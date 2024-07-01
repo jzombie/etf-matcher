@@ -3,11 +3,17 @@ FROM rust:latest
 
 # Install necessary dependencies
 RUN apt-get update && \
-    apt-get install -y cmake libz-dev python3 && \
+    apt-get install -y cmake libz-dev python3 gzip && \
     rm -rf /var/lib/apt/lists/*
 
 # Install wasm-pack
 RUN cargo install wasm-pack
+
+# Copy the original JSON data to the container
+COPY data.json /usr/src/app/data.json
+
+# Run the gzip command to compress the JSON data
+RUN gzip /usr/src/app/data.json
 
 # Create a new directory for the project
 WORKDIR /usr/src/app
@@ -16,16 +22,18 @@ WORKDIR /usr/src/app
 RUN cargo new --lib hello-wasm
 WORKDIR /usr/src/app/hello-wasm
 
-# Copy the source code and data into the container
+# Copy the source code into the container
 COPY src/lib.rs src/lib.rs
 COPY Cargo.toml Cargo.toml
-COPY ./data.json ./data.json 
+
+# Move the compressed data file to the project directory
+RUN mv /usr/src/app/data.json.gz /usr/src/app/hello-wasm/data.json.gz
 
 # Build the Rust project with wasm-pack
 RUN wasm-pack build --target web
 
 # Copy the HTML file into the container
-COPY ../index.html ./index.html
+COPY index.html ./index.html
 
 # Expose port 8000 for the web server
 EXPOSE 8000

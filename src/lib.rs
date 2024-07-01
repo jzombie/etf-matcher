@@ -2,6 +2,8 @@ use wasm_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::to_value;
 use std::collections::HashMap;
+use std::io::Read;
+use flate2::read::GzDecoder;
 
 #[wasm_bindgen]
 extern {
@@ -24,11 +26,19 @@ struct Entry {
 
 #[wasm_bindgen]
 pub fn count_entries_per_exchange() -> JsValue {
-    // Include the JSON data at compile time
-    let json_data = include_str!("../data.json");
+    // Include the compressed JSON data at compile time
+    let compressed_data = include_bytes!("../data.json.gz");
+
+    // Decompress the JSON data
+    let mut decoder = GzDecoder::new(&compressed_data[..]);
+    let mut json_data = String::new();
+    if let Err(err) = decoder.read_to_string(&mut json_data) {
+        alert(&format!("Failed to decompress JSON: {}", err));
+        return JsValue::NULL;
+    }
 
     // Parse the JSON data
-    let entries: Vec<Entry> = match serde_json::from_str(json_data) {
+    let entries: Vec<Entry> = match serde_json::from_str(&json_data) {
         Ok(entries) => entries,
         Err(err) => {
             alert(&format!("Failed to parse JSON: {}", err));
