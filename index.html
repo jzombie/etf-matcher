@@ -6,9 +6,14 @@
   </head>
   <body>
     <script type="module">
-      import init, { greet } from "./pkg/hello_wasm.js";
+      import init, { count_entries_per_exchange } from "./pkg/hello_wasm.js";
       init().then(() => {
-        greet();
+        const counts = count_entries_per_exchange();
+        if (counts !== null) {
+          console.log(counts);
+        } else {
+          alert("Failed to count entries per exchange");
+        }
       });
     </script>
   </body>
