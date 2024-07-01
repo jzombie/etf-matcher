@@ -16,15 +16,16 @@ WORKDIR /usr/src/app
 RUN cargo new --lib hello-wasm
 WORKDIR /usr/src/app/hello-wasm
 
-# Copy the source code into the container
+# Copy the source code and data into the container
 COPY src/lib.rs src/lib.rs
 COPY Cargo.toml Cargo.toml
+COPY ./data.json ./data.json 
 
 # Build the Rust project with wasm-pack
 RUN wasm-pack build --target web
 
 # Copy the HTML file into the container
-COPY index.html index.html
+COPY ../index.html ./index.html
 
 # Expose port 8000 for the web server
 EXPOSE 8000

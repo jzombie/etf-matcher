@@ -8,11 +8,7 @@
     <script type="module">
       import init, { greet } from "./pkg/hello_wasm.js";
       init().then(() => {
-        const jsonString = JSON.stringify([
-          { name: "WebAssembly" },
-          { name: "Rust" },
-        ]);
-        greet(jsonString);
+        greet();
       });
     </script>
   </body>
