@@ -9,29 +9,20 @@ RUN apt-get update && \
 # Install wasm-pack
 RUN cargo install wasm-pack
 
-# Copy the original JSON data to the container
-COPY data.json /usr/src/app/data.json
-
 # Create a new directory for the project
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Create a new Rust project
-RUN cargo new --lib hello-wasm
-WORKDIR /usr/src/app/hello-wasm
-
-# Copy the source code into the container
-COPY src/lib.rs src/lib.rs
-COPY Cargo.toml Cargo.toml
+# Copy all project files into the container
+COPY . .
 
 # Move the compressed data file to the project directory
-RUN gzip /usr/src/app/data.json
-RUN mv /usr/src/app/data.json.gz /usr/src/app/hello-wasm/data.json.gz
+RUN gzip data.json
 
 # Build the Rust project with wasm-pack
-RUN wasm-pack build --target web
+WORKDIR /app/rust
+RUN wasm-pack build --target web --out-dir /app/public/pkg
 
-# Copy the HTML file into the container
-COPY index.html ./index.html
+WORKDIR /app/public
 
 # Expose port 8000 for the web server
 EXPOSE 8000

@@ -27,7 +27,7 @@ struct Entry {
 #[wasm_bindgen]
 pub fn count_entries_per_exchange() -> JsValue {
     // Include the compressed JSON data at compile time
-    let compressed_data = include_bytes!("../data.json.gz");
+    let compressed_data = include_bytes!("/app/data.json.gz");
 
     // Decompress the JSON data
     let mut decoder = GzDecoder::new(&compressed_data[..]);
