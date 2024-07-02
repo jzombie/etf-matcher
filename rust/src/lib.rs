@@ -27,11 +27,10 @@ struct Entry {
     entry_type: Option<String>,
 }
 
-#[wasm_bindgen]
-pub async fn count_entries_per_exchange(url: String) -> Result<JsValue, JsValue> {
-    // Fetch the compressed JSON data
+// Function to fetch and decompress .gz data from a URL
+async fn fetch_and_decompress_gz(url: &str) -> Result<String, JsValue> {
     let xhr = XmlHttpRequest::new().unwrap();
-    xhr.open("GET", &url).unwrap();
+    xhr.open("GET", url).unwrap();
     xhr.set_response_type(XmlHttpRequestResponseType::Arraybuffer); // Correctly setting the response type
     xhr.send().unwrap();
 
@@ -62,29 +61,36 @@ pub async fn count_entries_per_exchange(url: String) -> Result<JsValue, JsValue>
     // Decompress the JSON data
     let mut decoder = GzDecoder::new(&compressed_data[..]);
     let mut json_data = String::new();
-    if let Err(err) = decoder.read_to_string(&mut json_data) {
-        return Err(JsValue::from_str(&format!("Failed to decompress JSON: {}", err)));
-    }
+    decoder.read_to_string(&mut json_data).map_err(|err| {
+        JsValue::from_str(&format!("Failed to decompress JSON: {}", err))
+    })?;
 
-    // Parse the JSON data
-    let entries: Vec<Entry> = match serde_json::from_str(&json_data) {
-        Ok(entries) => entries,
-        Err(err) => {
-            return Err(JsValue::from_str(&format!("Failed to parse JSON: {}", err)));
-        }
-    };
+    Ok(json_data)
+}
 
-    // Count the number of entries per exchange
+// Function to parse JSON data into entries
+fn parse_json_data(json_data: &str) -> Result<Vec<Entry>, JsValue> {
+    serde_json::from_str(json_data).map_err(|err| {
+        JsValue::from_str(&format!("Failed to parse JSON: {}", err))
+    })
+}
+
+// Function to count entries per exchange
+fn count_entries(entries: Vec<Entry>) -> Result<JsValue, JsValue> {
     let mut counts: HashMap<String, usize> = HashMap::new();
     for entry in entries {
         if let Some(exchange) = &entry.exchange {
             *counts.entry(exchange.clone()).or_insert(0) += 1;
         }
     }
+    to_value(&counts).map_err(|err| {
+        JsValue::from_str(&format!("Failed to serialize JSON: {}", err))
+    })
+}
 
-    // Convert the counts to a JSON value
-    match to_value(&counts) {
-        Ok(js_value) => Ok(js_value),
-        Err(err) => Err(JsValue::from_str(&format!("Failed to serialize JSON: {}", err))),
-    }
+#[wasm_bindgen]
+pub async fn count_entries_per_exchange(url: String) -> Result<JsValue, JsValue> {
+    let json_data = fetch_and_decompress_gz(&url).await?;
+    let entries = parse_json_data(&json_data)?;
+    count_entries(entries)
 }
