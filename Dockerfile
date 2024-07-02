@@ -12,7 +12,7 @@ RUN cargo install wasm-pack
 # Create a new directory for the project
 WORKDIR /app
 
-# Copy only Rust files into the container
+# First, copy only Rust files into the container
 COPY rust/ ./rust/
 
 # Build the Rust project with wasm-pack

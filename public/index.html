@@ -6,20 +6,20 @@
   </head>
   <body>
     <script type="module">
-      import init, { count_entries_per_exchange } from "./pkg/hello_wasm.js";
+      import init, { count_etfs_per_exchange } from "./pkg/hello_wasm.js";
       init().then(() => {
         const dataUrl = "/data/data.json.gz";
-        count_entries_per_exchange(dataUrl)
+        count_etfs_per_exchange(dataUrl)
           .then((counts) => {
             if (counts !== null) {
               console.log(counts);
             } else {
-              alert("Failed to count entries per exchange");
+              alert("Failed to count ETFs per exchange");
             }
           })
           .catch((error) => {
             console.error("Error:", error);
-            alert("An error occurred while counting entries per exchange");
+            alert("An error occurred while counting ETFs per exchange");
           });
       });
     </script>
