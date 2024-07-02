@@ -15,8 +15,8 @@ WORKDIR /app
 # Copy all project files into the container
 COPY . .
 
-# Move the compressed data file to the project directory
-RUN gzip data.json
+# Compress all files in the data directory in place
+RUN cd data && find . -type f -exec gzip {} \;
 
 # Build the Rust project with wasm-pack
 WORKDIR /app/rust
