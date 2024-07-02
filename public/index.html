@@ -6,22 +6,25 @@
   </head>
   <body>
     <script type="module">
-      import init, { count_etfs_per_exchange } from "./pkg/hello_wasm.js";
-      init().then(() => {
-        const dataUrl = "/data/data.json.gz";
-        count_etfs_per_exchange(dataUrl)
-          .then((counts) => {
-            if (counts !== null) {
-              console.log(counts);
-            } else {
-              alert("Failed to count ETFs per exchange");
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-            alert("An error occurred while counting ETFs per exchange");
-          });
+      const worker = new Worker(new URL("./worker.js", import.meta.url), {
+        type: "module",
       });
+
+      worker.onmessage = (event) => {
+        if (event.data.success) {
+          console.log(event.data.counts);
+        } else {
+          alert(`Failed to count ETFs per exchange: ${event.data.error}`);
+        }
+      };
+
+      worker.onerror = (error) => {
+        console.error("Worker error:", error);
+        alert("An error occurred in the web worker");
+      };
+
+      const dataUrl = "/data/data.json.gz";
+      worker.postMessage(dataUrl);
     </script>
   </body>
 </html>

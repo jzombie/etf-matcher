@@ -3,8 +3,12 @@ FROM rust:latest
 
 # Install necessary dependencies
 RUN apt-get update && \
-    apt-get install -y cmake libz-dev python3 gzip && \
+    apt-get install -y cmake libz-dev python3 gzip curl && \
     rm -rf /var/lib/apt/lists/*
+
+# Install Node.js and npm
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
+    apt-get install -y nodejs
 
 # Install wasm-pack
 RUN cargo install wasm-pack
@@ -25,6 +29,12 @@ WORKDIR /app
 # Copy the rest of the project files into the container
 COPY . .
 
+# Install Vite
+RUN npm install -g vite
+
+# Install project dependencies
+RUN npm install
+
 WORKDIR /app/data
 
 # Compress all files in the data directory in place
@@ -38,5 +48,5 @@ WORKDIR /app/public
 # Expose port 8000 for the web server
 EXPOSE 8000
 
-# Command to run the web server
-CMD ["python3", "-m", "http.server"]
+# Command to run the web server with Vite on port 8000
+CMD ["vite", "serve", "--host", "0.0.0.0", "--port", "8000"]
