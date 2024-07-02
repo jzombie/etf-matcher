@@ -12,9 +12,6 @@ RUN cargo install wasm-pack
 # Copy the original JSON data to the container
 COPY data.json /usr/src/app/data.json
 
-# Run the gzip command to compress the JSON data
-RUN gzip /usr/src/app/data.json
-
 # Create a new directory for the project
 WORKDIR /usr/src/app
 
@@ -27,6 +24,7 @@ COPY src/lib.rs src/lib.rs
 COPY Cargo.toml Cargo.toml
 
 # Move the compressed data file to the project directory
+RUN gzip /usr/src/app/data.json
 RUN mv /usr/src/app/data.json.gz /usr/src/app/hello-wasm/data.json.gz
 
 # Build the Rust project with wasm-pack
