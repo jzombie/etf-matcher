@@ -1,5 +1,6 @@
 import init, { count_etfs_per_exchange } from "./pkg/hello_wasm.js";
 
+// TODO: Call WASM function dynamically so it doesn't require a 1:1 mapping
 self.onmessage = async (event) => {
   const dataUrl = event.data;
   try {
