@@ -8,7 +8,7 @@ use js_sys::Promise;
 pub async fn fetch_and_decompress_gz(url: &str) -> Result<String, JsValue> {
     let xhr = XmlHttpRequest::new().unwrap();
     xhr.open("GET", url).unwrap();
-    xhr.set_response_type(web_sys::XmlHttpRequestResponseType::Arraybuffer); // Correctly setting the response type
+    xhr.set_response_type(web_sys::XmlHttpRequestResponseType::Arraybuffer);
     xhr.send().unwrap();
 
     let promise = Promise::new(&mut |resolve, reject| {
