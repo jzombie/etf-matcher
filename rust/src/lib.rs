@@ -14,7 +14,7 @@ extern {
 // Option<type> allows null values
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct ETF {
+struct Entry {
     symbol: Option<String>,
     name: Option<String>,
     price: Option<f64>,
@@ -25,10 +25,8 @@ struct ETF {
     entry_type: Option<String>,
 }
 
-
-
 // Function to count entries per exchange
-fn count_etfs(entries: Vec<ETF>) -> Result<JsValue, JsValue> {
+fn count_entries(entries: Vec<Entry>) -> Result<JsValue, JsValue> {
     let mut counts: HashMap<String, usize> = HashMap::new();
     for entry in entries {
         if let Some(exchange) = &entry.exchange {
@@ -41,15 +39,14 @@ fn count_etfs(entries: Vec<ETF>) -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
-pub async fn count_etfs_per_exchange(url: String) -> Result<JsValue, JsValue> {
-    let json_data = fetch_and_decompress_gz(&url).await?;
+pub async fn count_entries_per_exchange(url: String, password: String) -> Result<JsValue, JsValue> {
+    let json_data = fetch_and_decompress_gz(&url, &password).await?;
     let entries = parse_json_data(&json_data)?;
-    count_etfs(entries)
+    count_entries(entries)
 }
 
-
 // Function to parse JSON data into entries
-fn parse_json_data(json_data: &str) -> Result<Vec<ETF>, JsValue> {
+fn parse_json_data(json_data: &str) -> Result<Vec<Entry>, JsValue> {
     serde_json::from_str(json_data).map_err(|err| {
         JsValue::from_str(&format!("Failed to parse JSON: {}", err))
     })

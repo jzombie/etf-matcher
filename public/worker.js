@@ -1,18 +1,20 @@
-import init, { count_etfs_per_exchange } from "./pkg/hello_wasm.js";
+import init, { count_entries_per_exchange } from "./pkg/hello_wasm.js";
 
-// TODO: Call WASM function dynamically so it doesn't require a 1:1 mapping
 self.onmessage = async (event) => {
-  const dataUrl = event.data;
+  const { url, password } = event.data;
+  console.log(
+    "Worker received message with URL:",
+    url,
+    "and password:",
+    password
+  );
   try {
     await init();
-    const counts = await count_etfs_per_exchange(dataUrl);
-    self.postMessage({ success: true, counts });
+    const counts = await count_entries_per_exchange(url, password);
+    console.log("Worker successfully fetched and counted entries:", counts);
+    self.postMessage({ success: true, counts: counts });
   } catch (error) {
+    console.error("Worker encountered an error:", error);
     self.postMessage({ success: false, error: error.message });
   }
-};
-
-self.onerror = (error) => {
-  console.error("Worker error:", error);
-  self.postMessage({ success: false, error: error.message });
 };

@@ -6,9 +6,7 @@
   </head>
   <body>
     <script type="module">
-      const worker = new Worker(new URL("./worker.js", import.meta.url), {
-        type: "module",
-      });
+      const worker = new Worker("worker.js", { type: "module" });
 
       worker.onmessage = (event) => {
         if (event.data.success) {
@@ -23,8 +21,9 @@
         alert("An error occurred in the web worker");
       };
 
-      const dataUrl = "/data/data.json.gz";
-      worker.postMessage(dataUrl);
+      const dataUrl = "/data/etfs.json.enc";
+      const password = "mypassword";
+      worker.postMessage({ url: dataUrl, password: password });
     </script>
   </body>
 </html>

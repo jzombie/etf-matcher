@@ -13,4 +13,10 @@ export default defineConfig({
   worker: {
     format: "es",
   },
+  preview: {
+    port: 8000,
+    headers: {
+      "Content-Encoding": "gzip",
+    },
+  },
 });

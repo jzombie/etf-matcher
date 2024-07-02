@@ -3,7 +3,7 @@ FROM rust:latest
 
 # Install necessary dependencies
 RUN apt-get update && \
-    apt-get install -y cmake libz-dev python3 gzip curl && \
+    apt-get install -y cmake libz-dev python3 curl openssl && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Node.js and npm
@@ -38,13 +38,21 @@ RUN npm install -g vite
 # Install project dependencies
 RUN npm install
 
+WORKDIR /app/encrypt_tool
+
+# Copy the Rust encryption source file and compile it
+COPY encrypt_tool/ .
+RUN cargo build --release
+
+WORKDIR /app
+
+# Encrypt and compress the data file
+RUN ./encrypt_tool/target/release/encrypt_tool data/etfs.json data/etfs.json.enc mypassword
+
 WORKDIR /app/data
 
-# Compress all files in the data directory in place
-RUN find . -type f -exec gzip {} \;
-
 # Move the compressed data files into the public/data directory
-RUN mkdir -p /app/public/data && mv *.gz /app/public/data/
+RUN mkdir -p /app/public/data && mv etfs.json.enc /app/public/data/
 
 WORKDIR /app/public
 
