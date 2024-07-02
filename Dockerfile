@@ -10,6 +10,9 @@ RUN apt-get update && \
 RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
     apt-get install -y nodejs
 
+# Install tini
+RUN apt-get install -y tini
+
 # Install wasm-pack
 RUN cargo install wasm-pack
 
@@ -47,6 +50,9 @@ WORKDIR /app/public
 
 # Expose port 8000 for the web server
 EXPOSE 8000
+
+# Use tini as the entry point (trap SIGINT [Ctrl-C] and exit the Vite server)
+ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # Command to run the web server with Vite on port 8000
 CMD ["vite", "serve", "--host", "0.0.0.0", "--port", "8000"]
