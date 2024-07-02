@@ -8,12 +8,19 @@
     <script type="module">
       import init, { count_entries_per_exchange } from "./pkg/hello_wasm.js";
       init().then(() => {
-        const counts = count_entries_per_exchange();
-        if (counts !== null) {
-          console.log(counts);
-        } else {
-          alert("Failed to count entries per exchange");
-        }
+        const dataUrl = "/data/data.json.gz";
+        count_entries_per_exchange(dataUrl)
+          .then((counts) => {
+            if (counts !== null) {
+              console.log(counts);
+            } else {
+              alert("Failed to count entries per exchange");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("An error occurred while counting entries per exchange");
+          });
       });
     </script>
   </body>

@@ -12,15 +12,21 @@ RUN cargo install wasm-pack
 # Create a new directory for the project
 WORKDIR /app
 
+# TODO: Only copy rust files at first
 # Copy all project files into the container
 COPY . .
-
-# Compress all files in the data directory in place
-RUN cd data && find . -type f -exec gzip {} \;
 
 # Build the Rust project with wasm-pack
 WORKDIR /app/rust
 RUN wasm-pack build --target web --out-dir /app/public/pkg
+
+WORKDIR /app/data
+
+# Compress all files in the data directory in place
+RUN find . -type f -exec gzip {} \;
+
+# Move the compressed data files into the public/data directory
+RUN mkdir -p /app/public/data && mv *.gz /app/public/data/
 
 WORKDIR /app/public
 
