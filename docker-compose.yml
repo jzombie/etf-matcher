@@ -10,13 +10,13 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
-    working_dir: /app/public
     entrypoint: ["/usr/bin/tini", "--"]
     command: |
       sh -c '
       rm -rf /app/public/pkg /app/public/data || true &&
       cp -r /build_artifacts/pkg /app/public/pkg &&
       cp -r /build_artifacts/data /app/public/data &&
+      npm install &&
       vite serve --host 0.0.0.0 --port 8000
       '
     environment:

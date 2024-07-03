@@ -87,8 +87,6 @@ COPY --from=backend-build /app/public/data /build_artifacts/data
 # Copy the rest of the project files
 COPY . .
 
-WORKDIR /app/public
-
 # Expose port 8000 for the web server
 EXPOSE 8000
 
