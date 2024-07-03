@@ -6,13 +6,13 @@ RUN apt-get update && \
     apt-get install -y cmake libz-dev python3 curl openssl && \
     rm -rf /var/lib/apt/lists/*
 
+# Create a new directory for the project
+WORKDIR /app
+
 # ----- BEGIN BACKEND BUILD STAGE
 
 # Backend build stage
 FROM rust-base as backend-build
-
-# Create a new directory for the project
-WORKDIR /app
 
 # Copy only Rust backend files
 COPY backend/rust/encrypt_tool/ ./backend/rust/encrypt_tool/
@@ -31,9 +31,6 @@ FROM rust-base as frontend-build
 
 # Install wasm-pack for building the frontend
 RUN cargo install wasm-pack
-
-# Create a new directory for the project
-WORKDIR /app
 
 # Copy only Rust frontend files
 COPY rust/ ./rust/
