@@ -13,53 +13,27 @@ RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
 # Install tini
 RUN apt-get install -y tini
 
-# Install wasm-pack
-RUN cargo install wasm-pack
-
 # Create a new directory for the project
 WORKDIR /app
 
 # First, copy only Rust files into the container
 COPY rust/ ./rust/
-
-# Build the Rust project with wasm-pack
-WORKDIR /app/rust
-RUN wasm-pack build --target web --out-dir /app/public/pkg
-
-# Go back to the root directory
-WORKDIR /app
+COPY backend/rust/encrypt_tool/ ./backend/rust/encrypt_tool/
 
 # Copy the rest of the project files into the container
 COPY . .
 
-# -- BEGIN DATA ENCRYPTION
-WORKDIR /app/backend/rust/encrypt_tool
+# Make Rust build scripts executable
+RUN chmod +x docker_build_helpers/*.sh
 
-# Copy the Rust encryption source file and compile it
-COPY backend/rust/encrypt_tool/ . 
-RUN cargo build --release
+# Run the build scripts
+RUN ./docker_build_helpers/build_rust_frontend.sh
+RUN ./docker_build_helpers/build_rust_backend.sh
 
-WORKDIR /app
-
-# Encrypt and compress the data file
-RUN ./backend/rust/encrypt_tool/target/release/encrypt_tool data/etfs.json data/etfs.json.enc mypassword
-# -- END DATA ENCRYPTION
-
-# Go back to the root directory
-WORKDIR /app
-
-# Install Vite
-RUN npm install -g vite
-
-# Install project dependencies
-RUN npm install
-
-WORKDIR /app/data
-
-# Move the compressed data files into the public/data directory
-RUN mkdir -p /app/public/data && mv etfs.json.enc /app/public/data/
-
+# Switch back to the public directory
 WORKDIR /app/public
+
+RUN npm install -g vite
 
 # Expose port 8000 for the web server
 EXPOSE 8000
