@@ -73,8 +73,6 @@ COPY package.json package.json
 # Install Vite and project dependencies
 RUN npm install -g vite && npm install
 
-COPY --from=env-build app/.env /app/.env
-
 # Create a directory to store build artifacts
 RUN mkdir -p /build_artifacts/pkg /build_artifacts/data /build_artifacts/backend
 
