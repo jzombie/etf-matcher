@@ -20,20 +20,28 @@ WORKDIR /app
 COPY rust/ ./rust/
 COPY backend/rust/encrypt_tool/ ./backend/rust/encrypt_tool/
 
-# Copy the rest of the project files into the container
-COPY . .
+RUN mkdir -p docker_build_helpers public/data
+COPY rust/ ./rust/
+COPY docker_build_helpers/ ./docker_build_helpers/
 
 # Make Rust build scripts executable
 RUN chmod +x docker_build_helpers/*.sh
 
 # Run the build scripts
 RUN ./docker_build_helpers/build_rust_frontend.sh
+
+# The "backend" is built after the frontend due to it having potentially more changing data
+COPY backend/ ./backend/
+COPY data/ ./data/
 RUN ./docker_build_helpers/build_rust_backend.sh
+
+# Copy the rest of the project files into the container
+COPY . .
 
 # Switch back to the public directory
 WORKDIR /app/public
 
-RUN npm install -g vite
+RUN npm install -g vite && npm install
 
 # Expose port 8000 for the web server
 EXPOSE 8000
