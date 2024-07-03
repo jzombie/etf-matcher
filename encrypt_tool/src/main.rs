@@ -29,10 +29,8 @@ fn encrypt_and_compress_file(input_file: &str, output_file: &str, password: &str
     let salt: [u8; 16] = rand::thread_rng().gen();
     println!("Salt: {:?}", salt);
 
-    // TODO: Don't hardcode the key!
     // Derive a key from the password using PBKDF2
-    // let mut key = [0u8; 32];
-    let mut key = hex!("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f");
+    let mut key = [0u8; 32];
     pbkdf2::<Hmac<Sha256>>(password.as_bytes(), &salt, 10000, &mut key);
     println!("Derived key: {:?}", key);
 
