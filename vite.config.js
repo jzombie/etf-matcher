@@ -44,4 +44,10 @@ export default defineConfig({
     }),
     checker({ typescript: true }),
   ],
+  // Resolve warnings with checker plugin (even though this is not a Vue project)
+  define: {
+    __VUE_OPTIONS_API__: JSON.stringify(true),
+    __VUE_PROD_DEVTOOLS__: JSON.stringify(false),
+    __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: JSON.stringify(false),
+  },
 });
