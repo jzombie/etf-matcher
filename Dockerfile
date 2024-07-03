@@ -1,47 +1,74 @@
-# Use the official Rust image as the base image
-FROM rust:latest
+# Base image for building Rust projects
+FROM rust:latest as rust-base
 
 # Install necessary dependencies
 RUN apt-get update && \
     apt-get install -y cmake libz-dev python3 curl openssl && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Node.js and npm
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
-    apt-get install -y nodejs
+# Install wasm-pack for building the frontend
+RUN cargo install wasm-pack
 
-# Install tini
-RUN apt-get install -y tini
+# ----- BEGIN BACKEND BUILD STAGE
+
+# Backend build stage
+FROM rust-base as backend-build
 
 # Create a new directory for the project
 WORKDIR /app
 
-# First, copy only Rust files into the container
-COPY rust/ ./rust/
+# Copy only Rust backend files
 COPY backend/rust/encrypt_tool/ ./backend/rust/encrypt_tool/
-
-RUN mkdir -p docker_build_helpers public/data
-COPY rust/ ./rust/
-COPY docker_build_helpers/ ./docker_build_helpers/
-
-# Make Rust build scripts executable
-RUN chmod +x docker_build_helpers/*.sh
-
-# Run the build scripts
-RUN ./docker_build_helpers/build_rust_frontend.sh
-
-# The "backend" is built after the frontend due to it having potentially more changing data
-COPY backend/ ./backend/
 COPY data/ ./data/
-RUN ./docker_build_helpers/build_rust_backend.sh
+COPY docker_build_helpers/build_rust_backend.sh ./docker_build_helpers/
 
-# Copy the rest of the project files into the container
+# Make build script executable and run it
+RUN chmod +x ./docker_build_helpers/build_rust_backend.sh && ./docker_build_helpers/build_rust_backend.sh
+
+# ----- END BACKEND BUILD STAGE
+
+# ----- BEGIN FRONTEND BUILD STAGE
+
+# Frontend build stage
+FROM rust-base as frontend-build
+
+# Create a new directory for the project
+WORKDIR /app
+
+# Copy only Rust frontend files
+COPY rust/ ./rust/
+COPY docker_build_helpers/build_rust_frontend.sh ./docker_build_helpers/
+
+# Make build script executable and run it
+RUN chmod +x ./docker_build_helpers/build_rust_frontend.sh && ./docker_build_helpers/build_rust_frontend.sh
+
+# ----- END FRONTEND BUILD STAGE
+
+# Final stage
+FROM node:20 as final
+
+# Install tini
+RUN apt-get update && apt-get install -y tini && rm -rf /var/lib/apt/lists/*
+
+# Set the working directory
+WORKDIR /app
+
+# Copy frontend build artifacts
+COPY --from=frontend-build /app/public/pkg /app/public/pkg
+
+# Copy backend build artifacts
+COPY --from=backend-build /app/public/data /app/public/data
+
+COPY package.json package.json
+# COPY node_modules/ ./node_modules # TODO: Enable once populated
+
+# Install Vite and project dependencies
+RUN npm install -g vite && npm install
+
+# Copy the rest of the project files
 COPY . .
 
-# Switch back to the public directory
 WORKDIR /app/public
-
-RUN npm install -g vite && npm install
 
 # Expose port 8000 for the web server
 EXPOSE 8000
