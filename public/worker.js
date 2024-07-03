@@ -1,5 +1,45 @@
 import init, * as wasmModule from "./pkg/hello_wasm.js";
 
+let initialized = false;
+let initPromise = null;
+let callQueue = [];
+
+/**
+ * This function ensures the WebAssembly module is initialized only once.
+ */
+async function initializeWasm() {
+  if (!initialized) {
+    if (!initPromise) {
+      initPromise = init();
+      await initPromise;
+      initialized = true;
+    } else {
+      await initPromise;
+    }
+  }
+}
+
+/**
+ * This function processes the call queue.
+ */
+async function processQueue() {
+  while (callQueue.length > 0) {
+    const { functionName, args, resolve, reject } = callQueue.shift();
+
+    try {
+      await initializeWasm();
+      if (typeof wasmModule[functionName] !== "function") {
+        throw new Error(`Unknown function: ${functionName}`);
+      }
+      const result = await wasmModule[functionName](...args);
+      resolve(result);
+    } catch (error) {
+      console.error("Worker encountered an error:", error);
+      reject(error);
+    }
+  }
+}
+
 /**
  * This Web Worker script acts as a simple proxy layer to offload WebAssembly (WASM)
  * execution from the main thread. It listens for messages containing function names
@@ -7,7 +47,7 @@ import init, * as wasmModule from "./pkg/hello_wasm.js";
  * module, and sends the results back to the main thread.
  */
 self.onmessage = async (event) => {
-  const { functionName, args } = event.data;
+  const { functionName, args, messageId } = event.data;
   console.log(
     "Worker received message with functionName:",
     functionName,
@@ -15,27 +55,18 @@ self.onmessage = async (event) => {
     args
   );
 
-  if (typeof wasmModule[functionName] !== "function") {
-    console.error("Unknown function:", functionName);
-    self.postMessage({
-      success: false,
-      error: `Unknown function: ${functionName}`,
-    });
-    return;
-  }
+  const promise = new Promise((resolve, reject) => {
+    callQueue.push({ functionName, args, resolve, reject });
+    if (callQueue.length === 1) {
+      processQueue();
+    }
+  });
 
-  try {
-    await init();
-    const result = await wasmModule[functionName](...args);
-    // console.log(
-    //   "Worker successfully executed function:",
-    //   functionName,
-    //   "with result:",
-    //   result
-    // );
-    self.postMessage({ success: true, result: result });
-  } catch (error) {
-    console.error("Worker encountered an error:", error);
-    self.postMessage({ success: false, error: error.message });
-  }
+  promise
+    .then((result) => {
+      self.postMessage({ success: true, result, messageId });
+    })
+    .catch((error) => {
+      self.postMessage({ success: false, error: error.message, messageId });
+    });
 };
