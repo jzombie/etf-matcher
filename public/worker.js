@@ -27,12 +27,12 @@ self.onmessage = async (event) => {
   try {
     await init();
     const result = await wasmModule[functionName](...args);
-    console.log(
-      "Worker successfully executed function:",
-      functionName,
-      "with result:",
-      result
-    );
+    // console.log(
+    //   "Worker successfully executed function:",
+    //   functionName,
+    //   "with result:",
+    //   result
+    // );
     self.postMessage({ success: true, result: result });
   } catch (error) {
     console.error("Worker encountered an error:", error);
