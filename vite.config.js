@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 import path from "path";
 import react from "@vitejs/plugin-react";
+import checker from "vite-plugin-checker";
 
 const DESTINATION_DIR = path.resolve(__dirname, "dist");
 
@@ -41,5 +42,6 @@ export default defineConfig({
         },
       ],
     }),
+    checker({ typescript: true }),
   ],
 });
