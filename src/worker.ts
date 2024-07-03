@@ -1,4 +1,4 @@
-import init, * as wasmModule from "./pkg/hello_wasm.js";
+import init, * as wasmModule from "../public/pkg/hello_wasm";
 
 let initialized = false;
 let initPromise = null;

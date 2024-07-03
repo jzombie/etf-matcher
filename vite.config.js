@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 import path from "path";
+import react from "@vitejs/plugin-react";
 
 const DESTINATION_DIR = path.resolve(__dirname, "dist");
 
@@ -15,6 +16,7 @@ export default defineConfig({
         format: "es",
       },
     },
+    emptyOutDir: true, // Ensure the output directory is emptied before each build
   },
   worker: {
     format: "es",
@@ -26,11 +28,16 @@ export default defineConfig({
     },
   },
   plugins: [
+    react(),
     viteStaticCopy({
       targets: [
         {
-          src: "./*",
-          dest: DESTINATION_DIR,
+          src: "./data/*",
+          dest: path.resolve(DESTINATION_DIR, "data"),
+        },
+        {
+          src: "./pkg/*",
+          dest: path.resolve(DESTINATION_DIR, "pkg"),
         },
       ],
     }),
