@@ -14,12 +14,14 @@ use std::io::Read;
 use hex;
 use std::collections::HashMap;
 use std::cell::RefCell;
+use std::rc::Rc;
 use futures::future::Shared;
 use futures::FutureExt;
 use futures::future::LocalBoxFuture;
 
 include!("generated_password.rs");
 
+// Global cache with futures for pending requests
 thread_local! {
     static CACHE: RefCell<HashMap<String, Shared<LocalBoxFuture<'static, Result<String, JsValue>>>>> = RefCell::new(HashMap::new());
 }
@@ -35,16 +37,22 @@ fn decrypt_password(encrypted_password: &[u8], salt: &[u8]) -> Result<[u8; 32], 
 
 type Aes256Cbc = Cbc<Aes256, Pkcs7>;
 
-pub async fn fetch_and_decompress_gz(url: String) -> Result<String, JsValue> {
+pub async fn fetch_and_decompress_gz<T>(url: T) -> Result<String, JsValue>
+where
+    T: AsRef<str> + Clone,
+{
+    let url_str = url.as_ref().to_string();
+    let url_key = url.clone();
+
     let shared_future = CACHE.with(|cache| {
         let mut cache = cache.borrow_mut();
-        if let Some(cached_future) = cache.get(&url) {
+        if let Some(cached_future) = cache.get(&url_str) {
             web_sys::console::log_1(&"Returning cached future".into());
             cached_future.clone()
         } else {
             web_sys::console::log_1(&"Storing new future in cache".into());
-            let future = fetch_and_decompress_gz_internal(url.clone()).boxed_local().shared();
-            cache.insert(url.clone(), future.clone());
+            let future = fetch_and_decompress_gz_internal(url_str.clone()).boxed_local().shared();
+            cache.insert(url_str, future.clone());
             future
         }
     });

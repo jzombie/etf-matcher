@@ -65,7 +65,7 @@ struct ETFHolder {
 pub async fn count_etfs_per_exchange() -> Result<JsValue, JsValue> {
     let url: &str = ETF_URL;
 
-    let json_data = fetch_and_decompress_gz(url.to_string()).await?;
+    let json_data = fetch_and_decompress_gz(&url).await?;
     let entries: Vec<ETF> = parse_json_data(&json_data)?;
     
     let mut counts: HashMap<String, usize> = HashMap::new();
@@ -83,7 +83,7 @@ pub async fn count_etfs_per_exchange() -> Result<JsValue, JsValue> {
 pub async fn get_etf_holder_asset_count(symbol: String) -> Result<JsValue, JsValue> {
     let url = get_etf_holder_url(&symbol);
 
-    let json_data = fetch_and_decompress_gz(url.to_string()).await?;
+    let json_data = fetch_and_decompress_gz(&url).await?;
     let entries: Vec<ETFHolder> = parse_json_data(&json_data)?;
 
     let mut count = 0;
@@ -100,7 +100,7 @@ pub async fn get_etf_holder_asset_count(symbol: String) -> Result<JsValue, JsVal
 pub async fn get_etf_holder_asset_names(symbol: String) -> Result<JsValue, JsValue> {
     let url = get_etf_holder_url(&symbol);
 
-    let json_data = fetch_and_decompress_gz(url.to_string()).await?;
+    let json_data = fetch_and_decompress_gz(&url).await?;
     let entries: Vec<ETFHolder> = parse_json_data(&json_data)?;
 
     let mut asset_names: Vec<String> = Vec::new();
