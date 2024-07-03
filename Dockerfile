@@ -32,12 +32,7 @@ WORKDIR /app
 # Copy the rest of the project files into the container
 COPY . .
 
-# Install Vite
-RUN npm install -g vite
-
-# Install project dependencies
-RUN npm install
-
+# -- BEGIN DATA ENCRYPTION
 WORKDIR /app/backend/rust/encrypt_tool
 
 # Copy the Rust encryption source file and compile it
@@ -48,6 +43,16 @@ WORKDIR /app
 
 # Encrypt and compress the data file
 RUN ./backend/rust/encrypt_tool/target/release/encrypt_tool data/etfs.json data/etfs.json.enc mypassword
+# -- END DATA ENCRYPTION
+
+# Go back to the root directory
+WORKDIR /app
+
+# Install Vite
+RUN npm install -g vite
+
+# Install project dependencies
+RUN npm install
 
 WORKDIR /app/data
 
