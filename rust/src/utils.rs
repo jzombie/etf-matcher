@@ -30,7 +30,9 @@ fn decrypt_password(encrypted_password: &[u8], salt: &[u8]) -> Result<[u8; 32], 
     // Derive the decryption key
     let mut key = [0u8; 32];
     pbkdf2::<Hmac<Sha256>>(encrypted_password, salt, 10000, &mut key);
-    web_sys::console::log_1(&format!("Derived Key: {:?}", key).into());
+
+    // TODO: Only log during debugging
+    // web_sys::console::debug_1(&format!("Derived Key: {:?}", key).into());
 
     Ok(key)
 }
@@ -47,10 +49,10 @@ where
     let shared_future = CACHE.with(|cache| {
         let mut cache = cache.borrow_mut();
         if let Some(cached_future) = cache.get(&url_str) {
-            web_sys::console::log_1(&"Returning cached future".into());
+            web_sys::console::debug_1(&"Returning cached future".into());
             cached_future.clone()
         } else {
-            web_sys::console::log_1(&"Storing new future in cache".into());
+            web_sys::console::debug_1(&"Storing new future in cache".into());
             let future = fetch_and_decompress_gz_internal(url_str.clone()).boxed_local().shared();
             cache.insert(url_str, future.clone());
             future
@@ -64,18 +66,18 @@ where
 }
 
 async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue> {
-    web_sys::console::log_1(&"Starting fetch_and_decompress_gz".into());
+    web_sys::console::debug_1(&"Starting fetch_and_decompress_gz".into());
     let xhr = XmlHttpRequest::new().map_err(|err| {
-        web_sys::console::log_1(&format!("Failed to create XMLHttpRequest: {:?}", err).into());
+        web_sys::console::debug_1(&format!("Failed to create XMLHttpRequest: {:?}", err).into());
         JsValue::from_str("Failed to create XMLHttpRequest")
     })?;
     xhr.open("GET", &url).map_err(|err| {
-        web_sys::console::log_1(&format!("Failed to open XMLHttpRequest: {:?}", err).into());
+        web_sys::console::debug_1(&format!("Failed to open XMLHttpRequest: {:?}", err).into());
         JsValue::from_str("Failed to open XMLHttpRequest")
     })?;
     xhr.set_response_type(web_sys::XmlHttpRequestResponseType::Arraybuffer);
     xhr.send().map_err(|err| {
-        web_sys::console::log_1(&format!("Failed to send XMLHttpRequest: {:?}", err).into());
+        web_sys::console::debug_1(&format!("Failed to send XMLHttpRequest: {:?}", err).into());
         JsValue::from_str("Failed to send XMLHttpRequest")
     })?;
 
@@ -94,27 +96,30 @@ async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue
     });
 
     JsFuture::from(promise).await.map_err(|_| {
-        web_sys::console::log_1(&"Failed to fetch data".into());
+        web_sys::console::debug_1(&"Failed to fetch data".into());
         JsValue::from_str("Failed to fetch data")
     })?;
 
     if xhr.status().unwrap() != 200 {
         let status_code = xhr.status().unwrap();
-        web_sys::console::log_1(&format!("Failed to load data, status code: {}", status_code).into());
+        web_sys::console::debug_1(&format!("Failed to load data, status code: {}", status_code).into());
         return Err(JsValue::from_str(&format!("Failed to load data, status code: {}", status_code)));
     }
 
-    web_sys::console::log_1(&"Data fetched successfully".into());
+    web_sys::console::debug_1(&"Data fetched successfully".into());
     let array_buffer = xhr.response().unwrap();
     let buffer = js_sys::Uint8Array::new(&array_buffer);
     let encrypted_data = buffer.to_vec();
 
-    web_sys::console::log_1(&format!("Encrypted data length: {}", encrypted_data.len()).into());
+    // TODO: Only allow during debugging
+    // web_sys::console::debug_1(&format!("Encrypted data length: {}", encrypted_data.len()).into());
 
     // Ensure the correct salt extraction method
     // Assuming the salt was stored in the first 16 bytes of the encrypted data
     let salt = &encrypted_data[0..16];
-    web_sys::console::log_1(&format!("Salt: {:?}", salt).into());
+
+    // TODO: Only allow during debugging
+    // web_sys::console::debug_1(&format!("Salt: {:?}", salt).into());
 
     // Decrypt the password
     let encrypted_password: Vec<u8> = hex::decode(ENCRYPTED_PASSWORD).unwrap();
@@ -122,29 +127,31 @@ async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue
 
     // Assuming the IV was stored in the next 16 bytes of the encrypted data
     let iv: [u8; 16] = hex::decode(IV).unwrap().try_into().unwrap();
-    web_sys::console::log_1(&format!("IV: {:?}", iv).into());
+
+    // TODO: Only allow during debugging
+    // web_sys::console::debug_1(&format!("IV: {:?}", iv).into());
 
     let cipher = Aes256Cbc::new_from_slices(&key, &iv).map_err(|e| {
-        web_sys::console::log_1(&format!("Failed to create cipher: {}", e).into());
+        web_sys::console::debug_1(&format!("Failed to create cipher: {}", e).into());
         JsValue::from_str(&format!("Failed to create cipher: {}", e))
     })?;
 
-    web_sys::console::log_1(&"Cipher created successfully".into());
+    web_sys::console::debug_1(&"Cipher created successfully".into());
     let decrypted_data = cipher.decrypt_vec(&encrypted_data[32..]).map_err(|e| {
-        web_sys::console::log_1(&format!("Failed to decrypt data: {}", e).into());
+        web_sys::console::debug_1(&format!("Failed to decrypt data: {}", e).into());
         JsValue::from_str(&format!("Failed to decrypt data: {}", e))
     })?;
 
-    web_sys::console::log_1(&format!("Decrypted data length: {}", decrypted_data.len()).into());
+    web_sys::console::debug_1(&format!("Decrypted data length: {}", decrypted_data.len()).into());
 
     // Decompress the JSON data
     let mut decoder = GzDecoder::new(&decrypted_data[..]);
     let mut json_data = String::new();
     decoder.read_to_string(&mut json_data).map_err(|err| {
-        web_sys::console::log_1(&format!("Failed to decompress JSON: {}", err).into());
+        web_sys::console::debug_1(&format!("Failed to decompress JSON: {}", err).into());
         JsValue::from_str(&format!("Failed to decompress JSON: {}", err))
     })?;
 
-    web_sys::console::log_1(&"Data decompressed successfully".into());
+    web_sys::console::debug_1(&"Data decompressed successfully".into());
     Ok(json_data)
 }
