@@ -2,7 +2,7 @@ use aes::Aes256;
 use block_modes::{BlockMode, Cbc};
 use block_modes::block_padding::Pkcs7;
 use flate2::read::GzDecoder;
-use hmac::{Hmac};
+use hmac::Hmac;
 use pbkdf2::pbkdf2;
 use sha2::Sha256;
 use wasm_bindgen::prelude::*;
@@ -26,12 +26,22 @@ fn decrypt_password(encrypted_password: &[u8], salt: &[u8]) -> Result<[u8; 32], 
 
 type Aes256Cbc = Cbc<Aes256, Pkcs7>;
 
+#[wasm_bindgen]
 pub async fn fetch_and_decompress_gz(url: &str) -> Result<String, JsValue> {
     web_sys::console::log_1(&"Starting fetch_and_decompress_gz".into());
-    let xhr = XmlHttpRequest::new().unwrap();
-    xhr.open("GET", url).unwrap();
+    let xhr = XmlHttpRequest::new().map_err(|err| {
+        web_sys::console::log_1(&format!("Failed to create XMLHttpRequest: {:?}", err).into());
+        JsValue::from_str("Failed to create XMLHttpRequest")
+    })?;
+    xhr.open("GET", url).map_err(|err| {
+        web_sys::console::log_1(&format!("Failed to open XMLHttpRequest: {:?}", err).into());
+        JsValue::from_str("Failed to open XMLHttpRequest")
+    })?;
     xhr.set_response_type(web_sys::XmlHttpRequestResponseType::Arraybuffer);
-    xhr.send().unwrap();
+    xhr.send().map_err(|err| {
+        web_sys::console::log_1(&format!("Failed to send XMLHttpRequest: {:?}", err).into());
+        JsValue::from_str("Failed to send XMLHttpRequest")
+    })?;
 
     let promise = Promise::new(&mut |resolve, reject| {
         let onload = Closure::wrap(Box::new(move || {
@@ -41,7 +51,7 @@ pub async fn fetch_and_decompress_gz(url: &str) -> Result<String, JsValue> {
         onload.forget();
 
         let onerror = Closure::wrap(Box::new(move || {
-            reject.call1(&JsValue::NULL, &JsValue::NULL).unwrap();
+            reject.call1(&JsValue::NULL, &JsValue::from_str("Failed to fetch data")).unwrap();
         }) as Box<dyn FnMut()>);
         xhr.set_onerror(Some(onerror.as_ref().unchecked_ref()));
         onerror.forget();
