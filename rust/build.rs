@@ -19,7 +19,7 @@ fn main() {
 
         // Encode the byte arrays as hex strings
         let encrypted_password_hex = hex::encode(&encrypted_password_bytes);
-        let _key_hex = hex::encode(&key_bytes);
+        let _key_hex = hex::encode(&key_bytes); // Not used directly
         let iv_hex = hex::encode(&iv_bytes);
 
         // Write the encrypted password, key, and IV to a Rust source file
