@@ -19,7 +19,7 @@ fn main() {
 
         // Encode the byte arrays as hex strings
         let encrypted_password_hex = hex::encode(&encrypted_password_bytes);
-        let key_hex = hex::encode(&key_bytes);
+        let _key_hex = hex::encode(&key_bytes);
         let iv_hex = hex::encode(&iv_bytes);
 
         // Write the encrypted password, key, and IV to a Rust source file
@@ -29,7 +29,7 @@ fn main() {
             "pub const ENCRYPTED_PASSWORD: &str = \"{}\";\n",
             encrypted_password_hex
         ).expect("Could not write to file");
-        write!(file, "pub const KEY: &str = \"{}\";\n", key_hex).expect("Could not write to file");
+        // write!(file, "pub const KEY: &str = \"{}\";\n", key_hex).expect("Could not write to file");
         write!(file, "pub const IV: &str = \"{}\";\n", iv_hex).expect("Could not write to file");
     } else {
         panic!("ENCRYPTED_PASSWORD, KEY, or IV not set");

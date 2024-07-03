@@ -2,7 +2,7 @@ use aes::Aes256;
 use block_modes::{BlockMode, Cbc};
 use block_modes::block_padding::Pkcs7;
 use flate2::read::GzDecoder;
-use hmac::{Hmac, NewMac};
+use hmac::{Hmac};
 use pbkdf2::pbkdf2;
 use sha2::Sha256;
 use wasm_bindgen::prelude::*;
