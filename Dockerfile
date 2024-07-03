@@ -38,16 +38,16 @@ RUN npm install -g vite
 # Install project dependencies
 RUN npm install
 
-WORKDIR /app/encrypt_tool
+WORKDIR /app/backend/rust/encrypt_tool
 
 # Copy the Rust encryption source file and compile it
-COPY encrypt_tool/ .
+COPY backend/rust/encrypt_tool/ . 
 RUN cargo build --release
 
 WORKDIR /app
 
 # Encrypt and compress the data file
-RUN ./encrypt_tool/target/release/encrypt_tool data/etfs.json data/etfs.json.enc mypassword
+RUN ./backend/rust/encrypt_tool/target/release/encrypt_tool data/etfs.json data/etfs.json.enc mypassword
 
 WORKDIR /app/data
 
