@@ -6,9 +6,6 @@ RUN apt-get update && \
     apt-get install -y cmake libz-dev python3 curl openssl && \
     rm -rf /var/lib/apt/lists/*
 
-# Install wasm-pack for building the frontend
-RUN cargo install wasm-pack
-
 # ----- BEGIN BACKEND BUILD STAGE
 
 # Backend build stage
@@ -31,6 +28,9 @@ RUN chmod +x ./docker_build_helpers/build_rust_backend.sh && ./docker_build_help
 
 # Frontend build stage
 FROM rust-base as frontend-build
+
+# Install wasm-pack for building the frontend
+RUN cargo install wasm-pack
 
 # Create a new directory for the project
 WORKDIR /app
