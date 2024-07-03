@@ -22,24 +22,21 @@ services:
     environment:
       - RUST_BACKTRACE=1
 
-  # TODO: Debug this
-  # build-dist:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #     # target: final
-  #   ports:
-  #     - "8000:8000"
-  #   volumes:
-  #     - .:/app
-  #   working_dir: /app/public
-  #   entrypoint: ["/usr/bin/tini", "--"]
-  #   command: |
-  #     sh -c '
-  #     rm -rf /app/public/pkg /app/public/data || true &&
-  #     cp -r /build_artifacts/pkg /app/public/pkg &&
-  #     cp -r /build_artifacts/data /app/public/data &&
-  #     vite build && mv /app/public/dist /app/dist
-  #     '
-  #   profiles:
-  #     - optional
+  # docker compose up build-dist
+  build-dist:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    command: |
+      sh -c '
+      rm -rf /app/public/pkg /app/public/data || true &&
+      cp -r /build_artifacts/pkg /app/public/pkg &&
+      cp -r /build_artifacts/data /app/public/data &&
+      npm install &&
+      vite build
+      '
+    profiles:
+      # Don't run by default
+      - optional
