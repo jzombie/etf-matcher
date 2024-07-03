@@ -1,1 +1,8 @@
 .env
+
+# Frontend artifacts
+public/data
+public/pkg
+
+# OS generated files
+.DS_Store

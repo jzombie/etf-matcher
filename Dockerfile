@@ -77,12 +77,12 @@ RUN npm install -g vite && npm install
 
 COPY --from=env-build app/.env /app/.env
 
-# Copy frontend build artifacts
-COPY --from=frontend-build /app/public/pkg /app/public/pkg
+# Create a directory to store build artifacts
+RUN mkdir -p /build_artifacts/pkg /build_artifacts/data /build_artifacts/backend
 
-# Copy backend build artifacts
-COPY --from=backend-build app/backend /app/backend
-COPY --from=backend-build /app/public/data /app/public/data
+# Copy build artifacts
+COPY --from=frontend-build /app/public/pkg /build_artifacts/pkg
+COPY --from=backend-build /app/public/data /build_artifacts/data
 
 # Copy the rest of the project files
 COPY . .
