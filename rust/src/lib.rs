@@ -64,7 +64,7 @@ pub async fn count_etfs_per_exchange() -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
-pub async fn get_etf_holder(symbol: String) -> Result<JsValue, JsValue> {
+pub fn get_etf_holder(symbol: String) -> Result<JsValue, JsValue> {
     web_sys::console::log_1(&"Starting get_etf_holder".into());
 
     // Log the received symbol
