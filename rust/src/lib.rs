@@ -45,11 +45,27 @@ struct ETF {
     entry_type: Option<String>,
 }
 
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct ETFHolder {
+    asset: Option<String>,
+    name: Option<String>,
+    isin: Option<String>,
+    cusip: Option<String>,
+    #[serde(rename = "sharesNumber")]
+    shares_number: Option<f64>,
+    #[serde(rename = "weightPercentage")]
+    weight_percentage: Option<f64>,
+    #[serde(rename = "marketValue")]
+    market_value: Option<f64>,
+    updated: Option<String>,
+}
+
 #[wasm_bindgen]
 pub async fn count_etfs_per_exchange() -> Result<JsValue, JsValue> {
     let url: &str = ETF_URL;
 
-    let json_data = fetch_and_decompress_gz(&url).await?;
+    let json_data = fetch_and_decompress_gz(url.to_string()).await?;
     let entries: Vec<ETF> = parse_json_data(&json_data)?;
     
     let mut counts: HashMap<String, usize> = HashMap::new();
@@ -64,21 +80,39 @@ pub async fn count_etfs_per_exchange() -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
-pub fn get_etf_holder(symbol: String) -> Result<JsValue, JsValue> {
-    web_sys::console::log_1(&"Starting get_etf_holder".into());
-
-    // Log the received symbol
-    web_sys::console::log_1(&format!("Received symbol: {}", symbol).into());
-
-    // Generate the URL
+pub async fn get_etf_holder_asset_count(symbol: String) -> Result<JsValue, JsValue> {
     let url = get_etf_holder_url(&symbol);
-    web_sys::console::log_1(&format!("Generated URL: {}", url).into());
 
-    // Convert the URL to JsValue and return
-    let js_url = JsValue::from_str(&url);
-    web_sys::console::log_1(&format!("JsValue URL: {:?}", js_url).into());
+    let json_data = fetch_and_decompress_gz(url.to_string()).await?;
+    let entries: Vec<ETFHolder> = parse_json_data(&json_data)?;
 
-    Ok(js_url)
+    let mut count = 0;
+    for entry in entries {
+        if entry.asset.is_some() {
+            count += 1;
+        }
+    }
+
+    Ok(JsValue::from(count))
+}
+
+#[wasm_bindgen]
+pub async fn get_etf_holder_asset_names(symbol: String) -> Result<JsValue, JsValue> {
+    let url = get_etf_holder_url(&symbol);
+
+    let json_data = fetch_and_decompress_gz(url.to_string()).await?;
+    let entries: Vec<ETFHolder> = parse_json_data(&json_data)?;
+
+    let mut asset_names: Vec<String> = Vec::new();
+    for entry in entries {
+        if let Some(asset) = &entry.asset {
+            asset_names.push(asset.clone());
+        }
+    }
+
+    to_value(&asset_names).map_err(|err| {
+        JsValue::from_str(&format!("Failed to serialize asset names: {}", err))
+    })
 }
 
 

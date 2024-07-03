@@ -12,8 +12,17 @@ use js_sys::Promise;
 use std::convert::TryInto;
 use std::io::Read;
 use hex;
+use std::collections::HashMap;
+use std::cell::RefCell;
+use futures::future::Shared;
+use futures::FutureExt;
+use futures::future::LocalBoxFuture;
 
 include!("generated_password.rs");
+
+thread_local! {
+    static CACHE: RefCell<HashMap<String, Shared<LocalBoxFuture<'static, Result<String, JsValue>>>>> = RefCell::new(HashMap::new());
+}
 
 fn decrypt_password(encrypted_password: &[u8], salt: &[u8]) -> Result<[u8; 32], JsValue> {
     // Derive the decryption key
@@ -26,13 +35,33 @@ fn decrypt_password(encrypted_password: &[u8], salt: &[u8]) -> Result<[u8; 32], 
 
 type Aes256Cbc = Cbc<Aes256, Pkcs7>;
 
-pub async fn fetch_and_decompress_gz(url: &str) -> Result<String, JsValue> {
+pub async fn fetch_and_decompress_gz(url: String) -> Result<String, JsValue> {
+    let shared_future = CACHE.with(|cache| {
+        let mut cache = cache.borrow_mut();
+        if let Some(cached_future) = cache.get(&url) {
+            web_sys::console::log_1(&"Returning cached future".into());
+            cached_future.clone()
+        } else {
+            web_sys::console::log_1(&"Storing new future in cache".into());
+            let future = fetch_and_decompress_gz_internal(url.clone()).boxed_local().shared();
+            cache.insert(url.clone(), future.clone());
+            future
+        }
+    });
+
+    match shared_future.await {
+        Ok(result) => Ok(result),
+        Err(err) => Err(JsValue::from_str(&format!("Error: {:?}", err))),
+    }
+}
+
+async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue> {
     web_sys::console::log_1(&"Starting fetch_and_decompress_gz".into());
     let xhr = XmlHttpRequest::new().map_err(|err| {
         web_sys::console::log_1(&format!("Failed to create XMLHttpRequest: {:?}", err).into());
         JsValue::from_str("Failed to create XMLHttpRequest")
     })?;
-    xhr.open("GET", url).map_err(|err| {
+    xhr.open("GET", &url).map_err(|err| {
         web_sys::console::log_1(&format!("Failed to open XMLHttpRequest: {:?}", err).into());
         JsValue::from_str("Failed to open XMLHttpRequest")
     })?;
