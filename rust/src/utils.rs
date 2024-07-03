@@ -26,7 +26,6 @@ fn decrypt_password(encrypted_password: &[u8], salt: &[u8]) -> Result<[u8; 32], 
 
 type Aes256Cbc = Cbc<Aes256, Pkcs7>;
 
-#[wasm_bindgen]
 pub async fn fetch_and_decompress_gz(url: &str) -> Result<String, JsValue> {
     web_sys::console::log_1(&"Starting fetch_and_decompress_gz".into());
     let xhr = XmlHttpRequest::new().map_err(|err| {
