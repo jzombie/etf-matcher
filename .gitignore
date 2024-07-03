@@ -1,5 +1,7 @@
 .env
 
+dist/
+
 # Frontend artifacts
 public/data
 public/pkg
