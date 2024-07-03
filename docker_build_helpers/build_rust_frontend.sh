@@ -3,6 +3,11 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
+# Source the .env file
+if [ -f .env ]; then
+    export $(cat .env | xargs)
+fi
+
 # Install wasm-pack
 cargo install wasm-pack
 

@@ -1,6 +1,9 @@
 # Base image for building Rust projects
 FROM rust:latest as rust-base
 
+# Copy .env file into the container
+COPY .env .env
+
 # Install necessary dependencies
 RUN apt-get update && \
     apt-get install -y cmake libz-dev python3 curl openssl && \
@@ -9,13 +12,24 @@ RUN apt-get update && \
 # Create a new directory for the project
 WORKDIR /app
 
+FROM rust-base as env-build
+
+# Copy only Rust backend files
+COPY backend/ ./backend/
+COPY docker_build_helpers/ ./docker_build_helpers/
+
+# Make build script executable and run it
+RUN chmod +x ./docker_build_helpers/encrypt_password.sh && ./docker_build_helpers/encrypt_password.sh
+
 # ----- BEGIN BACKEND BUILD STAGE
 
 # Backend build stage
 FROM rust-base as backend-build
 
+COPY --from=env-build app/.env /app/.env
+
 # Copy only Rust backend files
-COPY backend/rust/encrypt_tool/ ./backend/rust/encrypt_tool/
+COPY backend/rust/ ./backend/rust/
 COPY data/ ./data/
 COPY docker_build_helpers/build_rust_backend.sh ./docker_build_helpers/
 
@@ -29,12 +43,17 @@ RUN chmod +x ./docker_build_helpers/build_rust_backend.sh && ./docker_build_help
 # Frontend build stage
 FROM rust-base as frontend-build
 
+COPY --from=env-build app/.env /app/.env
+
 # Install wasm-pack for building the frontend
 RUN cargo install wasm-pack
 
 # Copy only Rust frontend files
 COPY rust/ ./rust/
 COPY docker_build_helpers/build_rust_frontend.sh ./docker_build_helpers/
+
+# Set the ENCRYPTED_PASSWORD environment variable for build.rs
+ENV ENCRYPTED_PASSWORD your_encrypted_password
 
 # Make build script executable and run it
 RUN chmod +x ./docker_build_helpers/build_rust_frontend.sh && ./docker_build_helpers/build_rust_frontend.sh
@@ -50,17 +69,20 @@ RUN apt-get update && apt-get install -y tini && rm -rf /var/lib/apt/lists/*
 # Set the working directory
 WORKDIR /app
 
-# Copy frontend build artifacts
-COPY --from=frontend-build /app/public/pkg /app/public/pkg
-
-# Copy backend build artifacts
-COPY --from=backend-build /app/public/data /app/public/data
-
 COPY package.json package.json
 # COPY node_modules/ ./node_modules # TODO: Enable once populated
 
 # Install Vite and project dependencies
 RUN npm install -g vite && npm install
+
+COPY --from=env-build app/.env /app/.env
+
+# Copy frontend build artifacts
+COPY --from=frontend-build /app/public/pkg /app/public/pkg
+
+# Copy backend build artifacts
+COPY --from=backend-build app/backend /app/backend
+COPY --from=backend-build /app/public/data /app/public/data
 
 # Copy the rest of the project files
 COPY . .

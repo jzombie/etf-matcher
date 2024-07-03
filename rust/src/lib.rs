@@ -39,8 +39,8 @@ fn count_entries(entries: Vec<Entry>) -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
-pub async fn count_entries_per_exchange(url: String, password: String) -> Result<JsValue, JsValue> {
-    let json_data = fetch_and_decompress_gz(&url, &password).await?;
+pub async fn count_entries_per_exchange(url: String) -> Result<JsValue, JsValue> {
+    let json_data = fetch_and_decompress_gz(&url).await?;
     let entries = parse_json_data(&json_data)?;
     count_entries(entries)
 }

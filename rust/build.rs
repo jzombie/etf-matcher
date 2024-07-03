@@ -1,0 +1,49 @@
+use std::env;
+use std::fs::File;
+use std::io::Write;
+use hex;
+use dotenv::dotenv;
+
+fn main() {
+    dotenv().ok();
+
+    if let (Ok(encrypted_password), Ok(key), Ok(iv)) = (
+        env::var("ENCRYPTED_PASSWORD"),
+        env::var("KEY"),
+        env::var("IV"),
+    ) {
+        // Convert the comma-separated string to a byte array
+        let encrypted_password_bytes = parse_env_variable_to_bytes(&encrypted_password).expect("Failed to parse ENCRYPTED_PASSWORD");
+        let key_bytes = parse_env_variable_to_bytes(&key).expect("Failed to parse KEY");
+        let iv_bytes = parse_env_variable_to_bytes(&iv).expect("Failed to parse IV");
+
+        // Encode the byte arrays as hex strings
+        let encrypted_password_hex = hex::encode(&encrypted_password_bytes);
+        let key_hex = hex::encode(&key_bytes);
+        let iv_hex = hex::encode(&iv_bytes);
+
+        // Write the encrypted password, key, and IV to a Rust source file
+        let mut file = File::create("src/generated_password.rs").expect("Could not create file");
+        write!(
+            file,
+            "pub const ENCRYPTED_PASSWORD: &str = \"{}\";\n",
+            encrypted_password_hex
+        ).expect("Could not write to file");
+        write!(file, "pub const KEY: &str = \"{}\";\n", key_hex).expect("Could not write to file");
+        write!(file, "pub const IV: &str = \"{}\";\n", iv_hex).expect("Could not write to file");
+    } else {
+        panic!("ENCRYPTED_PASSWORD, KEY, or IV not set");
+    }
+}
+
+fn parse_env_variable_to_bytes(env_var: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    env_var
+        .split(',')
+        .map(|s| {
+            s.trim().parse::<u8>().map_err(|e| {
+                eprintln!("Failed to parse '{}': {}", s, e);
+                Box::new(e) as Box<dyn std::error::Error>
+            })
+        })
+        .collect()
+}
