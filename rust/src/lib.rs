@@ -3,6 +3,7 @@ use console_error_panic_hook;
 use std::panic;
 use serde::{Deserialize, Serialize};
 use serde::de::DeserializeOwned;
+use serde_wasm_bindgen;
 use serde_wasm_bindgen::to_value;
 use std::collections::HashMap;
 
@@ -18,6 +19,8 @@ pub fn main() -> Result<(), JsValue> {
 
 // https://financialmodelingprep.com/api/v3/etf/list
 const ETF_URL: &str = "/data/etfs.enc";
+
+const SYMBOLS_URL: &str = "/data/symbols.enc";
 
 
 // TODO: Encode w/ symbol
@@ -60,6 +63,27 @@ struct ETFHolder {
     market_value: Option<f64>,
     updated: Option<String>,
 }
+
+type SymbolList = Vec<String>;
+
+#[wasm_bindgen]
+pub async fn get_symbols() -> Result<JsValue, JsValue> {
+    let url: &str = SYMBOLS_URL;
+
+    // Fetch and decompress the JSON data
+    let json_data = fetch_and_decompress_gz(&url).await?;
+    
+    // Parse the JSON data into a SymbolList
+    let symbols: SymbolList = serde_json::from_str(&json_data).map_err(|err| {
+        JsValue::from_str(&format!("Failed to parse JSON data: {}", err))
+    })?;
+    
+    // Convert the SymbolList into a JsValue and return it using serde-wasm-bindgen
+    serde_wasm_bindgen::to_value(&symbols).map_err(|err| {
+        JsValue::from_str(&format!("Failed to convert symbols to JsValue: {}", err))
+    })
+}
+
 
 #[wasm_bindgen]
 pub async fn count_etfs_per_exchange() -> Result<JsValue, JsValue> {

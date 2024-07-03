@@ -109,6 +109,14 @@
           .catch((error) => console.error(error));
       }, 5000);
 
+      callWorkerFunction("get_symbols", "SPYG")
+        .then((symbols) =>
+          console.log({
+            getSymbolsResult: symbols,
+          })
+        )
+        .catch((error) => console.error(error));
+
       // callWorkerFunction("get_etf_holder", "TESTING123")
       //   .then((url) =>
       //     console.log({
