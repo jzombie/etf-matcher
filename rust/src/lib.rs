@@ -7,10 +7,10 @@ use std::collections::HashMap;
 mod utils;
 use utils::fetch_and_decompress_gz;
 
-#[wasm_bindgen]
-extern {
-    pub fn alert(s: &str);
-}
+// #[wasm_bindgen]
+// extern {
+//     pub fn alert(s: &str);
+// }
 
 // Option<type> allows null values
 #[derive(Serialize, Deserialize)]
