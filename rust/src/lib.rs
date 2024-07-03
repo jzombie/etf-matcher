@@ -1,5 +1,6 @@
 use wasm_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
+use serde::de::DeserializeOwned;
 use serde_wasm_bindgen::to_value;
 use std::collections::HashMap;
 
@@ -28,7 +29,7 @@ struct ETF {
 #[wasm_bindgen]
 pub async fn count_etfs_per_exchange(url: String) -> Result<JsValue, JsValue> {
     let json_data = fetch_and_decompress_gz(&url).await?;
-    let entries = parse_json_data(&json_data)?;
+    let entries: Vec<ETF> = parse_json_data(&json_data)?;
     
     let mut counts: HashMap<String, usize> = HashMap::new();
     for entry in entries {
@@ -41,8 +42,8 @@ pub async fn count_etfs_per_exchange(url: String) -> Result<JsValue, JsValue> {
     })
 }
 
-// Function to parse JSON data into entries
-fn parse_json_data(json_data: &str) -> Result<Vec<ETF>, JsValue> {
+// Generic function to parse JSON data into any type that implements Deserialize
+fn parse_json_data<T: DeserializeOwned>(json_data: &str) -> Result<T, JsValue> {
     serde_json::from_str(json_data).map_err(|err| {
         JsValue::from_str(&format!("Failed to parse JSON: {}", err))
     })
