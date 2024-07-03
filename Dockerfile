@@ -12,7 +12,7 @@ WORKDIR /app
 FROM rust-base as env-build
 
 # Copy only Rust backend files
-COPY backend/ ./backend/
+COPY backend/rust ./backend/rust
 COPY docker_build_helpers/ ./docker_build_helpers/
 
 # Make build script executable and run it
@@ -28,11 +28,15 @@ COPY --from=env-build app/.env /app/.env
 
 # Copy only Rust backend files
 COPY backend/rust/ ./backend/rust/
-COPY data/ ./data/
-COPY docker_build_helpers/build_rust_backend.sh ./docker_build_helpers/
+COPY docker_build_helpers/ ./docker_build_helpers/
 
 # Make build script executable and run it
 RUN chmod +x ./docker_build_helpers/build_rust_backend.sh && ./docker_build_helpers/build_rust_backend.sh
+
+COPY data/ ./data/
+
+# Make build script executable and run it
+RUN chmod +x ./docker_build_helpers/encode_data.sh && ./docker_build_helpers/encode_data.sh
 
 # ----- END BACKEND BUILD STAGE
 
