@@ -26,7 +26,7 @@
         worker.postMessage({ functionName, args });
       };
 
-      const dataUrl = "/data/etfs.json.enc";
+      const dataUrl = "/data/etfs.enc";
       callWorkerFunction("count_etfs_per_exchange", dataUrl);
     </script>
   </body>
