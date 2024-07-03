@@ -1,9 +1,6 @@
 # Base image for building Rust projects
 FROM rust:latest as rust-base
 
-# Copy .env file into the container
-COPY .env .env
-
 # Install necessary dependencies
 RUN apt-get update && \
     apt-get install -y cmake libz-dev python3 curl openssl && \
@@ -19,6 +16,7 @@ COPY backend/ ./backend/
 COPY docker_build_helpers/ ./docker_build_helpers/
 
 # Make build script executable and run it
+RUN chmod +x ./docker_build_helpers/generate_env.sh && ./docker_build_helpers/generate_env.sh
 RUN chmod +x ./docker_build_helpers/encrypt_password.sh && ./docker_build_helpers/encrypt_password.sh
 
 # ----- BEGIN BACKEND BUILD STAGE
