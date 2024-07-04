@@ -1,15 +1,13 @@
 import React from "react";
 import callWorkerFunction from "./utils/callWorkerFunction";
 
-const App: React.FC = () => {
+export default function App() {
   return (
     <div>
       <h1>Hello, Rust + Vite + React + TypeScript!!!</h1>
     </div>
   );
-};
-
-export default App;
+}
 
 (() => {
   callWorkerFunction("get_data_build_time").then((dataBuildTime) => {
