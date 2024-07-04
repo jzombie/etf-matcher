@@ -53,7 +53,7 @@ services:
       - .:/app
     command: |
       sh -c '
-      cp -rT /build_artifacts/backend /app/backend/ &&
+      cp -rTf /build_artifacts/backend /app/backend/ &&
       ./docker_build_helpers/inotify_rust.sh
       '
     environment:
