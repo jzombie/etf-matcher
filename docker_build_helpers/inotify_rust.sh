@@ -55,12 +55,6 @@ watch_directory "$WATCH_DIR" "$BUILD_SCRIPT" "$EXCLUDE_PATTERN" "$DEBOUNCE_TIME"
 
 # BACKEND WATCHER
 
-# Source the .env file
-if [ -f .env ]; then
-    export $(cat .env | xargs)
-fi
-
-
 WATCH_DIR="/app/data"
 BUILD_SCRIPT="./docker_build_helpers/encode_data.sh"
 EXCLUDE_PATTERN='.*\.enc$'

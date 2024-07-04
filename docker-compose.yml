@@ -14,7 +14,6 @@ services:
       - .:/app # Mount so we can access the build files
     command: |
       sh -c '
-      ls /build_artifacts &&
       cp -rT /build_artifacts/public/pkg /app/public/pkg &&
       cp -rT /build_artifacts/public/data /app/public/data &&
       npm install &&

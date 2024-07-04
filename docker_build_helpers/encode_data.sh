@@ -3,6 +3,11 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
+# Source the .env file
+if [ -f .env ]; then
+    export $(cat /app/.env | xargs)
+fi
+
 # Auto-append generated build info (this should come before
 # the encryption process)
 cd /app/docker_build_helpers && ./generate_data_build_info.sh
