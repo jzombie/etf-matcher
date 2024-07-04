@@ -67,7 +67,7 @@ FROM frontend-build as final
 
 # Install necessary dependencies including Node.js
 RUN apt-get update && \
-    apt-get install -y curl gnupg tini inotify-tools && \
+    apt-get install -y curl gnupg tini inotify-tools bc && \
     curl -sL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs && \
     npm install -g vite && \
