@@ -1,13 +1,7 @@
 use aes::Aes256;
 use block_modes::{BlockMode, Cbc};
 use block_modes::block_padding::Pkcs7;
-use hmac::{Hmac, NewMac};
-use pbkdf2::pbkdf2;
 use rand::Rng;
-use sha2::Sha256;
-use std::fs::File;
-use std::io::{Read, Write};
-use std::iter;
 
 type Aes256Cbc = Cbc<Aes256, Pkcs7>;
 
