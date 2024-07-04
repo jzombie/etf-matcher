@@ -3,7 +3,7 @@ use block_modes::{BlockMode, Cbc};
 use block_modes::block_padding::Pkcs7;
 use flate2::write::GzEncoder;
 use flate2::Compression;
-use hmac::{Hmac, NewMac};
+use hmac::Hmac;
 use pbkdf2::pbkdf2;
 use sha2::Sha256;
 use dotenv::dotenv;
@@ -11,7 +11,6 @@ use rand::Rng;
 use std::env;
 use std::fs::File;
 use std::io::{Read, Write};
-use std::iter;
 use std::convert::TryInto;
 
 type Aes256Cbc = Cbc<Aes256, Pkcs7>;
@@ -24,6 +23,8 @@ fn parse_env_variable_to_bytes(env_var: &str) -> Result<Vec<u8>, Box<dyn std::er
 }
 
 fn encrypt_and_compress_file(input_file: &str, output_file: &str) -> Result<(), Box<dyn std::error::Error>> {
+    println!("Processing file: {}", input_file);
+
     // Read the input file
     let mut data = Vec::new();
     File::open(input_file)?.read_to_end(&mut data)?;
