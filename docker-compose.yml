@@ -2,6 +2,30 @@ x-variables:
   image-name: &image-name rust-dev-app:latest
 
 services:
+  # Generate a production build
+  #   Command: "docker compose up build-dist"
+  #
+  build-dist:
+    image: *image-name
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app # Mount so we can access the build files
+    command: |
+      sh -c '
+      ls /build_artifacts &&
+      cp -rT /build_artifacts/public/pkg /app/public/pkg &&
+      cp -rT /build_artifacts/public/data /app/public/data &&
+      npm install &&
+      vite build
+      '
+    profiles:
+      # Don't run by default
+      - production-build
+
+  # --- The following is used for development environments
+
   dev:
     image: *image-name
     build:
@@ -35,23 +59,3 @@ services:
       '
     environment:
       - RUST_BACKTRACE=1
-
-  # docker compose up build-dist
-  build-dist:
-    image: *image-name
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - .:/app
-    command: |
-      sh -c '
-      ls /build_artifacts &&
-      cp -rT /build_artifacts/public/pkg /app/public/pkg &&
-      cp -rT /build_artifacts/public/data /app/public/data &&
-      npm install &&
-      vite build
-      '
-    profiles:
-      # Don't run by default
-      - optional
