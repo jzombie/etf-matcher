@@ -51,9 +51,23 @@ services:
     image: *image-name
     volumes:
       - .:/app
+    # Note: The convoluted code in here skips copying over backend files
+    # that already exist
     command: |
       sh -c '
-      cp -rTf /build_artifacts/backend /app/backend/ &&
+      find /build_artifacts/backend -type f | while read file; do
+        dest="/app/backend/$${file#/build_artifacts/backend/}"
+        if [ ! -e "$$dest" ]; then
+          mkdir -p "$$(dirname "$$dest")"
+          cp "$$file" "$$dest"
+        fi
+      done &&
+      find /build_artifacts/backend -type d | while read dir; do
+        dest="/app/backend/$${dir#/build_artifacts/backend/}"
+        if [ ! -d "$$dest" ]; then
+          mkdir -p "$$dest"
+        fi
+      done &&
       ./docker_build_helpers/inotify_rust.sh
       '
     environment:
