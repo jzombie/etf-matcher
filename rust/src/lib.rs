@@ -20,6 +20,8 @@ pub fn main() -> Result<(), JsValue> {
     Ok(())
 }
 
+const DATA_BUILD_INFO_URL: &str = "/data/data_build_info.enc";
+
 // https://financialmodelingprep.com/api/v3/etf/list
 const ETF_URL: &str = "/data/etfs.enc";
 
@@ -36,6 +38,11 @@ fn get_etf_holder_url(symbol: &str) -> String {
 // extern {
 //     pub fn alert(s: &str);
 // }
+
+#[derive(Serialize, Deserialize)]
+struct DataBuildInfo {
+    time: String
+}
 
 // Option<type> allows null values
 #[derive(Serialize, Deserialize)]
@@ -68,6 +75,24 @@ struct ETFHolder {
 }
 
 type SymbolList = Vec<String>;
+
+#[wasm_bindgen]
+pub async fn get_data_build_time() -> Result<JsValue, JsValue> {
+    let url: &str = DATA_BUILD_INFO_URL;
+
+    // Fetch and decompress the JSON data
+    let json_data = fetch_and_decompress_gz(&url).await?;
+    
+    // Use the `?` operator to propagate the error if `parse_json_data` fails
+    let data: DataBuildInfo = parse_json_data(&json_data)?;
+
+    // // Convert the DataBuildInfo struct into a JsValue and return it
+    // serde_wasm_bindgen::to_value(&data).map_err(|err| {
+    //     JsValue::from_str(&format!("Failed to convert DataBuildInfo to JsValue: {}", err))
+    // })
+
+    Ok(JsValue::from_str(&data.time))
+}
 
 #[wasm_bindgen]
 pub async fn get_symbols() -> Result<JsValue, JsValue> {
@@ -141,8 +166,6 @@ pub async fn get_etf_holder_asset_names(symbol: String) -> Result<JsValue, JsVal
         JsValue::from_str(&format!("Failed to serialize asset names: {}", err))
     })
 }
-
-
 
 // Generic function to parse JSON data into any type that implements Deserialize
 fn parse_json_data<T: DeserializeOwned>(json_data: &str) -> Result<T, JsValue> {

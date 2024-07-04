@@ -38,6 +38,7 @@ fn decrypt_password(encrypted_password: &[u8], salt: &[u8]) -> Result<[u8; 32], 
 
 type Aes256Cbc = Cbc<Aes256, Pkcs7>;
 
+// TODO: Add ability to skip the cache
 pub async fn fetch_and_decompress_gz<T>(url: T) -> Result<String, JsValue>
 where
     T: AsRef<str> + Clone,

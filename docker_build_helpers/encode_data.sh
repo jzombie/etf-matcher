@@ -3,6 +3,10 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
+# Auto-append generated build info (this should come before
+# the encryption process)
+cd /app/docker_build_helpers && ./generate_data_build_info.sh
+
 cd /app/backend/rust/encrypt_tool
 
 # Loop over all JSON files in the /app/data directory

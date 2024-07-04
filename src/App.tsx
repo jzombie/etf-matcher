@@ -12,6 +12,10 @@ const App: React.FC = () => {
 export default App;
 
 (() => {
+  callWorkerFunction("get_data_build_time").then((dataBuildTime) => {
+    console.log({ dataBuildTime });
+  });
+
   callWorkerFunction("get_symbols").then((symbols) => {
     console.log({ symbols });
   });
