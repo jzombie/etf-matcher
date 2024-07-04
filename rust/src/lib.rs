@@ -93,6 +93,8 @@ pub async fn get_data_build_time() -> Result<JsValue, JsValue> {
     Ok(JsValue::from_str(&data.time))
 }
 
+// TODO: For the following, if there is a decompression error, bust the cache and
+// try again
 
 #[wasm_bindgen]
 pub async fn get_symbols() -> Result<JsValue, JsValue> {
