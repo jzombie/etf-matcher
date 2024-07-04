@@ -27,6 +27,7 @@ services:
     environment:
       - RUST_BACKTRACE=1
 
+  # Used for Rust auto-refresh (not quite HMR, but close)
   dev-rust-hmr:
     image: *image-name
     volumes:
