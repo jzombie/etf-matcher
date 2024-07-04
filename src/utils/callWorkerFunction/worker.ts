@@ -44,7 +44,10 @@ async function processQueue() {
         )[functionName](...args);
         resolve(result);
       } catch (error) {
-        console.error("Worker encountered an error:", error);
+        console.error(
+          `Worker encountered an error @ function "${functionName}":`,
+          error
+        );
         reject(error);
       }
     }
