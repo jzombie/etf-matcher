@@ -14,7 +14,8 @@ data/
 
 node_modules/
 
-**/rust/target/
+# Ignore Rust targets
+**/rust/**/target/
 
 # Auto-generated Rust
 __AUTOGEN__*.rs

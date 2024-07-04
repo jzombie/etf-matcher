@@ -1,5 +1,3 @@
-version: "3.8"
-
 x-variables:
   image-name: &image-name rust-dev-app:latest
 
@@ -9,7 +7,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      # target: final
     ports:
       - "8000:8000"
     volumes:
@@ -17,10 +14,9 @@ services:
     entrypoint: ["/usr/bin/tini", "--"]
     command: |
       sh -c '
-      rm -rf /app/public/pkg /app/public/data || true &&
       cp -r /build_artifacts/.env /app/.env &&
-      cp -r /build_artifacts/pkg /app/public/pkg &&
-      cp -r /build_artifacts/data /app/public/data &&
+      cp -rT /build_artifacts/public/pkg /app/public/pkg &&
+      cp -rT /build_artifacts/public/data /app/public/data &&
       npm install &&
       vite serve --host 0.0.0.0 --port 8000
       '
@@ -34,13 +30,15 @@ services:
       - .:/app
     command: |
       sh -c '
-      ./docker_build_helpers/inotify_rust_frontend.sh
+      cp -rT /build_artifacts/backend /app/backend/ &&
+      ./docker_build_helpers/inotify_rust.sh
       '
     environment:
       - RUST_BACKTRACE=1
 
   # docker compose up build-dist
   build-dist:
+    image: *image-name
     build:
       context: .
       dockerfile: Dockerfile
@@ -48,9 +46,9 @@ services:
       - .:/app
     command: |
       sh -c '
-      rm -rf /app/public/pkg /app/public/data || true &&
-      cp -r /build_artifacts/pkg /app/public/pkg &&
-      cp -r /build_artifacts/data /app/public/data &&
+      ls /build_artifacts &&
+      cp -rT /build_artifacts/public/pkg /app/public/pkg &&
+      cp -rT /build_artifacts/public/data /app/public/data &&
       npm install &&
       vite build
       '

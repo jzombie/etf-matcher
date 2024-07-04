@@ -83,12 +83,15 @@ COPY package.json package.json
 RUN npm install -g vite && npm install
 
 # Create a directory to store build artifacts
-RUN mkdir -p /build_artifacts/pkg /build_artifacts/data /build_artifacts/backend
+RUN mkdir -p /build_artifacts/public/pkg /build_artifacts/public/data /build_artifacts/backend
 
 # Copy build artifacts
+#
+# Note: The backend is copied into here as well to support `dev-rust-hmr`service
+COPY --from=backend-build  /app/backend /build_artifacts/backend
+COPY --from=backend-build /app/public/data /build_artifacts/public/data
+COPY --from=frontend-build /app/public/pkg /build_artifacts/public/pkg
 COPY --from=frontend-build /app/.env /build_artifacts/.env
-COPY --from=frontend-build /app/public/pkg /build_artifacts/pkg
-COPY --from=backend-build /app/public/data /build_artifacts/data
 
 # Copy the rest of the project files
 COPY . .
