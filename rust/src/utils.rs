@@ -25,6 +25,13 @@ thread_local! {
     static CACHE: RefCell<HashMap<String, Shared<LocalBoxFuture<'static, Result<String, JsValue>>>>> = RefCell::new(HashMap::new());
 }
 
+// TODO: Implement once ready
+// pub fn clear_cache() {
+//     CACHE.with(|cache| {
+//         cache.borrow_mut().clear();
+//     });
+// }
+
 fn decrypt_password(encrypted_password: &[u8], salt: &[u8]) -> Result<[u8; 32], JsValue> {
     // Derive the decryption key
     let mut key = [0u8; 32];
@@ -38,7 +45,6 @@ fn decrypt_password(encrypted_password: &[u8], salt: &[u8]) -> Result<[u8; 32], 
 
 type Aes256Cbc = Cbc<Aes256, Pkcs7>;
 
-// TODO: Add ability to skip the cache
 pub async fn fetch_and_decompress_gz<T>(url: T) -> Result<String, JsValue>
 where
     T: AsRef<str> + Clone,
@@ -63,6 +69,15 @@ where
         Ok(result) => Ok(result),
         Err(err) => Err(JsValue::from_str(&format!("Error: {:?}", err))),
     }
+}
+
+pub async fn fetch_and_decompress_gz_non_cached<T>(url: T) -> Result<String, JsValue>
+where
+    T: AsRef<str> + Clone,
+{
+    web_sys::console::debug_1(&"Skipping cache".into());
+    let url_str = url.as_ref().to_string();
+    fetch_and_decompress_gz_internal(url_str.clone()).await
 }
 
 async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue> {

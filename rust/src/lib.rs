@@ -8,12 +8,11 @@ use serde_wasm_bindgen::to_value;
 use std::collections::HashMap;
 
 mod utils;
-use utils::fetch_and_decompress_gz;
+use utils::{fetch_and_decompress_gz, fetch_and_decompress_gz_non_cached};
 
 #[wasm_bindgen(start)]
 pub fn main() -> Result<(), JsValue> {
     web_sys::console::debug_1(&"Hello from Rust!".into());
-
 
     // Set the panic hook
     panic::set_hook(Box::new(console_error_panic_hook::hook));
@@ -81,7 +80,7 @@ pub async fn get_data_build_time() -> Result<JsValue, JsValue> {
     let url: &str = DATA_BUILD_INFO_URL;
 
     // Fetch and decompress the JSON data
-    let json_data = fetch_and_decompress_gz(&url).await?;
+    let json_data = fetch_and_decompress_gz_non_cached(&url).await?;
     
     // Use the `?` operator to propagate the error if `parse_json_data` fails
     let data: DataBuildInfo = parse_json_data(&json_data)?;
@@ -93,6 +92,7 @@ pub async fn get_data_build_time() -> Result<JsValue, JsValue> {
 
     Ok(JsValue::from_str(&data.time))
 }
+
 
 #[wasm_bindgen]
 pub async fn get_symbols() -> Result<JsValue, JsValue> {
