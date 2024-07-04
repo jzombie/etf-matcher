@@ -4,7 +4,7 @@ import callWorkerFunction from "./utils/callWorkerFunction";
 const App: React.FC = () => {
   return (
     <div>
-      <h1>Hello, Vite + React + TypeScript!!!</h1>
+      <h1>Hello, Rust + Vite + React + TypeScript!!!</h1>
     </div>
   );
 };
