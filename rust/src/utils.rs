@@ -48,10 +48,10 @@ where
     let shared_future = CACHE.with(|cache| {
         let mut cache = cache.borrow_mut();
         if let Some(cached_future) = cache.get(&url_str) {
-            web_sys::console::debug_1(&"Returning cached future".into());
+            // web_sys::console::debug_1(&"Returning cached future".into());
             cached_future.clone()
         } else {
-            web_sys::console::debug_1(&"Storing new future in cache".into());
+            // web_sys::console::debug_1(&"Storing new future in cache".into());
             let future = fetch_and_decompress_gz_internal(url_str.clone()).boxed_local().shared();
             cache.insert(url_str, future.clone());
             future
@@ -65,7 +65,7 @@ where
 }
 
 async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue> {
-    web_sys::console::debug_1(&"Starting fetch_and_decompress_gz".into());
+    // web_sys::console::debug_1(&"Starting fetch_and_decompress_gz".into());
     let xhr = XmlHttpRequest::new().map_err(|err| {
         web_sys::console::debug_1(&format!("Failed to create XMLHttpRequest: {:?}", err).into());
         JsValue::from_str("Failed to create XMLHttpRequest")
@@ -105,7 +105,7 @@ async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue
         return Err(JsValue::from_str(&format!("Failed to load data, status code: {}", status_code)));
     }
 
-    web_sys::console::debug_1(&"Data fetched successfully".into());
+    // web_sys::console::debug_1(&"Data fetched successfully".into());
     let array_buffer = xhr.response().unwrap();
     let buffer = js_sys::Uint8Array::new(&array_buffer);
     let encrypted_data = buffer.to_vec();
@@ -135,13 +135,13 @@ async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue
         JsValue::from_str(&format!("Failed to create cipher: {}", e))
     })?;
 
-    web_sys::console::debug_1(&"Cipher created successfully".into());
+    // web_sys::console::debug_1(&"Cipher created successfully".into());
     let decrypted_data = cipher.decrypt_vec(&encrypted_data[32..]).map_err(|e| {
         web_sys::console::debug_1(&format!("Failed to decrypt data: {}", e).into());
         JsValue::from_str(&format!("Failed to decrypt data: {}", e))
     })?;
 
-    web_sys::console::debug_1(&format!("Decrypted data length: {}", decrypted_data.len()).into());
+    // web_sys::console::debug_1(&format!("Decrypted data length: {}", decrypted_data.len()).into());
 
     // Decompress the JSON data
     let mut decoder = GzDecoder::new(&decrypted_data[..]);
@@ -151,6 +151,6 @@ async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue
         JsValue::from_str(&format!("Failed to decompress JSON: {}", err))
     })?;
 
-    web_sys::console::debug_1(&"Data decompressed successfully".into());
+    // web_sys::console::debug_1(&"Data decompressed successfully".into());
     Ok(json_data)
 }
