@@ -14,12 +14,11 @@ use std::io::Read;
 use hex;
 use std::collections::HashMap;
 use std::cell::RefCell;
-use std::rc::Rc;
 use futures::future::Shared;
 use futures::FutureExt;
 use futures::future::LocalBoxFuture;
 
-include!("generated_password.rs");
+include!("__AUTOGEN__generated_password.rs");
 
 // Global cache with futures for pending requests
 thread_local! {
@@ -44,7 +43,7 @@ where
     T: AsRef<str> + Clone,
 {
     let url_str = url.as_ref().to_string();
-    let url_key = url.clone();
+    let _url_key = url.clone();
 
     let shared_future = CACHE.with(|cache| {
         let mut cache = cache.borrow_mut();

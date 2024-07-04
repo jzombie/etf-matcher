@@ -52,7 +52,7 @@ RUN cargo install wasm-pack
 
 # Copy only Rust frontend files
 COPY rust/ ./rust/
-COPY docker_build_helpers/build_rust_frontend.sh ./docker_build_helpers/
+COPY docker_build_helpers/ ./docker_build_helpers/
 
 # Set the ENCRYPTED_PASSWORD environment variable for build.rs
 ENV ENCRYPTED_PASSWORD your_encrypted_password
@@ -63,10 +63,15 @@ RUN chmod +x ./docker_build_helpers/build_rust_frontend.sh && ./docker_build_hel
 # ----- END FRONTEND BUILD STAGE
 
 # Final stage
-FROM node:20 as final
+FROM frontend-build as final
 
-# Install tini
-RUN apt-get update && apt-get install -y tini && rm -rf /var/lib/apt/lists/*
+# Install necessary dependencies including Node.js
+RUN apt-get update && \
+    apt-get install -y curl gnupg tini inotify-tools && \
+    curl -sL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g vite && \
+    rm -rf /var/lib/apt/lists/*
 
 # Set the working directory
 WORKDIR /app
@@ -81,6 +86,7 @@ RUN npm install -g vite && npm install
 RUN mkdir -p /build_artifacts/pkg /build_artifacts/data /build_artifacts/backend
 
 # Copy build artifacts
+COPY --from=frontend-build /app/.env /build_artifacts/.env
 COPY --from=frontend-build /app/public/pkg /build_artifacts/pkg
 COPY --from=backend-build /app/public/data /build_artifacts/data
 

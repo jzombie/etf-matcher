@@ -23,7 +23,7 @@ fn main() {
         let iv_hex = hex::encode(&iv_bytes);
 
         // Write the encrypted password, key, and IV to a Rust source file
-        let mut file = File::create("src/generated_password.rs").expect("Could not create file");
+        let mut file = File::create("src/__AUTOGEN__generated_password.rs").expect("Could not create file");
         write!(
             file,
             "pub const ENCRYPTED_PASSWORD: &str = \"{}\";\n",

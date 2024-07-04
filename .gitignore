@@ -13,3 +13,8 @@ public/pkg
 data/
 
 node_modules/
+
+**/rust/target/
+
+# Auto-generated Rust
+__AUTOGEN__*.rs

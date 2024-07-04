@@ -12,6 +12,9 @@ use utils::fetch_and_decompress_gz;
 
 #[wasm_bindgen(start)]
 pub fn main() -> Result<(), JsValue> {
+    web_sys::console::debug_1(&"Hello from Rust".into());
+
+
     // Set the panic hook
     panic::set_hook(Box::new(console_error_panic_hook::hook));
     Ok(())
