@@ -3,10 +3,10 @@ use console_error_panic_hook;
 use serde_wasm_bindgen;
 use serde_wasm_bindgen::to_value;
 use std::panic;
+use crate::data_models::SymbolListExt;
 
 mod utils;
 use utils::{
-    fetch_and_decompress_gz,
     fetch_and_decompress_gz_non_cached,
     parse_json_data
 };
@@ -50,21 +50,11 @@ pub async fn get_data_build_info() -> Result<JsValue, JsValue> {
 
 #[wasm_bindgen]
 pub async fn get_symbols() -> Result<JsValue, JsValue> {
-    let url: &str = &DataUrl::SymbolList.value();
-
-    // Fetch and decompress the JSON data
-    let json_data = fetch_and_decompress_gz(&url).await?;
-    
-    // Parse the JSON data into a SymbolList
-    let symbols: SymbolList = serde_json::from_str(&json_data).map_err(|err| {
-        JsValue::from_str(&format!("Failed to parse JSON data: {}", err))
-    })?;
-    
-    // Convert the SymbolList into a JsValue and return it using serde-wasm-bindgen
-    serde_wasm_bindgen::to_value(&symbols).map_err(|err| {
-        JsValue::from_str(&format!("Failed to convert symbols to JsValue: {}", err))
-    })
+    SymbolList::get_symbols().await
+        .map(|symbols| serde_wasm_bindgen::to_value(&symbols).unwrap_or_else(JsValue::from))
+        .map_err(JsValue::from)
 }
+
 
 #[wasm_bindgen]
 pub async fn count_etfs_per_exchange() -> Result<JsValue, JsValue> {

@@ -27,6 +27,7 @@ getrandom = { version = "0.2", features = ["js"] }
 hex = "0.4"
 lazy_static = "1.4"
 futures = "0.3"
+async-trait = "0.1"
 
 [build-dependencies]
 dotenv = "0.15"

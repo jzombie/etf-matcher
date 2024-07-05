@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use crate::JsValue;
 use crate::utils::{fetch_and_decompress_gz, parse_json_data};
+use async_trait::async_trait;
 
 pub enum DataUrl {
     DataBuildInfo,
@@ -111,3 +112,25 @@ impl ETFHolder {
 }
 
 pub type SymbolList = Vec<String>;
+
+#[async_trait(?Send)]
+pub trait SymbolListExt {
+    async fn get_symbols() -> Result<SymbolList, JsValue>;
+}
+
+#[async_trait(?Send)]
+impl SymbolListExt for SymbolList {
+    async fn get_symbols() -> Result<SymbolList, JsValue> {
+        let url = DataUrl::SymbolList.value();
+
+        // Fetch and decompress the JSON data
+        let json_data = fetch_and_decompress_gz(&url).await?;
+        
+        // Parse the JSON data into a SymbolList
+        let symbols: SymbolList = serde_json::from_str(&json_data).map_err(|err| {
+            JsValue::from_str(&format!("Failed to parse JSON data: {}", err))
+        })?;
+        
+        Ok(symbols)
+    }
+}
