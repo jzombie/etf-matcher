@@ -92,6 +92,22 @@ impl ETFHolder {
 
       Ok(count)
   }
+
+  pub async fn get_etf_holder_asset_names(symbol: String) -> Result<Vec<String>, JsValue> {
+    let url = DataUrl::get_etf_holder_url(&symbol);
+
+    let json_data = fetch_and_decompress_gz(&url).await?;
+    let entries: Vec<ETFHolder> = parse_json_data(&json_data)?;
+
+    let mut asset_names: Vec<String> = Vec::new();
+    for entry in entries {
+        if let Some(asset) = &entry.asset {
+            asset_names.push(asset.clone());
+        }
+    }
+
+    Ok(asset_names)
+}
 }
 
 pub type SymbolList = Vec<String>;

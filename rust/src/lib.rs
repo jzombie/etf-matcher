@@ -83,17 +83,7 @@ pub async fn get_etf_holder_asset_count(symbol: String) -> Result<JsValue, JsVal
 
 #[wasm_bindgen]
 pub async fn get_etf_holder_asset_names(symbol: String) -> Result<JsValue, JsValue> {
-    let url = DataUrl::get_etf_holder_url(&symbol);
-
-    let json_data = fetch_and_decompress_gz(&url).await?;
-    let entries: Vec<ETFHolder> = parse_json_data(&json_data)?;
-
-    let mut asset_names: Vec<String> = Vec::new();
-    for entry in entries {
-        if let Some(asset) = &entry.asset {
-            asset_names.push(asset.clone());
-        }
-    }
+    let asset_names = ETFHolder::get_etf_holder_asset_names(symbol).await?;
 
     to_value(&asset_names).map_err(|err| {
         JsValue::from_str(&format!("Failed to serialize asset names: {}", err))
