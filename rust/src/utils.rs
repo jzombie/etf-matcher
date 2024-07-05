@@ -51,7 +51,6 @@ where
     T: AsRef<str> + Clone,
 {
     let url_str: String = url.as_ref().to_string();
-    let _url_key = url.clone();
 
     let shared_future: Shared<std::pin::Pin<Box<dyn Future<Output = Result<String, JsValue>>>>> = CACHE.with(|cache| {
         let mut cache: std::cell::RefMut<HashMap<String, Shared<std::pin::Pin<Box<dyn Future<Output = Result<String, JsValue>>>>>>> = cache.borrow_mut();
