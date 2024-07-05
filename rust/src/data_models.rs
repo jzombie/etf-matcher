@@ -64,9 +64,9 @@ pub struct ETF {
 
 impl ETF {
   pub async fn count_etfs_per_exchange() -> Result<HashMap<String, usize>, JsValue> {
-      let url = DataUrl::EtfList.value();
+      let url: &str = DataUrl::EtfList.value();
 
-      let json_data = fetch_and_decompress_gz(&url).await?;
+      let json_data: String = fetch_and_decompress_gz(&url).await?;
       let entries: Vec<ETF> = parse_json_data(&json_data)?;
 
       let mut counts: HashMap<String, usize> = HashMap::new();
@@ -121,12 +121,12 @@ pub struct ETFHolder {
 
 impl ETFHolder {
   pub async fn get_etf_holder_asset_count(symbol: String) -> Result<i32, JsValue> {
-      let url = DataUrl::get_etf_holder_url(&symbol);
+      let url: String = DataUrl::get_etf_holder_url(&symbol);
 
-      let json_data = fetch_and_decompress_gz(&url).await?;
+      let json_data: String = fetch_and_decompress_gz(&url).await?;
       let entries: Vec<ETFHolder> = parse_json_data(&json_data)?;
 
-      let mut count = 0;
+      let mut count: i32 = 0;
       for entry in entries {
           if entry.asset.is_some() {
               count += 1;
@@ -137,9 +137,9 @@ impl ETFHolder {
   }
 
   pub async fn get_etf_holder_asset_names(symbol: String) -> Result<Vec<String>, JsValue> {
-    let url = DataUrl::get_etf_holder_url(&symbol);
+    let url: String = DataUrl::get_etf_holder_url(&symbol);
 
-    let json_data = fetch_and_decompress_gz(&url).await?;
+    let json_data: String = fetch_and_decompress_gz(&url).await?;
     let entries: Vec<ETFHolder> = parse_json_data(&json_data)?;
 
     let mut asset_names: Vec<String> = Vec::new();
@@ -163,10 +163,10 @@ pub trait SymbolListExt {
 #[async_trait(?Send)]
 impl SymbolListExt for SymbolList {
     async fn get_symbols() -> Result<SymbolList, JsValue> {
-        let url = DataUrl::SymbolList.value();
+        let url: &str = DataUrl::SymbolList.value();
 
         // Fetch and decompress the JSON data
-        let json_data = fetch_and_decompress_gz(&url).await?;
+        let json_data: String = fetch_and_decompress_gz(&url).await?;
         
         // Parse the JSON data into a SymbolList
         let symbols: SymbolList = serde_json::from_str(&json_data).map_err(|err| {

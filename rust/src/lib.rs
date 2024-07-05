@@ -29,7 +29,7 @@ pub async fn get_data_build_info() -> Result<JsValue, JsValue> {
     let data: DataBuildInfo = DataBuildInfo::get_data_build_info().await?;
 
     // Convert the DataBuildInfo struct into a JsValue and return it
-    serde_wasm_bindgen::to_value(&data).map_err(|err| {
+    serde_wasm_bindgen::to_value(&data).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!("Failed to convert DataBuildInfo to JsValue: {}", err))
     })
 }
@@ -48,7 +48,7 @@ pub async fn get_symbols() -> Result<JsValue, JsValue> {
 #[wasm_bindgen]
 pub async fn count_etfs_per_exchange() -> Result<JsValue, JsValue> {
     ETF::count_etfs_per_exchange().await
-        .map(|counts| serde_wasm_bindgen::to_value(&counts).unwrap_or_else(JsValue::from))
+        .map(|counts: std::collections::HashMap<String, usize>| serde_wasm_bindgen::to_value(&counts).unwrap_or_else(JsValue::from))
         .map_err(JsValue::from)
 }
 
@@ -62,7 +62,7 @@ pub async fn get_etf_holder_asset_count(symbol: String) -> Result<JsValue, JsVal
 
 #[wasm_bindgen]
 pub async fn get_etf_holder_asset_names(symbol: String) -> Result<JsValue, JsValue> {
-    let asset_names = ETFHolder::get_etf_holder_asset_names(symbol).await?;
+    let asset_names: Vec<String> = ETFHolder::get_etf_holder_asset_names(symbol).await?;
 
     to_value(&asset_names).map_err(|err| {
         JsValue::from_str(&format!("Failed to serialize asset names: {}", err))

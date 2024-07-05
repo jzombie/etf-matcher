@@ -13,17 +13,17 @@ fn main() {
         env::var("IV"),
     ) {
         // Convert the comma-separated string to a byte array
-        let encrypted_password_bytes = parse_env_variable_to_bytes(&encrypted_password).expect("Failed to parse ENCRYPTED_PASSWORD");
-        let key_bytes = parse_env_variable_to_bytes(&key).expect("Failed to parse KEY");
-        let iv_bytes = parse_env_variable_to_bytes(&iv).expect("Failed to parse IV");
+        let encrypted_password_bytes: Vec<u8> = parse_env_variable_to_bytes(&encrypted_password).expect("Failed to parse ENCRYPTED_PASSWORD");
+        let key_bytes: Vec<u8> = parse_env_variable_to_bytes(&key).expect("Failed to parse KEY");
+        let iv_bytes: Vec<u8> = parse_env_variable_to_bytes(&iv).expect("Failed to parse IV");
 
         // Encode the byte arrays as hex strings
-        let encrypted_password_hex = hex::encode(&encrypted_password_bytes);
-        let _key_hex = hex::encode(&key_bytes); // Not used directly
-        let iv_hex = hex::encode(&iv_bytes);
+        let encrypted_password_hex: String = hex::encode(&encrypted_password_bytes);
+        let _key_hex: String = hex::encode(&key_bytes); // Not used directly
+        let iv_hex: String = hex::encode(&iv_bytes);
 
         // Write the encrypted password, key, and IV to a Rust source file
-        let mut file = File::create("src/__AUTOGEN__generated_password.rs").expect("Could not create file");
+        let mut file: File = File::create("src/__AUTOGEN__generated_password.rs").expect("Could not create file");
 
         write!(
             file,
@@ -45,7 +45,7 @@ fn parse_env_variable_to_bytes(env_var: &str) -> Result<Vec<u8>, Box<dyn std::er
     env_var
         .split(',')
         .map(|s| {
-            s.trim().parse::<u8>().map_err(|e| {
+            s.trim().parse::<u8>().map_err(|e: std::num::ParseIntError| {
                 eprintln!("Failed to parse '{}': {}", s, e);
                 Box::new(e) as Box<dyn std::error::Error>
             })

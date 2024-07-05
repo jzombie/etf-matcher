@@ -15,7 +15,7 @@ use hex;
 use std::collections::HashMap;
 use std::cell::RefCell;
 use futures::future::Shared;
-use futures::FutureExt;
+use futures::{Future, FutureExt};
 use futures::future::LocalBoxFuture;
 use serde::de::DeserializeOwned;
 
@@ -50,11 +50,11 @@ pub async fn fetch_and_decompress_gz<T>(url: T) -> Result<String, JsValue>
 where
     T: AsRef<str> + Clone,
 {
-    let url_str = url.as_ref().to_string();
+    let url_str: String = url.as_ref().to_string();
     let _url_key = url.clone();
 
-    let shared_future = CACHE.with(|cache| {
-        let mut cache = cache.borrow_mut();
+    let shared_future: Shared<std::pin::Pin<Box<dyn Future<Output = Result<String, JsValue>>>>> = CACHE.with(|cache| {
+        let mut cache: std::cell::RefMut<HashMap<String, Shared<std::pin::Pin<Box<dyn Future<Output = Result<String, JsValue>>>>>>> = cache.borrow_mut();
         if let Some(cached_future) = cache.get(&url_str) {
             // web_sys::console::debug_1(&"Returning cached future".into());
             cached_future.clone()
@@ -77,13 +77,13 @@ where
     T: AsRef<str> + Clone,
 {
     web_sys::console::debug_1(&"Skipping cache".into());
-    let url_str = url.as_ref().to_string();
+    let url_str: String = url.as_ref().to_string();
     fetch_and_decompress_gz_internal(url_str.clone()).await
 }
 
 async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue> {
     // web_sys::console::debug_1(&"Starting fetch_and_decompress_gz".into());
-    let xhr = XmlHttpRequest::new().map_err(|err| {
+    let xhr: XmlHttpRequest = XmlHttpRequest::new().map_err(|err| {
         web_sys::console::debug_1(&format!("Failed to create XMLHttpRequest: {:?}", err).into());
         JsValue::from_str("Failed to create XMLHttpRequest")
     })?;
@@ -97,14 +97,14 @@ async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue
         JsValue::from_str("Failed to send XMLHttpRequest")
     })?;
 
-    let promise = Promise::new(&mut |resolve, reject| {
+    let promise: Promise = Promise::new(&mut |resolve, reject| {
         let onload = Closure::wrap(Box::new(move || {
             resolve.call1(&JsValue::NULL, &JsValue::NULL).unwrap();
         }) as Box<dyn FnMut()>);
         xhr.set_onload(Some(onload.as_ref().unchecked_ref()));
         onload.forget();
 
-        let onerror = Closure::wrap(Box::new(move || {
+        let onerror: Closure<dyn FnMut()> = Closure::wrap(Box::new(move || {
             reject.call1(&JsValue::NULL, &JsValue::from_str("Failed to fetch data")).unwrap();
         }) as Box<dyn FnMut()>);
         xhr.set_onerror(Some(onerror.as_ref().unchecked_ref()));
@@ -117,29 +117,29 @@ async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue
     })?;
 
     if xhr.status().unwrap() != 200 {
-        let status_code = xhr.status().unwrap();
+        let status_code: u16 = xhr.status().unwrap();
         web_sys::console::debug_1(&format!("Failed to load data, status code: {}", status_code).into());
         return Err(JsValue::from_str(&format!("Failed to load data, status code: {}", status_code)));
     }
 
     // web_sys::console::debug_1(&"Data fetched successfully".into());
-    let array_buffer = xhr.response().unwrap();
-    let buffer = js_sys::Uint8Array::new(&array_buffer);
-    let encrypted_data = buffer.to_vec();
+    let array_buffer: JsValue = xhr.response().unwrap();
+    let buffer: js_sys::Uint8Array = js_sys::Uint8Array::new(&array_buffer);
+    let encrypted_data: Vec<u8> = buffer.to_vec();
 
     // TODO: Only allow during debugging
     // web_sys::console::debug_1(&format!("Encrypted data length: {}", encrypted_data.len()).into());
 
     // Ensure the correct salt extraction method
     // Assuming the salt was stored in the first 16 bytes of the encrypted data
-    let salt = &encrypted_data[0..16];
+    let salt: &[u8] = &encrypted_data[0..16];
 
     // TODO: Only allow during debugging
     // web_sys::console::debug_1(&format!("Salt: {:?}", salt).into());
 
     // Decrypt the password
     let encrypted_password: Vec<u8> = hex::decode(ENCRYPTED_PASSWORD).unwrap();
-    let key = decrypt_password(&encrypted_password, salt)?;
+    let key: [u8; 32] = decrypt_password(&encrypted_password, salt)?;
 
     // Assuming the IV was stored in the next 16 bytes of the encrypted data
     let iv: [u8; 16] = hex::decode(IV).unwrap().try_into().unwrap();
@@ -147,13 +147,13 @@ async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue
     // TODO: Only allow during debugging
     // web_sys::console::debug_1(&format!("IV: {:?}", iv).into());
 
-    let cipher = Aes256Cbc::new_from_slices(&key, &iv).map_err(|e| {
+    let cipher: Cbc<Aes256, Pkcs7> = Aes256Cbc::new_from_slices(&key, &iv).map_err(|e| {
         web_sys::console::debug_1(&format!("Failed to create cipher: {}", e).into());
         JsValue::from_str(&format!("Failed to create cipher: {}", e))
     })?;
 
     // web_sys::console::debug_1(&"Cipher created successfully".into());
-    let decrypted_data = cipher.decrypt_vec(&encrypted_data[32..]).map_err(|e| {
+    let decrypted_data: Vec<u8> = cipher.decrypt_vec(&encrypted_data[32..]).map_err(|e| {
         web_sys::console::debug_1(&format!("Failed to decrypt data: {}", e).into());
         JsValue::from_str(&format!("Failed to decrypt data: {}", e))
     })?;
@@ -161,8 +161,8 @@ async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue
     // web_sys::console::debug_1(&format!("Decrypted data length: {}", decrypted_data.len()).into());
 
     // Decompress the JSON data
-    let mut decoder = GzDecoder::new(&decrypted_data[..]);
-    let mut json_data = String::new();
+    let mut decoder: GzDecoder<&[u8]> = GzDecoder::new(&decrypted_data[..]);
+    let mut json_data: String = String::new();
     decoder.read_to_string(&mut json_data).map_err(|err| {
         web_sys::console::debug_1(&format!("Failed to decompress JSON: {}", err).into());
         JsValue::from_str(&format!("Failed to decompress JSON: {}", err))
