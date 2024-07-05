@@ -76,17 +76,7 @@ pub async fn count_etfs_per_exchange() -> Result<JsValue, JsValue> {
 
 #[wasm_bindgen]
 pub async fn get_etf_holder_asset_count(symbol: String) -> Result<JsValue, JsValue> {
-    let url = DataUrl::get_etf_holder_url(&symbol);
-
-    let json_data = fetch_and_decompress_gz(&url).await?;
-    let entries: Vec<ETFHolder> = parse_json_data(&json_data)?;
-
-    let mut count = 0;
-    for entry in entries {
-        if entry.asset.is_some() {
-            count += 1;
-        }
-    }
+    let count: i32 = ETFHolder::get_etf_holder_asset_count(symbol).await?;
 
     Ok(JsValue::from(count))
 }

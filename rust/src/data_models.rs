@@ -76,4 +76,22 @@ pub struct ETFHolder {
     pub updated: Option<String>,
 }
 
+impl ETFHolder {
+  pub async fn get_etf_holder_asset_count(symbol: String) -> Result<i32, JsValue> {
+      let url = DataUrl::get_etf_holder_url(&symbol);
+
+      let json_data = fetch_and_decompress_gz(&url).await?;
+      let entries: Vec<ETFHolder> = parse_json_data(&json_data)?;
+
+      let mut count = 0;
+      for entry in entries {
+          if entry.asset.is_some() {
+              count += 1;
+          }
+      }
+
+      Ok(count)
+  }
+}
+
 pub type SymbolList = Vec<String>;
