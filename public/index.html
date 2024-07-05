@@ -3,8 +3,36 @@
   <head>
     <meta charset="utf-8" />
     <title>hello-wasm example</title>
+
+    <style>
+      /* styles.css or a similar global stylesheet */
+      html,
+      body,
+      #root {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Render noscript front and center */
+      noscript {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: white;
+        font-weight: bold;
+        font-size: 2em;
+        text-align: center;
+      }
+    </style>
   </head>
   <body>
+    <noscript>JavaScript must be enabled to use this application.</noscript>
     <div id="app"></div>
     <script type="module" src="./src/main.tsx"></script>
   </body>
