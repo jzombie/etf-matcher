@@ -3,7 +3,7 @@ x-variables:
 
 services:
   # Generate a production build
-  #   Command: "docker compose up build-dist"
+  #   Command: "docker compose build build-dist && docker compose up build-dist"
   #
   build-dist:
     image: *image-name
