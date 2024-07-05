@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Exit immediately if a command exits with a non-zero status
-set -e
+# IMPORTANT: set -e is not used here intentionally to not crash the process
+# if the child has an error (which is often when developing code).
 
 # Ensure we're in a Docker container
 /app/docker_build_helpers/./validate_docker_env.sh
