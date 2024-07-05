@@ -10,6 +10,9 @@ use std::collections::HashMap;
 mod utils;
 use utils::{fetch_and_decompress_gz, fetch_and_decompress_gz_non_cached};
 
+mod data_url;
+use data_url::DataUrl;
+
 #[wasm_bindgen(start)]
 pub fn main() -> Result<(), JsValue> {
     web_sys::console::debug_1(&"Hello from Rust!".into());
@@ -18,25 +21,6 @@ pub fn main() -> Result<(), JsValue> {
     panic::set_hook(Box::new(console_error_panic_hook::hook));
     Ok(())
 }
-
-const DATA_BUILD_INFO_URL: &str = "/data/data_build_info.enc";
-
-// https://financialmodelingprep.com/api/v3/etf/list
-const ETF_URL: &str = "/data/etfs.enc";
-
-const SYMBOLS_URL: &str = "/data/symbols.enc";
-
-
-// TODO: Encode w/ symbol
-// https://financialmodelingprep.com/api/v3/etf-holder/{ETF_SYMBOL}
-fn get_etf_holder_url(symbol: &str) -> String {
-    format!("/data/etf_holder.{}.enc", symbol)
-}
-
-// #[wasm_bindgen]
-// extern {
-//     pub fn alert(s: &str);
-// }
 
 #[derive(Serialize, Deserialize)]
 struct DataBuildInfo {
@@ -78,7 +62,7 @@ type SymbolList = Vec<String>;
 
 #[wasm_bindgen]
 pub async fn get_data_build_info() -> Result<JsValue, JsValue> {
-    let url: &str = DATA_BUILD_INFO_URL;
+    let url: &str = &DataUrl::DataBuildInfo.value();
 
     // Fetch and decompress the JSON data
     let json_data = fetch_and_decompress_gz_non_cached(&url).await?;
@@ -97,7 +81,7 @@ pub async fn get_data_build_info() -> Result<JsValue, JsValue> {
 
 #[wasm_bindgen]
 pub async fn get_symbols() -> Result<JsValue, JsValue> {
-    let url: &str = SYMBOLS_URL;
+    let url: &str = &DataUrl::SymbolList.value();
 
     // Fetch and decompress the JSON data
     let json_data = fetch_and_decompress_gz(&url).await?;
@@ -116,7 +100,7 @@ pub async fn get_symbols() -> Result<JsValue, JsValue> {
 
 #[wasm_bindgen]
 pub async fn count_etfs_per_exchange() -> Result<JsValue, JsValue> {
-    let url: &str = ETF_URL;
+    let url: &str = &DataUrl::EtfList.value();
 
     let json_data = fetch_and_decompress_gz(&url).await?;
     let entries: Vec<ETF> = parse_json_data(&json_data)?;
@@ -134,7 +118,7 @@ pub async fn count_etfs_per_exchange() -> Result<JsValue, JsValue> {
 
 #[wasm_bindgen]
 pub async fn get_etf_holder_asset_count(symbol: String) -> Result<JsValue, JsValue> {
-    let url = get_etf_holder_url(&symbol);
+    let url = DataUrl::get_etf_holder_url(&symbol);
 
     let json_data = fetch_and_decompress_gz(&url).await?;
     let entries: Vec<ETFHolder> = parse_json_data(&json_data)?;
@@ -151,7 +135,7 @@ pub async fn get_etf_holder_asset_count(symbol: String) -> Result<JsValue, JsVal
 
 #[wasm_bindgen]
 pub async fn get_etf_holder_asset_names(symbol: String) -> Result<JsValue, JsValue> {
-    let url = get_etf_holder_url(&symbol);
+    let url = DataUrl::get_etf_holder_url(&symbol);
 
     let json_data = fetch_and_decompress_gz(&url).await?;
     let entries: Vec<ETFHolder> = parse_json_data(&json_data)?;
