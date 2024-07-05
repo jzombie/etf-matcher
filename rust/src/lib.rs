@@ -3,22 +3,17 @@ use console_error_panic_hook;
 use serde_wasm_bindgen;
 use serde_wasm_bindgen::to_value;
 use std::panic;
-use crate::data_models::SymbolListExt;
 
 mod utils;
-use utils::{
-    fetch_and_decompress_gz_non_cached,
-    parse_json_data
-};
 
 mod data_models;
 use data_models::{
-    DataUrl,
     DataBuildInfo,
     ETF,
     ETFHolder,
     SymbolList
 };
+use crate::data_models::SymbolListExt;
 
 #[wasm_bindgen(start)]
 pub fn main() -> Result<(), JsValue> {
@@ -30,14 +25,8 @@ pub fn main() -> Result<(), JsValue> {
 }
 
 #[wasm_bindgen]
-pub async fn get_data_build_info() -> Result<JsValue, JsValue> {
-    let url: &str = &DataUrl::DataBuildInfo.value();
-
-    // Fetch and decompress the JSON data
-    let json_data = fetch_and_decompress_gz_non_cached(&url).await?;
-    
-    // Use the `?` operator to propagate the error if `parse_json_data` fails
-    let data: DataBuildInfo = parse_json_data(&json_data)?;
+pub async fn get_data_build_info() -> Result<JsValue, JsValue> {   
+    let data: DataBuildInfo = DataBuildInfo::get_data_build_info().await?;
 
     // Convert the DataBuildInfo struct into a JsValue and return it
     serde_wasm_bindgen::to_value(&data).map_err(|err| {

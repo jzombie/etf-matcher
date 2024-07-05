@@ -1,7 +1,11 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use crate::JsValue;
-use crate::utils::{fetch_and_decompress_gz, parse_json_data};
+use crate::utils::{
+  fetch_and_decompress_gz_non_cached,
+  fetch_and_decompress_gz,
+  parse_json_data
+};
 use async_trait::async_trait;
 
 pub enum DataUrl {
@@ -28,6 +32,20 @@ impl DataUrl {
 pub struct DataBuildInfo {
     pub time: String,
     pub hash: String,
+}
+
+impl DataBuildInfo {
+  pub async fn get_data_build_info() -> Result<DataBuildInfo, JsValue> {
+    let url: &str = &DataUrl::DataBuildInfo.value();
+
+    // Fetch and decompress the JSON data
+    let json_data = fetch_and_decompress_gz_non_cached(&url).await?;
+    
+    // Use the `?` operator to propagate the error if `parse_json_data` fails
+    let data: DataBuildInfo = parse_json_data(&json_data)?;
+
+    Ok(data)
+  }
 }
 
 // Option<type> allows null values
