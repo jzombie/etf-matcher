@@ -1,14 +1,10 @@
 import React from "react";
 import callWorkerFunction from "./utils/callWorkerFunction";
-import { Link } from "react-router-dom";
+import { RouterProvider } from "react-router-dom";
+import router from "./router";
 
 export default function App() {
-  return (
-    <div>
-      <h1>Hello, Rust + Vite + React + TypeScript!!!</h1>
-      <Link to="about">About Us</Link>
-    </div>
-  );
+  return <RouterProvider router={router} />;
 }
 
 (() => {
