@@ -126,7 +126,7 @@ impl ETFHolder {
     }
 
     Ok(asset_names)
-}
+  }
 }
 
 pub type SymbolList = Vec<String>;
