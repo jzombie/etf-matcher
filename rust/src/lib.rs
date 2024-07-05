@@ -1,17 +1,22 @@
 use wasm_bindgen::prelude::*;
 use console_error_panic_hook;
-use std::panic;
-use serde::{Deserialize, Serialize};
 use serde::de::DeserializeOwned;
 use serde_wasm_bindgen;
 use serde_wasm_bindgen::to_value;
 use std::collections::HashMap;
+use std::panic;
 
 mod utils;
 use utils::{fetch_and_decompress_gz, fetch_and_decompress_gz_non_cached};
 
-mod data_url;
-use data_url::DataUrl;
+mod data_models;
+use data_models::{
+    DataUrl,
+    DataBuildInfo,
+    ETF,
+    ETFHolder,
+    SymbolList
+};
 
 #[wasm_bindgen(start)]
 pub fn main() -> Result<(), JsValue> {
@@ -21,44 +26,6 @@ pub fn main() -> Result<(), JsValue> {
     panic::set_hook(Box::new(console_error_panic_hook::hook));
     Ok(())
 }
-
-#[derive(Serialize, Deserialize)]
-struct DataBuildInfo {
-    time: String,
-    hash: String,
-}
-
-// Option<type> allows null values
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct ETF {
-    symbol: Option<String>,
-    name: Option<String>,
-    price: Option<f64>,
-    exchange: Option<String>,
-    #[serde(rename = "exchangeShortName")]
-    exchange_short_name: Option<String>,
-    #[serde(rename = "type")]
-    entry_type: Option<String>,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct ETFHolder {
-    asset: Option<String>,
-    name: Option<String>,
-    isin: Option<String>,
-    cusip: Option<String>,
-    #[serde(rename = "sharesNumber")]
-    shares_number: Option<f64>,
-    #[serde(rename = "weightPercentage")]
-    weight_percentage: Option<f64>,
-    #[serde(rename = "marketValue")]
-    market_value: Option<f64>,
-    updated: Option<String>,
-}
-
-type SymbolList = Vec<String>;
 
 #[wasm_bindgen]
 pub async fn get_data_build_info() -> Result<JsValue, JsValue> {
