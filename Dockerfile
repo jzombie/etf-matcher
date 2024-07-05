@@ -1,6 +1,9 @@
 # Base image for building Rust projects
 FROM rust:latest as rust-base
 
+# Tell `validate_docker_env.sh` that we're in a Docker build
+ARG DOCKER_BUILD=1
+
 # Install necessary dependencies
 RUN apt-get update && \
     apt-get install -y cmake libz-dev python3 curl openssl && \

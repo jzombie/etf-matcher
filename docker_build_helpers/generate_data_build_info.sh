@@ -3,6 +3,9 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
+# Ensure we're in a Docker container
+/app/docker_build_helpers/./validate_docker_env.sh
+
 # Get the current time as a string
 CURRENT_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 

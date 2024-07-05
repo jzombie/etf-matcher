@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Exit immediately if a command exits with a non-zero status
+set -e
+
+# Ensure we're in a Docker container
+/app/docker_build_helpers/./validate_docker_env.sh
+
 # Function to watch a directory and trigger a build script on changes
 watch_directory() {
   local WATCH_DIR=$1

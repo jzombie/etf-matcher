@@ -1,1 +1,1 @@
-These are extracted from the main Dockerfile so that they can be automated with file watchers to help speed up development workflows.
+IMPORTANT: These scripts should only be run from within the Docker environment.

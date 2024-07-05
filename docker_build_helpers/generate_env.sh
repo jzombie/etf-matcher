@@ -3,6 +3,9 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
+# Ensure we're in a Docker container
+/app/docker_build_helpers/./validate_docker_env.sh
+
 # Check if the .env file exists
 if [ ! -f /app/.env ]; then
   # Generate a random password
