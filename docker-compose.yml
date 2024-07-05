@@ -17,7 +17,7 @@ services:
       cp -rT /build_artifacts/public/pkg /app/public/pkg &&
       cp -rT /build_artifacts/public/data /app/public/data &&
       npm install &&
-      vite build
+      npm run build
       '
     profiles:
       # Don't run by default
