@@ -77,6 +77,29 @@ impl ETF {
       }
       Ok(counts)
   }
+
+    // TODO: Implement
+    // pub fn similarity(&self, portfolio: &Portfolio) -> f64 {
+    //     // Example: Simple cosine similarity
+    //     // You should replace this with an appropriate financial similarity measure
+    //     let mut dot_product = 0.0;
+    //     let mut norm_etf = 0.0;
+    //     let mut norm_portfolio = 0.0;
+
+    //     for asset in &self.holdings {
+    //         let portfolio_asset = portfolio.holdings.iter().find(|&a| a.symbol == asset.symbol);
+    //         if let Some(port_asset) = portfolio_asset {
+    //             dot_product += asset.percentage * port_asset.percentage;
+    //         }
+    //         norm_etf += asset.percentage.powi(2);
+    //     }
+
+    //     for asset in &portfolio.holdings {
+    //         norm_portfolio += asset.percentage.powi(2);
+    //     }
+
+    //     dot_product / (norm_etf.sqrt() * norm_portfolio.sqrt())
+    // }
 }
 
 #[derive(Serialize, Deserialize)]
