@@ -2,7 +2,6 @@ use wasm_bindgen::prelude::*;
 use console_error_panic_hook;
 use serde_wasm_bindgen;
 use serde_wasm_bindgen::to_value;
-use std::collections::HashMap;
 use std::panic;
 
 mod utils;
@@ -67,24 +66,13 @@ pub async fn get_symbols() -> Result<JsValue, JsValue> {
     })
 }
 
-
 #[wasm_bindgen]
 pub async fn count_etfs_per_exchange() -> Result<JsValue, JsValue> {
-    let url: &str = &DataUrl::EtfList.value();
-
-    let json_data = fetch_and_decompress_gz(&url).await?;
-    let entries: Vec<ETF> = parse_json_data(&json_data)?;
-    
-    let mut counts: HashMap<String, usize> = HashMap::new();
-    for entry in entries {
-        if let Some(exchange) = &entry.exchange {
-            *counts.entry(exchange.clone()).or_insert(0) += 1;
-        }
-    }
-    to_value(&counts).map_err(|err| {
-        JsValue::from_str(&format!("Failed to serialize JSON: {}", err))
-    })
+    ETF::count_etfs_per_exchange().await
+        .map(|counts| serde_wasm_bindgen::to_value(&counts).unwrap_or_else(JsValue::from))
+        .map_err(JsValue::from)
 }
+
 
 #[wasm_bindgen]
 pub async fn get_etf_holder_asset_count(symbol: String) -> Result<JsValue, JsValue> {

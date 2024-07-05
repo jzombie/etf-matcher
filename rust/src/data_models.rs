@@ -1,23 +1,26 @@
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use crate::JsValue;
+use crate::utils::{fetch_and_decompress_gz, parse_json_data};
 
 pub enum DataUrl {
-  DataBuildInfo,
-  EtfList,
-  SymbolList,
+    DataBuildInfo,
+    EtfList,
+    SymbolList,
 }
 
 impl DataUrl {
-  pub fn value(&self) -> &'static str {
-      match self {
-          DataUrl::DataBuildInfo => "/data/data_build_info.enc",
-          DataUrl::EtfList => "/data/etfs.enc",
-          DataUrl::SymbolList => "/data/symbols.enc",
-      }
-  }
+    pub fn value(&self) -> &'static str {
+        match self {
+            DataUrl::DataBuildInfo => "/data/data_build_info.enc",
+            DataUrl::EtfList => "/data/etfs.enc",
+            DataUrl::SymbolList => "/data/symbols.enc",
+        }
+    }
 
-  pub fn get_etf_holder_url(symbol: &str) -> String {
-      format!("/data/etf_holder.{}.enc", symbol)
-  }
+    pub fn get_etf_holder_url(symbol: &str) -> String {
+        format!("/data/etf_holder.{}.enc", symbol)
+    }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -38,6 +41,23 @@ pub struct ETF {
     pub exchange_short_name: Option<String>,
     #[serde(rename = "type")]
     pub entry_type: Option<String>,
+}
+
+impl ETF {
+  pub async fn count_etfs_per_exchange() -> Result<HashMap<String, usize>, JsValue> {
+      let url = DataUrl::EtfList.value();
+
+      let json_data = fetch_and_decompress_gz(&url).await?;
+      let entries: Vec<ETF> = parse_json_data(&json_data)?;
+
+      let mut counts: HashMap<String, usize> = HashMap::new();
+      for entry in entries {
+          if let Some(exchange) = &entry.exchange {
+              *counts.entry(exchange.clone()).or_insert(0) += 1;
+          }
+      }
+      Ok(counts)
+  }
 }
 
 #[derive(Serialize, Deserialize)]
