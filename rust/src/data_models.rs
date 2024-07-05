@@ -88,6 +88,7 @@ impl ETF {
 
     //     for asset in &self.holdings {
     //         let portfolio_asset = portfolio.holdings.iter().find(|&a| a.symbol == asset.symbol);
+    //         // TODO: Consider sector and industry here as well
     //         if let Some(port_asset) = portfolio_asset {
     //             dot_product += asset.percentage * port_asset.percentage;
     //         }
