@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Exit immediately if a command exits with a non-zero status
+set -e
+
 # Check if the .env file exists
 if [ ! -f /app/.env ]; then
   # Generate a random password
