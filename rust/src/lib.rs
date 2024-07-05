@@ -1,13 +1,16 @@
 use wasm_bindgen::prelude::*;
 use console_error_panic_hook;
-use serde::de::DeserializeOwned;
 use serde_wasm_bindgen;
 use serde_wasm_bindgen::to_value;
 use std::collections::HashMap;
 use std::panic;
 
 mod utils;
-use utils::{fetch_and_decompress_gz, fetch_and_decompress_gz_non_cached};
+use utils::{
+    fetch_and_decompress_gz,
+    fetch_and_decompress_gz_non_cached,
+    parse_json_data
+};
 
 mod data_models;
 use data_models::{
@@ -116,12 +119,5 @@ pub async fn get_etf_holder_asset_names(symbol: String) -> Result<JsValue, JsVal
 
     to_value(&asset_names).map_err(|err| {
         JsValue::from_str(&format!("Failed to serialize asset names: {}", err))
-    })
-}
-
-// Generic function to parse JSON data into any type that implements Deserialize
-fn parse_json_data<T: DeserializeOwned>(json_data: &str) -> Result<T, JsValue> {
-    serde_json::from_str(json_data).map_err(|err| {
-        JsValue::from_str(&format!("Failed to parse JSON: {}", err))
     })
 }

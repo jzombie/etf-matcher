@@ -17,6 +17,7 @@ use std::cell::RefCell;
 use futures::future::Shared;
 use futures::FutureExt;
 use futures::future::LocalBoxFuture;
+use serde::de::DeserializeOwned;
 
 include!("__AUTOGEN__generated_password.rs");
 
@@ -169,4 +170,11 @@ async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue
 
     // web_sys::console::debug_1(&"Data decompressed successfully".into());
     Ok(json_data)
+}
+
+// Generic function to parse JSON data into any type that implements Deserialize
+pub fn parse_json_data<T: DeserializeOwned>(json_data: &str) -> Result<T, JsValue> {
+    serde_json::from_str(json_data).map_err(|err| {
+        JsValue::from_str(&format!("Failed to parse JSON: {}", err))
+    })
 }
