@@ -10,8 +10,8 @@ export default function App() {
 }
 
 (() => {
-  callWorkerFunction("get_data_build_time").then((dataBuildTime) => {
-    console.log({ dataBuildTime });
+  callWorkerFunction("get_data_build_info").then((dataBuildInfo) => {
+    console.log({ dataBuildInfo });
   });
 
   callWorkerFunction("get_symbols").then((symbols) => {

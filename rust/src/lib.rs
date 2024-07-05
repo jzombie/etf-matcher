@@ -40,7 +40,8 @@ fn get_etf_holder_url(symbol: &str) -> String {
 
 #[derive(Serialize, Deserialize)]
 struct DataBuildInfo {
-    time: String
+    time: String,
+    hash: String,
 }
 
 // Option<type> allows null values
@@ -76,7 +77,7 @@ struct ETFHolder {
 type SymbolList = Vec<String>;
 
 #[wasm_bindgen]
-pub async fn get_data_build_time() -> Result<JsValue, JsValue> {
+pub async fn get_data_build_info() -> Result<JsValue, JsValue> {
     let url: &str = DATA_BUILD_INFO_URL;
 
     // Fetch and decompress the JSON data
@@ -85,12 +86,10 @@ pub async fn get_data_build_time() -> Result<JsValue, JsValue> {
     // Use the `?` operator to propagate the error if `parse_json_data` fails
     let data: DataBuildInfo = parse_json_data(&json_data)?;
 
-    // // Convert the DataBuildInfo struct into a JsValue and return it
-    // serde_wasm_bindgen::to_value(&data).map_err(|err| {
-    //     JsValue::from_str(&format!("Failed to convert DataBuildInfo to JsValue: {}", err))
-    // })
-
-    Ok(JsValue::from_str(&data.time))
+    // Convert the DataBuildInfo struct into a JsValue and return it
+    serde_wasm_bindgen::to_value(&data).map_err(|err| {
+        JsValue::from_str(&format!("Failed to convert DataBuildInfo to JsValue: {}", err))
+    })
 }
 
 // TODO: For the following, if there is a decompression error, bust the cache and

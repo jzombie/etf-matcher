@@ -58,6 +58,7 @@ watch_directory "$WATCH_DIR" "$BUILD_SCRIPT" "$EXCLUDE_PATTERN" "$DEBOUNCE_TIME"
 WATCH_DIR="/app/data"
 BUILD_SCRIPT="./docker_build_helpers/encode_data.sh"
 EXCLUDE_PATTERN='.*\.enc$'
+DEBOUNCE_TIME=1.0
 watch_directory "$WATCH_DIR" "$BUILD_SCRIPT" "$EXCLUDE_PATTERN" "$DEBOUNCE_TIME" &
 
 # Wait for all background processes to complete
