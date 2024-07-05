@@ -1,5 +1,14 @@
 import React from "react";
-import { Form, Input, InputNumber, Button, DatePicker, Select } from "antd";
+import {
+  Form,
+  Input,
+  InputNumber,
+  Button,
+  DatePicker,
+  Select,
+  Space,
+} from "antd";
+import MockAutoComplete from "./MockAutoComplete";
 
 const { Option } = Select;
 
@@ -20,7 +29,11 @@ const PortfolioForm: React.FC = () => {
         remember: true,
       }}
     >
-      <Button>Add Asset</Button>
+      <Space>
+        <Button>Add Asset</Button>
+
+        <MockAutoComplete />
+      </Space>
 
       <Form.Item
         name="portfolio_name"
