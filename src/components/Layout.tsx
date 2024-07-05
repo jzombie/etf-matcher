@@ -9,7 +9,7 @@ export default function Layout() {
   const selectedKey = location.pathname === "/" ? "/" : location.pathname;
 
   return (
-    <AntLayout>
+    <AntLayout style={{ minHeight: "100vh" }}>
       <Header>
         <Menu
           theme="dark"
@@ -27,10 +27,8 @@ export default function Layout() {
           ]}
         />
       </Header>
-      <Content style={{ padding: "0 50px", marginTop: 64 }}>
-        <div style={{ padding: 24, minHeight: 380 }}>
-          <Outlet />
-        </div>
+      <Content style={{ padding: "10px 10px" }}>
+        <Outlet />
       </Content>
       <Footer style={{ textAlign: "center" }}>©2024 Created by You</Footer>
     </AntLayout>
