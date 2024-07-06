@@ -1,0 +1,16 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="95" stroke="#2E3A59" stroke-width="10" fill="#F5F7FA" />
+
+  <!-- Magnifying Glass -->
+  <circle cx="80" cy="80" r="35" stroke="#2E3A59" stroke-width="8" fill="none" />
+  <line x1="110" y1="110" x2="140" y2="140" stroke="#2E3A59" stroke-width="8" stroke-linecap="round" />
+
+  <!-- Portfolio Icon -->
+  <rect x="40" y="130" width="120" height="20" rx="5" fill="#2E3A59" />
+  <rect x="40" y="155" width="120" height="20" rx="5" fill="#2E3A59" />
+  <rect x="40" y="180" width="120" height="20" rx="5" fill="#2E3A59" />
+
+  <!-- Text -->
+  <text x="100" y="50" text-anchor="middle" font-size="20" font-family="Arial, sans-serif" fill="#2E3A59">ETF Matcher</text>
+</svg>

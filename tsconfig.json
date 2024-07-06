@@ -11,6 +11,7 @@
     "types": ["vitest/globals"],
     "baseUrl": ".",
     "paths": {
+      "@assets/*": ["src/assets/*"],
       "@components/*": ["src/components/*"],
       "@hooks/*": ["src/hooks/*"],
       "@pages/*": ["src/pages/*"],

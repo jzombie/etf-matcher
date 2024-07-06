@@ -4,6 +4,7 @@ import path from "path";
 import react from "@vitejs/plugin-react";
 import checker from "vite-plugin-checker";
 import tsconfigPaths from "vite-tsconfig-paths";
+import svgr from "vite-plugin-svgr";
 
 const DESTINATION_DIR = path.resolve(__dirname, "dist");
 
@@ -49,6 +50,7 @@ export default defineConfig({
     }),
     checker({ typescript: true }),
     tsconfigPaths(),
+    svgr(),
   ],
   // Resolve warnings with checker plugin (even though this is not a Vue project)
   define: {
