@@ -11,12 +11,12 @@ import {
 import { SymbolInfo } from "react-ts-tradingview-widgets";
 
 import store, { CustomState } from "../store";
-import { useEmitterState } from "../utils/EmitterState";
+import { useEmitterStateReader } from "../utils/EmitterState";
 
 <TickerTape colorTheme="dark"></TickerTape>;
 
 export default function Home() {
-  const { dataBuildTime } = useEmitterState(store, "dataBuildTime");
+  const { dataBuildTime } = useEmitterStateReader(store, "dataBuildTime");
 
   return (
     <div>
