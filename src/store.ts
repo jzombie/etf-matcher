@@ -5,6 +5,7 @@ type StoreStateProps = {
   isRustInit: boolean;
   dataBuildTime: string;
   count: number;
+  isDirtyState: boolean;
 };
 
 class Store extends StateEmitter<StoreStateProps> {
@@ -13,6 +14,7 @@ class Store extends StateEmitter<StoreStateProps> {
       isRustInit: false,
       dataBuildTime: "",
       count: 0,
+      isDirtyState: false,
     });
 
     callWorkerFunction("get_data_build_info").then((dataBuildInfo) => {
@@ -22,10 +24,11 @@ class Store extends StateEmitter<StoreStateProps> {
       });
     });
 
-    // TODO: Remove
+    // TODO: Remove temporary
     setInterval(() => {
       this.setState((prev) => ({
         count: prev.count + 1,
+        isDirtyState: !prev.isDirtyState,
       }));
     }, 1000);
   }
