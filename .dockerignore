@@ -1,0 +1,16 @@
+dist/
+
+# Frontend artifacts
+public/data
+public/pkg
+
+# OS generated files
+.DS_Store
+
+node_modules/
+
+# Ignore Rust targets
+**/rust/**/target/
+
+# Auto-generated Rust
+__AUTOGEN__*.rs

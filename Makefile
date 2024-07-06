@@ -29,7 +29,7 @@ help:
 .PHONY: build-dev
 build-dev:
 	@echo "Building Docker container"
-	@docker compose build
+	@DOCKER_BUILDKIT=0 FORCE_COLOR=1 docker compose build
 
 .PHONY: start-dev
 start-dev:

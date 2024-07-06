@@ -80,10 +80,9 @@ RUN apt-get update && \
 WORKDIR /app
 
 COPY package.json package.json
-# COPY node_modules/ ./node_modules # TODO: Enable once populated
 
 # Install JS project dependencies
-RUN npm install
+RUN npm install --verbose
 
 # Create a directory to store build artifacts
 RUN mkdir -p /build_artifacts/public/pkg /build_artifacts/public/data /build_artifacts/backend
