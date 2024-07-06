@@ -82,10 +82,8 @@ WORKDIR /app
 COPY package.json package.json
 # COPY node_modules/ ./node_modules # TODO: Enable once populated
 
-# TODO: Remove vite global
-#
-# Install Vite and project dependencies
-RUN npm install -g vite && npm install
+# Install JS project dependencies
+RUN npm install
 
 # Create a directory to store build artifacts
 RUN mkdir -p /build_artifacts/public/pkg /build_artifacts/public/data /build_artifacts/backend
@@ -107,5 +105,5 @@ EXPOSE 8000
 # Use tini as the entry point (trap SIGINT [Ctrl-C] and exit the Vite server)
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
-# Command to run the web server with Vite on port 8000
-CMD ["vite", "serve", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["npm", "run", "serve"]
+

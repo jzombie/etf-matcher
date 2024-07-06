@@ -28,6 +28,10 @@ export default defineConfig({
       "Content-Encoding": "gzip",
     },
   },
+  server: {
+    host: "0.0.0.0",
+    port: 8000,
+  },
   plugins: [
     react(),
     viteStaticCopy({
