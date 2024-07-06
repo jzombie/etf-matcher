@@ -2,7 +2,7 @@ import React from "react";
 import { Layout as AntLayout, Menu, Button } from "antd";
 import { Link, Outlet, useLocation } from "react-router-dom";
 // import { SaveOutlined } from "@ant-design/icons";
-// import useStoreStateReader from "@hooks/useStoreStateReader";
+import useStoreStateReader from "@hooks/useStoreStateReader";
 
 const { Header, Content, Footer } = AntLayout;
 
@@ -10,7 +10,10 @@ export default function Layout() {
   const location = useLocation();
   const selectedKey = location.pathname === "/" ? "/" : location.pathname;
 
-  // const { isDirtyState } = useStoreStateReader("isDirtyState");
+  const { prettyDataBuildTime, isDirtyState } = useStoreStateReader([
+    "prettyDataBuildTime",
+    "isDirtyState",
+  ]);
 
   return (
     <AntLayout style={{ minHeight: "100vh" }}>
@@ -49,10 +52,23 @@ export default function Layout() {
         </Button> */
         }
       </Header>
-      <Content style={{ padding: "10px 10px" }}>
+      <Content
+        style={{
+          padding: "10px 10px",
+          height: 0, // Needs a height to force this container to stretch
+          display: "flex",
+          overflow: "auto",
+        }}
+      >
         <Outlet />
       </Content>
-      <Footer style={{ textAlign: "center" }}>©2024 Created by You</Footer>
+      <Footer style={{ textAlign: "left", padding: 0, margin: 0 }}>
+        <span>
+          {prettyDataBuildTime ? `Date build time: ${prettyDataBuildTime}` : ""}
+        </span>
+        {" | "}
+        <span>{isDirtyState ? "Not Saved" : "Saved"}</span>
+      </Footer>
     </AntLayout>
   );
 }

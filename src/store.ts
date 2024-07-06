@@ -4,6 +4,7 @@ import callWorkerFunction from "./utils/callWorkerFunction";
 type StoreStateProps = {
   isRustInit: boolean;
   dataBuildTime: string;
+  prettyDataBuildTime: string;
   count: number;
   isDirtyState: boolean;
 };
@@ -13,6 +14,7 @@ class Store extends StateEmitter<StoreStateProps> {
     super({
       isRustInit: false,
       dataBuildTime: "",
+      prettyDataBuildTime: "",
       count: 0,
       isDirtyState: false,
     });
@@ -21,6 +23,9 @@ class Store extends StateEmitter<StoreStateProps> {
       this.setState({
         isRustInit: true,
         dataBuildTime: (dataBuildInfo as any).time,
+        prettyDataBuildTime: new Date(
+          (dataBuildInfo as any).time
+        ).toLocaleString(),
       });
     });
 

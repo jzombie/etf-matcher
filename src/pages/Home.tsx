@@ -1,5 +1,5 @@
 import "react";
-import { Button } from "antd";
+import { Button, Flex } from "antd";
 import { Link } from "react-router-dom";
 import PortfolioForm from "../components/PortfolioForm";
 // https://tradingview-widgets.jorrinkievit.xyz/docs/components/Screener
@@ -17,15 +17,39 @@ import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 <TickerTape colorTheme="dark"></TickerTape>;
 
 export default function Home() {
-  const { dataBuildTime, count, isRustInit } = useStoreStateReader([
-    "dataBuildTime",
-    "count",
-    "isRustInit",
-  ]);
+  const { count, isRustInit } = useStoreStateReader(["count", "isRustInit"]);
+
+  if (!isRustInit) {
+    return (
+      <div
+        style={{
+          height: "100%",
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          overflow: "auto",
+        }}
+      >
+        <div
+          style={{
+            textAlign: "center",
+            height: 300,
+            backgroundColor: "yellow",
+          }}
+        >
+          Initializing...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
-      {dataBuildTime} | {count} | Rust?: {isRustInit ? "true" : "false"}
+      <div>
+        {count} | Rust?: {isRustInit ? "true" : "false"}
+      </div>
       <div>
         <Button onClick={() => store.PROTO_getSymbols()}>
           PROTO::getSymbols()
