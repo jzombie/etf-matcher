@@ -1,7 +1,9 @@
 /**
- * Performs a deep comparison between two objects to determine
- * whether they are deeply equal. This method avoids recursion
- * by using an explicit stack to manage the comparison process.
+ * Performs a deep comparison between two objects to determine whether they
+ * are deeply equal.
+ *
+ * This method avoids recursion by using an explicit stack to manage the
+ * comparison process and a WeakMap to handle cyclic references.
  */
 export default function deepEqual<T1, T2>(obj1: T1, obj2: T2): boolean {
   const stack: Array<{ prev: any; next: any }> = [{ prev: obj1, next: obj2 }];
