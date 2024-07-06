@@ -21,8 +21,6 @@ export default function Home() {
     "count",
   ]);
 
-  console.log("here");
-
   return (
     <div>
       {dataBuildTime} | {count}
