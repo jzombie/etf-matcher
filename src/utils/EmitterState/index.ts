@@ -1,5 +1,5 @@
-import EmitterState from "./EmitterState";
+import EmitterState, { EmitterStateDefaultEvents } from "./EmitterState";
 import useEmitterState from "./useEmitterState";
 
 export default EmitterState;
-export { useEmitterState };
+export { useEmitterState, EmitterStateDefaultEvents };

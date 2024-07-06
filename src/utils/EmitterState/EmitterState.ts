@@ -1,5 +1,9 @@
 import EventEmitter from "events";
 
+export enum EmitterStateDefaultEvents {
+  UPDATE = "update",
+}
+
 export default class EmitterState<
   T extends Record<string, any>
 > extends EventEmitter {
@@ -34,7 +38,7 @@ export default class EmitterState<
 
   setState<K extends keyof T>(key: K, newState: T[K]) {
     this.state[key] = newState;
-    this.emit("change");
+    this.emit(EmitterStateDefaultEvents.UPDATE);
   }
 
   getState(keys?: (keyof T)[]): Partial<T> | T {

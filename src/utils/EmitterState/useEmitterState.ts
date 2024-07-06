@@ -1,10 +1,10 @@
 import { useSyncExternalStore, useMemo } from "react";
-import EmitterState from "./EmitterState";
+import EmitterState, { EmitterStateDefaultEvents } from "./EmitterState";
 
 const useEmitterState = <T extends Record<string, any>, K extends keyof T>(
   emitter: EmitterState<T>,
   stateKeyOrKeys?: K | K[],
-  eventOrEventNames: string | string[] = "change"
+  eventOrEventNames: string | string[] = EmitterStateDefaultEvents.UPDATE
 ) => {
   const eventNames = useMemo(
     () =>

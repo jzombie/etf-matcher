@@ -16,10 +16,6 @@ class Store extends EmitterState<CustomState> {
     // TODO: Remove
     setInterval(() => {
       this.setState("count", this.state.count + 1);
-
-      console.log({
-        count: this.state.count,
-      });
     }, 1000);
   }
 
