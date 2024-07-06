@@ -49,23 +49,28 @@ watch_directory() {
 # FRONTEND WATCHER
 
 # Default parameters
+
 WATCH_DIR="/app/rust/"
 BUILD_SCRIPT="./docker_build_helpers/build_rust_frontend.sh"
 EXCLUDE_PATTERN='(target.*|Cargo\.lock|.*__AUTOGEN__.*)'
 DEBOUNCE_TIME=0.1
+
+echo "Initializing frontend watches..."
 
 # Call the function with the default parameters
 watch_directory "$WATCH_DIR" "$BUILD_SCRIPT" "$EXCLUDE_PATTERN" "$DEBOUNCE_TIME" &
 
 # ---------
 
-# BACKEND WATCHER
+# DATA WATCHER
 
 WATCH_DIR="/app/data"
 BUILD_SCRIPT="./docker_build_helpers/encode_data.sh"
 EXCLUDE_PATTERN='.*\.enc$'
 DEBOUNCE_TIME=1.0
 watch_directory "$WATCH_DIR" "$BUILD_SCRIPT" "$EXCLUDE_PATTERN" "$DEBOUNCE_TIME" &
+
+echo "Initializing data watches..."
 
 # Wait for all background processes to complete
 wait
