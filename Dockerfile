@@ -81,6 +81,8 @@ WORKDIR /app
 
 COPY package.json package.json
 
+# TODO: Skip if mounting locally
+#
 # Install JS project dependencies
 RUN npm install --verbose
 
