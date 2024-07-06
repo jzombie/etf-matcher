@@ -28,6 +28,14 @@ const useStateEmitterReader = <
     [stateKeyOrKeys]
   );
 
+  useMemo(() => {
+    if (!stateKeys) {
+      console.warn(
+        "useStateEmitterReader should be called with `stateKeyOrKeys` to improve rendering performance."
+      );
+    }
+  }, [stateKeys]);
+
   const prevSnapshotRef = useRef<T | Partial<T> | null>(null);
 
   const subscribe = (callback: () => void) => {
