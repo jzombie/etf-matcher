@@ -3,6 +3,24 @@ import { describe, it, expect } from "vitest";
 import deepEqual from "./deepEqual";
 
 describe("deepEqual function", () => {
+  it("should handle self-identity", () => {
+    const obj1 = {
+      foo: "bar",
+    };
+
+    expect(deepEqual(obj1, obj1)).toBe(true);
+
+    const obj2: any = {
+      foo: "hello",
+      sub: {
+        a: 1,
+      },
+    };
+    obj2.sub.b = obj2;
+
+    expect(deepEqual(obj2, obj2)).toBe(true);
+  });
+
   it("should handle cyclic references without infinite loop", () => {
     const obj1: any = { a: 1 };
     obj1.self = obj1; // Create cyclic reference
@@ -34,7 +52,7 @@ describe("deepEqual function", () => {
     obj3.a.c = obj3; // Create deeper cyclic reference
 
     const obj4: any = { a: { b: 1, c: {} } };
-    obj4.a.c.self = obj4; // Different structure
+    obj4.a.c.cyclic = obj4; // Different structure
 
     expect(deepEqual(obj3, obj4)).toBe(false);
   });
