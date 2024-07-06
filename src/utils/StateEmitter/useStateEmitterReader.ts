@@ -47,7 +47,7 @@ const useStateEmitterReader = <
       ? emitter.getState(stateKeys)
       : emitter.getState();
 
-    // Compare the new snapshot with the previous one using shallow equality
+    // Compare the new snapshot with the previous one using deep equality
     if (deepEqual(newSnapshot, prevSnapshotRef.current)) {
       return prevSnapshotRef.current!;
     }
