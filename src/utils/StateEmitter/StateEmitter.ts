@@ -1,10 +1,10 @@
 import EventEmitter from "events";
 
-export enum EmitterStateDefaultEvents {
+export enum StateEmitterDefaultEvents {
   UPDATE = "update",
 }
 
-export default class EmitterState<
+export default class StateEmitter<
   T extends Record<string, any>
 > extends EventEmitter {
   state: T = {} as T;
@@ -45,7 +45,7 @@ export default class EmitterState<
       const newState = newStateOrUpdater as Partial<T>;
       this.state = { ...this.state, ...newState };
     }
-    this.emit(EmitterStateDefaultEvents.UPDATE);
+    this.emit(StateEmitterDefaultEvents.UPDATE);
   }
 
   getState(keys?: (keyof T)[]): Partial<T> | T {
@@ -59,15 +59,28 @@ export default class EmitterState<
     }, {} as Partial<T>);
   }
 
+  /**
+   * Compares two states, performing a shallow equality check to determine
+   * whether they are identical. This method is useful for optimizing
+   * state updates by avoiding unnecessary re-renders when the state
+   * has not changed.
+   *
+   * The comparison checks:
+   * - If both states are strictly equal, it returns true.
+   * - If either state is null, it returns false.
+   * - If the states have different numbers of keys, it returns false.
+   * - For each key in the previous state, it verifies the key exists
+   *   in the next state and that the corresponding values are strictly equal.
+   */
   shallowEqual(
-    prevState: Partial<T> | T,
+    prevState: Partial<T> | T | null,
     nextState: Partial<T> | T | null
   ): boolean {
     if (prevState === nextState) {
       return true;
     }
 
-    if (nextState === null) {
+    if (prevState === null || nextState === null) {
       return false;
     }
 

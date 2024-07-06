@@ -1,4 +1,4 @@
-import EmitterState from "./utils/EmitterState";
+import StateEmitter from "./utils/StateEmitter";
 import callWorkerFunction from "./utils/callWorkerFunction";
 
 interface CustomState {
@@ -6,7 +6,7 @@ interface CustomState {
   // Add other properties if needed
 }
 
-class Store extends EmitterState<CustomState> {
+class Store extends StateEmitter<CustomState> {
   constructor(initialState?: CustomState) {
     super(initialState);
 
