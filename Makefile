@@ -26,6 +26,11 @@ help:
 	@echo "\n"
 	$(call check_container_status)
 
+.PHONY: build
+build:
+	@echo "Building Docker container"
+	@docker compose build
+
 .PHONY: start-dev-container
 start-dev-container:
 	@echo "Starting development container"
