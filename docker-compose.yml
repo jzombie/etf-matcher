@@ -1,17 +1,22 @@
 x-variables:
   image-name: &image-name rust-dev-app:latest
 
+x-base-service: &base-service
+  image: *image-name
+  build:
+    context: .
+    dockerfile: Dockerfile
+  volumes:
+    - .:/app
+  environment:
+    - FORCE_COLOR=1
+
 services:
   # Generate a production build
   #   Command: "docker compose build build-dist && docker compose up build-dist"
   #
   build-dist:
-    image: *image-name
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - .:/app # Mount so we can access the build files
+    <<: *base-service
     command: |
       sh -c '
       cp -rT /build_artifacts/public/pkg /app/public/pkg &&
@@ -26,7 +31,7 @@ services:
   # --- The following is used for development environments
 
   dev:
-    image: *image-name
+    <<: *base-service
     build:
       context: .
       dockerfile: Dockerfile
@@ -48,7 +53,7 @@ services:
 
   # Used for Rust auto-refresh (not quite HMR, but close)
   dev-rust-hmr:
-    image: *image-name
+    <<: *base-service
     depends_on:
       - dev
     volumes:
@@ -76,7 +81,7 @@ services:
       - RUST_BACKTRACE=1
 
   dev-test:
-    image: *image-name
+    <<: *base-service
     volumes:
       - .:/app
     command: |
@@ -85,7 +90,7 @@ services:
       cp -rT /build_artifacts/public/pkg /app/public/pkg &&
       cp -rT /build_artifacts/public/data /app/public/data &&
       npm install &&
-      npm run test
+      npm run test:ci
       '
     environment:
       - RUST_BACKTRACE=1
