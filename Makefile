@@ -41,6 +41,11 @@ enter-dev-container:
 	@echo "Entering development container $(CONTAINER_NAME)..."
 	@docker exec -it $(CONTAINER_NAME) bash
 
+.PHONY: test
+test:
+	@echo "Testing..."
+	@docker compose up dev-test
+
 .PHONY: generate-prod-build
 generate-prod-build:
 	@echo "Generating production build..."
