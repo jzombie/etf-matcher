@@ -74,3 +74,22 @@ services:
       '
     environment:
       - RUST_BACKTRACE=1
+
+  dev-test:
+    image: *image-name
+    volumes:
+      - .:/app
+    command: |
+      sh -c '
+      cp -r /build_artifacts/.env /app/.env &&
+      cp -rT /build_artifacts/public/pkg /app/public/pkg &&
+      cp -rT /build_artifacts/public/data /app/public/data &&
+      npm install &&
+      npm run test
+      '
+    environment:
+      - RUST_BACKTRACE=1
+      - FORCE_COLOR=1
+    profiles:
+      # Don't run by default
+      - test
