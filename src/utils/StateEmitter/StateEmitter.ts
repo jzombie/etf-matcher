@@ -1,5 +1,5 @@
 import EventEmitter from "events";
-import deepFreeze from "../deepFreeze";
+import deepFreeze from "@utils/deepFreeze";
 
 export enum StateEmitterDefaultEvents {
   UPDATE = "update",

@@ -1,6 +1,6 @@
 import { useSyncExternalStore, useMemo, useRef } from "react";
 import EmitterState, { StateEmitterDefaultEvents } from "./StateEmitter";
-import deepEqual from "../deepEqual";
+import deepEqual from "@utils/deepEqual";
 
 const useStateEmitterReader = <
   T extends Record<string, any>,

@@ -1,21 +1,23 @@
 import StateEmitter from "./utils/StateEmitter";
 import callWorkerFunction from "./utils/callWorkerFunction";
 
-interface CustomState {
+type StoreStateProps = {
+  isRustInit: boolean;
   dataBuildTime: string;
   count: number;
-  // Add other properties if needed
-}
+};
 
-class Store extends StateEmitter<CustomState> {
+class Store extends StateEmitter<StoreStateProps> {
   constructor() {
     super({
+      isRustInit: false,
       dataBuildTime: "",
       count: 0,
     });
 
     callWorkerFunction("get_data_build_info").then((dataBuildInfo) => {
       this.setState({
+        isRustInit: true,
         dataBuildTime: (dataBuildInfo as any).time,
       });
     });
@@ -62,4 +64,4 @@ class Store extends StateEmitter<CustomState> {
 const store = new Store();
 
 export default store;
-export type { CustomState };
+export type { StoreStateProps };

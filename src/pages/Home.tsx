@@ -10,20 +10,22 @@ import {
 } from "react-ts-tradingview-widgets";
 import { SymbolInfo } from "react-ts-tradingview-widgets";
 
-import store, { CustomState } from "../store";
-import { useStateEmitterReader } from "../utils/StateEmitter";
+// import store, { CustomState } from "../store";
+// import { useStateEmitterReader } from "../utils/StateEmitter";
+import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
 <TickerTape colorTheme="dark"></TickerTape>;
 
 export default function Home() {
-  const { dataBuildTime, count } = useStateEmitterReader(store, [
+  const { dataBuildTime, count, isRustInit } = useStoreStateReader([
     "dataBuildTime",
     "count",
+    "isRustInit",
   ]);
 
   return (
     <div>
-      {dataBuildTime} | {count}
+      {dataBuildTime} | {count} | Rust?: {isRustInit ? "true" : "false"}
       <div>
         <Button onClick={() => store.PROTO_getSymbols()}>
           PROTO::getSymbols()
