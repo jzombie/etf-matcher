@@ -9,8 +9,6 @@ import {
   Space,
 } from "antd";
 import MockAutoComplete from "./MockAutoComplete";
-import { useEmitterState } from "../utils/EmitterState";
-import store from "../store";
 
 const { Option } = Select;
 
@@ -20,9 +18,6 @@ const PortfolioForm: React.FC = () => {
   const onFinish = (values: any) => {
     console.log("Form Values: ", values);
   };
-
-  const { count } = useEmitterState(store, "count");
-
   return (
     <Form
       form={form}
@@ -33,7 +28,6 @@ const PortfolioForm: React.FC = () => {
         remember: true,
       }}
     >
-      {count}
       <Space>
         <Button>Add Asset</Button>
 

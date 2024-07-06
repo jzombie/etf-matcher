@@ -16,11 +16,25 @@ import { useEmitterState } from "../utils/EmitterState";
 <TickerTape colorTheme="dark"></TickerTape>;
 
 export default function Home() {
-  const { count } = useEmitterState(store, "count");
+  const { dataBuildTime } = useEmitterState(store, "dataBuildTime");
 
   return (
     <div>
-      {count}
+      {dataBuildTime}
+
+      <div>
+        <Button onClick={() => store.PROTO_getSymbols()}>
+          PROTO::getSymbols()
+        </Button>
+
+        <Button onClick={() => store.PROTO_countEtfsPerExchange()}>
+          PROTO::countEtfsPerExchange()
+        </Button>
+
+        <Button onClick={() => store.PROTO_getEtfHolderAssetCount()}>
+          PROTO::getEtfHolderAssetCount()
+        </Button>
+      </div>
 
       {/* <StockMarket colorTheme="dark" height={400} width="100%"></StockMarket>
       <TickerTape colorTheme="dark"></TickerTape>
