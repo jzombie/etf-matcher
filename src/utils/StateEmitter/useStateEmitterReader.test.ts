@@ -90,4 +90,41 @@ describe("useStateEmitterReader", () => {
 
     expect(result.current).toEqual({ count: obj });
   });
+
+  it("should not re-render when unrelated keys are changed", () => {
+    let renderCount = 0;
+    const { result, rerender } = renderHook(() => {
+      renderCount += 1;
+      return useStateEmitterReader(emitter, ["count"]);
+    });
+
+    expect(result.current).toEqual({ count: 0 });
+    expect(renderCount).toBe(1);
+
+    act(() => {
+      emitter.setState({ text: "updated" });
+    });
+
+    // The render count should not increase because we are only listening to 'count'
+    expect(renderCount).toBe(1);
+  });
+
+  it("should re-render when the subscribed key is changed", () => {
+    let renderCount = 0;
+    const { result } = renderHook(() => {
+      renderCount += 1;
+      return useStateEmitterReader(emitter, ["count"]);
+    });
+
+    expect(result.current).toEqual({ count: 0 });
+    expect(renderCount).toBe(1);
+
+    act(() => {
+      emitter.setState({ count: 1 });
+    });
+
+    // The render count should increase because 'count' was changed
+    expect(renderCount).toBe(2);
+    expect(result.current).toEqual({ count: 1 });
+  });
 });
