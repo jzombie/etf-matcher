@@ -9,7 +9,8 @@
     "__postbuild_doc__": "Creates an identical 404 page for GitHub pages to deep-link on",
     "postbuild": "cp -r ./dist/index.html ./dist/404.html",
     "test": "vitest",
-    "test:watch": "vitest --watch"
+    "test:watch": "vitest --watch",
+    "test:ci": "vitest run"
   },
   "dependencies": {
     "@testing-library/jest-dom": "^6.4.6",
