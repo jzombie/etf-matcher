@@ -4,16 +4,14 @@
  * by using an explicit stack to manage the comparison process.
  */
 export default function deepEqual<T1, T2>(obj1: T1, obj2: T2): boolean {
-  // Use a stack to avoid recursion
   const stack: Array<{ prev: any; next: any }> = [{ prev: obj1, next: obj2 }];
+  const visited = new WeakMap<any, any>();
 
   while (stack.length > 0) {
     const { prev, next } = stack.pop()!;
 
-    // Handle primitive types and strict equality
     if (prev === next) continue;
 
-    // If either is not an object or is null, they are not equal
     if (
       typeof prev !== "object" ||
       typeof next !== "object" ||
@@ -23,19 +21,26 @@ export default function deepEqual<T1, T2>(obj1: T1, obj2: T2): boolean {
       return false;
     }
 
-    // Special case for Date objects
+    // Check for cyclic references
+    if (visited.has(prev)) {
+      if (visited.get(prev) === next) {
+        continue;
+      } else {
+        return false;
+      }
+    }
+    visited.set(prev, next);
+
     if (prev instanceof Date && next instanceof Date) {
       if (prev.getTime() !== next.getTime()) {
         return false;
-      } else {
-        continue;
       }
+      continue;
     }
 
     const prevKeys = Object.keys(prev);
     const nextKeys = Object.keys(next);
 
-    // Different number of keys means objects are not equal
     if (prevKeys.length !== nextKeys.length) {
       return false;
     }
@@ -44,8 +49,6 @@ export default function deepEqual<T1, T2>(obj1: T1, obj2: T2): boolean {
       if (!nextKeys.includes(key)) {
         return false;
       }
-
-      // Push objects to the stack for further comparison
       stack.push({ prev: prev[key], next: next[key] });
     }
   }

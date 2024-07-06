@@ -2,9 +2,43 @@
 import { describe, it, expect } from "vitest";
 import deepEqual from "./deepEqual";
 
-// TODO: Add check for infinite loop
-
 describe("deepEqual function", () => {
+  it("should handle cyclic references without infinite loop", () => {
+    const obj1: any = { a: 1 };
+    obj1.self = obj1; // Create cyclic reference
+
+    const obj2: any = { a: 1 };
+    obj2.self = obj2; // Create cyclic reference
+
+    expect(deepEqual(obj1, obj2)).toBe(true);
+
+    const obj3: any = { a: 1 };
+    obj3.self = obj3; // Create cyclic reference
+
+    const obj4: any = { a: 1 };
+    obj4.self = { a: 1 }; // Different structure
+
+    expect(deepEqual(obj3, obj4)).toBe(false);
+  });
+
+  it("should handle deeper cyclic references", () => {
+    const obj1: any = { a: { b: 1 } };
+    obj1.a.c = obj1; // Create deeper cyclic reference
+
+    const obj2: any = { a: { b: 1 } };
+    obj2.a.c = obj2; // Create deeper cyclic reference
+
+    expect(deepEqual(obj1, obj2)).toBe(true);
+
+    const obj3: any = { a: { b: 1 } };
+    obj3.a.c = obj3; // Create deeper cyclic reference
+
+    const obj4: any = { a: { b: 1, c: {} } };
+    obj4.a.c.self = obj4; // Different structure
+
+    expect(deepEqual(obj3, obj4)).toBe(false);
+  });
+
   it("should return true for identical primitive values", () => {
     expect(deepEqual(1, 1)).toBe(true);
     expect(deepEqual("a", "a")).toBe(true);
