@@ -10,10 +10,9 @@ export default function Layout() {
   const location = useLocation();
   const selectedKey = location.pathname === "/" ? "/" : location.pathname;
 
-  const { prettyDataBuildTime, isDirtyState } = useStoreStateReader([
-    "prettyDataBuildTime",
-    "isDirtyState",
-  ]);
+  const { isRustInit, prettyDataBuildTime, isDirtyState } = useStoreStateReader(
+    ["isRustInit", "prettyDataBuildTime", "isDirtyState"]
+  );
 
   return (
     <AntLayout style={{ minHeight: "100vh" }}>
@@ -60,7 +59,29 @@ export default function Layout() {
           overflow: "auto",
         }}
       >
-        <Outlet />
+        {!isRustInit ? (
+          <div
+            style={{
+              height: "100%",
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "auto",
+            }}
+          >
+            <div
+              style={{
+                textAlign: "center",
+              }}
+            >
+              Initializing...
+            </div>
+          </div>
+        ) : (
+          <Outlet />
+        )}
       </Content>
       <Footer style={{ textAlign: "left", padding: 0, margin: 0 }}>
         <span>

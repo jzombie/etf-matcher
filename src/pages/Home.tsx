@@ -17,39 +17,11 @@ import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 <TickerTape colorTheme="dark"></TickerTape>;
 
 export default function Home() {
-  const { count, isRustInit } = useStoreStateReader(["count", "isRustInit"]);
-
-  if (!isRustInit) {
-    return (
-      <div
-        style={{
-          height: "100%",
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          overflow: "auto",
-        }}
-      >
-        <div
-          style={{
-            textAlign: "center",
-            height: 300,
-            backgroundColor: "yellow",
-          }}
-        >
-          Initializing...
-        </div>
-      </div>
-    );
-  }
+  const { count } = useStoreStateReader(["count"]);
 
   return (
     <div>
-      <div>
-        {count} | Rust?: {isRustInit ? "true" : "false"}
-      </div>
+      <div>{count}</div>
       <div>
         <Button onClick={() => store.PROTO_getSymbols()}>
           PROTO::getSymbols()
