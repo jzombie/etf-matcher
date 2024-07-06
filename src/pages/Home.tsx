@@ -22,10 +22,10 @@ export default function Home() {
     <div>
       {count}
 
-      <StockMarket colorTheme="dark" height={400} width="100%"></StockMarket>
+      {/* <StockMarket colorTheme="dark" height={400} width="100%"></StockMarket>
       <TickerTape colorTheme="dark"></TickerTape>
       <Screener colorTheme="dark" width="100%" height={300}></Screener>
-      <SymbolInfo colorTheme="dark" autosize></SymbolInfo>
+      <SymbolInfo colorTheme="dark" autosize></SymbolInfo> */}
 
       <PortfolioForm />
     </div>

@@ -36,8 +36,15 @@ export default class EmitterState<
     };
   }
 
-  setState<K extends keyof T>(key: K, newState: T[K]) {
-    this.state[key] = newState;
+  setState(newStateOrUpdater: Partial<T> | ((prevState: T) => Partial<T>)) {
+    if (typeof newStateOrUpdater === "function") {
+      const updaterFn = newStateOrUpdater as (prevState: T) => Partial<T>;
+      const newState = updaterFn(this.state);
+      this.state = { ...this.state, ...newState };
+    } else {
+      const newState = newStateOrUpdater as Partial<T>;
+      this.state = { ...this.state, ...newState };
+    }
     this.emit(EmitterStateDefaultEvents.UPDATE);
   }
 
