@@ -3,10 +3,16 @@ import callWorkerFunction from "./utils/callWorkerFunction";
 
 interface CustomState {
   dataBuildTime: string;
+  count: number;
   // Add other properties if needed
 }
 
 class Store extends StateEmitter<CustomState> {
+  state = {
+    dataBuildTime: "",
+    count: 0,
+  };
+
   constructor(initialState?: CustomState) {
     super(initialState);
 
@@ -15,6 +21,13 @@ class Store extends StateEmitter<CustomState> {
         dataBuildTime: (dataBuildInfo as any).time,
       });
     });
+
+    // TODO: Remove
+    setInterval(() => {
+      this.setState((prev) => ({
+        count: prev.count + 1,
+      }));
+    }, 1000);
   }
 
   PROTO_getSymbols() {

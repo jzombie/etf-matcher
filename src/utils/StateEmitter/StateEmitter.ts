@@ -72,34 +72,34 @@ export default class StateEmitter<
    * - For each key in the previous state, it verifies the key exists
    *   in the next state and that the corresponding values are strictly equal.
    */
-  shallowEqual(
-    prevState: Partial<T> | T | null,
-    nextState: Partial<T> | T | null
-  ): boolean {
-    if (prevState === nextState) {
-      return true;
-    }
+  // shallowEqual(
+  //   prevState: Partial<T> | T | null,
+  //   nextState: Partial<T> | T | null
+  // ): boolean {
+  //   if (prevState === nextState) {
+  //     return true;
+  //   }
 
-    if (prevState === null || nextState === null) {
-      return false;
-    }
+  //   if (prevState === null || nextState === null) {
+  //     return false;
+  //   }
 
-    const keysA = Object.keys(prevState);
-    const keysB = Object.keys(nextState);
+  //   const keysA = Object.keys(prevState);
+  //   const keysB = Object.keys(nextState);
 
-    if (keysA.length !== keysB.length) {
-      return false;
-    }
+  //   if (keysA.length !== keysB.length) {
+  //     return false;
+  //   }
 
-    for (let i = 0; i < keysA.length; i++) {
-      if (
-        !Object.prototype.hasOwnProperty.call(nextState, keysA[i]) ||
-        prevState[keysA[i]] !== nextState[keysA[i]]
-      ) {
-        return false;
-      }
-    }
+  //   for (let i = 0; i < keysA.length; i++) {
+  //     if (
+  //       !Object.prototype.hasOwnProperty.call(nextState, keysA[i]) ||
+  //       prevState[keysA[i]] !== nextState[keysA[i]]
+  //     ) {
+  //       return false;
+  //     }
+  //   }
 
-    return true;
-  }
+  //   return true;
+  // }
 }

@@ -82,6 +82,8 @@ WORKDIR /app
 COPY package.json package.json
 # COPY node_modules/ ./node_modules # TODO: Enable once populated
 
+# TODO: Remove vite global
+#
 # Install Vite and project dependencies
 RUN npm install -g vite && npm install
 

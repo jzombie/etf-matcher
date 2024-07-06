@@ -1,14 +1,15 @@
 import { useSyncExternalStore, useMemo, useRef } from "react";
-import StateEmitter, { StateEmitterDefaultEvents } from "./StateEmitter";
+import EmitterState, { StateEmitterDefaultEvents } from "./StateEmitter";
+import deepEqual from "../deepEqual";
 
-export default function useStateEmitterReader<
+const useStateEmitterReader = <
   T extends Record<string, any>,
   K extends keyof T
 >(
-  emitter: StateEmitter<T>,
+  emitter: EmitterState<T>,
   stateKeyOrKeys?: K | K[],
   eventOrEventNames: string | string[] = StateEmitterDefaultEvents.UPDATE
-) {
+) => {
   const eventNames = useMemo(
     () =>
       Array.isArray(eventOrEventNames)
@@ -47,7 +48,7 @@ export default function useStateEmitterReader<
       : emitter.getState();
 
     // Compare the new snapshot with the previous one using shallow equality
-    if (emitter.shallowEqual(newSnapshot, prevSnapshotRef.current)) {
+    if (deepEqual(newSnapshot, prevSnapshotRef.current)) {
       return prevSnapshotRef.current!;
     }
 
@@ -67,4 +68,6 @@ export default function useStateEmitterReader<
   );
 
   return state;
-}
+};
+
+export default useStateEmitterReader;

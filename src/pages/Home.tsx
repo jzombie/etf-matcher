@@ -16,12 +16,16 @@ import { useStateEmitterReader } from "../utils/StateEmitter";
 <TickerTape colorTheme="dark"></TickerTape>;
 
 export default function Home() {
-  const { dataBuildTime } = useStateEmitterReader(store, "dataBuildTime");
+  const { dataBuildTime, count } = useStateEmitterReader(store, [
+    "dataBuildTime",
+    "count",
+  ]);
+
+  console.log("here");
 
   return (
     <div>
-      {dataBuildTime}
-
+      {dataBuildTime} | {count}
       <div>
         <Button onClick={() => store.PROTO_getSymbols()}>
           PROTO::getSymbols()
@@ -35,12 +39,10 @@ export default function Home() {
           PROTO::getEtfHolderAssetCount()
         </Button>
       </div>
-
       {/* <StockMarket colorTheme="dark" height={400} width="100%"></StockMarket>
       <TickerTape colorTheme="dark"></TickerTape>
       <Screener colorTheme="dark" width="100%" height={300}></Screener>
       <SymbolInfo colorTheme="dark" autosize></SymbolInfo> */}
-
       <PortfolioForm />
     </div>
   );
