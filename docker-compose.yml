@@ -49,6 +49,8 @@ services:
   # Used for Rust auto-refresh (not quite HMR, but close)
   dev-rust-hmr:
     image: *image-name
+    depends_on:
+      - dev
     volumes:
       - .:/app
     # Note: The convoluted code in here skips copying over backend files
