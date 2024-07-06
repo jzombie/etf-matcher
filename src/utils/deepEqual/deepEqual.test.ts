@@ -2,6 +2,8 @@
 import { describe, it, expect } from "vitest";
 import deepEqual from "./deepEqual";
 
+// TODO: Add check for infinite loop
+
 describe("deepEqual function", () => {
   it("should return true for identical primitive values", () => {
     expect(deepEqual(1, 1)).toBe(true);
