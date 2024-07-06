@@ -10,6 +10,8 @@ set -e
 cd /app/backend/rust/encrypt_password
 cargo build --release
 
+# TODO: Use release contingent on build environment
+#
 # Run the encryption utility to get the key, IV, and encrypted password
 output=$(./target/release/encrypt_password "$PLAINTEXT_PASSWORD")
 

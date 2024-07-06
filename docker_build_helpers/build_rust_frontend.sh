@@ -16,4 +16,7 @@ cargo install wasm-pack
 
 # Build the Rust project with wasm-pack
 cd /app/rust
+
+# TODO: Use release contingent upon build environment
+#
 wasm-pack build --target web --out-dir /app/public/pkg

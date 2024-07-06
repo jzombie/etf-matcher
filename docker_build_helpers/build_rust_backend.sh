@@ -14,5 +14,7 @@ fi
 # Navigate to the encryption tool directory
 cd /app/backend/rust/encrypt_tool
 
+# TODO: Use release contingent upon build environment
+#
 # Build the encryption tool
 cargo build --release

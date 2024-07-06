@@ -22,6 +22,8 @@ for json_file in /app/data/*.json; do
     # Get the base name of the file (without the directory and file extension)
     base_name=$(basename "$json_file" .json)
     
+    # TODO: Use release contingent on build environment
+    #
     # Run the encryption tool with the input and output file arguments
     ./target/release/encrypt_tool "$json_file" "/app/data/${base_name}.enc"
 done
