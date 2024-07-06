@@ -38,43 +38,13 @@ const useEmitterState = <T extends Record<string, any>, K extends keyof T>(
     };
   };
 
-  const shallowEqual = (objA: any, objB: any): boolean => {
-    if (objA === objB) {
-      return true;
-    }
-
-    if (
-      typeof objA !== "object" ||
-      objA === null ||
-      typeof objB !== "object" ||
-      objB === null
-    ) {
-      return false;
-    }
-
-    const keysA = Object.keys(objA);
-    const keysB = Object.keys(objB);
-
-    if (keysA.length !== keysB.length) {
-      return false;
-    }
-
-    for (let i = 0; i < keysA.length; i++) {
-      if (!objB.hasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
-        return false;
-      }
-    }
-
-    return true;
-  };
-
   const getSnapshot = (): T | Partial<T> => {
     const newSnapshot = stateKeys
       ? emitter.getState(stateKeys)
       : emitter.getState();
 
     // Compare the new snapshot with the previous one using shallow equality
-    if (shallowEqual(newSnapshot, prevSnapshotRef.current)) {
+    if (emitter.shallowEqual(newSnapshot, prevSnapshotRef.current)) {
       return prevSnapshotRef.current!;
     }
 

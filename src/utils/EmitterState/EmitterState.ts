@@ -58,4 +58,35 @@ export default class EmitterState<
       return acc;
     }, {} as Partial<T>);
   }
+
+  shallowEqual(
+    prevState: Partial<T> | T,
+    nextState: Partial<T> | T | null
+  ): boolean {
+    if (prevState === nextState) {
+      return true;
+    }
+
+    if (nextState === null) {
+      return false;
+    }
+
+    const keysA = Object.keys(prevState);
+    const keysB = Object.keys(nextState);
+
+    if (keysA.length !== keysB.length) {
+      return false;
+    }
+
+    for (let i = 0; i < keysA.length; i++) {
+      if (
+        !Object.prototype.hasOwnProperty.call(nextState, keysA[i]) ||
+        prevState[keysA[i]] !== nextState[keysA[i]]
+      ) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 }
