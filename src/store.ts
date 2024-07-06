@@ -8,13 +8,11 @@ interface CustomState {
 }
 
 class Store extends StateEmitter<CustomState> {
-  state = {
-    dataBuildTime: "",
-    count: 0,
-  };
-
-  constructor(initialState?: CustomState) {
-    super(initialState);
+  constructor() {
+    super({
+      dataBuildTime: "",
+      count: 0,
+    });
 
     callWorkerFunction("get_data_build_info").then((dataBuildInfo) => {
       this.setState({
