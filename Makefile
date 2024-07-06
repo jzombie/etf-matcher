@@ -26,18 +26,18 @@ help:
 	@echo "\n"
 	$(call check_container_status)
 
-.PHONY: build
-build:
+.PHONY: build-dev
+build-dev:
 	@echo "Building Docker container"
 	@docker compose build
 
-.PHONY: start-dev-container
-start-dev-container:
+.PHONY: start-dev
+start-dev:
 	@echo "Starting development container"
 	@docker compose up
 
-.PHONY: enter-dev-container
-enter-dev-container:
+.PHONY: enter-dev
+enter-dev:
 	@echo "Entering development container $(CONTAINER_NAME)..."
 	@docker exec -it $(CONTAINER_NAME) bash
 
@@ -46,7 +46,7 @@ test:
 	@echo "Testing..."
 	@docker compose up dev-test
 
-.PHONY: generate-prod-build
-generate-prod-build:
+.PHONY: build-prod
+build-prod:
 	@echo "Generating production build..."
 	@docker compose build build-dist && docker compose up build-dist
