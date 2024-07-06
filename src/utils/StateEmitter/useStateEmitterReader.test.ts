@@ -2,6 +2,7 @@
 import { renderHook, act } from "@testing-library/react";
 import EmitterState, { StateEmitterDefaultEvents } from "./StateEmitter";
 import useStateEmitterReader from "./useStateEmitterReader";
+import { MockInstance } from "vitest";
 
 interface TestState {
   count: number;
@@ -11,6 +12,7 @@ interface TestState {
 
 describe("useStateEmitterReader", () => {
   let emitter: EmitterState<TestState>;
+  let consoleWarnSpy: MockInstance;
 
   beforeEach(() => {
     emitter = new EmitterState<TestState>({
@@ -18,6 +20,12 @@ describe("useStateEmitterReader", () => {
       text: "initial",
       items: ["item1"],
     });
+
+    consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleWarnSpy.mockRestore();
   });
 
   it("should read the initial state", () => {
@@ -27,6 +35,10 @@ describe("useStateEmitterReader", () => {
       text: "initial",
       items: ["item1"],
     });
+
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      "useStateEmitterReader should be called with `stateKeyOrKeys` to improve rendering performance."
+    );
   });
 
   it("should update state when the emitter state changes", () => {
@@ -51,6 +63,10 @@ describe("useStateEmitterReader", () => {
       text: "updated",
       items: ["item1"],
     });
+
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      "useStateEmitterReader should be called with `stateKeyOrKeys` to improve rendering performance."
+    );
   });
 
   it("should only subscribe to specific state keys (single string)", () => {
