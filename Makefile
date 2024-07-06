@@ -1,5 +1,9 @@
 # Makefile
 
+# By default, Docker Compose uses the directory name as the project name.
+# The CONTAINER_NAME is derived from the directory name and service name.
+# For example, if the directory name is "helloworldrustwasm" and the service
+# name is "dev", the container name will be "helloworldrustwasm-dev-1".
 CONTAINER_NAME := helloworldrustwasm-dev-1
 
 # Default target: help
