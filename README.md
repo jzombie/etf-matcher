@@ -5,7 +5,7 @@
 
 _Note: If using the Docker environment, a .env file will be [automatically generated](docker_build_helpers/generate_env.sh)._
 
-You can skip using Docker altogether if that's your thing, but it will be harder to build. The [docker_build_helpers directory](docker_build_helpers) has various utilities related to encrypting the data in the build, for various licensing conditions.
+You can skip using Docker altogether if that's your thing, but it will be harder to build. The [docker_build_helpers directory](docker_build_helpers) has various utilities related to encrypting the data in the build, related to licensing conditions.
 
 ## Development
 
