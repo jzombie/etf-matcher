@@ -8,10 +8,12 @@ CONTAINER_NAME := helloworldrustwasm-dev-1
 GREEN := $(shell tput setaf 2)
 RED := $(shell tput setaf 1)
 RESET := $(shell tput sgr0)
+BOLD := $(shell tput bold)
 
 # Unicode circle symbols
 CIRCLE_SYMBOL_GREEN := \033[32m●\033[0m
 CIRCLE_SYMBOL_RED := \033[31m●\033[0m
+CIRCLE_SYMBOL_GRAY := \033[90m●\033[0m
 
 # Function to check if the container is running
 define check_container_status
@@ -22,30 +24,21 @@ define check_container_status
   fi
 endef
 
-# Function to display command status
-define command_status
-  @if [ $$(docker ps -q -f name=$(CONTAINER_NAME)) ]; then \
-    echo "$1 $(CIRCLE_SYMBOL_GREEN)"; \
-  else \
-    echo "$1 $(CIRCLE_SYMBOL_RED)"; \
-  fi
-endef
-
 # Default target: help
 .PHONY: help
 help:
-	@echo "Available commands:"
+	@echo "$(BOLD)Available commands:$(RESET)"
 	@awk -F ':| ' '/^[a-zA-Z0-9_-]+:/ {print $$1}' $(MAKEFILE_LIST) | while read cmd; do \
 	  case $$cmd in \
 	    start-dev|enter-dev|stop-dev) \
 	      if [ $$(docker ps -q -f name=$(CONTAINER_NAME)) ]; then \
-	        echo "  make $$cmd $(CIRCLE_SYMBOL_GREEN)"; \
+	        printf "  $(CIRCLE_SYMBOL_GREEN) make %-15s\n" $$cmd; \
 	      else \
-	        echo "  make $$cmd $(CIRCLE_SYMBOL_RED)"; \
+	        printf "  $(CIRCLE_SYMBOL_RED) make %-15s\n" $$cmd; \
 	      fi \
 	      ;; \
 	    *) \
-	      echo "  make $$cmd"; \
+	      printf "  $(CIRCLE_SYMBOL_GRAY) make %-15s\n" $$cmd; \
 	      ;; \
 	  esac; \
 	done
