@@ -66,6 +66,10 @@ class Store extends StateEmitter<StoreStateProps> {
       .catch((error) => console.error(error));
   }
 
+  addSymbolToPortfolio(symbol: string) {
+    console.warn(`TODO: Handle symbol add: ${symbol}`);
+  }
+
   // Add additional methods or properties if needed
 }
 

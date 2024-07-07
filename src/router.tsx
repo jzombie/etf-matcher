@@ -1,7 +1,8 @@
 import Home from "@pages/Home";
-import About from "@pages/About";
 import Sectors from "@pages/Sectors";
+import Portfolio from "@pages/Portfolio";
 import SectorDetail from "@pages/SectorDetail";
+import About from "@pages/About";
 import NotFound from "@pages/NotFound";
 
 import { createBrowserRouter } from "react-router-dom";
@@ -26,6 +27,10 @@ export default createBrowserRouter([
             element: <SectorDetail />,
           },
         ],
+      },
+      {
+        path: "portfolio",
+        element: <Portfolio />,
       },
       {
         path: "about",

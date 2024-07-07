@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { Button, Grid, Row, Col } from "antd";
-import sectorColors from "@assets/sectorColors";
+import sectorColors from "@constants/sectorColors";
 
 const { useBreakpoint } = Grid;
 
@@ -47,6 +47,8 @@ export default function SectorButtonGrid({
                 paddingTop: 40,
                 paddingBottom: 40,
                 border: `1px ${sector.inverseColor} dotted`,
+                fontWeight: "bold",
+                fontSize: "1.2em",
               }}
             >
               {sector.name}

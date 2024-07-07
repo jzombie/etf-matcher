@@ -4,6 +4,7 @@ import { Layout as AntLayout, Menu, Button } from "antd";
 import { Link, Outlet, useLocation, matchPath } from "react-router-dom";
 // import { SaveOutlined } from "@ant-design/icons";
 import useStoreStateReader from "@hooks/useStoreStateReader";
+import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 
 const { Header, Content, Footer } = AntLayout;
 
@@ -14,6 +15,7 @@ export default function Layout() {
   const menuItems = [
     { key: "/", label: <Link to="/">Home</Link> },
     { key: "/sectors", label: <Link to="/sectors">Sectors</Link> },
+    { key: "/portfolio", label: <Link to="/portfolio">Portfolio</Link> },
     { key: "/about", label: <Link to="/about">About</Link> },
   ];
 
@@ -109,21 +111,11 @@ export default function Layout() {
             </a>
           </span>
         </div>
-        {
-          // Copyright attribute: https://tradingview-widgets.jorrinkievit.xyz/docs/
-        }
         <TickerTape
           colorTheme="dark"
-          // TODO: This has an issue where non-memoized copyright styles continuously blink on and off
-          copyrightStyles={footerCopyrightStyles}
+          copyrightStyles={tradingViewCopyrightStyles}
         ></TickerTape>
       </Footer>
     </AntLayout>
   );
 }
-
-const footerCopyrightStyles = {
-  parent: {
-    display: "none",
-  },
-};
