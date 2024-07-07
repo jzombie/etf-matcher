@@ -6,8 +6,10 @@
  * comparison process and a WeakMap to handle cyclic references.
  */
 export default function deepEqual<T1, T2>(obj1: T1, obj2: T2): boolean {
-  const stack: Array<{ prev: any; next: any }> = [{ prev: obj1, next: obj2 }];
-  const visited = new WeakMap<any, any>();
+  const stack: Array<{ prev: unknown; next: unknown }> = [
+    { prev: obj1, next: obj2 },
+  ];
+  const visited = new WeakMap<object, object>();
 
   while (stack.length > 0) {
     const { prev, next } = stack.pop()!;
@@ -24,14 +26,14 @@ export default function deepEqual<T1, T2>(obj1: T1, obj2: T2): boolean {
     }
 
     // Check for cyclic references
-    if (visited.has(prev)) {
-      if (visited.get(prev) === next) {
+    if (visited.has(prev as object)) {
+      if (visited.get(prev as object) === next) {
         continue;
       } else {
         return false;
       }
     }
-    visited.set(prev, next);
+    visited.set(prev as object, next as object);
 
     if (prev instanceof Date && next instanceof Date) {
       if (prev.getTime() !== next.getTime()) {
@@ -40,8 +42,8 @@ export default function deepEqual<T1, T2>(obj1: T1, obj2: T2): boolean {
       continue;
     }
 
-    const prevKeys = Object.keys(prev);
-    const nextKeys = Object.keys(next);
+    const prevKeys = Object.keys(prev as object);
+    const nextKeys = Object.keys(next as object);
 
     if (prevKeys.length !== nextKeys.length) {
       return false;
@@ -51,7 +53,10 @@ export default function deepEqual<T1, T2>(obj1: T1, obj2: T2): boolean {
       if (!nextKeys.includes(key)) {
         return false;
       }
-      stack.push({ prev: prev[key], next: next[key] });
+      stack.push({
+        prev: (prev as Record<string, unknown>)[key],
+        next: (next as Record<string, unknown>)[key],
+      });
     }
   }
 
