@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import EventEmitter from "events";
 import deepClone from "@utils/deepClone";
 import deepFreeze from "@utils/deepFreeze";
