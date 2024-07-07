@@ -57,6 +57,7 @@ export default function SymbolContainerProvider({
       visibleSymbolMap.current.delete(el);
     }
 
+    // TODO: Handle event emit (potentially debounced)
     console.log("visible symbols", [...visibleSymbolMap.current.values()]);
   }, []);
 
@@ -77,6 +78,7 @@ export default function SymbolContainerProvider({
         }
       });
 
+      // TODO: Handle event emit
       console.log("visible symbols", [...visibleSymbolMap.current.values()]);
     };
 
