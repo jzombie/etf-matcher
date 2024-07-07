@@ -24,7 +24,7 @@ export default class StateEmitter<
     this.initialState = Object.freeze({ ...initialState });
   }
 
-  subscribe<K extends keyof T>(
+  subscribe<K extends keyof T | StateEmitterDefaultEvents>(
     eventOrEventNames: K | K[],
     listener: () => void
   ): () => void {

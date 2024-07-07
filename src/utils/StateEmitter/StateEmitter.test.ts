@@ -1,0 +1,89 @@
+import { describe, it, expect, vi } from "vitest";
+import StateEmitter, { StateEmitterDefaultEvents } from "./StateEmitter";
+import deepFreeze from "@utils/deepFreeze";
+
+interface TestState {
+  count: number;
+  text: string;
+}
+
+describe("StateEmitter", () => {
+  it("should initialize with given state", () => {
+    const initialState: TestState = { count: 0, text: "hello" };
+    const emitter = new StateEmitter<TestState>(initialState);
+
+    expect(emitter.state).toEqual(deepFreeze(initialState));
+    expect(emitter.initialState).toEqual(deepFreeze(initialState));
+  });
+
+  it("should throw error if initial state is not provided", () => {
+    expect(() => {
+      // @ts-ignore: Suppress the error for this test case
+      new StateEmitter();
+    }).toThrow("Initial state must be provided.");
+  });
+
+  it("should update state correctly", () => {
+    const initialState: TestState = { count: 0, text: "hello" };
+    const emitter = new StateEmitter<TestState>(initialState);
+
+    emitter.setState({ count: 1 });
+    expect(emitter.state).toEqual(deepFreeze({ count: 1, text: "hello" }));
+
+    emitter.setState((prevState) => ({ text: prevState.text + " world" }));
+    expect(emitter.state).toEqual(
+      deepFreeze({ count: 1, text: "hello world" })
+    );
+  });
+
+  it("should subscribe to state updates and call listeners", () => {
+    const initialState: TestState = { count: 0, text: "hello" };
+    const emitter = new StateEmitter<TestState>(initialState);
+
+    const listener = vi.fn();
+    const unsubscribe = emitter.subscribe(
+      StateEmitterDefaultEvents.UPDATE,
+      listener
+    );
+
+    emitter.setState({ count: 1 });
+    expect(listener).toHaveBeenCalledTimes(1);
+
+    unsubscribe();
+    emitter.setState({ count: 2 });
+    expect(listener).toHaveBeenCalledTimes(1);
+  });
+
+  it("should return partial state based on keys", () => {
+    const initialState: TestState = { count: 0, text: "hello" };
+    const emitter = new StateEmitter<TestState>(initialState);
+
+    expect(emitter.getState(["count"])).toEqual({ count: 0 });
+    expect(emitter.getState(["text"])).toEqual({ text: "hello" });
+    expect(emitter.getState(["count", "text"])).toEqual({
+      count: 0,
+      text: "hello",
+    });
+  });
+
+  it("should emit update event on state change", () => {
+    const initialState: TestState = { count: 0, text: "hello" };
+    const emitter = new StateEmitter<TestState>(initialState);
+
+    const listener = vi.fn();
+    emitter.on(StateEmitterDefaultEvents.UPDATE, listener);
+
+    emitter.setState({ count: 1 });
+    expect(listener).toHaveBeenCalledTimes(1);
+  });
+
+  it("should not allow direct modification of state", () => {
+    const initialState: TestState = { count: 0, text: "hello" };
+    const emitter = new StateEmitter<TestState>(initialState);
+
+    expect(() => {
+      // @ts-ignore: Suppress the error for this test case
+      emitter.state = { count: 1, text: "world" };
+    }).toThrow("State is read-only. Use setState to modify the state.");
+  });
+});

@@ -1,6 +1,6 @@
 import StateEmitter, { StateEmitterDefaultEvents } from "./StateEmitter";
-import ReactStateEmitter from "./ReactStateEmitter";
-import useStateEmitterReader from "./useStateEmitterReader";
+import ReactStateEmitter from "./react/ReactStateEmitter";
+import useStateEmitterReader from "./react/useStateEmitterReader";
 
 export default StateEmitter;
 export { ReactStateEmitter };

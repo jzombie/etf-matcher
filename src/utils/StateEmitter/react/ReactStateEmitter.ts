@@ -1,6 +1,6 @@
-import { StateEmitterDefaultEvents } from "./StateEmitter";
+import { StateEmitterDefaultEvents } from "../StateEmitter";
 import useStateEmitterReader from "./useStateEmitterReader";
-import StateEmitter from "./StateEmitter";
+import StateEmitter from "../StateEmitter";
 
 export default class ReactStateEmitter<
   T extends Record<string, any>

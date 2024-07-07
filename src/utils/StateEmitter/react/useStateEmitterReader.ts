@@ -1,5 +1,5 @@
 import { useSyncExternalStore, useMemo, useRef } from "react";
-import EmitterState, { StateEmitterDefaultEvents } from "./StateEmitter";
+import EmitterState, { StateEmitterDefaultEvents } from "../StateEmitter";
 import deepEqual from "@utils/deepEqual";
 
 const useStateEmitterReader = <

@@ -1,6 +1,6 @@
 // useStateEmitterReader.test.ts
 import { renderHook, act } from "@testing-library/react";
-import EmitterState, { StateEmitterDefaultEvents } from "./StateEmitter";
+import EmitterState, { StateEmitterDefaultEvents } from "../StateEmitter";
 import useStateEmitterReader from "./useStateEmitterReader";
 import { MockInstance } from "vitest";
 
