@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useEffect, useRef } from "react";
+import { store } from "@hooks/useStoreStateReader";
 
 export type SymbolContainerContextType = {
   observe: (el: HTMLElement, tickerSymbol: string) => void;
@@ -32,10 +33,11 @@ export default function SymbolContainerProvider({
   // Contains mapping for currently visible observers
   const visibleSymbolMap = useRef(new Map<Element, string>());
 
-  // TODO: Remove?
-  // const getVisibleSymbols = useCallback((): string[] => {
-  //   return [...new Set([...metadataMap.current.values()])];
-  // }, []);
+  const syncVisibleSymbols = useCallback(() => {
+    const visibleSymbols = [...visibleSymbolMap.current.values()];
+
+    store.setVisibleSymbols(visibleSymbols);
+  }, []);
 
   const handleObserve = useCallback((el: HTMLElement, tickerSymbol: string) => {
     if (observerRef.current) {
@@ -44,16 +46,18 @@ export default function SymbolContainerProvider({
     }
   }, []);
 
-  const handleUnobserve = useCallback((el?: HTMLElement) => {
-    if (el && observerRef.current) {
-      observerRef.current.unobserve(el);
-      metadataMap.current.delete(el);
-      visibleSymbolMap.current.delete(el);
-    }
+  const handleUnobserve = useCallback(
+    (el?: HTMLElement) => {
+      if (el && observerRef.current) {
+        observerRef.current.unobserve(el);
+        metadataMap.current.delete(el);
+        visibleSymbolMap.current.delete(el);
 
-    // TODO: Handle event emit (potentially debounced)
-    console.log("visible symbols", [...visibleSymbolMap.current.values()]);
-  }, []);
+        syncVisibleSymbols();
+      }
+    },
+    [syncVisibleSymbols]
+  );
 
   useEffect(() => {
     const observerCallback: IntersectionObserverCallback = (entries) => {
@@ -72,8 +76,7 @@ export default function SymbolContainerProvider({
         }
       });
 
-      // TODO: Handle event emit
-      console.log("visible symbols", [...visibleSymbolMap.current.values()]);
+      syncVisibleSymbols();
     };
 
     observerRef.current = new IntersectionObserver(observerCallback, {
@@ -83,7 +86,7 @@ export default function SymbolContainerProvider({
     return () => {
       observerRef.current?.disconnect();
     };
-  }, [perSymbolThreshold]);
+  }, [perSymbolThreshold, syncVisibleSymbols]);
 
   return (
     <SymbolContainerContext.Provider

@@ -10,6 +10,7 @@ type StoreStateProps = {
   prettyDataBuildTime: string;
   count: number;
   isDirtyState: boolean;
+  visibleSymbols: string[];
 };
 
 class Store extends ReactStateEmitter<StoreStateProps> {
@@ -22,6 +23,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
       prettyDataBuildTime: "",
       count: 0,
       isDirtyState: false,
+      visibleSymbols: [],
     });
 
     // Only deepfreeze in development
@@ -44,6 +46,10 @@ class Store extends ReactStateEmitter<StoreStateProps> {
         isDirtyState: !prev.isDirtyState,
       }));
     }, 1000);
+  }
+
+  setVisibleSymbols(visibleSymbols: string[]) {
+    this.setState({ visibleSymbols });
   }
 
   // TODO: For the following `PROTO` functions, it might be best to not retain a duplicate copy here,
