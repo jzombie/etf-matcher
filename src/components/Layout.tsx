@@ -75,6 +75,9 @@ export default function Layout() {
           // This wrapping div prevents child elements from stretching by default
         }
         <div style={{ width: "100%", height: "100%" }}>
+          {
+            // TODO: Don't block if on home screen so that content can render faster
+          }
           {!isRustInit ? (
             <div
               style={{
