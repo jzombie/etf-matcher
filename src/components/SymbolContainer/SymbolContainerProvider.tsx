@@ -1,15 +1,8 @@
 import React, { createContext, useCallback, useEffect, useRef } from "react";
 
 export type SymbolContainerContextType = {
-  // TODO: Refine types
   observe: (el: HTMLElement, tickerSymbol: string) => void;
   unobserve: (el?: HTMLElement) => void;
-  // tickerSymbol: string;
-  // visibilityRatio: number;
-  // timeInView: number;
-  // setTickerSymbol: (tickerSymbol: string) => void;
-  // setVisibilityRatio: (ratio: number) => void;
-  // setTimeInView: (time: number) => void;
 };
 
 export const SymbolContainerContext = createContext<
@@ -39,6 +32,7 @@ export default function SymbolContainerProvider({
   // Contains mapping for currently visible observers
   const visibleSymbolMap = useRef(new Map<Element, string>());
 
+  // TODO: Remove?
   // const getVisibleSymbols = useCallback((): string[] => {
   //   return [...new Set([...metadataMap.current.values()])];
   // }, []);
