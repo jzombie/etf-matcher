@@ -1,7 +1,10 @@
 import { ReactStateEmitter } from "./utils/StateEmitter";
 import callWorkerFunction from "./utils/callWorkerFunction";
 
+const IS_PROD = import.meta.env.PROD;
+
 type StoreStateProps = {
+  isProductionBuild: boolean;
   isRustInit: boolean;
   dataBuildTime: string;
   prettyDataBuildTime: string;
@@ -14,6 +17,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
   constructor() {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
     super({
+      isProductionBuild: IS_PROD,
       isRustInit: false,
       dataBuildTime: "",
       prettyDataBuildTime: "",

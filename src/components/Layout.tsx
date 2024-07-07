@@ -27,9 +27,13 @@ export default function Layout() {
       matchPath({ path: `${item.key}/*`, end: false }, location.pathname)
   )?.key;
 
-  const { isRustInit, prettyDataBuildTime, isDirtyState } = useStoreStateReader(
-    ["isRustInit", "prettyDataBuildTime", "isDirtyState"]
-  );
+  const { isProductionBuild, isRustInit, prettyDataBuildTime, isDirtyState } =
+    useStoreStateReader([
+      "isProductionBuild",
+      "isRustInit",
+      "prettyDataBuildTime",
+      "isDirtyState",
+    ]);
 
   return (
     <AntLayout style={{ minHeight: "100vh" }}>
@@ -103,6 +107,8 @@ export default function Layout() {
               ? `Date build time: ${prettyDataBuildTime}`
               : ""}
           </span>
+          {" | "}
+          <span>{isProductionBuild ? "PROD" : "DEV"}</span>
           {" | "}
           <span>{isDirtyState ? "Not Saved" : "Saved"}</span>
 
