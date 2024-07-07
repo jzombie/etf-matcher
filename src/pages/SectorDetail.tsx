@@ -40,11 +40,10 @@ const SectorDetail = () => {
         // @ts-ignore
         etfs.map((etf, idx) => {
           return (
-            <>
+            <React.Fragment key={idx}>
               {idx > 0 && <hr style={{ opacity: 0.5, margin: 20 }} />}
               <div>
                 <CompanyProfile
-                  key={idx}
                   symbol={etf}
                   width="100%"
                   height={300}
@@ -54,7 +53,7 @@ const SectorDetail = () => {
                   Add {etf} to Portfolio
                 </Button>
               </div>
-            </>
+            </React.Fragment>
           );
         })
       }
