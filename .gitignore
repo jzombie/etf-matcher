@@ -1,5 +1,7 @@
 .env
 
+coverage/
+
 dist/
 
 # Frontend artifacts

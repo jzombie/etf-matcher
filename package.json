@@ -10,7 +10,8 @@
     "postbuild": "cp -r ./dist/index.html ./dist/404.html",
     "test": "vitest",
     "test:watch": "vitest --watch",
-    "test:ci": "vitest run"
+    "test:ci": "vitest run",
+    "coverage": "c8 vitest run"
   },
   "dependencies": {
     "@ant-design/icons": "^5.3.7",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.14.10",
+    "c8": "^10.1.2",
     "jsdom": "^24.1.0",
     "vite-plugin-svgr": "^4.2.0",
     "vite-tsconfig-paths": "^4.3.2"
