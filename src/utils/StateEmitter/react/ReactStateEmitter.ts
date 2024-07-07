@@ -10,6 +10,14 @@ export default class ReactStateEmitter<
    * from the StateEmitter. This hook can be used in React components to
    * subscribe to state changes and trigger re-renders when the specified
    * state keys are updated.
+   *
+   * @returns {Function} A custom React hook that takes optional state keys
+   * and event names, and returns the current state or partial state based on
+   * the specified keys.
+   *
+   * @example
+   * const useStateEmitterReader = store.createReactHookStateReader();
+   * const { count, items } = useStateEmitterReader(["count", "items"]);
    */
   createReactHookStateReader() {
     return <K extends keyof T>(
