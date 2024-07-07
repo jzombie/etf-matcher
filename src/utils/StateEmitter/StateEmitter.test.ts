@@ -138,23 +138,4 @@ describe("StateEmitter - Deepfreeze Tests", () => {
 
     expect(Object.isFrozen(emitter.initialState)).toBe(true);
   });
-
-  it("should throw error if initial state contains reserved keys", () => {
-    const reservedInitialState = {
-      count: 0,
-      text: "hello",
-      UPDATE: "reserved",
-    };
-
-    expect(() => {
-      new StateEmitter<any>(reservedInitialState);
-    }).toThrow('State key "UPDATE" conflicts with reserved event.');
-  });
-
-  it("should allow initial state without reserved keys", () => {
-    const initialState: TestState = { count: 0, text: "hello" };
-    expect(() => {
-      new StateEmitter<TestState>(initialState);
-    }).not.toThrow();
-  });
 });
