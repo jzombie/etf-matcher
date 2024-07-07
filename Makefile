@@ -9,15 +9,25 @@ GREEN := $(shell tput setaf 2)
 RED := $(shell tput setaf 1)
 RESET := $(shell tput sgr0)
 
-# Unicode circle symbol
-CIRCLE_SYMBOL := ●
+# Unicode circle symbols
+CIRCLE_SYMBOL_GREEN := \033[32m●\033[0m
+CIRCLE_SYMBOL_RED := \033[31m●\033[0m
 
 # Function to check if the container is running
 define check_container_status
   @if [ $$(docker ps -q -f name=$(CONTAINER_NAME)) ]; then \
-    echo "$(GREEN)Development container '$(CONTAINER_NAME)' is running. \033[32m$(CIRCLE_SYMBOL)$(RESET)"; \
+    echo "$(GREEN)Development container '$(CONTAINER_NAME)' is running. $(CIRCLE_SYMBOL_GREEN)$(RESET)"; \
   else \
-    echo "$(RED)Development container '$(CONTAINER_NAME)' is not running. \033[31m$(CIRCLE_SYMBOL)$(RESET)"; \
+    echo "$(RED)Development container '$(CONTAINER_NAME)' is not running. $(CIRCLE_SYMBOL_RED)$(RESET)"; \
+  fi
+endef
+
+# Function to display command status
+define command_status
+  @if [ $$(docker ps -q -f name=$(CONTAINER_NAME)) ]; then \
+    echo "$1 $(CIRCLE_SYMBOL_GREEN)"; \
+  else \
+    echo "$1 $(CIRCLE_SYMBOL_RED)"; \
   fi
 endef
 
@@ -25,7 +35,20 @@ endef
 .PHONY: help
 help:
 	@echo "Available commands:"
-	@awk -F ':| ' '/^[a-zA-Z0-9_-]+:/ {print "  make " $$1}' $(MAKEFILE_LIST) | grep -v '^\s*make\s*help'
+	@awk -F ':| ' '/^[a-zA-Z0-9_-]+:/ {print $$1}' $(MAKEFILE_LIST) | while read cmd; do \
+	  case $$cmd in \
+	    start-dev|enter-dev) \
+	      if [ $$(docker ps -q -f name=$(CONTAINER_NAME)) ]; then \
+	        echo "  make $$cmd $(CIRCLE_SYMBOL_GREEN)"; \
+	      else \
+	        echo "  make $$cmd $(CIRCLE_SYMBOL_RED)"; \
+	      fi \
+	      ;; \
+	    *) \
+	      echo "  make $$cmd"; \
+	      ;; \
+	  esac; \
+	done
 	@echo "\n"
 	$(call check_container_status)
 
