@@ -18,7 +18,6 @@ export default class StateEmitter<T extends object> extends EventEmitter {
 
   private _state!: T;
 
-  private _debouncedTimeouts: Map<keyof T, NodeJS.Timeout> = new Map();
   private _shouldDeepfreeze: boolean = true;
 
   get shouldDeepfreeze(): boolean {
@@ -118,31 +117,5 @@ export default class StateEmitter<T extends object> extends EventEmitter {
 
   set state(value: T) {
     throw new Error("State is read-only. Use setState to modify the state.");
-  }
-
-  debounceEmitState<K extends keyof T>(key: K, debounceMs?: number) {
-    if (this._debouncedTimeouts.get(key)) {
-      clearTimeout(this._debouncedTimeouts.get(key));
-    }
-
-    if (debounceMs) {
-      this._debouncedTimeouts.set(
-        key,
-        setTimeout(() => {
-          this._debouncedTimeouts.delete(key);
-
-          this.emit(key as string, this._state[key]);
-        }, debounceMs)
-      );
-    } else {
-      this.emit(key as string, this._state[key]);
-    }
-  }
-
-  clearDebouncedEmitState<K extends keyof T>(key: K) {
-    if (this._debouncedTimeouts.get(key)) {
-      clearTimeout(this._debouncedTimeouts.get(key));
-      this._debouncedTimeouts.delete(key);
-    }
   }
 }
