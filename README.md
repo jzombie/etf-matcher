@@ -1,7 +1,7 @@
 ## Dependencies
 
-  - Docker version 26.1.3 (may work with earlier versions of Docker).
   - A Unix terminal shell (such as Bash or Zsh)
+  - Docker version 26.1.3 (may work with earlier versions of Docker)
 
 _Note: If using the Docker environment, a .env file will be [automatically generated](docker_build_helpers/generate_env.sh)._
 
