@@ -1,18 +1,6 @@
-import store, { StoreStateProps } from "@src/store";
-import {
-  useStateEmitterReader,
-  StateEmitterDefaultEvents,
-} from "@utils/StateEmitter";
+import store from "@src/store";
 
-export default function useStoreStateReader<K extends keyof StoreStateProps>(
-  stateKeyOrKeys?: K | K[],
-  eventOrEventNames: string | string[] = StateEmitterDefaultEvents.UPDATE
-) {
-  return useStateEmitterReader<StoreStateProps, K>(
-    store,
-    stateKeyOrKeys,
-    eventOrEventNames
-  );
-}
+const useStoreStateReader = store.createReactHookStateReader();
 
+export default useStoreStateReader;
 export { store };
