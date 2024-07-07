@@ -1,8 +1,9 @@
 import React from "react";
-import { Button, ConfigProvider, Input, Space, theme } from "antd";
-import { Layout } from "antd";
+import { ConfigProvider, theme } from "antd";
+// import { Layout } from "antd";
 import { RouterProvider } from "react-router-dom";
 import router from "./router";
+import { SymbolContainerProvider } from "@components/SymbolContainer";
 
 export default function App() {
   return (
@@ -15,7 +16,9 @@ export default function App() {
         // algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
       }}
     >
-      <RouterProvider router={router} />
+      <SymbolContainerProvider>
+        <RouterProvider router={router} />
+      </SymbolContainerProvider>
     </ConfigProvider>
   );
 }

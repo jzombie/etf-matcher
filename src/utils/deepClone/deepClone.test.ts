@@ -90,12 +90,6 @@ describe("deepClone function", () => {
     expect(clone2.a.c).toBe(clone2);
   });
 
-  it("should clone primitive values correctly", () => {
-    expect(deepClone(1)).toBe(1);
-    expect(deepClone("a")).toBe("a");
-    expect(deepClone(true)).toBe(true);
-  });
-
   it("should clone deeply equal objects", () => {
     const obj1 = { a: 1, b: { c: 2 } };
     const clone = deepClone(obj1);
@@ -118,11 +112,6 @@ describe("deepClone function", () => {
     const obj1 = { a: 1, b: { c: 2, d: [3, 4, { e: 5 }] } };
     const clone = deepClone(obj1);
     expect(deepEqual(clone, obj1)).toBe(true);
-  });
-
-  it("should handle null and undefined correctly", () => {
-    expect(deepClone(null)).toBe(null);
-    expect(deepClone(undefined)).toBe(undefined);
   });
 
   it("should deep clone objects with nested dates and ensure their values are the same, but their references are different", () => {

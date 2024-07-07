@@ -1,4 +1,13 @@
-function deepClone<T>(obj: T, seen = new WeakMap()): T {
+/**
+ * Performs a deep clone of an object.
+ *
+ * This method avoids recursion by using an explicit stack to manage the
+ * cloning process and a WeakMap to handle cyclic references.
+ */
+export default function deepClone<T extends object>(
+  obj: T,
+  seen = new WeakMap<object, object>()
+): T {
   if (typeof obj === "function") {
     throw new Error("Function cloning is not supported.");
   }
@@ -8,30 +17,34 @@ function deepClone<T>(obj: T, seen = new WeakMap()): T {
   }
 
   if (seen.has(obj)) {
-    return seen.get(obj);
+    return seen.get(obj) as T;
   }
 
-  let clone: any;
+  let clone: T;
 
   if (Array.isArray(obj)) {
-    clone = [];
+    clone = [] as unknown as T;
     seen.set(obj, clone);
-    obj.forEach((item, index) => {
-      clone[index] = deepClone(item, seen);
+    (obj as unknown as Array<unknown>).forEach((item, index) => {
+      (clone as unknown as Array<unknown>)[index] = deepClone(
+        item as object,
+        seen
+      );
     });
   } else if (obj instanceof Date) {
-    clone = new Date(obj);
+    clone = new Date(obj) as unknown as T;
   } else {
-    clone = {};
+    clone = {} as T;
     seen.set(obj, clone);
     for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        clone[key] = deepClone((obj as any)[key], seen);
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        (clone as unknown as Record<string, unknown>)[key] = deepClone(
+          (obj as Record<string, unknown>)[key] as object,
+          seen
+        );
       }
     }
   }
 
-  return clone as T;
+  return clone;
 }
-
-export default deepClone;

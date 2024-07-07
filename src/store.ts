@@ -30,9 +30,9 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     callWorkerFunction("get_data_build_info").then((dataBuildInfo) => {
       this.setState({
         isRustInit: true,
-        dataBuildTime: (dataBuildInfo as any).time,
+        dataBuildTime: (dataBuildInfo as { [key: string]: string }).time,
         prettyDataBuildTime: new Date(
-          (dataBuildInfo as any).time
+          (dataBuildInfo as { [key: string]: string }).time
         ).toLocaleString(),
       });
     });

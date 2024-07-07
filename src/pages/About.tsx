@@ -1,5 +1,5 @@
 /// <reference types="vite-plugin-svgr/client" />
-import "react";
+import React from "react";
 import Logo from "@assets/logo.svg?react";
 
 export default function About() {
