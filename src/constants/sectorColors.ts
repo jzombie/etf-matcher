@@ -1,19 +1,19 @@
 const sectorColors = [
-  { name: "Energy", color: "#FF5733", inverseColor: "#FFFFFF" },
-  { name: "Materials", color: "#FFC300", inverseColor: "#000000" },
-  { name: "Industrials", color: "#DAF7A6", inverseColor: "#000000" },
-  { name: "Consumer Discretionary", color: "#C70039", inverseColor: "#FFFFFF" },
-  { name: "Consumer Staples", color: "#900C3F", inverseColor: "#FFFFFF" },
-  { name: "Healthcare", color: "#581845", inverseColor: "#FFFFFF" },
-  { name: "Financials", color: "#1C1C1C", inverseColor: "#FFFFFF" },
-  { name: "Information Technology", color: "#007BFF", inverseColor: "#FFFFFF" },
+  { name: "Energy", color: "#2AB8D4", inverseColor: "#FFFFFF" },
+  { name: "Materials", color: "#D66939", inverseColor: "#000000" },
+  { name: "Industrials", color: "#D51C01", inverseColor: "#000000" },
+  { name: "Consumer Discretionary", color: "#FBC02D", inverseColor: "#FFFFFF" },
+  { name: "Consumer Staples", color: "#FBC02D", inverseColor: "#FFFFFF" },
+  { name: "Healthcare", color: "#D51C01", inverseColor: "#FFFFFF" },
+  { name: "Financials", color: "#2D7D32", inverseColor: "#FFFFFF" },
+  { name: "Information Technology", color: "#2AB8D4", inverseColor: "#FFFFFF" },
   {
     name: "Telecommunication Services",
-    color: "#00A3E0",
+    color: "#44A047",
     inverseColor: "#FFFFFF",
   },
-  { name: "Utilities", color: "#F39C12", inverseColor: "#000000" },
-  { name: "Real Estate", color: "#27AE60", inverseColor: "#FFFFFF" },
+  { name: "Utilities", color: "#DE5340", inverseColor: "#000000" },
+  { name: "Real Estate", color: "#1B5E20", inverseColor: "#FFFFFF" },
 ];
 
 export default sectorColors;
