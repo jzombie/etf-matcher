@@ -4,6 +4,7 @@ import { Button } from "antd";
 import { CompanyProfile } from "react-ts-tradingview-widgets";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 import { store } from "@hooks/useStoreStateReader";
+import SymbolContainer from "@components/SymbolContainer";
 
 const ETFS_BY_SECTOR = {
   consumer_discretionary: ["XLY", "VCR", "IYC"],
@@ -42,7 +43,7 @@ const SectorDetail = () => {
           return (
             <React.Fragment key={idx}>
               {idx > 0 && <hr style={{ opacity: 0.5, margin: 20 }} />}
-              <div>
+              <SymbolContainer tickerSymbol={etf}>
                 <CompanyProfile
                   symbol={etf}
                   width="100%"
@@ -52,7 +53,7 @@ const SectorDetail = () => {
                 <Button onClick={() => store.addSymbolToPortfolio(etf)}>
                   Add {etf} to Portfolio
                 </Button>
-              </div>
+              </SymbolContainer>
             </React.Fragment>
           );
         })
