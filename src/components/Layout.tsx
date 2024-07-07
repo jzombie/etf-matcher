@@ -22,16 +22,6 @@ export default function Layout() {
       matchPath({ path: `${item.key}/*`, end: false }, location.pathname)
   )?.key;
 
-  console.log({ selectedKey });
-
-  // const match = matchPath(location.pathname, {
-  //   path: "/users/:id",
-  //   exact: true,
-  //   strict: false,
-  // });
-
-  console.log({ selectedKey });
-
   const { isRustInit, prettyDataBuildTime, isDirtyState } = useStoreStateReader(
     ["isRustInit", "prettyDataBuildTime", "isDirtyState"]
   );
