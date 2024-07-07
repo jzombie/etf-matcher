@@ -1,4 +1,5 @@
 import React from "react";
+import { TickerTape } from "react-ts-tradingview-widgets";
 import { Layout as AntLayout, Menu, Button } from "antd";
 import { Link, Outlet, useLocation, matchPath } from "react-router-dom";
 // import { SaveOutlined } from "@ant-design/icons";
@@ -92,12 +93,37 @@ export default function Layout() {
         </div>
       </Content>
       <Footer style={{ textAlign: "left", padding: 0, margin: 0 }}>
-        <span>
-          {prettyDataBuildTime ? `Date build time: ${prettyDataBuildTime}` : ""}
-        </span>
-        {" | "}
-        <span>{isDirtyState ? "Not Saved" : "Saved"}</span>
+        <div style={{ color: "#999" }}>
+          <span>
+            {prettyDataBuildTime
+              ? `Date build time: ${prettyDataBuildTime}`
+              : ""}
+          </span>
+          {" | "}
+          <span>{isDirtyState ? "Not Saved" : "Saved"}</span>
+
+          <span style={{ float: "right" }}>
+            Charts provided by{" "}
+            <a href="https://www.tradingview.com/" target="_blank">
+              TradingView
+            </a>
+          </span>
+        </div>
+        {
+          // Copyright attribute: https://tradingview-widgets.jorrinkievit.xyz/docs/
+        }
+        <TickerTape
+          colorTheme="dark"
+          // TODO: This has an issue where non-memoized copyright styles continuously blink on and off
+          copyrightStyles={footerCopyrightStyles}
+        ></TickerTape>
       </Footer>
     </AntLayout>
   );
 }
+
+const footerCopyrightStyles = {
+  parent: {
+    display: "none",
+  },
+};
