@@ -12,7 +12,6 @@ type StoreStateProps = {
   isDirtyState: boolean;
 };
 
-// TODO: Disable deep freezing in production
 class Store extends ReactStateEmitter<StoreStateProps> {
   constructor() {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
@@ -24,6 +23,9 @@ class Store extends ReactStateEmitter<StoreStateProps> {
       count: 0,
       isDirtyState: false,
     });
+
+    // Only deepfreeze in development
+    this.shouldDeepfreeze = !IS_PROD;
 
     callWorkerFunction("get_data_build_info").then((dataBuildInfo) => {
       this.setState({

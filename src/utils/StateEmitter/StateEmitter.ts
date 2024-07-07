@@ -26,6 +26,10 @@ export default class StateEmitter<
 
   set shouldDeepfreeze(shouldDeepfreeze: boolean) {
     this._shouldDeepfreeze = shouldDeepfreeze;
+
+    console.debug(
+      `Deepfreeze support ${this._shouldDeepfreeze ? "enabled" : "disabled"}.`
+    );
   }
 
   public readonly initialState: T;
