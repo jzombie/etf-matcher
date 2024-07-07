@@ -46,6 +46,9 @@ export default class StateEmitter<
     this._validateState(initialState);
 
     this.setState(initialState);
+
+    // TODO: This is not deeply frozen; deeply cloning and then freezing
+    // might be the more preferred solution
     this.initialState = Object.freeze({ ...initialState });
   }
 

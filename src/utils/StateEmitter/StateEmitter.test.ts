@@ -106,3 +106,55 @@ describe("StateEmitter", () => {
     }).not.toThrow();
   });
 });
+
+describe("StateEmitter - Deepfreeze Tests", () => {
+  it("should deepfreeze state when shouldDeepfreeze is true", () => {
+    const initialState: TestState = { count: 0, text: "hello" };
+    const emitter = new StateEmitter<TestState>(initialState);
+
+    // Enable deepfreeze
+    emitter.shouldDeepfreeze = true;
+
+    emitter.setState({ count: 1 });
+    expect(Object.isFrozen(emitter.state)).toBe(true);
+    expect(emitter.state).toEqual(deepFreeze({ count: 1, text: "hello" }));
+  });
+
+  it("should not deepfreeze state when shouldDeepfreeze is false", () => {
+    const initialState: TestState = { count: 0, text: "hello" };
+    const emitter = new StateEmitter<TestState>(initialState);
+
+    // Disable deepfreeze
+    emitter.shouldDeepfreeze = false;
+
+    emitter.setState({ count: 1 });
+    expect(Object.isFrozen(emitter.state)).toBe(false);
+    expect(emitter.state).toEqual({ count: 1, text: "hello" });
+  });
+
+  it("should deepfreeze initialState by default", () => {
+    const initialState: TestState = { count: 0, text: "hello" };
+    const emitter = new StateEmitter<TestState>(initialState);
+
+    expect(Object.isFrozen(emitter.initialState)).toBe(true);
+  });
+
+  it("should throw error if initial state contains reserved keys", () => {
+    const reservedInitialState = {
+      count: 0,
+      text: "hello",
+      UPDATE: "reserved",
+    };
+
+    expect(() => {
+      new StateEmitter<any>(reservedInitialState);
+    }).toThrow('State key "UPDATE" conflicts with reserved event.');
+  });
+
+  it("should allow initial state without reserved keys", () => {
+    const initialState: TestState = { count: 0, text: "hello" };
+    expect(() => {
+      new StateEmitter<TestState>(initialState);
+    }).not.toThrow();
+  });
+});
