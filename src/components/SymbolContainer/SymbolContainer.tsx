@@ -25,10 +25,12 @@ export default function SymbolContainer({
 
   useEffect(() => {
     if (elementRef.current) {
-      symbolProviderContext?.observe(elementRef.current, tickerSymbol);
+      const el = elementRef.current;
+
+      symbolProviderContext?.observe(el, tickerSymbol);
 
       return () => {
-        symbolProviderContext?.unobserve(elementRef.current as HTMLElement);
+        symbolProviderContext?.unobserve(el as HTMLElement);
       };
     }
   }, [symbolProviderContext, tickerSymbol]);

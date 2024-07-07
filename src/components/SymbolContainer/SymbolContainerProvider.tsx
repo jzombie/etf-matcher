@@ -21,6 +21,12 @@ export type SymbolContainerContextProps = {
   perSymbolThreshold?: number;
 };
 
+// Patch for ESLint not seeing browser's IntersectionObserverCallback
+type IntersectionObserverCallback = (
+  entries: IntersectionObserverEntry[],
+  observer: IntersectionObserver
+) => void;
+
 export default function SymbolContainerProvider({
   children,
   perSymbolThreshold = 0.5,

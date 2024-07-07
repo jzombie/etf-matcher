@@ -1,4 +1,4 @@
-import { useSyncExternalStore, useMemo, useRef } from "react";
+import { useSyncExternalStore, useCallback, useMemo, useRef } from "react";
 import EmitterState, { StateEmitterDefaultEvents } from "../StateEmitter";
 import deepEqual from "@utils/deepEqual";
 
@@ -50,7 +50,7 @@ const useStateEmitterReader = <
     };
   };
 
-  const getSnapshot = (): T | Partial<T> => {
+  const getSnapshot = useCallback((): T | Partial<T> => {
     const newSnapshot = stateKeys
       ? emitter.getState(stateKeys)
       : emitter.getState();
@@ -62,12 +62,9 @@ const useStateEmitterReader = <
 
     prevSnapshotRef.current = newSnapshot;
     return newSnapshot;
-  };
+  }, [emitter, stateKeys]);
 
-  const getCachedSnapshot = useMemo(
-    () => getSnapshot,
-    [emitter, eventNames, stateKeys]
-  );
+  const getCachedSnapshot = useMemo(() => getSnapshot, [getSnapshot]);
 
   const state = useSyncExternalStore(
     subscribe,

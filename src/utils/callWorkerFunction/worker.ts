@@ -9,7 +9,7 @@ interface CallQueueItem {
 
 let initialized = false;
 let initPromise: Promise<void> | null = null;
-let callQueue: CallQueueItem[] = [];
+const callQueue: CallQueueItem[] = [];
 
 async function initializeWasm() {
   if (!initialized) {

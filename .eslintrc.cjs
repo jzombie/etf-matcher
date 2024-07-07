@@ -13,14 +13,22 @@ module.exports = {
     },
   },
   env: {
-    browser: true, // This allows ESLint to recognize browser-specific globals like 'document'
+    browser: true,
     node: true,
     es6: true,
   },
   rules: {
-    "react-hooks/rules-of-hooks": "error", // Checks rules of Hooks
-    "react-hooks/exhaustive-deps": "warn", // Checks effect dependencies
-    "no-unused-vars": "warn", // Changes unused vars to warnings instead of errors
-    "no-undef": "warn", // Changes undefined errors to warnings
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "no-unused-vars": "off", // Turn off the base rule
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        vars: "all",
+        args: "after-used",
+        ignoreRestSiblings: true,
+      },
+    ],
+    "no-undef": "warn",
   },
 };
