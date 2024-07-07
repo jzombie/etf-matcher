@@ -11,6 +11,7 @@ type StoreStateProps = {
 
 class Store extends StateEmitter<StoreStateProps> {
   constructor() {
+    // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
     super({
       isRustInit: false,
       dataBuildTime: "",
@@ -37,6 +38,9 @@ class Store extends StateEmitter<StoreStateProps> {
       }));
     }, 1000);
   }
+
+  // TODO: For the following `PROTO` functions, it might be best to not retain a duplicate copy here,
+  // except where absolutely needed (and utilize Rust for more `composite` metric generation).
 
   PROTO_getSymbols() {
     callWorkerFunction("get_symbols").then((symbols) => {
