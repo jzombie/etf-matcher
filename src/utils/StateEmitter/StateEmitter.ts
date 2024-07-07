@@ -17,7 +17,16 @@ export default class StateEmitter<
   );
 
   private _state!: T;
-  private _frozenState!: T;
+
+  private _shouldDeepfreeze: boolean = true;
+
+  get shouldDeepfreeze(): boolean {
+    return this._shouldDeepfreeze;
+  }
+
+  set shouldDeepfreeze(shouldDeepfreeze: boolean) {
+    this._shouldDeepfreeze = shouldDeepfreeze;
+  }
 
   public readonly initialState: T;
 
@@ -77,26 +86,28 @@ export default class StateEmitter<
     this._validateState(newState);
 
     this._state = { ...this._state, ...newState };
-    this._frozenState = deepFreeze({ ...this._state });
     this.emit(StateEmitterDefaultEvents.UPDATE);
   }
 
   // Use a getter to provide read-only access to the state
   getState(keys?: (keyof T)[]): Partial<T> | T {
-    if (!keys) {
-      return this._frozenState;
-    }
+    const slice: T | Partial<T> = (() => {
+      if (!keys) {
+        return this._state;
+      }
 
-    const partialState = keys.reduce((acc, key) => {
-      acc[key] = this._frozenState[key];
-      return acc;
-    }, {} as Partial<T>);
-    return partialState;
+      return keys.reduce((acc, key) => {
+        acc[key] = this._state[key];
+        return acc;
+      }, {} as Partial<T>);
+    })();
+
+    return this._shouldDeepfreeze ? deepFreeze(slice) : slice;
   }
 
   // Provide a read-only accessor for the entire state
   get state(): T {
-    return this._frozenState;
+    return this.getState() as T;
   }
 
   set state(value: T) {

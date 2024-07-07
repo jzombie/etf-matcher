@@ -9,6 +9,7 @@ type StoreStateProps = {
   isDirtyState: boolean;
 };
 
+// TODO: Disable deep freezing in production
 class Store extends ReactStateEmitter<StoreStateProps> {
   constructor() {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
