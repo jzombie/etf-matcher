@@ -1,4 +1,5 @@
 import EventEmitter from "events";
+import deepClone from "@utils/deepClone";
 import deepFreeze from "@utils/deepFreeze";
 
 export enum StateEmitterDefaultEvents {
@@ -47,9 +48,7 @@ export default class StateEmitter<
 
     this.setState(initialState);
 
-    // TODO: This is not deeply frozen; deeply cloning and then freezing
-    // might be the more preferred solution
-    this.initialState = Object.freeze({ ...initialState });
+    this.initialState = deepFreeze(deepClone(initialState));
   }
 
   // Method to validate the state for conflicts with reserved events

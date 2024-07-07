@@ -145,14 +145,13 @@ describe("StateEmitter - Deepfreeze Tests", () => {
     expect(emitter.state).toEqual({ nested: { count: 2, text: "hello" } });
   });
 
-  // TODO: Enable later
-  // it("should deepfreeze initialState by default", () => {
-  //   const initialState: NestedState = { nested: { count: 0, text: "hello" } };
-  //   const emitter = new StateEmitter<NestedState>(initialState);
-  //   // Attempt to modify the deeply nested initial state
-  //   expect(() => {
-  //     (emitter.initialState.nested as any).count = 2;
-  //   }).toThrow();
-  //   expect(Object.isFrozen(emitter.initialState)).toBe(true);
-  // });
+  it("should deepfreeze initialState by default", () => {
+    const initialState: NestedState = { nested: { count: 0, text: "hello" } };
+    const emitter = new StateEmitter<NestedState>(initialState);
+    // Attempt to modify the deeply nested initial state
+    expect(() => {
+      (emitter.initialState.nested as any).count = 2;
+    }).toThrow();
+    expect(Object.isFrozen(emitter.initialState)).toBe(true);
+  });
 });
