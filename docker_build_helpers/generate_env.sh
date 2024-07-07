@@ -6,6 +6,9 @@ set -e
 # Ensure we're in a Docker container
 /app/docker_build_helpers/./validate_docker_env.sh
 
+# Note: The following `PLAINTEXT_PASSWORD` provides a seed for a set of encrypted
+# credentials, as specified in the adjacent `encrypt_password.sh` script.
+
 # Check if the .env file exists
 if [ ! -f /app/.env ]; then
   # Generate a random password

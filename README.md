@@ -3,9 +3,9 @@
   - Docker version 26.1.3 (may work with earlier versions of Docker).
   - A Unix terminal shell (such as Bash or Zsh)
 
-You can skip using Docker altogether if that's your thing, but it will be harder to build.
+_Note: If using the Docker environment, a .env file will be [automatically generated](docker_build_helpers/generate_env.sh)._
 
-_Note: If using the Docker environment, an .env file will be [automatically generated](docker_build_helpers/generate_env.sh)._
+You can skip using Docker altogether if that's your thing, but it will be harder to build. The [docker_build_helpers directory](docker_build_helpers) has various utilities related to encrypting the data in the build, for various licensing conditions.
 
 ## Development
 
