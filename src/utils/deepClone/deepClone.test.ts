@@ -4,6 +4,31 @@ import deepClone from "./deepClone";
 import deepEqual from "../deepEqual";
 
 describe("deepClone function", () => {
+  it("should deep clone nested objects and ensure their values are the same, but their references are different", () => {
+    const obj1 = { a: 1, b: { c: 2, d: [3, 4, { e: 5 }] } };
+    const clone = deepClone(obj1);
+
+    expect(deepEqual(clone, obj1)).toBe(true);
+
+    // Check if references are different
+    expect(clone).not.toBe(obj1);
+    expect(clone.b).not.toBe(obj1.b);
+    expect(clone.b.d).not.toBe(obj1.b.d);
+    expect(clone.b.d[2]).not.toBe(obj1.b.d[2]);
+  });
+
+  it("should deep clone nested arrays and ensure their values are the same, but their references are different", () => {
+    const arr1 = [1, [2, 3], { a: 4 }];
+    const clone = deepClone(arr1);
+
+    expect(deepEqual(clone, arr1)).toBe(true);
+
+    // Check if references are different
+    expect(clone).not.toBe(arr1);
+    expect(clone[1]).not.toBe(arr1[1]);
+    expect(clone[2]).not.toBe(arr1[2]);
+  });
+
   it("should handle self-identity", () => {
     const obj1 = { foo: "bar" };
     const clone1 = deepClone(obj1);
@@ -76,12 +101,6 @@ describe("deepClone function", () => {
     expect(deepEqual(clone, date1)).toBe(true);
   });
 
-  it("should clone functions correctly", () => {
-    const func1 = () => {};
-    const clone = deepClone(func1);
-    expect(clone).toBe(func1); // Functions should not be deeply cloned, should be the same reference
-  });
-
   it("should clone objects with nested arrays and objects correctly", () => {
     const obj1 = { a: 1, b: { c: 2, d: [3, 4, { e: 5 }] } };
     const clone = deepClone(obj1);
@@ -91,31 +110,6 @@ describe("deepClone function", () => {
   it("should handle null and undefined correctly", () => {
     expect(deepClone(null)).toBe(null);
     expect(deepClone(undefined)).toBe(undefined);
-  });
-
-  it("should deep clone nested objects and ensure their values are the same, but their references are different", () => {
-    const obj1 = { a: 1, b: { c: 2, d: [3, 4, { e: 5 }] } };
-    const clone = deepClone(obj1);
-
-    expect(deepEqual(clone, obj1)).toBe(true);
-
-    // Check if references are different
-    expect(clone).not.toBe(obj1);
-    expect(clone.b).not.toBe(obj1.b);
-    expect(clone.b.d).not.toBe(obj1.b.d);
-    expect(clone.b.d[2]).not.toBe(obj1.b.d[2]);
-  });
-
-  it("should deep clone nested arrays and ensure their values are the same, but their references are different", () => {
-    const arr1 = [1, [2, 3], { a: 4 }];
-    const clone = deepClone(arr1);
-
-    expect(deepEqual(clone, arr1)).toBe(true);
-
-    // Check if references are different
-    expect(clone).not.toBe(arr1);
-    expect(clone[1]).not.toBe(arr1[1]);
-    expect(clone[2]).not.toBe(arr1[2]);
   });
 
   it("should deep clone objects with nested dates and ensure their values are the same, but their references are different", () => {
@@ -150,5 +144,12 @@ describe("deepClone function", () => {
     // Check if cloned objects are deeply equal to the originals
     expect(deepEqual(clone1, obj1)).toBe(true);
     expect(deepEqual(clone2, obj2)).toBe(true);
+  });
+
+  it("should throw an error when attempting to clone functions", () => {
+    const func = () => "Hello, World!";
+    const obj = { func };
+
+    expect(() => deepClone(obj)).toThrow("Function cloning is not supported.");
   });
 });

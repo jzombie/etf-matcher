@@ -1,4 +1,8 @@
 function deepClone<T>(obj: T, seen = new WeakMap()): T {
+  if (typeof obj === "function") {
+    throw new Error("Function cloning is not supported.");
+  }
+
   if (obj === null || typeof obj !== "object") {
     return obj;
   }
@@ -17,8 +21,6 @@ function deepClone<T>(obj: T, seen = new WeakMap()): T {
     });
   } else if (obj instanceof Date) {
     clone = new Date(obj);
-  } else if (obj instanceof Function) {
-    clone = obj;
   } else {
     clone = {};
     seen.set(obj, clone);
