@@ -5,7 +5,18 @@ import deepEqual from "../deepEqual";
 
 describe("deepClone function", () => {
   it("should deep clone nested objects and ensure their values are the same, but their references are different", () => {
-    const obj1 = { a: 1, b: { c: 2, d: [3, 4, { e: 5 }] } };
+    const date1 = new Date();
+    const subObj: any = {
+      hello: "world",
+    };
+    subObj.self = subObj;
+
+    const obj1 = {
+      a: 1,
+      b: { c: 2, d: [3, 4, { e: 5 }] },
+      dateRef: date1,
+      subObj,
+    };
     const clone = deepClone(obj1);
 
     expect(deepEqual(clone, obj1)).toBe(true);
@@ -15,6 +26,8 @@ describe("deepClone function", () => {
     expect(clone.b).not.toBe(obj1.b);
     expect(clone.b.d).not.toBe(obj1.b.d);
     expect(clone.b.d[2]).not.toBe(obj1.b.d[2]);
+    expect(clone.dateRef).not.toBe(date1);
+    expect(clone.subObj).not.toBe(subObj);
   });
 
   it("should deep clone nested arrays and ensure their values are the same, but their references are different", () => {
