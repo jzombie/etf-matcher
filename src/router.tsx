@@ -1,5 +1,9 @@
-import Home from "./pages/Home";
-import About from "./pages/About";
+import Home from "@pages/Home";
+import About from "@pages/About";
+import Sectors from "@pages/Sectors";
+import SectorDetail from "@pages/SectorDetail";
+import NotFound from "@pages/NotFound";
+
 import { createBrowserRouter } from "react-router-dom";
 import Layout from "@components/Layout";
 
@@ -14,8 +18,22 @@ export default createBrowserRouter([
         element: <Home />,
       },
       {
+        path: "sectors",
+        element: <Sectors />,
+        children: [
+          {
+            path: ":sectorName",
+            element: <SectorDetail />,
+          },
+        ],
+      },
+      {
         path: "about",
         element: <About />,
+      },
+      {
+        path: "*",
+        element: <NotFound />, // This is the catch-all route
       },
     ],
   },

@@ -1,6 +1,6 @@
 import React from "react";
 import { Layout as AntLayout, Menu, Button } from "antd";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, matchPath } from "react-router-dom";
 // import { SaveOutlined } from "@ant-design/icons";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 
@@ -8,7 +8,29 @@ const { Header, Content, Footer } = AntLayout;
 
 export default function Layout() {
   const location = useLocation();
-  const selectedKey = location.pathname === "/" ? "/" : location.pathname;
+
+  // Define the base paths for the main menu items
+  const menuItems = [
+    { key: "/", label: <Link to="/">Home</Link> },
+    { key: "/sectors", label: <Link to="/sectors">Sectors</Link> },
+    { key: "/about", label: <Link to="/about">About</Link> },
+  ];
+
+  const selectedKey = menuItems.find(
+    (item) =>
+      matchPath({ path: item.key, end: true }, location.pathname) ||
+      matchPath({ path: `${item.key}/*`, end: false }, location.pathname)
+  )?.key;
+
+  console.log({ selectedKey });
+
+  // const match = matchPath(location.pathname, {
+  //   path: "/users/:id",
+  //   exact: true,
+  //   strict: false,
+  // });
+
+  console.log({ selectedKey });
 
   const { isRustInit, prettyDataBuildTime, isDirtyState } = useStoreStateReader(
     ["isRustInit", "prettyDataBuildTime", "isDirtyState"]
@@ -26,17 +48,8 @@ export default function Layout() {
         <Menu
           theme="dark"
           mode="horizontal"
-          selectedKeys={[selectedKey]}
-          items={[
-            {
-              key: "/",
-              label: <Link to="/">Home</Link>,
-            },
-            {
-              key: "/about",
-              label: <Link to="/about">About</Link>,
-            },
-          ]}
+          selectedKeys={selectedKey ? [selectedKey] : []}
+          items={menuItems}
           style={{ flex: 1 }}
         />
         {
