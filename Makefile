@@ -9,12 +9,15 @@ GREEN := $(shell tput setaf 2)
 RED := $(shell tput setaf 1)
 RESET := $(shell tput sgr0)
 
+# Unicode circle symbol
+CIRCLE_SYMBOL := ●
+
 # Function to check if the container is running
 define check_container_status
   @if [ $$(docker ps -q -f name=$(CONTAINER_NAME)) ]; then \
-    echo "$(GREEN)Development container '$(CONTAINER_NAME)' is running.$(RESET)"; \
+    echo "$(GREEN)Development container '$(CONTAINER_NAME)' is running. \033[32m$(CIRCLE_SYMBOL)$(RESET)"; \
   else \
-    echo "$(RED)Development container '$(CONTAINER_NAME)' is not running.$(RESET)"; \
+    echo "$(RED)Development container '$(CONTAINER_NAME)' is not running. \033[31m$(CIRCLE_SYMBOL)$(RESET)"; \
   fi
 endef
 
