@@ -37,7 +37,7 @@ help:
 	@echo "Available commands:"
 	@awk -F ':| ' '/^[a-zA-Z0-9_-]+:/ {print $$1}' $(MAKEFILE_LIST) | while read cmd; do \
 	  case $$cmd in \
-	    start-dev|enter-dev) \
+	    start-dev|enter-dev|stop-dev) \
 	      if [ $$(docker ps -q -f name=$(CONTAINER_NAME)) ]; then \
 	        echo "  make $$cmd $(CIRCLE_SYMBOL_GREEN)"; \
 	      else \
@@ -66,6 +66,11 @@ start-dev:
 enter-dev:
 	@echo "Entering development container $(CONTAINER_NAME)..."
 	@docker exec -it $(CONTAINER_NAME) bash
+
+.PHONY: stop-dev
+stop-dev:
+	@echo "Stopping development container"
+	@docker compose down
 
 .PHONY: test
 test:
