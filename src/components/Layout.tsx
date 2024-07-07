@@ -17,7 +17,7 @@ export default function Layout() {
   const menuItems = [
     { key: "/", label: <Link to="/">Home</Link> },
     { key: "/sectors", label: <Link to="/sectors">Sectors</Link> },
-    { key: "/portfolio", label: <Link to="/portfolio">Portfolio</Link> },
+    { key: "/portfolios", label: <Link to="/portfolios">Portfolios</Link> },
     { key: "/about", label: <Link to="/about">About</Link> },
   ];
 

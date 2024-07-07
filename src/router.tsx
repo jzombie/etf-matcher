@@ -1,6 +1,6 @@
 import Home from "@pages/Home";
 import Sectors from "@pages/Sectors";
-import Portfolio from "@pages/Portfolio";
+import Portfolios from "@pages/Portfolios";
 import SectorDetail from "@pages/SectorDetail";
 import About from "@pages/About";
 import NotFound from "@pages/NotFound";
@@ -29,8 +29,8 @@ export default createBrowserRouter([
         ],
       },
       {
-        path: "portfolio",
-        element: <Portfolio />,
+        path: "portfolios",
+        element: <Portfolios />,
       },
       {
         path: "about",
