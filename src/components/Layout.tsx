@@ -59,29 +59,34 @@ export default function Layout() {
           overflow: "auto",
         }}
       >
-        {!isRustInit ? (
-          <div
-            style={{
-              height: "100%",
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              overflow: "auto",
-            }}
-          >
+        {
+          // This wrapping div prevents child elements from stretching by default
+        }
+        <div style={{ width: "100%", height: "100%" }}>
+          {!isRustInit ? (
             <div
               style={{
-                textAlign: "center",
+                height: "100%",
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                overflow: "auto",
               }}
             >
-              Initializing...
+              <div
+                style={{
+                  textAlign: "center",
+                }}
+              >
+                Initializing...
+              </div>
             </div>
-          </div>
-        ) : (
-          <Outlet />
-        )}
+          ) : (
+            <Outlet />
+          )}
+        </div>
       </Content>
       <Footer style={{ textAlign: "left", padding: 0, margin: 0 }}>
         <span>

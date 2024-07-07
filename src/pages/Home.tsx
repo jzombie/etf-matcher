@@ -1,7 +1,9 @@
 import "react";
 import { Button, Flex } from "antd";
 import { Link } from "react-router-dom";
-import PortfolioForm from "../components/PortfolioForm";
+// import PortfolioForm from "@/components/PortfolioForm";
+import SectorButtonGrid from "@components/SectorButtonGrid";
+
 // https://tradingview-widgets.jorrinkievit.xyz/docs/components/Screener
 import {
   StockMarket,
@@ -39,7 +41,9 @@ export default function Home() {
       <TickerTape colorTheme="dark"></TickerTape>
       <Screener colorTheme="dark" width="100%" height={300}></Screener>
       <SymbolInfo colorTheme="dark" autosize></SymbolInfo> */}
-      <PortfolioForm />
+      {/* <PortfolioForm /> */}
+
+      <SectorButtonGrid />
     </div>
   );
 }
