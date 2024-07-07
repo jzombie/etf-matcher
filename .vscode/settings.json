@@ -1,0 +1,9 @@
+{
+  // Ignore symlinked public/src
+  "files.exclude": {
+    "**/public/src": true
+  },
+  "search.exclude": {
+    "**/public/src": true
+  }
+}
