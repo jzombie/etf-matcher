@@ -111,11 +111,79 @@ export default function Layout() {
             </a>
           </span>
         </div>
+        {
+          // TODO: Show with specific Portfolio symbols once
+        }
         <TickerTape
           colorTheme="dark"
           copyrightStyles={tradingViewCopyrightStyles}
+          symbols={symbols}
         ></TickerTape>
       </Footer>
     </AntLayout>
   );
 }
+
+// https://tradingview-widgets.jorrinkievit.xyz/docs/components/TickerTape#ticker-symbol
+const symbols = [
+  {
+    proName: "XLY",
+    title: "Consumer Discretionary (XLY)",
+  },
+  {
+    proName: "XLP",
+    title: "Consumer Staples (XLP)",
+  },
+  {
+    proName: "XLE",
+    title: "Energy (XLE)",
+  },
+  {
+    proName: "XLF",
+    title: "Financials (XLF)",
+  },
+  {
+    proName: "XLV",
+    title: "Healthcare (XLV)",
+  },
+  {
+    proName: "XLI",
+    title: "Industrials (XLI)",
+  },
+  {
+    proName: "XLB",
+    title: "Materials (XLB)",
+  },
+  {
+    proName: "XLRE",
+    title: "Real Estate (XLRE)",
+  },
+  {
+    proName: "XLK",
+    title: "Technology (XLK)",
+  },
+  {
+    proName: "XLC",
+    title: "Telecommunications (XLC)",
+  },
+  {
+    proName: "XLU",
+    title: "Utilities (XLU)",
+  },
+  // {
+  //   proName: "FOREXCOM:NSXUSD",
+  //   title: "Nasdaq 100",
+  // },
+  // {
+  //   proName: "FX_IDC:EURUSD",
+  //   title: "EUR/USD",
+  // },
+  // {
+  //   proName: "BITSTAMP:BTCUSD",
+  //   title: "BTC/USD",
+  // },
+  // {
+  //   proName: "BITSTAMP:ETHUSD",
+  //   title: "ETH/USD",
+  // },
+];
