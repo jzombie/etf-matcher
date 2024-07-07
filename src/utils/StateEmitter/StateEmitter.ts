@@ -10,6 +10,12 @@ export enum StateEmitterDefaultEvents {
 export default class StateEmitter<
   T extends Record<string, any>
 > extends EventEmitter {
+  // Individual state keys can be subscribed to, so it's best to ensure that they don't
+  // conflict with default events
+  protected _reservedStateKeys: string[] = Object.keys(
+    StateEmitterDefaultEvents
+  );
+
   private _state!: T;
   private _frozenState!: T;
 
@@ -22,8 +28,21 @@ export default class StateEmitter<
     if (!initialState) {
       throw new Error("Initial state must be provided.");
     }
+
+    // Validate the initial state to ensure no conflicts with reserved events
+    this._validateState(initialState);
+
     this.setState(initialState);
     this.initialState = Object.freeze({ ...initialState });
+  }
+
+  // Method to validate the state for conflicts with reserved events
+  private _validateState(state: T | Partial<T>) {
+    for (const key in state) {
+      if (this._reservedStateKeys.includes(key)) {
+        throw new Error(`State key "${key}" conflicts with reserved event.`);
+      }
+    }
   }
 
   subscribe<K extends keyof T | StateEmitterDefaultEvents>(
@@ -54,6 +73,8 @@ export default class StateEmitter<
     } else {
       newState = newStateOrUpdater as Partial<T>;
     }
+
+    this._validateState(newState);
 
     this._state = { ...this._state, ...newState };
     this._frozenState = deepFreeze({ ...this._state });

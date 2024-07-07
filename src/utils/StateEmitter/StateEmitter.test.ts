@@ -86,4 +86,23 @@ describe("StateEmitter", () => {
       emitter.state = { count: 1, text: "world" };
     }).toThrow("State is read-only. Use setState to modify the state.");
   });
+
+  it("should throw error if initial state contains reserved keys", () => {
+    const reservedInitialState = {
+      count: 0,
+      text: "hello",
+      UPDATE: "reserved",
+    };
+
+    expect(() => {
+      new StateEmitter<any>(reservedInitialState);
+    }).toThrow('State key "UPDATE" conflicts with reserved event.');
+  });
+
+  it("should allow initial state without reserved keys", () => {
+    const initialState: TestState = { count: 0, text: "hello" };
+    expect(() => {
+      new StateEmitter<TestState>(initialState);
+    }).not.toThrow();
+  });
 });
