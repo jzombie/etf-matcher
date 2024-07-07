@@ -133,4 +133,22 @@ describe("deepClone function", () => {
     expect(clone.b).not.toBe(obj1.b);
     expect(clone.b.c).not.toBe(obj1.b.c);
   });
+
+  it("should handle cyclic references correctly with different object references", () => {
+    const obj1: any = { a: 1 };
+    const obj2: any = { b: 2 };
+    obj1.self = obj2;
+    obj2.self = obj1;
+
+    const clone1 = deepClone(obj1);
+    const clone2 = deepClone(obj2);
+
+    // Check if cyclic references are maintained correctly
+    expect(clone1.self).toStrictEqual(clone2);
+    expect(clone2.self).toStrictEqual(clone1);
+
+    // Check if cloned objects are deeply equal to the originals
+    expect(deepEqual(clone1, obj1)).toBe(true);
+    expect(deepEqual(clone2, obj2)).toBe(true);
+  });
 });
