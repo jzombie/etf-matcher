@@ -27,7 +27,7 @@ const SectorDetail = () => {
     const mappedSectorName = sectorName?.replaceAll("-", "_");
 
     // TODO: Fix type
-    // @ts-ignore
+    // @ts-expect-error
     return ETFS_BY_SECTOR[mappedSectorName] || [];
   }, [sectorName]);
 
@@ -38,7 +38,7 @@ const SectorDetail = () => {
 
       {
         // TODO: Fix type
-        // @ts-ignore
+        // @ts-expect-error
         etfs.map((etf, idx) => {
           return (
             <React.Fragment key={idx}>

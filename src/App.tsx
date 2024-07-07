@@ -1,6 +1,6 @@
 import React from "react";
-import { Button, ConfigProvider, Input, Space, theme } from "antd";
-import { Layout } from "antd";
+import { ConfigProvider, theme } from "antd";
+// import { Layout } from "antd";
 import { RouterProvider } from "react-router-dom";
 import router from "./router";
 import { SymbolContainerProvider } from "@components/SymbolContainer";

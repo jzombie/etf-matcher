@@ -1,6 +1,6 @@
 import React from "react";
 import { TickerTape } from "react-ts-tradingview-widgets";
-import { Layout as AntLayout, Menu, Button } from "antd";
+import { Layout as AntLayout, Menu } from "antd";
 import { Link, Outlet, useLocation, matchPath } from "react-router-dom";
 // import { SaveOutlined } from "@ant-design/icons";
 import useStoreStateReader from "@hooks/useStoreStateReader";
@@ -117,7 +117,11 @@ export default function Layout() {
 
           <span style={{ float: "right" }}>
             Charts provided by{" "}
-            <a href="https://www.tradingview.com/" target="_blank">
+            <a
+              href="https://www.tradingview.com/"
+              target="_blank"
+              rel="noreferrer"
+            >
               TradingView
             </a>
           </span>

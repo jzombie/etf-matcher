@@ -18,10 +18,12 @@ export const SymbolContainerContext = createContext<
 
 export type SymbolContainerContextProps = {
   children: React.ReactNode;
+  perSymbolThreshold?: number;
 };
 
 export default function SymbolContainerProvider({
   children,
+  perSymbolThreshold = 0.5,
 }: SymbolContainerContextProps) {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const metadataMap = useRef(new Map<Element, string>());
@@ -62,13 +64,13 @@ export default function SymbolContainerProvider({
     };
 
     observerRef.current = new IntersectionObserver(observerCallback, {
-      threshold: 0.5, // Adjust the threshold as needed
+      threshold: perSymbolThreshold,
     });
 
     return () => {
       observerRef.current?.disconnect();
     };
-  }, []);
+  }, [perSymbolThreshold]);
 
   return (
     <SymbolContainerContext.Provider

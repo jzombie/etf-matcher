@@ -1,16 +1,16 @@
-import "react";
-import { Button, Flex } from "antd";
-import { Link } from "react-router-dom";
-import investmentDisclaimer from "@constants/investmentDisclaimer";
+import React from "react";
+import { Button } from "antd";
+// import { Link } from "react-router-dom";
+// import investmentDisclaimer from "@constants/investmentDisclaimer";
 // import PortfolioForm from "@/components/PortfolioForm";
 
 // https://tradingview-widgets.jorrinkievit.xyz/docs/components/Screener
 import {
-  StockMarket,
-  Screener,
+  // StockMarket,
+  // Screener,
   TickerTape,
 } from "react-ts-tradingview-widgets";
-import { SymbolInfo } from "react-ts-tradingview-widgets";
+// import { SymbolInfo } from "react-ts-tradingview-widgets";
 
 // import store, { CustomState } from "../store";
 // import { useStateEmitterReader } from "../utils/StateEmitter";
