@@ -8,6 +8,8 @@ import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 
 const { Header, Content, Footer } = AntLayout;
 
+// TODO: Experiment w/ old newspaper design for background
+
 export default function Layout() {
   const location = useLocation();
 
