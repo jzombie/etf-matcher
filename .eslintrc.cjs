@@ -31,4 +31,14 @@ module.exports = {
     ],
     "no-undef": "warn",
   },
+  overrides: [
+    {
+      files: ["**/*.test.ts", "**/*.test.tsx"],
+      rules: {
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/no-explicit-any": "off", // Allow `any` type in test files
+        "no-console": "off", // Allow console statements in test files
+      },
+    },
+  ],
 };

@@ -26,8 +26,7 @@ const SectorDetail = () => {
   const etfs = useMemo(() => {
     const mappedSectorName = sectorName?.replaceAll("-", "_");
 
-    // TODO: Fix type
-    // @ts-expect-error
+    // @ts-expect-error TODO: Fix this type
     return ETFS_BY_SECTOR[mappedSectorName] || [];
   }, [sectorName]);
 
@@ -37,8 +36,7 @@ const SectorDetail = () => {
       <p>Details about the {sectorName} sector...</p>
 
       {
-        // TODO: Fix type
-        // @ts-expect-error
+        // @ts-expect-error TODO: Fix this type
         etfs.map((etf, idx) => {
           return (
             <React.Fragment key={idx}>

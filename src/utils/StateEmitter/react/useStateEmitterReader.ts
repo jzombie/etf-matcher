@@ -2,19 +2,16 @@ import { useSyncExternalStore, useCallback, useMemo, useRef } from "react";
 import EmitterState, { StateEmitterDefaultEvents } from "../StateEmitter";
 import deepEqual from "@utils/deepEqual";
 
-const useStateEmitterReader = <
-  T extends Record<string, any>,
-  K extends keyof T
->(
+const useStateEmitterReader = <T extends object, K extends keyof T>(
   emitter: EmitterState<T>,
   stateKeyOrKeys?: K | K[],
   eventOrEventNames: string | string[] = StateEmitterDefaultEvents.UPDATE
 ) => {
-  const eventNames = useMemo(
+  const eventNames: K[] = useMemo(
     () =>
-      Array.isArray(eventOrEventNames)
+      (Array.isArray(eventOrEventNames)
         ? eventOrEventNames
-        : [eventOrEventNames],
+        : [eventOrEventNames]) as K[],
     [eventOrEventNames]
   );
 

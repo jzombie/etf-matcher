@@ -3,7 +3,7 @@ import useStateEmitterReader from "./useStateEmitterReader";
 import StateEmitter from "../StateEmitter";
 
 export default class ReactStateEmitter<
-  T extends Record<string, any>
+  T extends object
 > extends StateEmitter<T> {
   /**
    * Creates a custom React hook for reading specific parts of the state

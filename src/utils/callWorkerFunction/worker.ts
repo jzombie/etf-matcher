@@ -2,9 +2,9 @@ import init, * as wasmModule from "../../../public/pkg/hello_wasm";
 
 interface CallQueueItem {
   functionName: string;
-  args: any[];
-  resolve: (value: any) => void;
-  reject: (reason?: any) => void;
+  args: unknown[];
+  resolve: (value: unknown) => void;
+  reject: (reason?: unknown) => void;
 }
 
 let initialized = false;

@@ -32,7 +32,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
         isRustInit: true,
         dataBuildTime: (dataBuildInfo as { [key: string]: string }).time,
         prettyDataBuildTime: new Date(
-          (dataBuildInfo as any).time
+          (dataBuildInfo as { [key: string]: string }).time
         ).toLocaleString(),
       });
     });

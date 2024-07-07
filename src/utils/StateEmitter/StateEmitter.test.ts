@@ -18,7 +18,7 @@ describe("StateEmitter", () => {
 
   it("should throw error if initial state is not provided", () => {
     expect(() => {
-      // @ts-ignore: Suppress the error for this test case
+      // @ts-expect-error Expected error here for test case
       new StateEmitter();
     }).toThrow("Initial state must be provided.");
   });
@@ -82,7 +82,6 @@ describe("StateEmitter", () => {
     const emitter = new StateEmitter<TestState>(initialState);
 
     expect(() => {
-      // @ts-ignore: Suppress the error for this test case
       emitter.state = { count: 1, text: "world" };
     }).toThrow("State is read-only. Use setState to modify the state.");
   });

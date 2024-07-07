@@ -1,3 +1,6 @@
+/* eslint-disable */
+// TODO: Enable ESLint after prototyping
+
 import React from "react";
 import {
   Form,
