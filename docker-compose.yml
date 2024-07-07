@@ -90,7 +90,7 @@ services:
       cp -rT /build_artifacts/public/pkg /app/public/pkg &&
       cp -rT /build_artifacts/public/data /app/public/data &&
       npm install &&
-      npm run coverage
+      npm run test:ci
       '
     environment:
       - RUST_BACKTRACE=1
