@@ -28,21 +28,26 @@ export default function SymbolContainerProvider({
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   // Contains mapping for registered observers
-  const metadataMap = useRef(new Map<Element, string>());
+  const metadataMapRef = useRef(new Map<Element, string>());
 
   // Contains mapping for currently visible observers
-  const visibleSymbolMap = useRef(new Map<Element, string>());
+  const visibleSymbolMapRef = useRef(new Map<Element, string>());
 
+  /**
+   * Syncs the unique visible symbols with the store.
+   */
   const syncVisibleSymbols = useCallback(() => {
-    const visibleSymbols = [...visibleSymbolMap.current.values()];
+    const uniqueVisibleSymbols = [
+      ...new Set(visibleSymbolMapRef.current.values()),
+    ];
 
-    store.setVisibleSymbols(visibleSymbols);
+    store.setVisibleSymbols(uniqueVisibleSymbols);
   }, []);
 
   const handleObserve = useCallback((el: HTMLElement, tickerSymbol: string) => {
     if (observerRef.current) {
       observerRef.current.observe(el);
-      metadataMap.current.set(el, tickerSymbol);
+      metadataMapRef.current.set(el, tickerSymbol);
     }
   }, []);
 
@@ -50,8 +55,8 @@ export default function SymbolContainerProvider({
     (el?: HTMLElement) => {
       if (el && observerRef.current) {
         observerRef.current.unobserve(el);
-        metadataMap.current.delete(el);
-        visibleSymbolMap.current.delete(el);
+        metadataMapRef.current.delete(el);
+        visibleSymbolMapRef.current.delete(el);
 
         syncVisibleSymbols();
       }
@@ -60,19 +65,24 @@ export default function SymbolContainerProvider({
   );
 
   useEffect(() => {
+    /**
+     * Note: This callback is used in conjunction with the `handleUnobserve` callback.`IntersectionObserverCallback`
+     * is invoked when there is an intersection difference on the page, but is not emit when the elements are removed
+     * from the DOM, which is where `handleUnobserve` steps in.
+     */
     const observerCallback: IntersectionObserverCallback = (entries) => {
       entries.forEach((entry) => {
-        const symbol = metadataMap.current.get(entry.target);
+        const symbol = metadataMapRef.current.get(entry.target);
         if (symbol) {
           if (entry.isIntersecting) {
-            console.log(`Element with ticker symbol ${symbol} is visible.`);
-            visibleSymbolMap.current.set(entry.target, symbol);
+            // console.debug(`Element with ticker symbol ${symbol} is visible.`);
+            visibleSymbolMapRef.current.set(entry.target, symbol);
           } else {
-            console.log(`Element with ticker symbol ${symbol} is not visible.`);
-            visibleSymbolMap.current.delete(entry.target);
+            // console.debug(`Element with ticker symbol ${symbol} is not visible.`);
+            visibleSymbolMapRef.current.delete(entry.target);
           }
         } else {
-          console.log("No symbol associated with the element.");
+          console.debug("No symbol associated with the element.");
         }
       });
 
