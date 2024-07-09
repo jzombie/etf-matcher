@@ -158,6 +158,7 @@ pub type SymbolList = Vec<String>;
 #[async_trait(?Send)]
 pub trait SymbolListExt {
     async fn get_symbols() -> Result<SymbolList, JsValue>;
+    async fn search_symbols(query: &str) -> Result<SymbolList, JsValue>;
 }
 
 #[async_trait(?Send)]
@@ -174,5 +175,14 @@ impl SymbolListExt for SymbolList {
         })?;
         
         Ok(symbols)
+    }
+
+    async fn search_symbols(query: &str) -> Result<SymbolList, JsValue> {
+        let symbols = Self::get_symbols().await?;
+        let query_lower = query.to_lowercase();
+        Ok(symbols
+            .into_iter()
+            .filter(|symbol| symbol.to_lowercase().contains(&query_lower))
+            .collect())
     }
 }

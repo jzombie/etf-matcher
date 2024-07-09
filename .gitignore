@@ -13,6 +13,7 @@ public/pkg
 
 # Only ignore data in the root directory
 data/
+data.old/
 
 node_modules/
 

@@ -44,6 +44,12 @@ pub async fn get_symbols() -> Result<JsValue, JsValue> {
         .map_err(JsValue::from)
 }
 
+#[wasm_bindgen]
+pub async fn search_symbols(query: &str) -> Result<JsValue, JsValue> {
+    SymbolList::search_symbols(query).await
+        .map(|symbols| serde_wasm_bindgen::to_value(&symbols).unwrap_or_else(JsValue::from))
+        .map_err(JsValue::from)
+}
 
 #[wasm_bindgen]
 pub async fn count_etfs_per_exchange() -> Result<JsValue, JsValue> {

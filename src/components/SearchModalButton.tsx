@@ -3,6 +3,7 @@ import { Button, Modal, Form, Input, InputRef } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
+import { store } from "@hooks/useStoreStateReader";
 
 export default function SearchModalButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -60,6 +61,10 @@ export default function SearchModalButton() {
       handleOk();
     }
   };
+
+  useEffect(() => {
+    store.PROTO_searchSymbols(searchValue);
+  }, [searchValue]);
 
   const isModalOpenStableRef = useStableCurrentRef(isModalOpen);
   useEffect(() => {
