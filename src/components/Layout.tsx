@@ -111,7 +111,7 @@ export default function Layout() {
         <div style={{ color: "#999" }}>
           <span>
             {prettyDataBuildTime
-              ? `Date build time: ${prettyDataBuildTime}`
+              ? `Data build time: ${prettyDataBuildTime}`
               : ""}
           </span>
           {" | "}
