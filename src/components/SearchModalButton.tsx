@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Button, Modal, Form, Input, InputRef } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 export default function SearchModalButton() {
@@ -10,6 +10,7 @@ export default function SearchModalButton() {
   const inputRef = useRef<InputRef>(null);
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Reset search value on close
@@ -35,6 +36,14 @@ export default function SearchModalButton() {
 
     if (searchValue.length) {
       console.warn("TODO: Handle search", searchValue);
+
+      const searchParams = new URLSearchParams({ query: searchValue });
+
+      // Encode the search value to ensure it's safe to include in the URL
+      // const encodedSearchValue = encodeURIComponent(searchValue);
+
+      // navigate("/search?query=" + encodedSearchValue);
+      navigate(`/search?${searchParams.toString()}`);
     }
   };
 

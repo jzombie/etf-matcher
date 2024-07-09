@@ -2,6 +2,7 @@ import React from "react";
 import Home from "@pages/Home";
 import Sectors from "@pages/Sectors";
 import Portfolios from "@pages/Portfolios";
+import SearchResults from "@pages/SearchResults";
 import SectorDetail from "@pages/SectorDetail";
 import About from "@pages/About";
 import NotFound from "@pages/NotFound";
@@ -28,6 +29,10 @@ export default createBrowserRouter([
             element: <SectorDetail />,
           },
         ],
+      },
+      {
+        path: "search",
+        element: <SearchResults />,
       },
       {
         path: "portfolios",
