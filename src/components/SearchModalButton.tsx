@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, SyntheticEvent } from "react";
 import { Button, Modal, Form, Input, InputRef } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -9,21 +9,19 @@ export default function SearchModalButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchValue, setSearchValue] = useState<string>("");
   const [searchResults, setSearchResults] = useState<string[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const inputRef = useRef<InputRef>(null);
 
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Reset search value on close
+    // Reset search value and selected index on close
     if (!isModalOpen) {
       setSearchValue("");
       setSearchResults([]);
+      setSelectedIndex(-1);
     } else {
-      // The usage of `setTimeout` fixes an issue where repeatedly opening
-      // the modal would not automatically focus the input.
-      // Also, setting the `autofocus` property on the input, directly, did
-      // not achieve the desired effect.
       setTimeout(() => {
         inputRef.current?.focus();
       });
@@ -34,19 +32,17 @@ export default function SearchModalButton() {
     setIsModalOpen(true);
   };
 
-  const handleOk = () => {
+  const handleOk = (_: SyntheticEvent, exactSearchValue?: string) => {
     setIsModalOpen(false);
 
+    const locSearchValue = exactSearchValue || searchValue;
+
     if (searchValue.length) {
-      console.warn("TODO: Handle search", searchValue);
+      const searchParams = new URLSearchParams({ query: locSearchValue });
 
-      const searchParams = new URLSearchParams({ query: searchValue });
-
-      // Encode the search value to ensure it's safe to include in the URL
-      // const encodedSearchValue = encodeURIComponent(searchValue);
-
-      // navigate("/search?query=" + encodedSearchValue);
-      navigate(`/search?${searchParams.toString()}`);
+      navigate(
+        `/search?${searchParams.toString()}&exact=${Boolean(exactSearchValue)}`
+      );
     }
   };
 
@@ -56,11 +52,24 @@ export default function SearchModalButton() {
 
   const handleInputChange = (evt: React.BaseSyntheticEvent) => {
     setSearchValue(evt.target.value.toUpperCase());
+    setSelectedIndex(-1);
   };
 
-  const handleInputKeyDown = (evt: { code: string }) => {
+  const handleInputKeyDown = (evt: React.KeyboardEvent) => {
     if (evt.code === "Enter") {
-      handleOk();
+      if (selectedIndex == -1) {
+        handleOk(evt);
+      } else if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
+        const exactSearchValue = searchResults[selectedIndex];
+
+        handleOk(evt, exactSearchValue);
+      }
+    } else if (evt.code === "ArrowDown") {
+      setSelectedIndex((prevIndex) =>
+        Math.min(prevIndex + 1, searchResults.length - 1)
+      );
+    } else if (evt.code === "ArrowUp") {
+      setSelectedIndex((prevIndex) => Math.max(prevIndex - 1, 0));
     }
   };
 
@@ -72,8 +81,6 @@ export default function SearchModalButton() {
 
   const isModalOpenStableRef = useStableCurrentRef(isModalOpen);
   useEffect(() => {
-    // Note: The usage of `isModalOpenStableRef` prevents the conditional
-    // from auto-closing the modal each time the modal opens!
     if (location && isModalOpenStableRef.current) {
       console.debug("Closing modal due to location change", location);
       handleCancel();
@@ -105,7 +112,18 @@ export default function SearchModalButton() {
             </Form>
 
             {searchResults.map((searchResult, idx) => (
-              <div key={idx}>{searchResult}</div>
+              <div
+                key={idx}
+                style={{
+                  backgroundColor:
+                    idx === selectedIndex
+                      ? "rgba(255,255,255,.2)"
+                      : "transparent",
+                  padding: "5px",
+                }}
+              >
+                {searchResult}
+              </div>
             ))}
           </>
         )}

@@ -10,6 +10,8 @@ import SymbolContainer from "@components/SymbolContainer";
 export default function SearchResults() {
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [isExact, setIsExact] = useState<boolean>(false);
+  const [symbols, setSymbols] = useState<string[]>([]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -17,11 +19,28 @@ export default function SearchResults() {
       if (key === "query") {
         setSearchQuery(value);
       }
+      if (key === "exact") {
+        // String values from URL
+        setIsExact(value === "true" || value === "1");
+      }
     });
   }, [location]);
 
-  // TODO: Do an actual symbol search here
-  const symbols = useMemo(() => [searchQuery], [searchQuery]);
+  useEffect(() => {
+    store.searchSymbols(searchQuery).then((symbols) => {
+      let returnedSymbols: string[] = symbols;
+
+      if (isExact) {
+        if (searchQuery in symbols) {
+          returnedSymbols = [searchQuery];
+        } else {
+          returnedSymbols = [];
+        }
+      }
+
+      setSymbols(returnedSymbols);
+    });
+  }, [searchQuery, isExact]);
 
   if (!searchQuery) {
     return <div>No search query...</div>;
