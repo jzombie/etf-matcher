@@ -61,10 +61,8 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     });
   }
 
-  PROTO_searchSymbols(query: string) {
-    callWorkerFunction("search_symbols", query).then((symbols) => {
-      console.log({ symbols });
-    });
+  async searchSymbols(query: string): Promise<string[]> {
+    return callWorkerFunction<string[]>("search_symbols", query);
   }
 
   PROTO_countEtfsPerExchange() {

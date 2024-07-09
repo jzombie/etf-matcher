@@ -8,6 +8,7 @@ import { store } from "@hooks/useStoreStateReader";
 export default function SearchModalButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchValue, setSearchValue] = useState<string>("");
+  const [searchResults, setSearchResults] = useState<string[]>([]);
   const inputRef = useRef<InputRef>(null);
 
   const location = useLocation();
@@ -17,6 +18,7 @@ export default function SearchModalButton() {
     // Reset search value on close
     if (!isModalOpen) {
       setSearchValue("");
+      setSearchResults([]);
     } else {
       // The usage of `setTimeout` fixes an issue where repeatedly opening
       // the modal would not automatically focus the input.
@@ -63,7 +65,9 @@ export default function SearchModalButton() {
   };
 
   useEffect(() => {
-    store.PROTO_searchSymbols(searchValue);
+    store
+      .searchSymbols(searchValue)
+      .then((symbols) => setSearchResults(symbols));
   }, [searchValue]);
 
   const isModalOpenStableRef = useStableCurrentRef(isModalOpen);
@@ -88,18 +92,21 @@ export default function SearchModalButton() {
         onCancel={handleCancel}
       >
         {isModalOpen && (
-          <Form>
-            {
-              // TODO: Clear value when model closes
-            }
-            <Input
-              ref={inputRef}
-              placeholder='Search for Ticker Symbol (e.g. "AAPL")'
-              onChange={handleInputChange}
-              onKeyDown={handleInputKeyDown}
-              value={searchValue}
-            />
-          </Form>
+          <>
+            <Form>
+              <Input
+                ref={inputRef}
+                placeholder='Search for Ticker Symbol (e.g. "AAPL")'
+                onChange={handleInputChange}
+                onKeyDown={handleInputKeyDown}
+                value={searchValue}
+              />
+            </Form>
+
+            {searchResults.map((searchResult, idx) => (
+              <div key={idx}>{searchResult}</div>
+            ))}
+          </>
         )}
       </Modal>
     </>

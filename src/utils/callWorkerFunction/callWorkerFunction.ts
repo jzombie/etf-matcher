@@ -28,7 +28,10 @@ worker.onerror = (error) => {
   alert("An error occurred in the web worker");
 };
 
-const callWorkerFunction = (functionName: string, ...args: unknown[]) => {
+const callWorkerFunction = <T>(
+  functionName: string,
+  ...args: unknown[]
+): Promise<T> => {
   const messageId = messageCounter++;
   return new Promise((resolve, reject) => {
     messagePromises[messageId] = { resolve, reject };

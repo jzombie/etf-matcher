@@ -7,6 +7,7 @@ use crate::utils::{
   parse_json_data
 };
 use async_trait::async_trait;
+use regex::Regex;
 
 pub enum DataUrl {
     DataBuildInfo,
@@ -161,6 +162,16 @@ pub trait SymbolListExt {
     async fn search_symbols(query: &str) -> Result<SymbolList, JsValue>;
 }
 
+fn generate_alternative_symbols(query: &str) -> Vec<String> {
+    let mut alternatives = vec![query.to_lowercase()];
+    if query.contains('.') {
+        alternatives.push(query.replace('.', "-").to_lowercase());
+    } else if query.contains('-') {
+        alternatives.push(query.replace('-', ".").to_lowercase());
+    }
+    alternatives
+}
+
 #[async_trait(?Send)]
 impl SymbolListExt for SymbolList {
     async fn get_symbols() -> Result<SymbolList, JsValue> {
@@ -178,11 +189,29 @@ impl SymbolListExt for SymbolList {
     }
 
     async fn search_symbols(query: &str) -> Result<SymbolList, JsValue> {
+        // Check if the query starts with an alphanumeric character
+        let alphanumeric_start = Regex::new(r"^[a-zA-Z0-9]").unwrap();
+
+        if query.is_empty() || !alphanumeric_start.is_match(query) {
+            return Ok(vec![]);
+        }
+
         let symbols = Self::get_symbols().await?;
         let query_lower = query.to_lowercase();
-        Ok(symbols
-            .into_iter()
-            .filter(|symbol| symbol.to_lowercase().contains(&query_lower))
-            .collect())
+        let alternatives = generate_alternative_symbols(&query_lower);
+
+         let matched_symbols: SymbolList = symbols
+        .into_iter()
+        .filter(|symbol| {
+            let symbol_lower = symbol.to_lowercase();
+            alternatives.iter().any(|alt| symbol_lower.contains(alt))
+        })
+        .collect();
+
+        if matched_symbols.len() > 20 {
+            return Ok(vec![]);
+        }
+
+        Ok(matched_symbols)
     }
 }

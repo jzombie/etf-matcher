@@ -28,6 +28,7 @@ hex = "0.4"
 lazy_static = "1.4"
 futures = "0.3"
 async-trait = "0.1"
+regex = "1.5"
 
 [build-dependencies]
 dotenv = "0.15"
