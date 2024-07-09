@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { TickerTape } from "react-ts-tradingview-widgets";
-import { Layout as AntLayout, Menu } from "antd";
+import { Layout as AntLayout, Menu, Modal } from "antd";
 import { Link, Outlet, useLocation, matchPath } from "react-router-dom";
-// import { SaveOutlined } from "@ant-design/icons";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
+import SearchModalButton from "./SearchModalButton";
 
 const { Header, Content, Footer } = AntLayout;
 
@@ -58,16 +58,14 @@ export default function Layout() {
           style={{ flex: 1 }}
         />
         {
-          // TODO: Add save button
-          /* <Button
-          type="primary"
-          icon={<SaveOutlined />}
-          style={{ marginLeft: "auto" }}
-          disabled={!isDirtyState}
-        >
-          Save
-        </Button> */
+          // TODO: Open search modal
         }
+        {/* <Button
+          type="primary"
+          icon={<SearchOutlined />}
+          style={{ marginLeft: "auto" }}
+        /> */}
+        <SearchModalButton />
       </Header>
       <Content
         style={{
