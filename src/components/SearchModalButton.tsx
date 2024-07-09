@@ -79,6 +79,12 @@ export default function SearchModalButton() {
       .then((symbols) => setSearchResults(symbols));
   }, [searchValue]);
 
+  useEffect(() => {
+    for (const symbol of searchResults) {
+      store.PROTO_getSymbolDetail(symbol);
+    }
+  }, [searchResults]);
+
   const isModalOpenStableRef = useStableCurrentRef(isModalOpen);
   useEffect(() => {
     if (location && isModalOpenStableRef.current) {

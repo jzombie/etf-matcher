@@ -27,6 +27,10 @@ impl DataUrl {
     pub fn get_etf_holder_url(symbol: &str) -> String {
         format!("/data/etf_holder.{}.enc", symbol)
     }
+
+    pub fn get_symbol_detail_url(symbol: &str) -> String {
+        format!("/data/symbol_detail.{}.enc", symbol)
+    }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -219,5 +223,23 @@ impl SymbolListExt for SymbolList {
         }
     
         Ok(matched_symbols)
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct SymbolDetail {
+    pub symbol: String,
+    pub company: String,
+    pub industry: String,
+    pub sector: String,
+}
+
+impl SymbolDetail {
+    pub async fn get_symbol_detail(symbol: &str) -> Result<SymbolDetail, JsValue> {
+        let url: String = DataUrl::get_symbol_detail_url(symbol);
+        let json_data: String = fetch_and_decompress_gz(&url).await?;
+        let detail: SymbolDetail = serde_json::from_str(&json_data)
+            .map_err(|err| JsValue::from_str(&format!("Failed to parse JSON: {}", err)))?;
+        Ok(detail)
     }
 }

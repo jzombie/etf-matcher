@@ -11,7 +11,8 @@ use data_models::{
     DataBuildInfo,
     ETF,
     ETFHolder,
-    SymbolList
+    SymbolList,
+    SymbolDetail
 };
 use crate::data_models::SymbolListExt;
 
@@ -49,6 +50,14 @@ pub async fn search_symbols(query: &str) -> Result<JsValue, JsValue> {
     SymbolList::search_symbols(query).await
         .map(|symbols| serde_wasm_bindgen::to_value(&symbols).unwrap_or_else(JsValue::from))
         .map_err(JsValue::from)
+}
+
+#[wasm_bindgen]
+pub async fn get_symbol_detail(symbol: &str) -> Result<JsValue, JsValue> {
+    match SymbolDetail::get_symbol_detail(symbol.to_string()).await {
+        Ok(detail) => Ok(serde_wasm_bindgen::to_value(&detail).unwrap_or_else(JsValue::from)),
+        Err(err) => Err(err),
+    }
 }
 
 #[wasm_bindgen]
