@@ -191,27 +191,33 @@ impl SymbolListExt for SymbolList {
     async fn search_symbols(query: &str) -> Result<SymbolList, JsValue> {
         // Check if the query starts with an alphanumeric character
         let alphanumeric_start = Regex::new(r"^[a-zA-Z0-9]").unwrap();
-
+    
         if query.is_empty() || !alphanumeric_start.is_match(query) {
             return Ok(vec![]);
         }
-
+    
         let symbols = Self::get_symbols().await?;
         let query_lower = query.to_lowercase();
         let alternatives = generate_alternative_symbols(&query_lower);
-
-         let matched_symbols: SymbolList = symbols
-        .into_iter()
-        .filter(|symbol| {
-            let symbol_lower = symbol.to_lowercase();
-            alternatives.iter().any(|alt| symbol_lower.contains(alt))
-        })
-        .collect();
-
+    
+        let mut matched_symbols: SymbolList = symbols
+            .clone()
+            .into_iter()
+            .filter(|symbol| {
+                let symbol_lower = symbol.to_lowercase();
+                alternatives.iter().any(|alt| symbol_lower.contains(alt))
+            })
+            .collect();
+    
         if matched_symbols.len() > 20 {
-            return Ok(vec![]);
+            // Check if there is an exact match
+            if let Some(exact_match) = symbols.into_iter().find(|symbol| symbol.eq_ignore_ascii_case(query)) {
+                matched_symbols = vec![exact_match];
+            } else {
+                return Ok(vec![]);
+            }
         }
-
+    
         Ok(matched_symbols)
     }
 }
