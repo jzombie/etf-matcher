@@ -54,7 +54,7 @@ pub async fn search_symbols(query: &str) -> Result<JsValue, JsValue> {
 
 #[wasm_bindgen]
 pub async fn get_symbol_detail(symbol: &str) -> Result<JsValue, JsValue> {
-    match SymbolDetail::get_symbol_detail(symbol.to_string()).await {
+    match SymbolDetail::get_symbol_detail(symbol).await {
         Ok(detail) => Ok(serde_wasm_bindgen::to_value(&detail).unwrap_or_else(JsValue::from)),
         Err(err) => Err(err),
     }

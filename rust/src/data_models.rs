@@ -29,7 +29,8 @@ impl DataUrl {
     }
 
     pub fn get_symbol_detail_url(symbol: &str) -> String {
-        format!("/data/symbol_detail.{}.enc", symbol)
+        let first_char = symbol.chars().next().unwrap_or('O').to_ascii_uppercase();
+        format!("/data/symbol_detail.{}.enc", first_char)
     }
 }
 
@@ -229,17 +230,21 @@ impl SymbolListExt for SymbolList {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SymbolDetail {
     pub symbol: String,
-    pub company: String,
-    pub industry: String,
-    pub sector: String,
+    pub company: Option<String>,
+    pub industry: Option<String>,
+    pub sector: Option<String>,
 }
 
 impl SymbolDetail {
     pub async fn get_symbol_detail(symbol: &str) -> Result<SymbolDetail, JsValue> {
         let url: String = DataUrl::get_symbol_detail_url(symbol);
+        
         let json_data: String = fetch_and_decompress_gz(&url).await?;
-        let detail: SymbolDetail = serde_json::from_str(&json_data)
-            .map_err(|err| JsValue::from_str(&format!("Failed to parse JSON: {}", err)))?;
-        Ok(detail)
+        let details: Vec<SymbolDetail> = parse_json_data(&json_data)?;
+
+        // Find the specific symbol within the shard
+        details.into_iter()
+            .find(|detail| detail.symbol == symbol)
+            .ok_or_else(|| JsValue::from_str("Symbol not found"))
     }
 }

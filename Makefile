@@ -2,7 +2,7 @@
 # The CONTAINER_NAME is derived from the directory name and service name.
 # For example, if the directory name is "helloworldrustwasm" and the service
 # name is "dev", the container name will be "helloworldrustwasm-dev-1".
-CONTAINER_NAME := helloworldrustwasm-dev-1
+CONTAINER_NAME := etf-matcher-dev-1
 
 # ANSI color codes
 GREEN := $(shell tput setaf 2)
