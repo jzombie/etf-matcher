@@ -90,6 +90,7 @@ export default function SearchModalButton() {
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
+        okButtonProps={{ disabled: !searchResults.length }}
       >
         {isModalOpen && (
           <>
