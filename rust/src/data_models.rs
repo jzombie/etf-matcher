@@ -71,8 +71,8 @@ impl ETF {
 
       let mut counts: HashMap<String, usize> = HashMap::new();
       for entry in entries {
-          if let Some(exchange) = &entry.exchange {
-              *counts.entry(exchange.clone()).or_insert(0) += 1;
+          if let Some(exchange_short_name) = &entry.exchange_short_name {
+              *counts.entry(exchange_short_name.clone()).or_insert(0) += 1;
           }
       }
       Ok(counts)
