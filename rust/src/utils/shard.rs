@@ -37,6 +37,7 @@ where
     Ok(entries)
 }
 
+// TODO: Enhance with "near symbol" support if extending beyond just stock symbols (i.e. Hexadecimal-indexed vectors)
 pub async fn query_shard_for_symbol<T>(
     shard_index_url: &str,
     symbol: &str,
