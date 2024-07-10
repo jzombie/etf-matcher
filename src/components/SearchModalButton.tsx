@@ -29,7 +29,18 @@ export default function SearchModalButton() {
       setTotalSearchResults(0);
       setSelectedIndex(-1);
     } else {
+      // First, blur the currently active element, if any
+      if (
+        document.activeElement &&
+        document.activeElement instanceof HTMLElement
+      ) {
+        (document.activeElement as HTMLElement).blur();
+      }
+
+      // TODO: This still needs to improve on Safari when closing the Modal and then
+      // re-opening it again
       setTimeout(() => {
+        // Now focus the input element
         inputRef.current?.focus();
       });
     }
