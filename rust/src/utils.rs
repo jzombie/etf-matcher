@@ -198,11 +198,11 @@ async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue
 
 // Generic function to parse CSV data into any type that implements Deserialize
 pub fn parse_csv_data<T: DeserializeOwned>(csv_data: &str) -> Result<Vec<T>, JsValue> {
-    let mut reader = ReaderBuilder::new()
+    let mut reader: csv::Reader<&[u8]> = ReaderBuilder::new()
         .has_headers(true)
         .from_reader(csv_data.as_bytes());
 
-    let mut results = Vec::new();
+    let mut results: Vec<T> = Vec::new();
     for result in reader.deserialize() {
         let record: T = result.map_err(|err| {
             JsValue::from_str(&format!("Failed to parse CSV: {}", err))
