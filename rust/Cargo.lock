@@ -175,6 +175,36 @@ dependencies = [
 ]
 
 [[package]]
+name = "etf_matcher"
+version = "0.1.0"
+dependencies = [
+ "aes",
+ "async-trait",
+ "block-modes",
+ "console_error_panic_hook",
+ "dotenv",
+ "dotenv_codegen",
+ "flate2",
+ "futures",
+ "getrandom",
+ "hex",
+ "hex-literal",
+ "hmac",
+ "js-sys",
+ "lazy_static",
+ "pbkdf2",
+ "rand",
+ "regex",
+ "serde",
+ "serde-wasm-bindgen",
+ "serde_json",
+ "sha2",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+]
+
+[[package]]
 name = "flate2"
 version = "1.0.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -300,36 +330,6 @@ dependencies = [
  "libc",
  "wasi",
  "wasm-bindgen",
-]
-
-[[package]]
-name = "hello-wasm"
-version = "0.1.0"
-dependencies = [
- "aes",
- "async-trait",
- "block-modes",
- "console_error_panic_hook",
- "dotenv",
- "dotenv_codegen",
- "flate2",
- "futures",
- "getrandom",
- "hex",
- "hex-literal",
- "hmac",
- "js-sys",
- "lazy_static",
- "pbkdf2",
- "rand",
- "regex",
- "serde",
- "serde-wasm-bindgen",
- "serde_json",
- "sha2",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
 ]
 
 [[package]]

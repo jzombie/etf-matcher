@@ -1,7 +1,7 @@
 [package]
-name = "hello-wasm"
+name = "etf_matcher"
 version = "0.1.0"
-authors = ["Your Name <you@example.com>"]
+authors = ["Jeremy Harris <jeremy.harris@zenosmosis.com>"]
 edition = "2018"
 build = "build.rs"
 
