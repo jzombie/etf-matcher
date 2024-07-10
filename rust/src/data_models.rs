@@ -174,7 +174,7 @@ pub struct SymbolSearch {
 
 impl SymbolSearch {
     fn generate_alternative_symbols(query: &str) -> Vec<String> {
-        let mut alternatives = vec![query.to_lowercase()];
+        let mut alternatives: Vec<String> = vec![query.to_lowercase()];
         if query.contains('.') {
             alternatives.push(query.replace('.', "-").to_lowercase());
         } else if query.contains('-') {
@@ -184,7 +184,7 @@ impl SymbolSearch {
     }
 
     pub async fn search_symbols(query: &str, page: usize, page_size: usize) -> Result<PaginatedResults<SymbolSearch>, JsValue> {
-        let trimmed_query = query.trim();
+        let trimmed_query: String = query.trim().to_lowercase();
 
         if trimmed_query.is_empty() {
             return Ok(PaginatedResults {
@@ -197,26 +197,26 @@ impl SymbolSearch {
         let json_data: String = fetch_and_decompress_gz(&url).await?;
         let results: Vec<SymbolSearch> = parse_json_data(&json_data)?;
 
-        let alternatives = SymbolSearch::generate_alternative_symbols(trimmed_query);
-        let mut matches: Vec<SymbolSearch> = vec![];
+        let alternatives: Vec<String> = SymbolSearch::generate_alternative_symbols(&trimmed_query);
+        let mut exact_symbol_matches: Vec<SymbolSearch> = vec![];
+        let mut partial_matches: Vec<SymbolSearch> = vec![];
 
         for alternative in alternatives {
             let query_lower: String = alternative.to_lowercase();
-            let mut alternative_matches: Vec<SymbolSearch> = results.iter()
-                .filter(|result: &&SymbolSearch| {
-                    result.symbol.to_lowercase().contains(&query_lower) ||
-                    result.company.as_deref().map_or(false, |c| c.to_lowercase().contains(&query_lower))
-                })
-                .map(|result: &SymbolSearch| result.clone())
-                .collect();
-            matches.append(&mut alternative_matches);
+            for result in &results {
+                if result.symbol.to_lowercase() == query_lower {
+                    exact_symbol_matches.push(result.clone());
+                } else if result.symbol.to_lowercase().contains(&query_lower) || result.company.as_deref().map_or(false, |c| c.to_lowercase().contains(&query_lower)) {
+                    partial_matches.push(result.clone());
+                }
+            }
         }
 
-        // Remove duplicates
-        matches.sort_by(|a: &SymbolSearch, b: &SymbolSearch| a.symbol.cmp(&b.symbol));
-        matches.dedup_by(|a: &mut SymbolSearch, b: &mut SymbolSearch| a.symbol == b.symbol);
+        // Combine exact symbol matches and partial matches, with exact symbol matches first
+        exact_symbol_matches.append(&mut partial_matches);
+        let matches: Vec<SymbolSearch> = exact_symbol_matches;
 
-        let total_count = matches.len();
+        let total_count: usize = matches.len();
         let paginated_results: Vec<SymbolSearch> = matches.into_iter()
             .skip((page - 1) * page_size)
             .take(page_size)
