@@ -87,7 +87,7 @@ where
     fetch_and_decompress_gz_internal(url_str.clone()).await
 }
 
-async fn xhr_fetch(url: String) -> Result<Uint8Array, JsValue> {
+async fn xhr_fetch(url: String) -> Result<Vec<u8>, JsValue> {
     // web_sys::console::debug_1(&"Starting fetch_and_decompress_gz".into());
     let xhr: XmlHttpRequest = XmlHttpRequest::new().map_err(|err| {
         web_sys::console::debug_1(&format!("Failed to create XMLHttpRequest: {:?}", err).into());
@@ -95,8 +95,8 @@ async fn xhr_fetch(url: String) -> Result<Uint8Array, JsValue> {
     })?;
 
     // Let this utility manage its own cache
-    let timestamp = Date::now().to_string();
-    let nocache_url = format!("{}?nocache={}", url, timestamp);
+    let timestamp: String = Date::now().to_string();
+    let nocache_url: String = format!("{}?nocache={}", url, timestamp);
 
     xhr.open("GET", &nocache_url).map_err(|err| {
         web_sys::console::debug_1(&format!("Failed to open XMLHttpRequest: {:?}", err).into());
@@ -110,13 +110,13 @@ async fn xhr_fetch(url: String) -> Result<Uint8Array, JsValue> {
         JsValue::from_str("Failed to set Cache-Control header")
     })?;
 
-    xhr.send().map_err(|err| {
+    xhr.send().map_err(|err: JsValue| {
         web_sys::console::debug_1(&format!("Failed to send XMLHttpRequest: {:?}", err).into());
         JsValue::from_str("Failed to send XMLHttpRequest")
     })?;
 
     let promise: Promise = Promise::new(&mut |resolve, reject| {
-        let onload = Closure::wrap(Box::new(move || {
+        let onload: Closure<dyn FnMut()> = Closure::wrap(Box::new(move || {
             resolve.call1(&JsValue::NULL, &JsValue::NULL).unwrap();
         }) as Box<dyn FnMut()>);
         xhr.set_onload(Some(onload.as_ref().unchecked_ref()));
@@ -145,13 +145,11 @@ async fn xhr_fetch(url: String) -> Result<Uint8Array, JsValue> {
 
     let buffer: Uint8Array = Uint8Array::new(&array_buffer);
 
-    Ok(buffer.into())
+    Ok(buffer.to_vec())
 }
 
 async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue> {
-    let buffer: Uint8Array = xhr_fetch(url).await?;
-
-    let encrypted_data: Vec<u8> = buffer.to_vec();
+    let encrypted_data: Vec<u8> = xhr_fetch(url).await?;
 
     // TODO: Only allow during debugging
     // web_sys::console::debug_1(&format!("Encrypted data length: {}", encrypted_data.len()).into());
