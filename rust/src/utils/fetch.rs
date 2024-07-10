@@ -17,8 +17,6 @@ use std::cell::RefCell;
 use futures::future::Shared;
 use futures::{Future, FutureExt};
 use futures::future::LocalBoxFuture;
-use serde::de::DeserializeOwned;
-use csv::ReaderBuilder;
 
 include!("../__AUTOGEN__generated_password.rs");
 
@@ -28,7 +26,6 @@ pub fn decrypt_password(encrypted_password: &[u8], salt: &[u8]) -> Result<[u8; 3
     pbkdf2::<Hmac<Sha256>>(encrypted_password, salt, 10000, &mut key);
     Ok(key)
 }
-
 
 
 type Aes256Cbc = Cbc<Aes256, Pkcs7>;
