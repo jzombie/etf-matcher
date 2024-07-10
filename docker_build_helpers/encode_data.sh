@@ -17,10 +17,10 @@ cd /app/docker_build_helpers && ./generate_data_build_info.sh
 
 cd /app/backend/rust/encrypt_tool
 
-# Loop over all JSON files in the /app/data directory
-for json_file in /app/data/*.json; do
+# Loop over all CSV files in the /app/data directory
+for json_file in /app/data/*.csv; do
     # Get the base name of the file (without the directory and file extension)
-    base_name=$(basename "$json_file" .json)
+    base_name=$(basename "$json_file" .csv)
     
     # TODO: Use release contingent on build environment
     #

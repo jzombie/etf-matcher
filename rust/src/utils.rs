@@ -18,6 +18,7 @@ use futures::future::Shared;
 use futures::{Future, FutureExt};
 use futures::future::LocalBoxFuture;
 use serde::de::DeserializeOwned;
+use csv::ReaderBuilder;
 
 include!("__AUTOGEN__generated_password.rs");
 
@@ -165,21 +166,31 @@ async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue
 
     // web_sys::console::debug_1(&format!("Decrypted data length: {}", decrypted_data.len()).into());
 
-    // Decompress the JSON data
+    // Decompress the CSV data
     let mut decoder: GzDecoder<&[u8]> = GzDecoder::new(&decrypted_data[..]);
-    let mut json_data: String = String::new();
-    decoder.read_to_string(&mut json_data).map_err(|err| {
-        web_sys::console::debug_1(&format!("Failed to decompress JSON: {}", err).into());
-        JsValue::from_str(&format!("Failed to decompress JSON: {}", err))
+    let mut csv_data: String = String::new();
+    decoder.read_to_string(&mut csv_data).map_err(|err| {
+        web_sys::console::debug_1(&format!("Failed to decompress CSV: {}", err).into());
+        JsValue::from_str(&format!("Failed to decompress CSV: {}", err))
     })?;
 
     // web_sys::console::debug_1(&"Data decompressed successfully".into());
-    Ok(json_data)
+    Ok(csv_data)
 }
 
-// Generic function to parse JSON data into any type that implements Deserialize
-pub fn parse_json_data<T: DeserializeOwned>(json_data: &str) -> Result<T, JsValue> {
-    serde_json::from_str(json_data).map_err(|err| {
-        JsValue::from_str(&format!("Failed to parse JSON: {}", err))
-    })
+// Generic function to parse CSV data into any type that implements Deserialize
+pub fn parse_csv_data<T: DeserializeOwned>(csv_data: &str) -> Result<Vec<T>, JsValue> {
+    let mut reader = ReaderBuilder::new()
+        .has_headers(true)
+        .from_reader(csv_data.as_bytes());
+
+    let mut results = Vec::new();
+    for result in reader.deserialize() {
+        let record: T = result.map_err(|err| {
+            JsValue::from_str(&format!("Failed to parse CSV: {}", err))
+        })?;
+        results.push(record);
+    }
+
+    Ok(results)
 }

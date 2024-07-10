@@ -10,7 +10,9 @@ console_error_panic_hook = "0.1"
 wasm-bindgen = "0.2"
 web-sys = { version = "0.3", features = ["XmlHttpRequest", "XmlHttpRequestResponseType", "console"] }
 serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+# Commenting out serde_json if not used elsewhere
+# serde_json = "1.0"
+csv = "1.1"
 serde-wasm-bindgen = "0.2"
 flate2 = "1.0"
 js-sys = "0.3"

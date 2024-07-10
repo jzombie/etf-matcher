@@ -4,9 +4,8 @@ use crate::JsValue;
 use crate::utils::{
   fetch_and_decompress_gz_non_cached,
   fetch_and_decompress_gz,
-  parse_json_data
+  parse_csv_data
 };
-
 
 pub enum DataUrl {
     DataBuildInfo,
@@ -40,17 +39,18 @@ pub struct DataBuildInfo {
 }
 
 impl DataBuildInfo {
-  pub async fn get_data_build_info() -> Result<DataBuildInfo, JsValue> {
-    let url: &str = &DataUrl::DataBuildInfo.value();
+    pub async fn get_data_build_info() -> Result<DataBuildInfo, JsValue> {
+        let url: &str = &DataUrl::DataBuildInfo.value();
 
-    // Fetch and decompress the JSON data
-    let json_data = fetch_and_decompress_gz_non_cached(&url).await?;
-    
-    // Use the `?` operator to propagate the error if `parse_json_data` fails
-    let data: DataBuildInfo = parse_json_data(&json_data)?;
-
-    Ok(data)
-  }
+        // Fetch and decompress the CSV data
+        let csv_data = fetch_and_decompress_gz_non_cached(&url).await?;
+        
+        // Parse the CSV data
+        let mut data: Vec<DataBuildInfo> = parse_csv_data(&csv_data)?;
+        
+        // Expecting a single record
+        data.pop().ok_or_else(|| JsValue::from_str("No data found"))
+    }
 }
 
 // Option<type> allows null values
@@ -68,44 +68,20 @@ pub struct ETF {
 }
 
 impl ETF {
-  pub async fn count_etfs_per_exchange() -> Result<HashMap<String, usize>, JsValue> {
-      let url: &str = DataUrl::EtfList.value();
+    pub async fn count_etfs_per_exchange() -> Result<HashMap<String, usize>, JsValue> {
+        let url: &str = DataUrl::EtfList.value();
 
-      let json_data: String = fetch_and_decompress_gz(&url).await?;
-      let entries: Vec<ETF> = parse_json_data(&json_data)?;
+        let csv_data: String = fetch_and_decompress_gz(&url).await?;
+        let entries: Vec<ETF> = parse_csv_data(&csv_data)?;
 
-      let mut counts: HashMap<String, usize> = HashMap::new();
-      for entry in entries {
-          if let Some(exchange_short_name) = &entry.exchange_short_name {
-              *counts.entry(exchange_short_name.clone()).or_insert(0) += 1;
-          }
-      }
-      Ok(counts)
-  }
-
-    // TODO: Implement
-    // pub fn similarity(&self, portfolio: &Portfolio) -> f64 {
-    //     // Example: Simple cosine similarity
-    //     // You should replace this with an appropriate financial similarity measure
-    //     let mut dot_product = 0.0;
-    //     let mut norm_etf = 0.0;
-    //     let mut norm_portfolio = 0.0;
-
-    //     for asset in &self.holdings {
-    //         let portfolio_asset = portfolio.holdings.iter().find(|&a| a.symbol == asset.symbol);
-    //         // TODO: Consider sector and industry here as well
-    //         if let Some(port_asset) = portfolio_asset {
-    //             dot_product += asset.percentage * port_asset.percentage;
-    //         }
-    //         norm_etf += asset.percentage.powi(2);
-    //     }
-
-    //     for asset in &portfolio.holdings {
-    //         norm_portfolio += asset.percentage.powi(2);
-    //     }
-
-    //     dot_product / (norm_etf.sqrt() * norm_portfolio.sqrt())
-    // }
+        let mut counts: HashMap<String, usize> = HashMap::new();
+        for entry in entries {
+            if let Some(exchange_short_name) = &entry.exchange_short_name {
+                *counts.entry(exchange_short_name.clone()).or_insert(0) += 1;
+            }
+        }
+        Ok(counts)
+    }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -125,37 +101,37 @@ pub struct ETFHolder {
 }
 
 impl ETFHolder {
-  pub async fn get_etf_holder_asset_count(symbol: String) -> Result<i32, JsValue> {
-      let url: String = DataUrl::get_etf_holder_url(&symbol);
+    pub async fn get_etf_holder_asset_count(symbol: String) -> Result<i32, JsValue> {
+        let url: String = DataUrl::get_etf_holder_url(&symbol);
 
-      let json_data: String = fetch_and_decompress_gz(&url).await?;
-      let entries: Vec<ETFHolder> = parse_json_data(&json_data)?;
+        let csv_data: String = fetch_and_decompress_gz(&url).await?;
+        let entries: Vec<ETFHolder> = parse_csv_data(&csv_data)?;
 
-      let mut count: i32 = 0;
-      for entry in entries {
-          if entry.asset.is_some() {
-              count += 1;
-          }
-      }
-
-      Ok(count)
-  }
-
-  pub async fn get_etf_holder_asset_names(symbol: String) -> Result<Vec<String>, JsValue> {
-    let url: String = DataUrl::get_etf_holder_url(&symbol);
-
-    let json_data: String = fetch_and_decompress_gz(&url).await?;
-    let entries: Vec<ETFHolder> = parse_json_data(&json_data)?;
-
-    let mut asset_names: Vec<String> = Vec::new();
-    for entry in entries {
-        if let Some(asset) = &entry.asset {
-            asset_names.push(asset.clone());
+        let mut count: i32 = 0;
+        for entry in entries {
+            if entry.asset.is_some() {
+                count += 1;
+            }
         }
+
+        Ok(count)
     }
 
-    Ok(asset_names)
-  }
+    pub async fn get_etf_holder_asset_names(symbol: String) -> Result<Vec<String>, JsValue> {
+        let url: String = DataUrl::get_etf_holder_url(&symbol);
+
+        let csv_data: String = fetch_and_decompress_gz(&url).await?;
+        let entries: Vec<ETFHolder> = parse_csv_data(&csv_data)?;
+
+        let mut asset_names: Vec<String> = Vec::new();
+        for entry in entries {
+            if let Some(asset) = &entry.asset {
+                asset_names.push(asset.clone());
+            }
+        }
+
+        Ok(asset_names)
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -195,8 +171,8 @@ impl SymbolSearch {
         }
 
         let url: String = DataUrl::SymbolSearch.value().to_owned();
-        let json_data: String = fetch_and_decompress_gz(&url).await?;
-        let results: Vec<SymbolSearch> = parse_json_data(&json_data)?;
+        let csv_data: String = fetch_and_decompress_gz(&url).await?;
+        let results: Vec<SymbolSearch> = parse_csv_data(&csv_data)?;
 
         let alternatives: Vec<String> = SymbolSearch::generate_alternative_symbols(&trimmed_query);
         let mut exact_symbol_matches: Vec<SymbolSearch> = vec![];
@@ -246,7 +222,6 @@ impl SymbolSearch {
     }
 }
 
-
 // "Level 2"?
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SymbolDetail {
@@ -259,8 +234,8 @@ impl SymbolDetail {
     pub async fn get_symbol_detail(symbol: &str) -> Result<SymbolDetail, JsValue> {
         let url: String = DataUrl::get_symbol_detail_url(symbol);
         
-        let json_data: String = fetch_and_decompress_gz(&url).await?;
-        let details: Vec<SymbolDetail> = parse_json_data(&json_data)?;
+        let csv_data: String = fetch_and_decompress_gz(&url).await?;
+        let details: Vec<SymbolDetail> = parse_csv_data(&csv_data)?;
 
         // Find the specific symbol within the shard
         details.into_iter()
