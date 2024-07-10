@@ -4,10 +4,7 @@ import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import heroImg from "@assets/hero.webp"; // Adjust the path as needed
 
 export default function Home() {
-  const { count, isSearchModalOpen } = useStoreStateReader([
-    "count",
-    "isSearchModalOpen",
-  ]);
+  const { isSearchModalOpen } = useStoreStateReader(["isSearchModalOpen"]);
 
   const handleGetStarted = () => {
     store.setState({ isSearchModalOpen: true });
@@ -52,15 +49,6 @@ export default function Home() {
           omissions, or for any loss or damage incurred as a result of using
           this information.
         </p>
-        <div>{count}</div>
-        <div>
-          <Button onClick={() => store.PROTO_countEtfsPerExchange()}>
-            PROTO::countEtfsPerExchange()
-          </Button>
-          <Button onClick={() => store.PROTO_getEtfHolderAssetCount()}>
-            PROTO::getEtfHolderAssetCount()
-          </Button>
-        </div>
       </section>
     </div>
   );
