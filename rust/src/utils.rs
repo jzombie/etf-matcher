@@ -8,7 +8,7 @@ use sha2::Sha256;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 use web_sys::XmlHttpRequest;
-use js_sys::{Promise, Date};
+use js_sys::{Promise, Date, Uint8Array};
 use std::convert::TryInto;
 use std::io::Read;
 use hex;
@@ -87,7 +87,7 @@ where
     fetch_and_decompress_gz_internal(url_str.clone()).await
 }
 
-async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue> {
+async fn xhr_fetch(url: String) -> Result<Uint8Array, JsValue> {
     // web_sys::console::debug_1(&"Starting fetch_and_decompress_gz".into());
     let xhr: XmlHttpRequest = XmlHttpRequest::new().map_err(|err| {
         web_sys::console::debug_1(&format!("Failed to create XMLHttpRequest: {:?}", err).into());
@@ -142,7 +142,15 @@ async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue
 
     // web_sys::console::debug_1(&"Data fetched successfully".into());
     let array_buffer: JsValue = xhr.response().unwrap();
-    let buffer: js_sys::Uint8Array = js_sys::Uint8Array::new(&array_buffer);
+
+    let buffer: Uint8Array = Uint8Array::new(&array_buffer);
+
+    Ok(buffer.into())
+}
+
+async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue> {
+    let buffer: Uint8Array = xhr_fetch(url).await?;
+
     let encrypted_data: Vec<u8> = buffer.to_vec();
 
     // TODO: Only allow during debugging
