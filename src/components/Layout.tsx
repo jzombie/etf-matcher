@@ -121,10 +121,10 @@ export default function Layout() {
           {" | "}
           <span>{isDirtyState ? "Not Saved" : "Saved"}</span>
           {" | "}
-          <span>{visibleSymbols?.toString()}</span>
-          {" | "}
           <span>{isOnline ? "Online" : "Offline"}</span>
 
+          {" | "}
+          <span>{visibleSymbols?.toString()}</span>
           <span style={{ float: "right" }}>
             Charts provided by{" "}
             <a
