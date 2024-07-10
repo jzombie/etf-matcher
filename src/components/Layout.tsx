@@ -33,12 +33,14 @@ export default function Layout() {
     prettyDataBuildTime,
     isDirtyState,
     visibleSymbols,
+    isOnline,
   } = useStoreStateReader([
     "isProductionBuild",
     "isRustInit",
     "prettyDataBuildTime",
     "isDirtyState",
     "visibleSymbols",
+    "isOnline",
   ]);
 
   return (
@@ -120,6 +122,8 @@ export default function Layout() {
           <span>{isDirtyState ? "Not Saved" : "Saved"}</span>
           {" | "}
           <span>{visibleSymbols?.toString()}</span>
+          {" | "}
+          <span>{isOnline ? "Online" : "Offline"}</span>
 
           <span style={{ float: "right" }}>
             Charts provided by{" "}

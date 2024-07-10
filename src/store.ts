@@ -5,6 +5,7 @@ const IS_PROD = import.meta.env.PROD;
 
 export type StoreStateProps = {
   isProductionBuild: boolean;
+  isOnline: boolean;
   isRustInit: boolean;
   dataBuildTime: string;
   prettyDataBuildTime: string;
@@ -23,6 +24,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
     super({
       isProductionBuild: IS_PROD,
+      isOnline: false,
       isRustInit: false,
       dataBuildTime: "",
       prettyDataBuildTime: "",
@@ -33,6 +35,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     // Only deepfreeze in development
     this.shouldDeepfreeze = !IS_PROD;
+
+    this._initWindowEvents();
 
     callWorkerFunction("get_data_build_info").then((dataBuildInfo) => {
       this.setState({
@@ -51,6 +55,22 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     //     isDirtyState: !prev.isDirtyState,
     //   }));
     // }, 1000);
+  }
+
+  private _initWindowEvents() {
+    const _handleOnlineStatus = () => {
+      this.setState({ isOnline: Boolean(navigator.onLine) });
+    };
+
+    _handleOnlineStatus();
+
+    window.addEventListener("online", _handleOnlineStatus);
+    window.addEventListener("offline", _handleOnlineStatus);
+
+    return () => {
+      window.removeEventListener("online", _handleOnlineStatus);
+      window.removeEventListener("offline", _handleOnlineStatus);
+    };
   }
 
   setVisibleSymbols(visibleSymbols: string[]) {
