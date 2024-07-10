@@ -143,9 +143,7 @@ pub struct PaginatedResults<T> {
 // "Level 1"?
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SymbolSearch {
-    #[serde(rename = "s")]
     pub symbol: String,
-    #[serde(rename = "c")]
     pub company: Option<String>,
 }
 
@@ -183,11 +181,11 @@ impl SymbolSearch {
             let query_lower: String = alternative.to_lowercase();
             for result in &results {
                 let symbol_match = result.symbol.to_lowercase() == query_lower;
-                let company_match = result.company.as_deref().map_or(false, |c| c.to_lowercase() == query_lower);
+                let company_match = result.company.as_deref().map_or(false, |company| company.to_lowercase() == query_lower);
                 let partial_symbol_match_same_start = result.symbol.to_lowercase().starts_with(&query_lower);
-                let partial_company_match_same_start = result.company.as_deref().map_or(false, |c| c.to_lowercase().starts_with(&query_lower));
+                let partial_company_match_same_start = result.company.as_deref().map_or(false, |company| company.to_lowercase().starts_with(&query_lower));
                 let partial_symbol_match_contains = result.symbol.to_lowercase().contains(&query_lower);
-                let partial_company_match_contains = result.company.as_deref().map_or(false, |c| c.to_lowercase().contains(&query_lower));
+                let partial_company_match_contains = result.company.as_deref().map_or(false, |company| company.to_lowercase().contains(&query_lower));
 
                 if symbol_match || company_match {
                     exact_symbol_matches.push(result.clone());

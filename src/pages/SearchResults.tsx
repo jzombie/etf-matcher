@@ -34,7 +34,7 @@ export default function SearchResults() {
       .then((searchResultsWithTotalCount: SearchResultsWithTotalCount) => {
         const { results: searchResults } = searchResultsWithTotalCount;
 
-        const symbols = searchResults.map((result) => result.s);
+        const symbols = searchResults.map((result) => result.symbol);
 
         let returnedSymbols: string[] = symbols;
 

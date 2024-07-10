@@ -98,7 +98,7 @@ export default function SearchModalButton() {
       } else if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
         const selectedSearchResult = searchResults[selectedIndex];
 
-        handleOk(evt, selectedSearchResult.s);
+        handleOk(evt, selectedSearchResult.symbol);
       }
     } else if (evt.code === "ArrowDown") {
       setSelectedIndex((prevIndex) =>
@@ -170,11 +170,11 @@ export default function SearchModalButton() {
                   }}
                 >
                   <span style={{ fontWeight: "bold" }}>
-                    {searchResult["s"]}
+                    {searchResult["symbol"]}
                   </span>
 
                   <span style={{ float: "right", opacity: 0.5 }}>
-                    {searchResult["c"]}
+                    {searchResult["company"]}
                   </span>
                 </div>
               ))}

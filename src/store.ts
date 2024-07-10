@@ -18,8 +18,8 @@ export type StoreStateProps = {
 };
 
 export type SearchResult = {
-  s: string;
-  c: string;
+  symbol: string;
+  company: string;
 };
 
 export type SearchResultsWithTotalCount = {
