@@ -100,6 +100,7 @@ export default function SearchModalButton() {
     });
   }, [searchValue]);
 
+  // TODO: Update w/ icon, etc. once ready
   // useEffect(() => {
   //   for (const symbol of searchResults) {
   //     store.fetchSymbolDetail(symbol).then((detail) => {
