@@ -60,14 +60,20 @@ where
         } else {
             // web_sys::console::debug_1(&"Storing new future in cache".into());
             let future = fetch_and_decompress_gz_internal(url_str.clone()).boxed_local().shared();
-            cache.insert(url_str, future.clone());
+            cache.insert(url_str.clone(), future.clone());
             future
         }
     });
 
     match shared_future.await {
         Ok(result) => Ok(result),
-        Err(err) => Err(JsValue::from_str(&format!("Error: {:?}", err))),
+        Err(err) => {
+            // Remove the failed future from the cache
+            CACHE.with(|cache| {
+                cache.borrow_mut().remove(&url_str);
+            });
+            Err(JsValue::from_str(&format!("Error: {:?}", err)))
+        },
     }
 }
 
