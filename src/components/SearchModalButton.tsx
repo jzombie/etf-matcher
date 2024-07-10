@@ -12,6 +12,7 @@ export default function SearchModalButton() {
 
   const [searchValue, setSearchValue] = useState<string>("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [totalSearchResults, setTotalSearchResults] = useState<number>(0);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   // TODO: Update accordingly
   // const [symbolDetail, setSymbolDetail] = useState<any>({});
@@ -25,6 +26,7 @@ export default function SearchModalButton() {
     if (!isModalOpen) {
       setSearchValue("");
       setSearchResults([]);
+      setTotalSearchResults(0);
       setSelectedIndex(-1);
     } else {
       setTimeout(() => {
@@ -79,9 +81,12 @@ export default function SearchModalButton() {
   };
 
   useEffect(() => {
-    store
-      .searchSymbols(searchValue)
-      .then((searchResults) => setSearchResults(searchResults));
+    store.searchSymbols(searchValue).then((searchResultsWithTotalCount) => {
+      const { results, total_count } = searchResultsWithTotalCount;
+
+      setSearchResults(results);
+      setTotalSearchResults(total_count);
+    });
   }, [searchValue]);
 
   // useEffect(() => {
@@ -122,25 +127,25 @@ export default function SearchModalButton() {
                 onKeyDown={handleInputKeyDown}
                 value={searchValue}
               />
+              {searchResults.map((searchResult, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    backgroundColor:
+                      idx === selectedIndex
+                        ? "rgba(255,255,255,.2)"
+                        : "transparent",
+                    padding: "5px",
+                    overflow: "auto",
+                  }}
+                >
+                  {searchResult["s"]}
+
+                  <span style={{ float: "right" }}>{searchResult["c"]}</span>
+                </div>
+              ))}
+              Total Results: {totalSearchResults}
             </Form>
-
-            {searchResults.map((searchResult, idx) => (
-              <div
-                key={idx}
-                style={{
-                  backgroundColor:
-                    idx === selectedIndex
-                      ? "rgba(255,255,255,.2)"
-                      : "transparent",
-                  padding: "5px",
-                  overflow: "auto",
-                }}
-              >
-                {searchResult["s"]}
-
-                <span style={{ float: "right" }}>{searchResult["c"]}</span>
-              </div>
-            ))}
           </>
         )}
       </Modal>

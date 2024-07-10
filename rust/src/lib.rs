@@ -7,7 +7,7 @@ mod utils;
 mod data_models;
 
 use data_models::{
-    DataBuildInfo, ETF, ETFHolder, SymbolSearch, SymbolDetail,
+    DataBuildInfo, ETF, ETFHolder, PaginatedResults, SymbolSearch, SymbolDetail,
 };
 
 #[wasm_bindgen(start)]
@@ -24,9 +24,9 @@ pub async fn get_data_build_info() -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
-pub async fn search_symbols(query: &str) -> Result<JsValue, JsValue> {
-    let symbols: Vec<SymbolSearch> = SymbolSearch::search_symbols(query).await?;
-    to_value(&symbols).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to serialize symbols: {}", err)))
+pub async fn search_symbols(query: &str, page: usize, page_size: usize) -> Result<JsValue, JsValue> {
+    let results: PaginatedResults<SymbolSearch> = SymbolSearch::search_symbols(query, page, page_size).await?;
+    to_value(&results).map_err(|err| JsValue::from_str(&format!("Failed to serialize results: {}", err)))
 }
 
 #[wasm_bindgen]

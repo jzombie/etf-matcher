@@ -7,7 +7,7 @@ import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 import { store } from "@hooks/useStoreStateReader";
 import SymbolContainer from "@components/SymbolContainer";
 
-import type { SearchResult } from "@src/store";
+import type { SearchResultsWithTotalCount } from "@src/store";
 
 export default function SearchResults() {
   const location = useLocation();
@@ -29,21 +29,25 @@ export default function SearchResults() {
   }, [location]);
 
   useEffect(() => {
-    store.searchSymbols(searchQuery).then((searchResults: SearchResult[]) => {
-      const symbols = searchResults.map((result) => result.s);
+    store
+      .searchSymbols(searchQuery)
+      .then((searchResultsWithTotalCount: SearchResultsWithTotalCount) => {
+        const { results: searchResults } = searchResultsWithTotalCount;
 
-      let returnedSymbols: string[] = symbols;
+        const symbols = searchResults.map((result) => result.s);
 
-      if (isExact) {
-        if (symbols.includes(searchQuery.trim())) {
-          returnedSymbols = [searchQuery];
-        } else {
-          returnedSymbols = [];
+        let returnedSymbols: string[] = symbols;
+
+        if (isExact) {
+          if (symbols.includes(searchQuery.trim())) {
+            returnedSymbols = [searchQuery];
+          } else {
+            returnedSymbols = [];
+          }
         }
-      }
 
-      setSymbols(returnedSymbols);
-    });
+        setSymbols(returnedSymbols);
+      });
   }, [searchQuery, isExact]);
 
   if (!searchQuery) {

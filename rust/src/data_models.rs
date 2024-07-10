@@ -158,6 +158,12 @@ impl ETFHolder {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct PaginatedResults<T> {
+    pub total_count: usize,
+    pub results: Vec<T>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct SymbolSearch {
     #[serde(rename = "s")]
     pub symbol: String,
@@ -166,13 +172,14 @@ pub struct SymbolSearch {
 }
 
 impl SymbolSearch {
-    // TODO: Update with total count, regardless of search results returned
-    // TODO: Include functionality to paginate results
-    pub async fn search_symbols(query: &str) -> Result<Vec<SymbolSearch>, JsValue> {
+    pub async fn search_symbols(query: &str, page: usize, page_size: usize) -> Result<PaginatedResults<SymbolSearch>, JsValue> {
         let trimmed_query = query.trim();
 
         if trimmed_query.is_empty() {
-            return Ok(vec![]);
+            return Ok(PaginatedResults {
+                total_count: 0,
+                results: vec![],
+            });
         }
 
         let url: String = DataUrl::SymbolSearch.value().to_owned();
@@ -188,17 +195,19 @@ impl SymbolSearch {
             })
             .collect();
 
-        if matches.len() > 20 {
-            // Check if there is an exact match
-            if let Some(exact_match) = matches.into_iter().find(|result: &SymbolSearch| result.symbol.eq_ignore_ascii_case(query)) {
-                Ok(vec![exact_match])
-            } else {
-                Err(JsValue::from_str("Too many matches found, and no exact match"))
-            }
-        } else if matches.is_empty() {
-            Err(JsValue::from_str("Symbol not found"))
+        let total_count = matches.len();
+        let paginated_results: Vec<SymbolSearch> = matches.into_iter()
+            .skip((page - 1) * page_size)
+            .take(page_size)
+            .collect();
+
+        if paginated_results.is_empty() && total_count > 0 {
+            Err(JsValue::from_str("Page out of range"))
         } else {
-            Ok(matches)
+            Ok(PaginatedResults {
+                total_count,
+                results: paginated_results,
+            })
         }
     }
 }

@@ -20,6 +20,11 @@ export type SearchResult = {
   c: string;
 };
 
+export type SearchResultsWithTotalCount = {
+  total_count: number;
+  results: SearchResult[];
+};
+
 class _Store extends ReactStateEmitter<StoreStateProps> {
   constructor() {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
@@ -83,13 +88,20 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   // except where absolutely needed (and utilize Rust for more `composite` metric generation).
 
   // TODO: Update type
-  async searchSymbols(query: string): Promise<SearchResult[]> {
+  async searchSymbols(
+    query: string,
+    page: number = 1,
+    page_size: number = 20
+  ): Promise<SearchResultsWithTotalCount> {
     try {
       // Call the worker function with the given query and trim any extra spaces
-      const results = await callWorkerFunction<SearchResult[]>(
+      const results = await callWorkerFunction<SearchResultsWithTotalCount>(
         "search_symbols",
-        query.trim()
+        query.trim(),
+        page,
+        page_size
       );
+
       return results;
     } catch (error) {
       console.error("Error searching symbols:", error);
