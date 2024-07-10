@@ -89,7 +89,7 @@ where
 
 async fn xhr_fetch(url: String) -> Result<Vec<u8>, JsValue> {
     // web_sys::console::debug_1(&"Starting fetch_and_decompress_gz".into());
-    let xhr: XmlHttpRequest = XmlHttpRequest::new().map_err(|err| {
+    let xhr: XmlHttpRequest = XmlHttpRequest::new().map_err(|err: JsValue| {
         web_sys::console::debug_1(&format!("Failed to create XMLHttpRequest: {:?}", err).into());
         JsValue::from_str("Failed to create XMLHttpRequest")
     })?;
@@ -98,14 +98,14 @@ async fn xhr_fetch(url: String) -> Result<Vec<u8>, JsValue> {
     let timestamp: String = Date::now().to_string();
     let nocache_url: String = format!("{}?nocache={}", url, timestamp);
 
-    xhr.open("GET", &nocache_url).map_err(|err| {
+    xhr.open("GET", &nocache_url).map_err(|err: JsValue| {
         web_sys::console::debug_1(&format!("Failed to open XMLHttpRequest: {:?}", err).into());
         JsValue::from_str("Failed to open XMLHttpRequest")
     })?;
 
     xhr.set_response_type(web_sys::XmlHttpRequestResponseType::Arraybuffer);
 
-    xhr.set_request_header("Cache-Control", "no-cache").map_err(|err| {
+    xhr.set_request_header("Cache-Control", "no-cache").map_err(|err: JsValue| {
         web_sys::console::debug_1(&format!("Failed to set Cache-Control header: {:?}", err).into());
         JsValue::from_str("Failed to set Cache-Control header")
     })?;
@@ -115,7 +115,7 @@ async fn xhr_fetch(url: String) -> Result<Vec<u8>, JsValue> {
         JsValue::from_str("Failed to send XMLHttpRequest")
     })?;
 
-    let promise: Promise = Promise::new(&mut |resolve, reject| {
+    let promise: Promise = Promise::new(&mut |resolve, reject: js_sys::Function| {
         let onload: Closure<dyn FnMut()> = Closure::wrap(Box::new(move || {
             resolve.call1(&JsValue::NULL, &JsValue::NULL).unwrap();
         }) as Box<dyn FnMut()>);
