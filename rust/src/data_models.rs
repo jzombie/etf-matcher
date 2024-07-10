@@ -55,86 +55,86 @@ impl DataBuildInfo {
     }
 }
 
-// Option<type> allows null values
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ETF {
-    pub symbol: Option<String>,
-    pub name: Option<String>,
-    pub price: Option<f64>,
-    pub exchange: Option<String>,
-    #[serde(rename = "exchangeShortName")]
-    pub exchange_short_name: Option<String>,
-    #[serde(rename = "type")]
-    pub entry_type: Option<String>,
-}
+// // Option<type> allows null values
+// #[derive(Serialize, Deserialize)]
+// #[serde(rename_all = "camelCase")]
+// pub struct ETF {
+//     pub symbol: Option<String>,
+//     pub name: Option<String>,
+//     pub price: Option<f64>,
+//     pub exchange: Option<String>,
+//     #[serde(rename = "exchangeShortName")]
+//     pub exchange_short_name: Option<String>,
+//     #[serde(rename = "type")]
+//     pub entry_type: Option<String>,
+// }
 
-impl ETF {
-    pub async fn count_etfs_per_exchange() -> Result<HashMap<String, usize>, JsValue> {
-        let url: &str = DataUrl::EtfList.value();
+// impl ETF {
+//     pub async fn count_etfs_per_exchange() -> Result<HashMap<String, usize>, JsValue> {
+//         let url: &str = DataUrl::EtfList.value();
 
-        let csv_data: String = fetch_and_decompress_gz(&url).await?;
-        let entries: Vec<ETF> = parse_csv_data(&csv_data)?;
+//         let csv_data: String = fetch_and_decompress_gz(&url).await?;
+//         let entries: Vec<ETF> = parse_csv_data(&csv_data)?;
 
-        let mut counts: HashMap<String, usize> = HashMap::new();
-        for entry in entries {
-            if let Some(exchange_short_name) = &entry.exchange_short_name {
-                *counts.entry(exchange_short_name.clone()).or_insert(0) += 1;
-            }
-        }
-        Ok(counts)
-    }
-}
+//         let mut counts: HashMap<String, usize> = HashMap::new();
+//         for entry in entries {
+//             if let Some(exchange_short_name) = &entry.exchange_short_name {
+//                 *counts.entry(exchange_short_name.clone()).or_insert(0) += 1;
+//             }
+//         }
+//         Ok(counts)
+//     }
+// }
 
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ETFHolder {
-    pub asset: Option<String>,
-    pub name: Option<String>,
-    pub isin: Option<String>,
-    pub cusip: Option<String>,
-    #[serde(rename = "sharesNumber")]
-    pub shares_number: Option<f64>,
-    #[serde(rename = "weightPercentage")]
-    pub weight_percentage: Option<f64>,
-    #[serde(rename = "marketValue")]
-    pub market_value: Option<f64>,
-    pub updated: Option<String>,
-}
+// #[derive(Serialize, Deserialize)]
+// #[serde(rename_all = "camelCase")]
+// pub struct ETFHolder {
+//     pub asset: Option<String>,
+//     pub name: Option<String>,
+//     pub isin: Option<String>,
+//     pub cusip: Option<String>,
+//     #[serde(rename = "sharesNumber")]
+//     pub shares_number: Option<f64>,
+//     #[serde(rename = "weightPercentage")]
+//     pub weight_percentage: Option<f64>,
+//     #[serde(rename = "marketValue")]
+//     pub market_value: Option<f64>,
+//     pub updated: Option<String>,
+// }
 
-impl ETFHolder {
-    pub async fn get_etf_holder_asset_count(symbol: String) -> Result<i32, JsValue> {
-        let url: String = DataUrl::get_etf_holder_url(&symbol);
+// impl ETFHolder {
+//     pub async fn get_etf_holder_asset_count(symbol: String) -> Result<i32, JsValue> {
+//         let url: String = DataUrl::get_etf_holder_url(&symbol);
 
-        let csv_data: String = fetch_and_decompress_gz(&url).await?;
-        let entries: Vec<ETFHolder> = parse_csv_data(&csv_data)?;
+//         let csv_data: String = fetch_and_decompress_gz(&url).await?;
+//         let entries: Vec<ETFHolder> = parse_csv_data(&csv_data)?;
 
-        let mut count: i32 = 0;
-        for entry in entries {
-            if entry.asset.is_some() {
-                count += 1;
-            }
-        }
+//         let mut count: i32 = 0;
+//         for entry in entries {
+//             if entry.asset.is_some() {
+//                 count += 1;
+//             }
+//         }
 
-        Ok(count)
-    }
+//         Ok(count)
+//     }
 
-    pub async fn get_etf_holder_asset_names(symbol: String) -> Result<Vec<String>, JsValue> {
-        let url: String = DataUrl::get_etf_holder_url(&symbol);
+//     pub async fn get_etf_holder_asset_names(symbol: String) -> Result<Vec<String>, JsValue> {
+//         let url: String = DataUrl::get_etf_holder_url(&symbol);
 
-        let csv_data: String = fetch_and_decompress_gz(&url).await?;
-        let entries: Vec<ETFHolder> = parse_csv_data(&csv_data)?;
+//         let csv_data: String = fetch_and_decompress_gz(&url).await?;
+//         let entries: Vec<ETFHolder> = parse_csv_data(&csv_data)?;
 
-        let mut asset_names: Vec<String> = Vec::new();
-        for entry in entries {
-            if let Some(asset) = &entry.asset {
-                asset_names.push(asset.clone());
-            }
-        }
+//         let mut asset_names: Vec<String> = Vec::new();
+//         for entry in entries {
+//             if let Some(asset) = &entry.asset {
+//                 asset_names.push(asset.clone());
+//             }
+//         }
 
-        Ok(asset_names)
-    }
-}
+//         Ok(asset_names)
+//     }
+// }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PaginatedResults<T> {
