@@ -42,23 +42,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       visibleSymbols: [],
       isSearchModalOpen: false,
     });
-
-    this.on(
-      StateEmitterDefaultEvents.UPDATE,
-      (keys: (keyof StoreStateProps)[]) => {
-        if (keys.includes("visibleSymbols")) {
-          const { visibleSymbols } = this.getState(["visibleSymbols"]);
-
-          // TODO: Handle this tracking
-          console.log({ visibleSymbols });
-        }
-      }
-    );
-
     // Only deepfreeze in development
     this.shouldDeepfreeze = !IS_PROD;
 
-    this._initWindowEvents();
+    this._initLocalEvents();
 
     // TODO: Poll for data build info once every "x" to ensure the data is always running the latest version
     this._fetchDataBuildInfo();
@@ -72,7 +59,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // }, 1000);
   }
 
-  private _initWindowEvents() {
+  private _initLocalEvents() {
     const _handleOnlineStatus = () => {
       this.setState({ isOnline: Boolean(navigator.onLine) });
     };
@@ -82,9 +69,22 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     window.addEventListener("online", _handleOnlineStatus);
     window.addEventListener("offline", _handleOnlineStatus);
 
+    const _handleVisibleSymbolsUpdate = (keys: (keyof StoreStateProps)[]) => {
+      if (keys.includes("visibleSymbols")) {
+        const { visibleSymbols } = this.getState(["visibleSymbols"]);
+
+        // TODO: Handle this tracking
+        console.log({ visibleSymbols });
+      }
+    };
+
+    this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
+
     return () => {
       window.removeEventListener("online", _handleOnlineStatus);
       window.removeEventListener("offline", _handleOnlineStatus);
+
+      this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
     };
   }
 
