@@ -166,6 +166,8 @@ pub struct SymbolSearch {
 }
 
 impl SymbolSearch {
+    // TODO: Update with total count, regardless of search results returned
+    // TODO: Include functionality to paginate results
     pub async fn search_symbols(query: &str) -> Result<Vec<SymbolSearch>, JsValue> {
         let trimmed_query = query.trim();
 
