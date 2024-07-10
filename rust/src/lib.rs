@@ -5,8 +5,6 @@ use std::panic;
 
 mod utils;
 mod data_models;
-// use utils::shard::{parse_shard_index, find_shard_for_symbol, fetch_and_parse_shard, query_shard_for_symbol};
-// use utils::symbol_trait::HasSymbol;
 
 use data_models::{
     DataBuildInfo,
