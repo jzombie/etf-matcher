@@ -8,7 +8,7 @@ use sha2::Sha256;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 use web_sys::XmlHttpRequest;
-use js_sys::Promise;
+use js_sys::{Promise, Date};
 use std::convert::TryInto;
 use std::io::Read;
 use hex;
@@ -93,11 +93,23 @@ async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue
         web_sys::console::debug_1(&format!("Failed to create XMLHttpRequest: {:?}", err).into());
         JsValue::from_str("Failed to create XMLHttpRequest")
     })?;
-    xhr.open("GET", &url).map_err(|err| {
+
+    // Let this utility manage its own cache
+    let timestamp = Date::now().to_string();
+    let nocache_url = format!("{}?nocache={}", url, timestamp);
+
+    xhr.open("GET", &nocache_url).map_err(|err| {
         web_sys::console::debug_1(&format!("Failed to open XMLHttpRequest: {:?}", err).into());
         JsValue::from_str("Failed to open XMLHttpRequest")
     })?;
+
     xhr.set_response_type(web_sys::XmlHttpRequestResponseType::Arraybuffer);
+
+    xhr.set_request_header("Cache-Control", "no-cache").map_err(|err| {
+        web_sys::console::debug_1(&format!("Failed to set Cache-Control header: {:?}", err).into());
+        JsValue::from_str("Failed to set Cache-Control header")
+    })?;
+
     xhr.send().map_err(|err| {
         web_sys::console::debug_1(&format!("Failed to send XMLHttpRequest: {:?}", err).into());
         JsValue::from_str("Failed to send XMLHttpRequest")
