@@ -151,12 +151,20 @@ export default function SearchModalButton() {
                     overflow: "auto",
                   }}
                 >
-                  {searchResult["s"]}
+                  <span style={{ fontWeight: "bold" }}>
+                    {searchResult["s"]}
+                  </span>
 
-                  <span style={{ float: "right" }}>{searchResult["c"]}</span>
+                  <span style={{ float: "right", opacity: 0.5 }}>
+                    {searchResult["c"]}
+                  </span>
                 </div>
               ))}
-              Total Results: {totalSearchResults}
+              {totalSearchResults > 0 && (
+                <span style={{ fontStyle: "italic" }}>
+                  Total results for query: {totalSearchResults}
+                </span>
+              )}
             </Form>
           </>
         )}
