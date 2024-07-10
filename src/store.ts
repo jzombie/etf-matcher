@@ -12,7 +12,6 @@ export type StoreStateProps = {
   isRustInit: boolean;
   dataBuildTime: string;
   prettyDataBuildTime: string;
-  count: number;
   isDirtyState: boolean;
   visibleSymbols: string[];
   isSearchModalOpen: boolean;
@@ -37,11 +36,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       isRustInit: false,
       dataBuildTime: "",
       prettyDataBuildTime: "",
-      count: 0,
       isDirtyState: false,
       visibleSymbols: [],
       isSearchModalOpen: false,
     });
+
     // Only deepfreeze in development
     this.shouldDeepfreeze = !IS_PROD;
 
@@ -53,7 +52,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // TODO: Remove temporary
     // setInterval(() => {
     //   this.setState((prev) => ({
-    //     count: prev.count + 1,
     //     isDirtyState: !prev.isDirtyState,
     //   }));
     // }, 1000);
