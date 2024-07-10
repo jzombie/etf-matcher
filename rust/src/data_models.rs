@@ -7,6 +7,7 @@ use crate::utils::{
   parse_json_data
 };
 
+
 pub enum DataUrl {
     DataBuildInfo,
     EtfList,
@@ -163,7 +164,7 @@ pub struct PaginatedResults<T> {
     pub results: Vec<T>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SymbolSearch {
     #[serde(rename = "s")]
     pub symbol: String,
@@ -172,6 +173,16 @@ pub struct SymbolSearch {
 }
 
 impl SymbolSearch {
+    fn generate_alternative_symbols(query: &str) -> Vec<String> {
+        let mut alternatives = vec![query.to_lowercase()];
+        if query.contains('.') {
+            alternatives.push(query.replace('.', "-").to_lowercase());
+        } else if query.contains('-') {
+            alternatives.push(query.replace('-', ".").to_lowercase());
+        }
+        alternatives
+    }
+
     pub async fn search_symbols(query: &str, page: usize, page_size: usize) -> Result<PaginatedResults<SymbolSearch>, JsValue> {
         let trimmed_query = query.trim();
 
@@ -183,17 +194,27 @@ impl SymbolSearch {
         }
 
         let url: String = DataUrl::SymbolSearch.value().to_owned();
-
         let json_data: String = fetch_and_decompress_gz(&url).await?;
         let results: Vec<SymbolSearch> = parse_json_data(&json_data)?;
 
-        let query_lower: String = trimmed_query.to_lowercase();
-        let matches: Vec<SymbolSearch> = results.into_iter()
-            .filter(|result: &SymbolSearch| {
-                result.symbol.to_lowercase().contains(&query_lower) ||
-                result.company.as_deref().map_or(false, |c| c.to_lowercase().contains(&query_lower))
-            })
-            .collect();
+        let alternatives = SymbolSearch::generate_alternative_symbols(trimmed_query);
+        let mut matches: Vec<SymbolSearch> = vec![];
+
+        for alternative in alternatives {
+            let query_lower: String = alternative.to_lowercase();
+            let mut alternative_matches: Vec<SymbolSearch> = results.iter()
+                .filter(|result: &&SymbolSearch| {
+                    result.symbol.to_lowercase().contains(&query_lower) ||
+                    result.company.as_deref().map_or(false, |c| c.to_lowercase().contains(&query_lower))
+                })
+                .map(|result: &SymbolSearch| result.clone())
+                .collect();
+            matches.append(&mut alternative_matches);
+        }
+
+        // Remove duplicates
+        matches.sort_by(|a: &SymbolSearch, b: &SymbolSearch| a.symbol.cmp(&b.symbol));
+        matches.dedup_by(|a: &mut SymbolSearch, b: &mut SymbolSearch| a.symbol == b.symbol);
 
         let total_count = matches.len();
         let paginated_results: Vec<SymbolSearch> = matches.into_iter()

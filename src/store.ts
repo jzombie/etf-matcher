@@ -45,17 +45,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     this._initWindowEvents();
 
-    callWorkerFunction("get_data_build_info").then((dataBuildInfo) => {
-      this.setState({
-        isRustInit: true,
-        dataBuildTime: (dataBuildInfo as { [key: string]: string }).time,
-        prettyDataBuildTime: new Date(
-          (dataBuildInfo as { [key: string]: string }).time
-        ).toLocaleString(),
-      });
-    });
+    // TODO: Poll for data build info once every "x" to ensure the data is always running the latest version
+    this._fetchDataBuildInfo();
 
-    // // TODO: Remove temporary
+    // TODO: Remove temporary
     // setInterval(() => {
     //   this.setState((prev) => ({
     //     count: prev.count + 1,
@@ -82,6 +75,19 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
   setVisibleSymbols(visibleSymbols: string[]) {
     this.setState({ visibleSymbols });
+  }
+
+  private _fetchDataBuildInfo() {
+    callWorkerFunction("get_data_build_info").then((dataBuildInfo) => {
+      this.setState({
+        isRustInit: true,
+        // TODO: If data build time is already set as state, but this indicates otherwise, that's a signal the app needs to update
+        dataBuildTime: (dataBuildInfo as { [key: string]: string }).time,
+        prettyDataBuildTime: new Date(
+          (dataBuildInfo as { [key: string]: string }).time
+        ).toLocaleString(),
+      });
+    });
   }
 
   // TODO: For the following `PROTO` functions, it might be best to not retain a duplicate copy here,
