@@ -200,22 +200,34 @@ impl SymbolSearch {
 
         let alternatives: Vec<String> = SymbolSearch::generate_alternative_symbols(&trimmed_query);
         let mut exact_symbol_matches: Vec<SymbolSearch> = vec![];
-        let mut partial_matches: Vec<SymbolSearch> = vec![];
+        let mut starts_with_matches: Vec<SymbolSearch> = vec![];
+        let mut contains_matches: Vec<SymbolSearch> = vec![];
 
         for alternative in alternatives {
             let query_lower: String = alternative.to_lowercase();
             for result in &results {
-                if result.symbol.to_lowercase() == query_lower {
+                let symbol_match = result.symbol.to_lowercase() == query_lower;
+                let company_match = result.company.as_deref().map_or(false, |c| c.to_lowercase() == query_lower);
+                let partial_symbol_match_same_start = result.symbol.to_lowercase().starts_with(&query_lower);
+                let partial_company_match_same_start = result.company.as_deref().map_or(false, |c| c.to_lowercase().starts_with(&query_lower));
+                let partial_symbol_match_contains = result.symbol.to_lowercase().contains(&query_lower);
+                let partial_company_match_contains = result.company.as_deref().map_or(false, |c| c.to_lowercase().contains(&query_lower));
+
+                if symbol_match || company_match {
                     exact_symbol_matches.push(result.clone());
-                } else if result.symbol.to_lowercase().contains(&query_lower) || result.company.as_deref().map_or(false, |c| c.to_lowercase().contains(&query_lower)) {
-                    partial_matches.push(result.clone());
+                } else if partial_symbol_match_same_start || partial_company_match_same_start {
+                    starts_with_matches.push(result.clone());
+                } else if partial_symbol_match_contains || partial_company_match_contains {
+                    contains_matches.push(result.clone());
                 }
             }
         }
 
-        // Combine exact symbol matches and partial matches, with exact symbol matches first
-        exact_symbol_matches.append(&mut partial_matches);
-        let matches: Vec<SymbolSearch> = exact_symbol_matches;
+        // Combine matches in the desired order
+        let mut matches: Vec<SymbolSearch> = Vec::with_capacity(exact_symbol_matches.len() + starts_with_matches.len() + contains_matches.len());
+        matches.append(&mut exact_symbol_matches);
+        matches.append(&mut starts_with_matches);
+        matches.append(&mut contains_matches);
 
         let total_count: usize = matches.len();
         let paginated_results: Vec<SymbolSearch> = matches.into_iter()
@@ -233,6 +245,7 @@ impl SymbolSearch {
         }
     }
 }
+
 
 // "Level 2"?
 #[derive(Serialize, Deserialize, Debug)]
