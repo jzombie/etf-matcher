@@ -46,6 +46,24 @@ export default function SearchModalButton() {
     }
   }, [isModalOpen]);
 
+  // Prevent other elements from stealing focus
+  // TODO: This might need to be disabled on mobile so that the virtual keyboard can disappear as needed (add isMobile detection)
+  useEffect(() => {
+    const input = inputRef.current?.input;
+
+    if (isModalOpen && input) {
+      const _handleInputBlur = () => {
+        input.focus();
+      };
+
+      input.addEventListener("blur", _handleInputBlur);
+
+      return () => {
+        input.removeEventListener("blur", _handleInputBlur);
+      };
+    }
+  }, [isModalOpen]);
+
   const showModal = () => {
     store.setState({ isSearchModalOpen: true });
   };
