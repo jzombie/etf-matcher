@@ -20,7 +20,7 @@ export default function Home() {
               style={heroButtonStyle}
               type="primary"
               size="large"
-              onClick={() => store.PROTO_getSymbols()}
+              onClick={() => alert("TODO: Figure this out")}
             >
               Get Started
             </Button>
@@ -46,9 +46,6 @@ export default function Home() {
         </p>
         <div>{count}</div>
         <div>
-          <Button onClick={() => store.PROTO_getSymbols()}>
-            PROTO::getSymbols()
-          </Button>
           <Button onClick={() => store.PROTO_countEtfsPerExchange()}>
             PROTO::countEtfsPerExchange()
           </Button>

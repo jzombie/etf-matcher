@@ -7,9 +7,8 @@ mod utils;
 mod data_models;
 
 use data_models::{
-    DataBuildInfo, ETF, ETFHolder, SymbolList, SymbolSearch, SymbolDetail,
+    DataBuildInfo, ETF, ETFHolder, SymbolSearch, SymbolDetail,
 };
-use crate::data_models::SymbolListExt;
 
 #[wasm_bindgen(start)]
 pub fn main() -> Result<(), JsValue> {
@@ -25,19 +24,7 @@ pub async fn get_data_build_info() -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
-pub async fn get_symbols() -> Result<JsValue, JsValue> {
-    let symbols: Vec<String> = SymbolList::get_symbols().await?;
-    to_value(&symbols).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to convert SymbolList to JsValue: {}", err)))
-}
-
-#[wasm_bindgen]
 pub async fn search_symbols(query: &str) -> Result<JsValue, JsValue> {
-    let symbols: Vec<String> = SymbolList::search_symbols(query).await?;
-    to_value(&symbols).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to convert SymbolList to JsValue: {}", err)))
-}
-
-#[wasm_bindgen]
-pub async fn search_symbols_v2(query: &str) -> Result<JsValue, JsValue> {
     let symbols: Vec<SymbolSearch> = SymbolSearch::search_symbols_v2(query).await?;
     to_value(&symbols).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to serialize symbols: {}", err)))
 }

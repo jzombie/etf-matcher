@@ -60,18 +60,12 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   // TODO: For the following `PROTO` functions, it might be best to not retain a duplicate copy here,
   // except where absolutely needed (and utilize Rust for more `composite` metric generation).
 
-  PROTO_getSymbols() {
-    callWorkerFunction("get_symbols").then((symbols) => {
-      console.log({ symbols });
-    });
-  }
-
   // TODO: Update type
   async searchSymbols(query: string): Promise<SearchResult[]> {
     try {
       // Call the worker function with the given query and trim any extra spaces
       const results = await callWorkerFunction<SearchResult[]>(
-        "search_symbols_v2",
+        "search_symbols",
         query.trim()
       );
       return results;
