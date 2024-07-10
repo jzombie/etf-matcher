@@ -4,7 +4,10 @@ import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import heroImg from "@assets/hero.webp"; // Adjust the path as needed
 
 export default function Home() {
-  const { count } = useStoreStateReader(["count"]);
+  const { count, isSearchModalOpen } = useStoreStateReader([
+    "count",
+    "isSearchModalOpen",
+  ]);
 
   const handleGetStarted = () => {
     store.setState({ isSearchModalOpen: true });
@@ -25,8 +28,9 @@ export default function Home() {
               type="primary"
               size="large"
               onClick={handleGetStarted}
+              disabled={isSearchModalOpen}
             >
-              Get Started
+              {!isSearchModalOpen ? "Get Started" : "You're on your way!"}
             </Button>
           </div>
         </div>

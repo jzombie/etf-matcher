@@ -117,7 +117,7 @@ export default function SearchModalButton() {
             <Form>
               <Input
                 ref={inputRef}
-                placeholder='Search for Ticker Symbol (e.g. "AAPL")'
+                placeholder='Search for Symbol (e.g. "AAPL" or "Apple")'
                 onChange={handleInputChange}
                 onKeyDown={handleInputKeyDown}
                 value={searchValue}
