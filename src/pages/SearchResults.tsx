@@ -74,6 +74,8 @@ export default function SearchResults() {
           <Button onClick={() => store.addSymbolToPortfolio(symbol)}>
             Add {symbol} to Portfolio
           </Button>
+
+          <Button onClick={() => store.PROTO_getSymbolDetail(symbol)}></Button>
         </SymbolContainer>
       ))}
     </div>

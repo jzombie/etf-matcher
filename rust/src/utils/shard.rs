@@ -3,8 +3,8 @@ use serde::{Deserialize, Serialize};
 use crate::JsValue;
 use crate::utils::fetch::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
-use crate::utils::symbol_trait::HasSymbol;
-// use serde_json::Value;
+use web_sys::console;
+use url::Url;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ShardIndexEntry {
@@ -37,25 +37,38 @@ where
     Ok(entries)
 }
 
-// TODO: Enhance with "near symbol" support if extending beyond just stock symbols (i.e. Hexadecimal-indexed vectors)
-pub async fn query_shard_for_symbol<T>(
+pub async fn query_shard_for_symbol<T, F>(
     shard_index_url: &str,
     symbol: &str,
+    get_symbol: F,
 ) -> Result<Option<T>, JsValue>
 where
-    T: DeserializeOwned + HasSymbol,
+    T: DeserializeOwned,
+    F: Fn(&T) -> Option<&str>,
 {
     // Parse the shard index
     let shard_index = parse_shard_index(shard_index_url).await?;
 
     // Find the appropriate shard for the given symbol
     if let Some(shard_entry) = find_shard_for_symbol(symbol, &shard_index) {
+        // Determine the base path from the shard_index_url
+        let base_path = if let Some(pos) = shard_index_url.rfind('/') {
+            &shard_index_url[..pos + 1]
+        } else {
+            ""
+        };
+
+        // Construct the full URL for the shard file
+        let shard_file_url = format!("{}{}", base_path, shard_entry.shard_file);
+
         // Fetch and parse the shard
-        let shard_data: Vec<T> = fetch_and_parse_shard(&shard_entry.shard_file).await?;
+        let shard_data: Vec<T> = fetch_and_parse_shard(&shard_file_url).await?;
 
         // Find the specific entry in the shard
         for entry in shard_data {
-            if entry.get_symbol() == Some(symbol) {
+            if get_symbol(&entry) == Some(symbol) {
+                console::debug_1(&JsValue::from_str("Got symbol match..."));
+
                 return Ok(Some(entry));
             }
         }

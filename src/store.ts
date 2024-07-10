@@ -155,6 +155,17 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       .catch((error) => console.error(error));
   }
 
+  PROTO_getSymbolDetail(symbol: string) {
+    callWorkerFunction("get_symbol_detail", symbol)
+      .then((symbolDetail) =>
+        console.log({
+          symbol,
+          symbolDetail,
+        })
+      )
+      .catch((error) => console.error(error));
+  }
+
   addSymbolToPortfolio(symbol: string) {
     console.warn(`TODO: Handle symbol add: ${symbol}`);
   }

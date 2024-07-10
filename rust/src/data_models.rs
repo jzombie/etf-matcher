@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use lz4_flex::compress_prepend_size;
 use crate::JsValue;
+use base64::{encode_config, URL_SAFE_NO_PAD};
 // use crate::utils::{
 //   fetch_and_decompress_gz_non_cached,
 //   fetch_and_decompress_gz,
@@ -8,30 +10,34 @@ use crate::JsValue;
 // };
 use crate::utils::fetch::{fetch_and_decompress_gz, fetch_and_decompress_gz_non_cached};
 use crate::utils::parse::parse_csv_data;
+use crate::utils::shard::query_shard_for_symbol;
 
 pub enum DataUrl {
     DataBuildInfo,
-    EtfList,
-    SymbolSearch
+    // EtfList,
+    SymbolSearch,
+    SymbolDetailShardIndex,
 }
 
 impl DataUrl {
     pub fn value(&self) -> &'static str {
         match self {
             DataUrl::DataBuildInfo => "/data/data_build_info.enc",
-            DataUrl::EtfList => "/data/etfs.enc",
-            DataUrl::SymbolSearch => "/data/symbol_search_dict.enc"
+            // DataUrl::EtfList => "/data/etfs.enc",
+            DataUrl::SymbolSearch => "/data/symbol_search_dict.enc",
+            DataUrl::SymbolDetailShardIndex => "/data/symbol_detail_index.enc"
         }
     }
 
-    pub fn get_etf_holder_url(symbol: &str) -> String {
-        format!("/data/etf_holder.{}.enc", symbol)
-    }
 
-    pub fn get_symbol_detail_url(symbol: &str) -> String {
-        let first_char = symbol.chars().next().unwrap_or('O').to_ascii_uppercase();
-        format!("/data/symbol_detail.{}.enc", first_char)
-    }
+    // pub fn get_etf_holder_url(symbol: &str) -> String {
+    //     format!("/data/etf_holder.{}.enc", symbol)
+    // }
+
+    // pub fn get_symbol_detail_url(symbol: &str) -> String {
+    //     let first_char = symbol.chars().next().unwrap_or('O').to_ascii_uppercase();
+    //     format!("/data/symbol_detail.{}.enc", first_char)
+    // }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -226,20 +232,20 @@ impl SymbolSearch {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SymbolDetail {
     pub symbol: String,
+    pub cik: Option<String>,
+    pub country_code: Option<String>,
     pub industry: Option<String>,
     pub sector: Option<String>,
 }
 
 impl SymbolDetail {
     pub async fn get_symbol_detail(symbol: &str) -> Result<SymbolDetail, JsValue> {
-        let url: String = DataUrl::get_symbol_detail_url(symbol);
-        
-        let csv_data: String = fetch_and_decompress_gz(&url).await?;
-        let details: Vec<SymbolDetail> = parse_csv_data(&csv_data)?;
-
-        // Find the specific symbol within the shard
-        details.into_iter()
-            .find(|detail| detail.symbol == symbol)
-            .ok_or_else(|| JsValue::from_str("Symbol not found"))
+        let url: &str = DataUrl::SymbolDetailShardIndex.value();
+        query_shard_for_symbol(url, symbol, |detail: &SymbolDetail| {
+            Some(&detail.symbol)
+        })
+        .await?
+        .ok_or_else(|| JsValue::from_str("Symbol not found"))
     }
 }
+
