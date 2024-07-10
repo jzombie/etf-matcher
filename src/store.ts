@@ -62,13 +62,12 @@ class Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   async searchSymbols(query: string): Promise<string[]> {
-    return callWorkerFunction<string[]>("search_symbols", query);
+    return callWorkerFunction<string[]>("search_symbols", query.trim());
   }
 
-  async PROTO_getSymbolDetail(symbol: string) {
-    callWorkerFunction("get_symbol_detail", symbol).then((detail) => {
-      console.log(symbol, detail);
-    });
+  // TODO: Document type (should be able to import from WASM type)
+  async fetchSymbolDetail(symbol: string) {
+    return callWorkerFunction("get_symbol_detail", symbol);
   }
 
   PROTO_countEtfsPerExchange() {

@@ -17,7 +17,7 @@ export default function SearchResults() {
     const searchParams = new URLSearchParams(location.search);
     searchParams.forEach((value, key) => {
       if (key === "query") {
-        setSearchQuery(value);
+        setSearchQuery(value.trim());
       }
       if (key === "exact") {
         // String values from URL
@@ -31,7 +31,7 @@ export default function SearchResults() {
       let returnedSymbols: string[] = symbols;
 
       if (isExact) {
-        if (searchQuery in symbols) {
+        if (symbols.includes(searchQuery.trim())) {
           returnedSymbols = [searchQuery];
         } else {
           returnedSymbols = [];

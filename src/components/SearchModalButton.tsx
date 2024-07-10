@@ -10,6 +10,8 @@ export default function SearchModalButton() {
   const [searchValue, setSearchValue] = useState<string>("");
   const [searchResults, setSearchResults] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+  // TODO: Update accordingly
+  const [symbolDetail, setSymbolDetail] = useState<any>({});
   const inputRef = useRef<InputRef>(null);
 
   const location = useLocation();
@@ -81,7 +83,9 @@ export default function SearchModalButton() {
 
   useEffect(() => {
     for (const symbol of searchResults) {
-      store.PROTO_getSymbolDetail(symbol);
+      store.fetchSymbolDetail(symbol).then((detail) => {
+        setSymbolDetail((prev) => ({ ...prev, [symbol]: detail }));
+      });
     }
   }, [searchResults]);
 
@@ -117,7 +121,7 @@ export default function SearchModalButton() {
               />
             </Form>
 
-            {searchResults.map((searchResult, idx) => (
+            {searchResults.map((searchResultSymbol, idx) => (
               <div
                 key={idx}
                 style={{
@@ -126,9 +130,15 @@ export default function SearchModalButton() {
                       ? "rgba(255,255,255,.2)"
                       : "transparent",
                   padding: "5px",
+                  overflow: "auto",
                 }}
               >
-                {searchResult}
+                {searchResultSymbol}
+
+                <span style={{ float: "right" }}>
+                  {symbolDetail[searchResultSymbol] &&
+                    symbolDetail[searchResultSymbol]["company"]}
+                </span>
               </div>
             ))}
           </>
