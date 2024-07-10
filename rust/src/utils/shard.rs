@@ -4,7 +4,6 @@ use crate::JsValue;
 use crate::utils::fetch::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
 use web_sys::console;
-use url::Url;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ShardIndexEntry {
