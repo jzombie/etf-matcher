@@ -39,13 +39,13 @@ class Store extends ReactStateEmitter<StoreStateProps> {
       });
     });
 
-    // TODO: Remove temporary
-    setInterval(() => {
-      this.setState((prev) => ({
-        count: prev.count + 1,
-        isDirtyState: !prev.isDirtyState,
-      }));
-    }, 1000);
+    // // TODO: Remove temporary
+    // setInterval(() => {
+    //   this.setState((prev) => ({
+    //     count: prev.count + 1,
+    //     isDirtyState: !prev.isDirtyState,
+    //   }));
+    // }, 1000);
   }
 
   setVisibleSymbols(visibleSymbols: string[]) {
