@@ -1,11 +1,13 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use crate::JsValue;
-use crate::utils::{
-  fetch_and_decompress_gz_non_cached,
-  fetch_and_decompress_gz,
-  parse_csv_data
-};
+// use crate::utils::{
+//   fetch_and_decompress_gz_non_cached,
+//   fetch_and_decompress_gz,
+//   parse_csv_data
+// };
+use crate::utils::fetch::{fetch_and_decompress_gz, fetch_and_decompress_gz_non_cached};
+use crate::utils::parse::parse_csv_data;
 
 pub enum DataUrl {
     DataBuildInfo,
