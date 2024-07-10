@@ -46,19 +46,19 @@ where
     F: Fn(&T) -> Option<&str>,
 {
     // Parse the shard index
-    let shard_index = parse_shard_index(shard_index_url).await?;
+    let shard_index: Vec<ShardIndexEntry> = parse_shard_index(shard_index_url).await?;
 
     // Find the appropriate shard for the given symbol
     if let Some(shard_entry) = find_shard_for_symbol(symbol, &shard_index) {
         // Determine the base path from the shard_index_url
-        let base_path = if let Some(pos) = shard_index_url.rfind('/') {
+        let base_path: &str = if let Some(pos) = shard_index_url.rfind('/') {
             &shard_index_url[..pos + 1]
         } else {
             ""
         };
 
         // Construct the full URL for the shard file
-        let shard_file_url = format!("{}{}", base_path, shard_entry.shard_file);
+        let shard_file_url: String = format!("{}{}", base_path, shard_entry.shard_file);
 
         // Fetch and parse the shard
         let shard_data: Vec<T> = fetch_and_parse_shard(&shard_file_url).await?;
