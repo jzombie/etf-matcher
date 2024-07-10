@@ -1,4 +1,4 @@
-import init, * as wasmModule from "../../../public/pkg/hello_wasm";
+import init, * as wasmModule from "../../../public/pkg/etf_matcher";
 
 interface CallQueueItem {
   functionName: string;

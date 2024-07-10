@@ -90,7 +90,7 @@ export default class StateEmitter<T extends object> extends EventEmitter {
     this._validateState(newState);
 
     this._state = { ...this._state, ...newState };
-    this.emit(StateEmitterDefaultEvents.UPDATE);
+    this.emit(StateEmitterDefaultEvents.UPDATE, Object.keys(newState));
   }
 
   // Use a getter to provide read-only access to the state

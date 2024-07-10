@@ -12,6 +12,7 @@ export default function SearchModalButton() {
 
   const [searchValue, setSearchValue] = useState<string>("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [totalSearchResults, setTotalSearchResults] = useState<number>(0);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   // TODO: Update accordingly
   // const [symbolDetail, setSymbolDetail] = useState<any>({});
@@ -25,11 +26,41 @@ export default function SearchModalButton() {
     if (!isModalOpen) {
       setSearchValue("");
       setSearchResults([]);
+      setTotalSearchResults(0);
       setSelectedIndex(-1);
     } else {
+      // First, blur the currently active element, if any
+      if (
+        document.activeElement &&
+        document.activeElement instanceof HTMLElement
+      ) {
+        (document.activeElement as HTMLElement).blur();
+      }
+
+      // TODO: This still needs to improve on Safari when closing the Modal and then
+      // re-opening it again
       setTimeout(() => {
+        // Now focus the input element
         inputRef.current?.focus();
       });
+    }
+  }, [isModalOpen]);
+
+  // Prevent other elements from stealing focus
+  // TODO: This might need to be disabled on mobile so that the virtual keyboard can disappear as needed (add isMobile detection)
+  useEffect(() => {
+    const input = inputRef.current?.input;
+
+    if (isModalOpen && input) {
+      const _handleInputBlur = () => {
+        input.focus();
+      };
+
+      input.addEventListener("blur", _handleInputBlur);
+
+      return () => {
+        input.removeEventListener("blur", _handleInputBlur);
+      };
     }
   }, [isModalOpen]);
 
@@ -67,7 +98,7 @@ export default function SearchModalButton() {
       } else if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
         const selectedSearchResult = searchResults[selectedIndex];
 
-        handleOk(evt, selectedSearchResult.s);
+        handleOk(evt, selectedSearchResult.symbol);
       }
     } else if (evt.code === "ArrowDown") {
       setSelectedIndex((prevIndex) =>
@@ -79,11 +110,15 @@ export default function SearchModalButton() {
   };
 
   useEffect(() => {
-    store
-      .searchSymbols(searchValue)
-      .then((searchResults) => setSearchResults(searchResults));
+    store.searchSymbols(searchValue).then((searchResultsWithTotalCount) => {
+      const { results, total_count } = searchResultsWithTotalCount;
+
+      setSearchResults(results);
+      setTotalSearchResults(total_count);
+    });
   }, [searchValue]);
 
+  // TODO: Update w/ icon, etc. once ready
   // useEffect(() => {
   //   for (const symbol of searchResults) {
   //     store.fetchSymbolDetail(symbol).then((detail) => {
@@ -122,25 +157,33 @@ export default function SearchModalButton() {
                 onKeyDown={handleInputKeyDown}
                 value={searchValue}
               />
+              {searchResults.map((searchResult, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    backgroundColor:
+                      idx === selectedIndex
+                        ? "rgba(255,255,255,.2)"
+                        : "transparent",
+                    padding: "5px",
+                    overflow: "auto",
+                  }}
+                >
+                  <span style={{ fontWeight: "bold" }}>
+                    {searchResult["symbol"]}
+                  </span>
+
+                  <span style={{ float: "right", opacity: 0.5 }}>
+                    {searchResult["company"]}
+                  </span>
+                </div>
+              ))}
+              {totalSearchResults > 0 && (
+                <span style={{ fontStyle: "italic" }}>
+                  Total results for query: {totalSearchResults}
+                </span>
+              )}
             </Form>
-
-            {searchResults.map((searchResult, idx) => (
-              <div
-                key={idx}
-                style={{
-                  backgroundColor:
-                    idx === selectedIndex
-                      ? "rgba(255,255,255,.2)"
-                      : "transparent",
-                  padding: "5px",
-                  overflow: "auto",
-                }}
-              >
-                {searchResult["s"]}
-
-                <span style={{ float: "right" }}>{searchResult["c"]}</span>
-              </div>
-            ))}
           </>
         )}
       </Modal>

@@ -4,7 +4,7 @@ use crate::JsValue;
 use crate::utils::{
   fetch_and_decompress_gz_non_cached,
   fetch_and_decompress_gz,
-  parse_json_data
+  parse_csv_data
 };
 
 pub enum DataUrl {
@@ -39,17 +39,18 @@ pub struct DataBuildInfo {
 }
 
 impl DataBuildInfo {
-  pub async fn get_data_build_info() -> Result<DataBuildInfo, JsValue> {
-    let url: &str = &DataUrl::DataBuildInfo.value();
+    pub async fn get_data_build_info() -> Result<DataBuildInfo, JsValue> {
+        let url: &str = &DataUrl::DataBuildInfo.value();
 
-    // Fetch and decompress the JSON data
-    let json_data = fetch_and_decompress_gz_non_cached(&url).await?;
-    
-    // Use the `?` operator to propagate the error if `parse_json_data` fails
-    let data: DataBuildInfo = parse_json_data(&json_data)?;
-
-    Ok(data)
-  }
+        // Fetch and decompress the CSV data
+        let csv_data = fetch_and_decompress_gz_non_cached(&url).await?;
+        
+        // Parse the CSV data
+        let mut data: Vec<DataBuildInfo> = parse_csv_data(&csv_data)?;
+        
+        // Expecting a single record
+        data.pop().ok_or_else(|| JsValue::from_str("No data found"))
+    }
 }
 
 // Option<type> allows null values
@@ -67,44 +68,20 @@ pub struct ETF {
 }
 
 impl ETF {
-  pub async fn count_etfs_per_exchange() -> Result<HashMap<String, usize>, JsValue> {
-      let url: &str = DataUrl::EtfList.value();
+    pub async fn count_etfs_per_exchange() -> Result<HashMap<String, usize>, JsValue> {
+        let url: &str = DataUrl::EtfList.value();
 
-      let json_data: String = fetch_and_decompress_gz(&url).await?;
-      let entries: Vec<ETF> = parse_json_data(&json_data)?;
+        let csv_data: String = fetch_and_decompress_gz(&url).await?;
+        let entries: Vec<ETF> = parse_csv_data(&csv_data)?;
 
-      let mut counts: HashMap<String, usize> = HashMap::new();
-      for entry in entries {
-          if let Some(exchange_short_name) = &entry.exchange_short_name {
-              *counts.entry(exchange_short_name.clone()).or_insert(0) += 1;
-          }
-      }
-      Ok(counts)
-  }
-
-    // TODO: Implement
-    // pub fn similarity(&self, portfolio: &Portfolio) -> f64 {
-    //     // Example: Simple cosine similarity
-    //     // You should replace this with an appropriate financial similarity measure
-    //     let mut dot_product = 0.0;
-    //     let mut norm_etf = 0.0;
-    //     let mut norm_portfolio = 0.0;
-
-    //     for asset in &self.holdings {
-    //         let portfolio_asset = portfolio.holdings.iter().find(|&a| a.symbol == asset.symbol);
-    //         // TODO: Consider sector and industry here as well
-    //         if let Some(port_asset) = portfolio_asset {
-    //             dot_product += asset.percentage * port_asset.percentage;
-    //         }
-    //         norm_etf += asset.percentage.powi(2);
-    //     }
-
-    //     for asset in &portfolio.holdings {
-    //         norm_portfolio += asset.percentage.powi(2);
-    //     }
-
-    //     dot_product / (norm_etf.sqrt() * norm_portfolio.sqrt())
-    // }
+        let mut counts: HashMap<String, usize> = HashMap::new();
+        for entry in entries {
+            if let Some(exchange_short_name) = &entry.exchange_short_name {
+                *counts.entry(exchange_short_name.clone()).or_insert(0) += 1;
+            }
+        }
+        Ok(counts)
+    }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -124,89 +101,129 @@ pub struct ETFHolder {
 }
 
 impl ETFHolder {
-  pub async fn get_etf_holder_asset_count(symbol: String) -> Result<i32, JsValue> {
-      let url: String = DataUrl::get_etf_holder_url(&symbol);
+    pub async fn get_etf_holder_asset_count(symbol: String) -> Result<i32, JsValue> {
+        let url: String = DataUrl::get_etf_holder_url(&symbol);
 
-      let json_data: String = fetch_and_decompress_gz(&url).await?;
-      let entries: Vec<ETFHolder> = parse_json_data(&json_data)?;
+        let csv_data: String = fetch_and_decompress_gz(&url).await?;
+        let entries: Vec<ETFHolder> = parse_csv_data(&csv_data)?;
 
-      let mut count: i32 = 0;
-      for entry in entries {
-          if entry.asset.is_some() {
-              count += 1;
-          }
-      }
-
-      Ok(count)
-  }
-
-  pub async fn get_etf_holder_asset_names(symbol: String) -> Result<Vec<String>, JsValue> {
-    let url: String = DataUrl::get_etf_holder_url(&symbol);
-
-    let json_data: String = fetch_and_decompress_gz(&url).await?;
-    let entries: Vec<ETFHolder> = parse_json_data(&json_data)?;
-
-    let mut asset_names: Vec<String> = Vec::new();
-    for entry in entries {
-        if let Some(asset) = &entry.asset {
-            asset_names.push(asset.clone());
+        let mut count: i32 = 0;
+        for entry in entries {
+            if entry.asset.is_some() {
+                count += 1;
+            }
         }
+
+        Ok(count)
     }
 
-    Ok(asset_names)
-  }
+    pub async fn get_etf_holder_asset_names(symbol: String) -> Result<Vec<String>, JsValue> {
+        let url: String = DataUrl::get_etf_holder_url(&symbol);
+
+        let csv_data: String = fetch_and_decompress_gz(&url).await?;
+        let entries: Vec<ETFHolder> = parse_csv_data(&csv_data)?;
+
+        let mut asset_names: Vec<String> = Vec::new();
+        for entry in entries {
+            if let Some(asset) = &entry.asset {
+                asset_names.push(asset.clone());
+            }
+        }
+
+        Ok(asset_names)
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct PaginatedResults<T> {
+    pub total_count: usize,
+    pub results: Vec<T>,
+}
+
+// "Level 1"?
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SymbolSearch {
-    #[serde(rename = "s")]
     pub symbol: String,
-    #[serde(rename = "c")]
     pub company: Option<String>,
 }
 
 impl SymbolSearch {
-    // TODO: Update with total count, regardless of search results returned
-    // TODO: Include functionality to paginate results
-    pub async fn search_symbols(query: &str) -> Result<Vec<SymbolSearch>, JsValue> {
-        let trimmed_query = query.trim();
+    fn generate_alternative_symbols(query: &str) -> Vec<String> {
+        let mut alternatives: Vec<String> = vec![query.to_lowercase()];
+        if query.contains('.') {
+            alternatives.push(query.replace('.', "-").to_lowercase());
+        } else if query.contains('-') {
+            alternatives.push(query.replace('-', ".").to_lowercase());
+        }
+        alternatives
+    }
+
+    pub async fn search_symbols(query: &str, page: usize, page_size: usize) -> Result<PaginatedResults<SymbolSearch>, JsValue> {
+        let trimmed_query: String = query.trim().to_lowercase();
 
         if trimmed_query.is_empty() {
-            return Ok(vec![]);
+            return Ok(PaginatedResults {
+                total_count: 0,
+                results: vec![],
+            });
         }
 
         let url: String = DataUrl::SymbolSearch.value().to_owned();
+        let csv_data: String = fetch_and_decompress_gz(&url).await?;
+        let results: Vec<SymbolSearch> = parse_csv_data(&csv_data)?;
 
-        let json_data: String = fetch_and_decompress_gz(&url).await?;
-        let results: Vec<SymbolSearch> = parse_json_data(&json_data)?;
+        let alternatives: Vec<String> = SymbolSearch::generate_alternative_symbols(&trimmed_query);
+        let mut exact_symbol_matches: Vec<SymbolSearch> = vec![];
+        let mut starts_with_matches: Vec<SymbolSearch> = vec![];
+        let mut contains_matches: Vec<SymbolSearch> = vec![];
 
-        let query_lower: String = trimmed_query.to_lowercase();
-        let matches: Vec<SymbolSearch> = results.into_iter()
-            .filter(|result: &SymbolSearch| {
-                result.symbol.to_lowercase().contains(&query_lower) ||
-                result.company.as_deref().map_or(false, |c| c.to_lowercase().contains(&query_lower))
-            })
+        for alternative in alternatives {
+            let query_lower: String = alternative.to_lowercase();
+            for result in &results {
+                let symbol_match = result.symbol.to_lowercase() == query_lower;
+                let company_match = result.company.as_deref().map_or(false, |company| company.to_lowercase() == query_lower);
+                let partial_symbol_match_same_start = result.symbol.to_lowercase().starts_with(&query_lower);
+                let partial_company_match_same_start = result.company.as_deref().map_or(false, |company| company.to_lowercase().starts_with(&query_lower));
+                let partial_symbol_match_contains = result.symbol.to_lowercase().contains(&query_lower);
+                let partial_company_match_contains = result.company.as_deref().map_or(false, |company| company.to_lowercase().contains(&query_lower));
+
+                if symbol_match || company_match {
+                    exact_symbol_matches.push(result.clone());
+                } else if partial_symbol_match_same_start || partial_company_match_same_start {
+                    starts_with_matches.push(result.clone());
+                } else if partial_symbol_match_contains || partial_company_match_contains {
+                    contains_matches.push(result.clone());
+                }
+            }
+        }
+
+        // Combine matches in the desired order
+        let mut matches: Vec<SymbolSearch> = Vec::with_capacity(exact_symbol_matches.len() + starts_with_matches.len() + contains_matches.len());
+        matches.append(&mut exact_symbol_matches);
+        matches.append(&mut starts_with_matches);
+        matches.append(&mut contains_matches);
+
+        let total_count: usize = matches.len();
+        let paginated_results: Vec<SymbolSearch> = matches.into_iter()
+            .skip((page - 1) * page_size)
+            .take(page_size)
             .collect();
 
-        if matches.len() > 20 {
-            // Check if there is an exact match
-            if let Some(exact_match) = matches.into_iter().find(|result: &SymbolSearch| result.symbol.eq_ignore_ascii_case(query)) {
-                Ok(vec![exact_match])
-            } else {
-                Err(JsValue::from_str("Too many matches found, and no exact match"))
-            }
-        } else if matches.is_empty() {
-            Err(JsValue::from_str("Symbol not found"))
+        if paginated_results.is_empty() && total_count > 0 {
+            Err(JsValue::from_str("Page out of range"))
         } else {
-            Ok(matches)
+            Ok(PaginatedResults {
+                total_count,
+                results: paginated_results,
+            })
         }
     }
 }
 
+// "Level 2"?
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SymbolDetail {
     pub symbol: String,
-    pub company: Option<String>,
     pub industry: Option<String>,
     pub sector: Option<String>,
 }
@@ -215,8 +232,8 @@ impl SymbolDetail {
     pub async fn get_symbol_detail(symbol: &str) -> Result<SymbolDetail, JsValue> {
         let url: String = DataUrl::get_symbol_detail_url(symbol);
         
-        let json_data: String = fetch_and_decompress_gz(&url).await?;
-        let details: Vec<SymbolDetail> = parse_json_data(&json_data)?;
+        let csv_data: String = fetch_and_decompress_gz(&url).await?;
+        let details: Vec<SymbolDetail> = parse_csv_data(&csv_data)?;
 
         // Find the specific symbol within the shard
         details.into_iter()

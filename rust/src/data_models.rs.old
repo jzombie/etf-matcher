@@ -1,5 +1,5 @@
 // TODO: Replace w/ SymbolSearch
-pub type SymbolList = Vec<String>;
+// pub type SymbolList = Vec<String>;
 
 // #[async_trait(?Send)]
 // pub trait SymbolListExt {

@@ -2,7 +2,24 @@
 <html lang="en-US">
   <head>
     <meta charset="utf-8" />
-    <title>hello-wasm example</title>
+
+    <!-- TODO: Include -->
+    <!-- Google tag (gtag.js) -->
+    <!-- <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-T27D3JGSJV"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-T27D3JGSJV");
+    </script> -->
+
+    <title>ETF Matcher</title>
 
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
@@ -13,6 +30,15 @@
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
+    <meta
+      name="description"
+      content="Customize a virtual portfolio with potential fractional shares and find ETFs that closely match your investment goals."
+    />
+    <meta
+      name="keywords"
+      content="ETF Matcher, virtual portfolio, fractional shares, investment goals, ETFs, portfolio customization, ETF comparison, online trading, investment management, ETF selection, investment tool, customize portfolio, find ETFs"
     />
 
     <style>
@@ -44,7 +70,22 @@
   </head>
   <body>
     <noscript>JavaScript must be enabled to use this application.</noscript>
-    <div id="app"></div>
+    <div id="app">
+      Customize a virtual portfolio with potential fractional shares and find
+      ETFs that closely match your investment goals.
+
+      <div>
+        Disclaimer: The information provided on this platform is for
+        informational purposes only and does not constitute financial,
+        investment, or other professional advice. You should not rely on this
+        information to make any investment decisions. Always consult with a
+        qualified financial advisor before making any investment decisions. We
+        do not guarantee the accuracy, completeness, or timeliness of any
+        information provided and shall not be held liable for any errors or
+        omissions, or for any loss or damage incurred as a result of using this
+        information.
+      </div>
+    </div>
     <script type="module" src="./src/main.tsx"></script>
   </body>
 </html>
