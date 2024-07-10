@@ -12,6 +12,7 @@ export type StoreStateProps = {
   count: number;
   isDirtyState: boolean;
   visibleSymbols: string[];
+  isSearchModalOpen: boolean;
 };
 
 export type SearchResult = {
@@ -31,6 +32,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       count: 0,
       isDirtyState: false,
       visibleSymbols: [],
+      isSearchModalOpen: false,
     });
 
     // Only deepfreeze in development

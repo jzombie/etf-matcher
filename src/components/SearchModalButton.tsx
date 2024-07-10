@@ -3,11 +3,13 @@ import { Button, Modal, Form, Input, InputRef } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
-import { store } from "@hooks/useStoreStateReader";
+import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import type { SearchResult } from "@src/store";
 
 export default function SearchModalButton() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { isSearchModalOpen: isModalOpen } =
+    useStoreStateReader("isSearchModalOpen");
+
   const [searchValue, setSearchValue] = useState<string>("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
@@ -32,11 +34,11 @@ export default function SearchModalButton() {
   }, [isModalOpen]);
 
   const showModal = () => {
-    setIsModalOpen(true);
+    store.setState({ isSearchModalOpen: true });
   };
 
   const handleOk = (_: SyntheticEvent, exactSearchValue?: string) => {
-    setIsModalOpen(false);
+    store.setState({ isSearchModalOpen: false });
 
     const locSearchValue = exactSearchValue || searchValue;
 
@@ -50,7 +52,7 @@ export default function SearchModalButton() {
   };
 
   const handleCancel = () => {
-    setIsModalOpen(false);
+    store.setState({ isSearchModalOpen: false });
   };
 
   const handleInputChange = (evt: React.BaseSyntheticEvent) => {

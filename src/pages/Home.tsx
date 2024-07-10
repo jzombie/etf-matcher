@@ -6,6 +6,10 @@ import heroImg from "@assets/hero.webp"; // Adjust the path as needed
 export default function Home() {
   const { count } = useStoreStateReader(["count"]);
 
+  const handleGetStarted = () => {
+    store.setState({ isSearchModalOpen: true });
+  };
+
   return (
     <div>
       <section style={heroSectionStyle}>
@@ -20,7 +24,7 @@ export default function Home() {
               style={heroButtonStyle}
               type="primary"
               size="large"
-              onClick={() => alert("TODO: Figure this out")}
+              onClick={handleGetStarted}
             >
               Get Started
             </Button>
