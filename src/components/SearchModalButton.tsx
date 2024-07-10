@@ -8,10 +8,10 @@ import { store } from "@hooks/useStoreStateReader";
 export default function SearchModalButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchValue, setSearchValue] = useState<string>("");
-  const [searchResults, setSearchResults] = useState<string[]>([]);
+  const [searchResults, setSearchResults] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   // TODO: Update accordingly
-  const [symbolDetail, setSymbolDetail] = useState<any>({});
+  // const [symbolDetail, setSymbolDetail] = useState<any>({});
   const inputRef = useRef<InputRef>(null);
 
   const location = useLocation();
@@ -29,6 +29,8 @@ export default function SearchModalButton() {
       });
     }
   }, [isModalOpen]);
+
+  console.log({ searchResults });
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -78,16 +80,16 @@ export default function SearchModalButton() {
   useEffect(() => {
     store
       .searchSymbols(searchValue)
-      .then((symbols) => setSearchResults(symbols));
+      .then((searchResults) => setSearchResults(searchResults));
   }, [searchValue]);
 
-  useEffect(() => {
-    for (const symbol of searchResults) {
-      store.fetchSymbolDetail(symbol).then((detail) => {
-        setSymbolDetail((prev) => ({ ...prev, [symbol]: detail }));
-      });
-    }
-  }, [searchResults]);
+  // useEffect(() => {
+  //   for (const symbol of searchResults) {
+  //     store.fetchSymbolDetail(symbol).then((detail) => {
+  //       setSymbolDetail((prev) => ({ ...prev, [symbol]: detail }));
+  //     });
+  //   }
+  // }, [searchResults]);
 
   const isModalOpenStableRef = useStableCurrentRef(isModalOpen);
   useEffect(() => {
@@ -121,7 +123,7 @@ export default function SearchModalButton() {
               />
             </Form>
 
-            {searchResults.map((searchResultSymbol, idx) => (
+            {searchResults.map((searchResult, idx) => (
               <div
                 key={idx}
                 style={{
@@ -133,12 +135,9 @@ export default function SearchModalButton() {
                   overflow: "auto",
                 }}
               >
-                {searchResultSymbol}
+                {searchResult["s"]}
 
-                <span style={{ float: "right" }}>
-                  {symbolDetail[searchResultSymbol] &&
-                    symbolDetail[searchResultSymbol]["company"]}
-                </span>
+                <span style={{ float: "right" }}>{searchResult["c"]}</span>
               </div>
             ))}
           </>

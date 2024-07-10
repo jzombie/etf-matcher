@@ -26,21 +26,22 @@ export default function SearchResults() {
     });
   }, [location]);
 
-  useEffect(() => {
-    store.searchSymbols(searchQuery).then((symbols) => {
-      let returnedSymbols: string[] = symbols;
+  // TODO: Handle
+  // useEffect(() => {
+  //   store.searchSymbols(searchQuery).then((symbols) => {
+  //     let returnedSymbols: string[] = symbols;
 
-      if (isExact) {
-        if (symbols.includes(searchQuery.trim())) {
-          returnedSymbols = [searchQuery];
-        } else {
-          returnedSymbols = [];
-        }
-      }
+  //     if (isExact) {
+  //       if (symbols.includes(searchQuery.trim())) {
+  //         returnedSymbols = [searchQuery];
+  //       } else {
+  //         returnedSymbols = [];
+  //       }
+  //     }
 
-      setSymbols(returnedSymbols);
-    });
-  }, [searchQuery, isExact]);
+  //     setSymbols(returnedSymbols);
+  //   });
+  // }, [searchQuery, isExact]);
 
   if (!searchQuery) {
     return <div>No search query...</div>;

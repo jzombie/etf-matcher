@@ -13,6 +13,7 @@ pub enum DataUrl {
     DataBuildInfo,
     EtfList,
     SymbolList,
+    SymbolSearch
 }
 
 impl DataUrl {
@@ -21,6 +22,7 @@ impl DataUrl {
             DataUrl::DataBuildInfo => "/data/data_build_info.enc",
             DataUrl::EtfList => "/data/etfs.enc",
             DataUrl::SymbolList => "/data/symbols.enc",
+            DataUrl::SymbolSearch => "/data/symbol_search_dict.enc"
         }
     }
 
@@ -159,6 +161,7 @@ impl ETFHolder {
   }
 }
 
+// TODO: Replace w/ SymbolSearch
 pub type SymbolList = Vec<String>;
 
 #[async_trait(?Send)]
@@ -224,6 +227,44 @@ impl SymbolListExt for SymbolList {
         }
     
         Ok(matched_symbols)
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct SymbolSearch {
+    #[serde(rename = "s")]
+    pub symbol: String,
+    #[serde(rename = "c")]
+    pub company: Option<String>,
+}
+
+impl SymbolSearch {
+    pub async fn search_symbols_v2(query: &str) -> Result<Vec<SymbolSearch>, JsValue> {
+        let url: String = DataUrl::SymbolSearch.value().to_owned();
+
+        let json_data: String = fetch_and_decompress_gz(&url).await?;
+        let details: Vec<SymbolSearch> = parse_json_data(&json_data)?;
+
+        let query_lower = query.to_lowercase();
+        let matches: Vec<SymbolSearch> = details.into_iter()
+            .filter(|detail| {
+                detail.symbol.to_lowercase().contains(&query_lower) ||
+                detail.company.as_deref().map_or(false, |c| c.to_lowercase().contains(&query_lower))
+            })
+            .collect();
+
+        if matches.len() > 20 {
+            // Check if there is an exact match
+            if let Some(exact_match) = matches.into_iter().find(|detail| detail.symbol.eq_ignore_ascii_case(query)) {
+                Ok(vec![exact_match])
+            } else {
+                Err(JsValue::from_str("Too many matches found, and no exact match"))
+            }
+        } else if matches.is_empty() {
+            Err(JsValue::from_str("Symbol not found"))
+        } else {
+            Ok(matches)
+        }
     }
 }
 

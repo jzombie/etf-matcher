@@ -61,8 +61,12 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     });
   }
 
-  async searchSymbols(query: string): Promise<string[]> {
-    return callWorkerFunction<string[]>("search_symbols", query.trim());
+  // TODO: Update type
+  async searchSymbols(query: string) {
+    // TODO: Use this instead
+    const results = await callWorkerFunction("search_symbols_v2", query.trim());
+
+    return results;
   }
 
   // TODO: Document type (should be able to import from WASM type)

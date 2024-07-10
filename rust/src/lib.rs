@@ -12,7 +12,8 @@ use data_models::{
     ETF,
     ETFHolder,
     SymbolList,
-    SymbolDetail
+    SymbolSearch,
+    SymbolDetail,
 };
 use crate::data_models::SymbolListExt;
 
@@ -51,6 +52,17 @@ pub async fn search_symbols(query: &str) -> Result<JsValue, JsValue> {
         .map(|symbols| serde_wasm_bindgen::to_value(&symbols).unwrap_or_else(JsValue::from))
         .map_err(JsValue::from)
 }
+
+#[wasm_bindgen]
+pub async fn search_symbols_v2(query: &str) -> Result<JsValue, JsValue> {
+    match SymbolSearch::search_symbols_v2(query).await {
+        Ok(symbols) => serde_wasm_bindgen::to_value(&symbols).map_err(|err| {
+            JsValue::from_str(&format!("Failed to serialize symbols: {}", err))
+        }),
+        Err(err) => Err(err),
+    }
+}
+
 
 #[wasm_bindgen]
 pub async fn get_symbol_detail(symbol: &str) -> Result<JsValue, JsValue> {
