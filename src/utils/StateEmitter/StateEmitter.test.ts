@@ -36,6 +36,26 @@ describe("StateEmitter", () => {
     );
   });
 
+  it("should emit update event with keys used in the partial state", () => {
+    const initialState: TestState = { count: 0, text: "hello" };
+    const emitter = new StateEmitter<TestState>(initialState);
+
+    const listener = vi.fn();
+    emitter.on(StateEmitterDefaultEvents.UPDATE, listener);
+
+    // Call setState with partial state
+    emitter.setState({ count: 1 });
+
+    // Check if the listener was called with the correct event and keys
+    expect(listener).toHaveBeenCalledWith(["count"]);
+
+    // Call setState with a function that updates partial state
+    emitter.setState((prevState) => ({ text: prevState.text + " world" }));
+
+    // Check if the listener was called with the correct event and keys
+    expect(listener).toHaveBeenCalledWith(["text"]);
+  });
+
   it("should subscribe to state updates and call listeners", () => {
     const initialState: TestState = { count: 0, text: "hello" };
     const emitter = new StateEmitter<TestState>(initialState);
