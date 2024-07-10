@@ -25,7 +25,7 @@ pub async fn get_data_build_info() -> Result<JsValue, JsValue> {
 
 #[wasm_bindgen]
 pub async fn search_symbols(query: &str) -> Result<JsValue, JsValue> {
-    let symbols: Vec<SymbolSearch> = SymbolSearch::search_symbols_v2(query).await?;
+    let symbols: Vec<SymbolSearch> = SymbolSearch::search_symbols(query).await?;
     to_value(&symbols).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to serialize symbols: {}", err)))
 }
 

@@ -166,7 +166,7 @@ pub struct SymbolSearch {
 }
 
 impl SymbolSearch {
-    pub async fn search_symbols_v2(query: &str) -> Result<Vec<SymbolSearch>, JsValue> {
+    pub async fn search_symbols(query: &str) -> Result<Vec<SymbolSearch>, JsValue> {
         let trimmed_query = query.trim();
 
         if trimmed_query.is_empty() {
