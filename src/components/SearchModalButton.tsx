@@ -4,11 +4,12 @@ import { SearchOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import { store } from "@hooks/useStoreStateReader";
+import type { SearchResult } from "@src/store";
 
 export default function SearchModalButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchValue, setSearchValue] = useState<string>("");
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   // TODO: Update accordingly
   // const [symbolDetail, setSymbolDetail] = useState<any>({});
@@ -62,9 +63,9 @@ export default function SearchModalButton() {
       if (selectedIndex == -1) {
         handleOk(evt);
       } else if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
-        const exactSearchValue = searchResults[selectedIndex];
+        const selectedSearchResult = searchResults[selectedIndex];
 
-        handleOk(evt, exactSearchValue);
+        handleOk(evt, selectedSearchResult.s);
       }
     } else if (evt.code === "ArrowDown") {
       setSelectedIndex((prevIndex) =>
@@ -74,8 +75,6 @@ export default function SearchModalButton() {
       setSelectedIndex((prevIndex) => Math.max(prevIndex - 1, 0));
     }
   };
-
-  console.log("here");
 
   useEffect(() => {
     store

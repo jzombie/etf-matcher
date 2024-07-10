@@ -240,12 +240,18 @@ pub struct SymbolSearch {
 
 impl SymbolSearch {
     pub async fn search_symbols_v2(query: &str) -> Result<Vec<SymbolSearch>, JsValue> {
+        let trimmed_query = query.trim();
+
+        if trimmed_query.is_empty() {
+            return Ok(vec![]);
+        }
+
         let url: String = DataUrl::SymbolSearch.value().to_owned();
 
         let json_data: String = fetch_and_decompress_gz(&url).await?;
         let details: Vec<SymbolSearch> = parse_json_data(&json_data)?;
 
-        let query_lower = query.to_lowercase();
+        let query_lower = trimmed_query.to_lowercase();
         let matches: Vec<SymbolSearch> = details.into_iter()
             .filter(|detail| {
                 detail.symbol.to_lowercase().contains(&query_lower) ||

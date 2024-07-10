@@ -3,7 +3,7 @@ import callWorkerFunction from "./utils/callWorkerFunction";
 
 const IS_PROD = import.meta.env.PROD;
 
-type StoreStateProps = {
+export type StoreStateProps = {
   isProductionBuild: boolean;
   isRustInit: boolean;
   dataBuildTime: string;
@@ -13,7 +13,12 @@ type StoreStateProps = {
   visibleSymbols: string[];
 };
 
-class Store extends ReactStateEmitter<StoreStateProps> {
+export type SearchResult = {
+  s: string;
+  c: string;
+};
+
+class _Store extends ReactStateEmitter<StoreStateProps> {
   constructor() {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
     super({
@@ -62,11 +67,18 @@ class Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   // TODO: Update type
-  async searchSymbols(query: string) {
-    // TODO: Use this instead
-    const results = await callWorkerFunction("search_symbols_v2", query.trim());
-
-    return results;
+  async searchSymbols(query: string): Promise<SearchResult[]> {
+    try {
+      // Call the worker function with the given query and trim any extra spaces
+      const results = await callWorkerFunction<SearchResult[]>(
+        "search_symbols_v2",
+        query.trim()
+      );
+      return results;
+    } catch (error) {
+      console.error("Error searching symbols:", error);
+      throw error;
+    }
   }
 
   // TODO: Document type (should be able to import from WASM type)
@@ -103,7 +115,6 @@ class Store extends ReactStateEmitter<StoreStateProps> {
   // Add additional methods or properties if needed
 }
 
-const store = new Store();
+const store = new _Store();
 
 export default store;
-export type { StoreStateProps };
