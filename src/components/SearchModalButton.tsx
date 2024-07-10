@@ -30,8 +30,6 @@ export default function SearchModalButton() {
     }
   }, [isModalOpen]);
 
-  console.log({ searchResults });
-
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -76,6 +74,8 @@ export default function SearchModalButton() {
       setSelectedIndex((prevIndex) => Math.max(prevIndex - 1, 0));
     }
   };
+
+  console.log("here");
 
   useEffect(() => {
     store
