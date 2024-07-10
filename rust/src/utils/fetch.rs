@@ -79,9 +79,9 @@ async fn xhr_fetch(url: String) -> Result<Vec<u8>, JsValue> {
     })?;
 
     let timestamp: String = Date::now().to_string();
-    let nocache_url: String = format!("{}?nocache={}", url, timestamp);
+    let no_cache_url: String = format!("{}?no_cache={}", url, timestamp);
 
-    xhr.open("GET", &nocache_url).map_err(|err: JsValue| {
+    xhr.open("GET", &no_cache_url).map_err(|err: JsValue| {
         web_sys::console::debug_1(&format!("Failed to open XMLHttpRequest: {:?}", err).into());
         JsValue::from_str("Failed to open XMLHttpRequest")
     })?;
