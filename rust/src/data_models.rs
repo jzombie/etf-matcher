@@ -164,6 +164,7 @@ pub struct PaginatedResults<T> {
     pub results: Vec<T>,
 }
 
+// "Level 1"?
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SymbolSearch {
     #[serde(rename = "s")]
@@ -233,10 +234,10 @@ impl SymbolSearch {
     }
 }
 
+// "Level 2"?
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SymbolDetail {
     pub symbol: String,
-    pub company: Option<String>,
     pub industry: Option<String>,
     pub sector: Option<String>,
 }
