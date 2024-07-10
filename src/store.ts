@@ -1,4 +1,7 @@
-import { ReactStateEmitter } from "./utils/StateEmitter";
+import {
+  ReactStateEmitter,
+  StateEmitterDefaultEvents,
+} from "./utils/StateEmitter";
 import callWorkerFunction from "./utils/callWorkerFunction";
 
 const IS_PROD = import.meta.env.PROD;
@@ -39,6 +42,18 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       visibleSymbols: [],
       isSearchModalOpen: false,
     });
+
+    this.on(
+      StateEmitterDefaultEvents.UPDATE,
+      (keys: (keyof StoreStateProps)[]) => {
+        if (keys.includes("visibleSymbols")) {
+          const { visibleSymbols } = this.getState(["visibleSymbols"]);
+
+          // TODO: Handle this tracking
+          console.log({ visibleSymbols });
+        }
+      }
+    );
 
     // Only deepfreeze in development
     this.shouldDeepfreeze = !IS_PROD;
