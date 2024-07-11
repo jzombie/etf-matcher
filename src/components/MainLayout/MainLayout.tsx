@@ -15,12 +15,8 @@ import useStoreStateReader from "@hooks/useStoreStateReader";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 
 import FullViewport from "@components/layout-kit/FullViewport";
-import Layout, {
-  Center,
-  Header,
-  Content,
-  Footer,
-} from "@components/layout-kit/Layout";
+import Center from "@components/layout-kit/Center";
+import Layout, { Header, Content, Footer } from "@components/layout-kit/Layout";
 // import SearchModalButton from "../SearchModalButton";
 
 import useWindowSize from "@hooks/useWindowSize";

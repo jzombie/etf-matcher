@@ -13,8 +13,8 @@ export default function Content({
   ...rest
 }: ContentProps) {
   return (
-    <div className={clsx(styles.center, className)} {...rest}>
-      <div className={styles["content"]}>{children}</div>
+    <div className={clsx(styles.content, className)} {...rest}>
+      {children}
     </div>
   );
 }
