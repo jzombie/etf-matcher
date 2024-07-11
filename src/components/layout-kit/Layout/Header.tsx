@@ -1,6 +1,6 @@
 import React from "react";
 import clsx from "clsx";
-import styles from "./layout.module.scss";
+import styles from "./Layout.module.scss";
 
 export type HeaderProps = {
   children: React.ReactNode;
