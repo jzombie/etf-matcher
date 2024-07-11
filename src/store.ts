@@ -232,8 +232,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     // TODO: Show UI notification
   }
-
-  // Add additional methods or properties if needed
 }
 
 const store = new _Store();
