@@ -146,20 +146,19 @@ export default function SearchModalButton() {
         onOk={handleOk}
         onCancel={handleCancel}
         okButtonProps={{ disabled: !searchResults.length }}
-        styles={
-          {
-            // content: {
-            //   backgroundColor: "rgba(0,0,0,.9)",
-            //   border: "1px orange solid",
-            // },
-            // header: {
-            //   backgroundColor: "rgba(0,0,0,.2)",
-            // },
-            // body: {
-            //   backgroundColor: "rgba(0,0,0,.4)",
-            // },
-          }
-        }
+        styles={{
+          content: {
+            backgroundColor: "rgba(31,31,31,.8)",
+            border: "2px rgba(38,100,100,.8) solid",
+            backdropFilter: "blur(5px)",
+          },
+          // header: {
+          //   backgroundColor: "rgba(0,0,0,.2)",
+          // },
+          // body: {
+          //   backgroundColor: "rgba(0,0,0,.4)",
+          // },
+        }}
         // TODO: Blur effect
         // style={{
         //   backdropFilter: "blur(5px)",
@@ -168,6 +167,9 @@ export default function SearchModalButton() {
         {isModalOpen && (
           <>
             <Form>
+              {
+                // TODO: Add search outlined here (similar to Spotlight)
+              }
               <Input
                 ref={inputRef}
                 placeholder='Search for Symbol (e.g. "AAPL" or "Apple")'
