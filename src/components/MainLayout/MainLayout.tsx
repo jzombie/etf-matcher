@@ -23,8 +23,12 @@ import Layout, {
 } from "@components/Layout";
 // import SearchModalButton from "../SearchModalButton";
 
+import useWindowSize from "@hooks/useWindowSize";
+
 export default function MainLayout() {
   const theme = useTheme();
+
+  const { width, height } = useWindowSize();
 
   const {
     isProductionBuild,
@@ -55,7 +59,10 @@ export default function MainLayout() {
         </AppBar> */}
 
         <Layout>
-          <Header>Header</Header>
+          <Header>
+            {" "}
+            {width} x {height}
+          </Header>
 
           <Content>
             {!isRustInit ? (

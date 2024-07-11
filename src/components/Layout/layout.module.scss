@@ -1,7 +1,13 @@
 .full-viewport {
   position: fixed;
+
   min-height: 100vh;
   max-height: 100vh;
+  &.dvh {
+    min-height: 100dvh;
+    max-height: 100dvh;
+  }
+
   display: flex;
   flex-direction: column;
   position: relative;
