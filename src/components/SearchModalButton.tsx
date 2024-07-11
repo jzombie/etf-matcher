@@ -179,15 +179,13 @@ export default function SearchModalButton() {
         {isModalOpen && (
           <>
             <Form>
-              {
-                // TODO: Add search outlined here (similar to Spotlight)
-              }
               <Input
                 ref={inputRef}
                 placeholder='Search for Symbol (e.g. "AAPL" or "Apple")'
                 onChange={handleInputChange}
                 onKeyDown={handleInputKeyDown}
                 value={searchQuery}
+                prefix={<SearchOutlined />}
               />
               {searchResults.map((searchResult, idx) => (
                 <div
