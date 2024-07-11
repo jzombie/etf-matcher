@@ -13,6 +13,8 @@ import { Outlet } from "react-router-dom";
 import HeaderMenu from "./HeaderMenu";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
+
+import { FullViewport, Center, Header, Footer } from "@components/Layout";
 // import SearchModalButton from "../SearchModalButton";
 
 export default function MainLayout() {
@@ -36,22 +38,17 @@ export default function MainLayout() {
 
   return (
     <>
-      <Box
-        sx={{
-          minHeight: "100vh",
-          maxHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <AppBar position="static">
+      <FullViewport>
+        {/* <AppBar position="static">
           <Toolbar sx={{ justifyContent: "space-between" }}>
             <HeaderMenu />
             {
               // <SearchModalButton />
             }
           </Toolbar>
-        </AppBar>
+        </AppBar> */}
+
+        <Header>Header</Header>
 
         <Box
           sx={{
@@ -62,43 +59,19 @@ export default function MainLayout() {
             height: "100%",
           }}
         >
-          <Container
-            component="main"
-            sx={{
-              flex: 1,
-              padding: "10px 10px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              overflow: "auto",
-            }}
-          >
-            {!isRustInit ? (
-              <Box
-                sx={{
-                  width: "100%",
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Typography variant="h6" component="div" textAlign="center">
-                  Initializing...
-                </Typography>
-              </Box>
-            ) : (
+          {!isRustInit ? (
+            <Center>
+              <Typography variant="h6" component="div" textAlign="center">
+                Initializing...
+              </Typography>
+            </Center>
+          ) : (
+            <div style={{ width: "100%", height: "100%", overflow: "auto" }}>
               <Outlet />
-            )}
-          </Container>
+            </div>
+          )}
         </Box>
-        <Box
-          component="footer"
-          sx={{
-            textAlign: "left",
-          }}
-        >
+        <Footer>
           <Typography variant="body2" color="textSecondary">
             {prettyDataBuildTime
               ? `Data build time: ${prettyDataBuildTime}`
@@ -128,8 +101,8 @@ export default function MainLayout() {
             copyrightStyles={tradingViewCopyrightStyles}
             symbols={symbols}
           />
-        </Box>
-      </Box>
+        </Footer>
+      </FullViewport>
     </>
   );
 }
