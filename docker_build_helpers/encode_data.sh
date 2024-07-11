@@ -17,6 +17,8 @@ cd /app/docker_build_helpers && ./generate_data_build_info.sh
 
 cd /app/backend/rust/encrypt_tool
 
+mkdir -p /tmp/output-data
+
 # Loop over all CSV files in the /app/data directory
 for json_file in /app/data/*.csv; do
     # Get the base name of the file (without the directory and file extension)
@@ -25,9 +27,9 @@ for json_file in /app/data/*.csv; do
     # TODO: Use release contingent on build environment
     #
     # Run the encryption tool with the input and output file arguments
-    ./target/release/encrypt_tool "$json_file" "/app/data/${base_name}.enc"
+    ./target/release/encrypt_tool "$json_file" "/tmp/output-data/${base_name}.enc"
 done
 
 # Move encoded data files into public data directory
 mkdir -p /app/public/data
-mv /app/data/*.enc /app/public/data
+mv /tmp/output-data/* /app/public/data

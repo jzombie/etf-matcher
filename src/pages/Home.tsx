@@ -27,6 +27,9 @@ export default function Home() {
               onClick={handleGetStarted}
               disabled={isSearchModalOpen}
             >
+              {
+                // TODO: Don't say "Get Started" if already started... ("Continue" maybe?)
+              }
               {!isSearchModalOpen ? "Get Started" : "You're on your way!"}
             </Button>
           </div>

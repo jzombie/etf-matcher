@@ -133,23 +133,49 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return callWorkerFunction("get_symbol_detail", symbol);
   }
 
-  PROTO_countEtfsPerExchange() {
-    callWorkerFunction("count_etfs_per_exchange")
-      .then((countsPerExchange) =>
+  // PROTO_countEtfsPerExchange() {
+  //   callWorkerFunction("count_etfs_per_exchange")
+  //     .then((countsPerExchange) =>
+  //       console.log({
+  //         countsPerExchange,
+  //       })
+  //     )
+  //     .catch((error) => console.error(error));
+  // }
+
+  // PROTO_getEtfHolderAssetCount() {
+  //   const ETF_HOLDER_SYMBOL = "SPY";
+  //   callWorkerFunction("get_etf_holder_asset_count", ETF_HOLDER_SYMBOL)
+  //     .then((assetCount) =>
+  //       console.log({
+  //         etfHolder: ETF_HOLDER_SYMBOL,
+  //         assetCount,
+  //       })
+  //     )
+  //     .catch((error) => console.error(error));
+  // }
+
+  PROTO_getSymbolDetail(symbol: string) {
+    callWorkerFunction("get_symbol_detail", symbol)
+      .then((symbolDetail) =>
         console.log({
-          countsPerExchange,
+          symbol,
+          symbolDetail,
         })
       )
       .catch((error) => console.error(error));
   }
 
-  PROTO_getEtfHolderAssetCount() {
-    const ETF_HOLDER_SYMBOL = "SPY";
-    callWorkerFunction("get_etf_holder_asset_count", ETF_HOLDER_SYMBOL)
-      .then((assetCount) =>
+  PROTO_getSymbolETFHolders(
+    symbol: string,
+    page: number = 1,
+    page_size: number = 20
+  ) {
+    callWorkerFunction("get_symbol_etf_holders", symbol, page, page_size)
+      .then((etfHolders) =>
         console.log({
-          etfHolder: ETF_HOLDER_SYMBOL,
-          assetCount,
+          symbol,
+          etfHolders,
         })
       )
       .catch((error) => console.error(error));

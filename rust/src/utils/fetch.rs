@@ -17,35 +17,31 @@ use std::cell::RefCell;
 use futures::future::Shared;
 use futures::{Future, FutureExt};
 use futures::future::LocalBoxFuture;
-use serde::de::DeserializeOwned;
-use csv::ReaderBuilder;
 
-include!("__AUTOGEN__generated_password.rs");
+use crate::constants::{
+  FETCH_ERROR,
+  XML_HTTP_REQUEST_CREATE_ERROR,
+  XML_HTTP_REQUEST_OPEN_ERROR,
+  XML_HTTP_REQUEST_CACHE_CONTROL_SETTER_ERROR,
+  XML_HTTP_REQUEST_SEND_ERROR
+};
+
+include!("../__AUTOGEN__generated_password.rs");
+
+pub fn decrypt_password(encrypted_password: &[u8], salt: &[u8]) -> Result<[u8; 32], JsValue> {
+    // Derive the decryption key
+    let mut key = [0u8; 32];
+    pbkdf2::<Hmac<Sha256>>(encrypted_password, salt, 10000, &mut key);
+    Ok(key)
+}
+
+
+type Aes256Cbc = Cbc<Aes256, Pkcs7>;
 
 // Global cache with futures for pending requests
 thread_local! {
     static CACHE: RefCell<HashMap<String, Shared<LocalBoxFuture<'static, Result<String, JsValue>>>>> = RefCell::new(HashMap::new());
 }
-
-// TODO: Implement once ready
-// pub fn clear_cache() {
-//     CACHE.with(|cache| {
-//         cache.borrow_mut().clear();
-//     });
-// }
-
-fn decrypt_password(encrypted_password: &[u8], salt: &[u8]) -> Result<[u8; 32], JsValue> {
-    // Derive the decryption key
-    let mut key = [0u8; 32];
-    pbkdf2::<Hmac<Sha256>>(encrypted_password, salt, 10000, &mut key);
-
-    // TODO: Only log during debugging
-    // web_sys::console::debug_1(&format!("Derived Key: {:?}", key).into());
-
-    Ok(key)
-}
-
-type Aes256Cbc = Cbc<Aes256, Pkcs7>;
 
 pub async fn fetch_and_decompress_gz<T>(url: T) -> Result<String, JsValue>
 where
@@ -56,10 +52,8 @@ where
     let shared_future: Shared<std::pin::Pin<Box<dyn Future<Output = Result<String, JsValue>>>>> = CACHE.with(|cache| {
         let mut cache: std::cell::RefMut<HashMap<String, Shared<std::pin::Pin<Box<dyn Future<Output = Result<String, JsValue>>>>>>> = cache.borrow_mut();
         if let Some(cached_future) = cache.get(&url_str) {
-            // web_sys::console::debug_1(&"Returning cached future".into());
             cached_future.clone()
         } else {
-            // web_sys::console::debug_1(&"Storing new future in cache".into());
             let future = fetch_and_decompress_gz_internal(url_str.clone()).boxed_local().shared();
             cache.insert(url_str.clone(), future.clone());
             future
@@ -69,7 +63,6 @@ where
     match shared_future.await {
         Ok(result) => Ok(result),
         Err(err) => {
-            // Remove the failed future from the cache
             CACHE.with(|cache| {
                 cache.borrow_mut().remove(&url_str);
             });
@@ -88,31 +81,29 @@ where
 }
 
 async fn xhr_fetch(url: String) -> Result<Vec<u8>, JsValue> {
-    // web_sys::console::debug_1(&"Starting fetch_and_decompress_gz".into());
     let xhr: XmlHttpRequest = XmlHttpRequest::new().map_err(|err: JsValue| {
-        web_sys::console::debug_1(&format!("Failed to create XMLHttpRequest: {:?}", err).into());
-        JsValue::from_str("Failed to create XMLHttpRequest")
+        web_sys::console::debug_1(&format!("{XML_HTTP_REQUEST_CREATE_ERROR}: {:?}", err).into());
+        JsValue::from_str(XML_HTTP_REQUEST_CREATE_ERROR)
     })?;
 
-    // Let this utility manage its own cache
     let timestamp: String = Date::now().to_string();
-    let nocache_url: String = format!("{}?nocache={}", url, timestamp);
+    let no_cache_url: String = format!("{}?no_cache={}", url, timestamp);
 
-    xhr.open("GET", &nocache_url).map_err(|err: JsValue| {
-        web_sys::console::debug_1(&format!("Failed to open XMLHttpRequest: {:?}", err).into());
-        JsValue::from_str("Failed to open XMLHttpRequest")
+    xhr.open("GET", &no_cache_url).map_err(|err: JsValue| {
+        web_sys::console::debug_1(&format!("{XML_HTTP_REQUEST_OPEN_ERROR}: {:?}", err).into());
+        JsValue::from_str(XML_HTTP_REQUEST_OPEN_ERROR)
     })?;
 
     xhr.set_response_type(web_sys::XmlHttpRequestResponseType::Arraybuffer);
 
     xhr.set_request_header("Cache-Control", "no-cache").map_err(|err: JsValue| {
-        web_sys::console::debug_1(&format!("Failed to set Cache-Control header: {:?}", err).into());
-        JsValue::from_str("Failed to set Cache-Control header")
+        web_sys::console::debug_1(&format!("{XML_HTTP_REQUEST_CACHE_CONTROL_SETTER_ERROR}: {:?}", err).into());
+        JsValue::from_str(XML_HTTP_REQUEST_CACHE_CONTROL_SETTER_ERROR)
     })?;
 
     xhr.send().map_err(|err: JsValue| {
-        web_sys::console::debug_1(&format!("Failed to send XMLHttpRequest: {:?}", err).into());
-        JsValue::from_str("Failed to send XMLHttpRequest")
+        web_sys::console::debug_1(&format!("{XML_HTTP_REQUEST_SEND_ERROR}: {:?}", err).into());
+        JsValue::from_str(XML_HTTP_REQUEST_SEND_ERROR)
     })?;
 
     let promise: Promise = Promise::new(&mut |resolve, reject: js_sys::Function| {
@@ -123,15 +114,15 @@ async fn xhr_fetch(url: String) -> Result<Vec<u8>, JsValue> {
         onload.forget();
 
         let onerror: Closure<dyn FnMut()> = Closure::wrap(Box::new(move || {
-            reject.call1(&JsValue::NULL, &JsValue::from_str("Failed to fetch data")).unwrap();
+            reject.call1(&JsValue::NULL, &JsValue::from_str(FETCH_ERROR)).unwrap();
         }) as Box<dyn FnMut()>);
         xhr.set_onerror(Some(onerror.as_ref().unchecked_ref()));
         onerror.forget();
     });
 
     JsFuture::from(promise).await.map_err(|_| {
-        web_sys::console::debug_1(&"Failed to fetch data".into());
-        JsValue::from_str("Failed to fetch data")
+        web_sys::console::debug_1(&FETCH_ERROR.into());
+        JsValue::from_str(FETCH_ERROR)
     })?;
 
     if xhr.status().unwrap() != 200 {
@@ -140,7 +131,6 @@ async fn xhr_fetch(url: String) -> Result<Vec<u8>, JsValue> {
         return Err(JsValue::from_str(&format!("Failed to load data, status code: {}", status_code)));
     }
 
-    // web_sys::console::debug_1(&"Data fetched successfully".into());
     let array_buffer: JsValue = xhr.response().unwrap();
 
     let buffer: Uint8Array = Uint8Array::new(&array_buffer);
@@ -151,40 +141,23 @@ async fn xhr_fetch(url: String) -> Result<Vec<u8>, JsValue> {
 async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue> {
     let encrypted_data: Vec<u8> = xhr_fetch(url).await?;
 
-    // TODO: Only allow during debugging
-    // web_sys::console::debug_1(&format!("Encrypted data length: {}", encrypted_data.len()).into());
-
-    // Ensure the correct salt extraction method
-    // Assuming the salt was stored in the first 16 bytes of the encrypted data
     let salt: &[u8] = &encrypted_data[0..16];
 
-    // TODO: Only allow during debugging
-    // web_sys::console::debug_1(&format!("Salt: {:?}", salt).into());
-
-    // Decrypt the password
-    let encrypted_password: Vec<u8> = hex::decode(ENCRYPTED_PASSWORD).unwrap();
+    let encrypted_password: Vec<u8> = hex::decode(get_encrypted_password().as_bytes()).unwrap();
     let key: [u8; 32] = decrypt_password(&encrypted_password, salt)?;
 
-    // Assuming the IV was stored in the next 16 bytes of the encrypted data
-    let iv: [u8; 16] = hex::decode(IV).unwrap().try_into().unwrap();
-
-    // TODO: Only allow during debugging
-    // web_sys::console::debug_1(&format!("IV: {:?}", iv).into());
+    let iv: [u8; 16] = hex::decode(get_iv().as_bytes()).unwrap().try_into().unwrap();
 
     let cipher: Cbc<Aes256, Pkcs7> = Aes256Cbc::new_from_slices(&key, &iv).map_err(|e| {
         web_sys::console::debug_1(&format!("Failed to create cipher: {}", e).into());
         JsValue::from_str(&format!("Failed to create cipher: {}", e))
     })?;
 
-    // web_sys::console::debug_1(&"Cipher created successfully".into());
     let decrypted_data: Vec<u8> = cipher.decrypt_vec(&encrypted_data[32..]).map_err(|e| {
         web_sys::console::debug_1(&format!("Failed to decrypt data: {}", e).into());
         JsValue::from_str(&format!("Failed to decrypt data: {}", e))
     })?;
 
-    // web_sys::console::debug_1(&format!("Decrypted data length: {}", decrypted_data.len()).into());
-
-    // Decompress the CSV data
     let mut decoder: GzDecoder<&[u8]> = GzDecoder::new(&decrypted_data[..]);
     let mut csv_data: String = String::new();
     decoder.read_to_string(&mut csv_data).map_err(|err| {
@@ -192,23 +165,5 @@ async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue
         JsValue::from_str(&format!("Failed to decompress CSV: {}", err))
     })?;
 
-    // web_sys::console::debug_1(&"Data decompressed successfully".into());
     Ok(csv_data)
-}
-
-// Generic function to parse CSV data into any type that implements Deserialize
-pub fn parse_csv_data<T: DeserializeOwned>(csv_data: &str) -> Result<Vec<T>, JsValue> {
-    let mut reader: csv::Reader<&[u8]> = ReaderBuilder::new()
-        .has_headers(true)
-        .from_reader(csv_data.as_bytes());
-
-    let mut results: Vec<T> = Vec::new();
-    for result in reader.deserialize() {
-        let record: T = result.map_err(|err| {
-            JsValue::from_str(&format!("Failed to parse CSV: {}", err))
-        })?;
-        results.push(record);
-    }
-
-    Ok(results)
 }
