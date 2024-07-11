@@ -6,12 +6,12 @@ use std::panic;
 mod utils;
 mod data_models;
 
-use data_models::{
+use crate::data_models::{
     DataBuildInfo,
     PaginatedResults,
     SymbolSearch,
     SymbolDetail,
-    SymbolETFHolder
+    SymbolETFHolder,
 };
 
 #[wasm_bindgen(start)]
