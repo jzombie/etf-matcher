@@ -9,7 +9,7 @@ use crate::utils::fetch::{fetch_and_decompress_gz, fetch_and_decompress_gz_non_c
 use crate::utils::parse::parse_csv_data;
 use crate::utils::shard::query_shard_for_symbol;
 
-pub enum DataUrl {
+pub enum DataURL {
     DataBuildInfo,
     // EtfList,
     SymbolSearch,
@@ -17,14 +17,14 @@ pub enum DataUrl {
     SymbolETFHoldersShardIndex,
 }
 
-impl DataUrl {
+impl DataURL {
     pub fn value(&self) -> &'static str {
         match self {
-            DataUrl::DataBuildInfo => "/data/data_build_info.enc",
-            // DataUrl::EtfList => "/data/etfs.enc",
-            DataUrl::SymbolSearch => "/data/symbol_search_dict.enc",
-            DataUrl::SymbolDetailShardIndex => "/data/symbol_detail_index.enc",
-            DataUrl::SymbolETFHoldersShardIndex => "/data/symbol_etf_holders_index.enc",
+            DataURL::DataBuildInfo => "/data/data_build_info.enc",
+            // DataURL::EtfList => "/data/etfs.enc",
+            DataURL::SymbolSearch => "/data/symbol_search_dict.enc",
+            DataURL::SymbolDetailShardIndex => "/data/symbol_detail_index.enc",
+            DataURL::SymbolETFHoldersShardIndex => "/data/symbol_etf_holders_index.enc",
         }
     }
 
@@ -47,7 +47,7 @@ pub struct DataBuildInfo {
 
 impl DataBuildInfo {
     pub async fn get_data_build_info() -> Result<DataBuildInfo, JsValue> {
-        let url: &str = &DataUrl::DataBuildInfo.value();
+        let url: &str = &DataURL::DataBuildInfo.value();
 
         // Fetch and decompress the CSV data
         let csv_data = fetch_and_decompress_gz_non_cached(&url).await?;
@@ -76,7 +76,7 @@ impl DataBuildInfo {
 
 // impl ETF {
 //     pub async fn count_etfs_per_exchange() -> Result<HashMap<String, usize>, JsValue> {
-//         let url: &str = DataUrl::EtfList.value();
+//         let url: &str = DataURL::EtfList.value();
 
 //         let csv_data: String = fetch_and_decompress_gz(&url).await?;
 //         let entries: Vec<ETF> = parse_csv_data(&csv_data)?;
@@ -109,7 +109,7 @@ impl DataBuildInfo {
 
 // impl ETFHolder {
 //     pub async fn get_etf_holder_asset_count(symbol: String) -> Result<i32, JsValue> {
-//         let url: String = DataUrl::get_etf_holder_url(&symbol);
+//         let url: String = DataURL::get_etf_holder_url(&symbol);
 
 //         let csv_data: String = fetch_and_decompress_gz(&url).await?;
 //         let entries: Vec<ETFHolder> = parse_csv_data(&csv_data)?;
@@ -125,7 +125,7 @@ impl DataBuildInfo {
 //     }
 
 //     pub async fn get_etf_holder_asset_names(symbol: String) -> Result<Vec<String>, JsValue> {
-//         let url: String = DataUrl::get_etf_holder_url(&symbol);
+//         let url: String = DataURL::get_etf_holder_url(&symbol);
 
 //         let csv_data: String = fetch_and_decompress_gz(&url).await?;
 //         let entries: Vec<ETFHolder> = parse_csv_data(&csv_data)?;
@@ -175,7 +175,7 @@ impl SymbolSearch {
             });
         }
 
-        let url: String = DataUrl::SymbolSearch.value().to_owned();
+        let url: String = DataURL::SymbolSearch.value().to_owned();
         let csv_data: String = fetch_and_decompress_gz(&url).await?;
         let results: Vec<SymbolSearch> = parse_csv_data(&csv_data)?;
 
@@ -239,7 +239,7 @@ pub struct SymbolDetail {
 
 impl SymbolDetail {
     pub async fn get_symbol_detail(symbol: &str) -> Result<SymbolDetail, JsValue> {
-        let url: &str = DataUrl::SymbolDetailShardIndex.value();
+        let url: &str = DataURL::SymbolDetailShardIndex.value();
         query_shard_for_symbol(url, symbol, |detail: &SymbolDetail| {
             Some(&detail.symbol)
         })
@@ -257,7 +257,7 @@ pub struct SymbolETFHolder {
 
 impl SymbolETFHolder {
     pub async fn get_symbol_etf_holders(symbol: &str) -> Result<Vec<String>, JsValue> {
-        let url: &str = DataUrl::SymbolETFHoldersShardIndex.value();
+        let url: &str = DataURL::SymbolETFHoldersShardIndex.value();
         let holder = query_shard_for_symbol(url, symbol, |detail: &SymbolETFHolder| {
             Some(&detail.symbol)
         })
