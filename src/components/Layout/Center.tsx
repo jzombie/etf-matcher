@@ -1,6 +1,6 @@
 import React from "react";
 import clsx from "clsx";
-import styles from "./Center.module.css";
+import styles from "./layout.module.scss";
 
 export type CenterProps = {
   children: React.ReactNode;

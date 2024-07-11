@@ -1,6 +1,6 @@
 import React from "react";
 import clsx from "clsx";
-import styles from "./Footer.module.css";
+import styles from "./Layout.module.scss";
 
 export type FooterProps = {
   children: React.ReactNode;
