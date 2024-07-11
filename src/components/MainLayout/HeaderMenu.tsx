@@ -7,27 +7,30 @@ export default function HeaderMenu() {
   const location = useLocation();
 
   // Define the base paths for the main menu items
-  const menuItems = [
-    {
-      key: "/",
-      label: (
-        <Link to="/">
-          <HomeOutlined title="Home" />
-        </Link>
-      ),
-    },
-    // { key: "/sectors", label: <Link to="/sectors">Sectors</Link> },
-    { key: "/portfolios", label: <Link to="/portfolios">Portfolios</Link> },
-    { key: "/watchlists", label: <Link to="/watchlists">Watchlists</Link> },
-    {
-      key: "/settings",
-      label: (
-        <Link to="/settings">
-          <SettingOutlined title="Settings" />
-        </Link>
-      ),
-    },
-  ];
+  const menuItems = useMemo(
+    () => [
+      {
+        key: "/",
+        label: (
+          <Link to="/">
+            <HomeOutlined title="Home" />
+          </Link>
+        ),
+      },
+      // { key: "/sectors", label: <Link to="/sectors">Sectors</Link> },
+      { key: "/portfolios", label: <Link to="/portfolios">Portfolios</Link> },
+      { key: "/watchlists", label: <Link to="/watchlists">Watchlists</Link> },
+      {
+        key: "/settings",
+        label: (
+          <Link to="/settings">
+            <SettingOutlined title="Settings" />
+          </Link>
+        ),
+      },
+    ],
+    []
+  );
 
   const selectedKey = menuItems.find(
     (item) =>
