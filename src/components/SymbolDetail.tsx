@@ -1,6 +1,6 @@
 import React from "react";
 import SymbolContainer from "./SymbolContainer";
-import { store } from "@hooks/useStoreStateReader";
+import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import { Button } from "antd";
 
 import { MiniChart, CompanyProfile } from "react-ts-tradingview-widgets";
@@ -14,6 +14,8 @@ export default function SymbolDetail({
   tickerSymbol,
   ...args
 }: SymbolDetailProps) {
+  const { symbolBuckets } = useStoreStateReader("symbolBuckets");
+
   return (
     <SymbolContainer
       style={{ marginBottom: 12 }}
@@ -32,9 +34,16 @@ export default function SymbolDetail({
         height={300}
         copyrightStyles={tradingViewCopyrightStyles}
       />
-      <Button onClick={() => store.addSymbolToPortfolio(tickerSymbol)}>
-        Add {tickerSymbol} to Portfolio
-      </Button>
+
+      {symbolBuckets?.map((symbolBucket, idx) => (
+        // TODO: If symbol is already in the bucket, don't try to re-add it
+        <Button
+          key={idx}
+          onClick={() => store.addSymbolToBucket(tickerSymbol, symbolBucket)}
+        >
+          Add {tickerSymbol} to {symbolBucket.name}
+        </Button>
+      ))}
 
       <Button onClick={() => store.PROTO_getSymbolDetail(tickerSymbol)}>
         PROTO_getSymbolDetail()

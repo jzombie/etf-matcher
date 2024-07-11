@@ -10,6 +10,7 @@ export type SymbolBucketProps = {
   name: string;
   symbols: string[];
   type: "watchlist" | "portfolio" | "ticker_tape";
+  requiresQuantity: boolean;
 };
 
 export type StoreStateProps = {
@@ -51,16 +52,19 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           name: "My Portfolio",
           symbols: [],
           type: "portfolio",
+          requiresQuantity: true,
         },
         {
           name: "My Watchlist",
           symbols: [],
           type: "watchlist",
+          requiresQuantity: false,
         },
         {
           name: "My Ticker Tape",
           symbols: [],
           type: "ticker_tape",
+          requiresQuantity: false,
         },
       ],
     });
@@ -205,8 +209,22 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       .catch((error) => console.error(error));
   }
 
-  addSymbolToPortfolio(symbol: string) {
-    console.warn(`TODO: Handle symbol add: ${symbol}`);
+  addSymbolToBucket(symbol: string, symbolBucket: SymbolBucketProps) {
+    this.setState((prevState) => {
+      const symbolBuckets = prevState.symbolBuckets.map((bucket) => {
+        if (bucket.name === symbolBucket.name) {
+          return {
+            ...bucket,
+            symbols: Array.from(new Set([...bucket.symbols, symbol])),
+          };
+        }
+        return bucket;
+      });
+
+      return { symbolBuckets };
+    });
+
+    // TODO: Show UI notification
   }
 
   // Add additional methods or properties if needed
