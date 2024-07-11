@@ -39,10 +39,10 @@ export default function SearchModalButton() {
     } else {
       // First, blur the currently active element, if any
       if (
-        document.activeElement &&
-        document.activeElement instanceof HTMLElement
+        window.document.activeElement &&
+        window.document.activeElement instanceof HTMLElement
       ) {
-        (document.activeElement as HTMLElement).blur();
+        (window.document.activeElement as HTMLElement).blur();
       }
 
       // TODO: This still needs to improve on Safari when closing the Modal and then
