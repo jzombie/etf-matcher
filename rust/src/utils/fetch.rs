@@ -43,7 +43,7 @@ thread_local! {
     static CACHE: RefCell<HashMap<String, Shared<LocalBoxFuture<'static, Result<String, JsValue>>>>> = RefCell::new(HashMap::new());
 }
 
-// TODO: Compress xhr_fetch directly to save additional memory
+// TODO: Compress xhr_fetch directly to save additional memory?
 pub async fn fetch_and_decompress_gz<T>(url: T) -> Result<String, JsValue>
 where
     T: AsRef<str> + Clone,
