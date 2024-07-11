@@ -17,6 +17,11 @@ export default function SearchModalButton() {
     totalSearchResults,
     selectedIndex,
     setSelectedIndex,
+    page,
+    setPage,
+    totalPages,
+    setPageSize,
+    remaining,
     resetSearch,
   } = useSearch();
 
@@ -205,15 +210,32 @@ export default function SearchModalButton() {
                   </span>
                 </div>
               ))}
-              {totalSearchResults > 20 && (
+              {
+                // TODO: Show all results
+                remaining && (
+                  <div>
+                    <Button>+ {remaining} remaining</Button>
+                  </div>
+                )
+              }
+
+              <div>DEBUG total pages: {totalPages}</div>
+              <div>DEBUG remaining: {remaining}</div>
+              <div>DEBUG total search results: {totalSearchResults}</div>
+              {totalSearchResults > 20 && totalPages < 1000 && (
                 <div style={{ marginTop: 10 }}>
                   {
                     // TODO: Wire up (create `useSearch` hook to make this reusable)
                   }
                   <Pagination
                     align="center"
-                    defaultCurrent={1}
-                    pageSize={20}
+                    defaultCurrent={page}
+                    showSizeChanger={false}
+                    // pageSize={pageSize}
+                    onChange={(nextPage, nextPageSize) => {
+                      setPage(nextPage);
+                      setPageSize(nextPageSize);
+                    }}
                     total={totalSearchResults}
                   />
                 </div>
@@ -226,7 +248,8 @@ export default function SearchModalButton() {
                     marginTop: 10,
                   }}
                 >
-                  Total results for query "{searchQuery}": {totalSearchResults}
+                  Total results for query &quot;{searchQuery}&quot;:{" "}
+                  {totalSearchResults}
                 </div>
               )}
             </Form>

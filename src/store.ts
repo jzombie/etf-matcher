@@ -144,7 +144,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   async searchSymbols(
     query: string,
     page: number = 1,
-    page_size: number = 20
+    pageSize: number = 20
   ): Promise<SearchResultsWithTotalCount> {
     try {
       // Call the worker function with the given query and trim any extra spaces
@@ -152,7 +152,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         "search_symbols",
         query.trim(),
         page,
-        page_size
+        pageSize
       );
 
       return results;
@@ -203,9 +203,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   PROTO_getSymbolETFHolders(
     symbol: string,
     page: number = 1,
-    page_size: number = 20
+    pageSize: number = 20
   ) {
-    callWorkerFunction("get_symbol_etf_holders", symbol, page, page_size)
+    callWorkerFunction("get_symbol_etf_holders", symbol, page, pageSize)
       .then((etfHolders) =>
         console.log({
           symbol,
