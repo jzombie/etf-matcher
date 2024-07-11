@@ -12,7 +12,6 @@ export default function Home() {
 
   return (
     <div>
-      hello
       <section style={heroSectionStyle}>
         <div style={overlayStyle}>
           <div style={heroContentStyle}>

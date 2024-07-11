@@ -6,9 +6,8 @@ import {
   Toolbar,
   Typography,
   Container,
-  Button,
-  CssBaseline,
   useTheme,
+  CssBaseline,
 } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import HeaderMenu from "./HeaderMenu";
@@ -37,53 +36,83 @@ export default function MainLayout() {
 
   return (
     <>
-      <CssBaseline />
       <Box
-        sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
+        // full viewport
+        sx={{
+          minHeight: "100vh",
+          maxHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          // backgroundColor: "white",
+          // alignItems: "center",
+          // justifyContent: "space-between",
+        }}
       >
         <AppBar position="static">
           <Toolbar sx={{ justifyContent: "space-between" }}>
             <HeaderMenu />
-            {/*
-              <SearchModalButton />
-              */}
+            {
+              // <SearchModalButton />
+            }
           </Toolbar>
         </AppBar>
-        <Container
-          component="main"
+
+        <Box
           sx={{
             flex: 1,
             display: "flex",
             flexDirection: "column",
-            padding: theme.spacing(2),
+            overflow: "hidden",
+            height: "100%",
           }}
         >
-          <Box sx={{ width: "100%", flex: 1, display: "flex" }}>
+          <Container
+            component="main"
+            sx={{
+              flex: 1,
+              padding: "10px 10px",
+              height: 0,
+              display: "flex",
+              overflow: "auto",
+              // backgroundColor: "red",
+            }}
+          >
             {!isRustInit ? (
-              <Box
-                sx={{
+              <div
+                style={{
                   width: "100%",
+                  height: "100%",
                   display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  backgroundColor: "red",
                 }}
               >
-                <Typography variant="h6" component="div" textAlign="center">
-                  Initializing...
-                </Typography>
-              </Box>
+                <Box
+                  sx={{
+                    height: "100%",
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    overflow: "auto",
+                  }}
+                >
+                  <Typography variant="h6" component="div" textAlign="center">
+                    Initializing...
+                  </Typography>
+                </Box>
+              </div>
             ) : (
               <Outlet />
             )}
-          </Box>
-        </Container>
+          </Container>
+        </Box>
         <Box
           component="footer"
           sx={{
             textAlign: "left",
-            padding: theme.spacing(1),
-            backgroundColor: theme.palette.background.default,
+            // backgroundColor: theme.palette.background.default,
+            // padding: theme.spacing(2),
           }}
         >
           <Typography variant="body2" color="textSecondary">

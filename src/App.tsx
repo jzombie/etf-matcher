@@ -1,5 +1,7 @@
 import React from "react";
-// import { ConfigProvider, theme } from "antd";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+
 import { RouterProvider } from "react-router-dom";
 import router from "./router";
 import { SymbolContainerProvider } from "@components/SymbolContainer";
@@ -9,30 +11,19 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
+const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+});
+
 export default function App() {
   return (
-    // <ConfigProvider
-    //   // https://ant.design/theme-editor
-    //   theme={{
-    //     algorithm: theme.darkAlgorithm,
-    //     components: {
-    //       Layout: {
-    //         headerBg: "rgb(113, 44, 44)",
-    //       },
-    //       Menu: {
-    //         itemBg: "transparent",
-    //         darkItemBg: "transparent",
-    //       },
-    //       Drawer: {
-    //         colorBgElevated: "rgba(0,0,0,.9)",
-    //         // backdropFilter: "blur(5px)",
-    //       },
-    //     },
-    //   }}
-    // >
-    <SymbolContainerProvider>
-      <RouterProvider router={router} />
-    </SymbolContainerProvider>
-    // </ConfigProvider>
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <SymbolContainerProvider>
+        <RouterProvider router={router} />
+      </SymbolContainerProvider>
+    </ThemeProvider>
   );
 }
