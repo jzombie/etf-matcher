@@ -1,10 +1,5 @@
 use serde::{Deserialize, Serialize};
 use crate::JsValue;
-// use crate::utils::{
-//   fetch_and_decompress_gz_non_cached,
-//   fetch_and_decompress_gz,
-//   parse_csv_data
-// };
 use crate::utils::fetch::{fetch_and_decompress_gz, fetch_and_decompress_gz_non_cached};
 use crate::utils::parse::parse_csv_data;
 use crate::utils::shard::query_shard_for_symbol;
@@ -27,16 +22,6 @@ impl DataURL {
             DataURL::SymbolETFHoldersShardIndex => "/data/symbol_etf_holders_index.enc",
         }
     }
-
-
-    // pub fn get_etf_holder_url(symbol: &str) -> String {
-    //     format!("/data/etf_holder.{}.enc", symbol)
-    // }
-
-    // pub fn get_symbol_detail_url(symbol: &str) -> String {
-    //     let first_char = symbol.chars().next().unwrap_or('O').to_ascii_uppercase();
-    //     format!("/data/symbol_detail.{}.enc", first_char)
-    // }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -59,87 +44,6 @@ impl DataBuildInfo {
         data.pop().ok_or_else(|| JsValue::from_str("No data found"))
     }
 }
-
-// // Option<type> allows null values
-// #[derive(Serialize, Deserialize)]
-// #[serde(rename_all = "camelCase")]
-// pub struct ETF {
-//     pub symbol: Option<String>,
-//     pub name: Option<String>,
-//     pub price: Option<f64>,
-//     pub exchange: Option<String>,
-//     #[serde(rename = "exchangeShortName")]
-//     pub exchange_short_name: Option<String>,
-//     #[serde(rename = "type")]
-//     pub entry_type: Option<String>,
-// }
-
-// impl ETF {
-//     pub async fn count_etfs_per_exchange() -> Result<HashMap<String, usize>, JsValue> {
-//         let url: &str = DataURL::EtfList.value();
-
-//         let csv_data: String = fetch_and_decompress_gz(&url).await?;
-//         let entries: Vec<ETF> = parse_csv_data(&csv_data)?;
-
-//         let mut counts: HashMap<String, usize> = HashMap::new();
-//         for entry in entries {
-//             if let Some(exchange_short_name) = &entry.exchange_short_name {
-//                 *counts.entry(exchange_short_name.clone()).or_insert(0) += 1;
-//             }
-//         }
-//         Ok(counts)
-//     }
-// }
-
-// #[derive(Serialize, Deserialize)]
-// #[serde(rename_all = "camelCase")]
-// pub struct ETFHolder {
-//     pub asset: Option<String>,
-//     pub name: Option<String>,
-//     pub isin: Option<String>,
-//     pub cusip: Option<String>,
-//     #[serde(rename = "sharesNumber")]
-//     pub shares_number: Option<f64>,
-//     #[serde(rename = "weightPercentage")]
-//     pub weight_percentage: Option<f64>,
-//     #[serde(rename = "marketValue")]
-//     pub market_value: Option<f64>,
-//     pub updated: Option<String>,
-// }
-
-// impl ETFHolder {
-//     pub async fn get_etf_holder_asset_count(symbol: String) -> Result<i32, JsValue> {
-//         let url: String = DataURL::get_etf_holder_url(&symbol);
-
-//         let csv_data: String = fetch_and_decompress_gz(&url).await?;
-//         let entries: Vec<ETFHolder> = parse_csv_data(&csv_data)?;
-
-//         let mut count: i32 = 0;
-//         for entry in entries {
-//             if entry.asset.is_some() {
-//                 count += 1;
-//             }
-//         }
-
-//         Ok(count)
-//     }
-
-//     pub async fn get_etf_holder_asset_names(symbol: String) -> Result<Vec<String>, JsValue> {
-//         let url: String = DataURL::get_etf_holder_url(&symbol);
-
-//         let csv_data: String = fetch_and_decompress_gz(&url).await?;
-//         let entries: Vec<ETFHolder> = parse_csv_data(&csv_data)?;
-
-//         let mut asset_names: Vec<String> = Vec::new();
-//         for entry in entries {
-//             if let Some(asset) = &entry.asset {
-//                 asset_names.push(asset.clone());
-//             }
-//         }
-
-//         Ok(asset_names)
-//     }
-// }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PaginatedResults<T> {

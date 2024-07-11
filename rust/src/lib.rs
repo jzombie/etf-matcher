@@ -8,8 +8,6 @@ mod data_models;
 
 use data_models::{
     DataBuildInfo,
-    // ETF,
-    // ETFHolder,
     PaginatedResults,
     SymbolSearch,
     SymbolDetail,
@@ -46,21 +44,3 @@ pub async fn get_symbol_etf_holders(symbol: &str, page: usize, page_size: usize)
     let etf_symbols: PaginatedResults<String> = SymbolETFHolder::get_symbol_etf_holders(symbol, page, page_size).await?;
     to_value(&etf_symbols).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to convert Vec<String> to JsValue: {}", err)))
 }
-
-// #[wasm_bindgen]
-// pub async fn count_etfs_per_exchange() -> Result<JsValue, JsValue> {
-//     let counts: std::collections::HashMap<String, usize> = ETF::count_etfs_per_exchange().await?;
-//     to_value(&counts).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to convert ETF counts to JsValue: {}", err)))
-// }
-
-// #[wasm_bindgen]
-// pub async fn get_etf_holder_asset_count(symbol: String) -> Result<JsValue, JsValue> {
-//     let count: i32 = ETFHolder::get_etf_holder_asset_count(symbol).await?;
-//     Ok(JsValue::from(count))
-// }
-
-// #[wasm_bindgen]
-// pub async fn get_etf_holder_asset_names(symbol: String) -> Result<JsValue, JsValue> {
-//     let asset_names: Vec<String> = ETFHolder::get_etf_holder_asset_names(symbol).await?;
-//     to_value(&asset_names).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to serialize asset names: {}", err)))
-// }

@@ -133,27 +133,27 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return callWorkerFunction("get_symbol_detail", symbol);
   }
 
-  PROTO_countEtfsPerExchange() {
-    callWorkerFunction("count_etfs_per_exchange")
-      .then((countsPerExchange) =>
-        console.log({
-          countsPerExchange,
-        })
-      )
-      .catch((error) => console.error(error));
-  }
+  // PROTO_countEtfsPerExchange() {
+  //   callWorkerFunction("count_etfs_per_exchange")
+  //     .then((countsPerExchange) =>
+  //       console.log({
+  //         countsPerExchange,
+  //       })
+  //     )
+  //     .catch((error) => console.error(error));
+  // }
 
-  PROTO_getEtfHolderAssetCount() {
-    const ETF_HOLDER_SYMBOL = "SPY";
-    callWorkerFunction("get_etf_holder_asset_count", ETF_HOLDER_SYMBOL)
-      .then((assetCount) =>
-        console.log({
-          etfHolder: ETF_HOLDER_SYMBOL,
-          assetCount,
-        })
-      )
-      .catch((error) => console.error(error));
-  }
+  // PROTO_getEtfHolderAssetCount() {
+  //   const ETF_HOLDER_SYMBOL = "SPY";
+  //   callWorkerFunction("get_etf_holder_asset_count", ETF_HOLDER_SYMBOL)
+  //     .then((assetCount) =>
+  //       console.log({
+  //         etfHolder: ETF_HOLDER_SYMBOL,
+  //         assetCount,
+  //       })
+  //     )
+  //     .catch((error) => console.error(error));
+  // }
 
   PROTO_getSymbolDetail(symbol: string) {
     callWorkerFunction("get_symbol_detail", symbol)
