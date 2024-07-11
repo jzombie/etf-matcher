@@ -8,7 +8,7 @@ export default function useSearch(initialQuery: string = "") {
   const [totalSearchResults, _setTotalSearchResults] = useState<number>(0);
 
   const [page, setPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(20);
+  const [pageSize, setPageSize] = useState<number>(10);
   const totalPages = useMemo(
     () => Math.ceil(totalSearchResults / pageSize),
     [totalSearchResults, pageSize]
@@ -37,15 +37,6 @@ export default function useSearch(initialQuery: string = "") {
   const setSearchQuery = useCallback((searchQuery: string) => {
     _setSearchQuery(searchQuery.toUpperCase().trim());
   }, []);
-
-  useEffect(() => {
-    store.searchSymbols(searchQuery).then((searchResultsWithTotalCount) => {
-      const { results, total_count } = searchResultsWithTotalCount;
-
-      _setSearchResults(results);
-      _setTotalSearchResults(total_count);
-    });
-  }, [searchQuery]);
 
   useEffect(() => {
     store

@@ -21,6 +21,7 @@ export default function SearchModalButton() {
     setPage,
     totalPages,
     setPageSize,
+    pageSize,
     remaining,
     resetSearch,
   } = useSearch();
@@ -153,6 +154,7 @@ export default function SearchModalButton() {
         Search
       </Button>
       <Modal
+        // Empty title prevents the close button from overlaying the input element
         title="&nbsp;"
         open={isModalOpen}
         onOk={handleOk}
@@ -210,17 +212,23 @@ export default function SearchModalButton() {
               ))}
               {
                 // TODO: Show all results
-                remaining && (
+                remaining > 0 && (
                   <div>
                     <Button>+ {remaining} remaining</Button>
                   </div>
                 )
               }
 
-              <div>DEBUG total pages: {totalPages}</div>
+              {/* <div>DEBUG total pages: {totalPages}</div>
+              <div>DEBUG calc: {totalPages * pageSize}</div>
+              <div>DEBUG page: {page}</div>
               <div>DEBUG remaining: {remaining}</div>
-              <div>DEBUG total search results: {totalSearchResults}</div>
-              {totalSearchResults > 20 && totalPages < 1000 && (
+              <div>DEBUG total search results: {totalSearchResults}</div> */}
+              {
+                // TODO: This `totalPages` less than 1000 might not be needed if the styles work better
+                // i.e. box contain
+              }
+              {totalSearchResults > pageSize && (
                 <div style={{ marginTop: 10 }}>
                   {
                     // TODO: Wire up (create `useSearch` hook to make this reusable)
@@ -229,7 +237,7 @@ export default function SearchModalButton() {
                     align="center"
                     defaultCurrent={page}
                     showSizeChanger={false}
-                    // pageSize={pageSize}
+                    pageSize={pageSize}
                     onChange={(nextPage, nextPageSize) => {
                       setPage(nextPage);
                       setPageSize(nextPageSize);
