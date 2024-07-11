@@ -37,15 +37,11 @@ export default function MainLayout() {
   return (
     <>
       <Box
-        // full viewport
         sx={{
           minHeight: "100vh",
           maxHeight: "100vh",
           display: "flex",
           flexDirection: "column",
-          // backgroundColor: "white",
-          // alignItems: "center",
-          // justifyContent: "space-between",
         }}
       >
         <AppBar position="static">
@@ -71,37 +67,27 @@ export default function MainLayout() {
             sx={{
               flex: 1,
               padding: "10px 10px",
-              height: 0,
               display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
               overflow: "auto",
-              // backgroundColor: "red",
             }}
           >
             {!isRustInit ? (
-              <div
-                style={{
+              <Box
+                sx={{
                   width: "100%",
                   height: "100%",
                   display: "flex",
-                  backgroundColor: "red",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                <Box
-                  sx={{
-                    height: "100%",
-                    width: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    overflow: "auto",
-                  }}
-                >
-                  <Typography variant="h6" component="div" textAlign="center">
-                    Initializing...
-                  </Typography>
-                </Box>
-              </div>
+                <Typography variant="h6" component="div" textAlign="center">
+                  Initializing...
+                </Typography>
+              </Box>
             ) : (
               <Outlet />
             )}
@@ -111,8 +97,6 @@ export default function MainLayout() {
           component="footer"
           sx={{
             textAlign: "left",
-            // backgroundColor: theme.palette.background.default,
-            // padding: theme.spacing(2),
           }}
         >
           <Typography variant="body2" color="textSecondary">
