@@ -14,7 +14,7 @@ import HeaderMenu from "./HeaderMenu";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 
-import {
+import Layout, {
   FullViewport,
   Center,
   Header,
@@ -64,8 +64,15 @@ export default function MainLayout() {
               </Typography>
             </Center>
           ) : (
-            <div style={{ width: "100%", height: "100%", overflow: "auto" }}>
+            <div style={{ width: "100%", height: "100%" }}>
+              {/* <Layout>
+                  <Header>some header</Header>
+                  <Content> */}
               <Outlet />
+              {/* </Content>
+                  <Footer>another footer</Footer>
+                </Layout> */}
+              <Footer>yeah</Footer>
             </div>
           )}
         </Content>
