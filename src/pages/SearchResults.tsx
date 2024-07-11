@@ -1,16 +1,13 @@
 import React, { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "antd";
 
-import { store } from "@hooks/useStoreStateReader";
 import useSearch from "@hooks/useSearch";
 import SymbolDetail from "@components/SymbolDetail";
 
 export default function SearchResults() {
   const location = useLocation();
-  // const [searchQuery, setSearchQuery] = useState<string>("");
-  // const [isExact, setIsExact] = useState<boolean>(false);
-  // const [symbols, setSymbols] = useState<string[]>([]);
+  const navigate = useNavigate();
 
   const {
     searchQuery,
@@ -27,33 +24,30 @@ export default function SearchResults() {
         setSearchQuery(value.trim());
       }
       if (key === "exact") {
-        // String values from URL
         setOnlyExactMatches(value === "true" || value === "1");
       }
     });
   }, [location, setSearchQuery, setOnlyExactMatches]);
 
-  // useEffect(() => {
-  //   store
-  //     .searchSymbols(searchQuery)
-  //     .then((searchResultsWithTotalCount: SearchResultsWithTotalCount) => {
-  //       const { results: searchResults } = searchResultsWithTotalCount;
+  const toggleExactMatch = () => {
+    const searchParams = new URLSearchParams(location.search);
+    const newExactValue = !(
+      searchParams.get("exact") === "true" || searchParams.get("exact") === "1"
+    );
 
-  //       const symbols = searchResults.map((result) => result.symbol);
+    if (newExactValue) {
+      searchParams.set("exact", "true");
+    } else {
+      searchParams.delete("exact");
+    }
 
-  //       let returnedSymbols: string[] = symbols;
+    navigate({
+      pathname: location.pathname,
+      search: searchParams.toString(),
+    });
 
-  //       if (isExact) {
-  //         if (symbols.includes(searchQuery.trim())) {
-  //           returnedSymbols = [searchQuery];
-  //         } else {
-  //           returnedSymbols = [];
-  //         }
-  //       }
-
-  //       setSymbols(returnedSymbols);
-  //     });
-  // }, [searchQuery, isExact]);
+    setOnlyExactMatches(newExactValue);
+  };
 
   if (!searchQuery) {
     return <div>No search query...</div>;
@@ -62,7 +56,7 @@ export default function SearchResults() {
   return (
     <div>
       Search results for: {searchQuery}
-      <Button onClick={() => setOnlyExactMatches((prev) => !prev)}>
+      <Button onClick={toggleExactMatch}>
         Toggle Exact Match (currently {onlyExactMatches ? "on" : "off"})
       </Button>
       {searchResults.map((searchResult) => (

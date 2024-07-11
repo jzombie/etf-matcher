@@ -85,7 +85,9 @@ export default function SearchModalButton() {
       const searchParams = new URLSearchParams({ query: locSearchQuery });
 
       navigate(
-        `/search?${searchParams.toString()}&exact=${Boolean(exactSearchValue)}`
+        `/search?${searchParams.toString()}${
+          exactSearchValue ? "&exact=true" : ""
+        }`
       );
     }
   };
