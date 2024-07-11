@@ -28,6 +28,13 @@ export default function FullViewport({
   );
 }
 
+// Test if the browser supports the 'dvh' (dynamic viewport height) unit.
+//
+// The 'dvh' unit adjusts for the presence of on-screen elements like the
+// mobile keyboard, providing a more accurate viewport height.
+// This function creates a temporary element, sets its height to '100dvh',
+// and checks if the computed height is non-zero, indicating support.
+// If supported, it helps in better handling of mobile keyboard layouts.
 function testSupportsDvhUnit() {
   const testElement = window.document.createElement("div");
   testElement.style.height = "100dvh";
