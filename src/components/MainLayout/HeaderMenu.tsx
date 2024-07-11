@@ -73,7 +73,6 @@ export default function HeaderMenu() {
             open={isDrawerVisible}
           >
             <Menu
-              theme="dark"
               mode="vertical"
               selectedKeys={selectedKey ? [selectedKey] : []}
               items={menuItems}
