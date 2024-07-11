@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "antd";
+// import { Button } from "antd";
 import SymbolDetail from "@components/SymbolDetail";
 
 import useStoreStateReader from "@hooks/useStoreStateReader";
@@ -13,7 +13,10 @@ export default function Portfolios() {
 
   return (
     <div>
-      <Button>Create new Portfolio</Button>
+      {/*
+        <Button>Create new Portfolio</Button>
+        */}
+
       <hr />
       <div>
         <h2>My Portfolios</h2>

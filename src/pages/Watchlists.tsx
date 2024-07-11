@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "antd";
+// import { Button } from "antd";
 import SymbolDetail from "@components/SymbolDetail";
 
 import useStoreStateReader from "@hooks/useStoreStateReader";
@@ -13,7 +13,10 @@ export default function Watchlists() {
 
   return (
     <div>
-      <Button>Create new Watchlist</Button>
+      {/*
+        <Button>Create new Watchlist</Button>
+        */}
+
       <hr />
       <div>
         <h2>My Watchlists</h2>

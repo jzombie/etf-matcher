@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AutoComplete } from "antd";
+// import { AutoComplete } from "antd";
 
 const mockVal = (str: string, repeat = 1) => ({
   value: str.repeat(repeat),
@@ -25,7 +25,8 @@ export default function MockAutoComplete() {
 
   return (
     <>
-      <AutoComplete
+      {/*
+              <AutoComplete
         options={options}
         style={{ width: 200 }}
         onSelect={onSelect}
@@ -43,6 +44,7 @@ export default function MockAutoComplete() {
         onChange={onChange}
         placeholder="control mode"
       />
+        */}
     </>
   );
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "antd";
+// import { Button } from "antd";
 import { useNavigate } from "react-router-dom";
 
 export type LinkButtonProps = {
@@ -18,9 +18,13 @@ export default function LinkButton({
     navigate(to);
   };
 
+  return <div></div>;
+
+  /*
   return (
     <Button {...props} onClick={handleClick}>
       {children}
     </Button>
   );
+  */
 }

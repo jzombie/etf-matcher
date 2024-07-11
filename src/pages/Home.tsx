@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "antd";
+// import { Button } from "antd";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import heroImg from "@assets/hero.webp"; // Adjust the path as needed
 
@@ -12,6 +12,7 @@ export default function Home() {
 
   return (
     <div>
+      hello
       <section style={heroSectionStyle}>
         <div style={overlayStyle}>
           <div style={heroContentStyle}>
@@ -20,7 +21,7 @@ export default function Home() {
               Customize a virtual portfolio with potential fractional shares and
               find ETFs that closely match your investment goals.
             </p>
-            <Button
+            {/* <Button
               style={heroButtonStyle}
               type="primary"
               size="large"
@@ -31,7 +32,7 @@ export default function Home() {
                 // TODO: Don't say "Get Started" if already started... ("Continue" maybe?)
               }
               {!isSearchModalOpen ? "Get Started" : "You're on your way!"}
-            </Button>
+            </Button> */}
           </div>
         </div>
         <img style={heroImageStyle} src={heroImg} alt="ETF Matcher" />

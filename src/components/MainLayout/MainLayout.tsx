@@ -1,15 +1,24 @@
 import React from "react";
 import { TickerTape } from "react-ts-tradingview-widgets";
-import { Layout as AntLayout } from "antd";
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  Typography,
+  Container,
+  Button,
+  CssBaseline,
+  useTheme,
+} from "@mui/material";
 import { Outlet } from "react-router-dom";
 import HeaderMenu from "./HeaderMenu";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
-import SearchModalButton from "../SearchModalButton";
-
-const { Header, Content, Footer } = AntLayout;
+// import SearchModalButton from "../SearchModalButton";
 
 export default function MainLayout() {
+  const theme = useTheme();
+
   const {
     isProductionBuild,
     isRustInit,
@@ -27,78 +36,88 @@ export default function MainLayout() {
   ]);
 
   return (
-    <AntLayout style={{ minHeight: "100vh" }}>
-      <Header
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
+    <>
+      <CssBaseline />
+      <Box
+        sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
       >
-        <HeaderMenu />
-        <SearchModalButton />
-      </Header>
-      <Content
-        style={{
-          padding: "10px 10px",
-          height: 0, // Needs a height to force this container to stretch
-          display: "flex",
-          overflow: "auto",
-        }}
-      >
-        <div style={{ width: "100%", height: "100%" }}>
-          {!isRustInit ? (
-            <div
-              style={{
-                height: "100%",
-                width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                overflow: "auto",
-              }}
-            >
-              <div style={{ textAlign: "center" }}>Initializing...</div>
-            </div>
-          ) : (
-            <Outlet />
-          )}
-        </div>
-      </Content>
-      <Footer style={{ textAlign: "left", padding: 0, margin: 0 }}>
-        <div style={{ color: "#999" }}>
-          <span>
+        <AppBar position="static">
+          <Toolbar sx={{ justifyContent: "space-between" }}>
+            <HeaderMenu />
+            {/*
+              <SearchModalButton />
+              */}
+          </Toolbar>
+        </AppBar>
+        <Container
+          component="main"
+          sx={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            padding: theme.spacing(2),
+          }}
+        >
+          <Box sx={{ width: "100%", flex: 1, display: "flex" }}>
+            {!isRustInit ? (
+              <Box
+                sx={{
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Typography variant="h6" component="div" textAlign="center">
+                  Initializing...
+                </Typography>
+              </Box>
+            ) : (
+              <Outlet />
+            )}
+          </Box>
+        </Container>
+        <Box
+          component="footer"
+          sx={{
+            textAlign: "left",
+            padding: theme.spacing(1),
+            backgroundColor: theme.palette.background.default,
+          }}
+        >
+          <Typography variant="body2" color="textSecondary">
             {prettyDataBuildTime
               ? `Data build time: ${prettyDataBuildTime}`
               : ""}
-          </span>
-          {" | "}
-          <span>{isProductionBuild ? "PROD" : "DEV"}</span>
-          {" | "}
-          <span>{isDirtyState ? "Not Saved" : "Saved"}</span>
-          {" | "}
-          <span>{isOnline ? "Online" : "Offline"}</span>
-          {" | "}
-          <span>{visibleSymbols?.toString()}</span>
-          <span style={{ float: "right" }}>
+            {" | "}
+            {isProductionBuild ? "PROD" : "DEV"}
+            {" | "}
+            {isDirtyState ? "Not Saved" : "Saved"}
+            {" | "}
+            {isOnline ? "Online" : "Offline"}
+            {" | "}
+            {visibleSymbols?.toString()}
+          </Typography>
+          <Typography variant="body2" color="textSecondary" align="right">
             Charts provided by{" "}
             <a
               href="https://www.tradingview.com/"
               target="_blank"
               rel="noreferrer"
+              style={{ color: theme.palette.primary.main }}
             >
               TradingView
             </a>
-          </span>
-        </div>
-        <TickerTape
-          colorTheme="dark"
-          copyrightStyles={tradingViewCopyrightStyles}
-          symbols={symbols}
-        />
-      </Footer>
-    </AntLayout>
+          </Typography>
+          <TickerTape
+            colorTheme="dark"
+            copyrightStyles={tradingViewCopyrightStyles}
+            symbols={symbols}
+          />
+        </Box>
+      </Box>
+    </>
   );
 }
 

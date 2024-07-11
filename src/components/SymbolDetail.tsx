@@ -1,7 +1,7 @@
 import React from "react";
 import SymbolContainer from "./SymbolContainer";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
-import { Button } from "antd";
+// import { Button } from "antd";
 
 import { MiniChart, CompanyProfile } from "react-ts-tradingview-widgets";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
@@ -35,7 +35,8 @@ export default function SymbolDetail({
         copyrightStyles={tradingViewCopyrightStyles}
       />
 
-      {symbolBuckets?.map((symbolBucket, idx) => (
+      {/*
+              {symbolBuckets?.map((symbolBucket, idx) => (
         // TODO: If symbol is already in the bucket, don't try to re-add it
         <Button
           key={idx}
@@ -52,6 +53,7 @@ export default function SymbolDetail({
       <Button onClick={() => store.PROTO_getSymbolETFHolders(tickerSymbol)}>
         PROTO_getSymbolETFHolders()
       </Button>
+        */}
     </SymbolContainer>
   );
 }

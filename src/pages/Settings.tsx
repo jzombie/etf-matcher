@@ -1,13 +1,14 @@
 import React from "react";
-import { Button, notification, Space } from "antd";
+// import { Button, notification, Space } from "antd";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 
 export default function Settings() {
   const { symbolBuckets } = useStoreStateReader("symbolBuckets");
 
-  const [api, contextHolder] = notification.useNotification();
+  // const [api, contextHolder] = notification.useNotification();
 
   // TODO: Refactor into a system that can be called directly from the store
+  /*
   const openNotification = () => {
     const key = `open${Date.now()}`;
     const btn = (
@@ -30,10 +31,13 @@ export default function Settings() {
       // onClose: close,
     });
   };
+  */
 
   return (
     <div>
-      <Button onClick={() => alert("TODO: Implement")}>Clear Data</Button>
+      {/*
+        <Button onClick={() => alert("TODO: Implement")}>Clear Data</Button>
+        */}
 
       <div>
         <h2>Buckets</h2>
@@ -48,10 +52,14 @@ export default function Settings() {
       <h2>Prototype Notifications</h2>
 
       <>
-        {contextHolder}
-        <Button type="primary" onClick={openNotification}>
+        {
+          // contextHolder
+        }
+        {/*
+          <Button type="primary" onClick={openNotification}>
           Open the notification box
         </Button>
+          */}
       </>
 
       {
