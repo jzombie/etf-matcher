@@ -54,59 +54,58 @@ export default function MainLayout() {
           </Toolbar>
         </AppBar> */}
 
-        <Header>Header</Header>
+        <Layout>
+          <Header>Header</Header>
 
-        <Content>
-          {!isRustInit ? (
-            <Center>
-              <Typography variant="h6" component="div" textAlign="center">
-                Initializing...
-              </Typography>
-            </Center>
-          ) : (
-            <div style={{ width: "100%", height: "100%" }}>
-              {/* <Layout>
-                  <Header>some header</Header>
-                  <Content> */}
-              <Outlet />
-              {/* </Content>
-                  <Footer>another footer</Footer>
-                </Layout> */}
-              <Footer>yeah</Footer>
-            </div>
-          )}
-        </Content>
-        <Footer>
-          <Typography variant="body2" color="textSecondary">
-            {prettyDataBuildTime
-              ? `Data build time: ${prettyDataBuildTime}`
-              : ""}
-            {" | "}
-            {isProductionBuild ? "PROD" : "DEV"}
-            {" | "}
-            {isDirtyState ? "Not Saved" : "Saved"}
-            {" | "}
-            {isOnline ? "Online" : "Offline"}
-            {" | "}
-            {visibleSymbols?.toString()}
-          </Typography>
-          <Typography variant="body2" color="textSecondary" align="right">
-            Charts provided by{" "}
-            <a
-              href="https://www.tradingview.com/"
-              target="_blank"
-              rel="noreferrer"
-              style={{ color: theme.palette.primary.main }}
-            >
-              TradingView
-            </a>
-          </Typography>
-          <TickerTape
-            colorTheme="dark"
-            copyrightStyles={tradingViewCopyrightStyles}
-            symbols={symbols}
-          />
-        </Footer>
+          <Content>
+            {!isRustInit ? (
+              <Center>
+                <Typography variant="h6" component="div" textAlign="center">
+                  Initializing...
+                </Typography>
+              </Center>
+            ) : (
+              <Layout>
+                <Header>some header</Header>
+                <Content>
+                  <Outlet />
+                </Content>
+                <Footer>another footer</Footer>
+              </Layout>
+            )}
+          </Content>
+          <Footer>
+            <Typography variant="body2" color="textSecondary">
+              {prettyDataBuildTime
+                ? `Data build time: ${prettyDataBuildTime}`
+                : ""}
+              {" | "}
+              {isProductionBuild ? "PROD" : "DEV"}
+              {" | "}
+              {isDirtyState ? "Not Saved" : "Saved"}
+              {" | "}
+              {isOnline ? "Online" : "Offline"}
+              {" | "}
+              {visibleSymbols?.toString()}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" align="right">
+              Charts provided by{" "}
+              <a
+                href="https://www.tradingview.com/"
+                target="_blank"
+                rel="noreferrer"
+                style={{ color: theme.palette.primary.main }}
+              >
+                TradingView
+              </a>
+            </Typography>
+            <TickerTape
+              colorTheme="dark"
+              copyrightStyles={tradingViewCopyrightStyles}
+              symbols={symbols}
+            />
+          </Footer>
+        </Layout>
       </FullViewport>
     </>
   );
