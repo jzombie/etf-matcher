@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, SyntheticEvent } from "react";
-import { Button, Modal, Form, Input, InputRef } from "antd";
+import { Button, Modal, Form, Input, InputRef, Pagination } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
@@ -146,6 +146,24 @@ export default function SearchModalButton() {
         onOk={handleOk}
         onCancel={handleCancel}
         okButtonProps={{ disabled: !searchResults.length }}
+        styles={
+          {
+            // content: {
+            //   backgroundColor: "rgba(0,0,0,.9)",
+            //   border: "1px orange solid",
+            // },
+            // header: {
+            //   backgroundColor: "rgba(0,0,0,.2)",
+            // },
+            // body: {
+            //   backgroundColor: "rgba(0,0,0,.4)",
+            // },
+          }
+        }
+        // TODO: Blur effect
+        // style={{
+        //   backdropFilter: "blur(5px)",
+        // }}
       >
         {isModalOpen && (
           <>
@@ -178,10 +196,29 @@ export default function SearchModalButton() {
                   </span>
                 </div>
               ))}
+              {totalSearchResults > 20 && (
+                <div style={{ marginTop: 10 }}>
+                  {
+                    // TODO: Wire up (create `useSearch` hook to make this reusable)
+                  }
+                  <Pagination
+                    align="center"
+                    defaultCurrent={1}
+                    pageSize={20}
+                    total={totalSearchResults}
+                  />
+                </div>
+              )}
               {totalSearchResults > 0 && (
-                <span style={{ fontStyle: "italic" }}>
-                  Total results for query: {totalSearchResults}
-                </span>
+                <div
+                  style={{
+                    fontStyle: "italic",
+                    fontSize: ".8rem",
+                    marginTop: 10,
+                  }}
+                >
+                  Total results for query "{searchValue}": {totalSearchResults}
+                </div>
               )}
             </Form>
           </>
