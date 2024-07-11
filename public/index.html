@@ -49,10 +49,11 @@
         height: 100%;
         margin: 0;
         padding: 0;
+        background-color: black;
       }
 
       /* Render noscript front and center */
-      noscript {
+      noscript.big {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -61,7 +62,8 @@
         position: fixed;
         top: 0;
         left: 0;
-        background: white;
+        background: black;
+        color: #ccc;
         font-weight: bold;
         font-size: 2em;
         text-align: center;
@@ -69,23 +71,27 @@
     </style>
   </head>
   <body>
-    <noscript>JavaScript must be enabled to use this application.</noscript>
     <div id="app">
-      Customize a virtual portfolio with potential fractional shares and find
-      ETFs that closely match your investment goals.
+      <noscript>
+        Customize a virtual portfolio with potential fractional shares and find
+        ETFs that closely match your investment goals.
 
-      <div>
-        Disclaimer: The information provided on this platform is for
-        informational purposes only and does not constitute financial,
-        investment, or other professional advice. You should not rely on this
-        information to make any investment decisions. Always consult with a
-        qualified financial advisor before making any investment decisions. We
-        do not guarantee the accuracy, completeness, or timeliness of any
-        information provided and shall not be held liable for any errors or
-        omissions, or for any loss or damage incurred as a result of using this
-        information.
-      </div>
+        <div>
+          Disclaimer: The information provided on this platform is for
+          informational purposes only and does not constitute financial,
+          investment, or other professional advice. You should not rely on this
+          information to make any investment decisions. Always consult with a
+          qualified financial advisor before making any investment decisions. We
+          do not guarantee the accuracy, completeness, or timeliness of any
+          information provided and shall not be held liable for any errors or
+          omissions, or for any loss or damage incurred as a result of using
+          this information.
+        </div>
+      </noscript>
     </div>
+    <noscript class="big"
+      >JavaScript must be enabled to use this application.</noscript
+    >
     <script type="module" src="./src/main.tsx"></script>
   </body>
 </html>
