@@ -4,8 +4,9 @@ import { Button } from "antd";
 import { CompanyProfile } from "react-ts-tradingview-widgets";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 import { store } from "@hooks/useStoreStateReader";
-import SymbolContainer from "@components/SymbolContainer";
+import SymbolDetail from "@components/SymbolDetail";
 
+// TODO: Remove
 const ETFS_BY_SECTOR = {
   consumer_discretionary: ["XLY", "VCR", "IYC"],
   consumer_staples: ["XLP", "VDC", "IYK"],
@@ -37,22 +38,9 @@ const SectorDetail = () => {
 
       {
         // @ts-expect-error TODO: Fix this type
-        etfs.map((etf, idx) => {
+        etfs.map((tickerSymbol) => {
           return (
-            <React.Fragment key={idx}>
-              {idx > 0 && <hr style={{ opacity: 0.5, margin: 20 }} />}
-              <SymbolContainer tickerSymbol={etf}>
-                <CompanyProfile
-                  symbol={etf}
-                  width="100%"
-                  height={300}
-                  copyrightStyles={tradingViewCopyrightStyles}
-                />
-                <Button onClick={() => store.addSymbolToPortfolio(etf)}>
-                  Add {etf} to Portfolio
-                </Button>
-              </SymbolContainer>
-            </React.Fragment>
+            <SymbolDetail key={tickerSymbol} tickerSymbol={tickerSymbol} />
           );
         })
       }

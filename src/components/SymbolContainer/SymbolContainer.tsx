@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { SymbolContainerContext } from "./SymbolContainerProvider";
 
-export type SymbolContainerProps = {
+export type SymbolContainerProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerSymbol: string;
   children: React.ReactNode;
 };
