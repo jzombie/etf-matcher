@@ -9,7 +9,7 @@ const IS_PROD = import.meta.env.PROD;
 export type SymbolBucketProps = {
   name: string;
   symbols: string[];
-  type: "watchlist" | "portfolio" | "ticker_tape";
+  type: "watchlist" | "portfolio" | "ticker_tape" | "attention_tracker";
   requiresQuantity: boolean;
 };
 
@@ -64,6 +64,12 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           name: "My Ticker Tape",
           symbols: [],
           type: "ticker_tape",
+          requiresQuantity: false,
+        },
+        {
+          name: "My Attention Tracker",
+          symbols: [],
+          type: "attention_tracker",
           requiresQuantity: false,
         },
       ],
