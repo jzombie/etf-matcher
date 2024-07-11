@@ -6,6 +6,12 @@ import callWorkerFunction from "./utils/callWorkerFunction";
 
 const IS_PROD = import.meta.env.PROD;
 
+export type SymbolBucketProps = {
+  name: string;
+  symbols: string[];
+  type: "watchlist" | "portfolio" | "ticker_tape";
+};
+
 export type StoreStateProps = {
   isProductionBuild: boolean;
   isOnline: boolean;
@@ -15,6 +21,7 @@ export type StoreStateProps = {
   isDirtyState: boolean;
   visibleSymbols: string[];
   isSearchModalOpen: boolean;
+  symbolBuckets: SymbolBucketProps[];
 };
 
 export type SearchResult = {
@@ -39,6 +46,23 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       isDirtyState: false,
       visibleSymbols: [],
       isSearchModalOpen: false,
+      symbolBuckets: [
+        {
+          name: "My Portfolio",
+          symbols: [],
+          type: "portfolio",
+        },
+        {
+          name: "My Watchlist",
+          symbols: [],
+          type: "watchlist",
+        },
+        {
+          name: "My Ticker Tape",
+          symbols: [],
+          type: "ticker_tape",
+        },
+      ],
     });
 
     // Only deepfreeze in development
