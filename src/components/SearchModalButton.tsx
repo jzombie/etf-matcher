@@ -24,7 +24,9 @@ export default function SearchModalButton() {
     pageSize,
     remaining,
     resetSearch,
-  } = useSearch();
+  } = useSearch({
+    initialPageSize: 10,
+  });
 
   // const [searchValue, setSearchValue] = useState<string>("");
   // const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
