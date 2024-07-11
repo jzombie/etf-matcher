@@ -201,8 +201,11 @@ export default function SearchModalButton() {
               {totalSearchResults > pageSize && (
                 <div style={{ marginTop: 10 }}>
                   <Pagination
-                    align="center"
+                    // `key` is needed to set the page as `defaultCurrent`
+                    // alone won't subscribe to updates (only the initial value)
+                    key={page}
                     defaultCurrent={page}
+                    align="center"
                     showSizeChanger={false}
                     pageSize={pageSize}
                     onChange={(nextPage, nextPageSize) => {

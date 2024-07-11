@@ -1,17 +1,22 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { store } from "@hooks/useStoreStateReader";
 import type { SearchResult } from "@src/store";
+import usePrevious from "./usePrevious";
 
 export type UseSearchProps = {
   initialQuery?: string;
   initialOnlyExactMatches: boolean;
+  initialPage?: number;
   initialPageSize?: number;
+  initialSelectedIndex?: number;
 };
 
 const DEFAULT_PROPS: Required<UseSearchProps> = {
   initialQuery: "",
   initialOnlyExactMatches: false,
+  initialPage: 1,
   initialPageSize: 20,
+  initialSelectedIndex: -1,
 };
 
 export default function useSearch(
@@ -32,7 +37,7 @@ export default function useSearch(
   const [searchResults, _setSearchResults] = useState<SearchResult[]>([]);
   const [totalSearchResults, _setTotalSearchResults] = useState<number>(0);
 
-  const [page, setPage] = useState<number>(1);
+  const [page, setPage] = useState<number>(mergedProps.initialPage);
   const [pageSize, setPageSize] = useState<number>(mergedProps.initialPageSize);
   const totalPages = useMemo(
     () => Math.ceil(totalSearchResults / pageSize),
@@ -43,19 +48,33 @@ export default function useSearch(
     [totalSearchResults, page, pageSize, searchResults]
   );
 
-  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+  const [selectedIndex, setSelectedIndex] = useState<number>(
+    mergedProps.initialSelectedIndex
+  );
 
   const resetSearch = useCallback(() => {
     _setSearchQuery("");
     _setSearchResults([]);
     _setTotalSearchResults(0);
-    setPage(1);
-    setSelectedIndex(-1);
+    setPage(DEFAULT_PROPS.initialPage);
+    setSelectedIndex(DEFAULT_PROPS.initialSelectedIndex);
   }, []);
 
   const setSearchQuery = useCallback((searchQuery: string) => {
     _setSearchQuery(searchQuery.toUpperCase().trim());
   }, []);
+
+  const previousSearchQuery = usePrevious(searchQuery);
+  useEffect(() => {
+    if (
+      !searchQuery.trim() ||
+      (previousSearchQuery &&
+        searchQuery &&
+        searchQuery !== previousSearchQuery)
+    ) {
+      setPage(DEFAULT_PROPS.initialPage);
+    }
+  }, [searchQuery, previousSearchQuery]);
 
   // Perform search or reset
   useEffect(() => {
@@ -68,6 +87,7 @@ export default function useSearch(
         .then((searchResultsWithTotalCount) => {
           const { results, total_count } = searchResultsWithTotalCount;
 
+          setSelectedIndex(DEFAULT_PROPS.initialSelectedIndex);
           _setSearchResults(results);
           _setTotalSearchResults(total_count);
         });
