@@ -147,6 +147,25 @@ pub struct PaginatedResults<T> {
     pub results: Vec<T>,
 }
 
+impl<T> PaginatedResults<T> {
+    pub fn paginate(data: Vec<T>, page: usize, page_size: usize) -> Result<PaginatedResults<T>, JsValue> {
+        let total_count = data.len();
+        let paginated_results: Vec<T> = data.into_iter()
+            .skip((page - 1) * page_size)
+            .take(page_size)
+            .collect();
+
+        if paginated_results.is_empty() && total_count > 0 {
+            Err(JsValue::from_str("Page out of range"))
+        } else {
+            Ok(PaginatedResults {
+                total_count,
+                results: paginated_results,
+            })
+        }
+    }
+}
+
 // "Level 1"?
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SymbolSearch {
@@ -210,20 +229,7 @@ impl SymbolSearch {
         matches.append(&mut starts_with_matches);
         matches.append(&mut contains_matches);
 
-        let total_count: usize = matches.len();
-        let paginated_results: Vec<SymbolSearch> = matches.into_iter()
-            .skip((page - 1) * page_size)
-            .take(page_size)
-            .collect();
-
-        if paginated_results.is_empty() && total_count > 0 {
-            Err(JsValue::from_str("Page out of range"))
-        } else {
-            Ok(PaginatedResults {
-                total_count,
-                results: paginated_results,
-            })
-        }
+        PaginatedResults::paginate(matches, page, page_size)
     }
 }
 
@@ -266,20 +272,7 @@ impl SymbolETFHolder {
         let etf_symbols: Vec<String> = serde_json::from_str(&holder.etf_symbols_json)
             .map_err(|e| JsValue::from_str(&format!("Failed to parse etf_symbols: {}", e)))?;
 
-        let total_count = etf_symbols.len();
-        let paginated_results: Vec<String> = etf_symbols.into_iter()
-            .skip((page - 1) * page_size)
-            .take(page_size)
-            .collect();
-
-        if paginated_results.is_empty() && total_count > 0 {
-            Err(JsValue::from_str("Page out of range"))
-        } else {
-            Ok(PaginatedResults {
-                total_count,
-                results: paginated_results,
-            })
-        }
+        PaginatedResults::paginate(etf_symbols, page, page_size)
     }
 }
 
