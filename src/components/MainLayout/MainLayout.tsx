@@ -20,7 +20,7 @@ import Layout, {
   Header,
   Content,
   Footer,
-} from "@components/Layout";
+} from "@components/layout-kit/Layout";
 // import SearchModalButton from "../SearchModalButton";
 
 import useWindowSize from "@hooks/useWindowSize";
