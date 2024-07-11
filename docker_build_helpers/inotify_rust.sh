@@ -66,8 +66,8 @@ watch_directory "$WATCH_DIR" "$BUILD_SCRIPT" "$EXCLUDE_PATTERN" "$DEBOUNCE_TIME"
 
 WATCH_DIR="/app/data"
 BUILD_SCRIPT="./docker_build_helpers/encode_data.sh"
-EXCLUDE_PATTERN='.*\.enc$'
-DEBOUNCE_TIME=1.0
+EXCLUDE_PATTERN='(.*\.enc$|data_build_info\.csv)' # IMPORTANT: Ignoring data_build_info is extremly important here or this can go into an infinite loop
+DEBOUNCE_TIME=5.0
 watch_directory "$WATCH_DIR" "$BUILD_SCRIPT" "$EXCLUDE_PATTERN" "$DEBOUNCE_TIME" &
 
 echo "Initializing data watches..."
