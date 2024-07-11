@@ -27,6 +27,8 @@ pub fn decrypt_password(encrypted_password: &[u8], salt: &[u8]) -> Result<[u8; 3
     Ok(key)
 }
 
+const FETCH_ERROR_MSG: &str = "Failed to fetch data";
+
 
 type Aes256Cbc = Cbc<Aes256, Pkcs7>;
 
@@ -75,6 +77,7 @@ where
 async fn xhr_fetch(url: String) -> Result<Vec<u8>, JsValue> {
     let xhr: XmlHttpRequest = XmlHttpRequest::new().map_err(|err: JsValue| {
         web_sys::console::debug_1(&format!("Failed to create XMLHttpRequest: {:?}", err).into());
+        // TODO: Use constant?
         JsValue::from_str("Failed to create XMLHttpRequest")
     })?;
 
@@ -83,6 +86,7 @@ async fn xhr_fetch(url: String) -> Result<Vec<u8>, JsValue> {
 
     xhr.open("GET", &no_cache_url).map_err(|err: JsValue| {
         web_sys::console::debug_1(&format!("Failed to open XMLHttpRequest: {:?}", err).into());
+        // TODO: Use constant?
         JsValue::from_str("Failed to open XMLHttpRequest")
     })?;
 
@@ -90,11 +94,13 @@ async fn xhr_fetch(url: String) -> Result<Vec<u8>, JsValue> {
 
     xhr.set_request_header("Cache-Control", "no-cache").map_err(|err: JsValue| {
         web_sys::console::debug_1(&format!("Failed to set Cache-Control header: {:?}", err).into());
+        // TODO: Use constant?
         JsValue::from_str("Failed to set Cache-Control header")
     })?;
 
     xhr.send().map_err(|err: JsValue| {
         web_sys::console::debug_1(&format!("Failed to send XMLHttpRequest: {:?}", err).into());
+        // TODO: Use constant?
         JsValue::from_str("Failed to send XMLHttpRequest")
     })?;
 
@@ -106,15 +112,15 @@ async fn xhr_fetch(url: String) -> Result<Vec<u8>, JsValue> {
         onload.forget();
 
         let onerror: Closure<dyn FnMut()> = Closure::wrap(Box::new(move || {
-            reject.call1(&JsValue::NULL, &JsValue::from_str("Failed to fetch data")).unwrap();
+            reject.call1(&JsValue::NULL, &JsValue::from_str(FETCH_ERROR_MSG)).unwrap();
         }) as Box<dyn FnMut()>);
         xhr.set_onerror(Some(onerror.as_ref().unchecked_ref()));
         onerror.forget();
     });
 
     JsFuture::from(promise).await.map_err(|_| {
-        web_sys::console::debug_1(&"Failed to fetch data".into());
-        JsValue::from_str("Failed to fetch data")
+        web_sys::console::debug_1(&FETCH_ERROR_MSG.into());
+        JsValue::from_str(FETCH_ERROR_MSG)
     })?;
 
     if xhr.status().unwrap() != 200 {
