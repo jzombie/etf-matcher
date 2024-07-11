@@ -10,13 +10,13 @@ import Settings from "@pages/Settings";
 import NotFound from "@pages/NotFound";
 
 import { createBrowserRouter } from "react-router-dom";
-import Layout from "@components/Layout";
+import MainLayout from "@components/MainLayout";
 
 // TODO: For GitHub Pages: Check URL; if 404.html, redirect to non-404 with same path and query
 export default createBrowserRouter([
   {
     path: "/",
-    element: <Layout />, // Use Layout as the main wrapper
+    element: <MainLayout />, // Use MainLayout as the main wrapper
     children: [
       {
         path: "",

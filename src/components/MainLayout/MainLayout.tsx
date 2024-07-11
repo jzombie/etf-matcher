@@ -5,7 +5,7 @@ import { HomeOutlined, SettingOutlined } from "@ant-design/icons";
 import { Link, Outlet, useLocation, matchPath } from "react-router-dom";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
-import SearchModalButton from "./SearchModalButton";
+import SearchModalButton from "../SearchModalButton";
 
 const { Header, Content, Footer } = AntLayout;
 
