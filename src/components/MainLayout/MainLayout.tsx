@@ -14,7 +14,13 @@ import HeaderMenu from "./HeaderMenu";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 
-import { FullViewport, Center, Header, Footer } from "@components/Layout";
+import {
+  FullViewport,
+  Center,
+  Header,
+  Content,
+  Footer,
+} from "@components/Layout";
 // import SearchModalButton from "../SearchModalButton";
 
 export default function MainLayout() {
@@ -50,15 +56,7 @@ export default function MainLayout() {
 
         <Header>Header</Header>
 
-        <Box
-          sx={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-            height: "100%",
-          }}
-        >
+        <Content>
           {!isRustInit ? (
             <Center>
               <Typography variant="h6" component="div" textAlign="center">
@@ -70,7 +68,7 @@ export default function MainLayout() {
               <Outlet />
             </div>
           )}
-        </Box>
+        </Content>
         <Footer>
           <Typography variant="body2" color="textSecondary">
             {prettyDataBuildTime
