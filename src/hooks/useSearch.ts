@@ -81,7 +81,6 @@ export default function useSearch(
     if (!searchQuery.trim().length) {
       resetSearch();
     } else {
-      // TODO: Update with exact match support
       store
         .searchSymbols(searchQuery, page, pageSize, onlyExactMatches)
         .then((searchResultsWithTotalCount) => {
