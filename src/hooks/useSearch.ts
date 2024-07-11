@@ -62,7 +62,7 @@ export default function useSearch(
   }, []);
 
   const setSearchQuery = useCallback((searchQuery: string) => {
-    _setSearchQuery(searchQuery.toUpperCase().trim());
+    _setSearchQuery(searchQuery.toUpperCase());
   }, []);
 
   const previousSearchQuery = usePrevious(searchQuery);
@@ -76,7 +76,10 @@ export default function useSearch(
       const previousSearchQuery = previousSearchQueryStableRef.current;
 
       let activePage = page;
-      if (previousSearchQuery && searchQuery !== previousSearchQuery) {
+      if (
+        previousSearchQuery &&
+        searchQuery.trim() !== previousSearchQuery.trim()
+      ) {
         activePage = DEFAULT_PROPS.initialPage;
       }
 
