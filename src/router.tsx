@@ -5,6 +5,7 @@ import Home from "@pages/Home";
 import Portfolios from "@pages/Portfolios";
 import Watchlists from "@pages/Watchlists";
 import SearchResults from "@pages/SearchResults";
+import Settings from "@pages/Settings";
 // import About from "@pages/About";
 import NotFound from "@pages/NotFound";
 
@@ -42,6 +43,10 @@ export default createBrowserRouter([
       {
         path: "watchlists",
         element: <Watchlists />,
+      },
+      {
+        path: "settings",
+        element: <Settings />,
       },
       // TODO: Remove
       // {

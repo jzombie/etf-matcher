@@ -1,7 +1,7 @@
 import React from "react";
 import { TickerTape } from "react-ts-tradingview-widgets";
 import { Layout as AntLayout, Menu } from "antd";
-import { HomeOutlined } from "@ant-design/icons";
+import { HomeOutlined, SettingOutlined } from "@ant-design/icons";
 import { Link, Outlet, useLocation, matchPath } from "react-router-dom";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
@@ -20,13 +20,21 @@ export default function Layout() {
       key: "/",
       label: (
         <Link to="/">
-          <HomeOutlined />
+          <HomeOutlined title="Home" />
         </Link>
       ),
     },
     // { key: "/sectors", label: <Link to="/sectors">Sectors</Link> },
     { key: "/portfolios", label: <Link to="/portfolios">Portfolios</Link> },
     { key: "/watchlists", label: <Link to="/watchlists">Watchlists</Link> },
+    {
+      key: "/settings",
+      label: (
+        <Link to="/settings">
+          <SettingOutlined title="Settings" />
+        </Link>
+      ),
+    },
   ];
 
   const selectedKey = menuItems.find(
