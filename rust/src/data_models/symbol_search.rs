@@ -1,14 +1,13 @@
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 use crate::JsValue;
 use crate::utils::fetch::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
 use crate::data_models::{
-  DataURL,
-  PaginatedResults
+    DataURL,
+    PaginatedResults,
 };
 
-
-// "Level 1"?
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SymbolSearch {
     pub symbol: String,
@@ -50,36 +49,57 @@ impl SymbolSearch {
         let mut exact_symbol_matches: Vec<SymbolSearch> = vec![];
         let mut starts_with_matches: Vec<SymbolSearch> = vec![];
         let mut contains_matches: Vec<SymbolSearch> = vec![];
+        let mut reverse_contains_matches: Vec<SymbolSearch> = vec![];
+        let mut seen_symbols: HashSet<String> = HashSet::new();
 
-        for alternative in alternatives {
+        for alternative in &alternatives {
             let query_lower: String = alternative.to_lowercase();
             for result in &results {
-                let symbol_match = result.symbol.to_lowercase() == query_lower;
-                let company_match = result.company.as_deref().map_or(false, |company| company.to_lowercase() == query_lower);
-                let partial_symbol_match_same_start = result.symbol.to_lowercase().starts_with(&query_lower);
-                let partial_company_match_same_start = result.company.as_deref().map_or(false, |company| company.to_lowercase().starts_with(&query_lower));
-                let partial_symbol_match_contains = result.symbol.to_lowercase().contains(&query_lower);
-                let partial_company_match_contains = result.company.as_deref().map_or(false, |company| company.to_lowercase().contains(&query_lower));
+                let symbol_lower = result.symbol.to_lowercase();
+                let company_lower = result.company.as_deref().map_or("".to_string(), |company| company.to_lowercase());
+
+                let symbol_match = symbol_lower == query_lower;
+                let company_match = company_lower == query_lower;
 
                 if symbol_match || company_match {
-                    exact_symbol_matches.push(result.clone());
+                    if seen_symbols.insert(symbol_lower.clone()) {
+                        exact_symbol_matches.push(result.clone());
+                    }
                 } else if !only_exact_matches {
+                    let partial_symbol_match_same_start = symbol_lower.starts_with(&query_lower);
+                    let partial_company_match_same_start = company_lower.starts_with(&query_lower);
+                    let partial_symbol_match_contains = symbol_lower.contains(&query_lower);
+                    let partial_company_match_contains = company_lower.contains(&query_lower);
+                    let reverse_partial_symbol_match_contains = query_lower.contains(&symbol_lower);
+                    let reverse_partial_company_match_contains = query_lower.contains(&company_lower);
+
                     if partial_symbol_match_same_start || partial_company_match_same_start {
-                        starts_with_matches.push(result.clone());
+                        if seen_symbols.insert(symbol_lower.clone()) {
+                            starts_with_matches.push(result.clone());
+                        }
                     } else if partial_symbol_match_contains || partial_company_match_contains {
-                        contains_matches.push(result.clone());
+                        if seen_symbols.insert(symbol_lower.clone()) {
+                            contains_matches.push(result.clone());
+                        }
+                    } else if reverse_partial_symbol_match_contains || reverse_partial_company_match_contains {
+                        if seen_symbols.insert(symbol_lower.clone()) {
+                            reverse_contains_matches.push(result.clone());
+                        }
                     }
                 }
             }
         }
 
         // Combine matches in the desired order
-        let mut matches: Vec<SymbolSearch> = Vec::with_capacity(exact_symbol_matches.len() + starts_with_matches.len() + contains_matches.len());
+        let mut matches: Vec<SymbolSearch> = Vec::with_capacity(
+            exact_symbol_matches.len() + starts_with_matches.len() + contains_matches.len() + reverse_contains_matches.len()
+        );
         matches.append(&mut exact_symbol_matches);
 
         if !only_exact_matches {
             matches.append(&mut starts_with_matches);
             matches.append(&mut contains_matches);
+            matches.append(&mut reverse_contains_matches);
         }
 
         PaginatedResults::paginate(matches, page, page_size)
