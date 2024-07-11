@@ -1,19 +1,29 @@
-import React, { useEffect, useState, useRef, SyntheticEvent } from "react";
+import React, { useEffect, useRef, SyntheticEvent } from "react";
 import { Button, Modal, Form, Input, InputRef, Pagination } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
-import type { SearchResult } from "@src/store";
+import useSearch from "@hooks/useSearch";
 
 export default function SearchModalButton() {
   const { isSearchModalOpen: isModalOpen } =
     useStoreStateReader("isSearchModalOpen");
 
-  const [searchValue, setSearchValue] = useState<string>("");
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [totalSearchResults, setTotalSearchResults] = useState<number>(0);
-  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+  const {
+    searchQuery,
+    setSearchQuery,
+    searchResults,
+    totalSearchResults,
+    selectedIndex,
+    setSelectedIndex,
+    resetSearch,
+  } = useSearch();
+
+  // const [searchValue, setSearchValue] = useState<string>("");
+  // const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  // const [totalSearchResults, setTotalSearchResults] = useState<number>(0);
+  // const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   // TODO: Update accordingly
   // const [symbolDetail, setSymbolDetail] = useState<any>({});
   const inputRef = useRef<InputRef>(null);
@@ -24,10 +34,7 @@ export default function SearchModalButton() {
   useEffect(() => {
     // Reset search value and selected index on close
     if (!isModalOpen) {
-      setSearchValue("");
-      setSearchResults([]);
-      setTotalSearchResults(0);
-      setSelectedIndex(-1);
+      resetSearch();
     } else {
       // First, blur the currently active element, if any
       if (
@@ -44,7 +51,7 @@ export default function SearchModalButton() {
         inputRef.current?.focus();
       });
     }
-  }, [isModalOpen]);
+  }, [isModalOpen, resetSearch]);
 
   // Prevent other elements from stealing focus
   // TODO: This might need to be disabled on mobile so that the virtual keyboard can disappear as needed (add isMobile detection)
@@ -71,10 +78,10 @@ export default function SearchModalButton() {
   const handleOk = (_: SyntheticEvent, exactSearchValue?: string) => {
     store.setState({ isSearchModalOpen: false });
 
-    const locSearchValue = exactSearchValue || searchValue;
+    const locSearchQuery = exactSearchValue || searchQuery;
 
-    if (searchValue.length) {
-      const searchParams = new URLSearchParams({ query: locSearchValue });
+    if (searchQuery.length) {
+      const searchParams = new URLSearchParams({ query: locSearchQuery });
 
       navigate(
         `/search?${searchParams.toString()}&exact=${Boolean(exactSearchValue)}`
@@ -87,7 +94,7 @@ export default function SearchModalButton() {
   };
 
   const handleInputChange = (evt: React.BaseSyntheticEvent) => {
-    setSearchValue(evt.target.value.toUpperCase());
+    setSearchQuery(evt.target.value);
     setSelectedIndex(-1);
   };
 
@@ -109,14 +116,14 @@ export default function SearchModalButton() {
     }
   };
 
-  useEffect(() => {
-    store.searchSymbols(searchValue).then((searchResultsWithTotalCount) => {
-      const { results, total_count } = searchResultsWithTotalCount;
+  // useEffect(() => {
+  //   store.searchSymbols(searchValue).then((searchResultsWithTotalCount) => {
+  //     const { results, total_count } = searchResultsWithTotalCount;
 
-      setSearchResults(results);
-      setTotalSearchResults(total_count);
-    });
-  }, [searchValue]);
+  //     setSearchResults(results);
+  //     setTotalSearchResults(total_count);
+  //   });
+  // }, [searchValue]);
 
   // TODO: Update w/ icon, etc. once ready
   // useEffect(() => {
@@ -175,7 +182,7 @@ export default function SearchModalButton() {
                 placeholder='Search for Symbol (e.g. "AAPL" or "Apple")'
                 onChange={handleInputChange}
                 onKeyDown={handleInputKeyDown}
-                value={searchValue}
+                value={searchQuery}
               />
               {searchResults.map((searchResult, idx) => (
                 <div
@@ -219,7 +226,7 @@ export default function SearchModalButton() {
                     marginTop: 10,
                   }}
                 >
-                  Total results for query "{searchValue}": {totalSearchResults}
+                  Total results for query "{searchQuery}": {totalSearchResults}
                 </div>
               )}
             </Form>
