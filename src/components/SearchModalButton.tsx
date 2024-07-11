@@ -1,21 +1,32 @@
-import React, { useEffect, useState, useRef, SyntheticEvent } from "react";
+import React, { useEffect, useRef, SyntheticEvent } from "react";
 import { Button, Modal, Form, Input, InputRef, Pagination } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
-import type { SearchResult } from "@src/store";
+import useSearch from "@hooks/useSearch";
 
 export default function SearchModalButton() {
   const { isSearchModalOpen: isModalOpen } =
     useStoreStateReader("isSearchModalOpen");
 
-  const [searchValue, setSearchValue] = useState<string>("");
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [totalSearchResults, setTotalSearchResults] = useState<number>(0);
-  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
-  // TODO: Update accordingly
-  // const [symbolDetail, setSymbolDetail] = useState<any>({});
+  const {
+    searchQuery,
+    setSearchQuery,
+    searchResults,
+    totalSearchResults,
+    selectedIndex,
+    setSelectedIndex,
+    page,
+    setPage,
+    setPageSize,
+    pageSize,
+    remaining,
+    resetSearch,
+  } = useSearch({
+    initialPageSize: 10,
+  });
+
   const inputRef = useRef<InputRef>(null);
 
   const location = useLocation();
@@ -24,10 +35,7 @@ export default function SearchModalButton() {
   useEffect(() => {
     // Reset search value and selected index on close
     if (!isModalOpen) {
-      setSearchValue("");
-      setSearchResults([]);
-      setTotalSearchResults(0);
-      setSelectedIndex(-1);
+      resetSearch();
     } else {
       // First, blur the currently active element, if any
       if (
@@ -44,7 +52,7 @@ export default function SearchModalButton() {
         inputRef.current?.focus();
       });
     }
-  }, [isModalOpen]);
+  }, [isModalOpen, resetSearch]);
 
   // Prevent other elements from stealing focus
   // TODO: This might need to be disabled on mobile so that the virtual keyboard can disappear as needed (add isMobile detection)
@@ -71,13 +79,15 @@ export default function SearchModalButton() {
   const handleOk = (_: SyntheticEvent, exactSearchValue?: string) => {
     store.setState({ isSearchModalOpen: false });
 
-    const locSearchValue = exactSearchValue || searchValue;
+    const locSearchQuery = exactSearchValue || searchQuery;
 
-    if (searchValue.length) {
-      const searchParams = new URLSearchParams({ query: locSearchValue });
+    if (searchQuery.length) {
+      const searchParams = new URLSearchParams({ query: locSearchQuery });
 
       navigate(
-        `/search?${searchParams.toString()}&exact=${Boolean(exactSearchValue)}`
+        `/search?${searchParams.toString()}${
+          exactSearchValue ? "&exact=true" : ""
+        }`
       );
     }
   };
@@ -87,7 +97,7 @@ export default function SearchModalButton() {
   };
 
   const handleInputChange = (evt: React.BaseSyntheticEvent) => {
-    setSearchValue(evt.target.value.toUpperCase());
+    setSearchQuery(evt.target.value);
     setSelectedIndex(-1);
   };
 
@@ -109,24 +119,6 @@ export default function SearchModalButton() {
     }
   };
 
-  useEffect(() => {
-    store.searchSymbols(searchValue).then((searchResultsWithTotalCount) => {
-      const { results, total_count } = searchResultsWithTotalCount;
-
-      setSearchResults(results);
-      setTotalSearchResults(total_count);
-    });
-  }, [searchValue]);
-
-  // TODO: Update w/ icon, etc. once ready
-  // useEffect(() => {
-  //   for (const symbol of searchResults) {
-  //     store.fetchSymbolDetail(symbol).then((detail) => {
-  //       setSymbolDetail((prev) => ({ ...prev, [symbol]: detail }));
-  //     });
-  //   }
-  // }, [searchResults]);
-
   const isModalOpenStableRef = useStableCurrentRef(isModalOpen);
   useEffect(() => {
     if (location && isModalOpenStableRef.current) {
@@ -141,25 +133,25 @@ export default function SearchModalButton() {
         Search
       </Button>
       <Modal
+        // Empty title prevents the close button from overlaying the input element
         title="&nbsp;"
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
         okButtonProps={{ disabled: !searchResults.length }}
-        styles={
-          {
-            // content: {
-            //   backgroundColor: "rgba(0,0,0,.9)",
-            //   border: "1px orange solid",
-            // },
-            // header: {
-            //   backgroundColor: "rgba(0,0,0,.2)",
-            // },
-            // body: {
-            //   backgroundColor: "rgba(0,0,0,.4)",
-            // },
-          }
-        }
+        styles={{
+          content: {
+            backgroundColor: "rgba(31,31,31,.8)",
+            border: "2px rgba(38,100,100,.8) solid",
+            backdropFilter: "blur(5px)",
+          },
+          // header: {
+          //   backgroundColor: "rgba(0,0,0,.2)",
+          // },
+          // body: {
+          //   backgroundColor: "rgba(0,0,0,.4)",
+          // },
+        }}
         // TODO: Blur effect
         // style={{
         //   backdropFilter: "blur(5px)",
@@ -173,7 +165,8 @@ export default function SearchModalButton() {
                 placeholder='Search for Symbol (e.g. "AAPL" or "Apple")'
                 onChange={handleInputChange}
                 onKeyDown={handleInputKeyDown}
-                value={searchValue}
+                value={searchQuery}
+                prefix={<SearchOutlined />}
               />
               {searchResults.map((searchResult, idx) => (
                 <div
@@ -196,15 +189,29 @@ export default function SearchModalButton() {
                   </span>
                 </div>
               ))}
-              {totalSearchResults > 20 && (
+              {
+                // TODO: Show all results
+                remaining > 0 && (
+                  <div>
+                    <Button>+ {remaining} remaining</Button>
+                  </div>
+                )
+              }
+
+              {totalSearchResults > pageSize && (
                 <div style={{ marginTop: 10 }}>
-                  {
-                    // TODO: Wire up (create `useSearch` hook to make this reusable)
-                  }
                   <Pagination
+                    // `key` is needed to set the page as `defaultCurrent`
+                    // alone won't subscribe to updates (only the initial value)
+                    key={page}
+                    defaultCurrent={page}
                     align="center"
-                    defaultCurrent={1}
-                    pageSize={20}
+                    showSizeChanger={false}
+                    pageSize={pageSize}
+                    onChange={(nextPage, nextPageSize) => {
+                      setPage(nextPage);
+                      setPageSize(nextPageSize);
+                    }}
                     total={totalSearchResults}
                   />
                 </div>
@@ -217,7 +224,8 @@ export default function SearchModalButton() {
                     marginTop: 10,
                   }}
                 >
-                  Total results for query "{searchValue}": {totalSearchResults}
+                  Total results for query &quot;{searchQuery}&quot;:{" "}
+                  {totalSearchResults}
                 </div>
               )}
             </Form>

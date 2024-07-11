@@ -29,8 +29,8 @@ pub async fn get_data_build_info() -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
-pub async fn search_symbols(query: &str, page: usize, page_size: usize) -> Result<JsValue, JsValue> {
-    let results: PaginatedResults<SymbolSearch> = SymbolSearch::search_symbols(query, page, page_size).await?;
+pub async fn search_symbols(query: &str, page: usize, page_size: usize, only_exact_matches: Option<bool>) -> Result<JsValue, JsValue> {
+    let results: PaginatedResults<SymbolSearch> = SymbolSearch::search_symbols(query, page, page_size, only_exact_matches).await?;
     to_value(&results).map_err(|err| JsValue::from_str(&format!("Failed to serialize results: {}", err)))
 }
 
