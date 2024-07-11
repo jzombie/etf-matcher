@@ -251,8 +251,7 @@ impl SymbolDetail {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SymbolETFHolder {
     pub symbol: String,
-    // TODO: Rename `etf_symbols` to `etf_symbols_json`
-    pub etf_symbols: String
+    pub etf_symbols_json: String
 }
 
 impl SymbolETFHolder {
@@ -265,7 +264,7 @@ impl SymbolETFHolder {
         .ok_or_else(|| JsValue::from_str("Symbol not found"))?;
 
         // Parse the etf_symbols JSON string into a Vec<String>
-        serde_json::from_str(&holder.etf_symbols)
+        serde_json::from_str(&holder.etf_symbols_json)
             .map_err(|e| JsValue::from_str(&format!("Failed to parse etf_symbols: {}", e)))
     }
 }
