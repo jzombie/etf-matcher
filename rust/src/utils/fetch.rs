@@ -18,6 +18,14 @@ use futures::future::Shared;
 use futures::{Future, FutureExt};
 use futures::future::LocalBoxFuture;
 
+use crate::constants::{
+  FETCH_ERROR,
+  XML_HTTP_REQUEST_CREATE_ERROR,
+  XML_HTTP_REQUEST_OPEN_ERROR,
+  XML_HTTP_REQUEST_CACHE_CONTROL_SETTER_ERROR,
+  XML_HTTP_REQUEST_SEND_ERROR
+};
+
 include!("../__AUTOGEN__generated_password.rs");
 
 pub fn decrypt_password(encrypted_password: &[u8], salt: &[u8]) -> Result<[u8; 32], JsValue> {
@@ -26,8 +34,6 @@ pub fn decrypt_password(encrypted_password: &[u8], salt: &[u8]) -> Result<[u8; 3
     pbkdf2::<Hmac<Sha256>>(encrypted_password, salt, 10000, &mut key);
     Ok(key)
 }
-
-const FETCH_ERROR_MSG: &str = "Failed to fetch data";
 
 
 type Aes256Cbc = Cbc<Aes256, Pkcs7>;
@@ -76,32 +82,28 @@ where
 
 async fn xhr_fetch(url: String) -> Result<Vec<u8>, JsValue> {
     let xhr: XmlHttpRequest = XmlHttpRequest::new().map_err(|err: JsValue| {
-        web_sys::console::debug_1(&format!("Failed to create XMLHttpRequest: {:?}", err).into());
-        // TODO: Use constant?
-        JsValue::from_str("Failed to create XMLHttpRequest")
+        web_sys::console::debug_1(&format!("{XML_HTTP_REQUEST_CREATE_ERROR}: {:?}", err).into());
+        JsValue::from_str(XML_HTTP_REQUEST_CREATE_ERROR)
     })?;
 
     let timestamp: String = Date::now().to_string();
     let no_cache_url: String = format!("{}?no_cache={}", url, timestamp);
 
     xhr.open("GET", &no_cache_url).map_err(|err: JsValue| {
-        web_sys::console::debug_1(&format!("Failed to open XMLHttpRequest: {:?}", err).into());
-        // TODO: Use constant?
-        JsValue::from_str("Failed to open XMLHttpRequest")
+        web_sys::console::debug_1(&format!("{XML_HTTP_REQUEST_OPEN_ERROR}: {:?}", err).into());
+        JsValue::from_str(XML_HTTP_REQUEST_OPEN_ERROR)
     })?;
 
     xhr.set_response_type(web_sys::XmlHttpRequestResponseType::Arraybuffer);
 
     xhr.set_request_header("Cache-Control", "no-cache").map_err(|err: JsValue| {
-        web_sys::console::debug_1(&format!("Failed to set Cache-Control header: {:?}", err).into());
-        // TODO: Use constant?
-        JsValue::from_str("Failed to set Cache-Control header")
+        web_sys::console::debug_1(&format!("{XML_HTTP_REQUEST_CACHE_CONTROL_SETTER_ERROR}: {:?}", err).into());
+        JsValue::from_str(XML_HTTP_REQUEST_CACHE_CONTROL_SETTER_ERROR)
     })?;
 
     xhr.send().map_err(|err: JsValue| {
-        web_sys::console::debug_1(&format!("Failed to send XMLHttpRequest: {:?}", err).into());
-        // TODO: Use constant?
-        JsValue::from_str("Failed to send XMLHttpRequest")
+        web_sys::console::debug_1(&format!("{XML_HTTP_REQUEST_SEND_ERROR}: {:?}", err).into());
+        JsValue::from_str(XML_HTTP_REQUEST_SEND_ERROR)
     })?;
 
     let promise: Promise = Promise::new(&mut |resolve, reject: js_sys::Function| {
@@ -112,15 +114,15 @@ async fn xhr_fetch(url: String) -> Result<Vec<u8>, JsValue> {
         onload.forget();
 
         let onerror: Closure<dyn FnMut()> = Closure::wrap(Box::new(move || {
-            reject.call1(&JsValue::NULL, &JsValue::from_str(FETCH_ERROR_MSG)).unwrap();
+            reject.call1(&JsValue::NULL, &JsValue::from_str(FETCH_ERROR)).unwrap();
         }) as Box<dyn FnMut()>);
         xhr.set_onerror(Some(onerror.as_ref().unchecked_ref()));
         onerror.forget();
     });
 
     JsFuture::from(promise).await.map_err(|_| {
-        web_sys::console::debug_1(&FETCH_ERROR_MSG.into());
-        JsValue::from_str(FETCH_ERROR_MSG)
+        web_sys::console::debug_1(&FETCH_ERROR.into());
+        JsValue::from_str(FETCH_ERROR)
     })?;
 
     if xhr.status().unwrap() != 200 {

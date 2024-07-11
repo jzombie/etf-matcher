@@ -3,6 +3,7 @@ use console_error_panic_hook;
 use serde_wasm_bindgen::to_value;
 use std::panic;
 
+mod constants;
 mod utils;
 mod data_models;
 
