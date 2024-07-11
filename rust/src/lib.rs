@@ -42,8 +42,8 @@ pub async fn get_symbol_detail(symbol: &str) -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
-pub async fn get_symbol_etf_holders(symbol: &str) -> Result<JsValue, JsValue> {
-    let etf_symbols: Vec<String> = SymbolETFHolder::get_symbol_etf_holders(symbol).await?;
+pub async fn get_symbol_etf_holders(symbol: &str, page: usize, page_size: usize) -> Result<JsValue, JsValue> {
+    let etf_symbols: PaginatedResults<String> = SymbolETFHolder::get_symbol_etf_holders(symbol, page, page_size).await?;
     to_value(&etf_symbols).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to convert Vec<String> to JsValue: {}", err)))
 }
 

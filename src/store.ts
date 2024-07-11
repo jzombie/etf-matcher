@@ -166,8 +166,12 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       .catch((error) => console.error(error));
   }
 
-  PROTO_getSymbolETFHolders(symbol: string) {
-    callWorkerFunction("get_symbol_etf_holders", symbol)
+  PROTO_getSymbolETFHolders(
+    symbol: string,
+    page: number = 1,
+    page_size: number = 20
+  ) {
+    callWorkerFunction("get_symbol_etf_holders", symbol, page, page_size)
       .then((etfHolders) =>
         console.log({
           symbol,

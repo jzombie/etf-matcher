@@ -255,7 +255,7 @@ pub struct SymbolETFHolder {
 }
 
 impl SymbolETFHolder {
-    pub async fn get_symbol_etf_holders(symbol: &str) -> Result<Vec<String>, JsValue> {
+    pub async fn get_symbol_etf_holders(symbol: &str, page: usize, page_size: usize) -> Result<PaginatedResults<String>, JsValue> {
         let url: &str = DataURL::SymbolETFHoldersShardIndex.value();
         let holder = query_shard_for_symbol(url, symbol, |detail: &SymbolETFHolder| {
             Some(&detail.symbol)
@@ -263,9 +263,23 @@ impl SymbolETFHolder {
         .await?
         .ok_or_else(|| JsValue::from_str("Symbol not found"))?;
 
-        // Parse the etf_symbols JSON string into a Vec<String>
-        serde_json::from_str(&holder.etf_symbols_json)
-            .map_err(|e| JsValue::from_str(&format!("Failed to parse etf_symbols: {}", e)))
+        let etf_symbols: Vec<String> = serde_json::from_str(&holder.etf_symbols_json)
+            .map_err(|e| JsValue::from_str(&format!("Failed to parse etf_symbols: {}", e)))?;
+
+        let total_count = etf_symbols.len();
+        let paginated_results: Vec<String> = etf_symbols.into_iter()
+            .skip((page - 1) * page_size)
+            .take(page_size)
+            .collect();
+
+        if paginated_results.is_empty() && total_count > 0 {
+            Err(JsValue::from_str("Page out of range"))
+        } else {
+            Ok(PaginatedResults {
+                total_count,
+                results: paginated_results,
+            })
+        }
     }
 }
 
