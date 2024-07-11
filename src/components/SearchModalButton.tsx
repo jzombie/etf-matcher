@@ -19,7 +19,6 @@ export default function SearchModalButton() {
     setSelectedIndex,
     page,
     setPage,
-    totalPages,
     setPageSize,
     pageSize,
     remaining,
@@ -28,12 +27,6 @@ export default function SearchModalButton() {
     initialPageSize: 10,
   });
 
-  // const [searchValue, setSearchValue] = useState<string>("");
-  // const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  // const [totalSearchResults, setTotalSearchResults] = useState<number>(0);
-  // const [selectedIndex, setSelectedIndex] = useState<number>(-1);
-  // TODO: Update accordingly
-  // const [symbolDetail, setSymbolDetail] = useState<any>({});
   const inputRef = useRef<InputRef>(null);
 
   const location = useLocation();
@@ -124,24 +117,6 @@ export default function SearchModalButton() {
     }
   };
 
-  // useEffect(() => {
-  //   store.searchSymbols(searchValue).then((searchResultsWithTotalCount) => {
-  //     const { results, total_count } = searchResultsWithTotalCount;
-
-  //     setSearchResults(results);
-  //     setTotalSearchResults(total_count);
-  //   });
-  // }, [searchValue]);
-
-  // TODO: Update w/ icon, etc. once ready
-  // useEffect(() => {
-  //   for (const symbol of searchResults) {
-  //     store.fetchSymbolDetail(symbol).then((detail) => {
-  //       setSymbolDetail((prev) => ({ ...prev, [symbol]: detail }));
-  //     });
-  //   }
-  // }, [searchResults]);
-
   const isModalOpenStableRef = useStableCurrentRef(isModalOpen);
   useEffect(() => {
     if (location && isModalOpenStableRef.current) {
@@ -221,20 +196,8 @@ export default function SearchModalButton() {
                 )
               }
 
-              {/* <div>DEBUG total pages: {totalPages}</div>
-              <div>DEBUG calc: {totalPages * pageSize}</div>
-              <div>DEBUG page: {page}</div>
-              <div>DEBUG remaining: {remaining}</div>
-              <div>DEBUG total search results: {totalSearchResults}</div> */}
-              {
-                // TODO: This `totalPages` less than 1000 might not be needed if the styles work better
-                // i.e. box contain
-              }
               {totalSearchResults > pageSize && (
                 <div style={{ marginTop: 10 }}>
-                  {
-                    // TODO: Wire up (create `useSearch` hook to make this reusable)
-                  }
                   <Pagination
                     align="center"
                     defaultCurrent={page}
