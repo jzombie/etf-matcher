@@ -135,10 +135,10 @@ async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue
 
     let salt: &[u8] = &encrypted_data[0..16];
 
-    let encrypted_password: Vec<u8> = hex::decode(ENCRYPTED_PASSWORD).unwrap();
+    let encrypted_password: Vec<u8> = hex::decode(get_encrypted_password().as_bytes()).unwrap();
     let key: [u8; 32] = decrypt_password(&encrypted_password, salt)?;
 
-    let iv: [u8; 16] = hex::decode(IV).unwrap().try_into().unwrap();
+    let iv: [u8; 16] = hex::decode(get_iv().as_bytes()).unwrap().try_into().unwrap();
 
     let cipher: Cbc<Aes256, Pkcs7> = Aes256Cbc::new_from_slices(&key, &iv).map_err(|e| {
         web_sys::console::debug_1(&format!("Failed to create cipher: {}", e).into());
