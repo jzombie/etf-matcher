@@ -1,36 +1,57 @@
-import React, { useMemo } from "react";
-import { Menu } from "antd";
-import { HomeOutlined, SettingOutlined } from "@ant-design/icons";
+import React, { useState } from "react";
+import { Menu, Drawer, Button } from "antd";
+import { HomeOutlined, SettingOutlined, MenuOutlined } from "@ant-design/icons";
 import { Link, matchPath, useLocation } from "react-router-dom";
+
+import useWindowSize from "@hooks/useWindowSize";
+
+const MIN_DESKTOP_WINDOW_WIDTH = 600;
 
 export default function HeaderMenu() {
   const location = useLocation();
+  const [isDrawerVisible, setIsDrawerVisible] = useState(false);
 
-  // Define the base paths for the main menu items
-  const menuItems = useMemo(
-    () => [
-      {
-        key: "/",
-        label: (
-          <Link to="/">
-            <HomeOutlined title="Home" />
-          </Link>
-        ),
-      },
-      // { key: "/sectors", label: <Link to="/sectors">Sectors</Link> },
-      { key: "/portfolios", label: <Link to="/portfolios">Portfolios</Link> },
-      { key: "/watchlists", label: <Link to="/watchlists">Watchlists</Link> },
-      {
-        key: "/settings",
-        label: (
-          <Link to="/settings">
-            <SettingOutlined title="Settings" />
-          </Link>
-        ),
-      },
-    ],
-    []
-  );
+  const { width: windowWidth } = useWindowSize();
+
+  const showDrawer = () => setIsDrawerVisible(true);
+  const hideDrawer = () => setIsDrawerVisible(false);
+
+  const menuItems = [
+    {
+      key: "/",
+      label: (
+        <Link to="/" onClick={hideDrawer}>
+          <HomeOutlined title="Home" />
+          <span>Home</span>
+        </Link>
+      ),
+    },
+    {
+      key: "/portfolios",
+      label: (
+        <Link to="/portfolios" onClick={hideDrawer}>
+          Portfolios
+        </Link>
+      ),
+    },
+    {
+      key: "/watchlists",
+      label: (
+        <Link to="/watchlists" onClick={hideDrawer}>
+          Watchlists
+        </Link>
+      ),
+    },
+    {
+      key: "/settings",
+      label: (
+        <Link to="/settings" onClick={hideDrawer}>
+          <SettingOutlined title="Settings" />
+          <span>Settings</span>
+        </Link>
+      ),
+    },
+  ];
 
   const selectedKey = menuItems.find(
     (item) =>
@@ -39,12 +60,35 @@ export default function HeaderMenu() {
   )?.key;
 
   return (
-    <Menu
-      theme="dark"
-      mode="horizontal"
-      selectedKeys={selectedKey ? [selectedKey] : []}
-      items={menuItems}
-      style={{ flex: 1 }}
-    />
+    <>
+      {windowWidth < MIN_DESKTOP_WINDOW_WIDTH ? (
+        <>
+          <div className="menu-icon">
+            <Button icon={<MenuOutlined />} onClick={showDrawer} />
+          </div>
+          <Drawer
+            title="Menu"
+            placement="left"
+            onClose={hideDrawer}
+            open={isDrawerVisible}
+          >
+            <Menu
+              theme="dark"
+              mode="vertical"
+              selectedKeys={selectedKey ? [selectedKey] : []}
+              items={menuItems}
+            />
+          </Drawer>
+        </>
+      ) : (
+        <Menu
+          theme="dark"
+          mode="horizontal"
+          selectedKeys={selectedKey ? [selectedKey] : []}
+          items={menuItems}
+          className="desktop-menu"
+        />
+      )}
+    </>
   );
 }

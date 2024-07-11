@@ -2,18 +2,14 @@ import React from "react";
 import { TickerTape } from "react-ts-tradingview-widgets";
 import { Layout as AntLayout } from "antd";
 import { Outlet } from "react-router-dom";
-
 import HeaderMenu from "./HeaderMenu";
-
 import useStoreStateReader from "@hooks/useStoreStateReader";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 import SearchModalButton from "../SearchModalButton";
 
 const { Header, Content, Footer } = AntLayout;
 
-// TODO: Experiment w/ vintage newspaper design for background
-
-export default function Layout() {
+export default function MainLayout() {
   const {
     isProductionBuild,
     isRustInit,
@@ -40,14 +36,6 @@ export default function Layout() {
         }}
       >
         <HeaderMenu />
-        {
-          // TODO: Open search modal
-        }
-        {/* <Button
-          type="primary"
-          icon={<SearchOutlined />}
-          style={{ marginLeft: "auto" }}
-        /> */}
         <SearchModalButton />
       </Header>
       <Content
@@ -58,13 +46,7 @@ export default function Layout() {
           overflow: "auto",
         }}
       >
-        {
-          // This wrapping div prevents child elements from stretching by default
-        }
         <div style={{ width: "100%", height: "100%" }}>
-          {
-            // TODO: Don't block if on home screen so that content can render faster
-          }
           {!isRustInit ? (
             <div
               style={{
@@ -77,13 +59,7 @@ export default function Layout() {
                 overflow: "auto",
               }}
             >
-              <div
-                style={{
-                  textAlign: "center",
-                }}
-              >
-                Initializing...
-              </div>
+              <div style={{ textAlign: "center" }}>Initializing...</div>
             </div>
           ) : (
             <Outlet />
@@ -103,7 +79,6 @@ export default function Layout() {
           <span>{isDirtyState ? "Not Saved" : "Saved"}</span>
           {" | "}
           <span>{isOnline ? "Online" : "Offline"}</span>
-
           {" | "}
           <span>{visibleSymbols?.toString()}</span>
           <span style={{ float: "right" }}>
@@ -117,14 +92,11 @@ export default function Layout() {
             </a>
           </span>
         </div>
-        {
-          // TODO: Show with specific Portfolio symbols once
-        }
         <TickerTape
           colorTheme="dark"
           copyrightStyles={tradingViewCopyrightStyles}
           symbols={symbols}
-        ></TickerTape>
+        />
       </Footer>
     </AntLayout>
   );
@@ -132,64 +104,15 @@ export default function Layout() {
 
 // https://tradingview-widgets.jorrinkievit.xyz/docs/components/TickerTape#ticker-symbol
 const symbols = [
-  {
-    proName: "XLY",
-    title: "Consumer Discretionary (XLY)",
-  },
-  {
-    proName: "XLP",
-    title: "Consumer Staples (XLP)",
-  },
-  {
-    proName: "XLE",
-    title: "Energy (XLE)",
-  },
-  {
-    proName: "XLF",
-    title: "Financials (XLF)",
-  },
-  {
-    proName: "XLV",
-    title: "Healthcare (XLV)",
-  },
-  {
-    proName: "XLI",
-    title: "Industrials (XLI)",
-  },
-  {
-    proName: "XLB",
-    title: "Materials (XLB)",
-  },
-  {
-    proName: "XLRE",
-    title: "Real Estate (XLRE)",
-  },
-  {
-    proName: "XLK",
-    title: "Technology (XLK)",
-  },
-  {
-    proName: "XLC",
-    title: "Telecommunications (XLC)",
-  },
-  {
-    proName: "XLU",
-    title: "Utilities (XLU)",
-  },
-  // {
-  //   proName: "FOREXCOM:NSXUSD",
-  //   title: "Nasdaq 100",
-  // },
-  // {
-  //   proName: "FX_IDC:EURUSD",
-  //   title: "EUR/USD",
-  // },
-  // {
-  //   proName: "BITSTAMP:BTCUSD",
-  //   title: "BTC/USD",
-  // },
-  // {
-  //   proName: "BITSTAMP:ETHUSD",
-  //   title: "ETH/USD",
-  // },
+  { proName: "XLY", title: "Consumer Discretionary (XLY)" },
+  { proName: "XLP", title: "Consumer Staples (XLP)" },
+  { proName: "XLE", title: "Energy (XLE)" },
+  { proName: "XLF", title: "Financials (XLF)" },
+  { proName: "XLV", title: "Healthcare (XLV)" },
+  { proName: "XLI", title: "Industrials (XLI)" },
+  { proName: "XLB", title: "Materials (XLB)" },
+  { proName: "XLRE", title: "Real Estate (XLRE)" },
+  { proName: "XLK", title: "Technology (XLK)" },
+  { proName: "XLC", title: "Telecommunications (XLC)" },
+  { proName: "XLU", title: "Utilities (XLU)" },
 ];
