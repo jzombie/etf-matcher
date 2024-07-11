@@ -2,6 +2,7 @@
 import React from "react";
 import Logo from "@assets/logo.svg?react";
 
+// TODO: Remove
 export default function About() {
   return (
     <div>

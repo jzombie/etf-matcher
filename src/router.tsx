@@ -1,10 +1,11 @@
 import React from "react";
 import Home from "@pages/Home";
-import Sectors from "@pages/Sectors";
+// import Sectors from "@pages/Sectors";
+// import SectorDetail from "@pages/SectorDetail";
 import Portfolios from "@pages/Portfolios";
+import Watchlists from "@pages/Watchlists";
 import SearchResults from "@pages/SearchResults";
-import SectorDetail from "@pages/SectorDetail";
-import About from "@pages/About";
+// import About from "@pages/About";
 import NotFound from "@pages/NotFound";
 
 import { createBrowserRouter } from "react-router-dom";
@@ -20,16 +21,16 @@ export default createBrowserRouter([
         path: "",
         element: <Home />,
       },
-      {
-        path: "sectors",
-        element: <Sectors />,
-        children: [
-          {
-            path: ":sectorName",
-            element: <SectorDetail />,
-          },
-        ],
-      },
+      // {
+      //   path: "sectors",
+      //   element: <Sectors />,
+      //   children: [
+      //     {
+      //       path: ":sectorName",
+      //       element: <SectorDetail />,
+      //     },
+      //   ],
+      // },
       {
         path: "search",
         element: <SearchResults />,
@@ -39,9 +40,14 @@ export default createBrowserRouter([
         element: <Portfolios />,
       },
       {
-        path: "about",
-        element: <About />,
+        path: "watchlists",
+        element: <Watchlists />,
       },
+      // TODO: Remove
+      // {
+      //   path: "about",
+      //   element: <About />,
+      // },
       {
         path: "*",
         element: <NotFound />, // This is the catch-all route
