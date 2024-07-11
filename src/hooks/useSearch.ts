@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { store } from "@hooks/useStoreStateReader";
 import type { SearchResult } from "@src/store";
 import usePrevious from "./usePrevious";
+import useStableCurrentRef from "./useStableCurrentRef";
 
 export type UseSearchProps = {
   initialQuery?: string;
@@ -65,33 +66,39 @@ export default function useSearch(
   }, []);
 
   const previousSearchQuery = usePrevious(searchQuery);
-  useEffect(() => {
-    if (
-      !searchQuery.trim() ||
-      (previousSearchQuery &&
-        searchQuery &&
-        searchQuery !== previousSearchQuery)
-    ) {
-      setPage(DEFAULT_PROPS.initialPage);
-    }
-  }, [searchQuery, previousSearchQuery]);
+  const previousSearchQueryStableRef = useStableCurrentRef(previousSearchQuery);
 
   // Perform search or reset
   useEffect(() => {
     if (!searchQuery.trim().length) {
       resetSearch();
     } else {
+      const previousSearchQuery = previousSearchQueryStableRef.current;
+
+      let activePage = page;
+      if (previousSearchQuery && searchQuery !== previousSearchQuery) {
+        activePage = DEFAULT_PROPS.initialPage;
+      }
+
       store
-        .searchSymbols(searchQuery, page, pageSize, onlyExactMatches)
+        .searchSymbols(searchQuery, activePage, pageSize, onlyExactMatches)
         .then((searchResultsWithTotalCount) => {
           const { results, total_count } = searchResultsWithTotalCount;
 
-          setSelectedIndex(DEFAULT_PROPS.initialSelectedIndex);
           _setSearchResults(results);
           _setTotalSearchResults(total_count);
+          setPage(activePage);
+          setSelectedIndex(DEFAULT_PROPS.initialSelectedIndex);
         });
     }
-  }, [searchQuery, page, pageSize, resetSearch, onlyExactMatches]);
+  }, [
+    searchQuery,
+    previousSearchQueryStableRef,
+    page,
+    pageSize,
+    resetSearch,
+    onlyExactMatches,
+  ]);
 
   return {
     searchQuery,
