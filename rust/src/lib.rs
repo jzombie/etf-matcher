@@ -13,6 +13,7 @@ use data_models::{
     PaginatedResults,
     SymbolSearch,
     SymbolDetail,
+    SymbolETFHolder
 };
 
 #[wasm_bindgen(start)]
@@ -38,6 +39,12 @@ pub async fn search_symbols(query: &str, page: usize, page_size: usize) -> Resul
 pub async fn get_symbol_detail(symbol: &str) -> Result<JsValue, JsValue> {
     let detail: SymbolDetail = SymbolDetail::get_symbol_detail(symbol).await?;
     to_value(&detail).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to convert SymbolDetail to JsValue: {}", err)))
+}
+
+#[wasm_bindgen]
+pub async fn get_symbol_etf_holders(symbol: &str) -> Result<JsValue, JsValue> {
+    let etf_symbols: Vec<String> = SymbolETFHolder::get_symbol_etf_holders(symbol).await?;
+    to_value(&etf_symbols).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to convert Vec<String> to JsValue: {}", err)))
 }
 
 // #[wasm_bindgen]

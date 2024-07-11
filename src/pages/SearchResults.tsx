@@ -78,6 +78,10 @@ export default function SearchResults() {
           <Button onClick={() => store.PROTO_getSymbolDetail(symbol)}>
             PROTO_getSymbolDetail()
           </Button>
+
+          <Button onClick={() => store.PROTO_getSymbolETFHolders(symbol)}>
+            PROTO_getSymbolETFHolders()
+          </Button>
         </SymbolContainer>
       ))}
     </div>

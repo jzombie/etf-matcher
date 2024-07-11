@@ -166,6 +166,17 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       .catch((error) => console.error(error));
   }
 
+  PROTO_getSymbolETFHolders(symbol: string) {
+    callWorkerFunction("get_symbol_etf_holders", symbol)
+      .then((etfHolders) =>
+        console.log({
+          symbol,
+          etfHolders,
+        })
+      )
+      .catch((error) => console.error(error));
+  }
+
   addSymbolToPortfolio(symbol: string) {
     console.warn(`TODO: Handle symbol add: ${symbol}`);
   }

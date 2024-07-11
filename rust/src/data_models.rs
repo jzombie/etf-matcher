@@ -14,6 +14,7 @@ pub enum DataUrl {
     // EtfList,
     SymbolSearch,
     SymbolDetailShardIndex,
+    SymbolETFHoldersShardIndex,
 }
 
 impl DataUrl {
@@ -22,7 +23,8 @@ impl DataUrl {
             DataUrl::DataBuildInfo => "/data/data_build_info.enc",
             // DataUrl::EtfList => "/data/etfs.enc",
             DataUrl::SymbolSearch => "/data/symbol_search_dict.enc",
-            DataUrl::SymbolDetailShardIndex => "/data/symbol_detail_index.enc"
+            DataUrl::SymbolDetailShardIndex => "/data/symbol_detail_index.enc",
+            DataUrl::SymbolETFHoldersShardIndex => "/data/symbol_etf_holders_index.enc",
         }
     }
 
@@ -243,6 +245,28 @@ impl SymbolDetail {
         })
         .await?
         .ok_or_else(|| JsValue::from_str("Symbol not found"))
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct SymbolETFHolder {
+    pub symbol: String,
+    // TODO: Rename `etf_symbols` to `etf_symbols_json`
+    pub etf_symbols: String
+}
+
+impl SymbolETFHolder {
+    pub async fn get_symbol_etf_holders(symbol: &str) -> Result<Vec<String>, JsValue> {
+        let url: &str = DataUrl::SymbolETFHoldersShardIndex.value();
+        let holder = query_shard_for_symbol(url, symbol, |detail: &SymbolETFHolder| {
+            Some(&detail.symbol)
+        })
+        .await?
+        .ok_or_else(|| JsValue::from_str("Symbol not found"))?;
+
+        // Parse the etf_symbols JSON string into a Vec<String>
+        serde_json::from_str(&holder.etf_symbols)
+            .map_err(|e| JsValue::from_str(&format!("Failed to parse etf_symbols: {}", e)))
     }
 }
 
