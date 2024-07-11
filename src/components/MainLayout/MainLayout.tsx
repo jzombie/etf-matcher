@@ -14,8 +14,8 @@ import HeaderMenu from "./HeaderMenu";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 
+import FullViewport from "@components/layout-kit/FullViewport";
 import Layout, {
-  FullViewport,
   Center,
   Header,
   Content,

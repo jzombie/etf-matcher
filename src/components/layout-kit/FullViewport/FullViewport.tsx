@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import clsx from "clsx";
-import styles from "./layout.module.scss";
+import styles from "./FullViewport.module.scss";
 
 export type FullViewportProps = {
   children: React.ReactNode;
