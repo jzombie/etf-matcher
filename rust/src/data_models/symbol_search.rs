@@ -1,4 +1,3 @@
-
 use serde::{Deserialize, Serialize};
 use crate::JsValue;
 use crate::utils::fetch::fetch_and_decompress_gz;
@@ -27,8 +26,14 @@ impl SymbolSearch {
         alternatives
     }
 
-    pub async fn search_symbols(query: &str, page: usize, page_size: usize) -> Result<PaginatedResults<SymbolSearch>, JsValue> {
+    pub async fn search_symbols(
+        query: &str, 
+        page: usize, 
+        page_size: usize, 
+        only_exact_matches: Option<bool>
+    ) -> Result<PaginatedResults<SymbolSearch>, JsValue> {
         let trimmed_query: String = query.trim().to_lowercase();
+        let only_exact_matches = only_exact_matches.unwrap_or(false);
 
         if trimmed_query.is_empty() {
             return Ok(PaginatedResults {
@@ -58,10 +63,12 @@ impl SymbolSearch {
 
                 if symbol_match || company_match {
                     exact_symbol_matches.push(result.clone());
-                } else if partial_symbol_match_same_start || partial_company_match_same_start {
-                    starts_with_matches.push(result.clone());
-                } else if partial_symbol_match_contains || partial_company_match_contains {
-                    contains_matches.push(result.clone());
+                } else if !only_exact_matches {
+                    if partial_symbol_match_same_start || partial_company_match_same_start {
+                        starts_with_matches.push(result.clone());
+                    } else if partial_symbol_match_contains || partial_company_match_contains {
+                        contains_matches.push(result.clone());
+                    }
                 }
             }
         }
@@ -69,8 +76,11 @@ impl SymbolSearch {
         // Combine matches in the desired order
         let mut matches: Vec<SymbolSearch> = Vec::with_capacity(exact_symbol_matches.len() + starts_with_matches.len() + contains_matches.len());
         matches.append(&mut exact_symbol_matches);
-        matches.append(&mut starts_with_matches);
-        matches.append(&mut contains_matches);
+
+        if !only_exact_matches {
+            matches.append(&mut starts_with_matches);
+            matches.append(&mut contains_matches);
+        }
 
         PaginatedResults::paginate(matches, page, page_size)
     }

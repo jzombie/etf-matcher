@@ -4,15 +4,19 @@ import type { SearchResult } from "@src/store";
 
 export type UseSearchProps = {
   initialQuery?: string;
+  initialOnlyExactMatches: boolean;
   initialPageSize?: number;
 };
 
 const DEFAULT_PROPS: Required<UseSearchProps> = {
   initialQuery: "",
+  initialOnlyExactMatches: false,
   initialPageSize: 20,
 };
 
-export default function useSearch(props: UseSearchProps = DEFAULT_PROPS) {
+export default function useSearch(
+  props: Partial<UseSearchProps> = DEFAULT_PROPS
+) {
   const mergedProps: Required<UseSearchProps> = useMemo(
     () => ({ ...DEFAULT_PROPS, ...props }),
     [props]
@@ -21,6 +25,10 @@ export default function useSearch(props: UseSearchProps = DEFAULT_PROPS) {
   const [searchQuery, _setSearchQuery] = useState<string>(
     mergedProps.initialQuery
   );
+  const [onlyExactMatches, setOnlyExactMatches] = useState<boolean>(
+    mergedProps.initialOnlyExactMatches
+  );
+
   const [searchResults, _setSearchResults] = useState<SearchResult[]>([]);
   const [totalSearchResults, _setTotalSearchResults] = useState<number>(0);
 
@@ -54,8 +62,9 @@ export default function useSearch(props: UseSearchProps = DEFAULT_PROPS) {
     if (!searchQuery.trim().length) {
       resetSearch();
     } else {
+      // TODO: Update with exact match support
       store
-        .searchSymbols(searchQuery, page, pageSize)
+        .searchSymbols(searchQuery, page, pageSize, onlyExactMatches)
         .then((searchResultsWithTotalCount) => {
           const { results, total_count } = searchResultsWithTotalCount;
 
@@ -63,11 +72,13 @@ export default function useSearch(props: UseSearchProps = DEFAULT_PROPS) {
           _setTotalSearchResults(total_count);
         });
     }
-  }, [searchQuery, page, pageSize, resetSearch]);
+  }, [searchQuery, page, pageSize, resetSearch, onlyExactMatches]);
 
   return {
     searchQuery,
     setSearchQuery,
+    onlyExactMatches,
+    setOnlyExactMatches,
     searchResults,
     totalSearchResults,
     selectedIndex,

@@ -144,7 +144,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   async searchSymbols(
     query: string,
     page: number = 1,
-    pageSize: number = 20
+    pageSize: number = 20,
+    onlyExactMatches: boolean = false
   ): Promise<SearchResultsWithTotalCount> {
     try {
       // Call the worker function with the given query and trim any extra spaces
@@ -152,7 +153,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         "search_symbols",
         query.trim(),
         page,
-        pageSize
+        pageSize,
+        onlyExactMatches
       );
 
       return results;
