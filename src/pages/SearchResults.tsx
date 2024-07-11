@@ -75,7 +75,9 @@ export default function SearchResults() {
             Add {symbol} to Portfolio
           </Button>
 
-          <Button onClick={() => store.PROTO_getSymbolDetail(symbol)}></Button>
+          <Button onClick={() => store.PROTO_getSymbolDetail(symbol)}>
+            PROTO_getSymbolDetail()
+          </Button>
         </SymbolContainer>
       ))}
     </div>
