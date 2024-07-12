@@ -7,11 +7,22 @@ import Full from "../Full";
 export type CoverProps = React.HTMLAttributes<HTMLElement> & {
   children: React.ReactNode;
   className?: string;
+  clickThrough?: boolean;
 };
 
-export default function Cover({ children, className, ...rest }: CoverProps) {
+export default function Cover({
+  children,
+  className,
+  clickThrough = false,
+  ...rest
+}: CoverProps) {
   return (
-    <Full className={clsx(styles.cover, className)} {...rest}>
+    <Full
+      className={clsx(styles.cover, className, {
+        [styles.clickThrough]: clickThrough,
+      })}
+      {...rest}
+    >
       {children}
     </Full>
   );

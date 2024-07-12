@@ -44,4 +44,22 @@ describe("Cover Component", () => {
       </DocumentFragment>
     `);
   });
+
+  it("allows click through when clickThrough prop is true", () => {
+    const { container } = render(
+      <Cover clickThrough>
+        <span>Test Content</span>
+      </Cover>
+    );
+    expect(container.firstChild).toHaveClass("clickThrough");
+  });
+
+  it("does not allow click through when clickThrough prop is false", () => {
+    const { container } = render(
+      <Cover clickThrough={false}>
+        <span>Test Content</span>
+      </Cover>
+    );
+    expect(container.firstChild).not.toHaveClass("clickThrough");
+  });
 });
