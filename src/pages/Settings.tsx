@@ -2,6 +2,8 @@ import React from "react";
 import { Button } from "@mui/material";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
+import ProtoPieChart from "@components/PROTO_PieChart";
+
 export default function Settings() {
   const { symbolBuckets } = useStoreStateReader("symbolBuckets");
 
@@ -65,6 +67,10 @@ export default function Settings() {
           <div key={idx}>{symbolBucket.name}</div>
         ))}
       </div>
+
+      <hr />
+
+      <ProtoPieChart />
 
       <hr />
 
