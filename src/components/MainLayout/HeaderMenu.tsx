@@ -107,7 +107,6 @@ export default function HeaderMenu() {
                 <Typography variant="subtitle1">{item.label}</Typography>
               </Box>
             ))}
-            <SearchModalButton />
           </Box>
         ) : (
           <>
@@ -149,6 +148,9 @@ export default function HeaderMenu() {
             </Drawer>
           </>
         )}
+        <Box sx={{ flexGrow: 1 }} />{" "}
+        {/* Spacer to push the SearchModalButton to the right */}
+        <SearchModalButton />
       </Toolbar>
     </AppBar>
   );
