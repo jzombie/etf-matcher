@@ -9,8 +9,8 @@ export type FullProps = React.HTMLAttributes<HTMLElement> & {
 
 export default function Full({ children, className, ...rest }: FullProps) {
   return (
-    <footer className={clsx(styles.full, className)} {...rest}>
+    <div className={clsx(styles.full, className)} {...rest}>
       {children}
-    </footer>
+    </div>
   );
 }
