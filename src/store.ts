@@ -23,6 +23,7 @@ export type StoreStateProps = {
   visibleSymbols: string[];
   isSearchModalOpen: boolean;
   symbolBuckets: SymbolBucketProps[];
+  isProfilingCache: boolean;
 };
 
 export type SearchResult = {
@@ -34,6 +35,8 @@ export type SearchResultsWithTotalCount = {
   total_count: number;
   results: SearchResult[];
 };
+
+// TODO: Wrap `callWorkerFunction` and update cache metrics if profiling cache
 
 class _Store extends ReactStateEmitter<StoreStateProps> {
   constructor() {
@@ -73,6 +76,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           requiresQuantity: false,
         },
       ],
+      isProfilingCache: false,
     });
 
     // Only deepfreeze in development
