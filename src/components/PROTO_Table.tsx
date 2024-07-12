@@ -35,12 +35,28 @@ const headCells = [
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   padding: "4px 8px",
   fontSize: "0.75rem",
+  borderBottom: "1px solid rgba(224, 224, 224, 1)",
+  color: "cyan", // Set text color to cyan
 }));
 
 const StyledTableHeadCell = styled(TableCell)(({ theme }) => ({
   fontWeight: "bold",
   padding: "4px 8px",
   fontSize: "0.75rem",
+  borderBottom: "2px solid rgba(224, 224, 224, 1)",
+  color: "cyan", // Set text color to cyan
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: "#0e0e0e", // Set background color for odd rows
+  },
+  "&:nth-of-type(even)": {
+    backgroundColor: "#1e1e1e", // Set background color for even rows
+  },
+  "&:hover": {
+    backgroundColor: "#333", // Set hover background color
+  },
 }));
 
 const EnhancedTableHead = ({ order, orderBy, onRequestSort }) => {
@@ -57,6 +73,7 @@ const EnhancedTableHead = ({ order, orderBy, onRequestSort }) => {
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
+              style={{ color: "cyan" }} // Set text color to cyan
             >
               {headCell.label}
             </TableSortLabel>
@@ -105,7 +122,7 @@ function SortableTable() {
 
   return (
     <TableContainer component={Paper}>
-      <Table>
+      <Table size="small">
         <EnhancedTableHead
           order={order}
           orderBy={orderBy}
@@ -113,13 +130,13 @@ function SortableTable() {
         />
         <TableBody>
           {stableSort(rows, getComparator(order, orderBy)).map((row, index) => (
-            <TableRow key={index}>
+            <StyledTableRow key={index}>
               <StyledTableCell>{row.key}</StyledTableCell>
               <StyledTableCell>{row.size}</StyledTableCell>
               <StyledTableCell>{row.age}</StyledTableCell>
               <StyledTableCell>{row.last_accessed}</StyledTableCell>
               <StyledTableCell>{row.access_count}</StyledTableCell>
-            </TableRow>
+            </StyledTableRow>
           ))}
         </TableBody>
       </Table>
