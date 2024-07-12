@@ -153,7 +153,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   // TODO: For the following `PROTO` functions, it might be best to not retain a duplicate copy here,
   // except where absolutely needed (and utilize Rust for more `composite` metric generation).
 
-  // TODO: Update type
+  // TODO: Update type (use pagination type with generics)
   async searchSymbols(
     query: string,
     page: number = 1,
@@ -176,6 +176,18 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       console.error("Error searching symbols:", error);
       throw error;
     }
+  }
+  async getSymbolETFHolders(
+    symbol: string,
+    page: number = 1,
+    pageSize: number = 20
+  ) {
+    return TEMP_PROTO_libCallWorkerFunction(
+      "get_symbol_etf_holders",
+      symbol,
+      page,
+      pageSize
+    );
   }
 
   // TODO: Document type (should be able to import from WASM type)
@@ -211,26 +223,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         console.log({
           symbol,
           symbolDetail,
-        })
-      )
-      .catch((error) => console.error(error));
-  }
-
-  PROTO_getSymbolETFHolders(
-    symbol: string,
-    page: number = 1,
-    pageSize: number = 20
-  ) {
-    TEMP_PROTO_libCallWorkerFunction(
-      "get_symbol_etf_holders",
-      symbol,
-      page,
-      pageSize
-    )
-      .then((etfHolders) =>
-        console.log({
-          symbol,
-          etfHolders,
         })
       )
       .catch((error) => console.error(error));

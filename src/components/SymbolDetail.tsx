@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SymbolContainer from "./SymbolContainer";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 import { MiniChart, CompanyProfile } from "react-ts-tradingview-widgets";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
@@ -14,7 +15,19 @@ export default function SymbolDetail({
   tickerSymbol,
   ...args
 }: SymbolDetailProps) {
+  const navigate = useNavigate();
+
   const { symbolBuckets } = useStoreStateReader("symbolBuckets");
+
+  const [etfHolders, setEtfHolders] = useState([]);
+
+  useEffect(() => {
+    if (tickerSymbol) {
+      store.getSymbolETFHolders(tickerSymbol).then(setEtfHolders);
+    }
+  }, [tickerSymbol]);
+
+  console.log({ etfHolders: etfHolders?.results });
 
   return (
     <SymbolContainer
@@ -52,9 +65,23 @@ export default function SymbolDetail({
         PROTO_getSymbolDetail()
       </Button>
 
-      <Button onClick={() => store.PROTO_getSymbolETFHolders(tickerSymbol)}>
-        PROTO_getSymbolETFHolders()
-      </Button>
+      <div>
+        {
+          // TODO: Paginate through these results
+        }
+        {etfHolders?.results?.map((etfHolderSymbol) => (
+          <Button
+            key={etfHolderSymbol}
+            onClick={() =>
+              // TODO: Don't hardcode here
+              // TODO: Perhaps don't even navigate... just add the symbol to this view?
+              navigate(`/search?query=${etfHolderSymbol}&exact=true`)
+            }
+          >
+            {etfHolderSymbol}
+          </Button>
+        ))}
+      </div>
     </SymbolContainer>
   );
 }
