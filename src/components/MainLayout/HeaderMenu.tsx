@@ -16,13 +16,14 @@ import { Home, Settings, Menu as MenuIcon } from "@mui/icons-material";
 import { Link, useLocation, matchPath } from "react-router-dom";
 import SearchModalButton from "@components/SearchModalButton";
 import clsx from "clsx";
+import { styled } from "@mui/system";
 
 export default function HeaderMenu() {
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
 
-  const isDesktop = useMediaQuery("@media (min-width:600px)");
+  const isDesktop = useMediaQuery("@media (min-width:748px)");
 
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
@@ -56,6 +57,15 @@ export default function HeaderMenu() {
       matchPath({ path: `${item.key}/*`, end: false }, location.pathname)
   )?.key;
 
+  const StyledBranding = styled(Typography)(({ theme }) => ({
+    fontFamily: "'Roboto', sans-serif",
+    fontWeight: 700,
+    fontSize: "1.5rem",
+    marginRight: theme.spacing(2),
+    color: "white",
+    flexGrow: 1, // Makes the branding take up all available space
+  }));
+
   return (
     <AppBar position="relative">
       <Toolbar>
@@ -68,6 +78,7 @@ export default function HeaderMenu() {
               flexGrow: 1,
             }}
           >
+            <StyledBranding>ETF Matcher</StyledBranding>
             {menuItems.map((item) => (
               <Box
                 key={item.key}
@@ -119,6 +130,7 @@ export default function HeaderMenu() {
             >
               <MenuIcon />
             </IconButton>
+            <StyledBranding>ETF Matcher</StyledBranding>
             <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer}>
               <List>
                 {menuItems.map((item) => (
