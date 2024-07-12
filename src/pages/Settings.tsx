@@ -1,5 +1,5 @@
 import React from "react";
-// import { Button, notification, Space } from "antd";
+import { Button } from "@mui/material";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 
 export default function Settings() {
@@ -35,9 +35,9 @@ export default function Settings() {
 
   return (
     <div>
-      {/*
-        <Button onClick={() => alert("TODO: Implement")}>Clear Data</Button>
-        */}
+      <Button variant="outlined">TODO: Implement::Clear Data</Button>
+
+      <Button variant="outlined">TODO: Implement::Drain Cache</Button>
 
       <div>
         <h2>Buckets</h2>
