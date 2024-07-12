@@ -142,7 +142,12 @@ export default function SearchModalButton() {
 
   return (
     <>
-      <Button variant="outlined" startIcon={<SearchIcon />} onClick={showModal}>
+      <Button
+        variant="contained"
+        startIcon={<SearchIcon />}
+        onClick={showModal}
+        color="inherit"
+      >
         Search
       </Button>
       <Dialog open={isModalOpen} onClose={handleCancel}>

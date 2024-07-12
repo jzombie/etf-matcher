@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-// import { Button } from "antd";
+import { Button } from "@mui/material";
 
 import useSearch from "@hooks/useSearch";
 import SymbolDetail from "@components/SymbolDetail";
@@ -56,11 +56,9 @@ export default function SearchResults() {
   return (
     <div>
       Search results for: {searchQuery}
-      {/*
-        <Button onClick={toggleExactMatch}>
+      <Button onClick={toggleExactMatch}>
         Toggle Exact Match (currently {onlyExactMatches ? "on" : "off"})
       </Button>
-        */}
       {searchResults.map((searchResult) => (
         <SymbolDetail
           key={searchResult.symbol}
