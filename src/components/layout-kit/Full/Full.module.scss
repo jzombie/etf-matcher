@@ -5,3 +5,7 @@
   overflow: hidden;
   flex-direction: column;
 }
+
+.full > * {
+  flex: 0 0 auto; /* Prevent children from growing or shrinking */
+}
