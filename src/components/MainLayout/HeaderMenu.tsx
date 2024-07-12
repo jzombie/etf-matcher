@@ -20,7 +20,9 @@ export default function HeaderMenu() {
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+
+  // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const isDesktop = useMediaQuery("@media (min-width:600px)");
 
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
