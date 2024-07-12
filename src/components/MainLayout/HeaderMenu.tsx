@@ -57,6 +57,9 @@ export default function HeaderMenu() {
       matchPath({ path: `${item.key}/*`, end: false }, location.pathname)
   )?.key;
 
+  // i.e. For search results page, or anything else not corresponding to a menu link
+  const shouldHighlightSearchButton = !selectedKey;
+
   const DesktopStyledLogoBranding = styled(Typography)(({ theme }) => ({
     fontFamily: "'Roboto', sans-serif",
     fontWeight: 700,
@@ -125,7 +128,7 @@ export default function HeaderMenu() {
                 <Typography variant="subtitle1">{item.label}</Typography>
               </Box>
             ))}
-            <SearchModalButton highlight={!selectedKey} />
+            <SearchModalButton highlight={shouldHighlightSearchButton} />
           </Box>
         ) : (
           <>
@@ -175,10 +178,14 @@ export default function HeaderMenu() {
                   </ListItem>
                 ))}
               </List>
+              {
+                // TODO: This is nice here, but it should close the Drawer when clicked on
+                // <SearchModalButton highlight={shouldHighlightSearchButton} />
+              }
             </Drawer>
             <Box sx={{ flexGrow: 1 }} />{" "}
             {/* Spacer to push the SearchModalButton to the right */}
-            <SearchModalButton highlight={!selectedKey} />
+            <SearchModalButton highlight={shouldHighlightSearchButton} />
           </>
         )}
       </Toolbar>
