@@ -1,0 +1,16 @@
+// usePageTracking.js
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+
+export default function usePageTracking = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    const gtag = window.gtag;
+    if (typeof gtag === "function") {
+      gtag("config", "YOUR_GOOGLE_ANALYTICS_ID", {
+        page_path: location.pathname,
+      });
+    }
+  }, [location]);
+};

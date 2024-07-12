@@ -16,6 +16,7 @@ import MainLayout from "@components/MainLayout";
 export default createBrowserRouter([
   {
     path: "/",
+    // TODO: Enable for GA; Add `usePageTracking()`
     element: <MainLayout />, // Use MainLayout as the main wrapper
     children: [
       {
