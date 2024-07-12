@@ -12,6 +12,7 @@ use js_sys::{Promise, Date, Uint8Array};
 use serde::Serialize;
 use std::convert::TryInto;
 use std::io::Read;
+use std::time::{SystemTime, UNIX_EPOCH, Duration};
 use hex;
 use std::collections::HashMap;
 use std::cell::RefCell;
@@ -39,8 +40,8 @@ pub fn decrypt_password(encrypted_password: &[u8], salt: &[u8]) -> Result<[u8; 3
 pub fn get_cache_size() -> usize {
     CACHE.with(|cache| {
         let cache = cache.borrow();
-        cache.values().map(|shared_future| {
-            shared_future.clone().now_or_never().map_or(0, |result| {
+        cache.values().map(|cached_future| {
+            cached_future.future.clone().now_or_never().map_or(0, |result| {
                 result.map_or(0, |data| data.len())
             })
         }).sum()
@@ -48,23 +49,37 @@ pub fn get_cache_size() -> usize {
 }
 
 
+struct CachedFuture {
+    future: Shared<LocalBoxFuture<'static, Result<String, JsValue>>>,
+    added_at: f64,
+    last_accessed: RefCell<f64>,
+}
+
 #[derive(Serialize)]
 struct CacheEntry {
     key: String,
     size: usize,
+    age: f64,           // Age in milliseconds
+    last_accessed: f64, // Last accessed time in milliseconds since UNIX_EPOCH
 }
+
 
 pub fn get_cache_details() -> JsValue {
     CACHE.with(|cache| {
         let cache = cache.borrow();
+        let now = Date::now();
         let details: Vec<CacheEntry> = cache.iter()
-            .map(|(key, shared_future)| {
-                let size = shared_future.clone().now_or_never().map_or(0, |result| {
+            .map(|(key, cached_future)| {
+                let size = cached_future.future.clone().now_or_never().map_or(0, |result| {
                     result.map_or(0, |data| data.len())
                 });
+                let age = now - cached_future.added_at;
+                let last_accessed = *cached_future.last_accessed.borrow();
                 CacheEntry {
                     key: key.clone(),
                     size,
+                    age,
+                    last_accessed,
                 }
             })
             .collect();
@@ -72,12 +87,14 @@ pub fn get_cache_details() -> JsValue {
     })
 }
 
+
 type Aes256Cbc = Cbc<Aes256, Pkcs7>;
 
 // Global cache with futures for pending requests
 thread_local! {
-    static CACHE: RefCell<HashMap<String, Shared<LocalBoxFuture<'static, Result<String, JsValue>>>>> = RefCell::new(HashMap::new());
+    static CACHE: RefCell<HashMap<String, CachedFuture>> = RefCell::new(HashMap::new());
 }
+
 
 // TODO: Compress xhr_fetch directly to save additional memory?
 pub async fn fetch_and_decompress_gz<T>(url: T) -> Result<String, JsValue>
@@ -86,13 +103,19 @@ where
 {
     let url_str: String = url.as_ref().to_string();
 
-    let shared_future: Shared<std::pin::Pin<Box<dyn Future<Output = Result<String, JsValue>>>>> = CACHE.with(|cache| {
-        let mut cache: std::cell::RefMut<HashMap<String, Shared<std::pin::Pin<Box<dyn Future<Output = Result<String, JsValue>>>>>>> = cache.borrow_mut();
+    let shared_future = CACHE.with(|cache| {
+        let mut cache = cache.borrow_mut();
         if let Some(cached_future) = cache.get(&url_str) {
-            cached_future.clone()
+            *cached_future.last_accessed.borrow_mut() = Date::now();
+            cached_future.future.clone()
         } else {
             let future = fetch_and_decompress_gz_internal(url_str.clone()).boxed_local().shared();
-            cache.insert(url_str.clone(), future.clone());
+            let cached_future = CachedFuture {
+                future: future.clone(),
+                added_at: Date::now(),
+                last_accessed: RefCell::new(Date::now()),
+            };
+            cache.insert(url_str.clone(), cached_future);
             future
         }
     });
