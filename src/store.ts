@@ -9,7 +9,12 @@ const IS_PROD = import.meta.env.PROD;
 export type SymbolBucketProps = {
   name: string;
   symbols: string[];
-  type: "watchlist" | "portfolio" | "ticker_tape" | "attention_tracker";
+  type:
+    | "watchlist"
+    | "portfolio"
+    | "ticker_tape"
+    | "recently_viewed"
+    | "attention_tracker";
   requiresQuantity: boolean;
 };
 
@@ -72,6 +77,12 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           name: "My Ticker Tape",
           symbols: [],
           type: "ticker_tape",
+          requiresQuantity: false,
+        },
+        {
+          name: "My Recently Viewed",
+          symbols: [],
+          type: "recently_viewed",
           requiresQuantity: false,
         },
         // TODO: Infer potential ETFs that a user may be interested in based on searched
