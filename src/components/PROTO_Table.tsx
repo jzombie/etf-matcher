@@ -36,7 +36,10 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   padding: "4px 8px",
   fontSize: "0.75rem",
   borderBottom: "1px solid rgba(224, 224, 224, 1)",
-  color: "cyan", // Set text color to cyan
+  color: "cyan",
+  "&.numeric": {
+    color: "#aeadd6", // Bright fluorescent purple
+  },
 }));
 
 const StyledTableHeadCell = styled(TableCell)(({ theme }) => ({
@@ -44,18 +47,18 @@ const StyledTableHeadCell = styled(TableCell)(({ theme }) => ({
   padding: "4px 8px",
   fontSize: "0.75rem",
   borderBottom: "2px solid rgba(224, 224, 224, 1)",
-  color: "cyan", // Set text color to cyan
+  color: "white",
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
-    backgroundColor: "#0e0e0e", // Set background color for odd rows
+    backgroundColor: "#0e0e0e",
   },
   "&:nth-of-type(even)": {
-    backgroundColor: "#1e1e1e", // Set background color for even rows
+    backgroundColor: "#1e1e1e",
   },
   "&:hover": {
-    backgroundColor: "#333", // Set hover background color
+    backgroundColor: "#333",
   },
 }));
 
@@ -73,7 +76,7 @@ const EnhancedTableHead = ({ order, orderBy, onRequestSort }) => {
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
-              style={{ color: "cyan" }} // Set text color to cyan
+              style={{ color: "white" }}
             >
               {headCell.label}
             </TableSortLabel>
@@ -99,7 +102,7 @@ function SortableTable() {
     stabilizedThis.sort((a, b) => {
       const order = comparator(a[0], b[0]);
       if (order !== 0) return order;
-      return a[1] - b[1];
+      return a[1] - b[1]; // Corrected line
     });
     return stabilizedThis.map((el) => el[0]);
   };
@@ -132,10 +135,14 @@ function SortableTable() {
           {stableSort(rows, getComparator(order, orderBy)).map((row, index) => (
             <StyledTableRow key={index}>
               <StyledTableCell>{row.key}</StyledTableCell>
-              <StyledTableCell>{row.size}</StyledTableCell>
-              <StyledTableCell>{row.age}</StyledTableCell>
-              <StyledTableCell>{row.last_accessed}</StyledTableCell>
-              <StyledTableCell>{row.access_count}</StyledTableCell>
+              <StyledTableCell className="numeric">{row.size}</StyledTableCell>
+              <StyledTableCell className="numeric">{row.age}</StyledTableCell>
+              <StyledTableCell className="numeric">
+                {row.last_accessed}
+              </StyledTableCell>
+              <StyledTableCell className="numeric">
+                {row.access_count}
+              </StyledTableCell>
             </StyledTableRow>
           ))}
         </TableBody>
