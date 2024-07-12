@@ -15,6 +15,8 @@ import useStoreStateReader from "@hooks/useStoreStateReader";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 
 import FullViewport from "@layoutKit/FullViewport";
+import Full from "@layoutKit/Full";
+import Cover from "@layoutKit/Cover";
 import Center from "@layoutKit/Center";
 import Layout, { Header, Content, Footer } from "@layoutKit/Layout";
 // import SearchModalButton from "../SearchModalButton";
@@ -61,12 +63,23 @@ export default function MainLayout() {
           </Header>
 
           <Content>
-            {!isRustInit ? (
-              <Center>
-                <Typography variant="h6" component="div" textAlign="center">
-                  Initializing...
-                </Typography>
-              </Center>
+            {!isRustInit || 1 === 1 ? (
+              <Full>
+                <Cover>
+                  <Layout>
+                    <Header style={{ backgroundColor: "yellow" }}>Hi</Header>
+                    <Content>This is content</Content>
+                    <Footer>Another footer</Footer>
+                  </Layout>
+                </Cover>
+                <Cover>
+                  <Center>
+                    <Typography variant="h6" component="div" textAlign="center">
+                      Initializing...
+                    </Typography>
+                  </Center>
+                </Cover>
+              </Full>
             ) : (
               <Layout>
                 <Header>some header</Header>

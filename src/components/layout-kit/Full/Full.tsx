@@ -2,7 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import styles from "./Full.module.scss";
 
-export type FullProps = {
+export type FullProps = React.HTMLAttributes<HTMLElement> & {
   children: React.ReactNode;
   className?: string;
 };

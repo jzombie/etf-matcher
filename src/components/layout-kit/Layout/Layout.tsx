@@ -2,7 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import styles from "./Layout.module.scss";
 
-export type LayoutProps = {
+export type LayoutProps = React.HTMLAttributes<HTMLElement> & {
   children: React.ReactNode;
   className?: string;
 };

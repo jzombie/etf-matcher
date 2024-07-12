@@ -2,7 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import styles from "./Layout.module.scss";
 
-export type ContentProps = {
+export type ContentProps = React.HTMLAttributes<HTMLElement> & {
   children: React.ReactNode;
   className?: string;
 };

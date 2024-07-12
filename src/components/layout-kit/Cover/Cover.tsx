@@ -4,7 +4,7 @@ import styles from "./Cover.module.scss";
 
 import Full from "../Full";
 
-export type CoverProps = {
+export type CoverProps = React.HTMLAttributes<HTMLElement> & {
   children: React.ReactNode;
   className?: string;
 };

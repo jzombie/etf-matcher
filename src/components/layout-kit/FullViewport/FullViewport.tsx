@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import clsx from "clsx";
 import styles from "./FullViewport.module.scss";
 
-export type FullViewportProps = {
+export type FullViewportProps = React.HTMLAttributes<HTMLElement> & {
   children: React.ReactNode;
   className?: string;
 };
