@@ -22,7 +22,6 @@ export default function HeaderMenu() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
 
-  // const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const isDesktop = useMediaQuery("@media (min-width:600px)");
 
   const toggleDrawer = () => {
@@ -65,6 +64,7 @@ export default function HeaderMenu() {
             sx={{
               display: "flex",
               alignItems: "center",
+              justifyContent: "center", // Center all items
               flexGrow: 1,
             }}
           >
@@ -107,6 +107,7 @@ export default function HeaderMenu() {
                 <Typography variant="subtitle1">{item.label}</Typography>
               </Box>
             ))}
+            <SearchModalButton /> {/* Add SearchModalButton here */}
           </Box>
         ) : (
           <>
@@ -146,11 +147,11 @@ export default function HeaderMenu() {
                 ))}
               </List>
             </Drawer>
+            <Box sx={{ flexGrow: 1 }} />{" "}
+            {/* Spacer to push the SearchModalButton to the right */}
+            <SearchModalButton />
           </>
         )}
-        <Box sx={{ flexGrow: 1 }} />{" "}
-        {/* Spacer to push the SearchModalButton to the right */}
-        <SearchModalButton />
       </Toolbar>
     </AppBar>
   );
