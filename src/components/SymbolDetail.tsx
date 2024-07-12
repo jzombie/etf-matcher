@@ -28,12 +28,15 @@ export default function SymbolDetail({
         width="100%"
         copyrightStyles={tradingViewCopyrightStyles}
       />
-      <CompanyProfile
+      {
+        // TODO: Enable via toggle
+        /* <CompanyProfile
         symbol={tickerSymbol}
         width="100%"
         height={300}
         copyrightStyles={tradingViewCopyrightStyles}
-      />
+      /> */
+      }
 
       {symbolBuckets?.map((symbolBucket, idx) => (
         // TODO: If symbol is already in the bucket, don't try to re-add it
