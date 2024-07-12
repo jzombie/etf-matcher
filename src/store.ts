@@ -18,6 +18,24 @@ export type SymbolBucketProps = {
   requiresQuantity: boolean;
 };
 
+export type RustServiceSearchResult = {
+  symbol: string;
+  company: string;
+};
+
+export type RustServiceSearchResultsWithTotalCount = {
+  total_count: number;
+  results: RustServiceSearchResult[];
+};
+
+export type RustServiceCacheDetail = {
+  key: string;
+  size: string;
+  age: number;
+  last_accessed: number;
+  access_count: number;
+};
+
 export type StoreStateProps = {
   isProductionBuild: boolean;
   isOnline: boolean;
@@ -29,16 +47,8 @@ export type StoreStateProps = {
   isSearchModalOpen: boolean;
   symbolBuckets: SymbolBucketProps[];
   isProfilingCache: boolean;
-};
-
-export type SearchResult = {
-  symbol: string;
-  company: string;
-};
-
-export type SearchResultsWithTotalCount = {
-  total_count: number;
-  results: SearchResult[];
+  cacheDetails: RustServiceCacheDetail[];
+  cacheSize: number;
 };
 
 const TEMP_PROTO_libCallWorkerFunction = libCallWorkerFunction;
@@ -95,6 +105,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         },
       ],
       isProfilingCache: false,
+      cacheDetails: [],
+      cacheSize: 0,
     });
 
     // Only deepfreeze in development
@@ -170,11 +182,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     page: number = 1,
     pageSize: number = 20,
     onlyExactMatches: boolean = false
-  ): Promise<SearchResultsWithTotalCount> {
+  ): Promise<RustServiceSearchResultsWithTotalCount> {
     try {
       // Call the worker function with the given query and trim any extra spaces
       const results =
-        await TEMP_PROTO_libCallWorkerFunction<SearchResultsWithTotalCount>(
+        await TEMP_PROTO_libCallWorkerFunction<RustServiceSearchResultsWithTotalCount>(
           "search_symbols",
           query.trim(),
           page,
@@ -250,8 +262,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   PROTO_getCacheDetails() {
-    TEMP_PROTO_libCallWorkerFunction("get_cache_details")
-      .then((cacheDetails) => console.table(cacheDetails))
+    TEMP_PROTO_libCallWorkerFunction<CacheDetail[]>("get_cache_details")
+      .then(console.table)
       .catch((error) => console.error(error));
   }
 
