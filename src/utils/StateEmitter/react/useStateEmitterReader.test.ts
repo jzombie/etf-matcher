@@ -29,6 +29,7 @@ describe("useStateEmitterReader", () => {
   });
 
   it("should read the initial state", () => {
+    // @ts-expect-error For non-TS checks
     const { result } = renderHook(() => useStateEmitterReader(emitter));
     expect(result.current).toEqual({
       count: 0,
@@ -42,6 +43,7 @@ describe("useStateEmitterReader", () => {
   });
 
   it("should update state when the emitter state changes", () => {
+    // @ts-expect-error For non-TS checks
     const { result } = renderHook(() => useStateEmitterReader(emitter));
 
     act(() => {
@@ -110,6 +112,7 @@ describe("useStateEmitterReader", () => {
   });
 
   it("should handle deep equal state comparisons", () => {
+    // @ts-expect-error For non-TS checks
     const { result } = renderHook(() => useStateEmitterReader(emitter));
 
     const initialState = result.current;

@@ -4,7 +4,7 @@ import deepEqual from "@utils/deepEqual";
 
 const useStateEmitterReader = <T extends object, K extends keyof T>(
   emitter: EmitterState<T>,
-  stateKeyOrKeys?: K | K[],
+  stateKeyOrKeys: K | K[],
   eventOrEventNames: string | string[] = StateEmitterDefaultEvents.UPDATE
 ) => {
   const eventNames: K[] = useMemo(
@@ -52,6 +52,15 @@ const useStateEmitterReader = <T extends object, K extends keyof T>(
       ? emitter.getState(stateKeys)
       : emitter.getState();
 
+    // Add a type guard to ensure newSnapshot is of the expected type
+    if (stateKeys && typeof newSnapshot === "object" && newSnapshot !== null) {
+      // Ensure the stateKeys are in the newSnapshot
+      const hasAllKeys = stateKeys.every((key) => key in newSnapshot);
+      if (!hasAllKeys) {
+        throw new Error("State keys not found in the snapshot");
+      }
+    }
+
     // Compare the new snapshot with the previous one using deep equality
     if (deepEqual(newSnapshot, prevSnapshotRef.current)) {
       return prevSnapshotRef.current!;
@@ -69,7 +78,7 @@ const useStateEmitterReader = <T extends object, K extends keyof T>(
     getCachedSnapshot
   );
 
-  return state;
+  return state as Pick<T, K>;
 };
 
 export default useStateEmitterReader;
