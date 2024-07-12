@@ -48,11 +48,11 @@ pub fn get_cache_size() -> usize {
     })
 }
 
-
 struct CachedFuture {
     future: Shared<LocalBoxFuture<'static, Result<String, JsValue>>>,
     added_at: f64,
     last_accessed: RefCell<f64>,
+    access_count: RefCell<u32>,
 }
 
 #[derive(Serialize)]
@@ -61,6 +61,7 @@ struct CacheEntry {
     size: usize,
     age: f64,           // Age in milliseconds
     last_accessed: f64, // Last accessed time in milliseconds since UNIX_EPOCH
+    access_count: u32,  // Number of times accessed
 }
 
 
@@ -75,17 +76,20 @@ pub fn get_cache_details() -> JsValue {
                 });
                 let age = now - cached_future.added_at;
                 let last_accessed = *cached_future.last_accessed.borrow();
+                let access_count = *cached_future.access_count.borrow();
                 CacheEntry {
                     key: key.clone(),
                     size,
                     age,
                     last_accessed,
+                    access_count,
                 }
             })
             .collect();
         serde_wasm_bindgen::to_value(&details).unwrap()
     })
 }
+
 
 
 type Aes256Cbc = Cbc<Aes256, Pkcs7>;
@@ -107,6 +111,7 @@ where
         let mut cache = cache.borrow_mut();
         if let Some(cached_future) = cache.get(&url_str) {
             *cached_future.last_accessed.borrow_mut() = Date::now();
+            *cached_future.access_count.borrow_mut() += 1;
             cached_future.future.clone()
         } else {
             let future = fetch_and_decompress_gz_internal(url_str.clone()).boxed_local().shared();
@@ -114,11 +119,13 @@ where
                 future: future.clone(),
                 added_at: Date::now(),
                 last_accessed: RefCell::new(Date::now()),
+                access_count: RefCell::new(1),
             };
             cache.insert(url_str.clone(), cached_future);
             future
         }
     });
+    
 
     match shared_future.await {
         Ok(result) => Ok(result),
