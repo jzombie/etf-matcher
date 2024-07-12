@@ -92,7 +92,7 @@ export default function Settings() {
               }
             />
           }
-          label="Enable Profiling Overlay"
+          label="Enable Cache Profiling Overlay"
         />
 
         <h3>Purge</h3>
