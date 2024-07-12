@@ -51,8 +51,6 @@ export type StoreStateProps = {
   cacheSize: number;
 };
 
-const TEMP_PROTO_libCallWorkerFunction = libCallWorkerFunction;
-
 // TODO: Wrap `callWorkerFunction` and update cache metrics if profiling cache
 //
 //   |___  Include notification (and route to UI) showing data fetching status
@@ -159,18 +157,24 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   private _fetchDataBuildInfo() {
-    TEMP_PROTO_libCallWorkerFunction("get_data_build_info").then(
-      (dataBuildInfo) => {
-        this.setState({
-          isRustInit: true,
-          // TODO: If data build time is already set as state, but this indicates otherwise, that's a signal the app needs to update
-          dataBuildTime: (dataBuildInfo as { [key: string]: string }).time,
-          prettyDataBuildTime: new Date(
-            (dataBuildInfo as { [key: string]: string }).time
-          ).toLocaleString(),
-        });
-      }
-    );
+    this._callWorkerFunction("get_data_build_info").then((dataBuildInfo) => {
+      this.setState({
+        isRustInit: true,
+        // TODO: If data build time is already set as state, but this indicates otherwise, that's a signal the app needs to update
+        dataBuildTime: (dataBuildInfo as { [key: string]: string }).time,
+        prettyDataBuildTime: new Date(
+          (dataBuildInfo as { [key: string]: string }).time
+        ).toLocaleString(),
+      });
+    });
+  }
+
+  private _callWorkerFunction<T>(
+    functionName: string,
+    ...args: unknown[]
+  ): Promise<T> {
+    // TODO: Wrap accordingly
+    return libCallWorkerFunction(functionName, ...args);
   }
 
   // TODO: For the following `PROTO` functions, it might be best to not retain a duplicate copy here,
@@ -186,7 +190,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     try {
       // Call the worker function with the given query and trim any extra spaces
       const results =
-        await TEMP_PROTO_libCallWorkerFunction<RustServiceSearchResultsWithTotalCount>(
+        await this._callWorkerFunction<RustServiceSearchResultsWithTotalCount>(
           "search_symbols",
           query.trim(),
           page,
@@ -205,7 +209,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     page: number = 1,
     pageSize: number = 20
   ) {
-    return TEMP_PROTO_libCallWorkerFunction(
+    return this._callWorkerFunction(
       "get_symbol_etf_holders",
       symbol,
       page,
@@ -215,7 +219,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
   // TODO: Document type (should be able to import from WASM type)
   async fetchSymbolDetail(symbol: string) {
-    return TEMP_PROTO_libCallWorkerFunction("get_symbol_detail", symbol);
+    return this._callWorkerFunction("get_symbol_detail", symbol);
   }
 
   // PROTO_countEtfsPerExchange() {
@@ -241,7 +245,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   // }
 
   PROTO_getSymbolDetail(symbol: string) {
-    TEMP_PROTO_libCallWorkerFunction("get_symbol_detail", symbol)
+    this._callWorkerFunction("get_symbol_detail", symbol)
       .then((symbolDetail) =>
         console.log({
           symbol,
@@ -252,7 +256,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   PROTO_getCacheSize() {
-    TEMP_PROTO_libCallWorkerFunction("get_cache_size")
+    this._callWorkerFunction("get_cache_size")
       .then((cacheSize) =>
         console.log({
           cacheSize,
@@ -262,17 +266,17 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   PROTO_getCacheDetails() {
-    TEMP_PROTO_libCallWorkerFunction<CacheDetail[]>("get_cache_details")
+    this._callWorkerFunction<RustServiceCacheDetail[]>("get_cache_details")
       .then(console.table)
       .catch((error) => console.error(error));
   }
 
   PROTO_removeCacheEntry(key: string) {
-    TEMP_PROTO_libCallWorkerFunction("remove_cache_entry", key);
+    this._callWorkerFunction("remove_cache_entry", key);
   }
 
   PROTO_clearCache() {
-    TEMP_PROTO_libCallWorkerFunction("clear_cache");
+    this._callWorkerFunction("clear_cache");
   }
 
   addSymbolToBucket(symbol: string, symbolBucket: SymbolBucketProps) {
