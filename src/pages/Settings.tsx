@@ -6,6 +6,7 @@ import Scrollable from "@layoutKit/Scrollable";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
 import ProtoPieChart from "@components/PROTO_PieChart";
+import ProtoTable from "@components/PROTO_Table";
 
 export default function Settings() {
   const { symbolBuckets, isProfilingCache } = useStoreStateReader([
@@ -63,6 +64,8 @@ export default function Settings() {
           // TODO: Don't render until in view (to get nice transition-in effect)
         }
         <ProtoPieChart />
+
+        <ProtoTable />
 
         <Button variant="outlined">
           TODO Implement::Cache overlay metrics (state::isProfilingCache)
