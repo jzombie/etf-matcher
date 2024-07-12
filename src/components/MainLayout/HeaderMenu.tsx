@@ -56,8 +56,6 @@ export default function HeaderMenu() {
       matchPath({ path: `${item.key}/*`, end: false }, location.pathname)
   )?.key;
 
-  console.log({ selectedKey });
-
   return (
     <AppBar position="static">
       <Toolbar>
