@@ -1,5 +1,8 @@
 import React from "react";
 import { Button, Switch, FormControlLabel } from "@mui/material";
+
+import Scrollable from "@layoutKit/Scrollable";
+
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
 import ProtoPieChart from "@components/PROTO_PieChart";
@@ -39,7 +42,7 @@ export default function Settings() {
   */
 
   return (
-    <div>
+    <Scrollable>
       <div>
         <h2>User Data</h2>
 
@@ -56,6 +59,9 @@ export default function Settings() {
 
         <h3>View</h3>
 
+        {
+          // TODO: Don't render until in view (to get nice transition-in effect)
+        }
         <ProtoPieChart />
 
         <Button variant="outlined">
@@ -120,6 +126,6 @@ export default function Settings() {
       {
         // TODO: Add configuration options to adjust tickers which show in the ticker tape in the footer
       }
-    </div>
+    </Scrollable>
   );
 }
