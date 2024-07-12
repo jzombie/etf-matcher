@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@mui/material";
-import useStoreStateReader from "@hooks/useStoreStateReader";
+import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
 export default function Settings() {
   const { symbolBuckets } = useStoreStateReader("symbolBuckets");
@@ -38,6 +38,14 @@ export default function Settings() {
       <Button variant="outlined">TODO: Implement::Clear Data</Button>
 
       <Button variant="outlined">TODO: Implement::Drain Cache</Button>
+
+      <Button variant="outlined" onClick={() => store.PROTO_getCacheSize()}>
+        PROTO_getCacheSize()
+      </Button>
+
+      <Button variant="outlined" onClick={() => store.PROTO_getCacheDetails()}>
+        PROTO_getCacheDetails()
+      </Button>
 
       <div>
         <h2>Buckets</h2>

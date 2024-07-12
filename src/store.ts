@@ -217,6 +217,26 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       .catch((error) => console.error(error));
   }
 
+  PROTO_getCacheSize() {
+    callWorkerFunction("get_cache_size")
+      .then((cacheSize) =>
+        console.log({
+          cacheSize,
+        })
+      )
+      .catch((error) => console.error(error));
+  }
+
+  PROTO_getCacheDetails() {
+    callWorkerFunction("get_cache_details")
+      .then((cacheDetails) =>
+        console.log({
+          cacheDetails,
+        })
+      )
+      .catch((error) => console.error(error));
+  }
+
   addSymbolToBucket(symbol: string, symbolBucket: SymbolBucketProps) {
     this.setState((prevState) => {
       const symbolBuckets = prevState.symbolBuckets.map((bucket) => {

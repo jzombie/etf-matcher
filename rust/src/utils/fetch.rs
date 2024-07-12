@@ -9,6 +9,8 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 use web_sys::XmlHttpRequest;
 use js_sys::{Promise, Date, Uint8Array};
+use serde::Serialize;
+use serde_wasm_bindgen::to_value;
 use std::convert::TryInto;
 use std::io::Read;
 use hex;
@@ -35,6 +37,31 @@ pub fn decrypt_password(encrypted_password: &[u8], salt: &[u8]) -> Result<[u8; 3
     Ok(key)
 }
 
+pub fn get_cache_size() -> usize {
+    CACHE.with(|cache| {
+        let cache = cache.borrow();
+        cache.len()
+    })
+}
+
+#[derive(Serialize)]
+struct CacheEntry {
+    key: String,
+    status: String,
+}
+
+pub fn get_cache_details() -> JsValue {
+    CACHE.with(|cache| {
+        let cache = cache.borrow();
+        let details: Vec<CacheEntry> = cache.iter()
+            .map(|(key, _)| CacheEntry {
+                key: key.clone(),
+                status: "cached".to_string(),
+            })
+            .collect();
+        serde_wasm_bindgen::to_value(&details).unwrap()
+    })
+}
 
 type Aes256Cbc = Cbc<Aes256, Pkcs7>;
 
