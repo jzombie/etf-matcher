@@ -36,14 +36,7 @@ export default function MainLayout() {
       <FullViewport>
         <Layout>
           <Header>
-            <AppBar position="static">
-              <Toolbar sx={{ justifyContent: "space-between" }}>
-                <HeaderMenu />
-                {
-                  // <SearchModalButton />
-                }
-              </Toolbar>
-            </AppBar>
+            <HeaderMenu />
           </Header>
 
           <Content>
