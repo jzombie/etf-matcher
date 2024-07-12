@@ -19,7 +19,8 @@ use crate::data_models::{
 use crate::utils::fetch::{
     get_cache_size as lib_get_cache_size,
     get_cache_details as lib_get_cache_details,
-    remove_cache_entry as lib_remove_cache_entry
+    remove_cache_entry as lib_remove_cache_entry,
+    clear_cache as lib_clear_cache
 };
 
 #[wasm_bindgen(start)]
@@ -66,4 +67,9 @@ pub fn get_cache_details() -> JsValue {
 #[wasm_bindgen]
 pub fn remove_cache_entry(key: &str) {
     lib_remove_cache_entry(key);
+}
+
+#[wasm_bindgen]
+pub fn clear_cache() {
+    lib_clear_cache();
 }

@@ -37,14 +37,16 @@ export default function Settings() {
     <div>
       <Button variant="outlined">TODO: Implement::Clear Data</Button>
 
-      <Button variant="outlined">TODO: Implement::Drain Cache</Button>
-
       <Button variant="outlined" onClick={() => store.PROTO_getCacheSize()}>
         PROTO_getCacheSize()
       </Button>
 
       <Button variant="outlined" onClick={() => store.PROTO_getCacheDetails()}>
         PROTO_getCacheDetails()
+      </Button>
+
+      <Button variant="outlined" onClick={() => store.PROTO_clearCache()}>
+        PROTO_clearCache()
       </Button>
 
       <Button

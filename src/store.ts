@@ -241,6 +241,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     callWorkerFunction("remove_cache_entry", key);
   }
 
+  PROTO_clearCache() {
+    callWorkerFunction("clear_cache");
+  }
+
   addSymbolToBucket(symbol: string, symbolBucket: SymbolBucketProps) {
     this.setState((prevState) => {
       const symbolBuckets = prevState.symbolBuckets.map((bucket) => {

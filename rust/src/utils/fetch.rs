@@ -95,6 +95,12 @@ pub fn remove_cache_entry(key: &str) {
     });
 }
 
+pub fn clear_cache() {
+    CACHE.with(|cache| {
+        cache.borrow_mut().clear();
+    });
+}
+
 
 type Aes256Cbc = Cbc<Aes256, Pkcs7>;
 
