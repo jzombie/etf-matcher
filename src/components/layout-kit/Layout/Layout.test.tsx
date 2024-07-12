@@ -15,7 +15,7 @@ describe("Layout Component", () => {
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
         <div
-          class="_layout_86779f"
+          class="layout"
         >
           <span>
             Test Content
@@ -33,15 +33,15 @@ describe("Layout Component", () => {
     );
     expect(container.firstChild).toHaveClass("custom-class");
     expect(asFragment()).toMatchInlineSnapshot(`
-    <DocumentFragment>
-      <div
-        class="_layout_86779f custom-class"
-      >
-        <span>
-          Test Content
-        </span>
-      </div>
-    </DocumentFragment>
-  `);
+      <DocumentFragment>
+        <div
+          class="layout custom-class"
+        >
+          <span>
+            Test Content
+          </span>
+        </div>
+      </DocumentFragment>
+    `);
   });
 });

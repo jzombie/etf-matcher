@@ -15,10 +15,10 @@ describe("Center Component", () => {
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
         <div
-          class="_center_7f9c7e"
+          class="center"
         >
           <div
-            class="_content_wrap_7f9c7e"
+            class="content_wrap"
           >
             <span>
               Test Content
@@ -37,19 +37,19 @@ describe("Center Component", () => {
     );
     expect(container.firstChild).toHaveClass("custom-class");
     expect(asFragment()).toMatchInlineSnapshot(`
-            <DocumentFragment>
-              <div
-                class="_center_7f9c7e custom-class"
-              >
-                <div
-                  class="_content_wrap_7f9c7e"
-                >
-                  <span>
-                    Test Content
-                  </span>
-                </div>
-              </div>
-            </DocumentFragment>
-          `);
+      <DocumentFragment>
+        <div
+          class="center custom-class"
+        >
+          <div
+            class="content_wrap"
+          >
+            <span>
+              Test Content
+            </span>
+          </div>
+        </div>
+      </DocumentFragment>
+    `);
   });
 });

@@ -15,7 +15,7 @@ describe("Cover Component", () => {
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
         <div
-          class="_full_e31a78 _cover_dfc4c7"
+          class="full cover"
         >
           <span>
             Test Content
@@ -33,15 +33,15 @@ describe("Cover Component", () => {
     );
     expect(container.firstChild).toHaveClass("custom-class");
     expect(asFragment()).toMatchInlineSnapshot(`
-    <DocumentFragment>
-      <div
-        class="_full_e31a78 _cover_dfc4c7 custom-class"
-      >
-        <span>
-          Test Content
-        </span>
-      </div>
-    </DocumentFragment>
-  `);
+      <DocumentFragment>
+        <div
+          class="full cover custom-class"
+        >
+          <span>
+            Test Content
+          </span>
+        </div>
+      </DocumentFragment>
+    `);
   });
 });

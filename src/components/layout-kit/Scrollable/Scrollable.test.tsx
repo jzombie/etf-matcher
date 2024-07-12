@@ -2,7 +2,7 @@ import React from "react";
 import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
 import Scrollable from "./Scrollable";
-import { describe, it, expect } from "vitest";
+import { describe, it } from "vitest";
 import styles from "./Scrollable.module.scss";
 
 describe("Scrollable Component", () => {
@@ -16,7 +16,7 @@ describe("Scrollable Component", () => {
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
         <div
-          class="_scrollable_2af93e _scroll_y_2af93e"
+          class="scrollable scroll_y"
         >
           <span>
             Test Content
@@ -36,7 +36,7 @@ describe("Scrollable Component", () => {
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
         <div
-          class="_scrollable_2af93e _scroll_x_2af93e _scroll_y_2af93e"
+          class="scrollable scroll_y custom-class"
         >
           <span>
             Test Content
@@ -54,16 +54,16 @@ describe("Scrollable Component", () => {
     );
     expect(container.firstChild).toHaveClass(styles.scroll_x);
     expect(asFragment()).toMatchInlineSnapshot(`
-    <DocumentFragment>
-      <div
-        class="_scrollable_2af93e _scroll_y_2af93e"
-      >
-        <span>
-          Test Content
-        </span>
-      </div>
-    </DocumentFragment>
-  `);
+      <DocumentFragment>
+        <div
+          class="scrollable scroll_x scroll_y"
+        >
+          <span>
+            Test Content
+          </span>
+        </div>
+      </DocumentFragment>
+    `);
   });
 
   it("enables vertical scrolling when scrollY is true", () => {
@@ -76,7 +76,7 @@ describe("Scrollable Component", () => {
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
         <div
-          class="_scrollable_2af93e _scroll_y_2af93e"
+          class="scrollable scroll_y"
         >
           <span>
             Test Content

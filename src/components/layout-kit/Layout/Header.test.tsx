@@ -15,7 +15,7 @@ describe("Header Component", () => {
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
         <header
-          class="_header_86779f"
+          class="header"
         >
           <span>
             Test Content
@@ -33,15 +33,15 @@ describe("Header Component", () => {
     );
     expect(container.firstChild).toHaveClass("custom-class");
     expect(asFragment()).toMatchInlineSnapshot(`
-    <DocumentFragment>
-      <header
-        class="_header_86779f custom-class"
-      >
-        <span>
-          Test Content
-        </span>
-      </header>
-    </DocumentFragment>
-  `);
+      <DocumentFragment>
+        <header
+          class="header custom-class"
+        >
+          <span>
+            Test Content
+          </span>
+        </header>
+      </DocumentFragment>
+    `);
   });
 });

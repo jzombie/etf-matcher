@@ -15,7 +15,7 @@ describe("Footer Component", () => {
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
         <footer
-          class="_footer_86779f"
+          class="footer"
         >
           <span>
             Test Content
@@ -33,15 +33,15 @@ describe("Footer Component", () => {
     );
     expect(container.firstChild).toHaveClass("custom-class");
     expect(asFragment()).toMatchInlineSnapshot(`
-    <DocumentFragment>
-      <footer
-        class="_footer_86779f custom-class"
-      >
-        <span>
-          Test Content
-        </span>
-      </footer>
-    </DocumentFragment>
-  `);
+      <DocumentFragment>
+        <footer
+          class="footer custom-class"
+        >
+          <span>
+            Test Content
+          </span>
+        </footer>
+      </DocumentFragment>
+    `);
   });
 });
