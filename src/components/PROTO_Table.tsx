@@ -9,6 +9,7 @@ import {
   TableSortLabel,
   Paper,
 } from "@mui/material";
+import { styled } from "@mui/system";
 
 const createData = (key, size, age, last_accessed, access_count) => {
   return { key, size, age, last_accessed, access_count };
@@ -31,6 +32,17 @@ const headCells = [
   { id: "access_count", label: "Access Count" },
 ];
 
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  padding: "4px 8px",
+  fontSize: "0.75rem",
+}));
+
+const StyledTableHeadCell = styled(TableCell)(({ theme }) => ({
+  fontWeight: "bold",
+  padding: "4px 8px",
+  fontSize: "0.75rem",
+}));
+
 const EnhancedTableHead = ({ order, orderBy, onRequestSort }) => {
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
@@ -40,7 +52,7 @@ const EnhancedTableHead = ({ order, orderBy, onRequestSort }) => {
     <TableHead>
       <TableRow>
         {headCells.map((headCell) => (
-          <TableCell key={headCell.id}>
+          <StyledTableHeadCell key={headCell.id} align="left">
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : "asc"}
@@ -48,14 +60,14 @@ const EnhancedTableHead = ({ order, orderBy, onRequestSort }) => {
             >
               {headCell.label}
             </TableSortLabel>
-          </TableCell>
+          </StyledTableHeadCell>
         ))}
       </TableRow>
     </TableHead>
   );
 };
 
-export default function SortableTable() {
+function SortableTable() {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("key");
 
@@ -102,11 +114,11 @@ export default function SortableTable() {
         <TableBody>
           {stableSort(rows, getComparator(order, orderBy)).map((row, index) => (
             <TableRow key={index}>
-              <TableCell>{row.key}</TableCell>
-              <TableCell>{row.size}</TableCell>
-              <TableCell>{row.age}</TableCell>
-              <TableCell>{row.last_accessed}</TableCell>
-              <TableCell>{row.access_count}</TableCell>
+              <StyledTableCell>{row.key}</StyledTableCell>
+              <StyledTableCell>{row.size}</StyledTableCell>
+              <StyledTableCell>{row.age}</StyledTableCell>
+              <StyledTableCell>{row.last_accessed}</StyledTableCell>
+              <StyledTableCell>{row.access_count}</StyledTableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -114,3 +126,5 @@ export default function SortableTable() {
     </TableContainer>
   );
 }
+
+export default SortableTable;
