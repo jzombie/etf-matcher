@@ -54,7 +54,11 @@ export default function MainLayout() {
             )}
           </Content>
           <Footer>
-            <Typography variant="body2" color="textSecondary">
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              sx={{ float: "left" }}
+            >
               {prettyDataBuildTime
                 ? `Data build time: ${prettyDataBuildTime}`
                 : ""}
