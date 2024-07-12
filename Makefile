@@ -7,6 +7,7 @@ CONTAINER_NAME := etf-matcher-dev-1
 # ANSI color codes
 GREEN := $(shell tput setaf 2)
 RED := $(shell tput setaf 1)
+YELLOW := $(shell tput setaf 3)
 RESET := $(shell tput sgr0)
 BOLD := $(shell tput bold)
 
@@ -14,6 +15,7 @@ BOLD := $(shell tput bold)
 CIRCLE_SYMBOL_GREEN := \033[32m●\033[0m
 CIRCLE_SYMBOL_RED := \033[31m●\033[0m
 CIRCLE_SYMBOL_GRAY := \033[90m●\033[0m
+CIRCLE_SYMBOL_YELLOW := \033[33m●\033[0m
 
 # Function to check if the container is running
 define check_container_status
@@ -36,6 +38,9 @@ help:
 	      else \
 	        printf "  $(CIRCLE_SYMBOL_RED) make %-15s\n" $$cmd; \
 	      fi \
+	      ;; \
+			help) \
+	      printf "  $(CIRCLE_SYMBOL_YELLOW) make %-15s ← $(BOLD)you are here$(RESET)\n" $$cmd; \
 	      ;; \
 	    *) \
 	      printf "  $(CIRCLE_SYMBOL_GRAY) make %-15s\n" $$cmd; \
