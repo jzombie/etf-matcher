@@ -67,10 +67,6 @@ export default function Settings() {
 
         <ProtoTable />
 
-        <Button variant="outlined">
-          TODO Implement::Cache overlay metrics (state::isProfilingCache)
-        </Button>
-
         <Button variant="outlined" onClick={() => store.PROTO_getCacheSize()}>
           PROTO_getCacheSize()
         </Button>
