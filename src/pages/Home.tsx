@@ -59,8 +59,8 @@ export default function Home() {
 }
 
 const heroSectionStyle: React.CSSProperties = {
-  position: "relative",
-  height: "50vh",
+  position: "relative", // Ensure relative positioning for absolute children
+  height: 500,
   width: "100%",
   marginBottom: "50px",
   overflow: "hidden",
@@ -82,7 +82,6 @@ const heroContentStyle: React.CSSProperties = {
   color: "#fff",
   textAlign: "center" as const,
   maxWidth: "600px",
-  minHeight: 600,
 };
 
 const heroTitleStyle: React.CSSProperties = {
@@ -109,4 +108,5 @@ const heroImageStyle: React.CSSProperties = {
 
 const infoSectionStyle: React.CSSProperties = {
   padding: "20px 20px",
+  // boxSizing: "border-box",
 };

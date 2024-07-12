@@ -58,7 +58,7 @@ export default function HeaderMenu() {
   )?.key;
 
   return (
-    <AppBar position="static">
+    <AppBar position="relative">
       <Toolbar>
         {isDesktop ? (
           <Box
