@@ -3,6 +3,8 @@ import React from "react";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import heroImg from "@assets/hero.webp"; // Adjust the path as needed
 
+import Scrollable from "@layoutKit/Scrollable";
+
 export default function Home() {
   const { isSearchModalOpen } = useStoreStateReader(["isSearchModalOpen"]);
 
@@ -11,7 +13,7 @@ export default function Home() {
   };
 
   return (
-    <div>
+    <Scrollable>
       <section style={heroSectionStyle}>
         <div style={overlayStyle}>
           <div style={heroContentStyle}>
@@ -53,7 +55,7 @@ export default function Home() {
           this information.
         </p>
       </section>
-    </div>
+    </Scrollable>
   );
 }
 

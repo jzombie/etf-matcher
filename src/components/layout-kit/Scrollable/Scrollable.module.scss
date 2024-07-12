@@ -1,0 +1,12 @@
+.scrollable {
+  width: 100%;
+  height: 100%;
+
+  &.scroll_x {
+    overflow-x: auto;
+  }
+
+  &.scroll_y {
+    overflow-y: auto;
+  }
+}

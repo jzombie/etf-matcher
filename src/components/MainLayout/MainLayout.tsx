@@ -63,31 +63,17 @@ export default function MainLayout() {
           </Header>
 
           <Content>
-            {!isRustInit || 1 === 1 ? (
+            {!isRustInit ? (
+              // Note: `<Full>` is not needed here, but is used for testing
               <Full>
-                <Cover>
-                  <Layout>
-                    <Header style={{ backgroundColor: "yellow" }}>Hi</Header>
-                    <Content>This is content</Content>
-                    <Footer>Another footer</Footer>
-                  </Layout>
-                </Cover>
-                <Cover>
-                  <Center>
-                    <Typography variant="h6" component="div" textAlign="center">
-                      Initializing...
-                    </Typography>
-                  </Center>
-                </Cover>
+                <Center>
+                  <Typography variant="h6" component="div" textAlign="center">
+                    Initializing...
+                  </Typography>
+                </Center>
               </Full>
             ) : (
-              <Layout>
-                <Header>some header</Header>
-                <Content>
-                  <Outlet />
-                </Content>
-                <Footer>another footer</Footer>
-              </Layout>
+              <Outlet />
             )}
           </Content>
           <Footer>
