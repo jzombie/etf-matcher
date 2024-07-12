@@ -6,20 +6,42 @@ import { describe, it, expect } from "vitest";
 
 describe("Footer Component", () => {
   it("renders children correctly", () => {
-    const { getByText } = render(
+    const { getByText, asFragment } = render(
       <Footer>
         <span>Test Content</span>
       </Footer>
     );
     expect(getByText("Test Content")).toBeInTheDocument();
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <footer
+          class="_footer_86779f"
+        >
+          <span>
+            Test Content
+          </span>
+        </footer>
+      </DocumentFragment>
+    `);
   });
 
   it("applies custom className", () => {
-    const { container } = render(
+    const { container, asFragment } = render(
       <Footer className="custom-class">
         <span>Test Content</span>
       </Footer>
     );
     expect(container.firstChild).toHaveClass("custom-class");
+    expect(asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <footer
+        class="_footer_86779f custom-class"
+      >
+        <span>
+          Test Content
+        </span>
+      </footer>
+    </DocumentFragment>
+  `);
   });
 });

@@ -6,20 +6,42 @@ import { describe, it, expect } from "vitest";
 
 describe("Cover Component", () => {
   it("renders children correctly", () => {
-    const { getByText } = render(
+    const { getByText, asFragment } = render(
       <Cover>
         <span>Test Content</span>
       </Cover>
     );
     expect(getByText("Test Content")).toBeInTheDocument();
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="_full_e31a78 _cover_dfc4c7"
+        >
+          <span>
+            Test Content
+          </span>
+        </div>
+      </DocumentFragment>
+    `);
   });
 
   it("applies custom className", () => {
-    const { container } = render(
+    const { container, asFragment } = render(
       <Cover className="custom-class">
         <span>Test Content</span>
       </Cover>
     );
     expect(container.firstChild).toHaveClass("custom-class");
+    expect(asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <div
+        class="_full_e31a78 _cover_dfc4c7 custom-class"
+      >
+        <span>
+          Test Content
+        </span>
+      </div>
+    </DocumentFragment>
+  `);
   });
 });

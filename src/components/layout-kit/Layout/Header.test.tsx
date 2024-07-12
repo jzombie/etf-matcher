@@ -6,20 +6,42 @@ import { describe, it, expect } from "vitest";
 
 describe("Header Component", () => {
   it("renders children correctly", () => {
-    const { getByText } = render(
+    const { getByText, asFragment } = render(
       <Header>
         <span>Test Content</span>
       </Header>
     );
     expect(getByText("Test Content")).toBeInTheDocument();
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <header
+          class="_header_86779f"
+        >
+          <span>
+            Test Content
+          </span>
+        </header>
+      </DocumentFragment>
+    `);
   });
 
   it("applies custom className", () => {
-    const { container } = render(
+    const { container, asFragment } = render(
       <Header className="custom-class">
         <span>Test Content</span>
       </Header>
     );
     expect(container.firstChild).toHaveClass("custom-class");
+    expect(asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <header
+        class="_header_86779f custom-class"
+      >
+        <span>
+          Test Content
+        </span>
+      </header>
+    </DocumentFragment>
+  `);
   });
 });
