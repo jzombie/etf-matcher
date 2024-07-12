@@ -240,11 +240,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
   PROTO_getCacheDetails() {
     TEMP_PROTO_libCallWorkerFunction("get_cache_details")
-      .then((cacheDetails) =>
-        console.log({
-          cacheDetails,
-        })
-      )
+      .then((cacheDetails) => console.table(cacheDetails))
       .catch((error) => console.error(error));
   }
 
