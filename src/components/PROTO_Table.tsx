@@ -11,11 +11,28 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 
-const createData = (key, size, age, last_accessed, access_count) => {
+// Define the data type
+interface Data {
+  key: string;
+  size: number;
+  age: number;
+  last_accessed: number;
+  access_count: number;
+}
+
+// Function to create data
+const createData = (
+  key: string,
+  size: number,
+  age: number,
+  last_accessed: number,
+  access_count: number
+): Data => {
   return { key, size, age, last_accessed, access_count };
 };
 
-const rows = [
+// Sample data
+const rows: Data[] = [
   createData("/data/symbol_etf_holders.43.enc", 78092, 804727, 437279, 6),
   createData("/data/symbol_etf_holders.80.enc", 90309, 935205, 70073, 14),
   createData("/data/symbol_detail.0.enc", 56688, 851639, 849858, 3),
@@ -24,7 +41,14 @@ const rows = [
   // Add other rows here...
 ];
 
-const headCells = [
+// Define the head cell type
+interface HeadCell {
+  id: keyof Data;
+  label: string;
+}
+
+// Head cells definition
+const headCells: HeadCell[] = [
   { id: "key", label: "Key" },
   { id: "size", label: "Size" },
   { id: "age", label: "Age" },
@@ -32,6 +56,7 @@ const headCells = [
   { id: "access_count", label: "Access Count" },
 ];
 
+// Styled components
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   padding: "4px 8px",
   fontSize: "0.75rem",
@@ -62,10 +87,26 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const EnhancedTableHead = ({ order, orderBy, onRequestSort }) => {
-  const createSortHandler = (property) => (event) => {
-    onRequestSort(event, property);
-  };
+// Enhanced table head component props type
+interface EnhancedTableHeadProps {
+  order: "asc" | "desc";
+  orderBy: keyof Data;
+  onRequestSort: (
+    event: React.MouseEvent<unknown>,
+    property: keyof Data
+  ) => void;
+}
+
+// Enhanced table head component
+const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
+  order,
+  orderBy,
+  onRequestSort,
+}) => {
+  const createSortHandler =
+    (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
+      onRequestSort(event, property);
+    };
 
   return (
     <TableHead>
@@ -87,33 +128,42 @@ const EnhancedTableHead = ({ order, orderBy, onRequestSort }) => {
   );
 };
 
-function SortableTable() {
-  const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState("key");
+// Main sortable table component
+const SortableTable: React.FC = () => {
+  const [order, setOrder] = useState<"asc" | "desc">("asc");
+  const [orderBy, setOrderBy] = useState<keyof Data>("key");
 
-  const handleRequestSort = (event, property) => {
+  const handleRequestSort = (
+    event: React.MouseEvent<unknown>,
+    property: keyof Data
+  ) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
 
-  const stableSort = (array, comparator) => {
-    const stabilizedThis = array.map((el, index) => [el, index]);
+  const stableSort = (
+    array: Data[],
+    comparator: (a: Data, b: Data) => number
+  ) => {
+    const stabilizedThis = array.map(
+      (el, index) => [el, index] as [Data, number]
+    );
     stabilizedThis.sort((a, b) => {
       const order = comparator(a[0], b[0]);
       if (order !== 0) return order;
-      return a[1] - b[1]; // Corrected line
+      return a[1] - b[1];
     });
     return stabilizedThis.map((el) => el[0]);
   };
 
-  const getComparator = (order, orderBy) => {
+  const getComparator = (order: "asc" | "desc", orderBy: keyof Data) => {
     return order === "desc"
-      ? (a, b) => descendingComparator(a, b, orderBy)
-      : (a, b) => -descendingComparator(a, b, orderBy);
+      ? (a: Data, b: Data) => descendingComparator(a, b, orderBy)
+      : (a: Data, b: Data) => -descendingComparator(a, b, orderBy);
   };
 
-  const descendingComparator = (a, b, orderBy) => {
+  const descendingComparator = (a: Data, b: Data, orderBy: keyof Data) => {
     if (b[orderBy] < a[orderBy]) {
       return -1;
     }
@@ -149,6 +199,6 @@ function SortableTable() {
       </Table>
     </TableContainer>
   );
-}
+};
 
 export default SortableTable;
