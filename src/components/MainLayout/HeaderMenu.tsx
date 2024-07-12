@@ -57,13 +57,20 @@ export default function HeaderMenu() {
       matchPath({ path: `${item.key}/*`, end: false }, location.pathname)
   )?.key;
 
-  const StyledBranding = styled(Typography)(({ theme }) => ({
+  const DesktopStyledLogoBranding = styled(Typography)(({ theme }) => ({
     fontFamily: "'Roboto', sans-serif",
     fontWeight: 700,
     fontSize: "1.5rem",
     marginRight: theme.spacing(2),
     color: "white",
     flexGrow: 1, // Makes the branding take up all available space
+  }));
+
+  const MobileStyledLogoBranding = styled(Typography)(({ theme }) => ({
+    fontFamily: "'Roboto', sans-serif",
+    fontWeight: 700,
+    fontSize: "1.5rem",
+    color: "white",
   }));
 
   return (
@@ -78,7 +85,7 @@ export default function HeaderMenu() {
               flexGrow: 1,
             }}
           >
-            <StyledBranding>ETF Matcher</StyledBranding>
+            <DesktopStyledLogoBranding>ETF Matcher</DesktopStyledLogoBranding>
             {menuItems.map((item) => (
               <Box
                 key={item.key}
@@ -130,8 +137,13 @@ export default function HeaderMenu() {
             >
               <MenuIcon />
             </IconButton>
-            <StyledBranding>ETF Matcher</StyledBranding>
+            {!drawerOpen && (
+              <MobileStyledLogoBranding>ETF Matcher</MobileStyledLogoBranding>
+            )}
             <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer}>
+              <MobileStyledLogoBranding sx={{ padding: 1 }}>
+                ETF Matcher
+              </MobileStyledLogoBranding>
               <List>
                 {menuItems.map((item) => (
                   <ListItem
