@@ -74,7 +74,7 @@ pub fn get_cache_details() -> JsValue {
                     result.map_or(0, |data| data.len())
                 });
                 let age = now - cached_future.added_at;
-                let last_accessed = *cached_future.last_accessed.borrow();
+                let last_accessed = now - *cached_future.last_accessed.borrow();
                 let access_count = *cached_future.access_count.borrow();
                 CacheEntry {
                     key: key.clone(),
@@ -88,6 +88,7 @@ pub fn get_cache_details() -> JsValue {
         serde_wasm_bindgen::to_value(&details).unwrap()
     })
 }
+
 
 
 
