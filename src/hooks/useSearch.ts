@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { store } from "@hooks/useStoreStateReader";
-import type { SearchResult } from "@src/store";
+import type { RustServiceSearchResult } from "@src/store";
 import usePrevious from "./usePrevious";
 import useStableCurrentRef from "./useStableCurrentRef";
 
@@ -35,7 +35,9 @@ export default function useSearch(
     mergedProps.initialOnlyExactMatches
   );
 
-  const [searchResults, _setSearchResults] = useState<SearchResult[]>([]);
+  const [searchResults, _setSearchResults] = useState<
+    RustServiceSearchResult[]
+  >([]);
   const [totalSearchResults, _setTotalSearchResults] = useState<number>(0);
 
   const [page, setPage] = useState<number>(mergedProps.initialPage);

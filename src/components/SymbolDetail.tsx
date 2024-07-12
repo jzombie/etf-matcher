@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import SymbolContainer from "./SymbolContainer";
-import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+
+import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
+import type { RustServiceETFHoldersWithTotalCount } from "@src/store";
 
 import {
   MiniChart,
@@ -23,15 +25,15 @@ export default function SymbolDetail({
 
   const { symbolBuckets } = useStoreStateReader("symbolBuckets");
 
-  const [etfHolders, setEtfHolders] = useState([]);
+  const [etfHolders, setEtfHolders] = useState<
+    RustServiceETFHoldersWithTotalCount | undefined
+  >(undefined);
 
   useEffect(() => {
     if (tickerSymbol) {
       store.getSymbolETFHolders(tickerSymbol).then(setEtfHolders);
     }
   }, [tickerSymbol]);
-
-  console.log({ etfHolders: etfHolders?.results });
 
   return (
     <SymbolContainer

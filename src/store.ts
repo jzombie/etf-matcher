@@ -28,6 +28,11 @@ export type RustServiceSearchResultsWithTotalCount = {
   results: RustServiceSearchResult[];
 };
 
+export type RustServiceETFHoldersWithTotalCount = {
+  total_count: number;
+  results: string[];
+};
+
 export type RustServiceCacheDetail = {
   key: string;
   size: string;
@@ -208,8 +213,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     symbol: string,
     page: number = 1,
     pageSize: number = 20
-  ) {
-    return this._callWorkerFunction(
+  ): Promise<RustServiceETFHoldersWithTotalCount> {
+    return this._callWorkerFunction<RustServiceETFHoldersWithTotalCount>(
       "get_symbol_etf_holders",
       symbol,
       page,
