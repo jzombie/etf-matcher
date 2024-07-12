@@ -1,14 +1,6 @@
 import React from "react";
 import { TickerTape } from "react-ts-tradingview-widgets";
-import {
-  AppBar,
-  Box,
-  Toolbar,
-  Typography,
-  Container,
-  useTheme,
-  CssBaseline,
-} from "@mui/material";
+import { AppBar, Toolbar, Typography, useTheme } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import HeaderMenu from "./HeaderMenu";
 import useStoreStateReader from "@hooks/useStoreStateReader";
@@ -16,17 +8,12 @@ import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 
 import FullViewport from "@layoutKit/FullViewport";
 import Full from "@layoutKit/Full";
-import Cover from "@layoutKit/Cover";
 import Center from "@layoutKit/Center";
 import Layout, { Header, Content, Footer } from "@layoutKit/Layout";
 // import SearchModalButton from "../SearchModalButton";
 
-import useWindowSize from "@hooks/useWindowSize";
-
 export default function MainLayout() {
   const theme = useTheme();
-
-  const { width, height } = useWindowSize();
 
   const {
     isProductionBuild,
@@ -49,7 +36,7 @@ export default function MainLayout() {
       <FullViewport>
         <Layout>
           <Header>
-            <AppBar>
+            <AppBar position="static">
               <Toolbar sx={{ justifyContent: "space-between" }}>
                 <HeaderMenu />
                 {
