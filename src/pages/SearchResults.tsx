@@ -5,6 +5,8 @@ import { Button } from "@mui/material";
 import useSearch from "@hooks/useSearch";
 import SymbolDetail from "@components/SymbolDetail";
 
+import Scrollable from "@layoutKit/Scrollable";
+
 export default function SearchResults() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -54,7 +56,7 @@ export default function SearchResults() {
   }
 
   return (
-    <div>
+    <Scrollable>
       Search results for: {searchQuery}
       <Button onClick={toggleExactMatch}>
         Toggle Exact Match (currently {onlyExactMatches ? "on" : "off"})
@@ -65,6 +67,6 @@ export default function SearchResults() {
           tickerSymbol={searchResult.symbol}
         />
       ))}
-    </div>
+    </Scrollable>
   );
 }
