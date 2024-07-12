@@ -10,7 +10,7 @@ export type CenterProps = React.HTMLAttributes<HTMLElement> & {
 export default function Center({ children, className, ...rest }: CenterProps) {
   return (
     <div className={clsx(styles.center, className)} {...rest}>
-      <div className={styles["content-wrap"]}>{children}</div>
+      <div className={styles.content_wrap}>{children}</div>
     </div>
   );
 }

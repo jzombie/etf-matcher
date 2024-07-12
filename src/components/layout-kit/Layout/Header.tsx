@@ -9,7 +9,7 @@ export type HeaderProps = React.HTMLAttributes<HTMLElement> & {
 
 export default function Header({ children, className, ...rest }: HeaderProps) {
   return (
-    <header className={clsx(styles["header"], className)} {...rest}>
+    <header className={clsx(styles.header, className)} {...rest}>
       {children}
     </header>
   );

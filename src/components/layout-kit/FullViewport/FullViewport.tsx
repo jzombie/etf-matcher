@@ -17,7 +17,7 @@ export default function FullViewport({
   return (
     <div
       className={clsx(
-        styles["full-viewport"],
+        styles.full_viewport,
         { [styles.dvh]: supportsDvhUnit },
         className
       )}

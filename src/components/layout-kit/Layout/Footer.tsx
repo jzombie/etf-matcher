@@ -9,7 +9,7 @@ export type FooterProps = React.HTMLAttributes<HTMLElement> & {
 
 export default function Footer({ children, className, ...rest }: FooterProps) {
   return (
-    <footer className={clsx(styles["footer"], className)} {...rest}>
+    <footer className={clsx(styles.footer, className)} {...rest}>
       {children}
     </footer>
   );
