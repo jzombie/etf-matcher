@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, SyntheticEvent } from "react";
 import {
   Button,
+  ButtonProps,
   Dialog,
   DialogActions,
   DialogContent,
@@ -19,7 +20,13 @@ import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import useSearch from "@hooks/useSearch";
 
-export default function SearchModalButton() {
+export type SearchModalButtonProps = {
+  highlight?: boolean;
+};
+
+export default function SearchModalButton({
+  highlight = false,
+}: SearchModalButtonProps) {
   const { isSearchModalOpen: isModalOpen } =
     useStoreStateReader("isSearchModalOpen");
 
@@ -146,7 +153,7 @@ export default function SearchModalButton() {
         variant="contained"
         startIcon={<SearchIcon />}
         onClick={showModal}
-        color="inherit"
+        color={highlight ? "primary" : "inherit"}
       >
         Search
       </Button>
