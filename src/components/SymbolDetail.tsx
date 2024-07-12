@@ -4,7 +4,11 @@ import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-import { MiniChart, CompanyProfile } from "react-ts-tradingview-widgets";
+import {
+  MiniChart,
+  Timeline,
+  CompanyProfile,
+} from "react-ts-tradingview-widgets";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 
 export type SymbolDetailProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -50,6 +54,14 @@ export default function SymbolDetail({
         copyrightStyles={tradingViewCopyrightStyles}
       /> */
       }
+      <Timeline
+        colorTheme="dark"
+        feedMode="symbol"
+        symbol={tickerSymbol}
+        height={400}
+        width="100%"
+        copyrightStyles={tradingViewCopyrightStyles}
+      ></Timeline>
 
       {symbolBuckets?.map((symbolBucket, idx) => (
         // TODO: If symbol is already in the bucket, don't try to re-add it
