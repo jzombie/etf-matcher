@@ -37,40 +37,49 @@ export default function Settings() {
 
   return (
     <div>
-      <Button variant="outlined">TODO: Implement::Clear Data</Button>
-
-      <Button variant="outlined" onClick={() => store.PROTO_getCacheSize()}>
-        PROTO_getCacheSize()
-      </Button>
-
-      <Button variant="outlined" onClick={() => store.PROTO_getCacheDetails()}>
-        PROTO_getCacheDetails()
-      </Button>
-
-      <Button variant="outlined" onClick={() => store.PROTO_clearCache()}>
-        PROTO_clearCache()
-      </Button>
-
-      <Button
-        variant="outlined"
-        onClick={() =>
-          store.PROTO_removeCacheEntry("/data/symbol_search_dict.enc")
-        }
-      >
-        PROTO_removeCacheEntry(/data/symbol_search_dict.enc)
-      </Button>
-
       <div>
-        <h2>Buckets</h2>
+        <h2>User Data</h2>
+
+        <Button variant="outlined">TODO: Implement::Clear all user data</Button>
+
+        <h3>Buckets</h3>
 
         {symbolBuckets?.map((symbolBucket, idx) => (
           <div key={idx}>{symbolBucket.name}</div>
         ))}
       </div>
+      <div>
+        <h2>Cache</h2>
 
-      <hr />
+        <h3>View</h3>
 
-      <ProtoPieChart />
+        <ProtoPieChart />
+
+        <Button variant="outlined" onClick={() => store.PROTO_getCacheSize()}>
+          PROTO_getCacheSize()
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={() => store.PROTO_getCacheDetails()}
+        >
+          PROTO_getCacheDetails()
+        </Button>
+
+        <h3>Purge</h3>
+
+        <Button variant="outlined" onClick={() => store.PROTO_clearCache()}>
+          PROTO_clearCache()
+        </Button>
+
+        <Button
+          variant="outlined"
+          onClick={() =>
+            store.PROTO_removeCacheEntry("/data/symbol_search_dict.enc")
+          }
+        >
+          PROTO_removeCacheEntry(/data/symbol_search_dict.enc)
+        </Button>
+      </div>
 
       <hr />
 
