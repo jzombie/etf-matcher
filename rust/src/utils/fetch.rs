@@ -12,12 +12,11 @@ use js_sys::{Promise, Date, Uint8Array};
 use serde::Serialize;
 use std::convert::TryInto;
 use std::io::Read;
-use std::time::{SystemTime, UNIX_EPOCH, Duration};
 use hex;
 use std::collections::HashMap;
 use std::cell::RefCell;
 use futures::future::Shared;
-use futures::{Future, FutureExt};
+use futures::{FutureExt};
 use futures::future::LocalBoxFuture;
 
 use crate::constants::{
