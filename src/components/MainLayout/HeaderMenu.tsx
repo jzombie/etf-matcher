@@ -140,7 +140,12 @@ export default function HeaderMenu() {
             {!drawerOpen && (
               <MobileStyledLogoBranding>ETF Matcher</MobileStyledLogoBranding>
             )}
-            <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer}>
+            <Drawer
+              anchor="left"
+              open={drawerOpen}
+              onClose={toggleDrawer}
+              sx={{ "& .MuiDrawer-paper": { width: "240px" } }}
+            >
               <MobileStyledLogoBranding sx={{ padding: 1 }}>
                 ETF Matcher
               </MobileStyledLogoBranding>
