@@ -23,6 +23,7 @@ export default function MainLayout() {
     isDirtyState,
     visibleSymbols,
     isOnline,
+    isProfilingCache,
   } = useStoreStateReader([
     "isProductionBuild",
     "isRustInit",
@@ -30,6 +31,7 @@ export default function MainLayout() {
     "isDirtyState",
     "visibleSymbols",
     "isOnline",
+    "isProfilingCache",
   ]);
 
   return (
@@ -90,9 +92,11 @@ export default function MainLayout() {
             />
           </Footer>
         </Layout>
-        {/* <Cover clickThrough>
-          <Center>Prototype</Center>
-        </Cover> */}
+        {isProfilingCache && (
+          <Cover clickThrough>
+            <Center>Profiling Cache</Center>
+          </Cover>
+        )}
       </FullViewport>
     </>
   );

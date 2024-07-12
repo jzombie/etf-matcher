@@ -1,11 +1,14 @@
 import React from "react";
-import { Button } from "@mui/material";
+import { Button, Switch, FormControlLabel } from "@mui/material";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
 import ProtoPieChart from "@components/PROTO_PieChart";
 
 export default function Settings() {
-  const { symbolBuckets } = useStoreStateReader("symbolBuckets");
+  const { symbolBuckets, isProfilingCache } = useStoreStateReader([
+    "symbolBuckets",
+    "isProfilingCache",
+  ]);
 
   // const [api, contextHolder] = notification.useNotification();
 
@@ -68,6 +71,20 @@ export default function Settings() {
         >
           PROTO_getCacheDetails()
         </Button>
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={isProfilingCache}
+              onChange={() =>
+                store.setState(() => ({
+                  isProfilingCache: !isProfilingCache,
+                }))
+              }
+            />
+          }
+          label="Enable Profiling Overlay"
+        />
 
         <h3>Purge</h3>
 
