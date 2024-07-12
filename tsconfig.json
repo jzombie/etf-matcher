@@ -16,8 +16,8 @@
     "paths": {
       "@assets/*": ["src/assets/*"],
       "@constants/*": ["src/constants/*"],
-      "@components/*": ["src/components/*"],
       "@layoutKit/*": ["src/components/layout-kit/*"],
+      "@components/*": ["src/components/*"],
       "@hooks/*": ["src/hooks/*"],
       "@pages/*": ["src/pages/*"],
       "@utils/*": ["src/utils/*"],

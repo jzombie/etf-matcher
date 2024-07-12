@@ -1,6 +1,19 @@
 import React, { useEffect, useRef, SyntheticEvent } from "react";
-import { Button, Modal, Form, Input, InputRef, Pagination } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+  Pagination,
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import { useLocation, useNavigate } from "react-router-dom";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
@@ -27,7 +40,7 @@ export default function SearchModalButton() {
     initialPageSize: 10,
   });
 
-  const inputRef = useRef<InputRef>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -57,7 +70,7 @@ export default function SearchModalButton() {
   // Prevent other elements from stealing focus
   // TODO: This might need to be disabled on mobile so that the virtual keyboard can disappear as needed (add isMobile detection)
   useEffect(() => {
-    const input = inputRef.current?.input;
+    const input = inputRef.current;
 
     if (isModalOpen && input) {
       const _handleInputBlur = () => {
@@ -129,93 +142,71 @@ export default function SearchModalButton() {
 
   return (
     <>
-      <Button type="default" icon={<SearchOutlined />} onClick={showModal}>
+      <Button variant="outlined" startIcon={<SearchIcon />} onClick={showModal}>
         Search
       </Button>
-      <Modal
-        // Empty title prevents the close button from overlaying the input element
-        title="&nbsp;"
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okButtonProps={{ disabled: !searchResults.length }}
-        styles={{
-          content: {
+      <Dialog open={isModalOpen} onClose={handleCancel}>
+        <DialogTitle>&nbsp;</DialogTitle>
+        <DialogContent
+          sx={{
             backgroundColor: "rgba(31,31,31,.8)",
             border: "2px rgba(38,100,100,.8) solid",
             backdropFilter: "blur(5px)",
-          },
-          // header: {
-          //   backgroundColor: "rgba(0,0,0,.2)",
-          // },
-          // body: {
-          //   backgroundColor: "rgba(0,0,0,.4)",
-          // },
-        }}
-        // TODO: Blur effect
-        // style={{
-        //   backdropFilter: "blur(5px)",
-        // }}
-      >
-        {isModalOpen && (
-          <>
-            <Form>
-              {
-                // TODO: Add search outlined here (similar to Spotlight)
-              }
-              <Input
-                ref={inputRef}
+          }}
+        >
+          {isModalOpen && (
+            <form noValidate autoComplete="off">
+              <TextField
+                fullWidth
+                inputRef={inputRef}
                 placeholder='Search for Symbol (e.g. "AAPL" or "Apple")'
                 onChange={handleInputChange}
                 onKeyDown={handleInputKeyDown}
                 value={searchQuery}
-                prefix={<SearchOutlined />}
+                InputProps={{
+                  startAdornment: (
+                    <IconButton>
+                      <SearchIcon />
+                    </IconButton>
+                  ),
+                }}
               />
-              {searchResults.map((searchResult, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    backgroundColor:
-                      idx === selectedIndex
-                        ? "rgba(255,255,255,.2)"
-                        : "transparent",
-                    padding: "5px",
-                    overflow: "auto",
-                  }}
-                >
-                  <span style={{ fontWeight: "bold" }}>
-                    {searchResult["symbol"]}
-                  </span>
-
-                  <span style={{ float: "right", opacity: 0.5 }}>
-                    {searchResult["company"]}
-                  </span>
-                </div>
-              ))}
-              {
-                // TODO: Show all results
-                remaining > 0 && (
-                  <div>
-                    <Button>+ {remaining} remaining</Button>
-                  </div>
-                )
-              }
-
+              <List>
+                {searchResults.map((searchResult, idx) => (
+                  <ListItem
+                    key={idx}
+                    sx={{
+                      backgroundColor:
+                        idx === selectedIndex
+                          ? "rgba(255,255,255,.2)"
+                          : "transparent",
+                      padding: "5px",
+                      overflow: "auto",
+                    }}
+                  >
+                    <ListItemText
+                      primary={searchResult.symbol}
+                      secondary={
+                        <Typography
+                          variant="body2"
+                          style={{ opacity: 0.5, float: "right" }}
+                        >
+                          {searchResult.company}
+                        </Typography>
+                      }
+                    />
+                  </ListItem>
+                ))}
+              </List>
+              {remaining > 0 && <Button>+ {remaining} remaining</Button>}
               {totalSearchResults > pageSize && (
                 <div style={{ marginTop: 10 }}>
                   <Pagination
-                    // `key` is needed to set the page as `defaultCurrent`
-                    // alone won't subscribe to updates (only the initial value)
-                    key={page}
-                    defaultCurrent={page}
-                    align="center"
-                    showSizeChanger={false}
-                    pageSize={pageSize}
-                    onChange={(nextPage, nextPageSize) => {
-                      setPage(nextPage);
-                      setPageSize(nextPageSize);
-                    }}
-                    total={totalSearchResults}
+                    count={Math.ceil(totalSearchResults / pageSize)}
+                    page={page}
+                    onChange={(event, nextPage) => setPage(nextPage)}
+                    showFirstButton
+                    showLastButton
                   />
                 </div>
               )}
@@ -231,10 +222,16 @@ export default function SearchModalButton() {
                   {totalSearchResults}
                 </div>
               )}
-            </Form>
-          </>
-        )}
-      </Modal>
+            </form>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancel}>Cancel</Button>
+          <Button onClick={handleOk} disabled={!searchResults.length}>
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { Home, Settings, Menu as MenuIcon } from "@mui/icons-material";
 import { Link, useLocation, matchPath } from "react-router-dom";
+import SearchModalButton from "@components/SearchModalButton";
 import clsx from "clsx";
 
 export default function HeaderMenu() {
@@ -106,6 +107,7 @@ export default function HeaderMenu() {
                 <Typography variant="subtitle1">{item.label}</Typography>
               </Box>
             ))}
+            <SearchModalButton />
           </Box>
         ) : (
           <>
