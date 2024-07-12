@@ -59,7 +59,7 @@ export default function Home() {
 }
 
 const heroSectionStyle: React.CSSProperties = {
-  position: "relative", // Ensure relative positioning for absolute children
+  position: "relative",
   height: 500,
   width: "100%",
   marginBottom: "50px",
