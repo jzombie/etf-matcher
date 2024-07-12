@@ -9,6 +9,7 @@ import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 import FullViewport from "@layoutKit/FullViewport";
 import Full from "@layoutKit/Full";
 import Center from "@layoutKit/Center";
+import Cover from "@layoutKit/Cover";
 import Layout, { Header, Content, Footer } from "@layoutKit/Layout";
 // import SearchModalButton from "../SearchModalButton";
 
@@ -89,6 +90,9 @@ export default function MainLayout() {
             />
           </Footer>
         </Layout>
+        {/* <Cover clickThrough>
+          <Center>Prototype</Center>
+        </Cover> */}
       </FullViewport>
     </>
   );
