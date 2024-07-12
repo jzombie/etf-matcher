@@ -20,7 +20,7 @@ import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import useSearch from "@hooks/useSearch";
 
 export default function SearchModalButton() {
-  const { isSearchModalOpen: isModalOpen = false } =
+  const { isSearchModalOpen: isModalOpen } =
     useStoreStateReader("isSearchModalOpen");
 
   const {
