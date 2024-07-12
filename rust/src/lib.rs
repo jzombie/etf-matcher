@@ -16,7 +16,11 @@ use crate::data_models::{
 };
 
 // Rename the imported functions to avoid name conflicts
-use crate::utils::fetch::{get_cache_size as lib_get_cache_size, get_cache_details as lib_get_cache_details};
+use crate::utils::fetch::{
+    get_cache_size as lib_get_cache_size,
+    get_cache_details as lib_get_cache_details,
+    remove_cache_entry as lib_remove_cache_entry
+};
 
 #[wasm_bindgen(start)]
 pub fn main() -> Result<(), JsValue> {
@@ -57,4 +61,9 @@ pub fn get_cache_size() -> usize {
 #[wasm_bindgen]
 pub fn get_cache_details() -> JsValue {
     lib_get_cache_details()
+}
+
+#[wasm_bindgen]
+pub fn remove_cache_entry(key: &str) {
+    lib_remove_cache_entry(key);
 }

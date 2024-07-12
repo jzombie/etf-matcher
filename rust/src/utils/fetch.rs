@@ -89,7 +89,11 @@ pub fn get_cache_details() -> JsValue {
     })
 }
 
-
+pub fn remove_cache_entry(key: &str) {
+    CACHE.with(|cache| {
+        cache.borrow_mut().remove(key);
+    });
+}
 
 
 type Aes256Cbc = Cbc<Aes256, Pkcs7>;

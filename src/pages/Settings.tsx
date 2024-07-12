@@ -47,6 +47,15 @@ export default function Settings() {
         PROTO_getCacheDetails()
       </Button>
 
+      <Button
+        variant="outlined"
+        onClick={() =>
+          store.PROTO_removeCacheEntry("/data/symbol_search_dict.enc")
+        }
+      >
+        PROTO_removeCacheEntry(/data/symbol_search_dict.enc)
+      </Button>
+
       <div>
         <h2>Buckets</h2>
 
