@@ -39,7 +39,7 @@ export default function SearchModalButton({
     page,
     setPage,
     pageSize,
-    remaining,
+    // remaining,
     resetSearch,
   } = useSearch({
     initialPageSize: 10,
@@ -50,6 +50,7 @@ export default function SearchModalButton({
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Handle auto-focus when the modal opens
   useEffect(() => {
     // Reset search value and selected index on close
     if (!isModalOpen) {
