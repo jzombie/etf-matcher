@@ -19,7 +19,7 @@ export default function CachePieChart() {
           nameKey="key"
           cx="50%"
           cy="50%"
-          // outerRadius={80}
+          outerRadius={50}
           fill="#8884d8"
           label
         >
