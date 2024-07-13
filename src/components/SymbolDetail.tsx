@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import SymbolContainer from "./SymbolContainer";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -31,11 +31,10 @@ export default function SymbolDetail({
     "visibleSymbols",
   ]);
 
+  const maxIdxPrevVisibleSymbolRef = useRef<number>(-1);
+
   // TODO: Rename
   const isFullRenderSymbol = useMemo(() => {
-    // TODO: Keep track of max visible symbol idx as a ref, regardless if
-    // the page has been scrolled, to avoid re-querying on subsequent scrolling
-
     if (visibleSymbols.includes(tickerSymbol)) {
       return true;
     }
@@ -46,11 +45,22 @@ export default function SymbolDetail({
       return false;
     }
 
-    const idxGroup = groupTickerSymbols.indexOf(tickerSymbol);
-
+    // Where the last visible symbol lies in the group
     const idxGroupLastVisible = groupTickerSymbols.indexOf(lastVisibleSymbol);
 
-    if (idxGroup < idxGroupLastVisible) {
+    if (idxGroupLastVisible > maxIdxPrevVisibleSymbolRef.current) {
+      maxIdxPrevVisibleSymbolRef.current = idxGroupLastVisible;
+    }
+
+    // TODO: Keep track of max visible symbol idx as a ref, regardless if
+    // the page has been scrolled, to avoid re-querying on subsequent scrolling
+    //
+    // TODO: Handle `maxIdxPrevVisibleSymbolRef`
+
+    // Where the symbol lies in the group
+    const idxGroup = groupTickerSymbols.indexOf(tickerSymbol);
+
+    if (idxGroup <= idxGroupLastVisible) {
       return true;
     }
 
@@ -64,7 +74,7 @@ export default function SymbolDetail({
   useEffect(() => {
     if (isFullRenderSymbol) {
       // TODO: Remove
-      console.log({
+      console.warn({
         tickerSymbol,
         isFullRenderSymbol,
       });
