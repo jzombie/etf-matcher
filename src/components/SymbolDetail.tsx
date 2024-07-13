@@ -25,51 +25,9 @@ export default function SymbolDetail({
 }: SymbolDetailProps) {
   const navigate = useNavigate();
 
-  const { symbolBuckets, visibleSymbols } = useStoreStateReader([
-    "symbolBuckets",
-    // TODO: Offload to `SymbolContainer`
-    "visibleSymbols",
-  ]);
+  const { symbolBuckets } = useStoreStateReader(["symbolBuckets"]);
 
-  const maxIdxPrevVisibleSymbolRef = useRef<number>(-1);
-
-  // TODO: Rename
-  const isFullRenderSymbol = useMemo(() => {
-    if (visibleSymbols.includes(tickerSymbol)) {
-      return true;
-    }
-
-    const lastVisibleSymbol = visibleSymbols.at(-1);
-
-    if (lastVisibleSymbol === undefined) {
-      return false;
-    }
-
-    // Where the last visible symbol lies in the group
-    const idxGroupLastVisible = groupTickerSymbols.indexOf(lastVisibleSymbol);
-
-    if (idxGroupLastVisible > maxIdxPrevVisibleSymbolRef.current) {
-      maxIdxPrevVisibleSymbolRef.current = idxGroupLastVisible;
-    }
-
-    // TODO: Keep track of max visible symbol idx as a ref, regardless if
-    // the page has been scrolled, to avoid re-querying on subsequent scrolling
-    //
-    // TODO: Handle `maxIdxPrevVisibleSymbolRef`
-
-    // Where the symbol lies in the group
-    const idxGroup = groupTickerSymbols.indexOf(tickerSymbol);
-
-    if (idxGroup <= idxGroupLastVisible) {
-      return true;
-    }
-
-    if (idxGroup <= idxGroupLastVisible + 2) {
-      return true;
-    }
-
-    return false;
-  }, [tickerSymbol, groupTickerSymbols, visibleSymbols]);
+  const [isFullRenderSymbol, setIsFullRenderSymbol] = useState(false);
 
   useEffect(() => {
     if (isFullRenderSymbol) {
@@ -97,6 +55,8 @@ export default function SymbolDetail({
       style={{ marginBottom: 12 }}
       {...rest}
       tickerSymbol={tickerSymbol}
+      groupTickerSymbols={groupTickerSymbols}
+      onFullRenderSymbolStateChange={setIsFullRenderSymbol}
     >
       {!isFullRenderSymbol ? (
         <div

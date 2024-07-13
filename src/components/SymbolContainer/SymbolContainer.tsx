@@ -1,17 +1,84 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 import { SymbolContainerContext } from "./SymbolContainerProvider";
+
+import useStoreStateReader from "@hooks/useStoreStateReader";
 
 export type SymbolContainerProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerSymbol: string;
+  groupTickerSymbols: string[];
   children: React.ReactNode;
+  onFullRenderSymbolStateChange?: (isFullRenderSymbol: boolean) => void;
 };
 
 export default function SymbolContainer({
   tickerSymbol,
+  groupTickerSymbols,
   children,
+  onFullRenderSymbolStateChange,
   ...rest
 }: SymbolContainerProps) {
   const symbolProviderContext = useContext(SymbolContainerContext);
+
+  const { visibleSymbols } = useStoreStateReader(["visibleSymbols"]);
+
+  const maxIdxPrevVisibleSymbolRef = useRef<number>(-1);
+
+  // TODO: Rename
+  const isFullRenderSymbol = useMemo(() => {
+    if (visibleSymbols.includes(tickerSymbol)) {
+      return true;
+    }
+
+    const lastVisibleSymbol = visibleSymbols.at(-1);
+
+    if (lastVisibleSymbol === undefined) {
+      return false;
+    }
+
+    // Where the last visible symbol lies in the group
+    const idxGroupLastVisible = groupTickerSymbols.indexOf(lastVisibleSymbol);
+
+    if (idxGroupLastVisible > maxIdxPrevVisibleSymbolRef.current) {
+      maxIdxPrevVisibleSymbolRef.current = idxGroupLastVisible;
+    }
+
+    // TODO: Keep track of max visible symbol idx as a ref, regardless if
+    // the page has been scrolled, to avoid re-querying on subsequent scrolling
+    //
+    // TODO: Handle `maxIdxPrevVisibleSymbolRef`
+
+    // Where the symbol lies in the group
+    const idxGroup = groupTickerSymbols.indexOf(tickerSymbol);
+
+    if (idxGroup <= idxGroupLastVisible) {
+      return true;
+    }
+
+    if (idxGroup <= idxGroupLastVisible + 2) {
+      return true;
+    }
+
+    return false;
+  }, [tickerSymbol, groupTickerSymbols, visibleSymbols]);
+
+  const handleFullRenderSymbolStateChange = useCallback(
+    (isFullRenderSymbol: boolean) => {
+      if (typeof onFullRenderSymbolStateChange === "function") {
+        onFullRenderSymbolStateChange(isFullRenderSymbol);
+      }
+    },
+    [onFullRenderSymbolStateChange]
+  );
+
+  useEffect(() => {
+    handleFullRenderSymbolStateChange(isFullRenderSymbol);
+  }, [isFullRenderSymbol, handleFullRenderSymbolStateChange]);
 
   // TODO: Monitor time and percentage on screen and use to collect metrics
   // about which symbols are looked at the longest. This isn't intended for
