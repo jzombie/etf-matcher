@@ -14,13 +14,13 @@ describe("Padding Component", () => {
     expect(getByText("Test Content")).toBeInTheDocument();
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
-        <div
+        <section
           class="padding"
         >
           <span>
             Test Content
           </span>
-        </div>
+        </section>
       </DocumentFragment>
     `);
   });
@@ -34,13 +34,13 @@ describe("Padding Component", () => {
     expect(container.firstChild).toHaveClass("custom-class");
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
-        <div
+        <section
           class="padding custom-class"
         >
           <span>
             Test Content
           </span>
-        </div>
+        </section>
       </DocumentFragment>
     `);
   });

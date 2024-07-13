@@ -13,8 +13,8 @@ export default function Padding({
   ...rest
 }: PaddingProps) {
   return (
-    <div className={clsx(styles.padding, className)} {...rest}>
+    <section className={clsx(styles.padding, className)} {...rest}>
       {children}
-    </div>
+    </section>
   );
 }
