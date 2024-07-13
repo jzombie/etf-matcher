@@ -14,6 +14,9 @@ const useStateEmitterReader = <T extends object, K extends keyof T>(
   eventOrEventNames: string | string[] = StateEmitterDefaultEvents.UPDATE
 ) => {
   // Dynamically apply `maxListeners` offset
+  //
+  // This sidesteps an issue where the emitter will emit a warning if the max
+  // number of listeners has been exceeded if using many hooks to read state.
   useEffect(() => {
     const maxListeners = emitter.getMaxListeners();
     emitter.setMaxListeners(maxListeners + 1);
