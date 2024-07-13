@@ -9,9 +9,16 @@ import ProtoPieChart from "@components/PROTO_PieChart";
 import ProtoTable from "@components/PROTO_Table";
 
 export default function Settings() {
-  const { symbolBuckets, isProfilingCacheOverlayOpen } = useStoreStateReader([
+  const {
+    symbolBuckets,
+    isProfilingCacheOverlayOpen,
+    cacheDetails,
+    cacheSize,
+  } = useStoreStateReader([
     "symbolBuckets",
     "isProfilingCacheOverlayOpen",
+    "cacheDetails",
+    "cacheSize",
   ]);
 
   // const [api, contextHolder] = notification.useNotification();
@@ -60,22 +67,15 @@ export default function Settings() {
 
         <h3>View</h3>
 
+        <div>Cache size: {cacheSize}</div>
+        <div>Cache entries: {Object.keys(cacheDetails).length}</div>
+
         {
           // TODO: Don't render until in view (to get nice transition-in effect)
         }
         <ProtoPieChart />
 
         <ProtoTable />
-
-        <Button variant="outlined" onClick={() => store.PROTO_getCacheSize()}>
-          PROTO_getCacheSize()
-        </Button>
-        <Button
-          variant="outlined"
-          onClick={() => store.PROTO_getCacheDetails()}
-        >
-          PROTO_getCacheDetails()
-        </Button>
 
         <FormControlLabel
           control={

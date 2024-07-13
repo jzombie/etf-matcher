@@ -176,13 +176,28 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     });
   }
 
-  private _callWorkerFunction<T>(
+  private async _callWorkerFunction<T>(
     functionName: string,
     ...args: unknown[]
   ): Promise<T> {
-    // TODO: Wrap accordingly
-    return libCallWorkerFunction(functionName, ...args);
+    const resp = await libCallWorkerFunction<T>(functionName, ...args);
+
+    // TODO: Only call these if is profiling (cacheProfilerConnections > 0)
+    libCallWorkerFunction<number>("get_cache_size").then((cacheSize) => {
+      this.setState({ cacheSize });
+    });
+    libCallWorkerFunction<RustServiceCacheDetail[]>("get_cache_details").then(
+      (cacheDetails) => this.setState({ cacheDetails })
+    );
+
+    return resp;
   }
+
+  // PROTO_getCacheDetails() {
+  //   this._callWorkerFunction<RustServiceCacheDetail[]>("get_cache_details")
+  //     .then(console.table)
+  //     .catch((error) => console.error(error));
+  // }
 
   // TODO: For the following `PROTO` functions, it might be best to not retain a duplicate copy here,
   // except where absolutely needed (and utilize Rust for more `composite` metric generation).
@@ -259,22 +274,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           symbolDetail,
         })
       )
-      .catch((error) => console.error(error));
-  }
-
-  PROTO_getCacheSize() {
-    this._callWorkerFunction("get_cache_size")
-      .then((cacheSize) =>
-        console.log({
-          cacheSize,
-        })
-      )
-      .catch((error) => console.error(error));
-  }
-
-  PROTO_getCacheDetails() {
-    this._callWorkerFunction<RustServiceCacheDetail[]>("get_cache_details")
-      .then(console.table)
       .catch((error) => console.error(error));
   }
 
