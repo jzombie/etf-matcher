@@ -12,7 +12,13 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { Home, Settings, Menu as MenuIcon } from "@mui/icons-material";
+import {
+  Home,
+  Settings as SettingsIcon,
+  Menu as MenuIcon,
+  Assessment as AssessmentIcon,
+  ListAlt as ListAltIcon,
+} from "@mui/icons-material";
 import { Link, useLocation, matchPath } from "react-router-dom";
 import SearchModalButton from "@components/SearchModalButton";
 import clsx from "clsx";
@@ -23,7 +29,7 @@ export default function HeaderMenu() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
 
-  const isDesktop = useMediaQuery("@media (min-width:748px)");
+  const isDesktop = useMediaQuery("@media (min-width:800px)");
 
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
@@ -34,19 +40,19 @@ export default function HeaderMenu() {
     {
       key: "/portfolios",
       label: "Portfolios",
-      icon: null,
+      icon: <AssessmentIcon fontSize="small" />,
       link: "/portfolios",
     },
     {
       key: "/watchlists",
       label: "Watchlists",
-      icon: null,
+      icon: <ListAltIcon fontSize="small" />,
       link: "/watchlists",
     },
     {
       key: "/settings",
       label: "Settings",
-      icon: <Settings fontSize="small" />,
+      icon: <SettingsIcon fontSize="small" />,
       link: "/settings",
     },
   ];
