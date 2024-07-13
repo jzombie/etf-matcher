@@ -32,25 +32,25 @@ export default function SearchResults() {
     });
   }, [location, setSearchQuery, setOnlyExactMatches]);
 
-  const toggleExactMatch = () => {
-    const searchParams = new URLSearchParams(location.search);
-    const newExactValue = !(
-      searchParams.get("exact") === "true" || searchParams.get("exact") === "1"
-    );
+  // const toggleExactMatch = () => {
+  //   const searchParams = new URLSearchParams(location.search);
+  //   const newExactValue = !(
+  //     searchParams.get("exact") === "true" || searchParams.get("exact") === "1"
+  //   );
 
-    if (newExactValue) {
-      searchParams.set("exact", "true");
-    } else {
-      searchParams.delete("exact");
-    }
+  //   if (newExactValue) {
+  //     searchParams.set("exact", "true");
+  //   } else {
+  //     searchParams.delete("exact");
+  //   }
 
-    navigate({
-      pathname: location.pathname,
-      search: searchParams.toString(),
-    });
+  //   navigate({
+  //     pathname: location.pathname,
+  //     search: searchParams.toString(),
+  //   });
 
-    setOnlyExactMatches(newExactValue);
-  };
+  //   setOnlyExactMatches(newExactValue);
+  // };
 
   const searchResultSymbols = useMemo(
     () => searchResults.map((searchResult) => searchResult.symbol),
@@ -65,7 +65,7 @@ export default function SearchResults() {
     <Scrollable>
       {totalSearchResults} search result{totalSearchResults !== 1 ? "s" : ""}{" "}
       for: {searchQuery}
-      <Button onClick={toggleExactMatch}>
+      <Button onClick={() => setOnlyExactMatches((prev) => !prev)}>
         Toggle Exact Match (currently {onlyExactMatches ? "on" : "off"})
       </Button>
       {searchResultSymbols.map((tickerSymbol) => (
