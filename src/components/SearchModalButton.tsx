@@ -19,6 +19,8 @@ import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import useSearch from "@hooks/useSearch";
 
+// TODO: Replace modal with `TransparentModal`
+
 export type SearchModalButtonProps = {
   highlight?: boolean;
 };
