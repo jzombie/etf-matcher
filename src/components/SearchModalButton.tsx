@@ -129,11 +129,29 @@ export default function SearchModalButton({
         handleOk(evt, selectedSearchResult.symbol);
       }
     } else if (evt.code === "ArrowDown") {
-      setSelectedIndex((prevIndex) =>
-        Math.min(prevIndex + 1, searchResults.length - 1)
-      );
+      setSelectedIndex((prevIndex) => {
+        const newIndex = Math.min(prevIndex + 1, searchResults.length - 1);
+        const selectedListItem = window.document.getElementById(
+          `search-result-${newIndex}`
+        );
+        selectedListItem?.scrollIntoView({
+          block: "nearest",
+          behavior: "smooth",
+        });
+        return newIndex;
+      });
     } else if (evt.code === "ArrowUp") {
-      setSelectedIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+      setSelectedIndex((prevIndex) => {
+        const newIndex = Math.max(prevIndex - 1, 0);
+        const selectedListItem = window.document.getElementById(
+          `search-result-${newIndex}`
+        );
+        selectedListItem?.scrollIntoView({
+          block: "nearest",
+          behavior: "smooth",
+        });
+        return newIndex;
+      });
     }
   };
 
@@ -211,6 +229,7 @@ export default function SearchModalButton({
               {searchResults.map((searchResult, idx) => (
                 <ListItem
                   key={idx}
+                  id={`search-result-${idx}`}
                   sx={{
                     backgroundColor:
                       idx === selectedIndex
