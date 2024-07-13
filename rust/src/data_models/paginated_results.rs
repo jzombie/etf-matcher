@@ -7,6 +7,7 @@ pub struct PaginatedResults<T> {
     pub results: Vec<T>,
 }
 
+// TODO: This should be able to sort by columns
 impl<T> PaginatedResults<T> {
     pub fn paginate(data: Vec<T>, page: usize, page_size: usize) -> Result<PaginatedResults<T>, JsValue> {
         let total_count = data.len();
