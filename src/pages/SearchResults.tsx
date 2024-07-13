@@ -17,6 +17,7 @@ export default function SearchResults() {
     onlyExactMatches,
     setOnlyExactMatches,
     searchResults,
+    totalSearchResults,
   } = useSearch();
 
   useEffect(() => {
@@ -62,7 +63,8 @@ export default function SearchResults() {
 
   return (
     <Scrollable>
-      Search results for: {searchQuery}
+      {totalSearchResults} search result{totalSearchResults !== 1 ? "s" : ""}{" "}
+      for: {searchQuery}
       <Button onClick={toggleExactMatch}>
         Toggle Exact Match (currently {onlyExactMatches ? "on" : "off"})
       </Button>
