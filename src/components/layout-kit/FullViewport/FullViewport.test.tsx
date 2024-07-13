@@ -17,9 +17,13 @@ describe("FullViewport Component", () => {
         <div
           class="full_viewport"
         >
-          <span>
-            Test Content
-          </span>
+          <div
+            class="content_wrap"
+          >
+            <span>
+              Test Content
+            </span>
+          </div>
         </div>
       </DocumentFragment>
     `);
@@ -31,15 +35,21 @@ describe("FullViewport Component", () => {
         <span>Test Content</span>
       </FullViewport>
     );
-    expect(container.firstChild).toHaveClass("custom-class");
+    expect(container.querySelector(".content_wrap")).toHaveClass(
+      "custom-class"
+    );
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
         <div
-          class="full_viewport custom-class"
+          class="full_viewport"
         >
-          <span>
-            Test Content
-          </span>
+          <div
+            class="content_wrap custom-class"
+          >
+            <span>
+              Test Content
+            </span>
+          </div>
         </div>
       </DocumentFragment>
     `);

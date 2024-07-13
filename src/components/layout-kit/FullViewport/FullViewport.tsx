@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import clsx from "clsx";
 import styles from "./FullViewport.module.scss";
 
@@ -7,23 +7,25 @@ export type FullViewportProps = React.HTMLAttributes<HTMLElement> & {
   className?: string;
 };
 
+const supportsDvhUnit = testSupportsDvhUnit();
+
 export default function FullViewport({
   children,
   className,
   ...rest
 }: FullViewportProps) {
-  const supportsDvhUnit = useMemo(testSupportsDvhUnit, []);
-
   return (
-    <div
-      className={clsx(
-        styles.full_viewport,
-        { [styles.dvh]: supportsDvhUnit },
-        className
-      )}
-      {...rest}
-    >
-      {children}
+    <div className={styles.full_viewport}>
+      <div
+        className={clsx(
+          styles.content_wrap,
+          { [styles.dvh]: supportsDvhUnit },
+          className
+        )}
+        {...rest}
+      >
+        {children}
+      </div>
     </div>
   );
 }

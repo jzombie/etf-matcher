@@ -1,17 +1,24 @@
 .full_viewport {
   position: fixed;
-
   top: 0px;
   left: 0px;
 
-  display: flex;
-  flex-direction: column;
-  position: relative;
+  .content_wrap {
+    display: flex;
+    flex-direction: column;
+    position: relative;
 
-  min-height: 100vh;
-  max-height: 100vh;
-  &.dvh {
-    min-height: 100dvh;
-    max-height: 100dvh;
+    min-height: 100vh;
+    max-height: 100vh;
+    min-width: 100vw;
+    max-width: 100vw;
+    &.dvh {
+      min-height: 100dvh;
+      max-height: 100dvh;
+      min-width: 100dvw;
+      max-width: 100dvw;
+    }
   }
+
+  pointer-events: all;
 }
