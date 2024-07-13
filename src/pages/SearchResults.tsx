@@ -28,29 +28,11 @@ export default function SearchResults() {
       }
       if (key === "exact") {
         setOnlyExactMatches(value === "true" || value === "1");
+      } else {
+        setOnlyExactMatches(false);
       }
     });
   }, [location, setSearchQuery, setOnlyExactMatches]);
-
-  // const toggleExactMatch = () => {
-  //   const searchParams = new URLSearchParams(location.search);
-  //   const newExactValue = !(
-  //     searchParams.get("exact") === "true" || searchParams.get("exact") === "1"
-  //   );
-
-  //   if (newExactValue) {
-  //     searchParams.set("exact", "true");
-  //   } else {
-  //     searchParams.delete("exact");
-  //   }
-
-  //   navigate({
-  //     pathname: location.pathname,
-  //     search: searchParams.toString(),
-  //   });
-
-  //   setOnlyExactMatches(newExactValue);
-  // };
 
   const searchResultSymbols = useMemo(
     () => searchResults.map((searchResult) => searchResult.symbol),
