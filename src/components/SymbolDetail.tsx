@@ -47,16 +47,15 @@ export default function SymbolDetail({
       return false;
     }
 
-    const idxGroupSymbols = groupTickerSymbols.indexOf(tickerSymbol);
+    const idxGroup = groupTickerSymbols.indexOf(tickerSymbol);
 
-    const idxGroupLastVisibleSymbol =
-      groupTickerSymbols.indexOf(lastVisibleSymbol);
+    const idxGroupLastVisible = groupTickerSymbols.indexOf(lastVisibleSymbol);
 
-    if (idxGroupSymbols < idxGroupLastVisibleSymbol) {
+    if (idxGroup < idxGroupLastVisible) {
       return true;
     }
 
-    if (idxGroupSymbols === idxGroupLastVisibleSymbol) {
+    if (idxGroup <= idxGroupLastVisible + 2) {
       return true;
     }
 
