@@ -1,37 +1,8 @@
 import React from "react";
-// import { Button } from "antd";
-import SymbolDetail from "@components/SymbolDetail";
-
-import useStoreStateReader from "@hooks/useStoreStateReader";
+import ScrollableBucketList from "@components/ScrollableBucketList";
 
 export default function Portfolios() {
-  const { symbolBuckets } = useStoreStateReader("symbolBuckets");
-
-  const portfolioSymbolBuckets = symbolBuckets?.filter(
-    (symbolBucket) => symbolBucket.type === "portfolio"
-  );
-
-  return (
-    <div>
-      {/*
-        <Button>Create new Portfolio</Button>
-        */}
-
-      <hr />
-      <div>
-        <h2>My Portfolios</h2>
-        {portfolioSymbolBuckets?.map((symbolBucket, idx) => (
-          <div key={idx}>
-            {symbolBucket.name}
-
-            {symbolBucket.symbols.map((symbol) => (
-              <SymbolDetail key={symbol} tickerSymbol={symbol} />
-            ))}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+  return <ScrollableBucketList symbolBucketType="portfolio" />;
 }
 
 // TODO: Make use of persistent session storage for portfolios, with ability to clear data
