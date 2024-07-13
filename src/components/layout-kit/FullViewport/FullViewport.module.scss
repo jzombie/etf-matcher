@@ -8,6 +8,20 @@
     flex-direction: column;
     position: relative;
 
+    // TODO: Enable via configuration or by default?
+    //
+    // Use GPU acceleration
+    //
+    // Applying a 3D transform, even a trivial one like `translateZ(0)`,
+    // forces the browser to create a new rendering layer for the element.
+    // This triggers GPU acceleration, making the rendering of this element
+    // more efficient, especially for animations and transitions.
+    // By doing this, we offload some of the processing to the GPU,
+    // which can handle these tasks more efficiently than the CPU.
+    // This can lead to smoother animations and improved performance,
+    // particularly in complex layouts or when multiple elements are animated.
+    // transform: translateZ(0);
+
     min-height: 100vh;
     max-height: 100vh;
     min-width: 100vw;
