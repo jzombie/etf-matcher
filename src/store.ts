@@ -52,6 +52,7 @@ export type StoreStateProps = {
   isSearchModalOpen: boolean;
   symbolBuckets: SymbolBucketProps[];
   isProfilingCache: boolean;
+  cacheProfilerConnections: number; // Used to determine if active cache profiling needs to happen
   cacheDetails: RustServiceCacheDetail[];
   cacheSize: number;
 };
@@ -108,6 +109,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         },
       ],
       isProfilingCache: false,
+      cacheProfilerConnections: 0,
       cacheDetails: [],
       cacheSize: 0,
     });

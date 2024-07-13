@@ -1,0 +1,1 @@
+TODO: As long as this component is mounted, somewhere, it should keep an open "connection" to the cache profiler (the cache profiler should be enabled when this is active)
