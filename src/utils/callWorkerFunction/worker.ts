@@ -56,12 +56,12 @@ async function processQueue() {
 
 self.onmessage = async (event) => {
   const { functionName, args, messageId } = event.data;
-  // console.log(
-  //   "Worker received message with functionName:",
-  //   functionName,
-  //   "and args:",
-  //   args
-  // );
+  console.log(
+    "Worker received message with functionName:",
+    functionName,
+    "and args:",
+    args
+  );
 
   const promise = new Promise((resolve, reject) => {
     callQueue.push({ functionName, args, resolve, reject });
