@@ -42,8 +42,7 @@ export default function SymbolDetail({
 
     const lastVisibleSymbol = visibleSymbols.at(-1);
 
-    // TODO: Will it ever get here?
-    if (!lastVisibleSymbol) {
+    if (lastVisibleSymbol === undefined) {
       return false;
     }
 
