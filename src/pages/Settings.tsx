@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Switch, FormControlLabel } from "@mui/material";
 
 import Scrollable from "@layoutKit/Scrollable";
+import Padding from "@layoutKit/Padding";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
@@ -51,80 +52,84 @@ export default function Settings() {
 
   return (
     <Scrollable>
-      <div>
-        <h2>User Data</h2>
+      <Padding>
+        <div>
+          <h2>User Data</h2>
 
-        <Button variant="outlined">TODO: Implement::Clear all user data</Button>
+          <Button variant="outlined">
+            TODO: Implement::Clear all user data
+          </Button>
 
-        <h3>Buckets</h3>
+          <h3>Buckets</h3>
 
-        {symbolBuckets?.map((symbolBucket, idx) => (
-          <div key={idx}>{symbolBucket.name}</div>
-        ))}
-      </div>
-      <div>
-        <h2>Cache</h2>
+          {symbolBuckets?.map((symbolBucket, idx) => (
+            <div key={idx}>{symbolBucket.name}</div>
+          ))}
+        </div>
+        <div>
+          <h2>Cache</h2>
 
-        <h3>View</h3>
+          <h3>View</h3>
 
-        <div>Cache size: {cacheSize}</div>
-        <div>Cache entries: {Object.keys(cacheDetails).length}</div>
+          <div>Cache size: {cacheSize}</div>
+          <div>Cache entries: {Object.keys(cacheDetails).length}</div>
 
-        {
-          // TODO: Don't render until in view (to get nice transition-in effect)
-        }
-        <ProtoPieChart />
-
-        <ProtoTable />
-
-        <FormControlLabel
-          control={
-            <Switch
-              checked={isProfilingCacheOverlayOpen}
-              onChange={() =>
-                store.setState(() => ({
-                  isProfilingCacheOverlayOpen: !isProfilingCacheOverlayOpen,
-                }))
-              }
-            />
+          {
+            // TODO: Don't render until in view (to get nice transition-in effect)
           }
-          label="Enable Cache Profiling Overlay"
-        />
+          <ProtoPieChart />
 
-        <h3>Purge</h3>
+          <ProtoTable />
 
-        <Button variant="outlined" onClick={() => store.PROTO_clearCache()}>
-          PROTO_clearCache()
-        </Button>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={isProfilingCacheOverlayOpen}
+                onChange={() =>
+                  store.setState(() => ({
+                    isProfilingCacheOverlayOpen: !isProfilingCacheOverlayOpen,
+                  }))
+                }
+              />
+            }
+            label="Enable Cache Profiling Overlay"
+          />
 
-        <Button
-          variant="outlined"
-          onClick={() =>
-            store.PROTO_removeCacheEntry("/data/symbol_search_dict.enc")
+          <h3>Purge</h3>
+
+          <Button variant="outlined" onClick={() => store.PROTO_clearCache()}>
+            PROTO_clearCache()
+          </Button>
+
+          <Button
+            variant="outlined"
+            onClick={() =>
+              store.PROTO_removeCacheEntry("/data/symbol_search_dict.enc")
+            }
+          >
+            PROTO_removeCacheEntry(/data/symbol_search_dict.enc)
+          </Button>
+        </div>
+
+        <hr />
+
+        <h2>Prototype Notifications</h2>
+
+        <>
+          {
+            // contextHolder
           }
-        >
-          PROTO_removeCacheEntry(/data/symbol_search_dict.enc)
-        </Button>
-      </div>
-
-      <hr />
-
-      <h2>Prototype Notifications</h2>
-
-      <>
-        {
-          // contextHolder
-        }
-        {/*
+          {/*
           <Button type="primary" onClick={openNotification}>
           Open the notification box
         </Button>
           */}
-      </>
+        </>
 
-      {
-        // TODO: Add configuration options to adjust tickers which show in the ticker tape in the footer
-      }
+        {
+          // TODO: Add configuration options to adjust tickers which show in the ticker tape in the footer
+        }
+      </Padding>
     </Scrollable>
   );
 }
