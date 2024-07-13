@@ -1,9 +1,11 @@
 import React from "react";
 import clsx from "clsx";
-import Full, { FullProps } from "../Full";
 import styles from "./Padding.module.scss";
 
-export type PaddingProps = FullProps;
+export type PaddingProps = React.HTMLAttributes<HTMLElement> & {
+  children: React.ReactNode;
+  className?: string;
+};
 
 export default function Padding({
   children,
@@ -11,8 +13,8 @@ export default function Padding({
   ...rest
 }: PaddingProps) {
   return (
-    <Full className={clsx(styles.padding, className)} {...rest}>
+    <div className={clsx(styles.padding, className)} {...rest}>
       {children}
-    </Full>
+    </div>
   );
 }

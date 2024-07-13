@@ -15,7 +15,7 @@ describe("Padding Component", () => {
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
         <div
-          class="full padding"
+          class="padding"
         >
           <span>
             Test Content
@@ -35,7 +35,7 @@ describe("Padding Component", () => {
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
         <div
-          class="full padding custom-class"
+          class="padding custom-class"
         >
           <span>
             Test Content
