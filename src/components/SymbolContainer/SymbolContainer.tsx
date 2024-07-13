@@ -104,7 +104,20 @@ export default function SymbolContainer({
 
   return (
     <div ref={elementRef} {...rest}>
-      {children}
+      {
+        // TODO: Move this condition to the `SymbolContainer`
+        !isFullRenderSymbol ? (
+          <div
+            style={{
+              height: 500,
+              // TODO: Remove? This should never be visible, anyway, if the `isFullRenderSymbol` algorithm is working correct
+              backgroundColor: "yellow",
+            }}
+          />
+        ) : (
+          children
+        )
+      }
     </div>
   );
 }

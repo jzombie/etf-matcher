@@ -58,33 +58,24 @@ export default function SymbolDetail({
       groupTickerSymbols={groupTickerSymbols}
       onFullRenderSymbolStateChange={setIsFullRenderSymbol}
     >
-      {!isFullRenderSymbol ? (
-        <div
-          style={{
-            height: 500,
-            // TODO: Remove? This should never be visible, anyway, if the `isFullRenderSymbol` algorithm is working correct
-            backgroundColor: "yellow",
-          }}
-        />
-      ) : (
-        <>
-          {" "}
-          {/* <MiniChart
+      <>
+        {" "}
+        {/* <MiniChart
             symbol={tickerSymbol}
             colorTheme="dark"
             width="100%"
             copyrightStyles={tradingViewCopyrightStyles}
           /> */}
-          {
-            // TODO: Enable via toggle
-            /* <CompanyProfile
+        {
+          // TODO: Enable via toggle
+          /* <CompanyProfile
             symbol={tickerSymbol}
             width="100%"
             height={300}
             copyrightStyles={tradingViewCopyrightStyles}
           /> */
-          }
-          {/* <Timeline
+        }
+        {/* <Timeline
             colorTheme="dark"
             feedMode="symbol"
             symbol={tickerSymbol}
@@ -92,39 +83,36 @@ export default function SymbolDetail({
             width="100%"
             copyrightStyles={tradingViewCopyrightStyles}
           /> */}
-          {symbolBuckets?.map((symbolBucket, idx) => (
-            // TODO: If symbol is already in the bucket, don't try to re-add it
+        {symbolBuckets?.map((symbolBucket, idx) => (
+          // TODO: If symbol is already in the bucket, don't try to re-add it
+          <Button
+            key={idx}
+            onClick={() => store.addSymbolToBucket(tickerSymbol, symbolBucket)}
+          >
+            Add {tickerSymbol} to {symbolBucket.name}
+          </Button>
+        ))}
+        <Button onClick={() => store.PROTO_getSymbolDetail(tickerSymbol)}>
+          PROTO_getSymbolDetail()
+        </Button>
+        <div>
+          {
+            // TODO: Paginate through these results
+          }
+          {etfHolders?.results?.map((etfHolderSymbol) => (
             <Button
-              key={idx}
+              key={etfHolderSymbol}
               onClick={() =>
-                store.addSymbolToBucket(tickerSymbol, symbolBucket)
+                // TODO: Don't hardcode here
+                // TODO: Perhaps don't even navigate... just add the symbol to this view?
+                navigate(`/search?query=${etfHolderSymbol}&exact=true`)
               }
             >
-              Add {tickerSymbol} to {symbolBucket.name}
+              {etfHolderSymbol}
             </Button>
           ))}
-          <Button onClick={() => store.PROTO_getSymbolDetail(tickerSymbol)}>
-            PROTO_getSymbolDetail()
-          </Button>
-          <div>
-            {
-              // TODO: Paginate through these results
-            }
-            {etfHolders?.results?.map((etfHolderSymbol) => (
-              <Button
-                key={etfHolderSymbol}
-                onClick={() =>
-                  // TODO: Don't hardcode here
-                  // TODO: Perhaps don't even navigate... just add the symbol to this view?
-                  navigate(`/search?query=${etfHolderSymbol}&exact=true`)
-                }
-              >
-                {etfHolderSymbol}
-              </Button>
-            ))}
-          </div>
-        </>
-      )}
+        </div>
+      </>
     </SymbolContainer>
   );
 }
