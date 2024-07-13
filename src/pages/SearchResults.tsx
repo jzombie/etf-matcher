@@ -11,11 +11,14 @@ export default function SearchResults() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Note: The usage of `_` prefixes urges the usage to be aware before setting
+  // these values directly. They should be set as the result of URL change operations
+  // to ensure the queries are deep-linkable.
   const {
     searchQuery,
-    setSearchQuery,
+    setSearchQuery: _setSearchQuery,
     onlyExactMatches,
-    setOnlyExactMatches,
+    setOnlyExactMatches: _setOnlyExactMatches,
     searchResults,
     totalSearchResults,
   } = useSearch();
@@ -24,15 +27,37 @@ export default function SearchResults() {
     const searchParams = new URLSearchParams(location.search);
     searchParams.forEach((value, key) => {
       if (key === "query") {
-        setSearchQuery(value.trim());
+        _setSearchQuery(value.trim());
       }
       if (key === "exact") {
-        setOnlyExactMatches(value === "true" || value === "1");
+        _setOnlyExactMatches(value === "true" || value === "1");
       } else {
-        setOnlyExactMatches(false);
+        _setOnlyExactMatches(false);
       }
     });
-  }, [location, setSearchQuery, setOnlyExactMatches]);
+  }, [location, _setSearchQuery, _setOnlyExactMatches]);
+
+  // IMPORTANT: This adjusts the URL query as well and should be used instead
+  // of setting only exact matches directly
+  const toggleExactMatch = () => {
+    const searchParams = new URLSearchParams(location.search);
+    const newExactValue = !(
+      searchParams.get("exact") === "true" || searchParams.get("exact") === "1"
+    );
+
+    if (newExactValue) {
+      searchParams.set("exact", "true");
+    } else {
+      searchParams.delete("exact");
+    }
+
+    navigate({
+      pathname: location.pathname,
+      search: searchParams.toString(),
+    });
+
+    _setOnlyExactMatches(newExactValue);
+  };
 
   const searchResultSymbols = useMemo(
     () => searchResults.map((searchResult) => searchResult.symbol),
@@ -46,9 +71,9 @@ export default function SearchResults() {
   return (
     <Scrollable>
       {totalSearchResults} search result{totalSearchResults !== 1 ? "s" : ""}{" "}
-      for: {searchQuery}
-      <Button onClick={() => setOnlyExactMatches((prev) => !prev)}>
-        Toggle Exact Match (currently {onlyExactMatches ? "on" : "off"})
+      for: {searchQuery}{" "}
+      <Button onClick={toggleExactMatch} variant="outlined">
+        {onlyExactMatches ? "Exact Match" : "Non-Exact Match"}
       </Button>
       {searchResultSymbols.map((tickerSymbol) => (
         <SymbolDetail
