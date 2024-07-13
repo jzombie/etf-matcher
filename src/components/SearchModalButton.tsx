@@ -38,7 +38,6 @@ export default function SearchModalButton({
     setSelectedIndex,
     page,
     setPage,
-    setPageSize,
     pageSize,
     remaining,
     resetSearch,
@@ -160,21 +159,26 @@ export default function SearchModalButton({
         open={isModalOpen}
         onClose={handleCancel}
         PaperProps={{
-          style: {
-            minWidth: "400px",
+          sx: {
+            width: "50vw",
+            maxWidth: "500px",
+            minWidth: "300px",
+            height: "60vh",
             maxHeight: "80vh",
+            margin: "auto",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
             backgroundColor: "rgba(31,31,31,.8)",
             border: "2px rgba(38,100,100,.8) solid",
             backdropFilter: "blur(10px)",
           },
         }}
       >
-        <DialogTitle>&nbsp;</DialogTitle>
+        <DialogTitle sx={{ paddingBottom: 0 }}>&nbsp;</DialogTitle>
         <DialogContent
           sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "16px",
+            flexGrow: 1,
             overflowY: "auto",
           }}
         >
@@ -222,36 +226,46 @@ export default function SearchModalButton({
                   </ListItem>
                 ))}
               </List>
-              {remaining > 0 && <Button>+ {remaining} remaining</Button>}
-              {totalSearchResults > pageSize && (
-                <div style={{ marginTop: 10 }}>
-                  <Pagination
-                    count={Math.ceil(totalSearchResults / pageSize)}
-                    page={page}
-                    onChange={(event, nextPage) => setPage(nextPage)}
-                    showFirstButton
-                    showLastButton
-                  />
-                </div>
-              )}
-              {totalSearchResults > 0 && (
-                <div
-                  style={{
-                    fontStyle: "italic",
-                    fontSize: ".8rem",
-                    marginTop: 10,
-                  }}
-                >
-                  Total results for query &quot;{searchQuery}&quot;:{" "}
-                  {totalSearchResults}
-                </div>
-              )}
             </form>
           )}
         </DialogContent>
+        {remaining > 0 && <Button>+ {remaining} remaining</Button>}
+        {totalSearchResults > pageSize && (
+          <div style={{ marginTop: 10, textAlign: "center" }}>
+            <Pagination
+              count={Math.ceil(totalSearchResults / pageSize)}
+              page={page}
+              onChange={(event, nextPage) => setPage(nextPage)}
+              showFirstButton
+              showLastButton
+              sx={{ display: "inline-block" }}
+            />
+          </div>
+        )}
         <DialogActions>
-          <Button onClick={handleCancel}>Cancel</Button>
-          <Button onClick={handleOk} disabled={!searchResults.length}>
+          {totalSearchResults > 0 && (
+            <div
+              style={{
+                fontStyle: "italic",
+                fontSize: ".8rem",
+                float: "left",
+              }}
+            >
+              Total results for query &quot;{searchQuery}&quot;:{" "}
+              {totalSearchResults}
+            </div>
+          )}
+          <Button
+            onClick={handleCancel}
+            variant={!searchResults.length ? "contained" : "text"}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleOk}
+            disabled={!searchResults.length}
+            variant={searchResults.length ? "contained" : "text"}
+          >
             OK
           </Button>
         </DialogActions>
