@@ -13,7 +13,7 @@ export type SectorButtonGridProps = {
 
 export default function SectorButtonGrid({
   onClick,
-  ...args
+  ...rest
 }: SectorButtonGridProps) {
   const handleClick = useCallback(
     (sectorName: string, evt: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -27,7 +27,7 @@ export default function SectorButtonGrid({
   const screens = useBreakpoint();
 
   return (
-    <div style={{ padding: "20px" }} {...args}>
+    <div style={{ padding: "20px" }} {...rest}>
       <Row gutter={[16, 16]}>
         {sectorColors.map((sector) => (
           <Col

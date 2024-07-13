@@ -9,7 +9,7 @@ export type SymbolContainerProps = React.HTMLAttributes<HTMLDivElement> & {
 export default function SymbolContainer({
   tickerSymbol,
   children,
-  ...args
+  ...rest
 }: SymbolContainerProps) {
   const symbolProviderContext = useContext(SymbolContainerContext);
 
@@ -36,7 +36,7 @@ export default function SymbolContainer({
   }, [symbolProviderContext, tickerSymbol]);
 
   return (
-    <div ref={elementRef} {...args}>
+    <div ref={elementRef} {...rest}>
       {children}
     </div>
   );
