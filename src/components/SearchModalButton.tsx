@@ -175,59 +175,66 @@ export default function SearchModalButton({
           },
         }}
       >
-        <DialogTitle sx={{ paddingBottom: 0 }}>&nbsp;</DialogTitle>
+        <DialogTitle sx={{ paddingBottom: 0 }}>
+          <TextField
+            fullWidth
+            inputRef={inputRef}
+            placeholder='Search for Symbol (e.g. "AAPL" or "Apple")'
+            onChange={handleInputChange}
+            onKeyDown={handleInputKeyDown}
+            value={searchQuery}
+            InputProps={{
+              startAdornment: (
+                <IconButton>
+                  <SearchIcon />
+                </IconButton>
+              ),
+            }}
+          />
+        </DialogTitle>
         <DialogContent
           sx={{
             flexGrow: 1,
             overflowY: "auto",
           }}
         >
-          {isModalOpen && (
-            <form noValidate autoComplete="off">
-              <TextField
-                fullWidth
-                inputRef={inputRef}
-                placeholder='Search for Symbol (e.g. "AAPL" or "Apple")'
-                onChange={handleInputChange}
-                onKeyDown={handleInputKeyDown}
-                value={searchQuery}
-                InputProps={{
-                  startAdornment: (
-                    <IconButton>
-                      <SearchIcon />
-                    </IconButton>
-                  ),
-                }}
-              />
-              <List>
-                {searchResults.map((searchResult, idx) => (
-                  <ListItem
-                    key={idx}
-                    sx={{
-                      backgroundColor:
-                        idx === selectedIndex
-                          ? "rgba(255,255,255,.2)"
-                          : "transparent",
-                      padding: "5px",
-                      overflow: "auto",
-                    }}
-                  >
-                    <ListItemText
-                      primary={searchResult.symbol}
-                      secondary={
-                        <Typography
-                          variant="body2"
-                          style={{ opacity: 0.5, float: "right" }}
-                        >
-                          {searchResult.company}
-                        </Typography>
-                      }
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </form>
-          )}
+          <form noValidate autoComplete="off">
+            <div
+              style={{
+                position: "sticky",
+                top: 0,
+                backgroundColor: "transparent",
+                zIndex: 1,
+              }}
+            ></div>
+            <List>
+              {searchResults.map((searchResult, idx) => (
+                <ListItem
+                  key={idx}
+                  sx={{
+                    backgroundColor:
+                      idx === selectedIndex
+                        ? "rgba(255,255,255,.2)"
+                        : "transparent",
+                    padding: "5px",
+                    overflow: "auto",
+                  }}
+                >
+                  <ListItemText
+                    primary={searchResult.symbol}
+                    secondary={
+                      <Typography
+                        variant="body2"
+                        style={{ opacity: 0.5, float: "right" }}
+                      >
+                        {searchResult.company}
+                      </Typography>
+                    }
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </form>
         </DialogContent>
         {remaining > 0 && <Button>+ {remaining} remaining</Button>}
         {totalSearchResults > pageSize && (
