@@ -49,8 +49,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 const SortableTable: React.FC = () => {
   const { cacheDetails: rows } = useStoreStateReader("cacheDetails");
 
-  console.log({ rows });
-
   const [order, setOrder] = useState<"asc" | "desc">("asc");
   const [orderBy, setOrderBy] = useState<keyof RustServiceCacheDetail>("key");
 
