@@ -11,7 +11,7 @@ export default function CachePieChart() {
   const { cacheDetails } = useStoreStateReader("cacheDetails");
 
   return (
-    <ResponsiveContainer>
+    <ResponsiveContainer height={200}>
       <PieChart>
         <Pie
           data={cacheDetails}
