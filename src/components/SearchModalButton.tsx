@@ -182,6 +182,7 @@ export default function SearchModalButton({
             maxWidth: "500px",
             minWidth: "300px",
             height: "60vh",
+            minHeight: 300,
             maxHeight: "80vh",
             margin: "auto",
             display: "flex",
@@ -255,19 +256,26 @@ export default function SearchModalButton({
             </List>
           </form>
         </DialogContent>
-        {remaining > 0 && <Button>+ {remaining} remaining</Button>}
-        {totalSearchResults > pageSize && (
-          <div style={{ marginTop: 10, textAlign: "center" }}>
-            <Pagination
-              count={Math.ceil(totalSearchResults / pageSize)}
-              page={page}
-              onChange={(event, nextPage) => setPage(nextPage)}
-              showFirstButton
-              showLastButton
-              sx={{ display: "inline-block" }}
-            />
-          </div>
-        )}
+        <>
+          {
+            // TODO: Skip these if the viewport is too small
+          }
+          {
+            // remaining > 0 && <Button>+ {remaining} remaining</Button>
+          }
+          {totalSearchResults > pageSize && (
+            <div style={{ marginTop: 10, textAlign: "center" }}>
+              <Pagination
+                count={Math.ceil(totalSearchResults / pageSize)}
+                page={page}
+                onChange={(event, nextPage) => setPage(nextPage)}
+                showFirstButton
+                showLastButton
+                sx={{ display: "inline-block" }}
+              />
+            </div>
+          )}
+        </>
         <DialogActions>
           {totalSearchResults > 0 && (
             <div
