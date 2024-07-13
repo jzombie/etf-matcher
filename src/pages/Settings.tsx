@@ -53,66 +53,66 @@ export default function Settings() {
   return (
     <Scrollable>
       <Padding>
-        <div>
-          <h2>User Data</h2>
+        <h2>User Data</h2>
 
-          <Button variant="outlined">
-            TODO: Implement::Clear all user data
-          </Button>
+        <Button variant="outlined">TODO: Implement::Clear all user data</Button>
 
-          <h3>Buckets</h3>
+        <h3>Buckets</h3>
 
-          {symbolBuckets?.map((symbolBucket, idx) => (
-            <div key={idx}>{symbolBucket.name}</div>
-          ))}
-        </div>
-        <div>
-          <h2>Cache</h2>
+        {symbolBuckets?.map((symbolBucket, idx) => (
+          <div key={idx}>{symbolBucket.name}</div>
+        ))}
+      </Padding>
+      <Padding>
+        <h2>Cache</h2>
 
-          <h3>View</h3>
+        <h3>View</h3>
 
-          <div>Cache size: {cacheSize}</div>
-          <div>Cache entries: {Object.keys(cacheDetails).length}</div>
+        <div>Cache size: {cacheSize}</div>
+        <div>Cache entries: {Object.keys(cacheDetails).length}</div>
 
-          {
-            // TODO: Don't render until in view (to get nice transition-in effect)
+        {
+          // TODO: Don't render until in view (to get nice transition-in effect)
+        }
+        <ProtoPieChart />
+      </Padding>
+
+      <ProtoTable />
+
+      <Padding>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={isProfilingCacheOverlayOpen}
+              onChange={() =>
+                store.setState(() => ({
+                  isProfilingCacheOverlayOpen: !isProfilingCacheOverlayOpen,
+                }))
+              }
+            />
           }
-          <ProtoPieChart />
+          label="Enable Cache Profiling Overlay"
+        />
+      </Padding>
 
-          <ProtoTable />
+      <Padding>
+        <h3>Purge</h3>
 
-          <FormControlLabel
-            control={
-              <Switch
-                checked={isProfilingCacheOverlayOpen}
-                onChange={() =>
-                  store.setState(() => ({
-                    isProfilingCacheOverlayOpen: !isProfilingCacheOverlayOpen,
-                  }))
-                }
-              />
-            }
-            label="Enable Cache Profiling Overlay"
-          />
+        <Button variant="outlined" onClick={() => store.PROTO_clearCache()}>
+          PROTO_clearCache()
+        </Button>
 
-          <h3>Purge</h3>
+        <Button
+          variant="outlined"
+          onClick={() =>
+            store.PROTO_removeCacheEntry("/data/symbol_search_dict.enc")
+          }
+        >
+          PROTO_removeCacheEntry(/data/symbol_search_dict.enc)
+        </Button>
+      </Padding>
 
-          <Button variant="outlined" onClick={() => store.PROTO_clearCache()}>
-            PROTO_clearCache()
-          </Button>
-
-          <Button
-            variant="outlined"
-            onClick={() =>
-              store.PROTO_removeCacheEntry("/data/symbol_search_dict.enc")
-            }
-          >
-            PROTO_removeCacheEntry(/data/symbol_search_dict.enc)
-          </Button>
-        </div>
-
-        <hr />
-
+      <Padding>
         <h2>Prototype Notifications</h2>
 
         <>
