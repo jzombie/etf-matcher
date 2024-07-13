@@ -4,6 +4,7 @@ import {
   Drawer,
   List,
   ListItem,
+  ListItemIcon,
   ListItemText,
   AppBar,
   Toolbar,
@@ -180,6 +181,13 @@ export default function HeaderMenu() {
                       },
                     }}
                   >
+                    <ListItemIcon
+                      sx={{
+                        color: item.key === selectedKey ? "white" : "inherit",
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
                     <ListItemText primary={item.label} />
                   </ListItem>
                 ))}
