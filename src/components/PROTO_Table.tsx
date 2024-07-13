@@ -20,41 +20,60 @@ interface Data {
   access_count: number;
 }
 
-// Function to create data
-const createData = (
-  key: string,
-  size: number,
-  age: number,
-  last_accessed: number,
-  access_count: number
-): Data => {
-  return { key, size, age, last_accessed, access_count };
-};
-
-// Sample data
-const rows: Data[] = [
-  createData("/data/symbol_etf_holders.43.enc", 78092, 804727, 437279, 6),
-  createData("/data/symbol_etf_holders.80.enc", 90309, 935205, 70073, 14),
-  createData("/data/symbol_detail.0.enc", 56688, 851639, 849858, 3),
-  createData("/data/symbol_etf_holders.34.enc", 88635, 686272, 686267, 2),
-  createData("/data/symbol_etf_holders.42.enc", 81993, 64642, 64639, 2),
-  // Add other rows here...
-];
-
 // Define the head cell type
 interface HeadCell {
   id: keyof Data;
   label: string;
 }
 
-// Head cells definition
-const headCells: HeadCell[] = [
-  { id: "key", label: "Key" },
-  { id: "size", label: "Size" },
-  { id: "age", label: "Age" },
-  { id: "last_accessed", label: "Last Accessed" },
-  { id: "access_count", label: "Access Count" },
-];
+// Combined data and head cells in a single object
+const tableData = {
+  rows: [
+    {
+      key: "/data/symbol_etf_holders.43.enc",
+      size: 78092,
+      age: 804727,
+      last_accessed: 437279,
+      access_count: 6,
+    },
+    {
+      key: "/data/symbol_etf_holders.80.enc",
+      size: 90309,
+      age: 935205,
+      last_accessed: 70073,
+      access_count: 14,
+    },
+    {
+      key: "/data/symbol_detail.0.enc",
+      size: 56688,
+      age: 851639,
+      last_accessed: 849858,
+      access_count: 3,
+    },
+    {
+      key: "/data/symbol_etf_holders.34.enc",
+      size: 88635,
+      age: 686272,
+      last_accessed: 686267,
+      access_count: 2,
+    },
+    {
+      key: "/data/symbol_etf_holders.42.enc",
+      size: 81993,
+      age: 64642,
+      last_accessed: 64639,
+      access_count: 2,
+    },
+    // Add other rows here...
+  ],
+  headCells: [
+    { id: "key", label: "Key" },
+    { id: "size", label: "Size" },
+    { id: "age", label: "Age" },
+    { id: "last_accessed", label: "Last Accessed" },
+    { id: "access_count", label: "Access Count" },
+  ] as HeadCell[],
+};
 
 // Styled components
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -95,6 +114,7 @@ interface EnhancedTableHeadProps {
     event: React.MouseEvent<unknown>,
     property: keyof Data
   ) => void;
+  headCells: HeadCell[];
 }
 
 // Enhanced table head component
@@ -102,6 +122,7 @@ const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
   order,
   orderBy,
   onRequestSort,
+  headCells,
 }) => {
   const createSortHandler =
     (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
@@ -180,21 +201,25 @@ const SortableTable: React.FC = () => {
           order={order}
           orderBy={orderBy}
           onRequestSort={handleRequestSort}
+          headCells={tableData.headCells}
         />
         <TableBody>
-          {stableSort(rows, getComparator(order, orderBy)).map((row, index) => (
-            <StyledTableRow key={index}>
-              <StyledTableCell>{row.key}</StyledTableCell>
-              <StyledTableCell className="numeric">{row.size}</StyledTableCell>
-              <StyledTableCell className="numeric">{row.age}</StyledTableCell>
-              <StyledTableCell className="numeric">
-                {row.last_accessed}
-              </StyledTableCell>
-              <StyledTableCell className="numeric">
-                {row.access_count}
-              </StyledTableCell>
-            </StyledTableRow>
-          ))}
+          {stableSort(tableData.rows, getComparator(order, orderBy)).map(
+            (row, index) => (
+              <StyledTableRow key={index}>
+                {tableData.headCells.map((headCell) => (
+                  <StyledTableCell
+                    key={headCell.id}
+                    className={
+                      typeof row[headCell.id] === "number" ? "numeric" : ""
+                    }
+                  >
+                    {row[headCell.id]}
+                  </StyledTableCell>
+                ))}
+              </StyledTableRow>
+            )
+          )}
         </TableBody>
       </Table>
     </TableContainer>
