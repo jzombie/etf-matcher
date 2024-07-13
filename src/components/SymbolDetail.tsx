@@ -27,6 +27,7 @@ export default function SymbolDetail({
 
   const { symbolBuckets, visibleSymbols } = useStoreStateReader([
     "symbolBuckets",
+    // TODO: Offload to `SymbolContainer`
     "visibleSymbols",
   ]);
 
@@ -90,7 +91,13 @@ export default function SymbolDetail({
       tickerSymbol={tickerSymbol}
     >
       {!isFullRenderSymbol ? (
-        <div style={{ height: 500, backgroundColor: "yellow" }} />
+        <div
+          style={{
+            height: 500,
+            // TODO: Remove? This should never be visible, anyway, if the `isFullRenderSymbol` algorithm is working correct
+            backgroundColor: "yellow",
+          }}
+        />
       ) : (
         <>
           {" "}
