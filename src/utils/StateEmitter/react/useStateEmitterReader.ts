@@ -1,4 +1,10 @@
-import { useSyncExternalStore, useCallback, useMemo, useRef } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useSyncExternalStore,
+} from "react";
 import EmitterState, { StateEmitterDefaultEvents } from "../StateEmitter";
 import deepEqual from "@utils/deepEqual";
 
@@ -7,6 +13,19 @@ const useStateEmitterReader = <T extends object, K extends keyof T>(
   stateKeyOrKeys: K | K[],
   eventOrEventNames: string | string[] = StateEmitterDefaultEvents.UPDATE
 ) => {
+  // Dynamically apply `maxListeners` offset
+  useEffect(() => {
+    const maxListeners = emitter.getMaxListeners();
+    emitter.setMaxListeners(maxListeners + 1);
+
+    return () => {
+      // Max listeners has to be re-obtained because the value may have changed
+      // since the original call
+      const maxListeners = emitter.getMaxListeners();
+      emitter.setMaxListeners(maxListeners - 1);
+    };
+  }, [emitter]);
+
   const eventNames: K[] = useMemo(
     () =>
       (Array.isArray(eventOrEventNames)
