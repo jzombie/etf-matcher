@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, SyntheticEvent } from "react";
 import {
   Button,
-  ButtonProps,
   Dialog,
   DialogActions,
   DialogContent,
@@ -157,13 +156,26 @@ export default function SearchModalButton({
       >
         Search
       </Button>
-      <Dialog open={isModalOpen} onClose={handleCancel}>
+      <Dialog
+        open={isModalOpen}
+        onClose={handleCancel}
+        PaperProps={{
+          style: {
+            minWidth: "400px",
+            maxHeight: "80vh",
+            backgroundColor: "rgba(31,31,31,.8)",
+            border: "2px rgba(38,100,100,.8) solid",
+            backdropFilter: "blur(10px)",
+          },
+        }}
+      >
         <DialogTitle>&nbsp;</DialogTitle>
         <DialogContent
           sx={{
-            backgroundColor: "rgba(31,31,31,.8)",
-            border: "2px rgba(38,100,100,.8) solid",
-            backdropFilter: "blur(5px)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+            overflowY: "auto",
           }}
         >
           {isModalOpen && (
