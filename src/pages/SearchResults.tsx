@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 
@@ -51,6 +51,11 @@ export default function SearchResults() {
     setOnlyExactMatches(newExactValue);
   };
 
+  const searchResultSymbols = useMemo(
+    () => searchResults.map((searchResult) => searchResult.symbol),
+    [searchResults]
+  );
+
   if (!searchQuery) {
     return <div>No search query...</div>;
   }
@@ -61,10 +66,11 @@ export default function SearchResults() {
       <Button onClick={toggleExactMatch}>
         Toggle Exact Match (currently {onlyExactMatches ? "on" : "off"})
       </Button>
-      {searchResults.map((searchResult) => (
+      {searchResultSymbols.map((tickerSymbol) => (
         <SymbolDetail
-          key={searchResult.symbol}
-          tickerSymbol={searchResult.symbol}
+          key={tickerSymbol}
+          tickerSymbol={tickerSymbol}
+          groupTickerSymbols={searchResultSymbols}
         />
       ))}
     </Scrollable>

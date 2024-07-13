@@ -15,11 +15,13 @@ import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 
 export type SymbolDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerSymbol: string;
+  groupTickerSymbols: string[];
 };
 
 export default function SymbolDetail({
   tickerSymbol,
-  ...args
+  groupTickerSymbols,
+  ...rest
 }: SymbolDetailProps) {
   const navigate = useNavigate();
 
@@ -38,7 +40,7 @@ export default function SymbolDetail({
   return (
     <SymbolContainer
       style={{ marginBottom: 12 }}
-      {...args}
+      {...rest}
       tickerSymbol={tickerSymbol}
     >
       <MiniChart
