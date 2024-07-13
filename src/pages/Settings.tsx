@@ -9,9 +9,9 @@ import ProtoPieChart from "@components/PROTO_PieChart";
 import ProtoTable from "@components/PROTO_Table";
 
 export default function Settings() {
-  const { symbolBuckets, isProfilingCache } = useStoreStateReader([
+  const { symbolBuckets, isProfilingCacheOverlayOpen } = useStoreStateReader([
     "symbolBuckets",
-    "isProfilingCache",
+    "isProfilingCacheOverlayOpen",
   ]);
 
   // const [api, contextHolder] = notification.useNotification();
@@ -80,10 +80,10 @@ export default function Settings() {
         <FormControlLabel
           control={
             <Switch
-              checked={isProfilingCache}
+              checked={isProfilingCacheOverlayOpen}
               onChange={() =>
                 store.setState(() => ({
-                  isProfilingCache: !isProfilingCache,
+                  isProfilingCacheOverlayOpen: !isProfilingCacheOverlayOpen,
                 }))
               }
             />
