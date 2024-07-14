@@ -37,13 +37,15 @@ export default function ScrollableBucketList({
 
             {!symbolBucket.symbols.length && (
               <>
+                <Typography variant="body2" color="textSecondary">
+                  No items in &quot;{symbolBucket.name}&quot;.
+                </Typography>
                 <Typography
                   variant="body2"
                   color="textSecondary"
                   sx={{ display: "inline-block", marginRight: 1 }}
                 >
-                  No items in &quot;{symbolBucket.name}&quot;. Perhaps you might
-                  wish to perform a
+                  Perhaps you might wish to perform a
                 </Typography>
                 <SearchModalButton />
               </>
