@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import SymbolContainer from "./SymbolContainer";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +8,7 @@ import type { RustServiceETFHoldersWithTotalCount } from "@src/store";
 
 import {
   MiniChart,
-  Timeline,
+  // Timeline,
   // CompanyProfile,
 } from "react-ts-tradingview-widgets";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
@@ -26,18 +26,6 @@ export default function SymbolDetail({
   const navigate = useNavigate();
 
   const { symbolBuckets } = useStoreStateReader(["symbolBuckets"]);
-
-  // const [isFullRenderSymbol, setIsFullRenderSymbol] = useState(false);
-
-  // useEffect(() => {
-  //   if (isFullRenderSymbol) {
-  //     // TODO: Remove
-  //     console.warn({
-  //       tickerSymbol,
-  //       isFullRenderSymbol,
-  //     });
-  //   }
-  // }, [tickerSymbol, isFullRenderSymbol]);
 
   const [etfHolders, setEtfHolders] = useState<
     RustServiceETFHoldersWithTotalCount | undefined
