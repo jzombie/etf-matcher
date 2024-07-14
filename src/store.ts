@@ -201,7 +201,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         ).then((cacheDetails) => this.setState({ cacheDetails }));
       },
       500
-    )();
+    );
 
     return resp;
   }
