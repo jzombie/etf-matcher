@@ -5,6 +5,7 @@ import { Button } from "@mui/material";
 import useSearch from "@hooks/useSearch";
 import SymbolDetailList from "@components/SymbolDetailList";
 
+import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
 // TODO: Show search button if no search results
@@ -75,11 +76,13 @@ export default function SearchResults() {
 
   return (
     <Scrollable>
-      {totalSearchResults} search result{totalSearchResults !== 1 ? "s" : ""}{" "}
-      for: {searchQuery}{" "}
-      <Button onClick={toggleExactMatch} variant="outlined">
-        {onlyExactMatches ? "Exact Match" : "Non-Exact Match"}
-      </Button>
+      <Padding>
+        {totalSearchResults} search result{totalSearchResults !== 1 ? "s" : ""}{" "}
+        for &quot;{searchQuery}&quot;{" "}
+        <Button onClick={toggleExactMatch} variant="contained">
+          {onlyExactMatches ? "Disable Exact Match" : "Enable Exact Match"}
+        </Button>
+      </Padding>
       <SymbolDetailList tickerSymbols={searchResultSymbols} />
     </Scrollable>
   );
