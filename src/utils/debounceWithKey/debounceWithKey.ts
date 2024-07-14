@@ -4,8 +4,8 @@ export default function debounceWithKey<T extends (...args: unknown[]) => void>(
   key: string,
   func: T,
   wait: number
-): T {
-  return function (this: unknown, ...args: Parameters<T>): void {
+): T & { clear: () => void } {
+  function debouncedFunction(this: unknown, ...args: Parameters<T>): void {
     const later = () => {
       debounceMap[key] = null;
       func.apply(this, args);
@@ -16,5 +16,14 @@ export default function debounceWithKey<T extends (...args: unknown[]) => void>(
     }
 
     debounceMap[key] = setTimeout(later, wait);
-  } as T;
+  }
+
+  debouncedFunction.clear = () => {
+    if (debounceMap[key]) {
+      clearTimeout(debounceMap[key] as ReturnType<typeof setTimeout>);
+      debounceMap[key] = null;
+    }
+  };
+
+  return debouncedFunction as T & { clear: () => void };
 }

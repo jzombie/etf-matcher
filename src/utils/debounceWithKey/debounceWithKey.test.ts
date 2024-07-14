@@ -100,4 +100,15 @@ describe("debounceWithKey", () => {
 
     expect(mockFunction).toHaveBeenCalledWith(1, 2, 3);
   });
+
+  it("should clear the debounced function", async () => {
+    const debouncedFunction = debounceWithKey("test", mockFunction, 300);
+
+    debouncedFunction();
+    debouncedFunction.clear();
+
+    await wait(300);
+
+    expect(mockFunction).not.toHaveBeenCalled();
+  });
 });
