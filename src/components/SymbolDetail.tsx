@@ -56,7 +56,7 @@ export default function SymbolDetail({
       {...rest}
       tickerSymbol={tickerSymbol}
       groupTickerSymbols={groupTickerSymbols}
-      onFullRenderSymbolStateChange={setIsFullRenderSymbol}
+      onDeferredRenderStateChange={setIsFullRenderSymbol}
     >
       <>
         {" "}

@@ -13,7 +13,7 @@ export type SymbolContainerProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerSymbol: string;
   groupTickerSymbols: string[];
   children: React.ReactNode;
-  onFullRenderSymbolStateChange?: (isFullRenderSymbol: boolean) => void;
+  onDeferredRenderStateChange?: (isDeferredRender: boolean) => void;
   lookAheadBufferSize?: number;
   lookAheadMaskStyle?: React.HTMLAttributes<HTMLDivElement>["style"];
 };
@@ -22,7 +22,7 @@ export default function SymbolContainer({
   tickerSymbol,
   groupTickerSymbols,
   children,
-  onFullRenderSymbolStateChange,
+  onDeferredRenderStateChange,
   lookAheadBufferSize = 1,
   lookAheadMaskStyle = {
     height: 500,
@@ -52,7 +52,9 @@ export default function SymbolContainer({
 
   const maxIdxPrevVisibleSymbolRef = useRef<number>(-1);
 
-  const shouldRenderSymbol = useMemo(() => {
+  // Track whether the ticker symbol should be rendered immediately or deferred until it is scrolled into view.
+  // This approach minimizes unnecessary network calls by only fetching data when the ticker symbol is visible.
+  const isDeferredRender = useMemo(() => {
     if (visibleSymbols.includes(tickerSymbol)) {
       return true;
     }
@@ -85,18 +87,18 @@ export default function SymbolContainer({
     return false;
   }, [tickerSymbol, groupTickerSymbols, visibleSymbols, lookAheadBufferSize]);
 
-  const handleFullRenderSymbolStateChange = useCallback(
+  const handleDeferredRenderStateChange = useCallback(
     (isFullRenderSymbol: boolean) => {
-      if (typeof onFullRenderSymbolStateChange === "function") {
-        onFullRenderSymbolStateChange(isFullRenderSymbol);
+      if (typeof onDeferredRenderStateChange === "function") {
+        onDeferredRenderStateChange(isFullRenderSymbol);
       }
     },
-    [onFullRenderSymbolStateChange]
+    [onDeferredRenderStateChange]
   );
 
   useEffect(() => {
-    handleFullRenderSymbolStateChange(shouldRenderSymbol);
-  }, [shouldRenderSymbol, handleFullRenderSymbolStateChange]);
+    handleDeferredRenderStateChange(isDeferredRender);
+  }, [isDeferredRender, handleDeferredRenderStateChange]);
 
   const elementRef = useRef<HTMLDivElement>(null);
 
@@ -114,7 +116,7 @@ export default function SymbolContainer({
 
   return (
     <div ref={elementRef} {...rest}>
-      {!shouldRenderSymbol ? <div style={lookAheadMaskStyle} /> : children}
+      {!isDeferredRender ? <div style={lookAheadMaskStyle} /> : children}
     </div>
   );
 }
