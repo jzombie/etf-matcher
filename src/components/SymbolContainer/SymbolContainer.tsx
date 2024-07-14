@@ -60,7 +60,7 @@ export default function SymbolContainer({
       return false;
     }
 
-    // Where the last currenty visible symbol lies in the group
+    // Where the last currently visible symbol lies in the group
     const idxGroupLastVisible = groupTickerSymbols.indexOf(lastVisibleSymbol);
 
     if (idxGroupLastVisible > maxIdxPrevVisibleSymbolRef.current) {
