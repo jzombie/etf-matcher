@@ -68,6 +68,11 @@ export default function SymbolContainer({
 
     if (idxGroupLastVisible > maxIdxPrevVisibleSymbolRef.current) {
       maxIdxPrevVisibleSymbolRef.current = idxGroupLastVisible;
+
+      // console.debug({
+      //   maxIdxPrevVisibleSymbol: maxIdxPrevVisibleSymbolRef.current,
+      //   lack: groupTickerSymbols.length - maxIdxPrevVisibleSymbolRef.current,
+      // });
     }
 
     // Where the symbol lies in the group
