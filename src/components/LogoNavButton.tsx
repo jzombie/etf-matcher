@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { styled } from "@mui/system";
 
-const StyledLogoButton = styled(Link)(({ theme }) => ({
+const StyledNavButton = styled(Link)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   textDecoration: "none",
@@ -17,12 +17,10 @@ const StyledLogoButton = styled(Link)(({ theme }) => ({
   },
 }));
 
-export default function LogoButton({
-  to,
-  children,
-}: {
-  to: string;
-  children: React.ReactNode;
-}) {
-  return <StyledLogoButton to={to}>{children}</StyledLogoButton>;
+export type LogoNavButtonProps = {
+  to?: string;
+};
+
+export default function LogoNavButton({ to = "/" }: LogoNavButtonProps) {
+  return <StyledNavButton to={to}>ETF Matcher</StyledNavButton>;
 }

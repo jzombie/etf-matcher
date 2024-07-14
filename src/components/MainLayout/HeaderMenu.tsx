@@ -24,7 +24,7 @@ import { Link, useLocation, matchPath } from "react-router-dom";
 import SearchModalButton from "@components/SearchModalButton";
 import clsx from "clsx";
 import { styled } from "@mui/system";
-import LogoButton from "@components/LogoButton";
+import LogoNavButton from "@components/LogoNavButton";
 
 export default function HeaderMenu() {
   const location = useLocation();
@@ -97,7 +97,7 @@ export default function HeaderMenu() {
             }}
           >
             <DesktopStyledLogoBranding>
-              <LogoButton to="/">ETF Matcher</LogoButton>
+              <LogoNavButton />
             </DesktopStyledLogoBranding>
             {menuItems.map((item) => (
               <Box
@@ -153,7 +153,7 @@ export default function HeaderMenu() {
             {!drawerOpen && (
               <MobileStyledLogoBranding>
                 {" "}
-                <LogoButton to="/">ETF Matcher</LogoButton>
+                <LogoNavButton />
               </MobileStyledLogoBranding>
             )}
             <Drawer
@@ -163,7 +163,7 @@ export default function HeaderMenu() {
               sx={{ "& .MuiDrawer-paper": { width: "240px" } }}
             >
               <MobileStyledLogoBranding sx={{ padding: 1 }}>
-                <LogoButton to="/">ETF Matcher</LogoButton>
+                <LogoNavButton />
               </MobileStyledLogoBranding>
               <List>
                 {menuItems.map((item) => (
