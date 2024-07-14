@@ -3,7 +3,7 @@ import BucketList from "@components/BucketList";
 
 import Scrollable from "@layoutKit/Scrollable";
 
-export default function Portfolios() {
+export default function Watchlists() {
   return (
     <Scrollable>
       <BucketList symbolBucketType="watchlist" />
