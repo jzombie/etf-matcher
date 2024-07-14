@@ -3,9 +3,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 
 import useSearch from "@hooks/useSearch";
-import SymbolDetail from "@components/SymbolDetail";
+import SymbolDetailList from "@components/SymbolDetailList";
 
 import Scrollable from "@layoutKit/Scrollable";
+
+// TODO: Show search button if no search results
+
+// TODO: Include recent searches, or suggestions
 
 export default function SearchResults() {
   const location = useLocation();
@@ -75,13 +79,7 @@ export default function SearchResults() {
       <Button onClick={toggleExactMatch} variant="outlined">
         {onlyExactMatches ? "Exact Match" : "Non-Exact Match"}
       </Button>
-      {searchResultSymbols.map((tickerSymbol) => (
-        <SymbolDetail
-          key={tickerSymbol}
-          tickerSymbol={tickerSymbol}
-          groupTickerSymbols={searchResultSymbols}
-        />
-      ))}
+      <SymbolDetailList tickerSymbols={searchResultSymbols} />
     </Scrollable>
   );
 }

@@ -1,9 +1,8 @@
 import React, { useMemo } from "react";
-import SymbolDetail from "@components/SymbolDetail";
+import SymbolDetailList from "@components/SymbolDetailList";
 
 import Typography from "@mui/material/Typography";
 
-import Scrollable from "@layoutKit/Scrollable";
 import Padding from "@layoutKit/Padding";
 
 import SearchModalButton from "./SearchModalButton";
@@ -29,7 +28,7 @@ export default function ScrollableBucketList({
   );
 
   return (
-    <Scrollable>
+    <>
       {localSymbolBucket?.map((symbolBucket, idx) => (
         <React.Fragment key={idx}>
           <Padding>
@@ -37,27 +36,25 @@ export default function ScrollableBucketList({
 
             {!symbolBucket.symbols.length && (
               <>
+                <Typography variant="body2" color="textSecondary">
+                  No items in &quot;{symbolBucket.name}&quot;.
+                </Typography>
                 <Typography
                   variant="body2"
                   color="textSecondary"
                   sx={{ display: "inline-block", marginRight: 1 }}
                 >
-                  No items in this bucket.
+                  Perhaps you might wish to perform a{" "}
+                  {/* [`Search` button follows] */}
                 </Typography>
                 <SearchModalButton />
               </>
             )}
           </Padding>
 
-          {symbolBucket.symbols.map((symbol) => (
-            <SymbolDetail
-              key={symbol}
-              tickerSymbol={symbol}
-              groupTickerSymbols={symbolBucket.symbols}
-            />
-          ))}
+          <SymbolDetailList tickerSymbols={symbolBucket.symbols} />
         </React.Fragment>
       ))}
-    </Scrollable>
+    </>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import SymbolContainer from "./SymbolContainer";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -8,36 +8,24 @@ import type { RustServiceETFHoldersWithTotalCount } from "@src/store";
 
 import {
   MiniChart,
-  Timeline,
+  // Timeline,
   // CompanyProfile,
 } from "react-ts-tradingview-widgets";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 
 export type SymbolDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerSymbol: string;
-  groupTickerSymbols: string[];
+  onIntersectionStateChange?: (isIntersecting: boolean) => void;
 };
 
 export default function SymbolDetail({
   tickerSymbol,
-  groupTickerSymbols,
+  onIntersectionStateChange,
   ...rest
 }: SymbolDetailProps) {
   const navigate = useNavigate();
 
   const { symbolBuckets } = useStoreStateReader(["symbolBuckets"]);
-
-  const [isFullRenderSymbol, setIsFullRenderSymbol] = useState(false);
-
-  useEffect(() => {
-    if (isFullRenderSymbol) {
-      // TODO: Remove
-      console.warn({
-        tickerSymbol,
-        isFullRenderSymbol,
-      });
-    }
-  }, [tickerSymbol, isFullRenderSymbol]);
 
   const [etfHolders, setEtfHolders] = useState<
     RustServiceETFHoldersWithTotalCount | undefined
@@ -45,27 +33,33 @@ export default function SymbolDetail({
 
   // Only query symbols that are fully rendered, or are next in the list
   useEffect(() => {
-    if (tickerSymbol && isFullRenderSymbol) {
+    if (tickerSymbol) {
       store.getSymbolETFHolders(tickerSymbol).then(setEtfHolders);
     }
-  }, [tickerSymbol, isFullRenderSymbol]);
+  }, [tickerSymbol]);
 
   return (
     <SymbolContainer
       style={{ marginBottom: 12 }}
-      {...rest}
       tickerSymbol={tickerSymbol}
-      groupTickerSymbols={groupTickerSymbols}
-      onDeferredRenderStateChange={setIsFullRenderSymbol}
+      onIntersectionStateChange={onIntersectionStateChange}
+      {...rest}
     >
       <>
-        {" "}
-        <MiniChart
-          symbol={tickerSymbol}
-          colorTheme="dark"
-          width="100%"
-          copyrightStyles={tradingViewCopyrightStyles}
-        />
+        <div style={{ height: 200 }}>
+          <MiniChart
+            symbol={tickerSymbol}
+            colorTheme="dark"
+            width="100%"
+            height="100%"
+            copyrightStyles={tradingViewCopyrightStyles}
+          />
+        </div>
+
+        {
+          // TODO: For the following, wrap with a div to prevent potential reflow issues
+        }
+
         {/* <MiniChart
             symbol={tickerSymbol}
             colorTheme="dark"
@@ -80,13 +74,13 @@ export default function SymbolDetail({
             copyrightStyles={tradingViewCopyrightStyles}
           /> */}
         {/* <Timeline
-            colorTheme="dark"
-            feedMode="symbol"
-            symbol={tickerSymbol}
-            height={400}
-            width="100%"
-            copyrightStyles={tradingViewCopyrightStyles}
-          /> */}
+          colorTheme="dark"
+          feedMode="symbol"
+          symbol={tickerSymbol}
+          height={400}
+          width="100%"
+          copyrightStyles={tradingViewCopyrightStyles}
+        /> */}
         {symbolBuckets?.map((symbolBucket, idx) => (
           // TODO: If symbol is already in the bucket, don't try to re-add it
           <Button

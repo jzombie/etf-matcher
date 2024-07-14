@@ -1,8 +1,14 @@
 import React from "react";
-import ScrollableBucketList from "@components/ScrollableBucketList";
+import BucketList from "@components/BucketList";
+
+import Scrollable from "@layoutKit/Scrollable";
 
 export default function Portfolios() {
-  return <ScrollableBucketList symbolBucketType="portfolio" />;
+  return (
+    <Scrollable>
+      <BucketList symbolBucketType="portfolio" />
+    </Scrollable>
+  );
 }
 
 // TODO: Make use of persistent session storage for portfolios, with ability to clear data
