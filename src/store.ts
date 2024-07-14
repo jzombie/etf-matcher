@@ -54,7 +54,6 @@ export type StoreStateProps = {
   isSearchModalOpen: boolean;
   symbolBuckets: SymbolBucketProps[];
   isProfilingCacheOverlayOpen: boolean;
-  cacheProfilerConnections: number; // Used to determine if active cache profiling needs to happen
   cacheProfilerWaitTime: number;
   cacheDetails: RustServiceCacheDetail[];
   cacheSize: number;
@@ -117,7 +116,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         },
       ],
       isProfilingCacheOverlayOpen: false,
-      cacheProfilerConnections: 0,
       cacheProfilerWaitTime: 1000,
       cacheDetails: [],
       cacheSize: 0,
@@ -191,7 +189,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   ): Promise<T> {
     const resp = await libCallWorkerFunction<T>(functionName, ...args);
 
-    // TODO: Only call these if is profiling (cacheProfilerConnections > 0)
     debounceWithKey(
       "store:cache_profiler",
       () => {
