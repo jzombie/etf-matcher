@@ -189,12 +189,15 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     const resp = await libCallWorkerFunction<T>(functionName, ...args);
 
     // TODO: Only call these if is profiling (cacheProfilerConnections > 0)
-    libCallWorkerFunction<number>("get_cache_size").then((cacheSize) => {
-      this.setState({ cacheSize });
-    });
-    libCallWorkerFunction<RustServiceCacheDetail[]>("get_cache_details").then(
-      (cacheDetails) => this.setState({ cacheDetails })
-    );
+    // TODO: Regardless if profiling or not, these should be debounced
+    (() => {
+      libCallWorkerFunction<number>("get_cache_size").then((cacheSize) => {
+        this.setState({ cacheSize });
+      });
+      libCallWorkerFunction<RustServiceCacheDetail[]>("get_cache_details").then(
+        (cacheDetails) => this.setState({ cacheDetails })
+      );
+    })();
 
     return resp;
   }

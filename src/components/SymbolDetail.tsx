@@ -23,7 +23,7 @@ export default function SymbolDetail({
   onIntersectionStateChange,
   ...rest
 }: SymbolDetailProps) {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const { symbolBuckets } = useStoreStateReader(["symbolBuckets"]);
 
@@ -39,16 +39,16 @@ export default function SymbolDetail({
   //   }
   // }, [tickerSymbol, isFullRenderSymbol]);
 
-  // const [etfHolders, setEtfHolders] = useState<
-  //   RustServiceETFHoldersWithTotalCount | undefined
-  // >(undefined);
+  const [etfHolders, setEtfHolders] = useState<
+    RustServiceETFHoldersWithTotalCount | undefined
+  >(undefined);
 
   // Only query symbols that are fully rendered, or are next in the list
-  // useEffect(() => {
-  //   if (tickerSymbol && isFullRenderSymbol) {
-  //     store.getSymbolETFHolders(tickerSymbol).then(setEtfHolders);
-  //   }
-  // }, [tickerSymbol, isFullRenderSymbol]);
+  useEffect(() => {
+    if (tickerSymbol) {
+      store.getSymbolETFHolders(tickerSymbol).then(setEtfHolders);
+    }
+  }, [tickerSymbol]);
 
   return (
     <SymbolContainer
@@ -58,14 +58,13 @@ export default function SymbolDetail({
       {...rest}
     >
       <>
-        {/*
         <MiniChart
           symbol={tickerSymbol}
           colorTheme="dark"
           width="100%"
           copyrightStyles={tradingViewCopyrightStyles}
         />
-        */}
+
         {/* <MiniChart
             symbol={tickerSymbol}
             colorTheme="dark"
@@ -79,14 +78,14 @@ export default function SymbolDetail({
             height={300}
             copyrightStyles={tradingViewCopyrightStyles}
           /> */}
-        {/* <Timeline
-            colorTheme="dark"
-            feedMode="symbol"
-            symbol={tickerSymbol}
-            height={400}
-            width="100%"
-            copyrightStyles={tradingViewCopyrightStyles}
-          /> */}
+        <Timeline
+          colorTheme="dark"
+          feedMode="symbol"
+          symbol={tickerSymbol}
+          height={400}
+          width="100%"
+          copyrightStyles={tradingViewCopyrightStyles}
+        />
         {symbolBuckets?.map((symbolBucket, idx) => (
           // TODO: If symbol is already in the bucket, don't try to re-add it
           <Button
@@ -103,7 +102,7 @@ export default function SymbolDetail({
           {
             // TODO: Paginate through these results
           }
-          {/*etfHolders?.results?.map((etfHolderSymbol) => (
+          {etfHolders?.results?.map((etfHolderSymbol) => (
             <Button
               key={etfHolderSymbol}
               onClick={() =>
@@ -114,8 +113,7 @@ export default function SymbolDetail({
             >
               {etfHolderSymbol}
             </Button>
-          ))
-            */}
+          ))}
         </div>
       </>
     </SymbolContainer>
