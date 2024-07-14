@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 
 import useSearch from "@hooks/useSearch";
-import SymbolDetail from "@components/SymbolDetail";
+import SymbolDetailList from "@components/SymbolDetailList";
 
 import Scrollable from "@layoutKit/Scrollable";
 
@@ -77,9 +77,7 @@ export default function SearchResults() {
       <Button onClick={toggleExactMatch} variant="outlined">
         {onlyExactMatches ? "Exact Match" : "Non-Exact Match"}
       </Button>
-      {searchResultSymbols.map((tickerSymbol) => (
-        <SymbolDetail key={tickerSymbol} tickerSymbol={tickerSymbol} />
-      ))}
+      <SymbolDetailList tickerSymbols={searchResultSymbols} />
     </Scrollable>
   );
 }

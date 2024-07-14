@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import SymbolDetail from "@components/SymbolDetail";
+import SymbolDetailList from "@components/SymbolDetailList";
 
 import Typography from "@mui/material/Typography";
 
@@ -53,9 +53,7 @@ export default function ScrollableBucketList({
             )}
           </Padding>
 
-          {symbolBucket.symbols.map((symbol) => (
-            <SymbolDetail key={symbol} tickerSymbol={symbol} />
-          ))}
+          <SymbolDetailList tickerSymbols={symbolBucket.symbols} />
         </React.Fragment>
       ))}
     </Scrollable>

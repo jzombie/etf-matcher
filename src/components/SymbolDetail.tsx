@@ -66,7 +66,6 @@ export default function SymbolDetail({
           copyrightStyles={tradingViewCopyrightStyles}
         />
         */}
-
         {/* <MiniChart
             symbol={tickerSymbol}
             colorTheme="dark"

@@ -3,14 +3,14 @@ import SymbolDetail from "./SymbolDetail";
 
 export type SymbolDetailListProps = {
   tickerSymbols: string[];
-  onDeferredRenderStateChange?: (isDeferredRender: boolean) => void;
+  // onDeferredRenderStateChange?: (isDeferredRender: boolean) => void;
   lookAheadBufferSize?: number;
   lookAheadMaskStyle?: React.HTMLAttributes<HTMLDivElement>["style"];
 };
 
 export default function SymbolDetailList({
   tickerSymbols,
-  onDeferredRenderStateChange,
+  // onDeferredRenderStateChange,
   lookAheadBufferSize = 1,
   lookAheadMaskStyle = {
     height: 500,
@@ -70,20 +70,36 @@ export default function SymbolDetailList({
   // }, [tickerSymbol, groupTickerSymbols, visibleSymbols, lookAheadBufferSize]);
 
   // TODO: Don't hardcode
-  const isDeferredRender = false;
+  // const isDeferredRender = false;
 
-  const handleDeferredRenderStateChange = useCallback(
-    (isDeferredRender: boolean) => {
-      if (typeof onDeferredRenderStateChange === "function") {
-        onDeferredRenderStateChange(isDeferredRender);
-      }
-    },
-    [onDeferredRenderStateChange]
-  );
+  // const handleDeferredRenderStateChange = useCallback(
+  //   (isDeferredRender: boolean) => {
+  //     if (typeof onDeferredRenderStateChange === "function") {
+  //       onDeferredRenderStateChange(isDeferredRender);
+  //     }
+  //   },
+  //   [onDeferredRenderStateChange]
+  // );
 
   // useEffect(() => {
   //   handleDeferredRenderStateChange(isDeferredRender);
   // }, [isDeferredRender, handleDeferredRenderStateChange]);
 
-  return <></>;
+  return (
+    <div>
+      {tickerSymbols.map((tickerSymbol) => (
+        <SymbolDetail
+          key={tickerSymbol}
+          tickerSymbol={tickerSymbol}
+          onIntersectionStateChange={(isIntertersecting) => {
+            console.warn(
+              "TODO: Handle isIntersecting",
+              tickerSymbol,
+              isIntertersecting
+            );
+          }}
+        />
+      ))}
+    </div>
+  );
 }
