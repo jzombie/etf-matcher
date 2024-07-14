@@ -10,10 +10,11 @@ import {
 import Scrollable from "@layoutKit/Scrollable";
 import Padding from "@layoutKit/Padding";
 
-import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
-
 import ProtoPieChart from "@components/PROTO_PieChart";
 import ProtoTable from "@components/PROTO_Table";
+
+import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
+import formatSize from "@utils/formatSize";
 
 export default function Settings() {
   const {
@@ -49,7 +50,7 @@ export default function Settings() {
 
         <Box display="flex" justifyContent="center" alignItems="center" mb={2}>
           <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
-            Cache size: {cacheSize}
+            Cache size: {formatSize(cacheSize)}
           </Typography>
           <Typography variant="body2" color="textSecondary">
             Cache entries: {Object.keys(cacheDetails).length}

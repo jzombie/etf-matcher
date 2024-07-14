@@ -13,6 +13,7 @@ import { styled } from "@mui/system";
 
 import { RustServiceCacheDetail } from "@src/store";
 import useStoreStateReader from "@hooks/useStoreStateReader";
+import formatSize from "@utils/formatSize"; // Import the utility function
 
 // Styled components
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -145,7 +146,9 @@ const SortableTable: React.FC = () => {
                     typeof row[headCell.id] === "number" ? "numeric" : ""
                   }
                 >
-                  {row[headCell.id]}
+                  {headCell.id === "size"
+                    ? formatSize(row[headCell.id] as unknown as number)
+                    : row[headCell.id]}
                 </StyledTableCell>
               ))}
             </StyledTableRow>
