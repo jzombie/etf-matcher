@@ -9,6 +9,8 @@ import Scrollable from "@layoutKit/Scrollable";
 
 // TODO: Show search button if no search results
 
+// TODO: Include recent searches, or suggestions
+
 export default function SearchResults() {
   const location = useLocation();
   const navigate = useNavigate();
