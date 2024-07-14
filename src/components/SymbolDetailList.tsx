@@ -22,59 +22,64 @@ SymbolDetailListProps) {
     }
   }, [tickerSymbols]);
 
-  const [intersectingSymbols, setIntersectingSymbols] = useState<string[]>([]);
-  const [renderingIndex, setRenderingIndex] = useState<number>(0);
-  const maxIdxLastIntersecting = useRef<number>(-1);
+  // const [intersectingSymbols, setIntersectingSymbols] = useState<string[]>([]);
+  // const [renderingIndex, setRenderingIndex] = useState<number>(0);
+  // const maxInter = useRef<number>(-1);
+  const [maxIntersectionIndex, setMaxIntersectionIndex] = useState<number>(0);
 
   const handleIntersectionStateChange = useCallback(
     (tickerSymbol: string, isIntersecting: boolean) => {
-      setIntersectingSymbols((prevSymbols) => {
-        const updatedSymbols = [...prevSymbols];
-        const index = updatedSymbols.indexOf(tickerSymbol);
-        if (isIntersecting) {
-          if (index === -1) {
-            updatedSymbols.push(tickerSymbol);
-          }
-        } else {
-          if (index !== -1) {
-            updatedSymbols.splice(index, 1);
-          }
-        }
-        return updatedSymbols.sort(
-          (a, b) => tickerSymbols.indexOf(a) - tickerSymbols.indexOf(b)
-        );
-      });
+      // setIntersectingSymbols((prevSymbols) => {
+      //   const updatedSymbols = [...prevSymbols];
+      //   const index = updatedSymbols.indexOf(tickerSymbol);
+      //   if (isIntersecting) {
+      //     if (index === -1) {
+      //       updatedSymbols.push(tickerSymbol);
+      //     }
+      //   } else {
+      //     if (index !== -1) {
+      //       updatedSymbols.splice(index, 1);
+      //     }
+      //   }
+      //   return updatedSymbols.sort(
+      //     (a, b) => tickerSymbols.indexOf(a) - tickerSymbols.indexOf(b)
+      //   );
+      // });
 
       if (isIntersecting) {
-        setRenderingIndex((prevIndex) => prevIndex + 1);
+        const intersectionIndex = tickerSymbols.indexOf(tickerSymbol);
+
+        if (intersectionIndex > maxIntersectionIndex) {
+          setMaxIntersectionIndex(intersectionIndex);
+        }
       }
     },
-    [tickerSymbols]
+    [tickerSymbols, maxIntersectionIndex]
   );
 
-  useEffect(() => {
-    const lastIntersectingSymbol = intersectingSymbols.at(-1);
-    if (!lastIntersectingSymbol) {
-      return;
-    }
+  // useEffect(() => {
+  //   const lastIntersectingSymbol = intersectingSymbols.at(-1);
+  //   if (!lastIntersectingSymbol) {
+  //     return;
+  //   }
 
-    const idxGroupLastIntersecting = tickerSymbols.indexOf(
-      lastIntersectingSymbol
-    );
+  //   const idxGroupLastIntersecting = tickerSymbols.indexOf(
+  //     lastIntersectingSymbol
+  //   );
 
-    if (idxGroupLastIntersecting > maxIdxLastIntersecting.current) {
-      maxIdxLastIntersecting.current = idxGroupLastIntersecting;
-    }
+  //   if (idxGroupLastIntersecting > maxIdxLastIntersecting.current) {
+  //     maxIdxLastIntersecting.current = idxGroupLastIntersecting;
+  //   }
 
-    console.log({ max: maxIdxLastIntersecting.current });
-  }, [intersectingSymbols, tickerSymbols]);
+  //   console.log({ max: maxIdxLastIntersecting.current });
+  // }, [intersectingSymbols, tickerSymbols]);
 
-  console.log({ renderingIndex });
+  console.log({ maxIntersectionIndex });
 
   return (
     <>
       {tickerSymbols.map((tickerSymbol, idx) => {
-        if (idx <= renderingIndex + lookAheadBufferSize) {
+        if (idx <= maxIntersectionIndex + lookAheadBufferSize) {
           return (
             <SymbolDetail
               key={tickerSymbol}
