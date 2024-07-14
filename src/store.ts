@@ -16,6 +16,7 @@ export type SymbolBucketProps = {
     | "recently_viewed"
     | "attention_tracker";
   requiresQuantity: boolean;
+  isUserConfigurable: boolean;
 };
 
 export type RustServiceSearchResult = {
@@ -80,24 +81,28 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           symbols: [],
           type: "portfolio",
           requiresQuantity: true,
+          isUserConfigurable: true,
         },
         {
           name: "My Watchlist",
           symbols: [],
           type: "watchlist",
           requiresQuantity: false,
+          isUserConfigurable: true,
         },
         {
           name: "My Ticker Tape",
           symbols: [],
           type: "ticker_tape",
           requiresQuantity: false,
+          isUserConfigurable: true,
         },
         {
           name: "My Recently Viewed",
           symbols: [],
           type: "recently_viewed",
           requiresQuantity: false,
+          isUserConfigurable: false,
         },
         // TODO: Infer potential ETFs that a user may be interested in based on searched
         // symbols and the frequency of the most common ETFs that hold those symbols
@@ -106,6 +111,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           symbols: [],
           type: "attention_tracker",
           requiresQuantity: false,
+          isUserConfigurable: false,
         },
       ],
       isProfilingCacheOverlayOpen: false,
@@ -145,7 +151,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         const { visibleSymbols } = this.getState(["visibleSymbols"]);
 
         // TODO: Handle this tracking
-        console.log({ visibleSymbols });
+        // console.log({ visibleSymbols });
       }
     };
 
