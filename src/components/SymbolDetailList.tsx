@@ -38,6 +38,8 @@ export default function SymbolDetailList({
 
   const handleIntersectionStateChange = useCallback(
     (tickerSymbol: string, isIntersecting: boolean) => {
+      console.log({ tickerSymbol, isIntersecting });
+
       setIntersectingSymbols((prevSymbols) => {
         const updatedSymbols = [...prevSymbols];
         const index = updatedSymbols.indexOf(tickerSymbol);
@@ -59,14 +61,34 @@ export default function SymbolDetailList({
     [tickerSymbols]
   );
 
+  const maxIdxLastIntersecting = useRef<number>(-1);
+
   useEffect(() => {
-    console.log({ intersectingSymbols });
-  }, [intersectingSymbols]);
+    const lastIntersectingSymbol = intersectingSymbols.at(-1);
+
+    // TODO: Debug; this should only happen at initial mount stage
+    if (!lastIntersectingSymbol) {
+      return;
+    }
+
+    const idxGroupLastIntersecting = tickerSymbols.indexOf(
+      lastIntersectingSymbol
+    );
+
+    if (idxGroupLastIntersecting > maxIdxLastIntersecting.current) {
+      maxIdxLastIntersecting.current = idxGroupLastIntersecting;
+
+      // console.debug({
+      //   maxIdxPrevVisibleSymbol: maxIdxPrevVisibleSymbolRef.current,
+      //   lack: groupTickerSymbols.length - maxIdxPrevVisibleSymbolRef.current,
+      // });
+    }
+
+    console.log({ max: maxIdxLastIntersecting.current });
+  }, [intersectingSymbols, tickerSymbols]);
 
   // TODO: This doesn't apply SPECIFICALLY to this list, so this needs refinement!
   // const { visibleSymbols } = useStoreStateReader(["visibleSymbols"]);
-
-  const maxIdxPrevVisibleSymbolRef = useRef<number>(-1);
 
   // Track whether the ticker symbol should be rendered immediately or deferred until it is scrolled into view.
   // This approach minimizes unnecessary network calls by only fetching data when the ticker symbol is visible.
@@ -96,15 +118,12 @@ export default function SymbolDetailList({
   //   // Where the symbol lies in the group
   //   const idxGroup = groupTickerSymbols.indexOf(tickerSymbol);
 
-  //   if (
-  //     idxGroup <=
-  //     maxIdxPrevVisibleSymbolRef.current + lookAheadBufferSize
-  //   ) {
+  //   if (idxGroup <= maxIdxPrevVisibleSymbolRef.current + lookAheadBufferSize) {
   //     return true;
   //   }
 
   //   return false;
-  // }, [tickerSymbol, groupTickerSymbols, visibleSymbols, lookAheadBufferSize]);
+  // }, [tickerSymbol, groupTickerSymbols, intersectingSymbols, lookAheadBufferSize]);
 
   // TODO: Don't hardcode
   // const isDeferredRender = false;
@@ -123,16 +142,27 @@ export default function SymbolDetailList({
   // }, [isDeferredRender, handleDeferredRenderStateChange]);
 
   return (
-    <div>
-      {tickerSymbols.map((tickerSymbol) => (
-        <SymbolDetail
-          key={tickerSymbol}
-          tickerSymbol={tickerSymbol}
-          onIntersectionStateChange={(isIntersecting) =>
-            handleIntersectionStateChange(tickerSymbol, isIntersecting)
-          }
-        />
-      ))}
-    </div>
+    <>
+      {tickerSymbols.map((tickerSymbol, idx) => {
+        // if (idx <= maxIdxLastIntersecting.current + lookAheadBufferSize) {
+        return (
+          <SymbolDetail
+            key={tickerSymbol}
+            tickerSymbol={tickerSymbol}
+            onIntersectionStateChange={(isIntersecting) =>
+              handleIntersectionStateChange(tickerSymbol, isIntersecting)
+            }
+          />
+        );
+        // } else {
+        //   return (
+        //     <div
+        //       key={tickerSymbol}
+        //       style={{ ...lookAheadMaskStyle, backgroundColor: "yellow" }}
+        //     />
+        //   );
+        // }
+      })}
+    </>
   );
 }
