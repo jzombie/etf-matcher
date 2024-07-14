@@ -1,22 +1,29 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import debounceWithKey from "./debounceWithKey";
 
-// A helper function to wait for a specified duration
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 describe("debounceWithKey", () => {
   let mockFunction: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     mockFunction = vi.fn();
+    vi.useFakeTimers(); // Use fake timers to control time in tests
   });
 
   afterEach(() => {
-    vi.clearAllTimers();
+    vi.useRealTimers(); // Reset to real timers after each test
   });
 
-  it("should debounce a function call", async () => {
-    const debouncedFunction = debounceWithKey("test", mockFunction, 300);
+  it("should debounce a function call (default auto-invoke)", () => {
+    debounceWithKey("test", mockFunction, 300, true, 1, 2, 3);
+
+    vi.runAllTimers(); // Advance timers to ensure debounced function is called
+
+    expect(mockFunction).toHaveBeenCalledWith(1, 2, 3);
+    expect(mockFunction).toHaveBeenCalledTimes(1);
+  });
+
+  it("should debounce a function call (manual invocation)", async () => {
+    const debouncedFunction = debounceWithKey("test", mockFunction, 300, false);
 
     debouncedFunction();
     debouncedFunction();
@@ -24,15 +31,25 @@ describe("debounceWithKey", () => {
 
     expect(mockFunction).not.toHaveBeenCalled();
 
-    await wait(300);
+    vi.runAllTimers(); // Advance timers to ensure debounced function is called
 
     expect(mockFunction).toHaveBeenCalledTimes(1);
   });
 
   it("should handle multiple keys independently", async () => {
     const mockFunction2 = vi.fn();
-    const debouncedFunction1 = debounceWithKey("key1", mockFunction, 300);
-    const debouncedFunction2 = debounceWithKey("key2", mockFunction2, 300);
+    const debouncedFunction1 = debounceWithKey(
+      "key1",
+      mockFunction,
+      300,
+      false
+    );
+    const debouncedFunction2 = debounceWithKey(
+      "key2",
+      mockFunction2,
+      300,
+      false
+    );
 
     debouncedFunction1();
     debouncedFunction2();
@@ -42,36 +59,36 @@ describe("debounceWithKey", () => {
     expect(mockFunction).not.toHaveBeenCalled();
     expect(mockFunction2).not.toHaveBeenCalled();
 
-    await wait(300);
+    vi.runAllTimers(); // Advance timers to ensure debounced function is called
 
     expect(mockFunction).toHaveBeenCalledTimes(1);
     expect(mockFunction2).toHaveBeenCalledTimes(1);
   });
 
   it("should cancel previous calls with the same key", async () => {
-    const debouncedFunction = debounceWithKey("test", mockFunction, 300);
+    const debouncedFunction = debounceWithKey("test", mockFunction, 300, false);
 
     debouncedFunction();
-    await wait(100);
+    vi.advanceTimersByTime(100);
     debouncedFunction();
-    await wait(100);
+    vi.advanceTimersByTime(100);
     debouncedFunction();
 
     expect(mockFunction).not.toHaveBeenCalled();
 
-    await wait(300);
+    vi.runAllTimers(); // Advance timers to ensure debounced function is called
 
     expect(mockFunction).toHaveBeenCalledTimes(1);
   });
 
   it("should call the debounced function after the specified delay", async () => {
-    const debouncedFunction = debounceWithKey("test", mockFunction, 500);
+    const debouncedFunction = debounceWithKey("test", mockFunction, 500, false);
 
     debouncedFunction();
 
     expect(mockFunction).not.toHaveBeenCalled();
 
-    await wait(500);
+    vi.runAllTimers(); // Advance timers to ensure debounced function is called
 
     expect(mockFunction).toHaveBeenCalledTimes(1);
   });
@@ -82,33 +99,71 @@ describe("debounceWithKey", () => {
       mockFunction(this.value);
     }
 
-    const debouncedFunction = debounceWithKey("test", func.bind(context), 300);
+    const debouncedFunction = debounceWithKey(
+      "test",
+      func.bind(context),
+      300,
+      false
+    );
 
     debouncedFunction();
 
-    await wait(300);
+    vi.runAllTimers(); // Advance timers to ensure debounced function is called
 
     expect(mockFunction).toHaveBeenCalledWith(42);
   });
 
   it("should pass the correct arguments to the debounced function", async () => {
-    const debouncedFunction = debounceWithKey("test", mockFunction, 300);
+    const debouncedFunction = debounceWithKey("test", mockFunction, 300, false);
 
     debouncedFunction(1, 2, 3);
 
-    await wait(300);
+    vi.runAllTimers(); // Advance timers to ensure debounced function is called
 
     expect(mockFunction).toHaveBeenCalledWith(1, 2, 3);
   });
 
   it("should clear the debounced function", async () => {
-    const debouncedFunction = debounceWithKey("test", mockFunction, 300);
+    const debouncedFunction = debounceWithKey("test", mockFunction, 300, false);
 
     debouncedFunction();
     debouncedFunction.clear();
 
-    await wait(300);
+    vi.runAllTimers(); // Advance timers to ensure debounced function is called
 
     expect(mockFunction).not.toHaveBeenCalled();
+  });
+
+  it("should auto-invoke the debounced function with arguments", () => {
+    debounceWithKey("test", mockFunction, 300, true, 1, 2, 3);
+
+    vi.runAllTimers(); // Advance timers to ensure debounced function is called
+
+    expect(mockFunction).toHaveBeenCalledWith(1, 2, 3);
+    expect(mockFunction).toHaveBeenCalledTimes(1);
+  });
+
+  it("should handle manual invocation after auto-invoke", async () => {
+    const debouncedFunction = debounceWithKey(
+      "test",
+      mockFunction,
+      300,
+      true,
+      1,
+      2,
+      3
+    );
+
+    vi.runAllTimers(); // Advance timers to ensure debounced function is called
+
+    expect(mockFunction).toHaveBeenCalledWith(1, 2, 3);
+    expect(mockFunction).toHaveBeenCalledTimes(1);
+
+    debouncedFunction(4, 5, 6);
+
+    vi.runAllTimers(); // Advance timers to ensure debounced function is called
+
+    expect(mockFunction).toHaveBeenCalledWith(4, 5, 6);
+    expect(mockFunction).toHaveBeenCalledTimes(2);
   });
 });

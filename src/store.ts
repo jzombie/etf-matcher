@@ -1,8 +1,9 @@
 import {
   ReactStateEmitter,
   StateEmitterDefaultEvents,
-} from "./utils/StateEmitter";
-import libCallWorkerFunction from "./utils/callWorkerFunction";
+} from "@utils/StateEmitter";
+import libCallWorkerFunction from "@utils/callWorkerFunction";
+import debounceWithKey from "@utils/debounceWithKey";
 
 const IS_PROD = import.meta.env.PROD;
 
@@ -189,15 +190,18 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     const resp = await libCallWorkerFunction<T>(functionName, ...args);
 
     // TODO: Only call these if is profiling (cacheProfilerConnections > 0)
-    // TODO: Regardless if profiling or not, these should be debounced
-    (() => {
-      libCallWorkerFunction<number>("get_cache_size").then((cacheSize) => {
-        this.setState({ cacheSize });
-      });
-      libCallWorkerFunction<RustServiceCacheDetail[]>("get_cache_details").then(
-        (cacheDetails) => this.setState({ cacheDetails })
-      );
-    })();
+    debounceWithKey(
+      "store:cache_profiler",
+      () => {
+        libCallWorkerFunction<number>("get_cache_size").then((cacheSize) => {
+          this.setState({ cacheSize });
+        });
+        libCallWorkerFunction<RustServiceCacheDetail[]>(
+          "get_cache_details"
+        ).then((cacheDetails) => this.setState({ cacheDetails }));
+      },
+      500
+    );
 
     return resp;
   }

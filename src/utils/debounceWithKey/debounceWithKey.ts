@@ -1,14 +1,21 @@
 const debounceMap: { [key: string]: ReturnType<typeof setTimeout> | null } = {};
 
+interface DebouncedFunction<T extends (...args: unknown[]) => void> {
+  (...args: Parameters<T>): void;
+  clear: () => void;
+}
+
 export default function debounceWithKey<T extends (...args: unknown[]) => void>(
   key: string,
   func: T,
-  wait: number
-): T & { clear: () => void } {
-  function debouncedFunction(this: unknown, ...args: Parameters<T>): void {
+  wait: number,
+  autoInvoke: boolean = true,
+  ...args: Parameters<T>
+): DebouncedFunction<T> {
+  function debouncedFunction(this: unknown, ...innerArgs: Parameters<T>): void {
     const later = () => {
       debounceMap[key] = null;
-      func.apply(this, args);
+      func.apply(this, innerArgs.length ? innerArgs : args);
     };
 
     if (debounceMap[key]) {
@@ -25,5 +32,9 @@ export default function debounceWithKey<T extends (...args: unknown[]) => void>(
     }
   };
 
-  return debouncedFunction as T & { clear: () => void };
+  if (autoInvoke) {
+    debouncedFunction(...args);
+  }
+
+  return debouncedFunction as DebouncedFunction<T>;
 }
