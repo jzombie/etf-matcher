@@ -78,14 +78,14 @@ export default function SymbolDetail({
             height={300}
             copyrightStyles={tradingViewCopyrightStyles}
           /> */}
-        <Timeline
+        {/* <Timeline
           colorTheme="dark"
           feedMode="symbol"
           symbol={tickerSymbol}
           height={400}
           width="100%"
           copyrightStyles={tradingViewCopyrightStyles}
-        />
+        /> */}
         {symbolBuckets?.map((symbolBucket, idx) => (
           // TODO: If symbol is already in the bucket, don't try to re-add it
           <Button
