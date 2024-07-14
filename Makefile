@@ -29,6 +29,7 @@ endef
 # Default target: help
 .PHONY: help
 help:
+	@echo ""
 	@echo "$(BOLD)Available commands:$(RESET)"
 	@awk -F ':| ' '/^[a-zA-Z0-9_-]+:/ {print $$1}' $(MAKEFILE_LIST) | while read cmd; do \
 	  case $$cmd in \
