@@ -42,7 +42,8 @@ export default function ScrollableBucketList({
                   color="textSecondary"
                   sx={{ display: "inline-block", marginRight: 1 }}
                 >
-                  No items in this bucket.
+                  No items in &quot;{symbolBucket.name}&quot;. Perhaps you might
+                  wish to perform a
                 </Typography>
                 <SearchModalButton />
               </>
