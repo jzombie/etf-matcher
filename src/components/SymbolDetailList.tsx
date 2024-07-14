@@ -31,6 +31,9 @@ export default function SymbolDetailList({
     }
   }, [tickerSymbols]);
 
+  // Note: This should not be confused with `visibleSymbols` in the store state.
+  // `intersectingSymbols` refers to this component only, and `visibleSymbols` refers
+  // to the entire app.
   const [intersectingSymbols, setIntersectingSymbols] = useState<string[]>([]);
 
   const handleIntersectionStateChange = useCallback(
