@@ -1,6 +1,12 @@
 import React from "react";
-import ScrollableBucketList from "@components/ScrollableBucketList";
+import BucketList from "@components/BucketList";
+
+import Scrollable from "@layoutKit/Scrollable";
 
 export default function Portfolios() {
-  return <ScrollableBucketList symbolBucketType="watchlist" />;
+  return (
+    <Scrollable>
+      <BucketList symbolBucketType="watchlist" />
+    </Scrollable>
+  );
 }

@@ -3,7 +3,6 @@ import SymbolDetailList from "@components/SymbolDetailList";
 
 import Typography from "@mui/material/Typography";
 
-import Scrollable from "@layoutKit/Scrollable";
 import Padding from "@layoutKit/Padding";
 
 import SearchModalButton from "./SearchModalButton";
@@ -29,7 +28,7 @@ export default function ScrollableBucketList({
   );
 
   return (
-    <Scrollable>
+    <>
       {localSymbolBucket?.map((symbolBucket, idx) => (
         <React.Fragment key={idx}>
           <Padding>
@@ -56,6 +55,6 @@ export default function ScrollableBucketList({
           <SymbolDetailList tickerSymbols={symbolBucket.symbols} />
         </React.Fragment>
       ))}
-    </Scrollable>
+    </>
   );
 }
