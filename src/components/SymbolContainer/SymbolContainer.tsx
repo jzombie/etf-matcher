@@ -14,6 +14,7 @@ export type SymbolContainerProps = React.HTMLAttributes<HTMLDivElement> & {
   groupTickerSymbols: string[];
   children: React.ReactNode;
   onFullRenderSymbolStateChange?: (isFullRenderSymbol: boolean) => void;
+  lookAheadBufferSize?: number;
 };
 
 export default function SymbolContainer({
@@ -21,6 +22,7 @@ export default function SymbolContainer({
   groupTickerSymbols,
   children,
   onFullRenderSymbolStateChange,
+  lookAheadBufferSize = 1,
   ...rest
 }: SymbolContainerProps) {
   // Add prop validation
@@ -46,7 +48,7 @@ export default function SymbolContainer({
 
   const maxIdxPrevVisibleSymbolRef = useRef<number>(-1);
 
-  // TODO: Rename
+  // TODO: Rename to `shouldRenderSymbol`
   const isFullRenderSymbol = useMemo(() => {
     if (visibleSymbols.includes(tickerSymbol)) {
       return true;
@@ -58,7 +60,7 @@ export default function SymbolContainer({
       return false;
     }
 
-    // Where the last visible symbol lies in the group
+    // Where the last currenty visible symbol lies in the group
     const idxGroupLastVisible = groupTickerSymbols.indexOf(lastVisibleSymbol);
 
     if (idxGroupLastVisible > maxIdxPrevVisibleSymbolRef.current) {
@@ -73,16 +75,12 @@ export default function SymbolContainer({
     // Where the symbol lies in the group
     const idxGroup = groupTickerSymbols.indexOf(tickerSymbol);
 
-    if (idxGroup <= idxGroupLastVisible) {
-      return true;
-    }
-
-    if (idxGroup <= idxGroupLastVisible + 2) {
+    if (idxGroup <= maxIdxPrevVisibleSymbolRef.current + lookAheadBufferSize) {
       return true;
     }
 
     return false;
-  }, [tickerSymbol, groupTickerSymbols, visibleSymbols]);
+  }, [tickerSymbol, groupTickerSymbols, visibleSymbols, lookAheadBufferSize]);
 
   const handleFullRenderSymbolStateChange = useCallback(
     (isFullRenderSymbol: boolean) => {
