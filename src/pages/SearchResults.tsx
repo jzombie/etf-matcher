@@ -7,6 +7,8 @@ import SymbolDetail from "@components/SymbolDetail";
 
 import Scrollable from "@layoutKit/Scrollable";
 
+// TODO: Show search button if no search results
+
 export default function SearchResults() {
   const location = useLocation();
   const navigate = useNavigate();
