@@ -46,7 +46,8 @@ export default function SearchResults() {
   const toggleExactMatch = () => {
     const searchParams = new URLSearchParams(location.search);
     const newExactValue = !(
-      searchParams.get("exact") === "true" || searchParams.get("exact") === "1"
+      // Note: This is a string value since it's in the URL
+      (searchParams.get("exact") === "true")
     );
 
     if (newExactValue) {
