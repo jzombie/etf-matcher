@@ -58,12 +58,19 @@ export default function SymbolDetail({
       {...rest}
     >
       <>
-        <MiniChart
-          symbol={tickerSymbol}
-          colorTheme="dark"
-          width="100%"
-          copyrightStyles={tradingViewCopyrightStyles}
-        />
+        <div style={{ height: 200 }}>
+          <MiniChart
+            symbol={tickerSymbol}
+            colorTheme="dark"
+            width="100%"
+            height="100%"
+            copyrightStyles={tradingViewCopyrightStyles}
+          />
+        </div>
+
+        {
+          // TODO: For the following, wrap with a div to prevent potential reflow issues
+        }
 
         {/* <MiniChart
             symbol={tickerSymbol}
