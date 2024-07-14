@@ -13,7 +13,7 @@ export default function SymbolDetailList({
   useEffect(() => {
     if (tickerSymbols.length !== [...new Set(tickerSymbols)].length) {
       console.warn(
-        "`groupTickerSymbols` is not unique! Unpredictable results may occur."
+        "`tickerSymbols` is not unique! Unpredictable results may occur."
       );
     }
   }, [tickerSymbols]);
