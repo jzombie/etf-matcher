@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import SymbolDetail from "./SymbolDetail";
 
 export type SymbolDetailListProps = {
@@ -10,7 +16,6 @@ export type SymbolDetailListProps = {
 
 export default function SymbolDetailList({
   tickerSymbols,
-  // onDeferredRenderStateChange,
   lookAheadBufferSize = 1,
   lookAheadMaskStyle = {
     height: 500,
@@ -25,6 +30,35 @@ export default function SymbolDetailList({
       );
     }
   }, [tickerSymbols]);
+
+  const [intersectingSymbols, setIntersectingSymbols] = useState<string[]>([]);
+
+  const handleIntersectionStateChange = useCallback(
+    (tickerSymbol: string, isIntersecting: boolean) => {
+      setIntersectingSymbols((prevSymbols) => {
+        const updatedSymbols = [...prevSymbols];
+        const index = updatedSymbols.indexOf(tickerSymbol);
+        if (isIntersecting) {
+          if (index === -1) {
+            updatedSymbols.push(tickerSymbol);
+          }
+        } else {
+          if (index !== -1) {
+            updatedSymbols.splice(index, 1);
+          }
+        }
+        // Sort the updatedSymbols array based on the order of tickerSymbols
+        return updatedSymbols.sort(
+          (a, b) => tickerSymbols.indexOf(a) - tickerSymbols.indexOf(b)
+        );
+      });
+    },
+    [tickerSymbols]
+  );
+
+  useEffect(() => {
+    console.log({ intersectingSymbols });
+  }, [intersectingSymbols]);
 
   // TODO: This doesn't apply SPECIFICALLY to this list, so this needs refinement!
   // const { visibleSymbols } = useStoreStateReader(["visibleSymbols"]);
@@ -91,13 +125,9 @@ export default function SymbolDetailList({
         <SymbolDetail
           key={tickerSymbol}
           tickerSymbol={tickerSymbol}
-          onIntersectionStateChange={(isIntertersecting) => {
-            console.warn(
-              "TODO: Handle isIntersecting",
-              tickerSymbol,
-              isIntertersecting
-            );
-          }}
+          onIntersectionStateChange={(isIntersecting) =>
+            handleIntersectionStateChange(tickerSymbol, isIntersecting)
+          }
         />
       ))}
     </div>
