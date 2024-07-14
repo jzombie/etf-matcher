@@ -45,7 +45,8 @@ export default function ScrollableBucketList({
                   color="textSecondary"
                   sx={{ display: "inline-block", marginRight: 1 }}
                 >
-                  Perhaps you might wish to perform a
+                  Perhaps you might wish to perform a{" "}
+                  {/* [`Search` button follows] */}
                 </Typography>
                 <SearchModalButton />
               </>
