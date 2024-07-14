@@ -23,6 +23,23 @@ export default function SymbolContainer({
   onFullRenderSymbolStateChange,
   ...rest
 }: SymbolContainerProps) {
+  // Add prop validation
+  useEffect(() => {
+    // Validate groupTickerSymbols is unique
+    if (groupTickerSymbols.length !== [...new Set(groupTickerSymbols)].length) {
+      console.warn(
+        "`groupTickerSymbols` is not unique! Unpredictable results may occur."
+      );
+    }
+
+    // Validate ticker symbol is in groupTickerSymbols
+    if (!groupTickerSymbols.includes(tickerSymbol)) {
+      console.warn(
+        "`groupTickerSymbols` does not include `tickerSymbol`. Unpredictable results may occur."
+      );
+    }
+  }, [tickerSymbol, groupTickerSymbols]);
+
   const symbolProviderContext = useContext(SymbolContainerContext);
 
   const { visibleSymbols } = useStoreStateReader(["visibleSymbols"]);
