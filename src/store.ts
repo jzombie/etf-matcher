@@ -55,6 +55,7 @@ export type StoreStateProps = {
   symbolBuckets: SymbolBucketProps[];
   isProfilingCacheOverlayOpen: boolean;
   cacheProfilerConnections: number; // Used to determine if active cache profiling needs to happen
+  cacheProfilerWaitTime: number;
   cacheDetails: RustServiceCacheDetail[];
   cacheSize: number;
 };
@@ -117,6 +118,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       ],
       isProfilingCacheOverlayOpen: false,
       cacheProfilerConnections: 0,
+      cacheProfilerWaitTime: 1000,
       cacheDetails: [],
       cacheSize: 0,
     });
@@ -200,7 +202,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           "get_cache_details"
         ).then((cacheDetails) => this.setState({ cacheDetails }));
       },
-      500
+      this.state.cacheProfilerWaitTime
     );
 
     return resp;
