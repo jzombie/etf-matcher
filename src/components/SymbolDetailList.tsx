@@ -4,16 +4,16 @@ import SymbolDetail from "./SymbolDetail";
 export type SymbolDetailListProps = {
   tickerSymbols: string[];
   lookAheadBufferSize?: number;
-  lookAheadMaskStyle?: React.HTMLAttributes<HTMLDivElement>["style"];
+  // lookAheadMaskStyle?: React.HTMLAttributes<HTMLDivElement>["style"];
 };
 
 export default function SymbolDetailList({
   tickerSymbols,
   lookAheadBufferSize = 2,
-  lookAheadMaskStyle = {
-    height: 500,
-  },
-}: SymbolDetailListProps) {
+}: // lookAheadMaskStyle = {
+//   height: 500,
+// },
+SymbolDetailListProps) {
   useEffect(() => {
     if (tickerSymbols.length !== [...new Set(tickerSymbols)].length) {
       console.warn(
@@ -69,6 +69,8 @@ export default function SymbolDetailList({
     console.log({ max: maxIdxLastIntersecting.current });
   }, [intersectingSymbols, tickerSymbols]);
 
+  console.log({ renderingIndex });
+
   return (
     <>
       {tickerSymbols.map((tickerSymbol, idx) => {
@@ -82,7 +84,8 @@ export default function SymbolDetailList({
               }
             />
           );
-        } else {
+        }
+        /*else {
           return (
             <div
               key={tickerSymbol}
@@ -91,7 +94,7 @@ export default function SymbolDetailList({
               }}
             />
           );
-        }
+        }*/
       })}
     </>
   );
