@@ -81,15 +81,19 @@ export default function SymbolDetail({
           width="100%"
           copyrightStyles={tradingViewCopyrightStyles}
         /> */}
-        {symbolBuckets?.map((symbolBucket, idx) => (
-          // TODO: If symbol is already in the bucket, don't try to re-add it
-          <Button
-            key={idx}
-            onClick={() => store.addSymbolToBucket(tickerSymbol, symbolBucket)}
-          >
-            Add {tickerSymbol} to {symbolBucket.name}
-          </Button>
-        ))}
+        {symbolBuckets
+          ?.filter((symbolBucket) => symbolBucket.isUserConfigurable)
+          .map((symbolBucket, idx) => (
+            // TODO: If symbol is already in the bucket, don't try to re-add it
+            <Button
+              key={idx}
+              onClick={() =>
+                store.addSymbolToBucket(tickerSymbol, symbolBucket)
+              }
+            >
+              Add {tickerSymbol} to {symbolBucket.name}
+            </Button>
+          ))}
         <Button onClick={() => store.PROTO_getSymbolDetail(tickerSymbol)}>
           PROTO_getSymbolDetail()
         </Button>
