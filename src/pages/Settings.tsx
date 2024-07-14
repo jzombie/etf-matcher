@@ -14,7 +14,7 @@ import ProtoPieChart from "@components/PROTO_PieChart";
 import ProtoTable from "@components/PROTO_Table";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
-import formatSize from "@utils/formatSize";
+import formatByteSize from "@utils/formatByteSize";
 
 export default function Settings() {
   const {
@@ -50,7 +50,7 @@ export default function Settings() {
 
         <Box display="flex" justifyContent="center" alignItems="center" mb={2}>
           <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
-            Cache size: {formatSize(cacheSize)}
+            Cache size: {formatByteSize(cacheSize)}
           </Typography>
           <Typography variant="body2" color="textSecondary">
             Cache entries: {Object.keys(cacheDetails).length}
