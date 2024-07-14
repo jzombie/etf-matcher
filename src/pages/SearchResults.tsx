@@ -78,11 +78,7 @@ export default function SearchResults() {
         {onlyExactMatches ? "Exact Match" : "Non-Exact Match"}
       </Button>
       {searchResultSymbols.map((tickerSymbol) => (
-        <SymbolDetail
-          key={tickerSymbol}
-          tickerSymbol={tickerSymbol}
-          groupTickerSymbols={searchResultSymbols}
-        />
+        <SymbolDetail key={tickerSymbol} tickerSymbol={tickerSymbol} />
       ))}
     </Scrollable>
   );

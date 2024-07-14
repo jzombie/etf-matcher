@@ -50,11 +50,7 @@ export default function ScrollableBucketList({
           </Padding>
 
           {symbolBucket.symbols.map((symbol) => (
-            <SymbolDetail
-              key={symbol}
-              tickerSymbol={symbol}
-              groupTickerSymbols={symbolBucket.symbols}
-            />
+            <SymbolDetail key={symbol} tickerSymbol={symbol} />
           ))}
         </React.Fragment>
       ))}

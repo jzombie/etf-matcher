@@ -15,57 +15,58 @@ import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 
 export type SymbolDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerSymbol: string;
-  groupTickerSymbols: string[];
+  onIntersectionStateChange?: (isIntersecting: boolean) => void;
 };
 
 export default function SymbolDetail({
   tickerSymbol,
-  groupTickerSymbols,
+  onIntersectionStateChange,
   ...rest
 }: SymbolDetailProps) {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const { symbolBuckets } = useStoreStateReader(["symbolBuckets"]);
 
-  const [isFullRenderSymbol, setIsFullRenderSymbol] = useState(false);
+  // const [isFullRenderSymbol, setIsFullRenderSymbol] = useState(false);
 
-  useEffect(() => {
-    if (isFullRenderSymbol) {
-      // TODO: Remove
-      console.warn({
-        tickerSymbol,
-        isFullRenderSymbol,
-      });
-    }
-  }, [tickerSymbol, isFullRenderSymbol]);
+  // useEffect(() => {
+  //   if (isFullRenderSymbol) {
+  //     // TODO: Remove
+  //     console.warn({
+  //       tickerSymbol,
+  //       isFullRenderSymbol,
+  //     });
+  //   }
+  // }, [tickerSymbol, isFullRenderSymbol]);
 
-  const [etfHolders, setEtfHolders] = useState<
-    RustServiceETFHoldersWithTotalCount | undefined
-  >(undefined);
+  // const [etfHolders, setEtfHolders] = useState<
+  //   RustServiceETFHoldersWithTotalCount | undefined
+  // >(undefined);
 
   // Only query symbols that are fully rendered, or are next in the list
-  useEffect(() => {
-    if (tickerSymbol && isFullRenderSymbol) {
-      store.getSymbolETFHolders(tickerSymbol).then(setEtfHolders);
-    }
-  }, [tickerSymbol, isFullRenderSymbol]);
+  // useEffect(() => {
+  //   if (tickerSymbol && isFullRenderSymbol) {
+  //     store.getSymbolETFHolders(tickerSymbol).then(setEtfHolders);
+  //   }
+  // }, [tickerSymbol, isFullRenderSymbol]);
 
   return (
     <SymbolContainer
       style={{ marginBottom: 12 }}
-      {...rest}
       tickerSymbol={tickerSymbol}
-      groupTickerSymbols={groupTickerSymbols}
-      onDeferredRenderStateChange={setIsFullRenderSymbol}
+      onIntersectionStateChange={onIntersectionStateChange}
+      {...rest}
     >
       <>
-        {" "}
+        {/*
         <MiniChart
           symbol={tickerSymbol}
           colorTheme="dark"
           width="100%"
           copyrightStyles={tradingViewCopyrightStyles}
         />
+        */}
+
         {/* <MiniChart
             symbol={tickerSymbol}
             colorTheme="dark"
@@ -103,7 +104,7 @@ export default function SymbolDetail({
           {
             // TODO: Paginate through these results
           }
-          {etfHolders?.results?.map((etfHolderSymbol) => (
+          {/*etfHolders?.results?.map((etfHolderSymbol) => (
             <Button
               key={etfHolderSymbol}
               onClick={() =>
@@ -114,7 +115,8 @@ export default function SymbolDetail({
             >
               {etfHolderSymbol}
             </Button>
-          ))}
+          ))
+            */}
         </div>
       </>
     </SymbolContainer>
