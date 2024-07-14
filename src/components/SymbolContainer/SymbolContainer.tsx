@@ -15,6 +15,7 @@ export type SymbolContainerProps = React.HTMLAttributes<HTMLDivElement> & {
   children: React.ReactNode;
   onFullRenderSymbolStateChange?: (isFullRenderSymbol: boolean) => void;
   lookAheadBufferSize?: number;
+  lookAheadMaskStyle?: React.HTMLAttributes<HTMLDivElement>["style"];
 };
 
 export default function SymbolContainer({
@@ -23,6 +24,9 @@ export default function SymbolContainer({
   children,
   onFullRenderSymbolStateChange,
   lookAheadBufferSize = 1,
+  lookAheadMaskStyle = {
+    height: 500,
+  },
   ...rest
 }: SymbolContainerProps) {
   // Add prop validation
@@ -48,8 +52,7 @@ export default function SymbolContainer({
 
   const maxIdxPrevVisibleSymbolRef = useRef<number>(-1);
 
-  // TODO: Rename to `shouldRenderSymbol`
-  const isFullRenderSymbol = useMemo(() => {
+  const shouldRenderSymbol = useMemo(() => {
     if (visibleSymbols.includes(tickerSymbol)) {
       return true;
     }
@@ -87,8 +90,8 @@ export default function SymbolContainer({
   );
 
   useEffect(() => {
-    handleFullRenderSymbolStateChange(isFullRenderSymbol);
-  }, [isFullRenderSymbol, handleFullRenderSymbolStateChange]);
+    handleFullRenderSymbolStateChange(shouldRenderSymbol);
+  }, [shouldRenderSymbol, handleFullRenderSymbolStateChange]);
 
   // TODO: Monitor time and percentage on screen and use to collect metrics
   // about which symbols are looked at the longest. This isn't intended for
@@ -114,20 +117,7 @@ export default function SymbolContainer({
 
   return (
     <div ref={elementRef} {...rest}>
-      {
-        // TODO: Move this condition to the `SymbolContainer`
-        !isFullRenderSymbol ? (
-          <div
-            style={{
-              height: 500,
-              // TODO: Remove? This should never be visible, anyway, if the `isFullRenderSymbol` algorithm is working correct
-              backgroundColor: "yellow",
-            }}
-          />
-        ) : (
-          children
-        )
-      }
+      {!shouldRenderSymbol ? <div style={lookAheadMaskStyle} /> : children}
     </div>
   );
 }
