@@ -60,21 +60,25 @@ export default function SymbolDetail({
     >
       <>
         {" "}
+        <MiniChart
+          symbol={tickerSymbol}
+          colorTheme="dark"
+          width="100%"
+          copyrightStyles={tradingViewCopyrightStyles}
+        />
         {/* <MiniChart
             symbol={tickerSymbol}
             colorTheme="dark"
             width="100%"
             copyrightStyles={tradingViewCopyrightStyles}
-          /> */}
-        {
+          />
           // TODO: Enable via toggle
           /* <CompanyProfile
             symbol={tickerSymbol}
             width="100%"
             height={300}
             copyrightStyles={tradingViewCopyrightStyles}
-          /> */
-        }
+          /> */}
         {/* <Timeline
             colorTheme="dark"
             feedMode="symbol"
