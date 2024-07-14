@@ -1,11 +1,7 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
+import React, { useCallback, useContext, useEffect, useRef } from "react";
 import { SymbolContainerContext } from "./SymbolContainerProvider";
+
+import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 export type SymbolContainerProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerSymbol: string;
@@ -23,16 +19,31 @@ export default function SymbolContainer({
 
   const elementRef = useRef<HTMLDivElement>(null);
 
+  const onIntersectionStateChangeStableRef = useStableCurrentRef(
+    onIntersectionStateChange
+  );
+
+  const handleOnIntersectionStateChange = useCallback(
+    (isIntersecting: boolean) => {
+      // The `stable function reference` is very important here or this will wind
+      // up in an infinite loop
+      if (onIntersectionStateChangeStableRef.current) {
+        onIntersectionStateChangeStableRef.current(isIntersecting);
+      }
+    },
+    [onIntersectionStateChangeStableRef]
+  );
+
   useEffect(() => {
     if (elementRef.current) {
       const el = elementRef.current;
-      observe(el, tickerSymbol, onIntersectionStateChange);
+      observe(el, tickerSymbol, handleOnIntersectionStateChange);
 
       return () => {
         unobserve(el as HTMLElement);
       };
     }
-  }, [tickerSymbol, observe, unobserve, onIntersectionStateChange]);
+  }, [tickerSymbol, observe, unobserve, handleOnIntersectionStateChange]);
 
   return (
     <div ref={elementRef} {...rest}>
