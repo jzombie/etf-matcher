@@ -1,12 +1,33 @@
 import React, { useEffect, useRef, SyntheticEvent } from "react";
-import { Button, Modal, Form, Input, InputRef, Pagination } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+  Pagination,
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import { useLocation, useNavigate } from "react-router-dom";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import useSearch from "@hooks/useSearch";
 
-export default function SearchModalButton() {
+// TODO: Replace modal with `TransparentModal`
+
+export type SearchModalButtonProps = {
+  highlight?: boolean;
+};
+
+export default function SearchModalButton({
+  highlight = false,
+}: SearchModalButtonProps) {
   const { isSearchModalOpen: isModalOpen } =
     useStoreStateReader("isSearchModalOpen");
 
@@ -19,19 +40,19 @@ export default function SearchModalButton() {
     setSelectedIndex,
     page,
     setPage,
-    setPageSize,
     pageSize,
-    remaining,
+    // remaining,
     resetSearch,
   } = useSearch({
     initialPageSize: 10,
   });
 
-  const inputRef = useRef<InputRef>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Handle auto-focus when the modal opens
   useEffect(() => {
     // Reset search value and selected index on close
     if (!isModalOpen) {
@@ -39,10 +60,10 @@ export default function SearchModalButton() {
     } else {
       // First, blur the currently active element, if any
       if (
-        document.activeElement &&
-        document.activeElement instanceof HTMLElement
+        window.document.activeElement &&
+        window.document.activeElement instanceof HTMLElement
       ) {
-        (document.activeElement as HTMLElement).blur();
+        (window.document.activeElement as HTMLElement).blur();
       }
 
       // TODO: This still needs to improve on Safari when closing the Modal and then
@@ -57,7 +78,7 @@ export default function SearchModalButton() {
   // Prevent other elements from stealing focus
   // TODO: This might need to be disabled on mobile so that the virtual keyboard can disappear as needed (add isMobile detection)
   useEffect(() => {
-    const input = inputRef.current?.input;
+    const input = inputRef.current;
 
     if (isModalOpen && input) {
       const _handleInputBlur = () => {
@@ -111,11 +132,29 @@ export default function SearchModalButton() {
         handleOk(evt, selectedSearchResult.symbol);
       }
     } else if (evt.code === "ArrowDown") {
-      setSelectedIndex((prevIndex) =>
-        Math.min(prevIndex + 1, searchResults.length - 1)
-      );
+      setSelectedIndex((prevIndex) => {
+        const newIndex = Math.min(prevIndex + 1, searchResults.length - 1);
+        const selectedListItem = window.document.getElementById(
+          `search-result-${newIndex}`
+        );
+        selectedListItem?.scrollIntoView({
+          block: "nearest",
+          behavior: "smooth",
+        });
+        return newIndex;
+      });
     } else if (evt.code === "ArrowUp") {
-      setSelectedIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+      setSelectedIndex((prevIndex) => {
+        const newIndex = Math.max(prevIndex - 1, 0);
+        const selectedListItem = window.document.getElementById(
+          `search-result-${newIndex}`
+        );
+        selectedListItem?.scrollIntoView({
+          block: "nearest",
+          behavior: "smooth",
+        });
+        return newIndex;
+      });
     }
   };
 
@@ -129,52 +168,73 @@ export default function SearchModalButton() {
 
   return (
     <>
-      <Button type="default" icon={<SearchOutlined />} onClick={showModal}>
+      <Button
+        variant="contained"
+        startIcon={<SearchIcon />}
+        onClick={showModal}
+        color={highlight ? "primary" : "inherit"}
+      >
         Search
       </Button>
-      <Modal
-        // Empty title prevents the close button from overlaying the input element
-        title="&nbsp;"
+      <Dialog
         open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okButtonProps={{ disabled: !searchResults.length }}
-        styles={{
-          content: {
+        onClose={handleCancel}
+        PaperProps={{
+          sx: {
+            width: "50vw",
+            maxWidth: "500px",
+            minWidth: "300px",
+            height: "60vh",
+            minHeight: 300,
+            maxHeight: "80vh",
+            margin: "auto",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
             backgroundColor: "rgba(31,31,31,.8)",
             border: "2px rgba(38,100,100,.8) solid",
-            backdropFilter: "blur(5px)",
+            backdropFilter: "blur(10px)",
           },
-          // header: {
-          //   backgroundColor: "rgba(0,0,0,.2)",
-          // },
-          // body: {
-          //   backgroundColor: "rgba(0,0,0,.4)",
-          // },
         }}
-        // TODO: Blur effect
-        // style={{
-        //   backdropFilter: "blur(5px)",
-        // }}
       >
-        {isModalOpen && (
-          <>
-            <Form>
-              {
-                // TODO: Add search outlined here (similar to Spotlight)
-              }
-              <Input
-                ref={inputRef}
-                placeholder='Search for Symbol (e.g. "AAPL" or "Apple")'
-                onChange={handleInputChange}
-                onKeyDown={handleInputKeyDown}
-                value={searchQuery}
-                prefix={<SearchOutlined />}
-              />
+        <DialogTitle sx={{ paddingBottom: 0 }}>
+          <TextField
+            fullWidth
+            inputRef={inputRef}
+            placeholder='Search for Symbol (e.g. "AAPL" or "Apple")'
+            onChange={handleInputChange}
+            onKeyDown={handleInputKeyDown}
+            value={searchQuery}
+            InputProps={{
+              startAdornment: (
+                <IconButton>
+                  <SearchIcon />
+                </IconButton>
+              ),
+            }}
+          />
+        </DialogTitle>
+        <DialogContent
+          sx={{
+            flexGrow: 1,
+            overflowY: "auto",
+          }}
+        >
+          <form noValidate autoComplete="off">
+            <div
+              style={{
+                position: "sticky",
+                top: 0,
+                backgroundColor: "transparent",
+                zIndex: 1,
+              }}
+            ></div>
+            <List>
               {searchResults.map((searchResult, idx) => (
-                <div
+                <ListItem
                   key={idx}
-                  style={{
+                  id={`search-result-${idx}`}
+                  sx={{
                     backgroundColor:
                       idx === selectedIndex
                         ? "rgba(255,255,255,.2)"
@@ -183,58 +243,70 @@ export default function SearchModalButton() {
                     overflow: "auto",
                   }}
                 >
-                  <span style={{ fontWeight: "bold" }}>
-                    {searchResult["symbol"]}
-                  </span>
-
-                  <span style={{ float: "right", opacity: 0.5 }}>
-                    {searchResult["company"]}
-                  </span>
-                </div>
-              ))}
-              {
-                // TODO: Show all results
-                remaining > 0 && (
-                  <div>
-                    <Button>+ {remaining} remaining</Button>
-                  </div>
-                )
-              }
-
-              {totalSearchResults > pageSize && (
-                <div style={{ marginTop: 10 }}>
-                  <Pagination
-                    // `key` is needed to set the page as `defaultCurrent`
-                    // alone won't subscribe to updates (only the initial value)
-                    key={page}
-                    defaultCurrent={page}
-                    align="center"
-                    showSizeChanger={false}
-                    pageSize={pageSize}
-                    onChange={(nextPage, nextPageSize) => {
-                      setPage(nextPage);
-                      setPageSize(nextPageSize);
-                    }}
-                    total={totalSearchResults}
+                  <ListItemText
+                    primary={searchResult.symbol}
+                    secondary={
+                      <Typography
+                        variant="body2"
+                        style={{ opacity: 0.5, float: "right" }}
+                      >
+                        {searchResult.company}
+                      </Typography>
+                    }
                   />
-                </div>
-              )}
-              {totalSearchResults > 0 && (
-                <div
-                  style={{
-                    fontStyle: "italic",
-                    fontSize: ".8rem",
-                    marginTop: 10,
-                  }}
-                >
-                  Total results for query &quot;{searchQuery}&quot;:{" "}
-                  {totalSearchResults}
-                </div>
-              )}
-            </Form>
-          </>
-        )}
-      </Modal>
+                </ListItem>
+              ))}
+            </List>
+          </form>
+        </DialogContent>
+        <>
+          {
+            // TODO: Skip these if the viewport is too small
+          }
+          {
+            // remaining > 0 && <Button>+ {remaining} remaining</Button>
+          }
+          {totalSearchResults > pageSize && (
+            <div style={{ marginTop: 10, textAlign: "center" }}>
+              <Pagination
+                count={Math.ceil(totalSearchResults / pageSize)}
+                page={page}
+                onChange={(event, nextPage) => setPage(nextPage)}
+                showFirstButton
+                showLastButton
+                sx={{ display: "inline-block" }}
+              />
+            </div>
+          )}
+        </>
+        <DialogActions>
+          {totalSearchResults > 0 && (
+            <div
+              style={{
+                fontStyle: "italic",
+                fontSize: ".8rem",
+                float: "left",
+              }}
+            >
+              Total results for query &quot;{searchQuery}&quot;:{" "}
+              {totalSearchResults}
+            </div>
+          )}
+          <Button
+            onClick={handleCancel}
+            variant={!searchResults.length ? "contained" : "text"}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleOk}
+            disabled={!searchResults.length}
+            variant={searchResults.length ? "contained" : "text"}
+          >
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

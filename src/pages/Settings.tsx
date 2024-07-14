@@ -1,62 +1,108 @@
 import React from "react";
-import { Button, notification, Space } from "antd";
-import useStoreStateReader from "@hooks/useStoreStateReader";
+import {
+  Button,
+  Switch,
+  FormControlLabel,
+  Typography,
+  Box,
+} from "@mui/material";
+
+import Scrollable from "@layoutKit/Scrollable";
+import Padding from "@layoutKit/Padding";
+
+import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
+
+import ProtoPieChart from "@components/PROTO_PieChart";
+import ProtoTable from "@components/PROTO_Table";
 
 export default function Settings() {
-  const { symbolBuckets } = useStoreStateReader("symbolBuckets");
-
-  const [api, contextHolder] = notification.useNotification();
-
-  // TODO: Refactor into a system that can be called directly from the store
-  const openNotification = () => {
-    const key = `open${Date.now()}`;
-    const btn = (
-      <Space>
-        <Button type="link" size="small" onClick={() => api.destroy()}>
-          Destroy All
-        </Button>
-        <Button type="primary" size="small" onClick={() => api.destroy(key)}>
-          Confirm
-        </Button>
-      </Space>
-    );
-    api.open({
-      message: "Notification Title",
-      description:
-        'A function will be be called after the notification is closed (automatically after the "duration" time of manually).',
-      btn,
-      key,
-      // placement: "top",
-      // onClose: close,
-    });
-  };
+  const {
+    symbolBuckets,
+    isProfilingCacheOverlayOpen,
+    cacheDetails,
+    cacheSize,
+  } = useStoreStateReader([
+    "symbolBuckets",
+    "isProfilingCacheOverlayOpen",
+    "cacheDetails",
+    "cacheSize",
+  ]);
 
   return (
-    <div>
-      <Button onClick={() => alert("TODO: Implement")}>Clear Data</Button>
+    <Scrollable>
+      <Padding>
+        <h2>User Data</h2>
 
-      <div>
-        <h2>Buckets</h2>
+        <Button variant="outlined">TODO: Implement::Clear all user data</Button>
+
+        <h3>Buckets</h3>
 
         {symbolBuckets?.map((symbolBucket, idx) => (
-          <div key={idx}>{symbolBucket.name}</div>
+          <Typography key={idx} variant="body1">
+            {symbolBucket.name}
+          </Typography>
         ))}
-      </div>
+      </Padding>
 
-      <hr />
+      <Padding>
+        <h2>Cache</h2>
 
-      <h2>Prototype Notifications</h2>
+        <Box display="flex" justifyContent="center" alignItems="center" mb={2}>
+          <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
+            Cache size: {cacheSize}
+          </Typography>
+          <Typography variant="body2" color="textSecondary">
+            Cache entries: {Object.keys(cacheDetails).length}
+          </Typography>
+        </Box>
 
-      <>
-        {contextHolder}
-        <Button type="primary" onClick={openNotification}>
-          Open the notification box
+        <ProtoPieChart />
+      </Padding>
+
+      <ProtoTable />
+
+      <Padding>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={isProfilingCacheOverlayOpen}
+              onChange={() =>
+                store.setState(() => ({
+                  isProfilingCacheOverlayOpen: !isProfilingCacheOverlayOpen,
+                }))
+              }
+            />
+          }
+          label="Enable Cache Profiling Overlay"
+        />
+      </Padding>
+
+      <Padding>
+        <Button variant="outlined" onClick={() => store.PROTO_clearCache()}>
+          PROTO_clearCache()
         </Button>
-      </>
 
-      {
-        // TODO: Add configuration options to adjust tickers which show in the ticker tape in the footer
-      }
-    </div>
+        <Button
+          variant="outlined"
+          onClick={() =>
+            store.PROTO_removeCacheEntry("/data/symbol_search_dict.enc")
+          }
+        >
+          PROTO_removeCacheEntry(/data/symbol_search_dict.enc)
+        </Button>
+      </Padding>
+
+      <Padding>
+        <h2>Prototype Notifications</h2>
+
+        {
+          // Add prototype notifications code here
+        }
+
+        {
+          // TODO: Add configuration options to adjust tickers which show in the ticker tape in the footer
+        }
+      </Padding>
+    </Scrollable>
   );
 }

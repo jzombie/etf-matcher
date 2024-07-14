@@ -1,0 +1,16 @@
+.full {
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  flex-direction: column;
+}
+
+/* Ensure children of .full do not flex (grow or shrink) within the flex container.
+   This prevents them from stretching or compressing to fill the available space,
+   allowing them to maintain their intrinsic sizes and behave more predictably
+   within the flexbox layout. Useful for preventing layout shifts and ensuring 
+   that content does not overflow unexpectedly. */
+.full > * {
+  flex: 0 0 auto;
+}

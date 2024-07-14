@@ -1,34 +1,44 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button } from "antd";
+import { Button } from "@mui/material";
 
 import useSearch from "@hooks/useSearch";
 import SymbolDetail from "@components/SymbolDetail";
+
+import Scrollable from "@layoutKit/Scrollable";
 
 export default function SearchResults() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Note: The usage of `_` prefixes urges the usage to be aware before setting
+  // these values directly. They should be set as the result of URL change operations
+  // to ensure the queries are deep-linkable.
   const {
     searchQuery,
-    setSearchQuery,
+    setSearchQuery: _setSearchQuery,
     onlyExactMatches,
-    setOnlyExactMatches,
+    setOnlyExactMatches: _setOnlyExactMatches,
     searchResults,
+    totalSearchResults,
   } = useSearch();
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     searchParams.forEach((value, key) => {
       if (key === "query") {
-        setSearchQuery(value.trim());
+        _setSearchQuery(value.trim());
       }
       if (key === "exact") {
-        setOnlyExactMatches(value === "true" || value === "1");
+        _setOnlyExactMatches(value === "true" || value === "1");
+      } else {
+        _setOnlyExactMatches(false);
       }
     });
-  }, [location, setSearchQuery, setOnlyExactMatches]);
+  }, [location, _setSearchQuery, _setOnlyExactMatches]);
 
+  // IMPORTANT: This adjusts the URL query as well and should be used instead
+  // of setting only exact matches directly
   const toggleExactMatch = () => {
     const searchParams = new URLSearchParams(location.search);
     const newExactValue = !(
@@ -46,25 +56,32 @@ export default function SearchResults() {
       search: searchParams.toString(),
     });
 
-    setOnlyExactMatches(newExactValue);
+    _setOnlyExactMatches(newExactValue);
   };
+
+  const searchResultSymbols = useMemo(
+    () => searchResults.map((searchResult) => searchResult.symbol),
+    [searchResults]
+  );
 
   if (!searchQuery) {
     return <div>No search query...</div>;
   }
 
   return (
-    <div>
-      Search results for: {searchQuery}
-      <Button onClick={toggleExactMatch}>
-        Toggle Exact Match (currently {onlyExactMatches ? "on" : "off"})
+    <Scrollable>
+      {totalSearchResults} search result{totalSearchResults !== 1 ? "s" : ""}{" "}
+      for: {searchQuery}{" "}
+      <Button onClick={toggleExactMatch} variant="outlined">
+        {onlyExactMatches ? "Exact Match" : "Non-Exact Match"}
       </Button>
-      {searchResults.map((searchResult) => (
+      {searchResultSymbols.map((tickerSymbol) => (
         <SymbolDetail
-          key={searchResult.symbol}
-          tickerSymbol={searchResult.symbol}
+          key={tickerSymbol}
+          tickerSymbol={tickerSymbol}
+          groupTickerSymbols={searchResultSymbols}
         />
       ))}
-    </div>
+    </Scrollable>
   );
 }

@@ -25,7 +25,9 @@ worker.onmessage = (event) => {
 
 worker.onerror = (error) => {
   console.error("Worker error:", error);
-  alert("An error occurred in the web worker");
+  alert(
+    `This application is likely not supported on your current browser version or device. If you are on iOS, version 15 may be the minimum that is supported.`
+  );
 };
 
 const callWorkerFunction = <T>(

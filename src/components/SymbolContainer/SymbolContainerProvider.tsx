@@ -1,6 +1,8 @@
-import React, { createContext, useCallback, useEffect, useRef } from "react";
+import React, { createContext, useCallback, useRef } from "react";
 import { store } from "@hooks/useStoreStateReader";
+import useIntersectionObserver from "@hooks/useIntersectionObserver";
 
+// Modified version of `useIntersectionObserver` return
 export type SymbolContainerContextType = {
   observe: (el: HTMLElement, tickerSymbol: string) => void;
   unobserve: (el?: HTMLElement) => void;
@@ -15,95 +17,66 @@ export type SymbolContainerContextProps = {
   perSymbolThreshold?: number;
 };
 
-// Patch for ESLint not seeing browser's IntersectionObserverCallback
-type IntersectionObserverCallback = (
-  entries: IntersectionObserverEntry[],
-  observer: IntersectionObserver
-) => void;
-
 export default function SymbolContainerProvider({
   children,
   perSymbolThreshold = 0.5,
 }: SymbolContainerContextProps) {
-  const observerRef = useRef<IntersectionObserver | null>(null);
-
-  // Contains mapping for registered observers
   const metadataMapRef = useRef(new Map<Element, string>());
-
-  // Contains mapping for currently visible observers
   const visibleSymbolMapRef = useRef(new Map<Element, string>());
 
-  /**
-   * Syncs the unique visible symbols with the store.
-   */
   const syncVisibleSymbols = useCallback(() => {
     const uniqueVisibleSymbols = [
       ...new Set(visibleSymbolMapRef.current.values()),
     ];
-
     store.setVisibleSymbols(uniqueVisibleSymbols);
   }, []);
 
-  const handleObserve = useCallback((el: HTMLElement, tickerSymbol: string) => {
-    if (observerRef.current) {
-      observerRef.current.observe(el);
-      metadataMapRef.current.set(el, tickerSymbol);
-    }
-  }, []);
-
-  const handleUnobserve = useCallback(
-    (el?: HTMLElement) => {
-      if (el && observerRef.current) {
-        observerRef.current.unobserve(el);
-        metadataMapRef.current.delete(el);
-        visibleSymbolMapRef.current.delete(el);
-
-        syncVisibleSymbols();
-      }
-    },
-    [syncVisibleSymbols]
-  );
-
-  useEffect(() => {
-    /**
-     * Note: This callback is used in conjunction with the `handleUnobserve` callback.`IntersectionObserverCallback`
-     * is invoked when there is an intersection difference on the page, but is not emit when the elements are removed
-     * from the DOM, which is where `handleUnobserve` steps in.
-     */
-    const observerCallback: IntersectionObserverCallback = (entries) => {
+  const observerCallback = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
         const symbol = metadataMapRef.current.get(entry.target);
         if (symbol) {
           if (entry.isIntersecting) {
-            // console.debug(`Element with ticker symbol ${symbol} is visible.`);
             visibleSymbolMapRef.current.set(entry.target, symbol);
           } else {
-            // console.debug(`Element with ticker symbol ${symbol} is not visible.`);
             visibleSymbolMapRef.current.delete(entry.target);
           }
-        } else {
-          console.debug("No symbol associated with the element.");
         }
       });
 
       syncVisibleSymbols();
-    };
+    },
+    [syncVisibleSymbols]
+  );
 
-    observerRef.current = new IntersectionObserver(observerCallback, {
-      threshold: perSymbolThreshold,
-    });
+  const { observe, unobserve } = useIntersectionObserver(
+    observerCallback,
+    perSymbolThreshold
+  );
 
-    return () => {
-      observerRef.current?.disconnect();
-    };
-  }, [perSymbolThreshold, syncVisibleSymbols]);
+  const handleObserve = useCallback(
+    (el: HTMLElement, tickerSymbol: string) => {
+      observe(el);
+      metadataMapRef.current.set(el, tickerSymbol);
+    },
+    [observe]
+  );
+
+  const handleUnobserve = useCallback(
+    (el?: HTMLElement) => {
+      if (el) {
+        unobserve(el);
+        metadataMapRef.current.delete(el);
+        visibleSymbolMapRef.current.delete(el);
+        syncVisibleSymbols();
+      }
+    },
+    [unobserve, syncVisibleSymbols]
+  );
 
   return (
     <SymbolContainerContext.Provider
-      value={{
-        observe: handleObserve,
-        unobserve: handleUnobserve,
-      }}
+      value={{ observe: handleObserve, unobserve: handleUnobserve }}
     >
       {children}
     </SymbolContainerContext.Provider>

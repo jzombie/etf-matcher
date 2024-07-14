@@ -1,7 +1,9 @@
 import React from "react";
-import { Button } from "antd";
+import { Button } from "@mui/material";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import heroImg from "@assets/hero.webp"; // Adjust the path as needed
+
+import Scrollable from "@layoutKit/Scrollable";
 
 export default function Home() {
   const { isSearchModalOpen } = useStoreStateReader(["isSearchModalOpen"]);
@@ -11,7 +13,7 @@ export default function Home() {
   };
 
   return (
-    <div>
+    <Scrollable>
       <section style={heroSectionStyle}>
         <div style={overlayStyle}>
           <div style={heroContentStyle}>
@@ -21,9 +23,8 @@ export default function Home() {
               find ETFs that closely match your investment goals.
             </p>
             <Button
+              variant="contained"
               style={heroButtonStyle}
-              type="primary"
-              size="large"
               onClick={handleGetStarted}
               disabled={isSearchModalOpen}
             >
@@ -53,13 +54,13 @@ export default function Home() {
           this information.
         </p>
       </section>
-    </div>
+    </Scrollable>
   );
 }
 
 const heroSectionStyle: React.CSSProperties = {
   position: "relative",
-  height: "50vh",
+  height: 500,
   width: "100%",
   marginBottom: "50px",
   overflow: "hidden",
@@ -106,5 +107,6 @@ const heroImageStyle: React.CSSProperties = {
 };
 
 const infoSectionStyle: React.CSSProperties = {
-  padding: "20px 100px",
+  padding: "20px 20px",
+  // boxSizing: "border-box",
 };

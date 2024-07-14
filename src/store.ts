@@ -2,15 +2,43 @@ import {
   ReactStateEmitter,
   StateEmitterDefaultEvents,
 } from "./utils/StateEmitter";
-import callWorkerFunction from "./utils/callWorkerFunction";
+import libCallWorkerFunction from "./utils/callWorkerFunction";
 
 const IS_PROD = import.meta.env.PROD;
 
 export type SymbolBucketProps = {
   name: string;
   symbols: string[];
-  type: "watchlist" | "portfolio" | "ticker_tape" | "attention_tracker";
+  type:
+    | "watchlist"
+    | "portfolio"
+    | "ticker_tape"
+    | "recently_viewed"
+    | "attention_tracker";
   requiresQuantity: boolean;
+};
+
+export type RustServiceSearchResult = {
+  symbol: string;
+  company: string;
+};
+
+export type RustServiceSearchResultsWithTotalCount = {
+  total_count: number;
+  results: RustServiceSearchResult[];
+};
+
+export type RustServiceETFHoldersWithTotalCount = {
+  total_count: number;
+  results: string[];
+};
+
+export type RustServiceCacheDetail = {
+  key: string;
+  size: string;
+  age: number;
+  last_accessed: number;
+  access_count: number;
 };
 
 export type StoreStateProps = {
@@ -23,17 +51,16 @@ export type StoreStateProps = {
   visibleSymbols: string[];
   isSearchModalOpen: boolean;
   symbolBuckets: SymbolBucketProps[];
+  isProfilingCacheOverlayOpen: boolean;
+  cacheProfilerConnections: number; // Used to determine if active cache profiling needs to happen
+  cacheDetails: RustServiceCacheDetail[];
+  cacheSize: number;
 };
 
-export type SearchResult = {
-  symbol: string;
-  company: string;
-};
-
-export type SearchResultsWithTotalCount = {
-  total_count: number;
-  results: SearchResult[];
-};
+// TODO: Wrap `callWorkerFunction` and update cache metrics if profiling cache
+//
+//   |___  Include notification (and route to UI) showing data fetching status
+// (potentially show in red, just above the ticker tape)
 
 class _Store extends ReactStateEmitter<StoreStateProps> {
   constructor() {
@@ -67,12 +94,24 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           requiresQuantity: false,
         },
         {
+          name: "My Recently Viewed",
+          symbols: [],
+          type: "recently_viewed",
+          requiresQuantity: false,
+        },
+        // TODO: Infer potential ETFs that a user may be interested in based on searched
+        // symbols and the frequency of the most common ETFs that hold those symbols
+        {
           name: "My Attention Tracker",
           symbols: [],
           type: "attention_tracker",
           requiresQuantity: false,
         },
       ],
+      isProfilingCacheOverlayOpen: false,
+      cacheProfilerConnections: 0,
+      cacheDetails: [],
+      cacheSize: 0,
     });
 
     // Only deepfreeze in development
@@ -125,7 +164,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   private _fetchDataBuildInfo() {
-    callWorkerFunction("get_data_build_info").then((dataBuildInfo) => {
+    this._callWorkerFunction("get_data_build_info").then((dataBuildInfo) => {
       this.setState({
         isRustInit: true,
         // TODO: If data build time is already set as state, but this indicates otherwise, that's a signal the app needs to update
@@ -137,25 +176,49 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     });
   }
 
+  private async _callWorkerFunction<T>(
+    functionName: string,
+    ...args: unknown[]
+  ): Promise<T> {
+    const resp = await libCallWorkerFunction<T>(functionName, ...args);
+
+    // TODO: Only call these if is profiling (cacheProfilerConnections > 0)
+    libCallWorkerFunction<number>("get_cache_size").then((cacheSize) => {
+      this.setState({ cacheSize });
+    });
+    libCallWorkerFunction<RustServiceCacheDetail[]>("get_cache_details").then(
+      (cacheDetails) => this.setState({ cacheDetails })
+    );
+
+    return resp;
+  }
+
+  // PROTO_getCacheDetails() {
+  //   this._callWorkerFunction<RustServiceCacheDetail[]>("get_cache_details")
+  //     .then(console.table)
+  //     .catch((error) => console.error(error));
+  // }
+
   // TODO: For the following `PROTO` functions, it might be best to not retain a duplicate copy here,
   // except where absolutely needed (and utilize Rust for more `composite` metric generation).
 
-  // TODO: Update type
+  // TODO: Update type (use pagination type with generics)
   async searchSymbols(
     query: string,
     page: number = 1,
     pageSize: number = 20,
     onlyExactMatches: boolean = false
-  ): Promise<SearchResultsWithTotalCount> {
+  ): Promise<RustServiceSearchResultsWithTotalCount> {
     try {
       // Call the worker function with the given query and trim any extra spaces
-      const results = await callWorkerFunction<SearchResultsWithTotalCount>(
-        "search_symbols",
-        query.trim(),
-        page,
-        pageSize,
-        onlyExactMatches
-      );
+      const results =
+        await this._callWorkerFunction<RustServiceSearchResultsWithTotalCount>(
+          "search_symbols",
+          query.trim(),
+          page,
+          pageSize,
+          onlyExactMatches
+        );
 
       return results;
     } catch (error) {
@@ -163,10 +226,22 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       throw error;
     }
   }
+  async getSymbolETFHolders(
+    symbol: string,
+    page: number = 1,
+    pageSize: number = 20
+  ): Promise<RustServiceETFHoldersWithTotalCount> {
+    return this._callWorkerFunction<RustServiceETFHoldersWithTotalCount>(
+      "get_symbol_etf_holders",
+      symbol,
+      page,
+      pageSize
+    );
+  }
 
   // TODO: Document type (should be able to import from WASM type)
   async fetchSymbolDetail(symbol: string) {
-    return callWorkerFunction("get_symbol_detail", symbol);
+    return this._callWorkerFunction("get_symbol_detail", symbol);
   }
 
   // PROTO_countEtfsPerExchange() {
@@ -192,7 +267,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   // }
 
   PROTO_getSymbolDetail(symbol: string) {
-    callWorkerFunction("get_symbol_detail", symbol)
+    this._callWorkerFunction("get_symbol_detail", symbol)
       .then((symbolDetail) =>
         console.log({
           symbol,
@@ -202,19 +277,12 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       .catch((error) => console.error(error));
   }
 
-  PROTO_getSymbolETFHolders(
-    symbol: string,
-    page: number = 1,
-    pageSize: number = 20
-  ) {
-    callWorkerFunction("get_symbol_etf_holders", symbol, page, pageSize)
-      .then((etfHolders) =>
-        console.log({
-          symbol,
-          etfHolders,
-        })
-      )
-      .catch((error) => console.error(error));
+  PROTO_removeCacheEntry(key: string) {
+    this._callWorkerFunction("remove_cache_entry", key);
+  }
+
+  PROTO_clearCache() {
+    this._callWorkerFunction("clear_cache");
   }
 
   addSymbolToBucket(symbol: string, symbolBucket: SymbolBucketProps) {

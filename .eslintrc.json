@@ -29,7 +29,22 @@
         "ignoreRestSiblings": true
       }
     ],
-    "no-undef": "warn"
+    "no-undef": "warn",
+    "no-restricted-globals": [
+      "error",
+      {
+        "name": "location",
+        "message": "Use the useLocation hook from react-router-dom instead of the global location."
+      },
+      // {
+      //   "name": "window",
+      //   "message": "Use dependency injection or other methods to access window object."
+      // },
+      {
+        "name": "document",
+        "message": "Use dependency injection or other methods to access document object."
+      }
+    ]
   },
   "overrides": [
     {

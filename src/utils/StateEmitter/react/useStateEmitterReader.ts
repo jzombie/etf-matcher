@@ -1,12 +1,34 @@
-import { useSyncExternalStore, useCallback, useMemo, useRef } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useSyncExternalStore,
+} from "react";
 import EmitterState, { StateEmitterDefaultEvents } from "../StateEmitter";
 import deepEqual from "@utils/deepEqual";
 
 const useStateEmitterReader = <T extends object, K extends keyof T>(
   emitter: EmitterState<T>,
-  stateKeyOrKeys?: K | K[],
+  stateKeyOrKeys: K | K[],
   eventOrEventNames: string | string[] = StateEmitterDefaultEvents.UPDATE
 ) => {
+  // Dynamically apply `maxListeners` offset
+  //
+  // This sidesteps an issue where the emitter will emit a warning if the max
+  // number of listeners has been exceeded if using many hooks to read state.
+  useEffect(() => {
+    const maxListeners = emitter.getMaxListeners();
+    emitter.setMaxListeners(maxListeners + 1);
+
+    return () => {
+      // Max listeners has to be re-obtained because the value may have changed
+      // since the original call
+      const maxListeners = emitter.getMaxListeners();
+      emitter.setMaxListeners(maxListeners - 1);
+    };
+  }, [emitter]);
+
   const eventNames: K[] = useMemo(
     () =>
       (Array.isArray(eventOrEventNames)
@@ -52,6 +74,15 @@ const useStateEmitterReader = <T extends object, K extends keyof T>(
       ? emitter.getState(stateKeys)
       : emitter.getState();
 
+    // Add a type guard to ensure newSnapshot is of the expected type
+    if (stateKeys && typeof newSnapshot === "object" && newSnapshot !== null) {
+      // Ensure the stateKeys are in the newSnapshot
+      const hasAllKeys = stateKeys.every((key) => key in newSnapshot);
+      if (!hasAllKeys) {
+        throw new Error("State keys not found in the snapshot");
+      }
+    }
+
     // Compare the new snapshot with the previous one using deep equality
     if (deepEqual(newSnapshot, prevSnapshotRef.current)) {
       return prevSnapshotRef.current!;
@@ -69,7 +100,7 @@ const useStateEmitterReader = <T extends object, K extends keyof T>(
     getCachedSnapshot
   );
 
-  return state;
+  return state as Pick<T, K>;
 };
 
 export default useStateEmitterReader;
