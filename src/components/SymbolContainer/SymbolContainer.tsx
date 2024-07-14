@@ -67,11 +67,6 @@ export default function SymbolContainer({
       maxIdxPrevVisibleSymbolRef.current = idxGroupLastVisible;
     }
 
-    // TODO: Keep track of max visible symbol idx as a ref, regardless if
-    // the page has been scrolled, to avoid re-querying on subsequent scrolling
-    //
-    // TODO: Handle `maxIdxPrevVisibleSymbolRef`
-
     // Where the symbol lies in the group
     const idxGroup = groupTickerSymbols.indexOf(tickerSymbol);
 
