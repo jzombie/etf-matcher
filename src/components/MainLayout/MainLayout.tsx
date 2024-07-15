@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { TickerTape } from "react-ts-tradingview-widgets";
-import { AppBar, Toolbar, Typography, useTheme } from "@mui/material";
+import { Typography, useTheme } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import HeaderMenu from "./HeaderMenu";
 

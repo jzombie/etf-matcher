@@ -77,7 +77,7 @@ export default function HeaderMenu() {
     flexGrow: 1, // Makes the branding take up all available space
   }));
 
-  const MobileStyledLogoBranding = styled(Typography)(({ theme }) => ({
+  const MobileStyledLogoBranding = styled(Typography)(() => ({
     fontFamily: "'Roboto', sans-serif",
     fontWeight: 700,
     fontSize: "1.5rem",

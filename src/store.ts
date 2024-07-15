@@ -132,22 +132,23 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     window.addEventListener("online", _handleOnlineStatus);
     window.addEventListener("offline", _handleOnlineStatus);
 
-    const _handleVisibleSymbolsUpdate = (keys: (keyof StoreStateProps)[]) => {
-      if (keys.includes("visibleSymbols")) {
-        const { visibleSymbols } = this.getState(["visibleSymbols"]);
+    // TODO: Reintegrate or use this pattern as needed
+    // const _handleVisibleSymbolsUpdate = (keys: (keyof StoreStateProps)[]) => {
+    //   if (keys.includes("visibleSymbols")) {
+    //     const { visibleSymbols } = this.getState(["visibleSymbols"]);
 
-        // TODO: Handle this tracking
-        // console.log({ visibleSymbols });
-      }
-    };
+    //     // TODO: Handle this tracking
+    //     // console.log({ visibleSymbols });
+    //   }
+    // };
 
-    this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
+    // this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
 
     return () => {
       window.removeEventListener("online", _handleOnlineStatus);
       window.removeEventListener("offline", _handleOnlineStatus);
 
-      this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
+      // this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
     };
   }
 

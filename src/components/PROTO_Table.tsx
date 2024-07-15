@@ -16,7 +16,7 @@ import useStoreStateReader from "@hooks/useStoreStateReader";
 import formatByteSize from "@utils/formatByteSize"; // Import the utility function
 
 // Styled components
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
+const StyledTableCell = styled(TableCell)(() => ({
   padding: "4px 8px",
   fontSize: "0.75rem",
   borderBottom: "1px solid rgba(224, 224, 224, 1)",
@@ -26,7 +26,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   },
 }));
 
-const StyledTableHeadCell = styled(TableCell)(({ theme }) => ({
+const StyledTableHeadCell = styled(TableCell)(() => ({
   fontWeight: "bold",
   padding: "4px 8px",
   fontSize: "0.75rem",
@@ -34,7 +34,7 @@ const StyledTableHeadCell = styled(TableCell)(({ theme }) => ({
   color: "white",
 }));
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
+const StyledTableRow = styled(TableRow)(() => ({
   "&:nth-of-type(odd)": {
     backgroundColor: "#0e0e0e",
   },
