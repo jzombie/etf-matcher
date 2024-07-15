@@ -70,6 +70,12 @@ export default function SearchResults() {
 
   usePageTitleSetter(searchQuery ? `Search results for: ${searchQuery}` : null);
 
+  // Reset the scrollbar position on search query updates
+  const scrollableKey = useMemo(
+    () => JSON.stringify({ searchQuery, onlyExactMatches }),
+    [searchQuery, onlyExactMatches]
+  );
+
   if (!searchQuery) {
     return <div>No search query...</div>;
   }
@@ -110,7 +116,7 @@ export default function SearchResults() {
   }
 
   return (
-    <Scrollable>
+    <Scrollable key={scrollableKey}>
       <Padding>
         <Box
           display="flex"
