@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
-const GOOGLE_ANALYTICS_ID = (window as unknown as { [key: string]: string })
-  .GOOGLE_ANALYTICS_ID;
+const GOOGLE_ANALYTICS_ID = import.meta.env.VITE_GOOGLE_ANALYTICS_ID;
+const IS_DEV = import.meta.env.DEV;
 
 const PAGE_VIEW_TIMEOUT = 1000;
 
@@ -9,6 +9,14 @@ const PAGE_VIEW_TIMEOUT = 1000;
 // doesn't have to be a child of a `react-router` context.
 export default function useGAPageTracking() {
   useEffect(() => {
+    if (IS_DEV) {
+      console.debug(
+        "Skipping GA page tracking due to development environment."
+      );
+
+      return;
+    }
+
     if (!GOOGLE_ANALYTICS_ID) {
       console.warn(
         "`GOOGLE_ANALYTICS_ID` was not recovered from window. Skipping GA page tracking."

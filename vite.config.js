@@ -8,7 +8,10 @@ import svgr from "vite-plugin-svgr";
 import eslint from "vite-plugin-eslint";
 import { createHtmlPlugin } from "vite-plugin-html";
 import fs from "fs";
+import dotenv from "dotenv"; // Import dotenv
 const removeComments = require("./custom_vite_plugins/posthtml-remove-comments.cjs");
+
+dotenv.config();
 
 const DESTINATION_DIR = path.resolve(__dirname, "dist");
 

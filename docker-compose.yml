@@ -19,6 +19,7 @@ services:
     <<: *base-service
     command: |
       sh -c '
+      [ ! -f /app/.env ] && cp /build_artifacts/.env /app/.env ||
       cp -rT /build_artifacts/public/pkg /app/public/pkg &&
       cp -rT /build_artifacts/public/data /app/public/data &&
       npm install &&
@@ -42,7 +43,7 @@ services:
     entrypoint: ["/usr/bin/tini", "--"]
     command: |
       sh -c '
-      cp -r /build_artifacts/.env /app/.env &&
+      [ ! -f /app/.env ] && cp /build_artifacts/.env /app/.env ||
       cp -rT /build_artifacts/public/pkg /app/public/pkg &&
       cp -rT /build_artifacts/public/data /app/public/data &&
       npm install &&
@@ -86,7 +87,7 @@ services:
       - .:/app
     command: |
       sh -c '
-      cp -r /build_artifacts/.env /app/.env &&
+      [ ! -f /app/.env ] && cp /build_artifacts/.env /app/.env ||
       cp -rT /build_artifacts/public/pkg /app/public/pkg &&
       cp -rT /build_artifacts/public/data /app/public/data &&
       npm install &&
