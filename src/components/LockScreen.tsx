@@ -9,6 +9,8 @@ import {
 } from "@mui/material";
 import { PREVIEW_UNLOCK } from "@src/store";
 
+import Padding from "@layoutKit/Padding";
+
 const LOCK_MESSAGE = "ETF Matcher is currently in limited preview.";
 
 export type LockScreenProps = {
@@ -51,17 +53,20 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
         alignItems: "center",
       }}
     >
-      <Typography variant="h5" sx={{ textAlign: "center" }}>
-        Customize a virtual portfolio with potential fractional shares and find
-        ETFs that closely match your investment goals.
-      </Typography>
-      <Typography
-        mt={2}
-        variant="h6"
-        sx={{ color: "white", marginBottom: 4, textAlign: "center" }}
-      >
-        {LOCK_MESSAGE}
-      </Typography>
+      <Padding>
+        <Typography variant="h5" sx={{ textAlign: "center" }}>
+          Customize a virtual portfolio with potential fractional shares and
+          find ETFs that closely match your investment goals.
+        </Typography>
+
+        <Typography
+          mt={2}
+          variant="h6"
+          sx={{ color: "white", marginBottom: 4, textAlign: "center" }}
+        >
+          {LOCK_MESSAGE}
+        </Typography>
+      </Padding>
       <form onSubmit={handleSubmit}>
         <FormControl
           sx={{ marginBottom: 2, width: "250px" }}
