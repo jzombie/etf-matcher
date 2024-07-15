@@ -4,7 +4,8 @@ import App from "./App";
 
 import { buildTime } from "../public/buildTime.json";
 
-// TODO: Refactor this handling
+// TODO: Refactor this handling (query `public/buildTime.json` from client, without caching,
+// occasionally to determine if the app needs updating)
 (() => {
   const jsBuildTime = buildTime;
   const htmlBuildTime = window.document
