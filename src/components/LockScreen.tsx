@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Box, Typography, TextField, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  FormControl,
+  FormHelperText,
+} from "@mui/material";
 import { PREVIEW_UNLOCK } from "@src/store";
 
 const LOCK_MESSAGE = "ETF Matcher is currently in limited preview.";
@@ -17,7 +24,8 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
     setErrorMessage("");
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
     if (password === PREVIEW_UNLOCK) {
       onUnlock();
     } else {
@@ -26,9 +34,7 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter") {
-      handleSubmit();
-    } else if (event.key === "Escape") {
+    if (event.key === "Escape") {
       setPassword("");
       setErrorMessage("");
     }
@@ -43,8 +49,6 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        // backgroundColor: "#1e3c72",
-        // background: "linear-gradient(to bottom, #1e3c72, #2a5298)",
       }}
     >
       <Typography variant="h5" sx={{ textAlign: "center" }}>
@@ -58,39 +62,35 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
       >
         {LOCK_MESSAGE}
       </Typography>
-      <TextField
-        autoComplete="off"
-        type="password"
-        variant="outlined"
-        placeholder="Enter Password"
-        value={password}
-        onChange={handlePasswordChange}
-        onKeyDown={handleKeyDown}
-        sx={{ marginBottom: 2, width: "250px" }}
-      />
-      {errorMessage && (
-        <Typography
-          variant="body1"
-          sx={{
-            color: "white",
-            backgroundColor: "red",
-            padding: "8px",
-            borderRadius: "4px",
-            marginBottom: 2,
-            textAlign: "center",
-          }}
+      <form onSubmit={handleSubmit}>
+        <FormControl
+          sx={{ marginBottom: 2, width: "250px" }}
+          variant="outlined"
         >
-          {errorMessage}
-        </Typography>
-      )}
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleSubmit}
-        sx={{ width: "250px" }}
-      >
-        Submit
-      </Button>
+          <TextField
+            autoComplete="off"
+            type="password"
+            variant="outlined"
+            placeholder="Enter Password"
+            value={password}
+            onChange={handlePasswordChange}
+            onKeyDown={handleKeyDown}
+          />
+          {errorMessage && (
+            <FormHelperText error>{errorMessage}</FormHelperText>
+          )}
+        </FormControl>
+        <div>
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            sx={{ width: "250px" }}
+          >
+            Submit
+          </Button>
+        </div>
+      </form>
     </Box>
   );
 }
