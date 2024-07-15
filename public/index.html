@@ -3,6 +3,36 @@
   <head>
     <meta charset="utf-8" />
 
+    <script>
+      // Very simple no-cache mechanism. This may need to be improved if making the app a PWA.
+      (function () {
+        function getQueryParam(name) {
+          const urlParams = new URLSearchParams(window.location.search);
+          return urlParams.get(name);
+        }
+
+        function setQueryParam(name, value) {
+          const url = new URL(window.location);
+          url.searchParams.set(name, value);
+          window.history.replaceState(null, "", url.toString());
+        }
+
+        const noCacheParam = getQueryParam("no_cache");
+        const now = Math.floor(Date.now() / 1000);
+
+        if (noCacheParam) {
+          const timestamp = parseInt(noCacheParam, 10);
+          if (isNaN(timestamp) || now - timestamp > 10) {
+            setQueryParam("no_cache", now);
+            window.location.reload(true); // Force reload with new parameter
+          }
+        } else {
+          setQueryParam("no_cache", now);
+          window.location.reload(true); // Force reload with new parameter
+        }
+      })();
+    </script>
+
     <!-- Google tag (gtag.js) -->
     <script
       async
