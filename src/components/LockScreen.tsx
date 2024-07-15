@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  Box,
   Typography,
   TextField,
   Button,
@@ -9,7 +8,22 @@ import {
 } from "@mui/material";
 import { PREVIEW_UNLOCK } from "@src/store";
 
+import FullViewport from "@layoutKit/FullViewport";
+import Center from "@layoutKit/Center";
+import Layout, { Content, Footer } from "@layoutKit/Layout";
 import Padding from "@layoutKit/Padding";
+
+import { buildTime } from "../../public/buildTime.json";
+
+const formattedBuildTime = (() => {
+  // Convert the ISO string to a Date object
+  const date = new Date(buildTime);
+
+  // Format the date to a locale string
+  const formattedDate = date.toLocaleString();
+
+  return formattedDate;
+})();
 
 const LOCK_MESSAGE = "ETF Matcher is currently in limited preview.";
 
@@ -43,59 +57,64 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
   };
 
   return (
-    <Box
-      sx={{
-        width: "100vw",
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Padding>
-        <Typography variant="h5" sx={{ textAlign: "center" }}>
-          Customize a virtual portfolio with potential fractional shares and
-          find ETFs that closely match your investment goals.
+    <FullViewport>
+      <Layout>
+        <Typography variant="body1" sx={{ textAlign: "center" }}>
+          ETFMatcher.com
         </Typography>
+        <Content>
+          <Center>
+            <Padding>
+              <Typography variant="h5" sx={{ textAlign: "center" }}>
+                Customize a virtual portfolio with potential fractional shares
+                and find ETFs that closely match your investment goals.
+              </Typography>
 
-        <Typography
-          mt={2}
-          variant="h6"
-          sx={{ color: "white", marginBottom: 4, textAlign: "center" }}
-        >
-          {LOCK_MESSAGE}
-        </Typography>
-      </Padding>
-      <form onSubmit={handleSubmit}>
-        <FormControl
-          sx={{ marginBottom: 2, width: "250px" }}
-          variant="outlined"
-        >
-          <TextField
-            autoComplete="off"
-            type="password"
-            variant="outlined"
-            placeholder="Enter Password"
-            value={password}
-            onChange={handlePasswordChange}
-            onKeyDown={handleKeyDown}
-          />
-          {errorMessage && (
-            <FormHelperText error>{errorMessage}</FormHelperText>
-          )}
-        </FormControl>
-        <div>
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            sx={{ width: "250px" }}
-          >
-            Submit
-          </Button>
-        </div>
-      </form>
-    </Box>
+              <Typography
+                mt={2}
+                variant="h6"
+                sx={{ color: "white", marginBottom: 4, textAlign: "center" }}
+              >
+                {LOCK_MESSAGE}
+              </Typography>
+            </Padding>
+            <form onSubmit={handleSubmit}>
+              <FormControl
+                sx={{ marginBottom: 2, width: "250px" }}
+                variant="outlined"
+              >
+                <TextField
+                  autoComplete="off"
+                  type="password"
+                  variant="outlined"
+                  placeholder="Enter Password"
+                  value={password}
+                  onChange={handlePasswordChange}
+                  onKeyDown={handleKeyDown}
+                />
+                {errorMessage && (
+                  <FormHelperText error>{errorMessage}</FormHelperText>
+                )}
+              </FormControl>
+              <div>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                  sx={{ width: "250px" }}
+                >
+                  Submit
+                </Button>
+              </div>
+            </form>
+          </Center>
+        </Content>
+        <Footer>
+          <Typography variant="body2" sx={{ textAlign: "center" }}>
+            Build time: {formattedBuildTime}
+          </Typography>
+        </Footer>
+      </Layout>
+    </FullViewport>
   );
 }
