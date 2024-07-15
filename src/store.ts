@@ -3,9 +3,20 @@ import {
   StateEmitterDefaultEvents,
 } from "@utils/StateEmitter";
 import libCallWorkerFunction from "@utils/callWorkerFunction";
+import type {
+  RustServiceSymbolDetail,
+  RustServiceSearchResultsWithTotalCount,
+  RustServiceETFHoldersWithTotalCount,
+  RustServiceCacheDetail,
+} from "@utils/callWorkerFunction";
+
 import debounceWithKey from "@utils/debounceWithKey";
 
 const IS_PROD = import.meta.env.PROD;
+
+// TODO: Remove once launched
+// Note: This is not intended to be very secure, or else it would not be hardcoded here!
+export const PREVIEW_UNLOCK = "growth";
 
 export type SymbolBucketProps = {
   name: string;
@@ -20,30 +31,8 @@ export type SymbolBucketProps = {
   isUserConfigurable: boolean;
 };
 
-export type RustServiceSearchResult = {
-  symbol: string;
-  company: string;
-};
-
-export type RustServiceSearchResultsWithTotalCount = {
-  total_count: number;
-  results: RustServiceSearchResult[];
-};
-
-export type RustServiceETFHoldersWithTotalCount = {
-  total_count: number;
-  results: string[];
-};
-
-export type RustServiceCacheDetail = {
-  key: string;
-  size: string;
-  age: number;
-  last_accessed: number;
-  access_count: number;
-};
-
 export type StoreStateProps = {
+  isAppUnlocked: boolean;
   isProductionBuild: boolean;
   isOnline: boolean;
   isRustInit: boolean;
@@ -59,15 +48,11 @@ export type StoreStateProps = {
   cacheSize: number;
 };
 
-// TODO: Wrap `callWorkerFunction` and update cache metrics if profiling cache
-//
-//   |___  Include notification (and route to UI) showing data fetching status
-// (potentially show in red, just above the ticker tape)
-
 class _Store extends ReactStateEmitter<StoreStateProps> {
   constructor() {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
     super({
+      isAppUnlocked: false,
       isProductionBuild: IS_PROD,
       isOnline: false,
       isRustInit: false,
@@ -183,6 +168,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     });
   }
 
+  // TODO: Finish wrapping `callWorkerFunction`
+  //   |___  Include notification (and route to UI) showing data fetching status
+  //         (potentially show in red, just above the ticker tape)
+  //   |___  Show errors in UI
   private async _callWorkerFunction<T>(
     functionName: string,
     ...args: unknown[]
@@ -221,24 +210,15 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     pageSize: number = 20,
     onlyExactMatches: boolean = false
   ): Promise<RustServiceSearchResultsWithTotalCount> {
-    try {
-      // Call the worker function with the given query and trim any extra spaces
-      const results =
-        await this._callWorkerFunction<RustServiceSearchResultsWithTotalCount>(
-          "search_symbols",
-          query.trim(),
-          page,
-          pageSize,
-          onlyExactMatches
-        );
-
-      return results;
-    } catch (error) {
-      console.error("Error searching symbols:", error);
-      throw error;
-    }
+    return this._callWorkerFunction<RustServiceSearchResultsWithTotalCount>(
+      "search_symbols",
+      query.trim(),
+      page,
+      pageSize,
+      onlyExactMatches
+    );
   }
-  async getSymbolETFHolders(
+  async fetchSymbolETFHolders(
     symbol: string,
     page: number = 1,
     pageSize: number = 20
@@ -251,9 +231,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
-  // TODO: Document type (should be able to import from WASM type)
-  async fetchSymbolDetail(symbol: string) {
-    return this._callWorkerFunction("get_symbol_detail", symbol);
+  async fetchSymbolDetail(symbol: string): Promise<RustServiceSymbolDetail> {
+    return this._callWorkerFunction<RustServiceSymbolDetail>(
+      "get_symbol_detail",
+      symbol
+    );
   }
 
   // PROTO_countEtfsPerExchange() {
@@ -277,17 +259,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   //     )
   //     .catch((error) => console.error(error));
   // }
-
-  PROTO_getSymbolDetail(symbol: string) {
-    this._callWorkerFunction("get_symbol_detail", symbol)
-      .then((symbolDetail) =>
-        console.log({
-          symbol,
-          symbolDetail,
-        })
-      )
-      .catch((error) => console.error(error));
-  }
 
   PROTO_removeCacheEntry(key: string) {
     this._callWorkerFunction("remove_cache_entry", key);

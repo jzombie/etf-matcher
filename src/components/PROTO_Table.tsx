@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 
-import { RustServiceCacheDetail } from "@src/store";
+import { RustServiceCacheDetail } from "@utils/callWorkerFunction";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 import formatByteSize from "@utils/formatByteSize"; // Import the utility function
 

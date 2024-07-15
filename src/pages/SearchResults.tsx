@@ -1,12 +1,18 @@
 import React, { useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Box, Switch, FormControlLabel, Typography } from "@mui/material";
-import CheckBoxIcon from "@mui/icons-material/CheckBox";
-import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox";
+import {
+  Box,
+  Switch,
+  FormControlLabel,
+  Typography,
+  Button,
+} from "@mui/material";
 
+import SearchModalButton from "@components/SearchModalButton";
 import useSearch from "@hooks/useSearch";
 import SymbolDetailList from "@components/SymbolDetailList";
 
+import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
@@ -62,6 +68,41 @@ export default function SearchResults() {
 
   if (!searchQuery) {
     return <div>No search query...</div>;
+  }
+
+  if (!searchResultSymbols.length) {
+    return (
+      <Center>
+        <Typography variant="h6" fontWeight="bold">
+          No search results for &quot;{searchQuery}&quot;
+        </Typography>
+
+        <Box mt={4}>
+          <Typography
+            variant="body1"
+            sx={{ display: "inline-block", marginRight: 1 }}
+          >
+            Try another
+          </Typography>
+
+          <SearchModalButton />
+        </Box>
+
+        {Boolean(onlyExactMatches) && (
+          <Box mt={4}>
+            <Typography
+              variant="body1"
+              sx={{ display: "inline-block", marginRight: 1 }}
+            >
+              Or
+            </Typography>
+            <Button variant="contained" onClick={toggleExactMatch}>
+              Disable Exact Matches
+            </Button>
+          </Box>
+        )}
+      </Center>
+    );
   }
 
   return (

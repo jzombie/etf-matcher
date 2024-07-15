@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
 import SymbolContainer from "./SymbolContainer";
-import { Button } from "@mui/material";
+import { Button, Typography, Grid, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
+import Padding from "@layoutKit/Padding";
+
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
-import type { RustServiceETFHoldersWithTotalCount } from "@src/store";
+import type {
+  RustServiceSymbolDetail,
+  RustServiceETFHoldersWithTotalCount,
+} from "@utils/callWorkerFunction";
 
 import {
   MiniChart,
@@ -27,6 +32,10 @@ export default function SymbolDetail({
 
   const { symbolBuckets } = useStoreStateReader(["symbolBuckets"]);
 
+  const [symbolDetail, setSymbolDetail] = useState<
+    RustServiceSymbolDetail | undefined
+  >(undefined);
+
   const [etfHolders, setEtfHolders] = useState<
     RustServiceETFHoldersWithTotalCount | undefined
   >(undefined);
@@ -34,7 +43,8 @@ export default function SymbolDetail({
   // Only query symbols that are fully rendered, or are next in the list
   useEffect(() => {
     if (tickerSymbol) {
-      store.getSymbolETFHolders(tickerSymbol).then(setEtfHolders);
+      store.fetchSymbolDetail(tickerSymbol).then(setSymbolDetail);
+      store.fetchSymbolETFHolders(tickerSymbol).then(setEtfHolders);
     }
   }, [tickerSymbol]);
 
@@ -46,6 +56,44 @@ export default function SymbolDetail({
       {...rest}
     >
       <>
+        <Padding>
+          <Box mb={2}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" component="div">
+                  Company Name
+                </Typography>
+                <Typography variant="body1">
+                  {symbolDetail?.company_name || "N/A"}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" component="div">
+                  Sector
+                </Typography>
+                <Typography variant="body1">
+                  {symbolDetail?.sector || "N/A"}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" component="div">
+                  Industry
+                </Typography>
+                <Typography variant="body1">
+                  {symbolDetail?.industry || "N/A"}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" component="div">
+                  ETF Status
+                </Typography>
+                <Typography variant="body1">
+                  {symbolDetail?.is_etf ? "ETF" : "Not ETF"}
+                </Typography>
+              </Grid>
+            </Grid>
+          </Box>
+        </Padding>
         <div style={{ height: 200 }}>
           <MiniChart
             symbol={tickerSymbol}
@@ -94,9 +142,6 @@ export default function SymbolDetail({
               Add {tickerSymbol} to {symbolBucket.name}
             </Button>
           ))}
-        <Button onClick={() => store.PROTO_getSymbolDetail(tickerSymbol)}>
-          PROTO_getSymbolDetail()
-        </Button>
         <div>
           {
             // TODO: Paginate through these results
