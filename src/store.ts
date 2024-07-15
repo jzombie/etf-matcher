@@ -3,6 +3,13 @@ import {
   StateEmitterDefaultEvents,
 } from "@utils/StateEmitter";
 import libCallWorkerFunction from "@utils/callWorkerFunction";
+import type {
+  // RustServiceSearchResult,
+  RustServiceSearchResultsWithTotalCount,
+  RustServiceETFHoldersWithTotalCount,
+  RustServiceCacheDetail,
+} from "@utils/callWorkerFunction";
+
 import debounceWithKey from "@utils/debounceWithKey";
 
 const IS_PROD = import.meta.env.PROD;
@@ -18,29 +25,6 @@ export type SymbolBucketProps = {
     | "attention_tracker";
   requiresQuantity: boolean;
   isUserConfigurable: boolean;
-};
-
-export type RustServiceSearchResult = {
-  symbol: string;
-  company: string;
-};
-
-export type RustServiceSearchResultsWithTotalCount = {
-  total_count: number;
-  results: RustServiceSearchResult[];
-};
-
-export type RustServiceETFHoldersWithTotalCount = {
-  total_count: number;
-  results: string[];
-};
-
-export type RustServiceCacheDetail = {
-  key: string;
-  size: string;
-  age: number;
-  last_accessed: number;
-  access_count: number;
 };
 
 export type StoreStateProps = {

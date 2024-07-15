@@ -1,7 +1,6 @@
 import React from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
-import type { RustServiceCacheDetail } from "@src/store";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 import formatByteSize from "@utils/formatByteSize"; // Import the utility function
 

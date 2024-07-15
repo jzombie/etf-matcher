@@ -4,7 +4,7 @@ import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
-import type { RustServiceETFHoldersWithTotalCount } from "@src/store";
+import type { RustServiceETFHoldersWithTotalCount } from "@utils/callWorkerFunction";
 
 import {
   MiniChart,
