@@ -31,7 +31,7 @@ export default function useGAPageTracking() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const gtag = (window as { [key: string]: any }).gtag;
       if (typeof gtag === "function") {
-        gtag("config", GOOGLE_ANALYTICS_ID, {
+        gtag("event", "page_view", {
           page_path:
             window.location.pathname +
             window.location.search +
