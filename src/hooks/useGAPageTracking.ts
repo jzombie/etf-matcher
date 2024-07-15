@@ -3,6 +3,8 @@ import { useEffect } from "react";
 const GOOGLE_ANALYTICS_ID = (window as unknown as { [key: string]: string })
   .GOOGLE_ANALYTICS_ID;
 
+const PAGE_VIEW_TIMEOUT = 1000;
+
 // Note: This intentionally does not use `react-router` events so that it
 // doesn't have to be a child of a `react-router` context.
 export default function useGAPageTracking() {
@@ -15,23 +17,11 @@ export default function useGAPageTracking() {
       return;
     }
 
-    // TODO: Incorporate page title
-
     // Function to send page view to Google Analytics
     const sendPageView = () => {
-      console.log({
-        page_path:
-          window.location.pathname +
-          window.location.search +
-          window.location.hash,
-        page_title: window.document.title,
-        page_location: window.location.href,
-      });
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const gtag = (window as { [key: string]: any }).gtag;
-      if (typeof gtag === "function") {
-        gtag("event", "page_view", {
+      // A timeout is used here to account for any async page title changes
+      setTimeout(() => {
+        console.log({
           page_path:
             window.location.pathname +
             window.location.search +
@@ -39,9 +29,22 @@ export default function useGAPageTracking() {
           page_title: window.document.title,
           page_location: window.location.href,
         });
-      } else {
-        console.warn("`gtag` is not a function. Skipping GA page tracking.");
-      }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const gtag = (window as { [key: string]: any }).gtag;
+        if (typeof gtag === "function") {
+          gtag("event", "page_view", {
+            page_path:
+              window.location.pathname +
+              window.location.search +
+              window.location.hash,
+            page_title: window.document.title,
+            page_location: window.location.href,
+          });
+        } else {
+          console.warn("`gtag` is not a function. Skipping GA page tracking.");
+        }
+      }, PAGE_VIEW_TIMEOUT);
     };
 
     // Track initial page load
