@@ -4,7 +4,7 @@ import {
 } from "@utils/StateEmitter";
 import libCallWorkerFunction from "@utils/callWorkerFunction";
 import type {
-  // RustServiceSearchResult,
+  RustServiceSymbolDetail,
   RustServiceSearchResultsWithTotalCount,
   RustServiceETFHoldersWithTotalCount,
   RustServiceCacheDetail,
@@ -222,7 +222,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       throw error;
     }
   }
-  async getSymbolETFHolders(
+  async fetchSymbolETFHolders(
     symbol: string,
     page: number = 1,
     pageSize: number = 20
@@ -235,9 +235,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
-  // TODO: Document type (should be able to import from WASM type)
-  async fetchSymbolDetail(symbol: string) {
-    return this._callWorkerFunction("get_symbol_detail", symbol);
+  async fetchSymbolDetail(symbol: string): Promise<RustServiceSymbolDetail> {
+    return this._callWorkerFunction<RustServiceSymbolDetail>(
+      "get_symbol_detail",
+      symbol
+    );
   }
 
   // PROTO_countEtfsPerExchange() {
@@ -261,17 +263,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   //     )
   //     .catch((error) => console.error(error));
   // }
-
-  PROTO_getSymbolDetail(symbol: string) {
-    this._callWorkerFunction("get_symbol_detail", symbol)
-      .then((symbolDetail) =>
-        console.log({
-          symbol,
-          symbolDetail,
-        })
-      )
-      .catch((error) => console.error(error));
-  }
 
   PROTO_removeCacheEntry(key: string) {
     this._callWorkerFunction("remove_cache_entry", key);

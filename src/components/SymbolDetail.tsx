@@ -4,7 +4,10 @@ import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
-import type { RustServiceETFHoldersWithTotalCount } from "@utils/callWorkerFunction";
+import type {
+  RustServiceSymbolDetail,
+  RustServiceETFHoldersWithTotalCount,
+} from "@utils/callWorkerFunction";
 
 import {
   MiniChart,
@@ -27,6 +30,10 @@ export default function SymbolDetail({
 
   const { symbolBuckets } = useStoreStateReader(["symbolBuckets"]);
 
+  const [symbolDetail, setSymbolDetail] = useState<
+    RustServiceSymbolDetail | undefined
+  >(undefined);
+
   const [etfHolders, setEtfHolders] = useState<
     RustServiceETFHoldersWithTotalCount | undefined
   >(undefined);
@@ -34,7 +41,8 @@ export default function SymbolDetail({
   // Only query symbols that are fully rendered, or are next in the list
   useEffect(() => {
     if (tickerSymbol) {
-      store.getSymbolETFHolders(tickerSymbol).then(setEtfHolders);
+      store.fetchSymbolDetail(tickerSymbol).then(setSymbolDetail);
+      store.fetchSymbolETFHolders(tickerSymbol).then(setEtfHolders);
     }
   }, [tickerSymbol]);
 
@@ -46,6 +54,8 @@ export default function SymbolDetail({
       {...rest}
     >
       <>
+        <div>{symbolDetail?.sector || "N/A"}</div>
+        <div>{symbolDetail?.industry || "N/A"}</div>
         <div style={{ height: 200 }}>
           <MiniChart
             symbol={tickerSymbol}
@@ -94,9 +104,6 @@ export default function SymbolDetail({
               Add {tickerSymbol} to {symbolBucket.name}
             </Button>
           ))}
-        <Button onClick={() => store.PROTO_getSymbolDetail(tickerSymbol)}>
-          PROTO_getSymbolDetail()
-        </Button>
         <div>
           {
             // TODO: Paginate through these results
