@@ -16,7 +16,11 @@ import ProtoTable from "@components/PROTO_Table";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import formatByteSize from "@utils/formatByteSize";
 
+import usePageTitleSetter from "@utils/usePageTitleSetter";
+
 export default function Settings() {
+  usePageTitleSetter("Settings");
+
   const {
     symbolBuckets,
     isProfilingCacheOverlayOpen,

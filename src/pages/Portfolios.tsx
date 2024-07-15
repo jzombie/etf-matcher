@@ -3,7 +3,11 @@ import BucketList from "@components/BucketList";
 
 import Scrollable from "@layoutKit/Scrollable";
 
+import usePageTitleSetter from "@utils/usePageTitleSetter";
+
 export default function Portfolios() {
+  usePageTitleSetter("Portfolios");
+
   return (
     <Scrollable>
       <BucketList symbolBucketType="portfolio" />

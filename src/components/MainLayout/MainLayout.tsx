@@ -7,6 +7,8 @@ import HeaderMenu from "./HeaderMenu";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 
+import usePageTitleSetter from "@utils/usePageTitleSetter";
+
 import FullViewport from "@layoutKit/FullViewport";
 import Full from "@layoutKit/Full";
 import Center from "@layoutKit/Center";
@@ -16,6 +18,8 @@ import Layout, { Header, Content, Footer } from "@layoutKit/Layout";
 import LockScreen from "@components/LockScreen";
 
 export default function MainLayout() {
+  usePageTitleSetter();
+
   const theme = useTheme();
 
   const {

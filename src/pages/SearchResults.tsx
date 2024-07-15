@@ -16,6 +16,8 @@ import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
+import usePageTitleSetter from "@utils/usePageTitleSetter";
+
 export default function SearchResults() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -65,6 +67,8 @@ export default function SearchResults() {
     () => searchResults.map((searchResult) => searchResult.symbol),
     [searchResults]
   );
+
+  usePageTitleSetter(searchQuery ? `Search results for: ${searchQuery}` : null);
 
   if (!searchQuery) {
     return <div>No search query...</div>;

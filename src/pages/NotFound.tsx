@@ -1,7 +1,11 @@
 import React, { useEffect } from "react";
 import { To, useLocation, useNavigate } from "react-router-dom";
 
+import usePageTitleSetter from "@utils/usePageTitleSetter";
+
 export default function NotFound() {
+  usePageTitleSetter("Not Found");
+
   const location = useLocation();
   const navigate = useNavigate();
 
