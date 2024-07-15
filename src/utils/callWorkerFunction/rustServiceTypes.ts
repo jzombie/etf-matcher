@@ -7,10 +7,12 @@ export type RustServiceSearchResult = {
 // "Level 2"
 export type RustServiceSymbolDetail = {
   symbol: string;
+  company_name: string;
   cik: string;
   country_code: string;
   industry: string;
   sector: string;
+  is_etf: boolean;
 };
 
 export type RustServiceSearchResultsWithTotalCount = {

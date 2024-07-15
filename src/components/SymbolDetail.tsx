@@ -54,8 +54,10 @@ export default function SymbolDetail({
       {...rest}
     >
       <>
+        <div>{symbolDetail?.company_name || "N/A"}</div>
         <div>{symbolDetail?.sector || "N/A"}</div>
         <div>{symbolDetail?.industry || "N/A"}</div>
+        <div>{symbolDetail?.is_etf ? "ETF" : "Not ETF"}</div>
         <div style={{ height: 200 }}>
           <MiniChart
             symbol={tickerSymbol}
