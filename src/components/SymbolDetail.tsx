@@ -91,6 +91,14 @@ export default function SymbolDetail({
                   {symbolDetail?.is_etf ? "ETF" : "Not ETF"}
                 </Typography>
               </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" component="div">
+                  DCA
+                </Typography>
+                <Typography variant="body1">
+                  {symbolDetail?.score_avg_dca || "N/A"}
+                </Typography>
+              </Grid>
             </Grid>
           </Box>
         </Padding>

@@ -13,6 +13,7 @@ export type RustServiceSymbolDetail = {
   industry: string;
   sector: string;
   is_etf: boolean;
+  score_avg_dca: number;
 };
 
 export type RustServiceSearchResultsWithTotalCount = {

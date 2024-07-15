@@ -23,6 +23,7 @@ pub struct SymbolDetail {
     pub sector: Option<String>,
     #[serde(deserialize_with = "from_numeric_to_option_bool")]
     pub is_etf: Option<bool>,
+    pub score_avg_dca: Option<f32>
 }
 
 impl SymbolDetail {
