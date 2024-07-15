@@ -59,6 +59,7 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
         {LOCK_MESSAGE}
       </Typography>
       <TextField
+        autoComplete="off"
         type="password"
         variant="outlined"
         placeholder="Enter Password"
