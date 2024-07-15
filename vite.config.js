@@ -8,9 +8,10 @@ import svgr from "vite-plugin-svgr";
 import eslint from "vite-plugin-eslint";
 import { createHtmlPlugin } from "vite-plugin-html";
 import fs from "fs";
-import dotenv from "dotenv"; // Import dotenv
+import dotenv from "dotenv";
 const removeComments = require("./custom_vite_plugins/posthtml-remove-comments.cjs");
 
+// This is needed to get the .env variables to populate here
 dotenv.config();
 
 const DESTINATION_DIR = path.resolve(__dirname, "dist");
@@ -84,11 +85,17 @@ export default defineConfig({
     }),
     svgr(),
     createHtmlPlugin({
-      minify: true,
       inject: {
         data: {
           buildTime: writeBuildTime(), // Write build time to a file and inject it into HTML
         },
+      },
+      minify: {
+        collapseWhitespace: true,
+        removeComments: true,
+        minifyJS: true,
+        minifyCSS: true,
+        minifyURLs: true,
       },
       posthtml: {
         plugins: [removeComments()],
