@@ -43,11 +43,6 @@ export type StoreStateProps = {
   cacheSize: number;
 };
 
-// TODO: Wrap `callWorkerFunction` and update cache metrics if profiling cache
-//
-//   |___  Include notification (and route to UI) showing data fetching status
-// (potentially show in red, just above the ticker tape)
-
 class _Store extends ReactStateEmitter<StoreStateProps> {
   constructor() {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
@@ -167,6 +162,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     });
   }
 
+  // TODO: Finish wrapping `callWorkerFunction`
+  //   |___  Include notification (and route to UI) showing data fetching status
+  //         (potentially show in red, just above the ticker tape)
+  //   |___  Show errors in UI
   private async _callWorkerFunction<T>(
     functionName: string,
     ...args: unknown[]
@@ -205,22 +204,13 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     pageSize: number = 20,
     onlyExactMatches: boolean = false
   ): Promise<RustServiceSearchResultsWithTotalCount> {
-    try {
-      // Call the worker function with the given query and trim any extra spaces
-      const results =
-        await this._callWorkerFunction<RustServiceSearchResultsWithTotalCount>(
-          "search_symbols",
-          query.trim(),
-          page,
-          pageSize,
-          onlyExactMatches
-        );
-
-      return results;
-    } catch (error) {
-      console.error("Error searching symbols:", error);
-      throw error;
-    }
+    return this._callWorkerFunction<RustServiceSearchResultsWithTotalCount>(
+      "search_symbols",
+      query.trim(),
+      page,
+      pageSize,
+      onlyExactMatches
+    );
   }
   async fetchSymbolETFHolders(
     symbol: string,
