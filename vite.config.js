@@ -60,6 +60,8 @@ export default defineConfig({
     eslint({
       failOnError: false, // Show errors in console but do not fail build
       failOnWarning: false, // Show warnings in console but do not fail build
+      cache: false, // Ensure ESLint re-evaluates on every save
+      fix: true, // Automatically fix linting errors where possible
     }),
     svgr(),
     createHtmlPlugin({
