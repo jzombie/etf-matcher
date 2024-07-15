@@ -1,0 +1,28 @@
+// import { useEffect, useState } from 'react';
+
+// const CURRENT_VERSION = '1.0.0'; // This should be dynamically set to match your deployed version
+
+// export default function useVersionCheck() {
+//   const [hasUpdate, setHasUpdate] = useState(false);
+
+//   useEffect(() => {
+//     const checkVersion = async () => {
+//       try {
+//         const response = await fetch('/version.json', { cache: 'no-cache' });
+//         const { version } = await response.json();
+//         if (version !== CURRENT_VERSION) {
+//           setHasUpdate(true);
+//         }
+//       } catch (error) {
+//         console.error('Error fetching version:', error);
+//       }
+//     };
+
+//     // Check version immediately and then every 5 minutes
+//     checkVersion();
+//     const interval = setInterval(checkVersion, 5 * 60 * 1000);
+//     return () => clearInterval(interval);
+//   }, []);
+
+//   return hasUpdate;
+// }
