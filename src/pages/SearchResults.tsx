@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button } from "@mui/material";
+import { Box, Switch, FormControlLabel, Typography } from "@mui/material";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox";
 
 import useSearch from "@hooks/useSearch";
 import SymbolDetailList from "@components/SymbolDetailList";
@@ -8,17 +10,10 @@ import SymbolDetailList from "@components/SymbolDetailList";
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
-// TODO: Show search button if no search results
-
-// TODO: Include recent searches, or suggestions
-
 export default function SearchResults() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Note: The usage of `_` prefixes urges the usage to be aware before setting
-  // these values directly. They should be set as the result of URL change operations
-  // to ensure the queries are deep-linkable.
   const {
     searchQuery,
     setSearchQuery: _setSearchQuery,
@@ -42,14 +37,9 @@ export default function SearchResults() {
     });
   }, [location, _setSearchQuery, _setOnlyExactMatches]);
 
-  // IMPORTANT: This adjusts the URL query as well and should be used instead
-  // of setting only exact matches directly
   const toggleExactMatch = () => {
     const searchParams = new URLSearchParams(location.search);
-    const newExactValue = !(
-      // Note: This is a string value since it's in the URL
-      (searchParams.get("exact") === "true")
-    );
+    const newExactValue = !(searchParams.get("exact") === "true");
 
     if (newExactValue) {
       searchParams.set("exact", "true");
@@ -77,11 +67,24 @@ export default function SearchResults() {
   return (
     <Scrollable>
       <Padding>
+        <Box
+          display="flex"
+          alignItems="center"
+          sx={{ display: "inline-block" }}
+        >
+          <FormControlLabel
+            control={
+              <Switch checked={onlyExactMatches} onChange={toggleExactMatch} />
+            }
+            label={
+              <Typography variant="body1" color="textSecondary">
+                Toggle Exact Match
+              </Typography>
+            }
+          />
+        </Box>
         {totalSearchResults} search result{totalSearchResults !== 1 ? "s" : ""}{" "}
-        for &quot;{searchQuery}&quot;{" "}
-        <Button onClick={toggleExactMatch} variant="contained">
-          {onlyExactMatches ? "Disable Exact Match" : "Enable Exact Match"}
-        </Button>
+        for &quot;{searchQuery}&quot;
       </Padding>
       <SymbolDetailList tickerSymbols={searchResultSymbols} />
     </Scrollable>
