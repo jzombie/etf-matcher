@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { TickerTape } from "react-ts-tradingview-widgets";
 import { AppBar, Toolbar, Typography, useTheme } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import HeaderMenu from "./HeaderMenu";
-import useStoreStateReader from "@hooks/useStoreStateReader";
+
+import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 
 import FullViewport from "@layoutKit/FullViewport";
@@ -11,12 +12,14 @@ import Full from "@layoutKit/Full";
 import Center from "@layoutKit/Center";
 import Cover from "@layoutKit/Cover";
 import Layout, { Header, Content, Footer } from "@layoutKit/Layout";
-// import SearchModalButton from "../SearchModalButton";
+
+import LockScreen from "@components/LockScreen";
 
 export default function MainLayout() {
   const theme = useTheme();
 
   const {
+    isAppUnlocked,
     isProductionBuild,
     isRustInit,
     prettyDataBuildTime,
@@ -25,6 +28,7 @@ export default function MainLayout() {
     isOnline,
     isProfilingCacheOverlayOpen,
   } = useStoreStateReader([
+    "isAppUnlocked",
     "isProductionBuild",
     "isRustInit",
     "prettyDataBuildTime",
@@ -33,6 +37,12 @@ export default function MainLayout() {
     "isOnline",
     "isProfilingCacheOverlayOpen",
   ]);
+
+  if (!isAppUnlocked) {
+    return (
+      <LockScreen onUnlock={() => store.setState({ isAppUnlocked: true })} />
+    );
+  }
 
   return (
     <>
