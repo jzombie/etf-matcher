@@ -22,11 +22,13 @@ export default function Settings() {
   usePageTitleSetter("Settings");
 
   const {
+    isGAPageTrackingEnabled,
     symbolBuckets,
     isProfilingCacheOverlayOpen,
     cacheDetails,
     cacheSize,
   } = useStoreStateReader([
+    "isGAPageTrackingEnabled",
     "symbolBuckets",
     "isProfilingCacheOverlayOpen",
     "cacheDetails",
@@ -98,7 +100,9 @@ export default function Settings() {
       </Padding>
 
       <Padding>
-        <h2>Prototype Notifications</h2>
+        <h2>Notifications</h2>
+
+        <div>GA Events: {isGAPageTrackingEnabled ? "On" : "Off"}</div>
 
         {
           // Add prototype notifications code here

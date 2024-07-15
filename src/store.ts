@@ -1,7 +1,4 @@
-import {
-  ReactStateEmitter,
-  StateEmitterDefaultEvents,
-} from "@utils/StateEmitter";
+import { ReactStateEmitter } from "@utils/StateEmitter";
 import libCallWorkerFunction from "@utils/callWorkerFunction";
 import type {
   RustServiceSymbolDetail,
@@ -33,6 +30,7 @@ export type SymbolBucketProps = {
 
 export type StoreStateProps = {
   isAppUnlocked: boolean;
+  isGAPageTrackingEnabled: boolean;
   isProductionBuild: boolean;
   isOnline: boolean;
   isRustInit: boolean;
@@ -53,6 +51,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
     super({
       isAppUnlocked: false,
+      isGAPageTrackingEnabled: false,
       isProductionBuild: IS_PROD,
       isOnline: false,
       isRustInit: false,
