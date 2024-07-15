@@ -58,6 +58,10 @@ export default defineConfig({
           dest: path.resolve(DESTINATION_DIR),
         },
         {
+          src: "buildTime.json",
+          dest: path.resolve(DESTINATION_DIR),
+        },
+        {
           src: "./data/*",
           dest: path.resolve(DESTINATION_DIR, "data"),
         },
