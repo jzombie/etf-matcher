@@ -21,15 +21,6 @@ export default function useGAPageTracking() {
     const sendPageView = () => {
       // A timeout is used here to account for any async page title changes
       setTimeout(() => {
-        console.log({
-          page_path:
-            window.location.pathname +
-            window.location.search +
-            window.location.hash,
-          page_title: window.document.title,
-          page_location: window.location.href,
-        });
-
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const gtag = (window as { [key: string]: any }).gtag;
         if (typeof gtag === "function") {
