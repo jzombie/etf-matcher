@@ -30,7 +30,7 @@ export default function useGAPageTracking() {
       // A timeout is used here to account for any async page title changes
       setTimeout(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const gtag = (window as { [key: string]: any }).gtag;
+        const gtag = (window as { [key: string]: any })._gtag;
         if (typeof gtag === "function") {
           gtag("event", "page_view", {
             page_path:

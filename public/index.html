@@ -63,6 +63,8 @@
           }
           gtag("js", new Date());
           gtag("config", import.meta.env.VITE_GOOGLE_ANALYTICS_ID);
+
+          window._gtag = gtag;
         } else {
           console.warn("`GOOGLE_ANALYTICS_ID` is not available");
         }
