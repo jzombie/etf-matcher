@@ -11,6 +11,12 @@ const removeComments = require("./custom_vite_plugins/posthtml-remove-comments.c
 
 const DESTINATION_DIR = path.resolve(__dirname, "dist");
 
+// Function to get the current build time
+function getBuildTime() {
+  const now = new Date();
+  return now.toISOString(); // Returns the build time in ISO format
+}
+
 export default defineConfig({
   root: "./public",
   publicDir: false, // Disable the default publicDir handling
@@ -67,8 +73,8 @@ export default defineConfig({
     createHtmlPlugin({
       minify: true,
       inject: {
-        injectData: {
-          // You can inject data into your HTML here if needed
+        data: {
+          buildTime: getBuildTime(),
         },
       },
       posthtml: {
