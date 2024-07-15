@@ -12,8 +12,6 @@ export default function usePageTitleSetter(nextPageTitle?: string | null) {
       ? `${nextPageTitle} | ${DEFAULT_PAGE_TITLE}`
       : DEFAULT_PAGE_TITLE;
 
-    console.log({ location, nextPageTitle, newPageTitle });
-
     // Set the new page title
     window.document.title = newPageTitle;
   }, [nextPageTitle, location]);
