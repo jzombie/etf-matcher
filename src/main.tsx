@@ -14,7 +14,10 @@ import { buildTime } from "../public/buildTime.json";
   if (jsBuildTime === htmlBuildTime) {
     console.debug("HTML and JS versions are in sync");
   } else {
-    console.warn("HTML and JS versions are not in sync!");
+    console.warn("HTML and JS versions are not in sync!", {
+      jsBuildTime,
+      htmlBuildTime,
+    });
   }
 })();
 
