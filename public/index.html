@@ -6,6 +6,8 @@
     <script>
       // Very simple no-cache mechanism. This may need to be improved if making the app a PWA.
       (function () {
+        const NO_CACHE_KEY = "no_cache";
+
         function getQueryParam(name) {
           const urlParams = new URLSearchParams(window.location.search);
           return urlParams.get(name);
@@ -17,17 +19,26 @@
           window.history.replaceState(null, "", url.toString());
         }
 
-        const noCacheParam = getQueryParam("no_cache");
+        function removeQueryParam(name) {
+          const url = new URL(window.location);
+          url.searchParams.delete(name);
+          window.history.replaceState(null, "", url.toString());
+        }
+
+        const noCacheParam = getQueryParam(NO_CACHE_KEY);
         const now = Math.floor(Date.now() / 1000);
 
         if (noCacheParam) {
           const timestamp = parseInt(noCacheParam, 10);
           if (isNaN(timestamp) || now - timestamp > 10) {
-            setQueryParam("no_cache", now);
+            setQueryParam(NO_CACHE_KEY, now);
             window.location.reload(true); // Force reload with new parameter
+          } else {
+            removeQueryParam(NO_CACHE_KEY);
+            console.debug("Loaded with skip-cache");
           }
         } else {
-          setQueryParam("no_cache", now);
+          setQueryParam(NO_CACHE_KEY, now);
           window.location.reload(true); // Force reload with new parameter
         }
       })();
