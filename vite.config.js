@@ -7,14 +7,20 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import svgr from "vite-plugin-svgr";
 import eslint from "vite-plugin-eslint";
 import { createHtmlPlugin } from "vite-plugin-html";
+import fs from "fs";
 const removeComments = require("./custom_vite_plugins/posthtml-remove-comments.cjs");
 
 const DESTINATION_DIR = path.resolve(__dirname, "dist");
 
-// Function to get the current build time
-function getBuildTime() {
+// Function to get the current build time and write it to a file
+function writeBuildTime() {
   const now = new Date();
-  return now.toISOString(); // Returns the build time in ISO format
+  const buildTime = now.toISOString(); // Returns the build time in ISO format
+  fs.writeFileSync(
+    path.resolve(__dirname, "public/buildTime.json"),
+    JSON.stringify({ buildTime })
+  );
+  return buildTime;
 }
 
 export default defineConfig({
@@ -74,7 +80,7 @@ export default defineConfig({
       minify: true,
       inject: {
         data: {
-          buildTime: getBuildTime(),
+          buildTime: writeBuildTime(), // Write build time to a file and inject it into HTML
         },
       },
       posthtml: {
