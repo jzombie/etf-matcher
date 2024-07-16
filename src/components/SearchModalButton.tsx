@@ -15,6 +15,9 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useLocation, useNavigate } from "react-router-dom";
+
+import EncodedImage from "./EncodedImage";
+
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import useSearch from "@hooks/useSearch";
@@ -243,6 +246,10 @@ export default function SearchModalButton({
                     overflow: "auto",
                   }}
                 >
+                  <EncodedImage
+                    encSrc="AMZN.enc"
+                    style={{ width: 50, height: 50 }}
+                  />
                   <ListItemText
                     primary={searchResult.symbol}
                     secondary={
