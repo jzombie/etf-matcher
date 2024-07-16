@@ -52,6 +52,12 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     port: 8000,
+    watch: {
+      // Ignoring this because of the large amount of files present in here, leading
+      // to stack overflow issues at times when rebuilding the data.
+      // (`viteStaticCopy` may need to be configured to work around this as well)
+      ignored: ["public/data"],
+    },
   },
   plugins: [
     react(),
