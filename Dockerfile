@@ -1,6 +1,8 @@
 # Base image for building Rust projects
 FROM rust:1.79.0 as rust-base
 
+# TODO: Replace backend build stages with zip file (DataPack)
+
 # Tell `validate_docker_env.sh` that we're in a Docker build
 ARG DOCKER_BUILD=1
 
@@ -20,6 +22,8 @@ COPY .env /app/.env
 COPY backend/rust ./backend/rust
 COPY docker_build_helpers/ ./docker_build_helpers/
 
+# TODO: Combine these steps?
+# 
 # Make build script executable and run it
 RUN chmod +x ./docker_build_helpers/generate_env.sh && ./docker_build_helpers/generate_env.sh
 RUN chmod +x ./docker_build_helpers/encrypt_password.sh && ./docker_build_helpers/encrypt_password.sh
