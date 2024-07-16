@@ -17,6 +17,8 @@ import Center from "@layoutKit/Center";
 import Layout, { Content, Footer } from "@layoutKit/Layout";
 import Padding from "@layoutKit/Padding";
 
+import LogoNavButton from "./LogoNavButton";
+
 import { buildTime } from "../../public/buildTime.json";
 
 const formattedBuildTime = (() => {
@@ -77,9 +79,7 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
       </Full>
       <Cover style={{ backgroundColor: "rgba(0,0,0,.85)" }}>
         <Layout>
-          <Typography variant="body1" sx={{ textAlign: "center" }}>
-            ETFMatcher.com
-          </Typography>
+          <LogoNavButton />
           <Content>
             <Center>
               <Padding>
