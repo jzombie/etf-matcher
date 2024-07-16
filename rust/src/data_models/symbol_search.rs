@@ -3,6 +3,7 @@ use std::collections::HashSet;
 use crate::JsValue;
 use crate::utils::fetch::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
+use crate::utils::uncompress_logo_filename;
 use crate::data_models::{
     DataURL,
     PaginatedResults,
@@ -12,6 +13,7 @@ use crate::data_models::{
 pub struct SymbolSearch {
     pub symbol: String,
     pub company: Option<String>,
+    pub logo_filename: Option<String>,
 }
 
 impl SymbolSearch {
@@ -46,7 +48,12 @@ impl SymbolSearch {
         let csv_string = String::from_utf8(csv_data).map_err(|err| {
             JsValue::from_str(&format!("Failed to convert data to String: {}", err))
         })?;
-        let results: Vec<SymbolSearch> = parse_csv_data(csv_string.as_bytes())?;
+        let mut results: Vec<SymbolSearch> = parse_csv_data(csv_string.as_bytes())?;
+
+        // Uncompress the logo filename for each result
+        for result in &mut results {
+            result.logo_filename = uncompress_logo_filename(result.logo_filename.as_deref(), &result.symbol);
+        }
 
         let alternatives: Vec<String> = SymbolSearch::generate_alternative_symbols(&trimmed_query);
         let mut exact_symbol_matches: Vec<SymbolSearch> = vec![];
