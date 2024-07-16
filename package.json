@@ -51,6 +51,7 @@
     "sass": "^1.77.8",
     "vite-plugin-eslint": "^1.8.1",
     "vite-plugin-html": "^3.2.2",
+    "vite-plugin-sitemap": "^0.6.2",
     "vite-plugin-svgr": "^4.2.0",
     "vite-tsconfig-paths": "^4.3.2"
   }

@@ -7,6 +7,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import svgr from "vite-plugin-svgr";
 import eslint from "vite-plugin-eslint";
 import { createHtmlPlugin } from "vite-plugin-html";
+import sitemap from "vite-plugin-sitemap";
 import fs from "fs";
 import dotenv from "dotenv";
 const removeComments = require("./custom_vite_plugins/posthtml-remove-comments.cjs");
@@ -100,6 +101,17 @@ export default defineConfig({
       posthtml: {
         plugins: [removeComments()],
       },
+    }),
+    sitemap({
+      hostname: "https://etfmatcher.com",
+      // TODO: Ideally these would seed automatically from `router.ts`
+      dynamicRoutes: [
+        "/",
+        "/search",
+        "/portfolios",
+        "/watchlists",
+        "/settings",
+      ],
     }),
   ],
   // Resolve warnings with checker plugin (even though this is not a Vue project)
