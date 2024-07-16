@@ -76,15 +76,18 @@ export default function SearchResults() {
     [searchQuery, onlyExactMatches]
   );
 
-  if (!searchQuery) {
-    return <div>No search query...</div>;
-  }
-
   if (!searchResultSymbols.length) {
     return (
       <Center>
         <Typography variant="h6" fontWeight="bold">
-          No search results for &quot;{searchQuery}&quot;
+          {!searchQuery.length ? (
+            <>No search query defined.</>
+          ) : (
+            <>
+              No {onlyExactMatches && "exact"} search results for &quot;
+              {searchQuery}&quot;
+            </>
+          )}
         </Typography>
 
         <Box mt={4}>
@@ -98,7 +101,7 @@ export default function SearchResults() {
           <SearchModalButton />
         </Box>
 
-        {Boolean(onlyExactMatches) && (
+        {onlyExactMatches && (
           <Box mt={4}>
             <Typography
               variant="body1"
