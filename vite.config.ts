@@ -10,7 +10,6 @@ import { createHtmlPlugin } from "vite-plugin-html";
 import sitemap from "vite-plugin-sitemap";
 import fs from "fs";
 import dotenv from "dotenv";
-const removeComments = require("./custom_vite_plugins/posthtml-remove-comments.cjs");
 
 // This is needed to get the .env variables to populate here
 dotenv.config();
@@ -97,9 +96,6 @@ export default defineConfig({
         minifyJS: true,
         minifyCSS: true,
         minifyURLs: true,
-      },
-      posthtml: {
-        plugins: [removeComments()],
       },
     }),
     sitemap({
