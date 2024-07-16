@@ -19,17 +19,19 @@ cd /app/backend/rust/encrypt_tool
 
 mkdir -p /tmp/output-data
 
-# Loop over all CSV files in the /app/data directory
-for json_file in /app/data/*.csv; do
-    # Get the base name of the file (without the directory and file extension)
-    base_name=$(basename "$json_file" .csv)
+# Loop over all files in the /app/data directory and its subdirectories
+find /app/data -type f | while read -r file; do
+    # Remove the base directory path and file extension
+    relative_path="${file#/app/data/}"
+    output_path="${relative_path%.*}.enc"
     
-    # TODO: Use release contingent on build environment
-    #
+    # Create the necessary subdirectories in the output directory
+    mkdir -p "/tmp/output-data/$(dirname "$output_path")"
+    
     # Run the encryption tool with the input and output file arguments
-    ./target/release/encrypt_tool "$json_file" "/tmp/output-data/${base_name}.enc"
+    ./target/release/encrypt_tool "$file" "/tmp/output-data/$output_path"
 done
 
-# Move encoded data files into public data directory
+# Move encoded data files into public data directory, maintaining the subdirectory structure
 mkdir -p /app/public/data
 mv /tmp/output-data/* /app/public/data
