@@ -64,7 +64,6 @@ pub async fn get_image_base64(filename: &str) -> Result<JsValue, JsValue> {
     Ok(JsValue::from_str(&base64_data))
 }
 
-
 #[wasm_bindgen]
 pub fn get_cache_size() -> usize {
     lib_get_cache_size()

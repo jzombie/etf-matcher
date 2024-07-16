@@ -76,10 +76,7 @@ export default function SymbolDetail({
     >
       <SymbolDetailWrapper>
         <LogoContainer>
-          <EncodedImage
-            encSrc="AMZN.enc"
-            title={`${symbolDetail?.symbol} logo`}
-          />
+          <EncodedImage encSrc="Z.enc" title={`${symbolDetail?.symbol} logo`} />
         </LogoContainer>
         <InfoContainer>
           <Padding>
