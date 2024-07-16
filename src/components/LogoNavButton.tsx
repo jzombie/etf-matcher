@@ -1,6 +1,9 @@
+/// <reference types="vite-plugin-svgr/client" />
 import React from "react";
 import { Link } from "react-router-dom";
 import { styled } from "@mui/system";
+
+import Logo from "@assets/etf-matcher.logo.white.svg?react";
 
 const StyledNavButton = styled(Link)(({ theme }) => ({
   display: "flex",
@@ -22,5 +25,9 @@ export type LogoNavButtonProps = {
 };
 
 export default function LogoNavButton({ to = "/" }: LogoNavButtonProps) {
-  return <StyledNavButton to={to}>ETF Matcher</StyledNavButton>;
+  return (
+    <StyledNavButton to={to} title={"ETF Matcher"}>
+      <Logo width={100} height={50} />
+    </StyledNavButton>
+  );
 }
