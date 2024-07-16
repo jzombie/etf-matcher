@@ -103,12 +103,18 @@ export default function SymbolDetail({
           </Box>
         </Padding>
         <div style={{ height: 200 }}>
+          {
+            // https://tradingview-widgets.jorrinkievit.xyz/docs/components/MiniChart
+          }
           <MiniChart
             symbol={tickerSymbol}
             colorTheme="dark"
             width="100%"
             height="100%"
             copyrightStyles={tradingViewCopyrightStyles}
+            dateRange="ALL" // 1D / 1M / 3M / 12M / 60M / ALL
+            // TODO: Provide ability to configure date range
+            // isTransparent={true}
           />
         </div>
 
