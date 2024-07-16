@@ -9,11 +9,10 @@ import Settings from "@pages/Settings";
 // import About from "@pages/About";
 import NotFound from "@pages/NotFound";
 
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, RouteObject } from "react-router-dom";
 import MainLayout from "@components/MainLayout";
 
-// TODO: For GitHub Pages: Check URL; if 404.html, redirect to non-404 with same path and query
-export default createBrowserRouter([
+export const routes: RouteObject[] = [
   {
     path: "/",
     // TODO: Enable for GA; Add `usePageTracking()`
@@ -60,7 +59,9 @@ export default createBrowserRouter([
       },
     ],
   },
-]);
+];
+
+export default createBrowserRouter(routes);
 
 // Example flow if adding view transitions between routes:
 //
