@@ -22,11 +22,15 @@ const StyledNavButton = styled(Link)(({ theme }) => ({
 
 export type LogoNavButtonProps = {
   to?: string;
+  onClick?: (evt: React.SyntheticEvent) => void;
 };
 
-export default function LogoNavButton({ to = "/" }: LogoNavButtonProps) {
+export default function LogoNavButton({
+  to = "/",
+  onClick,
+}: LogoNavButtonProps) {
   return (
-    <StyledNavButton to={to} title={"ETF Matcher"}>
+    <StyledNavButton to={to} title={"ETF Matcher"} onClick={onClick}>
       <Logo width={100} height={50} />
     </StyledNavButton>
   );
