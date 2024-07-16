@@ -32,6 +32,10 @@ find /app/data -type f | while read -r file; do
     ./target/release/encrypt_tool "$file" "/tmp/output-data/$output_path"
 done
 
-# Move encoded data files into public data directory, maintaining the subdirectory structure
-mkdir -p /app/public/data
-mv /tmp/output-data/* /app/public/data
+# Delete the existing /app/data directory and recreate it
+public_data_dir="/app/public/data"
+rm -rf "$public_data_dir"
+mkdir -p "$public_data_dir"
+
+# Move encoded data files into public data directory
+mv /tmp/output-data/* "$public_data_dir"
