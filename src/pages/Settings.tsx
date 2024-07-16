@@ -34,7 +34,7 @@ export default function Settings() {
     symbolBuckets,
     cacheDetails,
     cacheSize,
-    rustServiceErrorFunctionMap,
+    rustServiceFunctionErrors,
   } = useStoreStateReader([
     "isAppUnlocked",
     "isProductionBuild",
@@ -48,7 +48,7 @@ export default function Settings() {
     "symbolBuckets",
     "cacheDetails",
     "cacheSize",
-    "rustServiceErrorFunctionMap",
+    "rustServiceFunctionErrors",
   ]);
 
   return (
@@ -120,12 +120,17 @@ export default function Settings() {
       <Padding>
         <h2>Rust Service Errors</h2>
 
-        {![...rustServiceErrorFunctionMap.keys()].length ? (
+        {!Object.keys(rustServiceFunctionErrors).length ? (
           <div>No reported errors.</div>
         ) : (
-          [...rustServiceErrorFunctionMap.keys()].map((functionName) => (
-            <div key={functionName}>{functionName}</div>
-          ))
+          Object.keys(rustServiceFunctionErrors).map((functionName) => {
+            const { errCount } = rustServiceFunctionErrors[functionName];
+            return (
+              <div key={functionName}>
+                {functionName}: {errCount} error(s)
+              </div>
+            );
+          })
         )}
       </Padding>
 

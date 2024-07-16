@@ -44,7 +44,12 @@ export type StoreStateProps = {
   cacheProfilerWaitTime: number;
   cacheDetails: RustServiceCacheDetail[];
   cacheSize: number;
-  rustServiceErrorFunctionMap: Map<string, Error | unknown>;
+  rustServiceFunctionErrors: {
+    [functionName: string]: {
+      err: Error | unknown;
+      errCount: number;
+    };
+  };
 };
 
 class _Store extends ReactStateEmitter<StoreStateProps> {
@@ -104,7 +109,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       cacheProfilerWaitTime: 1000,
       cacheDetails: [],
       cacheSize: 0,
-      rustServiceErrorFunctionMap: new Map(),
+      rustServiceFunctionErrors: {},
     });
 
     // Only deepfreeze in development
@@ -183,13 +188,20 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     try {
       resp = await libCallWorkerFunction<T>(functionName, ...args);
     } catch (err) {
-      if (err instanceof Error) {
-        const errFunctionMap = this.state.rustServiceErrorFunctionMap;
-        errFunctionMap.set(functionName, err);
-        this.setState({
-          rustServiceErrorFunctionMap: errFunctionMap,
-        });
+      const funcErrors = {
+        ...this.state.rustServiceFunctionErrors,
+        [functionName]: {
+          err,
+          errCount: this.state.rustServiceFunctionErrors[functionName]?.errCount
+            ? this.state.rustServiceFunctionErrors[functionName]?.errCount + 1
+            : 1,
+        },
+      };
+      this.setState({
+        rustServiceFunctionErrors: funcErrors,
+      });
 
+      if (err instanceof Error) {
         throw err;
       } else {
         throw new Error(err?.toString());
