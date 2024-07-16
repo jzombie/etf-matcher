@@ -18,25 +18,12 @@ import LockScreen from "@components/LockScreen";
 export default function MainLayout() {
   const theme = useTheme();
 
-  const {
-    isAppUnlocked,
-    isProductionBuild,
-    isRustInit,
-    prettyDataBuildTime,
-    isDirtyState,
-    visibleSymbols,
-    isOnline,
-    isProfilingCacheOverlayOpen,
-  } = useStoreStateReader([
-    "isAppUnlocked",
-    "isProductionBuild",
-    "isRustInit",
-    "prettyDataBuildTime",
-    "isDirtyState",
-    "visibleSymbols",
-    "isOnline",
-    "isProfilingCacheOverlayOpen",
-  ]);
+  const { isAppUnlocked, isRustInit, isProfilingCacheOverlayOpen } =
+    useStoreStateReader([
+      "isAppUnlocked",
+      "isRustInit",
+      "isProfilingCacheOverlayOpen",
+    ]);
 
   if (!isAppUnlocked) {
     return (
