@@ -1,7 +1,10 @@
+// TODO: Mark `optional` the types which are `Option` types in Rust
+
 // "Level 1"
 export type RustServiceSearchResult = {
   symbol: string;
   company: string;
+  logo_filename?: string;
 };
 
 // "Level 2"
@@ -14,6 +17,7 @@ export type RustServiceSymbolDetail = {
   sector: string;
   is_etf: boolean;
   score_avg_dca: number;
+  logo_filename?: string;
 };
 
 export type RustServiceSearchResultsWithTotalCount = {
