@@ -22,6 +22,7 @@ export default function Settings() {
   usePageTitleSetter("Settings");
 
   const {
+    isHTMLJSVersionSynced,
     isAppUnlocked,
     isProductionBuild,
     isRustInit,
@@ -36,6 +37,7 @@ export default function Settings() {
     cacheSize,
     rustServiceFunctionErrors,
   } = useStoreStateReader([
+    "isHTMLJSVersionSynced",
     "isAppUnlocked",
     "isProductionBuild",
     "isRustInit",
@@ -157,6 +159,10 @@ export default function Settings() {
           {prettyDataBuildTime ? `Data build time: ${prettyDataBuildTime}` : ""}
           {" | "}
           {isProductionBuild ? "PROD" : "DEV"}
+          {" | "}
+          {isHTMLJSVersionSynced
+            ? `HTML/JS Versions Synced`
+            : `HTML/JS Versions Not Synced`}
           {" | "}
           {isDirtyState ? "Not Saved" : "Saved"}
           {" | "}

@@ -6,6 +6,7 @@ import type {
   RustServiceETFHoldersWithTotalCount,
   RustServiceCacheDetail,
 } from "@utils/callWorkerFunction";
+import detectHTMLJSVersionSync from "@utils/PROTO_detectHTMLJSVersionSync";
 
 import debounceWithKey from "@utils/debounceWithKey";
 
@@ -29,6 +30,7 @@ export type SymbolBucketProps = {
 };
 
 export type StoreStateProps = {
+  isHTMLJSVersionSynced: boolean;
   isAppUnlocked: boolean;
   isGAPageTrackingEnabled: boolean;
   isProductionBuild: boolean;
@@ -56,6 +58,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   constructor() {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
     super({
+      isHTMLJSVersionSynced: detectHTMLJSVersionSync(),
       isAppUnlocked: false,
       isGAPageTrackingEnabled: false,
       isProductionBuild: IS_PROD,
