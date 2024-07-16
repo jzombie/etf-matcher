@@ -169,6 +169,9 @@ export default function SearchModalButton({
     }
   }, [location, isModalOpenStableRef]);
 
+  // TODO: Remove
+  console.log({ searchResults });
+
   return (
     <>
       <Button
@@ -247,7 +250,8 @@ export default function SearchModalButton({
                   }}
                 >
                   <EncodedImage
-                    encSrc="AMZN.enc"
+                    // TODO: Include support for fallback image
+                    encSrc={searchResult.logo_filename}
                     style={{ width: 50, height: 50 }}
                   />
                   <ListItemText
