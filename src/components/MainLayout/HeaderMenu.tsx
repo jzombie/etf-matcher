@@ -12,6 +12,7 @@ import {
   Box,
   useMediaQuery,
   useTheme,
+  Badge,
 } from "@mui/material";
 import {
   Home,
@@ -68,7 +69,6 @@ export default function HeaderMenu() {
       matchPath({ path: `${item.key}/*`, end: false }, location.pathname)
   )?.key;
 
-  // i.e. For search results page, or anything else not corresponding to a menu link
   const shouldHighlightSearchButton = !selectedKey;
 
   const DesktopStyledLogoBranding = styled(Typography)(({ theme }) => ({
@@ -77,7 +77,7 @@ export default function HeaderMenu() {
     fontSize: "1.5rem",
     marginRight: theme.spacing(2),
     color: "white",
-    flexGrow: 1, // Makes the branding take up all available space
+    flexGrow: 1,
   }));
 
   const MobileStyledLogoBranding = styled(Typography)(() => ({
@@ -95,7 +95,7 @@ export default function HeaderMenu() {
             sx={{
               display: "flex",
               alignItems: "center",
-              justifyContent: "center", // Center all items
+              justifyContent: "center",
               flexGrow: 1,
             }}
           >
@@ -127,7 +127,8 @@ export default function HeaderMenu() {
                   },
                 }}
               >
-                {item.icon && (
+                <Typography variant="subtitle1">{item.label}</Typography>
+                <Badge badgeContent={4} color="secondary">
                   <Box
                     sx={{
                       display: "flex",
@@ -137,8 +138,7 @@ export default function HeaderMenu() {
                   >
                     {item.icon}
                   </Box>
-                )}
-                <Typography variant="subtitle1">{item.label}</Typography>
+                </Badge>
               </Box>
             ))}
             <SearchModalButton highlight={shouldHighlightSearchButton} />
@@ -170,7 +170,6 @@ export default function HeaderMenu() {
               <List>
                 {menuItems.map((item) => (
                   <ListItem
-                    // button
                     key={item.key}
                     component={Link}
                     to={item.link}
@@ -194,7 +193,9 @@ export default function HeaderMenu() {
                         color: item.key === selectedKey ? "white" : "inherit",
                       }}
                     >
-                      {item.icon}
+                      <Badge badgeContent={4} color="secondary">
+                        {item.icon}
+                      </Badge>
                     </ListItemIcon>
                     <ListItemText primary={item.label} />
                   </ListItem>
@@ -223,13 +224,8 @@ export default function HeaderMenu() {
                   <ListItemText primary="Search" />
                 </ListItem>
               </List>
-              {
-                // TODO: This is nice here, but it should close the Drawer when clicked on
-                // <SearchModalButton highlight={shouldHighlightSearchButton} />
-              }
             </Drawer>
-            <Box sx={{ flexGrow: 1 }} />{" "}
-            {/* Spacer to push the SearchModalButton to the right */}
+            <Box sx={{ flexGrow: 1 }} />
             <SearchModalButton highlight={shouldHighlightSearchButton} />
           </>
         )}
