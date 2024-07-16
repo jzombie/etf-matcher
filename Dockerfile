@@ -14,6 +14,8 @@ WORKDIR /app
 
 FROM rust-base as env-build
 
+COPY .env /app/.env
+
 # Copy only Rust backend files
 COPY backend/rust ./backend/rust
 COPY docker_build_helpers/ ./docker_build_helpers/
