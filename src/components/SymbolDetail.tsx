@@ -10,7 +10,7 @@ import type {
 } from "@utils/callWorkerFunction";
 import { MiniChart } from "react-ts-tradingview-widgets";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
-import ProtoStockLogoImg from "@assets/PROTO_stock_logo.png";
+// import ProtoStockLogoImg from "@assets/PROTO_stock_logo.png";
 import { styled } from "@mui/system";
 
 export type SymbolDetailProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -73,9 +73,9 @@ export default function SymbolDetail({
       {...rest}
     >
       <SymbolDetailWrapper>
-        <LogoContainer>
+        {/* <LogoContainer>
           <img src={ProtoStockLogoImg} alt="Logo" />
-        </LogoContainer>
+        </LogoContainer> */}
         <InfoContainer>
           <Padding>
             <Grid container spacing={2}>

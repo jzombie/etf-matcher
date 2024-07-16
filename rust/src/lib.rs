@@ -8,11 +8,13 @@ mod utils;
 mod data_models;
 
 use crate::data_models::{
+    // DataURL,
     DataBuildInfo,
     PaginatedResults,
     SymbolSearch,
     SymbolDetail,
     SymbolETFHolder,
+    Image
 };
 
 // Rename the imported functions to avoid name conflicts
@@ -55,6 +57,13 @@ pub async fn get_symbol_etf_holders(symbol: &str, page: usize, page_size: usize)
 }
 
 #[wasm_bindgen]
+pub async fn get_image_base64(filename: &str) -> Result<JsValue, JsValue> {
+    // let image_url = DataURL::Image(filename.to_string()).image_url();
+    let base64_data = Image::get_image_base64(&filename).await?;
+    Ok(JsValue::from_str(&base64_data))
+}
+
+#[wasm_bindgen]
 pub fn get_cache_size() -> usize {
     lib_get_cache_size()
 }
@@ -73,3 +82,4 @@ pub fn remove_cache_entry(key: &str) {
 pub fn clear_cache() {
     lib_clear_cache();
 }
+

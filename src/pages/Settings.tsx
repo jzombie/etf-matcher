@@ -55,6 +55,10 @@ export default function Settings() {
 
   return (
     <Scrollable>
+      <Button onClick={() => store.PROTO_fetchImageBase64("AMZN.enc")}>
+        PROTO_fetchImageBase64()
+      </Button>
+
       <Padding>
         <h2>User Data</h2>
 
