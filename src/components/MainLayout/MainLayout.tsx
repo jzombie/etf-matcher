@@ -68,7 +68,7 @@ export default function MainLayout() {
             <TickerTape
               colorTheme="dark"
               copyrightStyles={tradingViewCopyrightStyles}
-              symbols={symbols}
+              symbols={SECTOR_SYMBOLS}
             />
           </Footer>
         </Layout>
@@ -82,8 +82,10 @@ export default function MainLayout() {
   );
 }
 
+// TODO: Move; don't hardcode here
+//
 // https://tradingview-widgets.jorrinkievit.xyz/docs/components/TickerTape#ticker-symbol
-const symbols = [
+const SECTOR_SYMBOLS = [
   { proName: "XLY", title: "Consumer Discretionary (XLY)" },
   { proName: "XLP", title: "Consumer Staples (XLP)" },
   { proName: "XLE", title: "Energy (XLE)" },
