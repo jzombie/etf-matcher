@@ -13,6 +13,8 @@ import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 // import ProtoStockLogoImg from "@assets/PROTO_stock_logo.png";
 import { styled } from "@mui/system";
 
+import EncodedImage from "./EncodedImage";
+
 export type SymbolDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerSymbol: string;
   onIntersectionStateChange?: (isIntersecting: boolean) => void;
@@ -73,9 +75,12 @@ export default function SymbolDetail({
       {...rest}
     >
       <SymbolDetailWrapper>
-        {/* <LogoContainer>
-          <img src={ProtoStockLogoImg} alt="Logo" />
-        </LogoContainer> */}
+        <LogoContainer>
+          <EncodedImage
+            encSrc="AMZN.enc"
+            title={`${symbolDetail?.symbol} logo`}
+          />
+        </LogoContainer>
         <InfoContainer>
           <Padding>
             <Grid container spacing={2}>

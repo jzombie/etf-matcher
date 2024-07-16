@@ -293,10 +293,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   //     .catch((error) => console.error(error));
   // }
 
-  PROTO_fetchImageBase64(filename: string) {
-    this._callWorkerFunction("get_image_base64", filename).then((base64) =>
-      console.log({ base64 })
-    );
+  fetchImageBase64(filename: string): Promise<string> {
+    return this._callWorkerFunction<string>("get_image_base64", filename);
   }
 
   PROTO_removeCacheEntry(key: string) {
