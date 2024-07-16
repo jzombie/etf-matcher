@@ -131,6 +131,9 @@ export default function SymbolDetail({
 
       <div style={{ height: 200 }}>
         <MiniChart
+          // TODO: It is very important that the exchange gets encoded into this as well (fixes
+          // issues such as: Fix issue where querying "BRK-B" lands on "BROOKS MACDONALD GROUP ORD GBP0.01")
+          // For BRK-B: symbol={`NYSE:${tickerSymbol.replaceAll("-", ".")}`}
           symbol={tickerSymbol}
           colorTheme="dark"
           width="100%"
