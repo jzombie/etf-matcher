@@ -45,7 +45,15 @@ export default class StateEmitter<T extends object> extends EventEmitter {
 
     this.setState(initialState);
 
-    this.initialState = deepFreeze(structuredClone(initialState));
+    // Check if structuredClone is available
+    if (typeof structuredClone === "function") {
+      this.initialState = deepFreeze(structuredClone(initialState));
+    } else {
+      console.warn(
+        "structuredClone is not available. Initial state will not be deeply cloned, which will affect immutability."
+      );
+      this.initialState = initialState;
+    }
   }
 
   // Method to validate the state for conflicts with reserved events
