@@ -81,17 +81,28 @@ export default function SymbolDetail({
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
                 <Typography variant="h6" component="div">
-                  Company Name
+                  Company
                 </Typography>
-                <Typography variant="body1">
-                  {symbolDetail?.company_name || "N/A"}
+                <Typography variant="body2">
+                  {symbolDetail?.company_name}
+                  &nbsp;{symbolDetail?.symbol && `(${symbolDetail.symbol})`}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" component="div">
+                  Durability Rating
+                </Typography>
+                <Typography variant="body2">
+                  {(symbolDetail?.score_avg_dca &&
+                    `${symbolDetail?.score_avg_dca.toFixed(2)} / 5.00`) ||
+                    "N/A"}
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="h6" component="div">
                   Sector
                 </Typography>
-                <Typography variant="body1">
+                <Typography variant="body2">
                   {symbolDetail?.sector || "N/A"}
                 </Typography>
               </Grid>
@@ -99,7 +110,7 @@ export default function SymbolDetail({
                 <Typography variant="h6" component="div">
                   Industry
                 </Typography>
-                <Typography variant="body1">
+                <Typography variant="body2">
                   {symbolDetail?.industry || "N/A"}
                 </Typography>
               </Grid>
@@ -107,16 +118,8 @@ export default function SymbolDetail({
                 <Typography variant="h6" component="div">
                   ETF Status
                 </Typography>
-                <Typography variant="body1">
+                <Typography variant="body2">
                   {symbolDetail?.is_etf ? "ETF" : "Not ETF"}
-                </Typography>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Typography variant="h6" component="div">
-                  DCA
-                </Typography>
-                <Typography variant="body1">
-                  {symbolDetail?.score_avg_dca || "N/A"}
                 </Typography>
               </Grid>
             </Grid>
