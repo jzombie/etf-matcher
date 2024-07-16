@@ -67,23 +67,6 @@ export default function MainLayout() {
             )}
           </Content>
           <Footer>
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              sx={{ float: "left" }}
-            >
-              {prettyDataBuildTime
-                ? `Data build time: ${prettyDataBuildTime}`
-                : ""}
-              {" | "}
-              {isProductionBuild ? "PROD" : "DEV"}
-              {" | "}
-              {isDirtyState ? "Not Saved" : "Saved"}
-              {" | "}
-              {isOnline ? "Online" : "Offline"}
-              {" | "}
-              {visibleSymbols?.toString()}
-            </Typography>
             <Typography variant="body2" color="textSecondary" align="right">
               Charts provided by{" "}
               <a

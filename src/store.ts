@@ -44,6 +44,7 @@ export type StoreStateProps = {
   cacheProfilerWaitTime: number;
   cacheDetails: RustServiceCacheDetail[];
   cacheSize: number;
+  rustServiceErrorFunctionMap: Map<string, Error | unknown>;
 };
 
 class _Store extends ReactStateEmitter<StoreStateProps> {
@@ -103,6 +104,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       cacheProfilerWaitTime: 1000,
       cacheDetails: [],
       cacheSize: 0,
+      rustServiceErrorFunctionMap: new Map(),
     });
 
     // Only deepfreeze in development
@@ -176,20 +178,36 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     functionName: string,
     ...args: unknown[]
   ): Promise<T> {
-    const resp = await libCallWorkerFunction<T>(functionName, ...args);
+    let resp: T;
 
-    debounceWithKey(
-      "store:cache_profiler",
-      () => {
-        libCallWorkerFunction<number>("get_cache_size").then((cacheSize) => {
-          this.setState({ cacheSize });
+    try {
+      resp = await libCallWorkerFunction<T>(functionName, ...args);
+    } catch (err) {
+      if (err instanceof Error) {
+        const errFunctionMap = this.state.rustServiceErrorFunctionMap;
+        errFunctionMap.set(functionName, err);
+        this.setState({
+          rustServiceErrorFunctionMap: errFunctionMap,
         });
-        libCallWorkerFunction<RustServiceCacheDetail[]>(
-          "get_cache_details"
-        ).then((cacheDetails) => this.setState({ cacheDetails }));
-      },
-      this.state.cacheProfilerWaitTime
-    );
+
+        throw err;
+      } else {
+        throw new Error(err?.toString());
+      }
+    } finally {
+      debounceWithKey(
+        "store:cache_profiler",
+        () => {
+          libCallWorkerFunction<number>("get_cache_size").then((cacheSize) => {
+            this.setState({ cacheSize });
+          });
+          libCallWorkerFunction<RustServiceCacheDetail[]>(
+            "get_cache_details"
+          ).then((cacheDetails) => this.setState({ cacheDetails }));
+        },
+        this.state.cacheProfilerWaitTime
+      );
+    }
 
     return resp;
   }
