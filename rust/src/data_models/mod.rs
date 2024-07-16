@@ -12,4 +12,4 @@ pub use paginated_results::PaginatedResults;
 pub use symbol_search::SymbolSearch;
 pub use symbol_detail::SymbolDetail;
 pub use symbol_etf_holder::SymbolETFHolder;
-pub use image::Image;
+

@@ -13,9 +13,10 @@ use crate::data_models::{
     SymbolSearch,
     SymbolDetail,
     SymbolETFHolder,
-    Image,
-    DataURL, // Ensure this is imported
+    DataURL,
 };
+
+use crate::data_models::image::get_image_base64 as lib_get_image_base64;
 
 // Rename the imported functions to avoid name conflicts
 use crate::utils::fetch::{
@@ -59,9 +60,10 @@ pub async fn get_symbol_etf_holders(symbol: &str, page: usize, page_size: usize)
 #[wasm_bindgen]
 pub async fn get_image_base64(filename: &str) -> Result<JsValue, JsValue> {
     let image_url = DataURL::Image(filename.to_string()).image_url();
-    let base64_data = Image::get_image_base64(&image_url).await?;
+    let base64_data = lib_get_image_base64(&image_url).await?;
     Ok(JsValue::from_str(&base64_data))
 }
+
 
 #[wasm_bindgen]
 pub fn get_cache_size() -> usize {
