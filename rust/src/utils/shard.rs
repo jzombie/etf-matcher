@@ -12,8 +12,11 @@ struct ShardIndexEntry {
 }
 
 async fn parse_shard_index(shard_index_url: &str) -> Result<Vec<ShardIndexEntry>, JsValue> {
-    let csv_data: String = fetch_and_decompress_gz(shard_index_url).await?;
-    let entries: Vec<ShardIndexEntry> = parse_csv_data(&csv_data)?;
+    let csv_data = fetch_and_decompress_gz(shard_index_url).await?;
+    let csv_string = String::from_utf8(csv_data).map_err(|err| {
+        JsValue::from_str(&format!("Failed to convert data to String: {}", err))
+    })?;
+    let entries: Vec<ShardIndexEntry> = parse_csv_data(csv_string.as_bytes())?;
     Ok(entries)
 }
 
@@ -30,8 +33,11 @@ async fn fetch_and_parse_shard<T>(shard_url: &str) -> Result<Vec<T>, JsValue>
 where
     T: DeserializeOwned,
 {
-    let csv_data: String = fetch_and_decompress_gz(shard_url).await?;
-    let entries: Vec<T> = parse_csv_data(&csv_data)?;
+    let csv_data = fetch_and_decompress_gz(shard_url).await?;
+    let csv_string = String::from_utf8(csv_data).map_err(|err| {
+        JsValue::from_str(&format!("Failed to convert data to String: {}", err))
+    })?;
+    let entries: Vec<T> = parse_csv_data(csv_string.as_bytes())?;
     Ok(entries)
 }
 

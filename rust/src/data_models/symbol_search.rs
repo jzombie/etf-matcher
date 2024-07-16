@@ -42,8 +42,11 @@ impl SymbolSearch {
         }
 
         let url: String = DataURL::SymbolSearch.value().to_owned();
-        let csv_data: String = fetch_and_decompress_gz(&url).await?;
-        let results: Vec<SymbolSearch> = parse_csv_data(&csv_data)?;
+        let csv_data = fetch_and_decompress_gz(&url).await?;
+        let csv_string = String::from_utf8(csv_data).map_err(|err| {
+            JsValue::from_str(&format!("Failed to convert data to String: {}", err))
+        })?;
+        let results: Vec<SymbolSearch> = parse_csv_data(csv_string.as_bytes())?;
 
         let alternatives: Vec<String> = SymbolSearch::generate_alternative_symbols(&trimmed_query);
         let mut exact_symbol_matches: Vec<SymbolSearch> = vec![];
