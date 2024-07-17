@@ -153,35 +153,40 @@ export default function SymbolDetail({
                 <Typography variant="h6" component="div">
                   ETF Status
                 </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={6}>
-                    <Typography variant="subtitle1">Market Value</Typography>
-                    <Typography variant="body2">
-                      Sector: {etfAggregateDetail?.top_market_value_sector_name}
-                    </Typography>
-                    <Typography variant="body2">
-                      Industry:{" "}
-                      {etfAggregateDetail?.top_market_value_industry_name}
-                    </Typography>
-                    <Typography variant="body2">
-                      Value: {etfAggregateDetail?.aggregate_market_value}
-                    </Typography>
+                {!symbolDetail?.is_etf ? (
+                  <>Not ETF</>
+                ) : (
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <Typography variant="subtitle1">Market Value</Typography>
+                      <Typography variant="body2">
+                        Sector:{" "}
+                        {etfAggregateDetail?.top_market_value_sector_name}
+                      </Typography>
+                      <Typography variant="body2">
+                        Industry:{" "}
+                        {etfAggregateDetail?.top_market_value_industry_name}
+                      </Typography>
+                      <Typography variant="body2">
+                        Value: {etfAggregateDetail?.aggregate_market_value}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="subtitle1">
+                        Percentage Weight
+                      </Typography>
+                      <Typography variant="body2">
+                        Sector: {etfAggregateDetail?.top_pct_sector_name}
+                      </Typography>
+                      <Typography variant="body2">
+                        Industry: {etfAggregateDetail?.top_pct_industry_name}
+                      </Typography>
+                      <Typography variant="body2">
+                        Weight: {etfAggregateDetail?.pct_market_weight}
+                      </Typography>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="subtitle1">
-                      Percentage Weight
-                    </Typography>
-                    <Typography variant="body2">
-                      Sector: {etfAggregateDetail?.top_pct_sector_name}
-                    </Typography>
-                    <Typography variant="body2">
-                      Industry: {etfAggregateDetail?.top_pct_industry_name}
-                    </Typography>
-                    <Typography variant="body2">
-                      Weight: {etfAggregateDetail?.pct_market_weight}
-                    </Typography>
-                  </Grid>
-                </Grid>
+                )}
               </Grid>
             </Grid>
           </Padding>
