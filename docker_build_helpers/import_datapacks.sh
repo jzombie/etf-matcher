@@ -27,3 +27,12 @@ done
 
 # Remove unnecessary files
 find /build_artifacts/public/data -name "__MACOSX" -exec rm -rf {} +
+
+# --- Move to /app/public/data
+
+if [ -d /app/public/data ]; then
+    rm -rf /app/public/data
+fi
+
+mkdir -p /app/public/data
+mv /build_artifacts/public/data  /app/public/data/
