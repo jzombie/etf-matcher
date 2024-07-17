@@ -51,6 +51,10 @@ export default function SearchResults() {
         _setPage(parseInt(value, 10));
       }
     });
+    // Default to first page
+    if (!searchParams.has("page")) {
+      _setPage(1);
+    }
   }, [location, _setSearchQuery, _setOnlyExactMatches, _setPage]);
 
   const toggleExactMatch = () => {
