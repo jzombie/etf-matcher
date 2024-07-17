@@ -12,6 +12,7 @@ import {
   ListItemText,
   Typography,
   Pagination,
+  ListItemIcon,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -246,18 +247,18 @@ export default function SearchModalButton({
                     overflow: "auto",
                   }}
                 >
-                  <EncodedImage
-                    // TODO: Include support for fallback image
-                    encSrc={searchResult.logo_filename}
-                    style={{ width: 50, height: 50 }}
-                  />
+                  <ListItemIcon>
+                    <EncodedImage
+                      // TODO: Include support for fallback image
+                      encSrc={searchResult.logo_filename}
+                      style={{ width: 50, height: 50 }}
+                    />
+                  </ListItemIcon>
                   <ListItemText
+                    sx={{ marginLeft: 1 }}
                     primary={searchResult.symbol}
                     secondary={
-                      <Typography
-                        variant="body2"
-                        style={{ opacity: 0.5, float: "right" }}
-                      >
+                      <Typography variant="body2" style={{ opacity: 0.5 }}>
                         {searchResult.company}
                       </Typography>
                     }
