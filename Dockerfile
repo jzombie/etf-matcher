@@ -93,4 +93,5 @@ EXPOSE 8000
 # Use tini as the entry point (trap SIGINT [Ctrl-C] and exit the Vite server)
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
-CMD ["npm", "run", "serve"]
+# TODO: Uncomment if not mounting locally
+# CMD ["npm", "run", "build"]
