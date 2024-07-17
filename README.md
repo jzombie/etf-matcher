@@ -10,7 +10,7 @@
 
   - make (utility) - Helpful.
 
-You can skip using Docker altogether if that's your thing, but it will be harder to build. The [docker_build_helpers directory](docker_build_helpers) has various utilities related to encrypting the data in the build, related to licensing conditions.
+You can skip using Docker altogether if that's your thing, but it will be harder to build.
 
 ## Development
 
