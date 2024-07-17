@@ -71,6 +71,11 @@ stop-dev:
 	@echo "Stopping development container"
 	@docker compose down
 
+.PHONY: import-dev
+import-dev:
+	@echo "Importing new datapacks"
+	@docker compose up dev-import
+
 .PHONY: test
 test:
 	@echo "Testing..."
