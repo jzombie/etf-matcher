@@ -4,7 +4,7 @@ pub enum DataURL {
     SymbolDetailShardIndex,
     SymbolETFHoldersShardIndex,
     ETFAggregateDetailShardIndex,
-    Image(String), // Add this variant
+    Image(String),
 }
 
 impl DataURL {
