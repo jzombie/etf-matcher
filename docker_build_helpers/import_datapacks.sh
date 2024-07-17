@@ -27,6 +27,9 @@ for zip_file in /app/data/*.zip; do
     rm -rf /tmp/unzip_temp/*
 done
 
+# Remove any remaining empty directories in the data directory
+find /build_artifacts/public/data -type d -empty -exec rmdir {} +
+
 # --- Move to /app/public/data
 
 if [ -d /app/public/data ]; then
@@ -34,4 +37,6 @@ if [ -d /app/public/data ]; then
 fi
 
 mkdir -p /app/public
-mv /build_artifacts/public/data /app/public/
+
+# Copy (instead of move) so that volume mounts can still obtain the artifacts
+cp -r /build_artifacts/public/data /app/public/
