@@ -169,9 +169,6 @@ export default function SearchModalButton({
     }
   }, [location, isModalOpenStableRef]);
 
-  // TODO: Remove
-  console.log({ searchResults });
-
   return (
     <>
       <Button
