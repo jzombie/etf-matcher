@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -32,7 +32,7 @@ export default function SearchResults() {
     totalSearchResults,
     pageSize,
     page,
-    setPage,
+    setPage: _setPage,
     totalPages,
   } = useSearch();
 
@@ -47,8 +47,11 @@ export default function SearchResults() {
       } else {
         _setOnlyExactMatches(false);
       }
+      if (key === "page") {
+        _setPage(parseInt(value, 10));
+      }
     });
-  }, [location, _setSearchQuery, _setOnlyExactMatches]);
+  }, [location, _setSearchQuery, _setOnlyExactMatches, _setPage]);
 
   const toggleExactMatch = () => {
     const searchParams = new URLSearchParams(location.search);
@@ -66,7 +69,26 @@ export default function SearchResults() {
     });
 
     _setOnlyExactMatches(newExactValue);
+    _setPage(1);
   };
+
+  const setPage = useCallback(
+    (page: number) => {
+      const searchParams = new URLSearchParams(location.search);
+
+      if (page > 1) {
+        searchParams.set("page", page.toString());
+      } else {
+        searchParams.delete("page");
+      }
+
+      navigate({
+        pathname: location.pathname,
+        search: searchParams.toString(),
+      });
+    },
+    [location, navigate]
+  );
 
   const searchResultSymbols = useMemo(
     () => searchResults.map((searchResult) => searchResult.symbol),
