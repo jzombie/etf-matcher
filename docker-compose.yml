@@ -79,6 +79,15 @@ services:
     environment:
       - RUST_BACKTRACE=1
 
+  dev-import:
+    <<: *base-service
+    volumes:
+      - .:/app
+    command: "import_datapacks"
+    profiles:
+      # Don't run by default
+      - import
+
   dev-test:
     <<: *base-service
     volumes:
@@ -92,7 +101,6 @@ services:
       '
     environment:
       - RUST_BACKTRACE=1
-      - FORCE_COLOR=1
     profiles:
       # Don't run by default
       - test
