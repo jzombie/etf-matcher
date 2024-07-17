@@ -115,7 +115,7 @@ export default function SearchResults() {
             <>No search query defined.</>
           ) : (
             <>
-              No {onlyExactMatches && "exact"} search results for &quot;
+              No {onlyExactMatches && "exact symbol"} search results for &quot;
               {searchQuery}&quot;
             </>
           )}
