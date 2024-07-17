@@ -34,5 +34,5 @@ if [ -d /app/public/data ]; then
     rm -rf /app/public/data
 fi
 
-mkdir -p /app/public/data
-mv /build_artifacts/public/data  /app/public/data/
+mkdir -p /app/public
+mv /build_artifacts/public/data /app/public/
