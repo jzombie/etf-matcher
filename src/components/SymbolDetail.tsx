@@ -11,9 +11,7 @@ import type {
 } from "@utils/callWorkerFunction";
 import { MiniChart } from "react-ts-tradingview-widgets";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
-// import ProtoStockLogoImg from "@assets/PROTO_stock_logo.png";
 import { styled } from "@mui/system";
-
 import EncodedImage from "./EncodedImage";
 
 export type SymbolDetailProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -43,7 +41,6 @@ const SymbolDetailWrapper = styled(Box)(({ theme }) => ({
   flexDirection: "row",
   backgroundColor: theme.palette.background.default,
   borderRadius: theme.shape.borderRadius,
-  // boxShadow: theme.shadows[1],
   marginBottom: theme.spacing(4),
 }));
 
@@ -156,9 +153,35 @@ export default function SymbolDetail({
                 <Typography variant="h6" component="div">
                   ETF Status
                 </Typography>
-                <Typography variant="body2">
-                  {symbolDetail?.is_etf ? "ETF" : "Not ETF"}
-                </Typography>
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <Typography variant="subtitle1">Market Value</Typography>
+                    <Typography variant="body2">
+                      Sector: {etfAggregateDetail?.top_market_value_sector_name}
+                    </Typography>
+                    <Typography variant="body2">
+                      Industry:{" "}
+                      {etfAggregateDetail?.top_market_value_industry_name}
+                    </Typography>
+                    <Typography variant="body2">
+                      Value: {etfAggregateDetail?.aggregate_market_value}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="subtitle1">
+                      Percentage Weight
+                    </Typography>
+                    <Typography variant="body2">
+                      Sector: {etfAggregateDetail?.top_pct_sector_name}
+                    </Typography>
+                    <Typography variant="body2">
+                      Industry: {etfAggregateDetail?.top_pct_industry_name}
+                    </Typography>
+                    <Typography variant="body2">
+                      Weight: {etfAggregateDetail?.pct_market_weight}
+                    </Typography>
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
           </Padding>
@@ -167,9 +190,6 @@ export default function SymbolDetail({
 
       <div style={{ height: 200 }}>
         <MiniChart
-          // TODO: It is very important that the exchange gets encoded into this as well (fixes
-          // issues such as: Fix issue where querying "BRK-B" lands on "BROOKS MACDONALD GROUP ORD GBP0.01")
-          // For BRK-B: symbol={`NYSE:${tickerSymbol.replaceAll("-", ".")}`}
           symbol={tickerSymbol}
           colorTheme="dark"
           width="100%"
