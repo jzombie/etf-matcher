@@ -7,6 +7,7 @@ import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import type {
   RustServiceSymbolDetail,
   RustServiceETFHoldersWithTotalCount,
+  RustServiceETFAggregateDetail,
 } from "@utils/callWorkerFunction";
 import { MiniChart } from "react-ts-tradingview-widgets";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
@@ -59,6 +60,9 @@ export default function SymbolDetail({
   const [etfHolders, setEtfHolders] = useState<
     RustServiceETFHoldersWithTotalCount | undefined
   >(undefined);
+  const [etfAggregateDetail, setETFAggregateDetail] = useState<
+    RustServiceETFAggregateDetail | undefined
+  >(undefined);
 
   useEffect(() => {
     if (tickerSymbol) {
@@ -67,16 +71,11 @@ export default function SymbolDetail({
     }
   }, [tickerSymbol]);
 
-  // TODO: Handle accordingly
   useEffect(() => {
     if (symbolDetail?.is_etf) {
       store
         .fetchETFAggregateDetail(symbolDetail.symbol)
-        .then((etfAggregateDetail) => {
-          console.debug({
-            etfAggregateDetail,
-          });
-        });
+        .then(setETFAggregateDetail);
     }
   }, [symbolDetail]);
 
@@ -123,6 +122,16 @@ export default function SymbolDetail({
                 </Typography>
                 <Typography variant="body2">
                   {symbolDetail?.sector || "N/A"}
+                  <>
+                    {etfAggregateDetail?.top_market_value_sector_name &&
+                      symbolDetail?.sector !==
+                        etfAggregateDetail?.top_market_value_sector_name && (
+                        <>
+                          {" "}
+                          ({etfAggregateDetail.top_market_value_sector_name})
+                        </>
+                      )}
+                  </>
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
@@ -131,6 +140,16 @@ export default function SymbolDetail({
                 </Typography>
                 <Typography variant="body2">
                   {symbolDetail?.industry || "N/A"}
+                  <>
+                    {etfAggregateDetail?.top_market_value_industry_name &&
+                      symbolDetail?.sector !==
+                        etfAggregateDetail?.top_market_value_industry_name && (
+                        <>
+                          {" "}
+                          ({etfAggregateDetail.top_market_value_industry_name})
+                        </>
+                      )}
+                  </>
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
