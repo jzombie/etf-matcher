@@ -13,6 +13,7 @@ import {
   Typography,
   Pagination,
   ListItemIcon,
+  ButtonBase,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -101,7 +102,7 @@ export default function SearchModalButton({
     store.setState({ isSearchModalOpen: true });
   };
 
-  const handleOk = (_: SyntheticEvent, exactSearchValue?: string) => {
+  const handleOk = (_?: SyntheticEvent, exactSearchValue?: string) => {
     store.setState({ isSearchModalOpen: false });
 
     const locSearchQuery = exactSearchValue || searchQuery;
@@ -235,35 +236,47 @@ export default function SearchModalButton({
             ></div>
             <List>
               {searchResults.map((searchResult, idx) => (
-                <ListItem
+                <ButtonBase
                   key={idx}
-                  id={`search-result-${idx}`}
+                  onClick={(_) => handleOk(_, searchResult.symbol)}
                   sx={{
-                    backgroundColor:
-                      idx === selectedIndex
-                        ? "rgba(255,255,255,.2)"
-                        : "transparent",
-                    padding: "5px",
-                    overflow: "auto",
+                    // TODO: Rework this to work better in conjunction w/ arrow keys
+                    display: "block",
+                    width: "100%",
+                    "&:hover": {
+                      backgroundColor: "rgba(255,255,255,.1)",
+                    },
                   }}
                 >
-                  <ListItemIcon>
-                    <EncodedImage
-                      // TODO: Include support for fallback image
-                      encSrc={searchResult.logo_filename}
-                      style={{ width: 50, height: 50 }}
+                  <ListItem
+                    id={`search-result-${idx}`}
+                    sx={{
+                      backgroundColor:
+                        idx === selectedIndex
+                          ? "rgba(255,255,255,.2)"
+                          : "transparent",
+                      padding: "5px",
+                      overflow: "auto",
+                    }}
+                  >
+                    <ListItemIcon>
+                      <EncodedImage
+                        // TODO: Include support for fallback image
+                        encSrc={searchResult.logo_filename}
+                        style={{ width: 50, height: 50 }}
+                      />
+                    </ListItemIcon>
+                    <ListItemText
+                      sx={{ marginLeft: 1 }}
+                      primary={searchResult.symbol}
+                      secondary={
+                        <Typography variant="body2" style={{ opacity: 0.5 }}>
+                          {searchResult.company}
+                        </Typography>
+                      }
                     />
-                  </ListItemIcon>
-                  <ListItemText
-                    sx={{ marginLeft: 1 }}
-                    primary={searchResult.symbol}
-                    secondary={
-                      <Typography variant="body2" style={{ opacity: 0.5 }}>
-                        {searchResult.company}
-                      </Typography>
-                    }
-                  />
-                </ListItem>
+                  </ListItem>
+                </ButtonBase>
               ))}
             </List>
           </form>
