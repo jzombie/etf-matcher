@@ -30,7 +30,7 @@ const LogoContainer = styled(Box)(({ theme }) => ({
   marginRight: theme.spacing(2),
 }));
 
-const InfoContainer = styled(Box)(({ theme }) => ({
+const InfoContainer = styled(Box)(() => ({
   display: "flex",
   flexDirection: "column",
   justifyContent: "space-around",
