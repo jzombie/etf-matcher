@@ -16,9 +16,12 @@ impl DataBuildInfo {
 
         // Fetch and decompress the CSV data
         let csv_data = fetch_and_decompress_gz_non_cached(&url).await?;
+        let csv_string = String::from_utf8(csv_data).map_err(|err| {
+            JsValue::from_str(&format!("Failed to convert data to String: {}", err))
+        })?;
         
         // Parse the CSV data
-        let mut data: Vec<DataBuildInfo> = parse_csv_data(&csv_data)?;
+        let mut data: Vec<DataBuildInfo> = parse_csv_data(csv_string.as_bytes())?;
         
         // Expecting a single record
         data.pop().ok_or_else(|| JsValue::from_str("No data found"))

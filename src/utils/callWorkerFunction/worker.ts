@@ -45,7 +45,9 @@ async function processQueue() {
         resolve(result);
       } catch (error) {
         console.error(
-          `Worker encountered an error @ function "${functionName}":`,
+          `Worker encountered an error @ function "${functionName}" [${args.join(
+            ","
+          )}]:`,
           error
         );
         reject(error);

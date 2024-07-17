@@ -6,11 +6,15 @@
   flex-direction: column;
 }
 
+// TODO: Remove? This breaks `Center` layouts, forcing them to not fill up the
+// vertical space. If this needs to be reintroduced, make it a user-configurable
+// parameter for `Full`.
+//
 /* Ensure children of .full do not flex (grow or shrink) within the flex container.
    This prevents them from stretching or compressing to fill the available space,
    allowing them to maintain their intrinsic sizes and behave more predictably
    within the flexbox layout. Useful for preventing layout shifts and ensuring 
    that content does not overflow unexpectedly. */
-.full > * {
-  flex: 0 0 auto;
-}
+// .full > * {
+//   flex: 0 0 auto;
+// }

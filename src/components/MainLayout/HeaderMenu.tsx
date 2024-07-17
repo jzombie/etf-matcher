@@ -12,6 +12,7 @@ import {
   Box,
   useMediaQuery,
   useTheme,
+  Badge,
 } from "@mui/material";
 import {
   Home,
@@ -19,12 +20,15 @@ import {
   Menu as MenuIcon,
   Assessment as AssessmentIcon,
   ListAlt as ListAltIcon,
+  Search as SearchIcon,
 } from "@mui/icons-material";
 import { Link, useLocation, matchPath } from "react-router-dom";
 import SearchModalButton from "@components/SearchModalButton";
 import clsx from "clsx";
 import { styled } from "@mui/system";
 import LogoNavButton from "@components/LogoNavButton";
+
+import store from "@src/store";
 
 export default function HeaderMenu() {
   const location = useLocation();
@@ -65,7 +69,6 @@ export default function HeaderMenu() {
       matchPath({ path: `${item.key}/*`, end: false }, location.pathname)
   )?.key;
 
-  // i.e. For search results page, or anything else not corresponding to a menu link
   const shouldHighlightSearchButton = !selectedKey;
 
   const DesktopStyledLogoBranding = styled(Typography)(({ theme }) => ({
@@ -74,10 +77,10 @@ export default function HeaderMenu() {
     fontSize: "1.5rem",
     marginRight: theme.spacing(2),
     color: "white",
-    flexGrow: 1, // Makes the branding take up all available space
+    flexGrow: 1,
   }));
 
-  const MobileStyledLogoBranding = styled(Typography)(({ theme }) => ({
+  const MobileStyledLogoBranding = styled(Typography)(() => ({
     fontFamily: "'Roboto', sans-serif",
     fontWeight: 700,
     fontSize: "1.5rem",
@@ -92,7 +95,7 @@ export default function HeaderMenu() {
             sx={{
               display: "flex",
               alignItems: "center",
-              justifyContent: "center", // Center all items
+              justifyContent: "center",
               flexGrow: 1,
             }}
           >
@@ -124,7 +127,8 @@ export default function HeaderMenu() {
                   },
                 }}
               >
-                {item.icon && (
+                <Typography variant="subtitle1">{item.label}</Typography>
+                <Badge badgeContent={4} color="secondary">
                   <Box
                     sx={{
                       display: "flex",
@@ -134,8 +138,7 @@ export default function HeaderMenu() {
                   >
                     {item.icon}
                   </Box>
-                )}
-                <Typography variant="subtitle1">{item.label}</Typography>
+                </Badge>
               </Box>
             ))}
             <SearchModalButton highlight={shouldHighlightSearchButton} />
@@ -152,7 +155,6 @@ export default function HeaderMenu() {
             </IconButton>
             {!drawerOpen && (
               <MobileStyledLogoBranding>
-                {" "}
                 <LogoNavButton />
               </MobileStyledLogoBranding>
             )}
@@ -163,12 +165,11 @@ export default function HeaderMenu() {
               sx={{ "& .MuiDrawer-paper": { width: "240px" } }}
             >
               <MobileStyledLogoBranding sx={{ padding: 1 }}>
-                <LogoNavButton />
+                <LogoNavButton onClick={toggleDrawer} />
               </MobileStyledLogoBranding>
               <List>
                 {menuItems.map((item) => (
                   <ListItem
-                    button
                     key={item.key}
                     component={Link}
                     to={item.link}
@@ -192,19 +193,39 @@ export default function HeaderMenu() {
                         color: item.key === selectedKey ? "white" : "inherit",
                       }}
                     >
-                      {item.icon}
+                      <Badge badgeContent={4} color="secondary">
+                        {item.icon}
+                      </Badge>
                     </ListItemIcon>
                     <ListItemText primary={item.label} />
                   </ListItem>
                 ))}
+                <ListItem
+                  sx={{
+                    color: "white",
+                    backgroundColor: "transparent",
+                    "&:hover": {
+                      backgroundColor: theme.palette.action.hover,
+                    },
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    toggleDrawer();
+                    store.setState({ isSearchModalOpen: true });
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      color: "white",
+                    }}
+                  >
+                    <SearchIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Search" />
+                </ListItem>
               </List>
-              {
-                // TODO: This is nice here, but it should close the Drawer when clicked on
-                // <SearchModalButton highlight={shouldHighlightSearchButton} />
-              }
             </Drawer>
-            <Box sx={{ flexGrow: 1 }} />{" "}
-            {/* Spacer to push the SearchModalButton to the right */}
+            <Box sx={{ flexGrow: 1 }} />
             <SearchModalButton highlight={shouldHighlightSearchButton} />
           </>
         )}

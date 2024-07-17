@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { TickerTape } from "react-ts-tradingview-widgets";
-import { AppBar, Toolbar, Typography, useTheme } from "@mui/material";
+import { Typography, useTheme } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import HeaderMenu from "./HeaderMenu";
 
@@ -18,25 +18,12 @@ import LockScreen from "@components/LockScreen";
 export default function MainLayout() {
   const theme = useTheme();
 
-  const {
-    isAppUnlocked,
-    isProductionBuild,
-    isRustInit,
-    prettyDataBuildTime,
-    isDirtyState,
-    visibleSymbols,
-    isOnline,
-    isProfilingCacheOverlayOpen,
-  } = useStoreStateReader([
-    "isAppUnlocked",
-    "isProductionBuild",
-    "isRustInit",
-    "prettyDataBuildTime",
-    "isDirtyState",
-    "visibleSymbols",
-    "isOnline",
-    "isProfilingCacheOverlayOpen",
-  ]);
+  const { isAppUnlocked, isRustInit, isProfilingCacheOverlayOpen } =
+    useStoreStateReader([
+      "isAppUnlocked",
+      "isRustInit",
+      "isProfilingCacheOverlayOpen",
+    ]);
 
   if (!isAppUnlocked) {
     return (
@@ -67,23 +54,6 @@ export default function MainLayout() {
             )}
           </Content>
           <Footer>
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              sx={{ float: "left" }}
-            >
-              {prettyDataBuildTime
-                ? `Data build time: ${prettyDataBuildTime}`
-                : ""}
-              {" | "}
-              {isProductionBuild ? "PROD" : "DEV"}
-              {" | "}
-              {isDirtyState ? "Not Saved" : "Saved"}
-              {" | "}
-              {isOnline ? "Online" : "Offline"}
-              {" | "}
-              {visibleSymbols?.toString()}
-            </Typography>
             <Typography variant="body2" color="textSecondary" align="right">
               Charts provided by{" "}
               <a
@@ -98,7 +68,7 @@ export default function MainLayout() {
             <TickerTape
               colorTheme="dark"
               copyrightStyles={tradingViewCopyrightStyles}
-              symbols={symbols}
+              symbols={SECTOR_SYMBOLS}
             />
           </Footer>
         </Layout>
@@ -112,8 +82,10 @@ export default function MainLayout() {
   );
 }
 
+// TODO: Move; don't hardcode here
+//
 // https://tradingview-widgets.jorrinkievit.xyz/docs/components/TickerTape#ticker-symbol
-const symbols = [
+const SECTOR_SYMBOLS = [
   { proName: "XLY", title: "Consumer Discretionary (XLY)" },
   { proName: "XLP", title: "Consumer Staples (XLP)" },
   { proName: "XLE", title: "Energy (XLE)" },

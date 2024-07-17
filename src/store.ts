@@ -1,7 +1,4 @@
-import {
-  ReactStateEmitter,
-  StateEmitterDefaultEvents,
-} from "@utils/StateEmitter";
+import { ReactStateEmitter } from "@utils/StateEmitter";
 import libCallWorkerFunction from "@utils/callWorkerFunction";
 import type {
   RustServiceSymbolDetail,
@@ -9,6 +6,7 @@ import type {
   RustServiceETFHoldersWithTotalCount,
   RustServiceCacheDetail,
 } from "@utils/callWorkerFunction";
+import detectHTMLJSVersionSync from "@utils/PROTO_detectHTMLJSVersionSync";
 
 import debounceWithKey from "@utils/debounceWithKey";
 
@@ -32,7 +30,9 @@ export type SymbolBucketProps = {
 };
 
 export type StoreStateProps = {
+  isHTMLJSVersionSynced: boolean;
   isAppUnlocked: boolean;
+  isGAPageTrackingEnabled: boolean;
   isProductionBuild: boolean;
   isOnline: boolean;
   isRustInit: boolean;
@@ -46,13 +46,21 @@ export type StoreStateProps = {
   cacheProfilerWaitTime: number;
   cacheDetails: RustServiceCacheDetail[];
   cacheSize: number;
+  rustServiceFunctionErrors: {
+    [functionName: string]: {
+      err: Error | unknown;
+      errCount: number;
+    };
+  };
 };
 
 class _Store extends ReactStateEmitter<StoreStateProps> {
   constructor() {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
     super({
+      isHTMLJSVersionSynced: detectHTMLJSVersionSync(),
       isAppUnlocked: false,
+      isGAPageTrackingEnabled: false,
       isProductionBuild: IS_PROD,
       isOnline: false,
       isRustInit: false,
@@ -104,6 +112,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       cacheProfilerWaitTime: 1000,
       cacheDetails: [],
       cacheSize: 0,
+      rustServiceFunctionErrors: {},
     });
 
     // Only deepfreeze in development
@@ -132,22 +141,23 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     window.addEventListener("online", _handleOnlineStatus);
     window.addEventListener("offline", _handleOnlineStatus);
 
-    const _handleVisibleSymbolsUpdate = (keys: (keyof StoreStateProps)[]) => {
-      if (keys.includes("visibleSymbols")) {
-        const { visibleSymbols } = this.getState(["visibleSymbols"]);
+    // TODO: Reintegrate or use this pattern as needed
+    // const _handleVisibleSymbolsUpdate = (keys: (keyof StoreStateProps)[]) => {
+    //   if (keys.includes("visibleSymbols")) {
+    //     const { visibleSymbols } = this.getState(["visibleSymbols"]);
 
-        // TODO: Handle this tracking
-        // console.log({ visibleSymbols });
-      }
-    };
+    //     // TODO: Handle this tracking
+    //     // console.log({ visibleSymbols });
+    //   }
+    // };
 
-    this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
+    // this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
 
     return () => {
       window.removeEventListener("online", _handleOnlineStatus);
       window.removeEventListener("offline", _handleOnlineStatus);
 
-      this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
+      // this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
     };
   }
 
@@ -176,20 +186,43 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     functionName: string,
     ...args: unknown[]
   ): Promise<T> {
-    const resp = await libCallWorkerFunction<T>(functionName, ...args);
+    let resp: T;
 
-    debounceWithKey(
-      "store:cache_profiler",
-      () => {
-        libCallWorkerFunction<number>("get_cache_size").then((cacheSize) => {
-          this.setState({ cacheSize });
-        });
-        libCallWorkerFunction<RustServiceCacheDetail[]>(
-          "get_cache_details"
-        ).then((cacheDetails) => this.setState({ cacheDetails }));
-      },
-      this.state.cacheProfilerWaitTime
-    );
+    try {
+      resp = await libCallWorkerFunction<T>(functionName, ...args);
+    } catch (err) {
+      const funcErrors = {
+        ...this.state.rustServiceFunctionErrors,
+        [functionName]: {
+          err,
+          errCount: this.state.rustServiceFunctionErrors[functionName]?.errCount
+            ? this.state.rustServiceFunctionErrors[functionName]?.errCount + 1
+            : 1,
+        },
+      };
+      this.setState({
+        rustServiceFunctionErrors: funcErrors,
+      });
+
+      if (err instanceof Error) {
+        throw err;
+      } else {
+        throw new Error(err?.toString());
+      }
+    } finally {
+      debounceWithKey(
+        "store:cache_profiler",
+        () => {
+          libCallWorkerFunction<number>("get_cache_size").then((cacheSize) => {
+            this.setState({ cacheSize });
+          });
+          libCallWorkerFunction<RustServiceCacheDetail[]>(
+            "get_cache_details"
+          ).then((cacheDetails) => this.setState({ cacheDetails }));
+        },
+        this.state.cacheProfilerWaitTime
+      );
+    }
 
     return resp;
   }
@@ -259,6 +292,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   //     )
   //     .catch((error) => console.error(error));
   // }
+
+  fetchImageBase64(filename: string): Promise<string> {
+    return this._callWorkerFunction<string>("get_image_base64", filename);
+  }
 
   PROTO_removeCacheEntry(key: string) {
     this._callWorkerFunction("remove_cache_entry", key);

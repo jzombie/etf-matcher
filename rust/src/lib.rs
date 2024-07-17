@@ -13,7 +13,10 @@ use crate::data_models::{
     SymbolSearch,
     SymbolDetail,
     SymbolETFHolder,
+    DataURL,
 };
+
+use crate::data_models::image::get_image_base64 as lib_get_image_base64;
 
 // Rename the imported functions to avoid name conflicts
 use crate::utils::fetch::{
@@ -52,6 +55,13 @@ pub async fn get_symbol_detail(symbol: &str) -> Result<JsValue, JsValue> {
 pub async fn get_symbol_etf_holders(symbol: &str, page: usize, page_size: usize) -> Result<JsValue, JsValue> {
     let etf_symbols: PaginatedResults<String> = SymbolETFHolder::get_symbol_etf_holders(symbol, page, page_size).await?;
     to_value(&etf_symbols).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to convert Vec<String> to JsValue: {}", err)))
+}
+
+#[wasm_bindgen]
+pub async fn get_image_base64(filename: &str) -> Result<JsValue, JsValue> {
+    let image_url = DataURL::Image(filename.to_string()).image_url();
+    let base64_data = lib_get_image_base64(&image_url).await?;
+    Ok(JsValue::from_str(&base64_data))
 }
 
 #[wasm_bindgen]

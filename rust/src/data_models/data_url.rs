@@ -3,6 +3,7 @@ pub enum DataURL {
     SymbolSearch,
     SymbolDetailShardIndex,
     SymbolETFHoldersShardIndex,
+    Image(String), // Add this variant
 }
 
 impl DataURL {
@@ -12,6 +13,15 @@ impl DataURL {
             DataURL::SymbolSearch => "/data/symbol_search_dict.enc",
             DataURL::SymbolDetailShardIndex => "/data/symbol_detail_index.enc",
             DataURL::SymbolETFHoldersShardIndex => "/data/symbol_etf_holders_index.enc",
+            DataURL::Image(_) => panic!("Use image_url() for image paths"), // Prevent calling value() for images
+        }
+    }
+
+    // Function to get full URL for images
+    pub fn image_url(&self) -> String {
+        match self {
+            DataURL::Image(filename) => format!("/data/images/{}", filename),
+            _ => panic!("Not an image URL"),
         }
     }
 }

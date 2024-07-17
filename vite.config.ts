@@ -7,9 +7,25 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import svgr from "vite-plugin-svgr";
 import eslint from "vite-plugin-eslint";
 import { createHtmlPlugin } from "vite-plugin-html";
-const removeComments = require("./custom_vite_plugins/posthtml-remove-comments.cjs");
+import sitemap from "vite-plugin-sitemap";
+import fs from "fs";
+import dotenv from "dotenv";
+
+// This is needed to get the .env variables to populate here
+dotenv.config();
 
 const DESTINATION_DIR = path.resolve(__dirname, "dist");
+
+// Function to get the current build time and write it to a file
+function writeBuildTime() {
+  const now = new Date();
+  const buildTime = now.toISOString(); // Returns the build time in ISO format
+  fs.writeFileSync(
+    path.resolve(__dirname, "public/buildTime.json"),
+    JSON.stringify({ buildTime })
+  );
+  return buildTime;
+}
 
 export default defineConfig({
   root: "./public",
@@ -36,6 +52,12 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     port: 8000,
+    watch: {
+      // Ignoring this because of the large amount of files present in here, leading
+      // to stack overflow issues at times when rebuilding the data.
+      // (`viteStaticCopy` may need to be configured to work around this as well)
+      ignored: ["public/data"],
+    },
   },
   plugins: [
     react(),
@@ -43,6 +65,10 @@ export default defineConfig({
       targets: [
         {
           src: "CNAME",
+          dest: path.resolve(DESTINATION_DIR),
+        },
+        {
+          src: "buildTime.json",
           dest: path.resolve(DESTINATION_DIR),
         },
         {
@@ -60,18 +86,34 @@ export default defineConfig({
     eslint({
       failOnError: false, // Show errors in console but do not fail build
       failOnWarning: false, // Show warnings in console but do not fail build
+      cache: false, // Ensure ESLint re-evaluates on every save
+      fix: true, // Automatically fix linting errors where possible
     }),
     svgr(),
     createHtmlPlugin({
-      minify: true,
       inject: {
-        injectData: {
-          // You can inject data into your HTML here if needed
+        data: {
+          buildTime: writeBuildTime(), // Write build time to a file and inject it into HTML
         },
       },
-      posthtml: {
-        plugins: [removeComments()],
+      minify: {
+        collapseWhitespace: true,
+        removeComments: true,
+        minifyJS: true,
+        minifyCSS: true,
+        minifyURLs: true,
       },
+    }),
+    sitemap({
+      hostname: "https://etfmatcher.com",
+      // TODO: Ideally these would seed automatically from `router.ts`
+      dynamicRoutes: [
+        "/",
+        "/search",
+        "/portfolios",
+        "/watchlists",
+        "/settings",
+      ],
     }),
   ],
   // Resolve warnings with checker plugin (even though this is not a Vue project)

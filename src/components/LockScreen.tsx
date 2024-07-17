@@ -1,6 +1,35 @@
 import React, { useState } from "react";
-import { Box, Typography, TextField, Button } from "@mui/material";
+import {
+  Typography,
+  TextField,
+  Button,
+  FormControl,
+  FormHelperText,
+} from "@mui/material";
 import { PREVIEW_UNLOCK } from "@src/store";
+
+import lockScreenImg from "@assets/lock.jpeg";
+
+import FullViewport from "@layoutKit/FullViewport";
+import Full from "@layoutKit/Full";
+import Cover from "@layoutKit/Cover";
+import Center from "@layoutKit/Center";
+import Layout, { Content, Footer } from "@layoutKit/Layout";
+import Padding from "@layoutKit/Padding";
+
+import LogoNavButton from "./LogoNavButton";
+
+import { buildTime } from "../../public/buildTime.json";
+
+const formattedBuildTime = (() => {
+  // Convert the ISO string to a Date object
+  const date = new Date(buildTime);
+
+  // Format the date to a locale string
+  const formattedDate = date.toLocaleString();
+
+  return formattedDate;
+})();
 
 const LOCK_MESSAGE = "ETF Matcher is currently in limited preview.";
 
@@ -17,7 +46,8 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
     setErrorMessage("");
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
     if (password === PREVIEW_UNLOCK) {
       onUnlock();
     } else {
@@ -26,71 +56,85 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter") {
-      handleSubmit();
-    } else if (event.key === "Escape") {
+    if (event.key === "Escape") {
       setPassword("");
       setErrorMessage("");
     }
   };
 
   return (
-    <Box
-      sx={{
-        width: "100vw",
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        // backgroundColor: "#1e3c72",
-        // background: "linear-gradient(to bottom, #1e3c72, #2a5298)",
-      }}
-    >
-      <Typography variant="h5" sx={{ textAlign: "center" }}>
-        Customize a virtual portfolio with potential fractional shares and find
-        ETFs that closely match your investment goals.
-      </Typography>
-      <Typography
-        mt={2}
-        variant="h6"
-        sx={{ color: "white", marginBottom: 4, textAlign: "center" }}
-      >
-        {LOCK_MESSAGE}
-      </Typography>
-      <TextField
-        autoComplete="off"
-        type="password"
-        variant="outlined"
-        placeholder="Enter Password"
-        value={password}
-        onChange={handlePasswordChange}
-        onKeyDown={handleKeyDown}
-        sx={{ marginBottom: 2, width: "250px" }}
-      />
-      {errorMessage && (
-        <Typography
-          variant="body1"
-          sx={{
-            color: "white",
-            backgroundColor: "red",
-            padding: "8px",
-            borderRadius: "4px",
-            marginBottom: 2,
-            textAlign: "center",
+    <FullViewport>
+      <Full>
+        <img
+          src={lockScreenImg}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
           }}
-        >
-          {errorMessage}
-        </Typography>
-      )}
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleSubmit}
-        sx={{ width: "250px" }}
-      >
-        Submit
-      </Button>
-    </Box>
+        />
+      </Full>
+      <Cover style={{ backgroundColor: "rgba(0,0,0,.85)" }}>
+        <Layout>
+          <LogoNavButton />
+          <Content>
+            <Center>
+              <Padding>
+                <Typography variant="h5" sx={{ textAlign: "center" }}>
+                  Customize a virtual portfolio with potential fractional shares
+                  and find ETFs that closely match your investment goals.
+                </Typography>
+
+                <Typography
+                  mt={2}
+                  variant="h6"
+                  sx={{ color: "white", marginBottom: 4, textAlign: "center" }}
+                >
+                  {LOCK_MESSAGE}
+                </Typography>
+              </Padding>
+              <form onSubmit={handleSubmit}>
+                <FormControl
+                  sx={{ marginBottom: 2, width: "250px" }}
+                  variant="outlined"
+                >
+                  <TextField
+                    autoComplete="off"
+                    type="password"
+                    variant="outlined"
+                    placeholder="Enter Password"
+                    value={password}
+                    onChange={handlePasswordChange}
+                    onKeyDown={handleKeyDown}
+                    sx={{ backgroundColor: "rgba(0,0,0,.5)" }}
+                  />
+                  {errorMessage && (
+                    <FormHelperText error>{errorMessage}</FormHelperText>
+                  )}
+                </FormControl>
+                <div>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    sx={{ width: "250px" }}
+                  >
+                    Submit
+                  </Button>
+                </div>
+              </form>
+            </Center>
+          </Content>
+          <Footer>
+            <Typography variant="body2" sx={{ textAlign: "center" }}>
+              Build time: {formattedBuildTime}
+            </Typography>
+          </Footer>
+        </Layout>
+      </Cover>
+    </FullViewport>
   );
 }

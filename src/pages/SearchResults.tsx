@@ -16,6 +16,8 @@ import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
+import usePageTitleSetter from "@utils/usePageTitleSetter";
+
 export default function SearchResults() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -66,15 +68,26 @@ export default function SearchResults() {
     [searchResults]
   );
 
-  if (!searchQuery) {
-    return <div>No search query...</div>;
-  }
+  usePageTitleSetter(searchQuery ? `Search results for: ${searchQuery}` : null);
+
+  // Reset the scrollbar position on search query updates
+  const scrollableKey = useMemo(
+    () => JSON.stringify({ searchQuery, onlyExactMatches }),
+    [searchQuery, onlyExactMatches]
+  );
 
   if (!searchResultSymbols.length) {
     return (
       <Center>
         <Typography variant="h6" fontWeight="bold">
-          No search results for &quot;{searchQuery}&quot;
+          {!searchQuery.length ? (
+            <>No search query defined.</>
+          ) : (
+            <>
+              No {onlyExactMatches && "exact"} search results for &quot;
+              {searchQuery}&quot;
+            </>
+          )}
         </Typography>
 
         <Box mt={4}>
@@ -88,7 +101,7 @@ export default function SearchResults() {
           <SearchModalButton />
         </Box>
 
-        {Boolean(onlyExactMatches) && (
+        {onlyExactMatches && (
           <Box mt={4}>
             <Typography
               variant="body1"
@@ -106,7 +119,7 @@ export default function SearchResults() {
   }
 
   return (
-    <Scrollable>
+    <Scrollable key={scrollableKey}>
       <Padding>
         <Box
           display="flex"

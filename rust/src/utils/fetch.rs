@@ -48,7 +48,7 @@ pub fn get_cache_size() -> usize {
 }
 
 struct CachedFuture {
-    future: Shared<LocalBoxFuture<'static, Result<String, JsValue>>>,
+    future: Shared<LocalBoxFuture<'static, Result<Vec<u8>, JsValue>>>, // Adjusted to Vec<u8>
     added_at: f64,
     last_accessed: RefCell<f64>,
     access_count: RefCell<u32>,
@@ -62,7 +62,6 @@ struct CacheEntry {
     last_accessed: f64, // Last accessed time in milliseconds since UNIX_EPOCH
     access_count: u32,  // Number of times accessed
 }
-
 
 pub fn get_cache_details() -> JsValue {
     CACHE.with(|cache| {
@@ -101,7 +100,6 @@ pub fn clear_cache() {
     });
 }
 
-
 type Aes256Cbc = Cbc<Aes256, Pkcs7>;
 
 // Global cache with futures for pending requests
@@ -109,9 +107,7 @@ thread_local! {
     static CACHE: RefCell<HashMap<String, CachedFuture>> = RefCell::new(HashMap::new());
 }
 
-
-// TODO: Compress xhr_fetch directly to save additional memory?
-pub async fn fetch_and_decompress_gz<T>(url: T) -> Result<String, JsValue>
+pub async fn fetch_and_decompress_gz<T>(url: T) -> Result<Vec<u8>, JsValue>
 where
     T: AsRef<str> + Clone,
 {
@@ -135,7 +131,6 @@ where
             future
         }
     });
-    
 
     match shared_future.await {
         Ok(result) => Ok(result),
@@ -148,7 +143,8 @@ where
     }
 }
 
-pub async fn fetch_and_decompress_gz_non_cached<T>(url: T) -> Result<String, JsValue>
+
+pub async fn fetch_and_decompress_gz_non_cached<T>(url: T) -> Result<Vec<u8>, JsValue>
 where
     T: AsRef<str> + Clone,
 {
@@ -215,7 +211,7 @@ async fn xhr_fetch(url: String) -> Result<Vec<u8>, JsValue> {
     Ok(buffer.to_vec())
 }
 
-async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue> {
+async fn fetch_and_decompress_gz_internal(url: String) -> Result<Vec<u8>, JsValue> {
     let encrypted_data: Vec<u8> = xhr_fetch(url).await?;
 
     let salt: &[u8] = &encrypted_data[0..16];
@@ -235,12 +231,12 @@ async fn fetch_and_decompress_gz_internal(url: String) -> Result<String, JsValue
         JsValue::from_str(&format!("Failed to decrypt data: {}", e))
     })?;
 
-    let mut decoder: GzDecoder<&[u8]> = GzDecoder::new(&decrypted_data[..]);
-    let mut csv_data: String = String::new();
-    decoder.read_to_string(&mut csv_data).map_err(|err| {
-        web_sys::console::debug_1(&format!("Failed to decompress CSV: {}", err).into());
-        JsValue::from_str(&format!("Failed to decompress CSV: {}", err))
+    let mut decoder = GzDecoder::new(&decrypted_data[..]);
+    let mut decompressed_data = Vec::new();
+    decoder.read_to_end(&mut decompressed_data).map_err(|err| {
+        web_sys::console::debug_1(&format!("Failed to decompress data: {}", err).into());
+        JsValue::from_str(&format!("Failed to decompress data: {}", err))
     })?;
 
-    Ok(csv_data)
+    Ok(decompressed_data)
 }
