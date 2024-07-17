@@ -1,3 +1,5 @@
+# ETF Matcher
+
 ## Requirements
 
   - A Unix terminal shell (such as Bash or Zsh)
@@ -32,3 +34,7 @@ $ make build-prod
 ```
 
 Built artifacts will be written to `{project_root}/dist`.
+
+## License
+
+[MIT License](LICENSE) (c) 2024 Jeremy Harris.
