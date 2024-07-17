@@ -12,6 +12,14 @@ RUN apt-get update && \
 # Create a new directory for the project
 WORKDIR /app
 
+COPY docker_build_helpers/ ./docker_build_helpers/
+
+# Make all copied scripts executable and create global symlinks (within container context)
+RUN for script in /app/docker_build_helpers/*.sh; do \
+        chmod +x "$script"; \
+        ln -s "$script" /usr/local/bin/$(basename "$script" .sh); \
+    done
+
 # ----- BEGIN DATAPACK_EXTRACT BUILD STAGE
 
 # Backend build stage
@@ -20,14 +28,8 @@ FROM rust-base as datapack-extract
 # Copy data files
 COPY data/ /app/data/
 
-# Copy the extraction script
-COPY docker_build_helpers/extract_and_clean_datapacks.sh /usr/local/bin/extract_and_clean_datapacks.sh
-
-# Make sure the script is executable
-RUN chmod +x /usr/local/bin/extract_and_clean_datapacks.sh
-
 # Run the extraction script
-RUN /usr/local/bin/extract_and_clean_datapacks.sh
+RUN import_datapacks
 
 # ----- END DATAPACK_EXTRACT BUILD STAGE
 
@@ -43,13 +45,12 @@ RUN cargo install wasm-pack
 
 # Copy only Rust frontend files
 COPY rust/ ./rust/
-COPY docker_build_helpers/ ./docker_build_helpers/
 
 # Set the ENCRYPTED_PASSWORD environment variable for build.rs
 ENV ENCRYPTED_PASSWORD your_encrypted_password
 
 # Make build script executable and run it
-RUN chmod +x ./docker_build_helpers/build_rust_frontend.sh && ./docker_build_helpers/build_rust_frontend.sh
+RUN build_rust_frontend
 
 # ----- END FRONTEND BUILD STAGE
 
@@ -92,5 +93,5 @@ EXPOSE 8000
 # Use tini as the entry point (trap SIGINT [Ctrl-C] and exit the Vite server)
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
-CMD ["npm", "run", "serve"]
-
+# TODO: Uncomment if not mounting locally
+# CMD ["npm", "run", "build"]

@@ -16,6 +16,8 @@ for zip_file in /app/data/*.zip; do
     # Move the contents of each extracted directory to the final directory
     for dir in /tmp/unzip_temp/*; do
         if [ -d "$dir" ]; then
+            # Remove unnecessary files
+            find "$dir" -name ".__MACOSX" -exec rm -rf {} + -o -name "._.DS_Store" -exec rm -f {} +
             cp -r "$dir"/* /build_artifacts/public/data/
         else
             mv "$dir" /build_artifacts/public/data/
@@ -25,5 +27,16 @@ for zip_file in /app/data/*.zip; do
     rm -rf /tmp/unzip_temp/*
 done
 
-# Remove unnecessary files
-find /build_artifacts/public/data -name "__MACOSX" -exec rm -rf {} +
+# Remove any remaining empty directories in the data directory
+find /build_artifacts/public/data -type d -empty -exec rmdir {} +
+
+# --- Move to /app/public/data
+
+if [ -d /app/public/data ]; then
+    rm -rf /app/public/data
+fi
+
+mkdir -p /app/public
+
+# Copy (instead of move) so that volume mounts can still obtain the artifacts
+cp -r /build_artifacts/public/data /app/public/

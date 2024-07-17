@@ -17,20 +17,20 @@ You can skip using Docker altogether if that's your thing, but it will be harder
 ## Development
 
 ```bash
-$ make build-dev
-$ make start-dev
+make build-dev
+make start-dev
 ```
 
 Other development commands are available by running:
 
 ```bash
-$ make help # Or just `make`
+make help # Or just `make`
 ```
 
 ## Deployment
 
 ```bash
-$ make build-prod
+make build-prod
 ```
 
 Built artifacts will be written to `{project_root}/dist`.
