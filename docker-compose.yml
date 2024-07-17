@@ -1,6 +1,5 @@
 x-variables:
-  # TODO: Rename to etf-matcher
-  image-name: &image-name rust-dev-app:latest
+  image-name: &image-name etf-matcher:latest
 
 x-base-service: &base-service
   image: *image-name
