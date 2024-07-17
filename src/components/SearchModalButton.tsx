@@ -48,6 +48,7 @@ export default function SearchModalButton({
     pageSize,
     // remaining,
     resetSearch,
+    totalPages,
   } = useSearch({
     initialPageSize: 10,
   });
@@ -291,7 +292,7 @@ export default function SearchModalButton({
           {totalSearchResults > pageSize && (
             <div style={{ marginTop: 10, textAlign: "center" }}>
               <Pagination
-                count={Math.ceil(totalSearchResults / pageSize)}
+                count={totalPages}
                 page={page}
                 onChange={(event, nextPage) => setPage(nextPage)}
                 showFirstButton

@@ -6,6 +6,7 @@ import {
   FormControlLabel,
   Typography,
   Button,
+  Pagination,
 } from "@mui/material";
 
 import SearchModalButton from "@components/SearchModalButton";
@@ -29,6 +30,10 @@ export default function SearchResults() {
     setOnlyExactMatches: _setOnlyExactMatches,
     searchResults,
     totalSearchResults,
+    pageSize,
+    page,
+    setPage,
+    totalPages,
   } = useSearch();
 
   useEffect(() => {
@@ -72,8 +77,8 @@ export default function SearchResults() {
 
   // Reset the scrollbar position on search query updates
   const scrollableKey = useMemo(
-    () => JSON.stringify({ searchQuery, onlyExactMatches }),
-    [searchQuery, onlyExactMatches]
+    () => JSON.stringify({ searchQuery, onlyExactMatches, page }),
+    [searchQuery, onlyExactMatches, page]
   );
 
   if (!searchResultSymbols.length) {
@@ -140,7 +145,31 @@ export default function SearchResults() {
         {totalSearchResults} search result{totalSearchResults !== 1 ? "s" : ""}{" "}
         for &quot;{searchQuery}&quot;
       </Padding>
+      {totalSearchResults > pageSize && (
+        <Box sx={{ textAlign: "center" }}>
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={(event, nextPage) => setPage(nextPage)}
+            showFirstButton
+            showLastButton
+            sx={{ display: "inline-block" }}
+          />
+        </Box>
+      )}
       <SymbolDetailList tickerSymbols={searchResultSymbols} />
+      {totalSearchResults > pageSize && (
+        <Box sx={{ textAlign: "center" }}>
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={(event, nextPage) => setPage(nextPage)}
+            showFirstButton
+            showLastButton
+            sx={{ display: "inline-block" }}
+          />
+        </Box>
+      )}
     </Scrollable>
   );
 }
