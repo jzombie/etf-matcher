@@ -20,14 +20,14 @@ FROM rust-base as datapack-extract
 # Copy data files
 COPY data/ /app/data/
 
-# Create directory for extracted files
-RUN mkdir -p /build_artifacts/public/data
+# Copy the extraction script
+COPY docker_build_helpers/extract_and_clean_datapacks.sh /usr/local/bin/extract_and_clean_datapacks.sh
 
-# Extract all zip files from /app/data to /build_artifacts/public/data
-RUN find /app/data -name "*.zip" -exec unzip -o {} -d /build_artifacts/public/data/ \;
+# Make sure the script is executable
+RUN chmod +x /usr/local/bin/extract_and_clean_datapacks.sh
 
-# TODO: Ideally we should try to extract data from a file from each zip file to ensure
-# the local .env is set up correct
+# Run the extraction script
+RUN /usr/local/bin/extract_and_clean_datapacks.sh
 
 # ----- END DATAPACK_EXTRACT BUILD STAGE
 
