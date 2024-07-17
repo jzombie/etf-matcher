@@ -139,7 +139,7 @@ export default function SymbolDetail({
                   {symbolDetail?.industry || "N/A"}
                   <>
                     {etfAggregateDetail?.top_market_value_industry_name &&
-                      symbolDetail?.sector !==
+                      symbolDetail?.industry !==
                         etfAggregateDetail?.top_market_value_industry_name && (
                         <>
                           {" "}
