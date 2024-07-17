@@ -184,6 +184,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   //   |___  Show errors in UI
   private async _callWorkerFunction<T>(
     functionName: string,
+    // TODO: Make this an array, so other options can be configured
     ...args: unknown[]
   ): Promise<T> {
     let resp: T;
