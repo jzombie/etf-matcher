@@ -13,6 +13,7 @@ use crate::data_models::{
     SymbolSearch,
     SymbolDetail,
     SymbolETFHolder,
+    ETFAggregateDetail,
     DataURL,
 };
 
@@ -55,6 +56,12 @@ pub async fn get_symbol_detail(symbol: &str) -> Result<JsValue, JsValue> {
 pub async fn get_symbol_etf_holders(symbol: &str, page: usize, page_size: usize) -> Result<JsValue, JsValue> {
     let etf_symbols: PaginatedResults<String> = SymbolETFHolder::get_symbol_etf_holders(symbol, page, page_size).await?;
     to_value(&etf_symbols).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to convert Vec<String> to JsValue: {}", err)))
+}
+
+#[wasm_bindgen]
+pub async fn get_etf_aggregate_detail(etf_symbol: &str) -> Result<JsValue, JsValue> {
+    let etf_detail: ETFAggregateDetail = ETFAggregateDetail::get_etf_aggregate_detail(etf_symbol).await?;
+    to_value(&etf_detail).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to convert ETFAggregateDetail to JsValue: {}", err)))
 }
 
 #[wasm_bindgen]

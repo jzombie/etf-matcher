@@ -4,6 +4,7 @@ use crate::utils::shard::query_shard_for_symbol;
 use crate::utils::uncompress_logo_filename;
 use crate::data_models::DataURL;
 
+// TODO: Move to `utils`
 // Custom deserialization function to convert Option<i32> to Option<bool>
 fn from_numeric_to_option_bool<'de, D>(deserializer: D) -> Result<Option<bool>, D::Error>
 where

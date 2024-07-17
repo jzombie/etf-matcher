@@ -4,6 +4,7 @@ export default callWorkerFunction;
 import type {
   RustServiceSearchResult,
   RustServiceSymbolDetail,
+  RustServiceETFAggregateDetail,
   RustServiceSearchResultsWithTotalCount,
   RustServiceETFHoldersWithTotalCount,
   RustServiceCacheDetail,
@@ -11,6 +12,7 @@ import type {
 export type {
   RustServiceSearchResult,
   RustServiceSymbolDetail,
+  RustServiceETFAggregateDetail,
   RustServiceSearchResultsWithTotalCount,
   RustServiceETFHoldersWithTotalCount,
   RustServiceCacheDetail,

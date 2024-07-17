@@ -5,6 +5,7 @@ import type {
   RustServiceSearchResultsWithTotalCount,
   RustServiceETFHoldersWithTotalCount,
   RustServiceCacheDetail,
+  RustServiceETFAggregateDetail,
 } from "@utils/callWorkerFunction";
 import detectHTMLJSVersionSync from "@utils/PROTO_detectHTMLJSVersionSync";
 
@@ -269,6 +270,15 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return this._callWorkerFunction<RustServiceSymbolDetail>(
       "get_symbol_detail",
       symbol
+    );
+  }
+
+  async fetchETFAggregateDetail(
+    etfSymbol: string
+  ): Promise<RustServiceETFAggregateDetail> {
+    return this._callWorkerFunction<RustServiceETFAggregateDetail>(
+      "get_etf_aggregate_detail",
+      etfSymbol
     );
   }
 

@@ -67,6 +67,19 @@ export default function SymbolDetail({
     }
   }, [tickerSymbol]);
 
+  // TODO: Handle accordingly
+  useEffect(() => {
+    if (symbolDetail?.is_etf) {
+      store
+        .fetchETFAggregateDetail(symbolDetail.symbol)
+        .then((etfAggregateDetail) => {
+          console.debug({
+            etfAggregateDetail,
+          });
+        });
+    }
+  }, [symbolDetail]);
+
   return (
     <SymbolContainer
       style={{ marginBottom: 12 }}

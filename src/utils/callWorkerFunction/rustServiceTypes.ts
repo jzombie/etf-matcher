@@ -20,6 +20,16 @@ export type RustServiceSymbolDetail = {
   logo_filename?: string;
 };
 
+export type RustServiceETFAggregateDetail = {
+  etf_symbol: string;
+  top_market_value_sector_name: string;
+  top_market_value_industry_name: string;
+  aggregate_market_value: number;
+  top_pct_sector_name: string;
+  top_pct_industry_name: string;
+  pct_market_weight: number;
+};
+
 export type RustServiceSearchResultsWithTotalCount = {
   total_count: number;
   results: RustServiceSearchResult[];
