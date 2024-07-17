@@ -21,13 +21,13 @@ FROM rust-base as datapack-extract
 COPY data/ /app/data/
 
 # Copy the extraction script
-COPY docker_build_helpers/extract_and_clean_datapacks.sh /usr/local/bin/extract_and_clean_datapacks.sh
+COPY docker_build_helpers/import_datapacks.sh /usr/local/bin/import_datapacks.sh
 
 # Make sure the script is executable
-RUN chmod +x /usr/local/bin/extract_and_clean_datapacks.sh
+RUN chmod +x /usr/local/bin/import_datapacks.sh
 
 # Run the extraction script
-RUN /usr/local/bin/extract_and_clean_datapacks.sh
+RUN /usr/local/bin/import_datapacks.sh
 
 # ----- END DATAPACK_EXTRACT BUILD STAGE
 
