@@ -64,6 +64,10 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
+          src: "favicon.ico",
+          dest: path.resolve(DESTINATION_DIR),
+        },
+        {
           src: "CNAME",
           dest: path.resolve(DESTINATION_DIR),
         },
