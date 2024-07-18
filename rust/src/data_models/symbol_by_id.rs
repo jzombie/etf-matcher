@@ -13,7 +13,7 @@ pub struct SymbolById {
 }
 
 impl SymbolById {
-    pub async fn get_symbol_by_id(ticker_id: i32) -> Result<SymbolById, JsValue> {
+    pub async fn get_symbol_by_id(ticker_id: i32) -> Result<String, JsValue> {
         let url: &str = &DataURL::SymbolByIdShardIndex.value();
 
         // Fetch and decompress the CSV data
@@ -28,6 +28,7 @@ impl SymbolById {
         // Find the matching record
         data.into_iter()
             .find(|symbol| symbol.ticker_id == ticker_id)
+            .map(|symbol| symbol.symbol)
             .ok_or_else(|| JsValue::from_str("Symbol ID or Exchange ID not found"))
     }
 }
