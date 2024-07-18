@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import SymbolContainer from "./SymbolContainer";
+import SymbolContainer from "../SymbolContainer";
 import { Button, Typography, Grid, Box } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import Padding from "@layoutKit/Padding";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import type {
@@ -12,7 +11,9 @@ import type {
 import { MiniChart } from "react-ts-tradingview-widgets";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 import { styled } from "@mui/system";
-import EncodedImage from "./EncodedImage";
+import EncodedImage from "../EncodedImage";
+
+import ETFHolder from "./SymbolDetail.ETFHolder";
 
 export type SymbolDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerSymbol: string;
@@ -49,7 +50,6 @@ export default function SymbolDetail({
   onIntersectionStateChange,
   ...rest
 }: SymbolDetailProps) {
-  const navigate = useNavigate();
   const { symbolBuckets } = useStoreStateReader(["symbolBuckets"]);
   const [symbolDetail, setSymbolDetail] = useState<
     RustServiceSymbolDetail | undefined
@@ -240,14 +240,7 @@ export default function SymbolDetail({
         ))}
       <div>
         {etfHolders?.results?.map((etfHolderSymbol) => (
-          <Button
-            key={etfHolderSymbol}
-            onClick={() =>
-              navigate(`/search?query=${etfHolderSymbol}&exact=true`)
-            }
-          >
-            {etfHolderSymbol}
-          </Button>
+          <ETFHolder key={etfHolderSymbol} etfSymbol={etfHolderSymbol} />
         ))}
       </div>
     </SymbolContainer>
