@@ -12,7 +12,7 @@ use crate::data_models::{
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SymbolSearch {
     pub symbol: String,
-    pub company: Option<String>,
+    pub company_name: Option<String>,
     pub logo_filename: Option<String>,
 }
 
@@ -66,7 +66,7 @@ impl SymbolSearch {
             let query_lower: String = alternative.to_lowercase();
             for result in &results {
                 let symbol_lower = result.symbol.to_lowercase();
-                let company_lower = result.company.as_deref().map_or("".to_string(), |company| company.to_lowercase());
+                let company_lower = result.company_name.as_deref().map_or("".to_string(), |company_name| company_name.to_lowercase());
 
                 let symbol_match = symbol_lower == query_lower;
                 let company_match = company_lower == query_lower;

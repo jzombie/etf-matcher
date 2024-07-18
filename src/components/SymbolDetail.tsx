@@ -118,10 +118,10 @@ export default function SymbolDetail({
                   Sector
                 </Typography>
                 <Typography variant="body2">
-                  {symbolDetail?.sector || "N/A"}
+                  {symbolDetail?.sector_name || "N/A"}
                   <>
                     {etfAggregateDetail?.top_market_value_sector_name &&
-                      symbolDetail?.sector !==
+                      symbolDetail?.sector_name !==
                         etfAggregateDetail?.top_market_value_sector_name && (
                         <>
                           {" "}
@@ -136,10 +136,10 @@ export default function SymbolDetail({
                   Industry
                 </Typography>
                 <Typography variant="body2">
-                  {symbolDetail?.industry || "N/A"}
+                  {symbolDetail?.industry_name || "N/A"}
                   <>
                     {etfAggregateDetail?.top_market_value_industry_name &&
-                      symbolDetail?.industry !==
+                      symbolDetail?.industry_name !==
                         etfAggregateDetail?.top_market_value_industry_name && (
                         <>
                           {" "}

@@ -13,8 +13,8 @@ export type RustServiceSymbolDetail = {
   company_name: string;
   cik: string;
   country_code: string;
-  industry: string;
-  sector: string;
+  industry_name: string;
+  sector_name: string;
   is_etf: boolean;
   score_avg_dca: number;
   logo_filename?: string;

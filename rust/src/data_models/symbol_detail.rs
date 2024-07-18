@@ -16,12 +16,13 @@ where
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SymbolDetail {
+    pub ticker_id: i32,
     pub symbol: String,
     pub company_name: String,
     pub cik: Option<String>,
     pub country_code: Option<String>,
-    pub industry: Option<String>,
-    pub sector: Option<String>,
+    pub industry_name: Option<String>,
+    pub sector_name: Option<String>,
     #[serde(deserialize_with = "from_numeric_to_option_bool")]
     pub is_etf: Option<bool>,
     pub score_avg_dca: Option<f32>,
