@@ -41,6 +41,8 @@ where
     Ok(entries)
 }
 
+// TODO: Add `query_shard_for_ticker_id` and deprecate `query_shard_for_symbol` and related tooling
+
 pub async fn query_shard_for_symbol<T, F>(
     shard_index_url: &str,
     symbol: &str,

@@ -308,11 +308,17 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return this._callWorkerFunction<string>("get_image_base64", filename);
   }
 
+  PROTO_fetchSymbolById(tickerId: number) {
+    this._callWorkerFunction("get_symbol_by_id", tickerId).then(console.debug);
+  }
+
   PROTO_removeCacheEntry(key: string) {
+    // TODO: Add rapid UI update
     this._callWorkerFunction("remove_cache_entry", key);
   }
 
   PROTO_clearCache() {
+    // TODO: Add rapid UI update
     this._callWorkerFunction("clear_cache");
   }
 

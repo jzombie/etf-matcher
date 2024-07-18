@@ -8,13 +8,14 @@ mod utils;
 mod data_models;
 
 use crate::data_models::{
+    DataURL,
     DataBuildInfo,
+    SymbolById,
     PaginatedResults,
     SymbolSearch,
     SymbolDetail,
     SymbolETFHolder,
     ETFAggregateDetail,
-    DataURL,
 };
 
 use crate::data_models::image::get_image_base64 as lib_get_image_base64;
@@ -38,6 +39,12 @@ pub fn main() -> Result<(), JsValue> {
 pub async fn get_data_build_info() -> Result<JsValue, JsValue> {
     let data: DataBuildInfo = DataBuildInfo::get_data_build_info().await?;
     to_value(&data).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to convert DataBuildInfo to JsValue: {}", err)))
+}
+
+#[wasm_bindgen]
+pub async fn get_symbol_by_id(ticker_id: i32) -> Result<JsValue, JsValue> {
+    let data: SymbolById = SymbolById::get_symbol_by_id(ticker_id).await?;
+    to_value(&data).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to convert SymbolById to JsValue: {}", err)))
 }
 
 #[wasm_bindgen]

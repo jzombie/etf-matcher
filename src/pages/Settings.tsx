@@ -56,6 +56,13 @@ export default function Settings() {
   return (
     <Scrollable>
       <Padding>
+        <h2>Proto</h2>
+
+        <Button onClick={() => store.PROTO_fetchSymbolById(2221)}>
+          PROTO_fetchSymbolById
+        </Button>
+      </Padding>
+      <Padding>
         <h2>User Data</h2>
 
         <Button variant="outlined">TODO: Implement::Clear all user data</Button>
