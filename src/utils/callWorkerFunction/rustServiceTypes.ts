@@ -3,7 +3,7 @@
 // "Level 1"
 export type RustServiceSearchResult = {
   symbol: string;
-  company: string;
+  company_name: string;
   logo_filename?: string;
 };
 

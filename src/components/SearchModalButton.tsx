@@ -272,7 +272,7 @@ export default function SearchModalButton({
                       primary={searchResult.symbol}
                       secondary={
                         <Typography variant="body2" style={{ opacity: 0.5 }}>
-                          {searchResult.company}
+                          {searchResult.company_name}
                         </Typography>
                       }
                     />
