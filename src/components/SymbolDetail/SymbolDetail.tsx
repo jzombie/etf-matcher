@@ -80,6 +80,9 @@ export default function SymbolDetail({
 
   const navigate = useNavigate();
 
+  // TODO: This needs to be unit tested and made to work explicity for TradingView
+  const symbolWithExchange = (`${symbolDetail?.exchange_short_name ? `${symbolDetail?.exchange_short_name}:` : ''}${symbolDetail?.symbol.replaceAll('-', '.')}`);
+
   return (
     <SymbolContainer
       style={{ marginBottom: 12 }}
@@ -230,7 +233,7 @@ export default function SymbolDetail({
 
       <div style={{ height: 200 }}>
         <MiniChart
-          symbol={tickerSymbol}
+          symbol={symbolWithExchange}
           colorTheme="dark"
           width="100%"
           height="100%"
