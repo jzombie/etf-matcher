@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   IconButton,
   Drawer,
@@ -30,15 +30,47 @@ import LogoNavButton from "@components/LogoNavButton";
 
 import store from "@src/store";
 
+interface SlidingBackgroundProps {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  borderRadius: string;
+  visible: boolean;
+}
+
+const SlidingBackground = styled(Box, {
+  shouldForwardProp: (prop) =>
+    prop !== "left" &&
+    prop !== "top" &&
+    prop !== "width" &&
+    prop !== "height" &&
+    prop !== "borderRadius" &&
+    prop !== "visible",
+})<SlidingBackgroundProps>(
+  ({ theme, left, top, width, height, borderRadius, visible }) => ({
+    position: "absolute",
+    top,
+    left,
+    width,
+    height,
+    backgroundColor: visible ? theme.palette.primary.main : "transparent",
+    // TODO: Disable transition if actively resizing window
+    transition:
+      "left 0.3s ease, width 0.3s ease, top 0.3s ease, background-color 0.3s ease",
+    zIndex: 0,
+    borderRadius,
+  })
+);
+
 export default function HeaderMenu() {
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
-
   const isDesktop = useMediaQuery("@media (min-width:800px)");
 
   const toggleDrawer = () => {
-    setDrawerOpen(!drawerOpen);
+    setDrawerOpen((prev) => !prev);
   };
 
   const menuItems = [
@@ -71,6 +103,54 @@ export default function HeaderMenu() {
 
   const shouldHighlightSearchButton = !selectedKey;
 
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [backgroundProps, setBackgroundProps] = useState({
+    left: 0,
+    top: 0,
+    width: 0,
+    height: 0,
+    borderRadius: "0px",
+    visible: false,
+  });
+
+  useEffect(() => {
+    const updateBackgroundPosition = () => {
+      if (isDesktop && menuRef.current && selectedKey) {
+        const selectedItem = menuRef.current.querySelector(
+          `.active`
+        ) as HTMLElement;
+        if (selectedItem) {
+          const {
+            offsetLeft: left,
+            offsetTop: top,
+            offsetWidth: width,
+            offsetHeight: height,
+          } = selectedItem;
+          const borderRadius =
+            window.getComputedStyle(selectedItem).borderRadius;
+          setBackgroundProps({
+            left,
+            top,
+            width,
+            height,
+            borderRadius,
+            visible: true,
+          });
+        }
+      } else {
+        setBackgroundProps((prev) => ({ ...prev, visible: false }));
+      }
+    };
+
+    updateBackgroundPosition(); // Update position on mount
+
+    window.addEventListener("resize", updateBackgroundPosition);
+
+    return () => {
+      window.removeEventListener("resize", updateBackgroundPosition);
+    };
+  }, [isDesktop, selectedKey]);
+
   const DesktopStyledLogoBranding = styled(Typography)(({ theme }) => ({
     fontFamily: "'Roboto', sans-serif",
     fontWeight: 700,
@@ -92,13 +172,23 @@ export default function HeaderMenu() {
       <Toolbar>
         {isDesktop ? (
           <Box
+            ref={menuRef}
             sx={{
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               flexGrow: 1,
+              position: "relative",
             }}
           >
+            <SlidingBackground
+              left={backgroundProps.left}
+              top={backgroundProps.top}
+              width={backgroundProps.width}
+              height={backgroundProps.height}
+              borderRadius={backgroundProps.borderRadius}
+              visible={backgroundProps.visible}
+            />
             <DesktopStyledLogoBranding>
               <LogoNavButton />
             </DesktopStyledLogoBranding>
@@ -112,10 +202,8 @@ export default function HeaderMenu() {
                 })}
                 sx={{
                   color: item.key === selectedKey ? "white" : "inherit",
-                  backgroundColor:
-                    item.key === selectedKey
-                      ? theme.palette.primary.main
-                      : "transparent",
+                  position: "relative",
+                  zIndex: 1,
                   textDecoration: "none",
                   display: "flex",
                   alignItems: "center",
@@ -203,7 +291,10 @@ export default function HeaderMenu() {
                 <ListItem
                   sx={{
                     color: "white",
-                    backgroundColor: "transparent",
+
+                    backgroundColor: shouldHighlightSearchButton
+                      ? theme.palette.primary.main
+                      : "transparent",
                     "&:hover": {
                       backgroundColor: theme.palette.action.hover,
                     },
