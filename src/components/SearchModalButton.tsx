@@ -266,6 +266,9 @@ export default function SearchModalButton({
                   >
                     <ListItemIcon>
                       <EncodedImage
+                        // Note: Key is used here to fix issue where logo could
+                        // be attached to wrong symbol
+                        key={searchResult.logo_filename}
                         // TODO: Include support for fallback image
                         encSrc={searchResult.logo_filename}
                         style={{ width: 50, height: 50 }}
