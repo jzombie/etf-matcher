@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { PREVIEW_UNLOCK } from "@src/store";
 
-import lockScreenImg from "@assets/lock.jpeg";
+import lockScreenImg from "@assets/lock.jpg";
 
 import FullViewport from "@layoutKit/FullViewport";
 import Full from "@layoutKit/Full";
