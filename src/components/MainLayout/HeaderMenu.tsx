@@ -37,6 +37,7 @@ interface SlidingBackgroundProps {
   height: number;
   borderRadius: string;
   visible: boolean;
+  transitionEnabled: boolean;
 }
 
 const SlidingBackground = styled(Box, {
@@ -46,18 +47,28 @@ const SlidingBackground = styled(Box, {
     prop !== "width" &&
     prop !== "height" &&
     prop !== "borderRadius" &&
-    prop !== "visible",
+    prop !== "visible" &&
+    prop !== "transitionEnabled",
 })<SlidingBackgroundProps>(
-  ({ theme, left, top, width, height, borderRadius, visible }) => ({
+  ({
+    theme,
+    left,
+    top,
+    width,
+    height,
+    borderRadius,
+    visible,
+    transitionEnabled,
+  }) => ({
     position: "absolute",
     top,
     left,
     width,
     height,
     backgroundColor: visible ? theme.palette.primary.main : "transparent",
-    // TODO: Disable transition if actively resizing window
-    transition:
-      "left 0.3s ease, width 0.3s ease, top 0.3s ease, background-color 0.3s ease",
+    transition: transitionEnabled
+      ? "left 0.3s ease, width 0.3s ease, top 0.3s ease, background-color 0.3s ease"
+      : "none",
     zIndex: 0,
     borderRadius,
   })
@@ -68,6 +79,7 @@ export default function HeaderMenu() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
   const isDesktop = useMediaQuery("@media (min-width:800px)");
+  const [isResizing, setIsResizing] = useState(false);
 
   const toggleDrawer = () => {
     setDrawerOpen((prev) => !prev);
@@ -111,7 +123,27 @@ export default function HeaderMenu() {
     height: 0,
     borderRadius: "0px",
     visible: false,
+    transitionEnabled: true,
   });
+
+  useEffect(() => {
+    let resizeTimer: NodeJS.Timeout;
+
+    const handleResize = () => {
+      setIsResizing(true);
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        setIsResizing(false);
+      }, 200);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      clearTimeout(resizeTimer);
+    };
+  }, []);
 
   useEffect(() => {
     const updateBackgroundPosition = () => {
@@ -135,10 +167,15 @@ export default function HeaderMenu() {
             height,
             borderRadius,
             visible: true,
+            transitionEnabled: !isResizing,
           });
         }
       } else {
-        setBackgroundProps((prev) => ({ ...prev, visible: false }));
+        setBackgroundProps((prev) => ({
+          ...prev,
+          visible: false,
+          transitionEnabled: true,
+        }));
       }
     };
 
@@ -149,7 +186,7 @@ export default function HeaderMenu() {
     return () => {
       window.removeEventListener("resize", updateBackgroundPosition);
     };
-  }, [isDesktop, selectedKey]);
+  }, [isDesktop, selectedKey, isResizing]);
 
   const DesktopStyledLogoBranding = styled(Typography)(({ theme }) => ({
     fontFamily: "'Roboto', sans-serif",
@@ -188,6 +225,7 @@ export default function HeaderMenu() {
               height={backgroundProps.height}
               borderRadius={backgroundProps.borderRadius}
               visible={backgroundProps.visible}
+              transitionEnabled={backgroundProps.transitionEnabled}
             />
             <DesktopStyledLogoBranding>
               <LogoNavButton />
