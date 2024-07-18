@@ -183,6 +183,10 @@ export default function SearchModalButton({
         Search
       </Button>
       <Dialog
+        // Note: Setting this key fixes an issue where the transparent `presentation`
+        // element would remain in place if the viewport were resized while the modal
+        // was open, preventing further UI interaction.
+        key={isModalOpen ? "open" : "closed"}
         open={isModalOpen}
         onClose={handleCancel}
         PaperProps={{
@@ -262,6 +266,9 @@ export default function SearchModalButton({
                   >
                     <ListItemIcon>
                       <EncodedImage
+                        // Note: Key is used here to fix issue where logo could
+                        // be attached to wrong symbol
+                        key={searchResult.logo_filename}
                         // TODO: Include support for fallback image
                         encSrc={searchResult.logo_filename}
                         style={{ width: 50, height: 50 }}
