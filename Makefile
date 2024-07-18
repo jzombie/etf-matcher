@@ -76,6 +76,11 @@ import-dev:
 	@echo "Importing new datapacks"
 	@docker compose up dev-import
 
+.PHONY: build-rust-dev
+build-rust-dev:
+	@echo "Building Rust frontend"
+	@docker compose up dev-build-rust
+
 .PHONY: test
 test:
 	@echo "Testing..."
