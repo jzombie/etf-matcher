@@ -13,7 +13,7 @@ import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 import { styled } from "@mui/system";
 import EncodedImage from "../EncodedImage";
 
-import ETFHolder from "./SymbolDetail.ETFHolder";
+import ETFHolderList from "./SymbolDetail.ETFHolderList";
 
 export type SymbolDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerSymbol: string;
@@ -238,11 +238,10 @@ export default function SymbolDetail({
             Add {tickerSymbol} to {symbolBucket.name}
           </Button>
         ))}
-      <div>
-        {etfHolders?.results?.map((etfHolderSymbol) => (
-          <ETFHolder key={etfHolderSymbol} etfSymbol={etfHolderSymbol} />
-        ))}
-      </div>
+      {
+        // TODO: Apply pagination to ETF holders
+      }
+      <ETFHolderList etfSymbols={etfHolders?.results} />
     </SymbolContainer>
   );
 }
