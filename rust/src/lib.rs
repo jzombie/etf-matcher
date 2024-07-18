@@ -10,7 +10,9 @@ mod data_models;
 use crate::data_models::{
     DataURL,
     DataBuildInfo,
-    SymbolById,
+    TickerById,
+    SectorById,
+    IndustryById,
     PaginatedResults,
     SymbolSearch,
     SymbolDetail,
@@ -43,14 +45,26 @@ pub async fn get_data_build_info() -> Result<JsValue, JsValue> {
 
 #[wasm_bindgen]
 pub async fn get_symbol_with_id(ticker_id: i32) -> Result<JsValue, JsValue> {
-    let data: String = SymbolById::get_symbol_with_id(ticker_id).await?;
+    let data: String = TickerById::get_symbol_with_id(ticker_id).await?;
     to_value(&data).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to convert String to JsValue: {}", err)))
 }
 
 #[wasm_bindgen]
 pub async fn get_exchange_id_with_ticker_id(ticker_id: i32) -> Result<JsValue, JsValue> {
-    let data: i32 = SymbolById::get_exchange_id_with_ticker_id(ticker_id).await?;
+    let data: i32 = TickerById::get_exchange_id_with_ticker_id(ticker_id).await?;
     to_value(&data).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to convert i32 to JsValue: {}", err)))
+}
+
+#[wasm_bindgen]
+pub async fn get_sector_name_with_id(sector_id: i32) -> Result<JsValue, JsValue> {
+    let data: String = SectorById::get_sector_name_with_id(sector_id).await?;
+    to_value(&data).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to convert String to JsValue: {}", err)))
+}
+
+#[wasm_bindgen]
+pub async fn get_industry_name_with_id(industry_id: i32) -> Result<JsValue, JsValue> {
+    let data: String = IndustryById::get_industry_name_with_id(industry_id).await?;
+    to_value(&data).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to convert String to JsValue: {}", err)))
 }
 
 #[wasm_bindgen]

@@ -308,14 +308,30 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return this._callWorkerFunction<string>("get_image_base64", filename);
   }
 
+  // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchSymbolWithId(tickerId: number) {
     this._callWorkerFunction("get_symbol_with_id", tickerId).then(
       console.debug
     );
   }
 
+  // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchExchangeIdWithTickerId(tickerId: number) {
     this._callWorkerFunction("get_exchange_id_with_ticker_id", tickerId).then(
+      console.debug
+    );
+  }
+
+  // TODO: Remove; just debugging; probably don't need to expose this
+  PROTO_fetchSectorNameWithId(sectorId: number) {
+    this._callWorkerFunction("get_sector_name_with_id", sectorId).then(
+      console.debug
+    );
+  }
+
+  // TODO: Remove; just debugging; probably don't need to expose this
+  PROTO_fetchIndustryNameWithId(industryId: number) {
+    this._callWorkerFunction("get_industry_name_with_id", industryId).then(
       console.debug
     );
   }

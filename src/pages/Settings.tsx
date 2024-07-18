@@ -64,6 +64,12 @@ export default function Settings() {
         <Button onClick={() => store.PROTO_fetchExchangeIdWithTickerId(2221)}>
           PROTO_fetchExchangeIdWithTickerId
         </Button>
+        <Button onClick={() => store.PROTO_fetchSectorNameWithId(14312)}>
+          PROTO_fetchSectorNameWithId
+        </Button>
+        <Button onClick={() => store.PROTO_fetchIndustryNameWithId(14324)}>
+          PROTO_fetchIndustryNameWithId
+        </Button>
       </Padding>
       <Padding>
         <h2>User Data</h2>
