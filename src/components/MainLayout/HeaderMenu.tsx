@@ -67,7 +67,7 @@ const SlidingBackground = styled(Box, {
     height,
     backgroundColor: visible ? theme.palette.primary.main : "transparent",
     transition: transitionEnabled
-      ? "left 0.3s ease, width 0.3s ease, top 0.3s ease, background-color 0.3s ease"
+      ? "left 0.3s ease, width 0.3s ease, top 0.3s ease, background-color 1s ease"
       : "none",
     zIndex: 0,
     borderRadius,
