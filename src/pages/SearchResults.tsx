@@ -36,7 +36,7 @@ export default function SearchResults() {
     page,
     setPage: _setPage,
     totalPages,
-    isFetching,
+    isLoading,
   } = useSearch();
 
   useEffect(() => {
@@ -111,7 +111,7 @@ export default function SearchResults() {
   );
 
   if (!searchResultSymbols.length) {
-    if (isFetching) {
+    if (isLoading) {
       return (
         <Center>
           <CircularProgress />
