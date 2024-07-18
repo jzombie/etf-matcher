@@ -1,6 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import { styled } from "@mui/system";
+
+const nonForwardedProps = [
+  "left",
+  "top",
+  "width",
+  "height",
+  "borderRadius",
+  "visible",
+  "transitionEnabled",
+] as const;
+
+type NonForwardedProp = (typeof nonForwardedProps)[number];
 
 interface StyledSlidingBackgroundProps {
   left: number;
@@ -14,13 +26,7 @@ interface StyledSlidingBackgroundProps {
 
 const StyledSlidingBackground = styled(Box, {
   shouldForwardProp: (prop) =>
-    prop !== "left" &&
-    prop !== "top" &&
-    prop !== "width" &&
-    prop !== "height" &&
-    prop !== "borderRadius" &&
-    prop !== "visible" &&
-    prop !== "transitionEnabled",
+    !nonForwardedProps.includes(prop as NonForwardedProp),
 })<StyledSlidingBackgroundProps>(
   ({
     theme,
@@ -129,15 +135,5 @@ export default function SlidingBackground({
     };
   }, [menuRef, selectedKey, isResizing]);
 
-  return (
-    <StyledSlidingBackground
-      left={backgroundProps.left}
-      top={backgroundProps.top}
-      width={backgroundProps.width}
-      height={backgroundProps.height}
-      borderRadius={backgroundProps.borderRadius}
-      visible={backgroundProps.visible}
-      transitionEnabled={backgroundProps.transitionEnabled}
-    ></StyledSlidingBackground>
-  );
+  return <StyledSlidingBackground {...backgroundProps} />;
 }
