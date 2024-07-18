@@ -14,7 +14,7 @@ pub struct SymbolById {
 
 impl SymbolById {
     pub async fn get_symbol_with_id(ticker_id: i32) -> Result<String, JsValue> {
-        let url: &str = &DataURL::SymbolByIdShardIndex.value();
+        let url: &str = &DataURL::SymbolByIdIndex.value();
 
         // Fetch and decompress the CSV data
         let csv_data = fetch_and_decompress_gz(&url).await?;
@@ -33,7 +33,7 @@ impl SymbolById {
     }
 
     pub async fn get_exchange_id_with_ticker_id(ticker_id: i32) -> Result<i32, JsValue> {
-      let url: &str = &DataURL::SymbolByIdShardIndex.value();
+      let url: &str = &DataURL::SymbolByIdIndex.value();
 
       // Fetch and decompress the CSV data
       let csv_data = fetch_and_decompress_gz(&url).await?;
