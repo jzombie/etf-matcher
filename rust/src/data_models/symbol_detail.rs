@@ -18,6 +18,7 @@ where
 pub struct SymbolDetail {
     pub ticker_id: i32,
     pub symbol: String,
+    pub exchange_short_name: Option<String>,
     pub company_name: String,
     pub cik: Option<String>,
     pub country_code: Option<String>,
