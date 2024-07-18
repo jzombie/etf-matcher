@@ -42,8 +42,12 @@ services:
     entrypoint: ["/usr/bin/tini", "--"]
     command: |
       sh -c '
-      cp -rT /build_artifacts/public/pkg /app/public/pkg &&
-      cp -rT /build_artifacts/public/data /app/public/data &&
+      if [ ! -d "/app/public/pkg" ]; then
+        cp -rT /build_artifacts/public/pkg /app/public/pkg;
+      fi &&
+      if [ ! -d "/app/public/data" ]; then
+        cp -rT /build_artifacts/public/data /app/public/data;
+      fi &&
       npm install &&
       npm run dev
       '
