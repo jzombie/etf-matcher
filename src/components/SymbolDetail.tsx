@@ -182,7 +182,15 @@ export default function SymbolDetail({
                           {etfAggregateDetail?.top_market_value_industry_name}
                         </Typography>
                         <Typography variant="body2">
-                          Value: {etfAggregateDetail?.aggregate_market_value}
+                          {
+                            // TODO: Add currency code here as well
+                            // const formattedNumber = new Intl.NumberFormat('en-US', {
+                            //   style: 'currency',
+                            //   currency: 'USD',
+                            // }).format(number);
+                          }
+                          Value: {etfAggregateDetail?.aggregate_market_value}{" "}
+                          Currency Code: {etfAggregateDetail?.currency_code}
                         </Typography>
                       </Grid>
                       <Grid item xs={6}>

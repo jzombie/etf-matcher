@@ -9,6 +9,7 @@ pub struct ETFAggregateDetail {
     pub top_market_value_sector_name: String,
     pub top_market_value_industry_name: String,
     pub aggregate_market_value: f32,
+    pub currency_code: String,
     pub top_pct_sector_name: String,
     pub top_pct_industry_name: String,
     pub pct_market_weight: f32,
@@ -17,7 +18,7 @@ pub struct ETFAggregateDetail {
 impl ETFAggregateDetail {
     pub async fn get_etf_aggregate_detail(etf_symbol: &str) -> Result<ETFAggregateDetail, JsValue> {
         let url: &str = DataURL::ETFAggregateDetailShardIndex.value();
-        let etf_aggregate_detail = query_shard_for_symbol(url, etf_symbol, |etf_aggregate_detail: &ETFAggregateDetail| {
+        let etf_aggregate_detail: ETFAggregateDetail = query_shard_for_symbol(url, etf_symbol, |etf_aggregate_detail: &ETFAggregateDetail| {
             Some(&etf_aggregate_detail.etf_symbol)
         })
         .await?
