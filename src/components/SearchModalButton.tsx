@@ -183,6 +183,10 @@ export default function SearchModalButton({
         Search
       </Button>
       <Dialog
+        // Note: Setting this key fixes an issue where the transparent `presentation`
+        // element would remain in place if the viewport were resized while the modal
+        // was open, preventing further UI interaction.
+        key={isModalOpen ? "open" : "closed"}
         open={isModalOpen}
         onClose={handleCancel}
         PaperProps={{
