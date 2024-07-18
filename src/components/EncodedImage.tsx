@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import CircularProgress from "@mui/material/CircularProgress";
+
 import store from "@src/store";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
@@ -12,6 +14,7 @@ export default function EncodedImage({
   alt = "Encoded Image",
   ...rest
 }: EncodedImageProps) {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [base64, setBase64] = useState<string | null>(null);
 
   const encSrcStaticRef = useStableCurrentRef(encSrc);
@@ -22,13 +25,21 @@ export default function EncodedImage({
     }
 
     if (encSrc) {
-      store.fetchImageBase64(encSrc).then((base64) => {
-        if (encSrcStaticRef.current === encSrc) {
-          setBase64(base64);
-        }
-      });
+      setIsLoading(true);
+      store
+        .fetchImageBase64(encSrc)
+        .then((base64) => {
+          if (encSrcStaticRef.current === encSrc) {
+            setBase64(base64);
+          }
+        })
+        .finally(() => setIsLoading(false));
     }
   }, [encSrc, encSrcStaticRef]);
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
 
   return base64 ? (
     <img src={`data:image/png;base64,${base64}`} alt={alt} {...rest} />
