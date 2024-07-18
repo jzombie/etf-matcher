@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SymbolContainer from "../SymbolContainer";
-import { Button, Typography, Grid, Box } from "@mui/material";
+import { Button, ButtonBase, Typography, Grid, Box } from "@mui/material";
 import Padding from "@layoutKit/Padding";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import type {
@@ -14,6 +14,8 @@ import { styled } from "@mui/system";
 import EncodedImage from "../EncodedImage";
 
 import ETFHolderList from "./SymbolDetail.ETFHolderList";
+
+import { useNavigate } from "react-router-dom";
 
 export type SymbolDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerSymbol: string;
@@ -76,6 +78,8 @@ export default function SymbolDetail({
     }
   }, [symbolDetail]);
 
+  const navigate = useNavigate();
+
   return (
     <SymbolContainer
       style={{ marginBottom: 12 }}
@@ -85,12 +89,19 @@ export default function SymbolDetail({
     >
       <SymbolDetailWrapper>
         <LogoContainer>
-          <EncodedImage
-            encSrc={symbolDetail?.logo_filename}
-            title={`${symbolDetail?.symbol} logo`}
-            style={{ width: 80, height: 80 }}
-          />
+          <ButtonBase
+            onClick={() =>
+              navigate(`/search?query=${symbolDetail?.symbol}&exact=true`)
+            }
+          >
+            <EncodedImage
+              encSrc={symbolDetail?.logo_filename}
+              title={`${symbolDetail?.symbol} logo`}
+              style={{ width: 80, height: 80 }}
+            />
+          </ButtonBase>
         </LogoContainer>
+
         <InfoContainer>
           <Padding>
             <Grid container spacing={2}>
