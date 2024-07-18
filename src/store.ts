@@ -124,6 +124,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // TODO: Poll for data build info once every "x" to ensure the data is always running the latest version
     this._fetchDataBuildInfo();
 
+    // Make initial searches faster
+    this._preloadSymbolSearchCache();
+
     // TODO: Remove temporary
     // setInterval(() => {
     //   this.setState((prev) => ({
@@ -227,6 +230,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     }
 
     return resp;
+  }
+
+  private async _preloadSymbolSearchCache() {
+    return this._callWorkerFunction("preload_symbol_search_cache");
   }
 
   // PROTO_getCacheDetails() {

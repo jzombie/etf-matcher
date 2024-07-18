@@ -17,6 +17,18 @@ pub struct SymbolSearch {
 }
 
 impl SymbolSearch {
+    // Make initial searches faster
+    pub async fn preload_symbol_search_cache() -> Result<(), JsValue> {
+        let url: String = DataURL::SymbolSearch.value().to_owned();
+    
+        // Fetch and decompress the data, properly awaiting the result and handling errors
+        fetch_and_decompress_gz(&url).await.map_err(|err| {
+            JsValue::from_str(&format!("Failed to fetch and decompress data: {:?}", err))
+        })?;
+        
+        Ok(())
+    }
+
     fn generate_alternative_symbols(query: &str) -> Vec<String> {
         let mut alternatives: Vec<String> = vec![query.to_lowercase()];
         if query.contains('.') {

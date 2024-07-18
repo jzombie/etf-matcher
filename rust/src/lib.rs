@@ -68,6 +68,13 @@ pub async fn get_industry_name_with_id(industry_id: i32) -> Result<JsValue, JsVa
 }
 
 #[wasm_bindgen]
+pub async fn preload_symbol_search_cache() -> Result<JsValue, JsValue> {
+    SymbolSearch::preload_symbol_search_cache().await.map(|_| {
+        JsValue::NULL // Returning an empty JsValue on success
+    })
+}
+
+#[wasm_bindgen]
 pub async fn search_symbols(query: &str, page: usize, page_size: usize, only_exact_matches: Option<bool>) -> Result<JsValue, JsValue> {
     let results: PaginatedResults<SymbolSearch> = SymbolSearch::search_symbols(query, page, page_size, only_exact_matches).await?;
     to_value(&results).map_err(|err| JsValue::from_str(&format!("Failed to serialize results: {}", err)))
