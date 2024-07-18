@@ -42,9 +42,15 @@ pub async fn get_data_build_info() -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
-pub async fn get_symbol_by_id(ticker_id: i32) -> Result<JsValue, JsValue> {
-    let data: String = SymbolById::get_symbol_by_id(ticker_id).await?;
-    to_value(&data).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to convert SymbolById to JsValue: {}", err)))
+pub async fn get_symbol_with_id(ticker_id: i32) -> Result<JsValue, JsValue> {
+    let data: String = SymbolById::get_symbol_with_id(ticker_id).await?;
+    to_value(&data).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to convert String to JsValue: {}", err)))
+}
+
+#[wasm_bindgen]
+pub async fn get_exchange_id_with_ticker_id(ticker_id: i32) -> Result<JsValue, JsValue> {
+    let data: i32 = SymbolById::get_exchange_id_with_ticker_id(ticker_id).await?;
+    to_value(&data).map_err(|err: serde_wasm_bindgen::Error| JsValue::from_str(&format!("Failed to convert i32 to JsValue: {}", err)))
 }
 
 #[wasm_bindgen]
