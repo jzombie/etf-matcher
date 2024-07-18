@@ -55,7 +55,10 @@ export default function useSearch(
     mergedProps.initialSelectedIndex
   );
 
+  const [isFetching, _setIsFetching] = useState<boolean>(false);
+
   const resetSearch = useCallback(() => {
+    _setIsFetching(false);
     _setSearchQuery("");
     _setSearchResults([]);
     _setTotalSearchResults(0);
@@ -85,6 +88,8 @@ export default function useSearch(
         activePage = DEFAULT_PROPS.initialPage;
       }
 
+      _setIsFetching(true);
+
       store
         .searchSymbols(searchQuery, activePage, pageSize, onlyExactMatches)
         .then((searchResultsWithTotalCount) => {
@@ -94,6 +99,9 @@ export default function useSearch(
           _setTotalSearchResults(total_count);
           setPage(activePage);
           setSelectedIndex(DEFAULT_PROPS.initialSelectedIndex);
+        })
+        .finally(() => {
+          _setIsFetching(false);
         });
     }
   }, [
@@ -121,5 +129,6 @@ export default function useSearch(
     totalPages,
     remaining,
     resetSearch,
+    isFetching,
   };
 }

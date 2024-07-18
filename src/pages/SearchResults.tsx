@@ -19,6 +19,8 @@ import Scrollable from "@layoutKit/Scrollable";
 
 import usePageTitleSetter from "@utils/usePageTitleSetter";
 
+import CircularProgress from "@mui/material/CircularProgress";
+
 export default function SearchResults() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -34,6 +36,7 @@ export default function SearchResults() {
     page,
     setPage: _setPage,
     totalPages,
+    isFetching,
   } = useSearch();
 
   useEffect(() => {
@@ -108,6 +111,14 @@ export default function SearchResults() {
   );
 
   if (!searchResultSymbols.length) {
+    if (isFetching) {
+      return (
+        <Center>
+          <CircularProgress />
+        </Center>
+      );
+    }
+
     return (
       <Center>
         <Typography variant="h6" fontWeight="bold">
