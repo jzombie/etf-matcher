@@ -12,7 +12,7 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["vitest/globals"],
+    "types": ["vitest/globals", "@types/node"],
     "baseUrl": ".",
     "paths": {
       "@assets/*": ["src/assets/*"],
