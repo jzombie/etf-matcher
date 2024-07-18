@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
+import clsx from "clsx";
+import styles from "./EncodedImage.module.scss";
 
 import store from "@src/store";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
@@ -7,11 +9,13 @@ import useStableCurrentRef from "@hooks/useStableCurrentRef";
 export type EncodedImageProps = React.HTMLAttributes<HTMLImageElement> & {
   encSrc?: string;
   alt?: string;
+  className?: string;
 };
 
 export default function EncodedImage({
   encSrc,
   alt = "Encoded Image",
+  className,
   ...rest
 }: EncodedImageProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -44,7 +48,8 @@ export default function EncodedImage({
   return base64 ? (
     <img src={`data:image/png;base64,${base64}`} alt={alt} {...rest} />
   ) : (
-    // TODO: Update as necessary
-    <div style={{ display: "inline-block" }} {...rest} />
+    <div className={clsx(styles.no_image_fallback, className)} {...rest}>
+      N/A
+    </div>
   );
 }
