@@ -6,8 +6,6 @@ x-base-service: &base-service
   build:
     context: .
     dockerfile: Dockerfile
-  volumes:
-    - .:/app
   environment:
     - FORCE_COLOR=1
 
@@ -17,6 +15,9 @@ services:
   #
   build-dist:
     <<: *base-service
+    # TODO: Only mount dist
+    volumes:
+      - .:/app
     command: |
       sh -c '
       cp -rT /build_artifacts/public/pkg /app/public/pkg &&
