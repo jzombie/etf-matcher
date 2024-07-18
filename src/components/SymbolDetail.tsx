@@ -182,15 +182,15 @@ export default function SymbolDetail({
                           {etfAggregateDetail?.top_market_value_industry_name}
                         </Typography>
                         <Typography variant="body2">
-                          {
-                            // TODO: Add currency code here as well
-                            // const formattedNumber = new Intl.NumberFormat('en-US', {
-                            //   style: 'currency',
-                            //   currency: 'USD',
-                            // }).format(number);
-                          }
-                          Value: {etfAggregateDetail?.aggregate_market_value}{" "}
-                          Currency Code: {etfAggregateDetail?.currency_code}
+                          Value:{" "}
+                          {etfAggregateDetail?.aggregate_market_value &&
+                            etfAggregateDetail?.currency_code &&
+                            new Intl.NumberFormat("en-US", {
+                              style: "currency",
+                              currency: etfAggregateDetail?.currency_code,
+                            }).format(
+                              etfAggregateDetail?.aggregate_market_value
+                            )}
                         </Typography>
                       </Grid>
                       <Grid item xs={6}>
@@ -204,7 +204,8 @@ export default function SymbolDetail({
                           Industry: {etfAggregateDetail?.top_pct_industry_name}
                         </Typography>
                         <Typography variant="body2">
-                          Weight: {etfAggregateDetail?.pct_market_weight}
+                          Weight:{" "}
+                          {etfAggregateDetail?.pct_market_weight.toFixed(2)}
                         </Typography>
                       </Grid>
                     </Grid>
