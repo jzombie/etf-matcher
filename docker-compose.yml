@@ -15,7 +15,7 @@ services:
   #
   build-dist:
     <<: *base-service
-    # TODO: Only mount dist
+    # TODO: Only mount `dist`
     volumes:
       - .:/app
     command: |
