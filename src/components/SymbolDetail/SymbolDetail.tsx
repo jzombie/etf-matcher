@@ -5,13 +5,13 @@ import Padding from "@layoutKit/Padding";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import type {
   RustServiceSymbolDetail,
-  RustServiceETFHoldersWithTotalCount,
   RustServiceETFAggregateDetail,
 } from "@utils/callWorkerFunction";
-import { MiniChart } from "react-ts-tradingview-widgets";
+import { MiniChart, Timeline } from "react-ts-tradingview-widgets";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 import { styled } from "@mui/system";
 import EncodedImage from "../EncodedImage";
+import NewsIcon from "@mui/icons-material/Article";
 
 import ETFHolderList from "./SymbolDetail.ETFHolderList";
 
@@ -61,6 +61,8 @@ export default function SymbolDetail({
   const [etfAggregateDetail, setETFAggregateDetail] = useState<
     RustServiceETFAggregateDetail | undefined
   >(undefined);
+
+  const [showNews, setShowNews] = useState(false);
 
   useEffect(() => {
     if (tickerSymbol) {
@@ -236,7 +238,7 @@ export default function SymbolDetail({
         </InfoContainer>
       </SymbolDetailWrapper>
 
-      <div style={{ height: 200 }}>
+      <Box sx={{ height: 200 }}>
         <MiniChart
           symbol={formattedSymbolWithExchange}
           colorTheme="dark"
@@ -245,18 +247,47 @@ export default function SymbolDetail({
           copyrightStyles={tradingViewCopyrightStyles}
           dateRange="ALL"
         />
-      </div>
+      </Box>
 
-      {symbolBuckets
-        ?.filter((symbolBucket) => symbolBucket.isUserConfigurable)
-        .map((symbolBucket, idx) => (
-          <Button
-            key={idx}
-            onClick={() => store.addSymbolToBucket(tickerSymbol, symbolBucket)}
-          >
-            Add {tickerSymbol} to {symbolBucket.name}
-          </Button>
-        ))}
+      <Box sx={{ textAlign: "center" }}>
+        <Button onClick={() => setShowNews(!showNews)} startIcon={<NewsIcon />}>
+          {showNews ? "Hide News" : "View News"}
+        </Button>
+        {symbolBuckets
+          ?.filter((symbolBucket) => symbolBucket.isUserConfigurable)
+          .map((symbolBucket, idx) => (
+            <Button
+              key={idx}
+              onClick={() =>
+                store.addSymbolToBucket(tickerSymbol, symbolBucket)
+              }
+            >
+              Add {tickerSymbol} to {symbolBucket.name}
+            </Button>
+          ))}
+      </Box>
+
+      {showNews && (
+        // TODO: This seems out of date for `CRWD`, regardless if using `formattedSymbolWithExchange`
+        // or just the `tickerSymbol` itself. Other symbols seem to be okay.
+        <Timeline
+          feedMode="symbol"
+          colorTheme="dark"
+          symbol={formattedSymbolWithExchange}
+          width="100%"
+          copyrightStyles={tradingViewCopyrightStyles}
+        />
+      )}
+
+      {showNews && (
+        <Box mt={2}>
+          <Typography variant="h6">News</Typography>
+          <Typography variant="body2">
+            Placeholder for news articles related to {symbolDetail.symbol}.
+          </Typography>
+        </Box>
+      )}
+
       <ETFHolderList tickerSymbol={symbolDetail.symbol} />
     </SymbolContainer>
   );
