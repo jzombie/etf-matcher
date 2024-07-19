@@ -86,7 +86,7 @@ export default function SymbolDetail({
   );
 
   if (!formattedSymbolWithExchange || !symbolDetail) {
-    return <></>;
+    return null;
   }
 
   return (
