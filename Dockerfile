@@ -83,7 +83,7 @@ COPY .env /app/.env
 RUN cargo install wasm-pack
 
 # Copy only Rust frontend files
-COPY rust/ ./rust/
+COPY --chown=etfuser:etfuser rust/ ./rust/
 
 # Set the ENCRYPTED_PASSWORD environment variable for build.rs
 ENV ENCRYPTED_PASSWORD your_encrypted_password
@@ -95,6 +95,9 @@ RUN build_rust_frontend
 
 # Final stage
 FROM frontend-build AS final
+
+# Switch to the root user to install deps
+USER root
 
 # Install necessary dependencies including Node.js
 RUN apt-get update && \
