@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { store } from "@hooks/useStoreStateReader";
 
 import type { RustServiceETFAggregateDetail } from "@utils/callWorkerFunction";
+import formatCurrency from "@utils/formatCurrency";
 
 export type ETFHolderProps = {
   etfSymbol: string;
@@ -23,6 +24,9 @@ export default function ETFHolderProps({ etfSymbol }: ETFHolderProps) {
 
   // TODO: Look up more information about this symbol (i.e. holdings, etc.)
 
+  // TODO: Remove
+  console.log({ etfAggregateDetail });
+
   if (!etfAggregateDetail) {
     return null;
   }
@@ -34,13 +38,16 @@ export default function ETFHolderProps({ etfSymbol }: ETFHolderProps) {
         sx={{ display: "block", width: "100%", textAlign: "left" }}
       >
         <div>
-          {etfSymbol}
-          <div>Currency code: {etfAggregateDetail.currency_code}</div>
+          <div style={{ fontWeight: "bold" }}>
+            {etfAggregateDetail.etf_name} ({etfSymbol})
+          </div>
           <div>
-            {
-              // TODO: This is a confusing metric; just show total market value for the ETF
-            }
-            Top Market Value Amount: {etfAggregateDetail.aggregate_market_value}
+            Top Sector Market Value:{" "}
+            {formatCurrency(
+              etfAggregateDetail.currency_code,
+              etfAggregateDetail.top_sector_market_value
+            )}{" "}
+            ({etfAggregateDetail.currency_code})
           </div>
           <div>
             Top Market Value Industry:{" "}

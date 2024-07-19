@@ -5,14 +5,16 @@ use crate::data_models::DataURL;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ETFAggregateDetail {
+    pub ticker_id: i32,
     pub etf_symbol: String,
+    pub etf_name: Option<String>,
     pub top_market_value_sector_name: String,
     pub top_market_value_industry_name: String,
-    pub aggregate_market_value: f32,
+    pub top_sector_market_value: f32,
     pub currency_code: String,
     pub top_pct_sector_name: String,
     pub top_pct_industry_name: String,
-    pub pct_market_weight: f32,
+    pub top_pct_sector_weight: f32,
 }
 
 impl ETFAggregateDetail {

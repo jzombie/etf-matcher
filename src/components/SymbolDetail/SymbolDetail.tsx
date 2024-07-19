@@ -17,6 +17,7 @@ import ETFHolderList from "./SymbolDetail.ETFHolderList";
 
 import { useNavigate } from "react-router-dom";
 import formatSymbolWithExchange from "@utils/formatSymbolWithExchange";
+import formatCurrency from "@utils/formatCurrency";
 
 export type SymbolDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerSymbol: string;
@@ -204,13 +205,11 @@ export default function SymbolDetail({
                         </Typography>
                         <Typography variant="body2">
                           Value:{" "}
-                          {etfAggregateDetail?.aggregate_market_value &&
+                          {etfAggregateDetail?.top_sector_market_value &&
                             etfAggregateDetail?.currency_code &&
-                            new Intl.NumberFormat("en-US", {
-                              style: "currency",
-                              currency: etfAggregateDetail?.currency_code,
-                            }).format(
-                              etfAggregateDetail?.aggregate_market_value
+                            formatCurrency(
+                              etfAggregateDetail.currency_code,
+                              etfAggregateDetail.top_sector_market_value
                             )}
                         </Typography>
                       </Grid>
@@ -226,7 +225,7 @@ export default function SymbolDetail({
                         </Typography>
                         <Typography variant="body2">
                           Weight:{" "}
-                          {etfAggregateDetail?.pct_market_weight.toFixed(2)}
+                          {etfAggregateDetail?.top_pct_sector_weight.toFixed(2)}
                         </Typography>
                       </Grid>
                     </Grid>
