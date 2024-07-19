@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { store } from "@hooks/useStoreStateReader";
-import type { RustServiceSearchResult } from "@utils/callWorkerFunction";
+import type { RustServiceSearchResult } from "@utils/callRustService";
 import usePrevious from "./usePrevious";
 import useStableCurrentRef from "./useStableCurrentRef";
 import usePagination from "./usePagination";

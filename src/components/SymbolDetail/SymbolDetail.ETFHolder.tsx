@@ -4,7 +4,7 @@ import { Box, ButtonBase } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { store } from "@hooks/useStoreStateReader";
 
-import type { RustServiceETFAggregateDetail } from "@utils/callWorkerFunction";
+import type { RustServiceETFAggregateDetail } from "@utils/callRustService";
 import formatCurrency from "@utils/formatCurrency";
 
 export type ETFHolderProps = {

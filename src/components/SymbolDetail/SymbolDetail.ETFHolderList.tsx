@@ -6,7 +6,7 @@ import usePagination from "@hooks/usePagination";
 
 import Padding from "@layoutKit/Padding";
 
-import type { RustServiceETFHoldersWithTotalCount } from "@utils/callWorkerFunction";
+import type { RustServiceETFHoldersWithTotalCount } from "@utils/callRustService";
 
 import { store } from "@hooks/useStoreStateReader";
 

@@ -6,7 +6,7 @@ import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import type {
   RustServiceSymbolDetail,
   RustServiceETFAggregateDetail,
-} from "@utils/callWorkerFunction";
+} from "@utils/callRustService";
 import { MiniChart, Timeline } from "react-ts-tradingview-widgets";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 import { styled } from "@mui/system";

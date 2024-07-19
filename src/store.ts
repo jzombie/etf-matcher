@@ -1,12 +1,12 @@
 import { ReactStateEmitter } from "@utils/StateEmitter";
-import libCallWorkerFunction from "@utils/callWorkerFunction";
+import libCallRustService from "@utils/callRustService";
 import type {
   RustServiceSymbolDetail,
   RustServiceSearchResultsWithTotalCount,
   RustServiceETFHoldersWithTotalCount,
   RustServiceCacheDetail,
   RustServiceETFAggregateDetail,
-} from "@utils/callWorkerFunction";
+} from "@utils/callRustService";
 import detectHTMLJSVersionSync from "@utils/PROTO_detectHTMLJSVersionSync";
 
 import debounceWithKey from "@utils/debounceWithKey";
@@ -170,7 +170,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   private _fetchDataBuildInfo() {
-    this._callWorkerFunction("get_data_build_info").then((dataBuildInfo) => {
+    this._callRustService("get_data_build_info").then((dataBuildInfo) => {
       this.setState({
         isRustInit: true,
         // TODO: If data build time is already set as state, but this indicates otherwise, that's a signal the app needs to update
@@ -182,18 +182,18 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     });
   }
 
-  // TODO: Finish wrapping `callWorkerFunction`
+  // TODO: Finish wrapping `callRustService`
   //   |___  Include notification (and route to UI) showing data fetching status
   //         (potentially show in red, just above the ticker tape)
   //   |___  Show errors in UI
-  private async _callWorkerFunction<T>(
+  private async _callRustService<T>(
     functionName: string,
     args: unknown[] = []
   ): Promise<T> {
     let resp: T;
 
     try {
-      resp = await libCallWorkerFunction<T>(functionName, args);
+      resp = await libCallRustService<T>(functionName, args);
     } catch (err) {
       const funcErrors = {
         ...this.state.rustServiceFunctionErrors,
@@ -217,10 +217,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       debounceWithKey(
         "store:cache_profiler",
         () => {
-          libCallWorkerFunction<number>("get_cache_size").then((cacheSize) => {
+          libCallRustService<number>("get_cache_size").then((cacheSize) => {
             this.setState({ cacheSize });
           });
-          libCallWorkerFunction<RustServiceCacheDetail[]>(
+          libCallRustService<RustServiceCacheDetail[]>(
             "get_cache_details"
           ).then((cacheDetails) => this.setState({ cacheDetails }));
         },
@@ -232,11 +232,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   private async _preloadSymbolSearchCache() {
-    return this._callWorkerFunction("preload_symbol_search_cache");
+    return this._callRustService("preload_symbol_search_cache");
   }
 
   // PROTO_getCacheDetails() {
-  //   this._callWorkerFunction<RustServiceCacheDetail[]>("get_cache_details")
+  //   this._callRustService<RustServiceCacheDetail[]>("get_cache_details")
   //     .then(console.table)
   //     .catch((error) => console.error(error));
   // }
@@ -251,7 +251,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     pageSize: number = 20,
     onlyExactMatches: boolean = false
   ): Promise<RustServiceSearchResultsWithTotalCount> {
-    return this._callWorkerFunction<RustServiceSearchResultsWithTotalCount>(
+    return this._callRustService<RustServiceSearchResultsWithTotalCount>(
       "search_symbols",
       [query.trim(), page, pageSize, onlyExactMatches]
     );
@@ -261,30 +261,29 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     page: number = 1,
     pageSize: number = 20
   ): Promise<RustServiceETFHoldersWithTotalCount> {
-    return this._callWorkerFunction<RustServiceETFHoldersWithTotalCount>(
+    return this._callRustService<RustServiceETFHoldersWithTotalCount>(
       "get_symbol_etf_holders",
       [symbol, page, pageSize]
     );
   }
 
   async fetchSymbolDetail(symbol: string): Promise<RustServiceSymbolDetail> {
-    return this._callWorkerFunction<RustServiceSymbolDetail>(
-      "get_symbol_detail",
-      [symbol]
-    );
+    return this._callRustService<RustServiceSymbolDetail>("get_symbol_detail", [
+      symbol,
+    ]);
   }
 
   async fetchETFAggregateDetail(
     etfSymbol: string
   ): Promise<RustServiceETFAggregateDetail> {
-    return this._callWorkerFunction<RustServiceETFAggregateDetail>(
+    return this._callRustService<RustServiceETFAggregateDetail>(
       "get_etf_aggregate_detail",
       [etfSymbol]
     );
   }
 
   // PROTO_countEtfsPerExchange() {
-  //   callWorkerFunction("count_etfs_per_exchange")
+  //   callRustService("count_etfs_per_exchange")
   //     .then((countsPerExchange) =>
   //       console.log({
   //         countsPerExchange,
@@ -295,7 +294,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
   // PROTO_getEtfHolderAssetCount() {
   //   const ETF_HOLDER_SYMBOL = "SPY";
-  //   callWorkerFunction("get_etf_holder_asset_count", ETF_HOLDER_SYMBOL)
+  //   callRustService("get_etf_holder_asset_count", ETF_HOLDER_SYMBOL)
   //     .then((assetCount) =>
   //       console.log({
   //         etfHolder: ETF_HOLDER_SYMBOL,
@@ -306,45 +305,43 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   // }
 
   fetchImageBase64(filename: string): Promise<string> {
-    return this._callWorkerFunction<string>("get_image_base64", [filename]);
+    return this._callRustService<string>("get_image_base64", [filename]);
   }
 
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchSymbolWithId(tickerId: number) {
-    this._callWorkerFunction("get_symbol_with_id", [tickerId]).then(
-      console.debug
-    );
+    this._callRustService("get_symbol_with_id", [tickerId]).then(console.debug);
   }
 
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchExchangeIdWithTickerId(tickerId: number) {
-    this._callWorkerFunction("get_exchange_id_with_ticker_id", [tickerId]).then(
+    this._callRustService("get_exchange_id_with_ticker_id", [tickerId]).then(
       console.debug
     );
   }
 
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchSectorNameWithId(sectorId: number) {
-    this._callWorkerFunction("get_sector_name_with_id", [sectorId]).then(
+    this._callRustService("get_sector_name_with_id", [sectorId]).then(
       console.debug
     );
   }
 
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchIndustryNameWithId(industryId: number) {
-    this._callWorkerFunction("get_industry_name_with_id", [industryId]).then(
+    this._callRustService("get_industry_name_with_id", [industryId]).then(
       console.debug
     );
   }
 
   PROTO_removeCacheEntry(key: string) {
     // TODO: Add rapid UI update
-    this._callWorkerFunction("remove_cache_entry", [key]);
+    this._callRustService("remove_cache_entry", [key]);
   }
 
   PROTO_clearCache() {
     // TODO: Add rapid UI update
-    this._callWorkerFunction("clear_cache");
+    this._callRustService("clear_cache");
   }
 
   addSymbolToBucket(symbol: string, symbolBucket: SymbolBucketProps) {

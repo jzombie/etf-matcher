@@ -1,4 +1,4 @@
-import type { RustServiceSymbolDetail } from "@utils/callWorkerFunction";
+import type { RustServiceSymbolDetail } from "@utils/callRustService";
 
 // Converts a symbol detail object into a formatted symbol with exchange identifier
 export default function formatSymbolWithExchange(

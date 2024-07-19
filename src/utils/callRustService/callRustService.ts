@@ -30,7 +30,7 @@ worker.onerror = (error) => {
   );
 };
 
-const callWorkerFunction = <T>(
+const callRustService = <T>(
   functionName: string,
   args: unknown[] = []
 ): Promise<T> => {
@@ -41,4 +41,4 @@ const callWorkerFunction = <T>(
   });
 };
 
-export default callWorkerFunction;
+export default callRustService;
