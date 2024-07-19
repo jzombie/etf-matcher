@@ -52,7 +52,6 @@ export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
             )}
 
             {etfSymbols.map((etfSymbol) => (
-              // TODO: Exchange
               <ETFHolder key={etfSymbol} etfSymbol={etfSymbol} />
             ))}
           </Padding>
