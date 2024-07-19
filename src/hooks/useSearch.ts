@@ -3,6 +3,7 @@ import { store } from "@hooks/useStoreStateReader";
 import type { RustServiceSearchResult } from "@utils/callWorkerFunction";
 import usePrevious from "./usePrevious";
 import useStableCurrentRef from "./useStableCurrentRef";
+import usePagination from "./usePagination";
 
 export type UseSearchProps = {
   initialQuery?: string;
@@ -40,16 +41,19 @@ export default function useSearch(
   >([]);
   const [totalSearchResults, _setTotalSearchResults] = useState<number>(0);
 
-  const [page, setPage] = useState<number>(mergedProps.initialPage);
-  const [pageSize, setPageSize] = useState<number>(mergedProps.initialPageSize);
-  const totalPages = useMemo(
-    () => Math.ceil(totalSearchResults / pageSize),
-    [totalSearchResults, pageSize]
-  );
-  const remaining = useMemo(
-    () => totalSearchResults - ((page - 1) * pageSize + searchResults.length),
-    [totalSearchResults, page, pageSize, searchResults]
-  );
+  const {
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    totalPages,
+    remaining,
+    resetPagination,
+  } = usePagination({
+    initialPage: mergedProps.initialPage,
+    initialPageSize: mergedProps.initialPageSize,
+    totalItems: totalSearchResults,
+  });
 
   const [selectedIndex, setSelectedIndex] = useState<number>(
     mergedProps.initialSelectedIndex
@@ -62,9 +66,9 @@ export default function useSearch(
     _setSearchQuery("");
     _setSearchResults([]);
     _setTotalSearchResults(0);
-    setPage(DEFAULT_PROPS.initialPage);
+    resetPagination();
     setSelectedIndex(DEFAULT_PROPS.initialSelectedIndex);
-  }, []);
+  }, [resetPagination]);
 
   const setSearchQuery = useCallback((searchQuery: string) => {
     _setSearchQuery(searchQuery.toUpperCase());
@@ -111,6 +115,7 @@ export default function useSearch(
     pageSize,
     resetSearch,
     onlyExactMatches,
+    setPage,
   ]);
 
   return {
