@@ -22,7 +22,12 @@ jobs:
           zip -j ${{ github.workspace }}/data/datapack.images.zip ${{ github.workspace }}/data/datapack.image1.enc ${{ github.workspace }}/data/datapack.image2.enc
 
       - name: Create mock .env file
-        run: echo "ENCRYPTED_PASSWORD=your_encrypted_password" > ${{ github.workspace }}/.env
+        run: |
+          echo "PLAINTEXT_PASSWORD=GYVYX9+bALWXwh/jpUYfK5BXGp+8HrdVTc9rfGpcXh0=" > ${{ github.workspace }}/.env
+          echo "ENCRYPTED_PASSWORD=\"165,179,44,54,40,237,201,83,25,166,208,151,113,77,122,23\"" >> ${{ github.workspace }}/.env
+          echo "KEY=\"212,29,194,181,240,35,85,144,203,203,84,204,254,10,193,31,69,28,250,74,15,10,247,6,171,11,57,100,194,154,229,170\"" >> ${{ github.workspace }}/.env
+          echo "IV=\"98,251,10,46,191,221,86,242,97,104,157,105,73,15,173,223\"" >> ${{ github.workspace }}/.env
+          echo "# Note: This is a mock .env file" >> ${{ github.workspace }}/.env
 
       - name: Set up environment
         run: sudo apt-get update && sudo apt-get install -y make cmake zip
