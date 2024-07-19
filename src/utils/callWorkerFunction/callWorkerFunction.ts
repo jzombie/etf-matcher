@@ -32,7 +32,7 @@ worker.onerror = (error) => {
 
 const callWorkerFunction = <T>(
   functionName: string,
-  ...args: unknown[]
+  args: unknown[] = []
 ): Promise<T> => {
   const messageId = messageCounter++;
   return new Promise((resolve, reject) => {

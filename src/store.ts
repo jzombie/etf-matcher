@@ -188,13 +188,12 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   //   |___  Show errors in UI
   private async _callWorkerFunction<T>(
     functionName: string,
-    // TODO: Make this an array, so other options can be configured
-    ...args: unknown[]
+    args: unknown[] = []
   ): Promise<T> {
     let resp: T;
 
     try {
-      resp = await libCallWorkerFunction<T>(functionName, ...args);
+      resp = await libCallWorkerFunction<T>(functionName, args);
     } catch (err) {
       const funcErrors = {
         ...this.state.rustServiceFunctionErrors,
@@ -254,10 +253,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   ): Promise<RustServiceSearchResultsWithTotalCount> {
     return this._callWorkerFunction<RustServiceSearchResultsWithTotalCount>(
       "search_symbols",
-      query.trim(),
-      page,
-      pageSize,
-      onlyExactMatches
+      [query.trim(), page, pageSize, onlyExactMatches]
     );
   }
   async fetchSymbolETFHolders(
@@ -267,16 +263,14 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   ): Promise<RustServiceETFHoldersWithTotalCount> {
     return this._callWorkerFunction<RustServiceETFHoldersWithTotalCount>(
       "get_symbol_etf_holders",
-      symbol,
-      page,
-      pageSize
+      [symbol, page, pageSize]
     );
   }
 
   async fetchSymbolDetail(symbol: string): Promise<RustServiceSymbolDetail> {
     return this._callWorkerFunction<RustServiceSymbolDetail>(
       "get_symbol_detail",
-      symbol
+      [symbol]
     );
   }
 
@@ -285,7 +279,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   ): Promise<RustServiceETFAggregateDetail> {
     return this._callWorkerFunction<RustServiceETFAggregateDetail>(
       "get_etf_aggregate_detail",
-      etfSymbol
+      [etfSymbol]
     );
   }
 
@@ -312,40 +306,40 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   // }
 
   fetchImageBase64(filename: string): Promise<string> {
-    return this._callWorkerFunction<string>("get_image_base64", filename);
+    return this._callWorkerFunction<string>("get_image_base64", [filename]);
   }
 
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchSymbolWithId(tickerId: number) {
-    this._callWorkerFunction("get_symbol_with_id", tickerId).then(
+    this._callWorkerFunction("get_symbol_with_id", [tickerId]).then(
       console.debug
     );
   }
 
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchExchangeIdWithTickerId(tickerId: number) {
-    this._callWorkerFunction("get_exchange_id_with_ticker_id", tickerId).then(
+    this._callWorkerFunction("get_exchange_id_with_ticker_id", [tickerId]).then(
       console.debug
     );
   }
 
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchSectorNameWithId(sectorId: number) {
-    this._callWorkerFunction("get_sector_name_with_id", sectorId).then(
+    this._callWorkerFunction("get_sector_name_with_id", [sectorId]).then(
       console.debug
     );
   }
 
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchIndustryNameWithId(industryId: number) {
-    this._callWorkerFunction("get_industry_name_with_id", industryId).then(
+    this._callWorkerFunction("get_industry_name_with_id", [industryId]).then(
       console.debug
     );
   }
 
   PROTO_removeCacheEntry(key: string) {
     // TODO: Add rapid UI update
-    this._callWorkerFunction("remove_cache_entry", key);
+    this._callWorkerFunction("remove_cache_entry", [key]);
   }
 
   PROTO_clearCache() {
