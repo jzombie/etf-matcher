@@ -302,6 +302,8 @@ export default function SearchModalButton({
                 // TODO: Fix issue where an infinite loop can occur if scrolling through
                 // this list very fast. This isn't likely tied into the `Pagination`
                 // component itself, but a result of a race condition when doing the data fetch.
+                //  |
+                //  |__ This could be fixed by implementing AbortController in existing calls.
               }
               <Pagination
                 count={totalPages}
