@@ -6,7 +6,7 @@ ARG DOCKER_BUILD=1
 
 # Install necessary dependencies
 RUN apt-get update && \
-    apt-get install -y cmake libz-dev python3 curl openssl && \
+    apt-get install -y cmake libz-dev python3 curl openssl zip && \
     rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user with the same UID and GID as the local user
@@ -77,12 +77,12 @@ WORKDIR /app
 # Switch to the non-root user
 USER etfuser
 
-COPY --chown=etfuser:etfuser .env /app/.env
+COPY .env /app/.env
 
 # Install wasm-pack for building the frontend
 RUN cargo install wasm-pack
 
-# Copy only Rust frontend files
+# Copy only Rust frontend files with correct ownership
 COPY --chown=etfuser:etfuser rust/ ./rust/
 
 # Set the ENCRYPTED_PASSWORD environment variable for build.rs
@@ -96,7 +96,7 @@ RUN build_rust_frontend
 # Final stage
 FROM frontend-build AS final
 
-# Switch to the root user to install deps
+# Switch to root user to install deps
 USER root
 
 # Install necessary dependencies including Node.js
@@ -104,7 +104,6 @@ RUN apt-get update && \
     apt-get install -y curl gnupg tini inotify-tools bc && \
     curl -sL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs && \
-    npm install -g vite && \
     rm -rf /var/lib/apt/lists/*
 
 # Switch to the non-root user
@@ -113,18 +112,19 @@ USER etfuser
 # Set the working directory
 WORKDIR /app
 
+# Copy package.json with correct ownership
 COPY --chown=etfuser:etfuser package.json package.json
 
 # Create directories with the correct permissions
 RUN mkdir -p /build_artifacts/public/pkg /build_artifacts/public/data /build_artifacts/backend && \
-    chown -R $UID:$GID /build_artifacts /app
+    chown -R $UID:$GID /build_artifacts
 
 # Copy build artifacts (this is so that volume mounts won't replace these)
 COPY --chown=etfuser:etfuser --from=datapack-extract /build_artifacts/public/data /build_artifacts/public/data
 COPY --chown=etfuser:etfuser --from=frontend-build /app/public/pkg /build_artifacts/public/pkg
 COPY --chown=etfuser:etfuser --from=frontend-build /app/.env /build_artifacts/.env
 
-# Copy the rest of the project files
+# Copy the rest of the project files with correct ownership
 COPY --chown=etfuser:etfuser . .
 
 # Expose port 8000 for the web server
