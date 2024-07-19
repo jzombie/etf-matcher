@@ -34,13 +34,20 @@ export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
     [etfHolders]
   );
 
-  if (!etfSymbols) {
+  if (!etfSymbols || !etfHolders) {
     return null;
   }
 
   return (
     <Box>
       <Padding>
+        <h3>
+          {tickerSymbol} is found in the following {etfHolders.total_count} ETF
+          {etfHolders.total_count !== 1 ? "s" : ""}:
+        </h3>
+        {
+          // TODO: Show the actual symbol weight in each ETFHolder (send `tickerSymbol` to it and make clear distinction between which symbol is what)
+        }
         <Box sx={{ backgroundColor: "rgba(255,255,255,.05)", borderRadius: 4 }}>
           <Padding>
             {totalPages > 1 && (
