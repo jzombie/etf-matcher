@@ -1,11 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { Pagination } from "@mui/material";
 import ETFHolder from "./SymbolDetail.ETFHolder";
 
-import type {
-  RustServiceSymbolDetail,
-  RustServiceETFHoldersWithTotalCount,
-  RustServiceETFAggregateDetail,
-} from "@utils/callWorkerFunction";
+import usePagination from "@hooks/usePagination";
+
+import type { RustServiceETFHoldersWithTotalCount } from "@utils/callWorkerFunction";
 
 import { store } from "@hooks/useStoreStateReader";
 
@@ -18,11 +17,15 @@ export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
     RustServiceETFHoldersWithTotalCount | undefined
   >(undefined);
 
+  const { page, setPage, totalPages, remaining } = usePagination({
+    totalItems: etfHolders?.total_count,
+  });
+
   useEffect(() => {
     if (tickerSymbol) {
-      store.fetchSymbolETFHolders(tickerSymbol).then(setEtfHolders);
+      store.fetchSymbolETFHolders(tickerSymbol, page).then(setEtfHolders);
     }
-  }, [tickerSymbol]);
+  }, [tickerSymbol, page]);
 
   const etfSymbols = useMemo<string[] | undefined>(
     () => etfHolders?.results,
@@ -35,6 +38,14 @@ export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
 
   return (
     <div>
+      {totalPages > 1 && (
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={(event, nextPage) => setPage(nextPage)}
+        />
+      )}
+
       {etfSymbols.map((etfSymbol) => (
         <ETFHolder key={etfSymbol} etfSymbol={etfSymbol} />
       ))}
