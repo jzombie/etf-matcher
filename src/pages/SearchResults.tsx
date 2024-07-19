@@ -182,7 +182,7 @@ export default function SearchResults() {
         {totalSearchResults} search result{totalSearchResults !== 1 ? "s" : ""}{" "}
         for &quot;{searchQuery}&quot;
       </Padding>
-      {totalSearchResults > pageSize && (
+      {totalSearchResults > pageSize && !isLoading && (
         <Box sx={{ textAlign: "center" }}>
           <Pagination
             count={totalPages}
@@ -195,7 +195,7 @@ export default function SearchResults() {
         </Box>
       )}
       <SymbolDetailList tickerSymbols={searchResultSymbols} />
-      {totalSearchResults > pageSize && (
+      {totalSearchResults > pageSize && !isLoading && (
         <Box sx={{ textAlign: "center" }}>
           <Pagination
             count={totalPages}
