@@ -14,12 +14,12 @@ jobs:
 
       - name: Create mock data files
         run: |
-          mkdir -p ${{ github.workspace }}/app/data
-          echo "mock data" > ${{ github.workspace }}/app/data/datapack.data.enc
-          echo "mock data" > ${{ github.workspace }}/app/data/datapack.image1.enc
-          echo "mock data" > ${{ github.workspace }}/app/data/datapack.image2.enc
-          zip -j ${{ github.workspace }}/app/data/datapack.data.zip ${{ github.workspace }}/app/data/datapack.data.enc
-          zip -j ${{ github.workspace }}/app/data/datapack.images.zip ${{ github.workspace }}/app/data/datapack.image1.enc ${{ github.workspace }}/app/data/datapack.image2.enc
+          mkdir -p ${{ github.workspace }}/data
+          echo "mock data" > ${{ github.workspace }}/data/datapack.data.enc
+          echo "mock data" > ${{ github.workspace }}/data/datapack.image1.enc
+          echo "mock data" > ${{ github.workspace }}/data/datapack.image2.enc
+          zip -j ${{ github.workspace }}/data/datapack.data.zip ${{ github.workspace }}/data/datapack.data.enc
+          zip -j ${{ github.workspace }}/data/datapack.images.zip ${{ github.workspace }}/data/datapack.image1.enc ${{ github.workspace }}/data/datapack.image2.enc
 
       - name: Create mock .env file
         run: echo "ENCRYPTED_PASSWORD=your_encrypted_password" > ${{ github.workspace }}/.env
