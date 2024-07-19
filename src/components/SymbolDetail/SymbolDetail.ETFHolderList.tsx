@@ -1,11 +1,34 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ETFHolder from "./SymbolDetail.ETFHolder";
 
+import type {
+  RustServiceSymbolDetail,
+  RustServiceETFHoldersWithTotalCount,
+  RustServiceETFAggregateDetail,
+} from "@utils/callWorkerFunction";
+
+import { store } from "@hooks/useStoreStateReader";
+
 export type ETFHolderListProps = {
-  etfSymbols?: string[] | undefined;
+  tickerSymbol: string;
 };
 
-export default function ETFHolderList({ etfSymbols }: ETFHolderListProps) {
+export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
+  const [etfHolders, setEtfHolders] = useState<
+    RustServiceETFHoldersWithTotalCount | undefined
+  >(undefined);
+
+  useEffect(() => {
+    if (tickerSymbol) {
+      store.fetchSymbolETFHolders(tickerSymbol).then(setEtfHolders);
+    }
+  }, [tickerSymbol]);
+
+  const etfSymbols = useMemo<string[] | undefined>(
+    () => etfHolders?.results,
+    [etfHolders]
+  );
+
   if (!etfSymbols) {
     return null;
   }

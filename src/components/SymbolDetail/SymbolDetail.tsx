@@ -57,9 +57,7 @@ export default function SymbolDetail({
   const [symbolDetail, setSymbolDetail] = useState<
     RustServiceSymbolDetail | undefined
   >(undefined);
-  const [etfHolders, setEtfHolders] = useState<
-    RustServiceETFHoldersWithTotalCount | undefined
-  >(undefined);
+
   const [etfAggregateDetail, setETFAggregateDetail] = useState<
     RustServiceETFAggregateDetail | undefined
   >(undefined);
@@ -67,7 +65,6 @@ export default function SymbolDetail({
   useEffect(() => {
     if (tickerSymbol) {
       store.fetchSymbolDetail(tickerSymbol).then(setSymbolDetail);
-      store.fetchSymbolETFHolders(tickerSymbol).then(setEtfHolders);
     }
   }, [tickerSymbol]);
 
@@ -86,7 +83,7 @@ export default function SymbolDetail({
     [symbolDetail]
   );
 
-  if (!formattedSymbolWithExchange) {
+  if (!formattedSymbolWithExchange || !symbolDetail) {
     return <></>;
   }
 
@@ -260,10 +257,7 @@ export default function SymbolDetail({
             Add {tickerSymbol} to {symbolBucket.name}
           </Button>
         ))}
-      {
-        // TODO: Apply pagination to ETF holders
-      }
-      <ETFHolderList etfSymbols={etfHolders?.results} />
+      <ETFHolderList tickerSymbol={symbolDetail.symbol} />
     </SymbolContainer>
   );
 }
