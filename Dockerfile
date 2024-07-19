@@ -113,7 +113,7 @@ USER etfuser
 # Set the working directory
 WORKDIR /app
 
-COPY package.json package.json
+COPY --chown=etfuser:etfuser package.json package.json
 
 # Create directories with the correct permissions
 RUN mkdir -p /build_artifacts/public/pkg /build_artifacts/public/data /build_artifacts/backend && \
