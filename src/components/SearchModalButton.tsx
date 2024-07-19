@@ -298,6 +298,11 @@ export default function SearchModalButton({
           }
           {totalSearchResults > pageSize && (
             <div style={{ marginTop: 10, textAlign: "center" }}>
+              {
+                // TODO: Fix issue where an infinite loop can occur if scrolling through
+                // this list very fast. This isn't likely tied into the `Pagination`
+                // component itself, but a result of a race condition when doing the data fetch.
+              }
               <Pagination
                 count={totalPages}
                 page={page}
