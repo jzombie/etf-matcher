@@ -287,6 +287,9 @@ export default function SymbolDetail({
         </Box>
       )}
 
+      {
+        // TODO: Show `ETFHoldingList` (~inverse of `ETFHolderList`) if this is an ETF
+      }
       <ETFHolderList tickerSymbol={symbolDetail.symbol} />
     </SymbolContainer>
   );
