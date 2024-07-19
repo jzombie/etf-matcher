@@ -66,10 +66,20 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user with the same UID and GID as the local user
-ARG UID
-ARG GID
-RUN groupadd -g $GID etfuser && \
-    useradd -m -u $UID -g $GID -s /bin/bash etfuser
+ARG UID=1000
+ARG GID=1000
+
+# Create group if it doesn't exist
+RUN if ! getent group $GID; then \
+      groupadd -g $GID etfuser; \
+    else \
+      groupmod -n etfuser $(getent group $GID | cut -d: -f1); \
+    fi
+
+# Create user if it doesn't exist
+RUN if ! id -u $UID; then \
+      useradd -m -u $UID -g $GID -s /bin/bash etfuser; \
+    fi
 
 # Set the working directory
 WORKDIR /app
@@ -78,7 +88,7 @@ COPY package.json package.json
 
 # Create directories with the correct permissions
 RUN mkdir -p /build_artifacts/public/pkg /build_artifacts/public/data /build_artifacts/backend && \
-    chown -R etfuser:etfuser /build_artifacts /app
+    chown -R $UID:$GID /build_artifacts /app
 
 # Switch to the non-root user
 USER etfuser
