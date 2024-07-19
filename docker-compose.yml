@@ -6,8 +6,12 @@ x-base-service: &base-service
   build:
     context: .
     dockerfile: Dockerfile
+    args:
+      UID: ${UID}
+      GID: ${GID}
   environment:
     - FORCE_COLOR=1
+  user: "${UID}:${GID}" # Use the local user UID and GID
 
 services:
   # Generate a production build
