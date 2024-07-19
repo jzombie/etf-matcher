@@ -77,7 +77,7 @@ WORKDIR /app
 # Switch to the non-root user
 USER etfuser
 
-COPY .env /app/.env
+COPY --chown=etfuser:etfuser .env /app/.env
 
 # Install wasm-pack for building the frontend
 RUN cargo install wasm-pack
