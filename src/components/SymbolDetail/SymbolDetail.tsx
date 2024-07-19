@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import SymbolContainer from "../SymbolContainer";
 import { Button, ButtonBase, Typography, Grid, Box } from "@mui/material";
 import Padding from "@layoutKit/Padding";
@@ -15,10 +15,8 @@ import EncodedImage from "../EncodedImage";
 
 import ETFHolderList from "./SymbolDetail.ETFHolderList";
 
-import CircularProgress from "@mui/material/CircularProgress";
-
 import { useNavigate } from "react-router-dom";
-import { toTradingViewSymbolWithExchange } from "@utils/tradingView";
+import formatSymbolWithExchange from "@utils/formatSymbolWithExchange";
 
 export type SymbolDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerSymbol: string;
@@ -83,9 +81,12 @@ export default function SymbolDetail({
 
   const navigate = useNavigate();
 
-  const symbolWithExchange = toTradingViewSymbolWithExchange(symbolDetail);
+  const formattedSymbolWithExchange = useMemo(
+    () => symbolDetail && formatSymbolWithExchange(symbolDetail),
+    [symbolDetail]
+  );
 
-  if (!symbolWithExchange) {
+  if (!formattedSymbolWithExchange) {
     return <></>;
   }
 
@@ -120,7 +121,8 @@ export default function SymbolDetail({
                 </Typography>
                 <Typography variant="body2">
                   {symbolDetail?.company_name}
-                  &nbsp;{symbolDetail?.symbol && `(${symbolDetail.symbol})`}
+                  &nbsp;
+                  {`(${formattedSymbolWithExchange})`}
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
@@ -239,7 +241,7 @@ export default function SymbolDetail({
 
       <div style={{ height: 200 }}>
         <MiniChart
-          symbol={symbolWithExchange}
+          symbol={formattedSymbolWithExchange}
           colorTheme="dark"
           width="100%"
           height="100%"
