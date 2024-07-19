@@ -5,6 +5,8 @@ import usePrevious from "./usePrevious";
 import useStableCurrentRef from "./useStableCurrentRef";
 import usePagination from "./usePagination";
 
+import debounceWithKey from "@utils/debounceWithKey";
+
 export type UseSearchProps = {
   initialQuery?: string;
   initialOnlyExactMatches: boolean;
@@ -94,19 +96,32 @@ export default function useSearch(
 
       _setisLoading(true);
 
-      store
-        .searchSymbols(searchQuery, activePage, pageSize, onlyExactMatches)
-        .then((searchResultsWithTotalCount) => {
-          const { results, total_count } = searchResultsWithTotalCount;
+      // The `debouncedSearch` helps prevent potential infinite loop errors that can be
+      // caused by the user rapidly paginating through results. Usage of the AbortController
+      // AbortSignal didn't seem to alleviate this.
+      const debouncedSearch = debounceWithKey(
+        "use_search",
+        () => {
+          store
+            .searchSymbols(searchQuery, activePage, pageSize, onlyExactMatches)
+            .then((searchResultsWithTotalCount) => {
+              const { results, total_count } = searchResultsWithTotalCount;
 
-          _setSearchResults(results);
-          _setTotalSearchResults(total_count);
-          setPage(activePage);
-          setSelectedIndex(DEFAULT_PROPS.initialSelectedIndex);
-        })
-        .finally(() => {
-          _setisLoading(false);
-        });
+              _setSearchResults(results);
+              _setTotalSearchResults(total_count);
+              setPage(activePage);
+              setSelectedIndex(DEFAULT_PROPS.initialSelectedIndex);
+            })
+            .finally(() => {
+              _setisLoading(false);
+            });
+        },
+        50
+      );
+
+      return () => {
+        debouncedSearch.clear();
+      };
     }
   }, [
     searchQuery,

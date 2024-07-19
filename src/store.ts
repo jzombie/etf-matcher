@@ -188,12 +188,13 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   //   |___  Show errors in UI
   private async _callRustService<T>(
     functionName: string,
-    args: unknown[] = []
+    args: unknown[] = [],
+    abortSignal?: AbortSignal
   ): Promise<T> {
     let resp: T;
 
     try {
-      resp = await libCallRustService<T>(functionName, args);
+      resp = await libCallRustService<T>(functionName, args, abortSignal);
     } catch (err) {
       const funcErrors = {
         ...this.state.rustServiceFunctionErrors,
@@ -249,11 +250,13 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     query: string,
     page: number = 1,
     pageSize: number = 20,
-    onlyExactMatches: boolean = false
+    onlyExactMatches: boolean = false,
+    abortSignal?: AbortSignal
   ): Promise<RustServiceSearchResultsWithTotalCount> {
     return this._callRustService<RustServiceSearchResultsWithTotalCount>(
       "search_symbols",
-      [query.trim(), page, pageSize, onlyExactMatches]
+      [query.trim(), page, pageSize, onlyExactMatches],
+      abortSignal
     );
   }
   async fetchSymbolETFHolders(
