@@ -83,6 +83,10 @@ export default defineConfig({
           src: "./pkg/*",
           dest: path.resolve(DESTINATION_DIR, "pkg"),
         },
+        {
+          src: "README.md",
+          dest: path.resolve(DESTINATION_DIR),
+        },
       ],
     }),
     checker({ typescript: true }),

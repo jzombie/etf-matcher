@@ -12,11 +12,23 @@ use crate::data_models::{
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SymbolSearch {
     pub symbol: String,
-    pub company: Option<String>,
+    pub company_name: Option<String>,
     pub logo_filename: Option<String>,
 }
 
 impl SymbolSearch {
+    // Make initial searches faster
+    pub async fn preload_symbol_search_cache() -> Result<(), JsValue> {
+        let url: String = DataURL::SymbolSearch.value().to_owned();
+    
+        // Fetch and decompress the data, properly awaiting the result and handling errors
+        fetch_and_decompress_gz(&url).await.map_err(|err| {
+            JsValue::from_str(&format!("Failed to fetch and decompress data: {:?}", err))
+        })?;
+        
+        Ok(())
+    }
+
     fn generate_alternative_symbols(query: &str) -> Vec<String> {
         let mut alternatives: Vec<String> = vec![query.to_lowercase()];
         if query.contains('.') {
@@ -66,7 +78,7 @@ impl SymbolSearch {
             let query_lower: String = alternative.to_lowercase();
             for result in &results {
                 let symbol_lower = result.symbol.to_lowercase();
-                let company_lower = result.company.as_deref().map_or("".to_string(), |company| company.to_lowercase());
+                let company_lower = result.company_name.as_deref().map_or("".to_string(), |company_name| company_name.to_lowercase());
 
                 let symbol_match = symbol_lower == query_lower;
                 let company_match = company_lower == query_lower;

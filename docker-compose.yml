@@ -6,10 +6,12 @@ x-base-service: &base-service
   build:
     context: .
     dockerfile: Dockerfile
-  volumes:
-    - .:/app
+    args:
+      UID: ${UID:-1000} # Default to 1000 if UID is not set
+      GID: ${GID:-1000} # Default to 1000 if GID is not set
   environment:
     - FORCE_COLOR=1
+  user: "${UID:-1000}:${GID:-1000}" # Use default values if not set
 
 services:
   # Generate a production build
@@ -17,6 +19,9 @@ services:
   #
   build-dist:
     <<: *base-service
+    # TODO: Only mount `dist`
+    volumes:
+      - .:/app
     command: |
       sh -c '
       cp -rT /build_artifacts/public/pkg /app/public/pkg &&
@@ -42,8 +47,12 @@ services:
     entrypoint: ["/usr/bin/tini", "--"]
     command: |
       sh -c '
-      cp -rT /build_artifacts/public/pkg /app/public/pkg &&
-      cp -rT /build_artifacts/public/data /app/public/data &&
+      if [ ! -d "/app/public/pkg" ]; then
+        cp -rT /build_artifacts/public/pkg /app/public/pkg;
+      fi &&
+      if [ ! -d "/app/public/data" ]; then
+        cp -rT /build_artifacts/public/data /app/public/data;
+      fi &&
       npm install &&
       npm run dev
       '
@@ -79,6 +88,24 @@ services:
     environment:
       - RUST_BACKTRACE=1
 
+  dev-import:
+    <<: *base-service
+    volumes:
+      - .:/app
+    command: "import_datapacks"
+    profiles:
+      # Don't run by default
+      - import
+
+  dev-build-rust:
+    <<: *base-service
+    volumes:
+      - .:/app
+    command: "build_rust_frontend"
+    profiles:
+      # Don't run by default
+      - build_rust_frontend
+
   dev-test:
     <<: *base-service
     volumes:
@@ -92,7 +119,6 @@ services:
       '
     environment:
       - RUST_BACKTRACE=1
-      - FORCE_COLOR=1
     profiles:
       # Don't run by default
       - test

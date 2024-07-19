@@ -19,6 +19,8 @@ import Scrollable from "@layoutKit/Scrollable";
 
 import usePageTitleSetter from "@utils/usePageTitleSetter";
 
+import CircularProgress from "@mui/material/CircularProgress";
+
 export default function SearchResults() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -34,6 +36,7 @@ export default function SearchResults() {
     page,
     setPage: _setPage,
     totalPages,
+    isLoading,
   } = useSearch();
 
   useEffect(() => {
@@ -108,6 +111,14 @@ export default function SearchResults() {
   );
 
   if (!searchResultSymbols.length) {
+    if (isLoading) {
+      return (
+        <Center>
+          <CircularProgress />
+        </Center>
+      );
+    }
+
     return (
       <Center>
         <Typography variant="h6" fontWeight="bold">
@@ -115,7 +126,7 @@ export default function SearchResults() {
             <>No search query defined.</>
           ) : (
             <>
-              No {onlyExactMatches && "exact"} search results for &quot;
+              No {onlyExactMatches && "exact symbol"} search results for &quot;
               {searchQuery}&quot;
             </>
           )}
@@ -171,7 +182,7 @@ export default function SearchResults() {
         {totalSearchResults} search result{totalSearchResults !== 1 ? "s" : ""}{" "}
         for &quot;{searchQuery}&quot;
       </Padding>
-      {totalSearchResults > pageSize && (
+      {totalSearchResults > pageSize && !isLoading && (
         <Box sx={{ textAlign: "center" }}>
           <Pagination
             count={totalPages}
@@ -184,7 +195,7 @@ export default function SearchResults() {
         </Box>
       )}
       <SymbolDetailList tickerSymbols={searchResultSymbols} />
-      {totalSearchResults > pageSize && (
+      {totalSearchResults > pageSize && !isLoading && (
         <Box sx={{ textAlign: "center" }}>
           <Pagination
             count={totalPages}

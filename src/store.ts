@@ -5,6 +5,7 @@ import type {
   RustServiceSearchResultsWithTotalCount,
   RustServiceETFHoldersWithTotalCount,
   RustServiceCacheDetail,
+  RustServiceETFAggregateDetail,
 } from "@utils/callWorkerFunction";
 import detectHTMLJSVersionSync from "@utils/PROTO_detectHTMLJSVersionSync";
 
@@ -123,6 +124,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // TODO: Poll for data build info once every "x" to ensure the data is always running the latest version
     this._fetchDataBuildInfo();
 
+    // Make initial searches faster
+    this._preloadSymbolSearchCache();
+
     // TODO: Remove temporary
     // setInterval(() => {
     //   this.setState((prev) => ({
@@ -228,6 +232,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return resp;
   }
 
+  private async _preloadSymbolSearchCache() {
+    return this._callWorkerFunction("preload_symbol_search_cache");
+  }
+
   // PROTO_getCacheDetails() {
   //   this._callWorkerFunction<RustServiceCacheDetail[]>("get_cache_details")
   //     .then(console.table)
@@ -272,6 +280,15 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
+  async fetchETFAggregateDetail(
+    etfSymbol: string
+  ): Promise<RustServiceETFAggregateDetail> {
+    return this._callWorkerFunction<RustServiceETFAggregateDetail>(
+      "get_etf_aggregate_detail",
+      etfSymbol
+    );
+  }
+
   // PROTO_countEtfsPerExchange() {
   //   callWorkerFunction("count_etfs_per_exchange")
   //     .then((countsPerExchange) =>
@@ -298,11 +315,41 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return this._callWorkerFunction<string>("get_image_base64", filename);
   }
 
+  // TODO: Remove; just debugging; probably don't need to expose this
+  PROTO_fetchSymbolWithId(tickerId: number) {
+    this._callWorkerFunction("get_symbol_with_id", tickerId).then(
+      console.debug
+    );
+  }
+
+  // TODO: Remove; just debugging; probably don't need to expose this
+  PROTO_fetchExchangeIdWithTickerId(tickerId: number) {
+    this._callWorkerFunction("get_exchange_id_with_ticker_id", tickerId).then(
+      console.debug
+    );
+  }
+
+  // TODO: Remove; just debugging; probably don't need to expose this
+  PROTO_fetchSectorNameWithId(sectorId: number) {
+    this._callWorkerFunction("get_sector_name_with_id", sectorId).then(
+      console.debug
+    );
+  }
+
+  // TODO: Remove; just debugging; probably don't need to expose this
+  PROTO_fetchIndustryNameWithId(industryId: number) {
+    this._callWorkerFunction("get_industry_name_with_id", industryId).then(
+      console.debug
+    );
+  }
+
   PROTO_removeCacheEntry(key: string) {
+    // TODO: Add rapid UI update
     this._callWorkerFunction("remove_cache_entry", key);
   }
 
   PROTO_clearCache() {
+    // TODO: Add rapid UI update
     this._callWorkerFunction("clear_cache");
   }
 

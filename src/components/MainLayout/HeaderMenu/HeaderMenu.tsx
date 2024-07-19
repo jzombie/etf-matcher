@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   IconButton,
   Drawer,
@@ -28,17 +28,20 @@ import clsx from "clsx";
 import { styled } from "@mui/system";
 import LogoNavButton from "@components/LogoNavButton";
 
+import SlidingBackground from "./HeaderMenu.SlidingBackground";
+
 import store from "@src/store";
 
 export default function HeaderMenu() {
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
-
   const isDesktop = useMediaQuery("@media (min-width:800px)");
 
+  const menuRef = useRef<HTMLDivElement>(null);
+
   const toggleDrawer = () => {
-    setDrawerOpen(!drawerOpen);
+    setDrawerOpen((prev) => !prev);
   };
 
   const menuItems = [
@@ -92,13 +95,16 @@ export default function HeaderMenu() {
       <Toolbar>
         {isDesktop ? (
           <Box
+            ref={menuRef}
             sx={{
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               flexGrow: 1,
+              position: "relative",
             }}
           >
+            <SlidingBackground menuRef={menuRef} selectedKey={selectedKey} />
             <DesktopStyledLogoBranding>
               <LogoNavButton />
             </DesktopStyledLogoBranding>
@@ -112,10 +118,8 @@ export default function HeaderMenu() {
                 })}
                 sx={{
                   color: item.key === selectedKey ? "white" : "inherit",
-                  backgroundColor:
-                    item.key === selectedKey
-                      ? theme.palette.primary.main
-                      : "transparent",
+                  position: "relative",
+                  zIndex: 1,
                   textDecoration: "none",
                   display: "flex",
                   alignItems: "center",
@@ -203,7 +207,10 @@ export default function HeaderMenu() {
                 <ListItem
                   sx={{
                     color: "white",
-                    backgroundColor: "transparent",
+
+                    backgroundColor: shouldHighlightSearchButton
+                      ? theme.palette.primary.main
+                      : "transparent",
                     "&:hover": {
                       backgroundColor: theme.palette.action.hover,
                     },

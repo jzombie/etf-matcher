@@ -29,7 +29,7 @@
         "ignoreRestSiblings": true
       }
     ],
-    "no-undef": "warn",
+    "no-undef": "off", // Disable this rule for TypeScript as it handles this check
     "no-restricted-globals": [
       "error",
       {

@@ -4,6 +4,7 @@ use crate::utils::shard::query_shard_for_symbol;
 use crate::utils::uncompress_logo_filename;
 use crate::data_models::DataURL;
 
+// TODO: Move to `utils`
 // Custom deserialization function to convert Option<i32> to Option<bool>
 fn from_numeric_to_option_bool<'de, D>(deserializer: D) -> Result<Option<bool>, D::Error>
 where
@@ -15,12 +16,14 @@ where
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SymbolDetail {
+    pub ticker_id: i32,
     pub symbol: String,
+    pub exchange_short_name: Option<String>,
     pub company_name: String,
     pub cik: Option<String>,
     pub country_code: Option<String>,
-    pub industry: Option<String>,
-    pub sector: Option<String>,
+    pub industry_name: Option<String>,
+    pub sector_name: Option<String>,
     #[serde(deserialize_with = "from_numeric_to_option_bool")]
     pub is_etf: Option<bool>,
     pub score_avg_dca: Option<f32>,

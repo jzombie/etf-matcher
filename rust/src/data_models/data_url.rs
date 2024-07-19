@@ -1,18 +1,26 @@
 pub enum DataURL {
     DataBuildInfo,
+    TickerByIdIndex,
+    SectorByIdIndex,
+    IndustryByIdIndex,
     SymbolSearch,
     SymbolDetailShardIndex,
     SymbolETFHoldersShardIndex,
-    Image(String), // Add this variant
+    ETFAggregateDetailShardIndex,
+    Image(String),
 }
 
 impl DataURL {
     pub fn value(&self) -> &'static str {
         match self {
             DataURL::DataBuildInfo => "/data/data_build_info.enc",
+            DataURL::TickerByIdIndex => "/data/ticker_by_id_index.enc",
+            DataURL::SectorByIdIndex => "/data/sector_by_id_index.enc",
+            DataURL::IndustryByIdIndex => "/data/industry_by_id_index.enc",
             DataURL::SymbolSearch => "/data/symbol_search_dict.enc",
-            DataURL::SymbolDetailShardIndex => "/data/symbol_detail_index.enc",
-            DataURL::SymbolETFHoldersShardIndex => "/data/symbol_etf_holders_index.enc",
+            DataURL::SymbolDetailShardIndex => "/data/symbol_detail_shard_index.enc",
+            DataURL::SymbolETFHoldersShardIndex => "/data/symbol_etf_holders_shard_index.enc",
+            DataURL::ETFAggregateDetailShardIndex => "/data/etf_aggregate_detail_shard_index.enc",
             DataURL::Image(_) => panic!("Use image_url() for image paths"), // Prevent calling value() for images
         }
     }

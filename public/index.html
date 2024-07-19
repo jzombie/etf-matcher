@@ -108,7 +108,7 @@
       }
 
       /* Render noscript front and center */
-      noscript.big {
+      noscript.modal {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -122,6 +122,12 @@
         font-weight: bold;
         font-size: 2em;
         text-align: center;
+      }
+
+      noscript.modal .small {
+        font-size: 1rem;
+        max-width: 70vw;
+        margin: 2rem auto;
       }
     </style>
   </head>
@@ -144,9 +150,16 @@
         </div>
       </noscript>
     </div>
-    <noscript class="big"
-      >JavaScript must be enabled to use this application.</noscript
-    >
+    <noscript class="modal"
+      ><div>
+        JavaScript must be enabled to use this application.
+
+        <p class="small">
+          ETF Matcher leverages Rust compiled to WebAssembly (WASM), executed
+          via a Web Worker thread for optimal performance.
+        </p>
+      </div>
+    </noscript>
     <script type="module" src="./src/main.tsx"></script>
   </body>
 </html>
