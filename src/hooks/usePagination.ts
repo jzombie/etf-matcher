@@ -28,10 +28,11 @@ export default function usePagination(
     [mergedProps.totalItems, pageSize]
   );
 
-  const remaining = useMemo(
-    () => mergedProps.totalItems - page * pageSize,
-    [mergedProps.totalItems, page, pageSize]
-  );
+  const remaining = useMemo(() => {
+    const calc = mergedProps.totalItems - page * pageSize;
+
+    return calc > 0 ? calc : 0;
+  }, [mergedProps.totalItems, page, pageSize]);
   const resetPagination = useCallback(() => {
     setPage(DEFAULT_PAGINATION_PROPS.initialPage);
   }, []);
