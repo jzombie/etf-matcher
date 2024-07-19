@@ -10,6 +10,8 @@ export type ETFHolderProps = {
 export default function ETFHolderProps({ etfSymbol }: ETFHolderProps) {
   const navigate = useNavigate();
 
+  // TODO: Look up more information about this symbol (i.e. holdings, etc.)
+
   return (
     <Button onClick={() => navigate(`/search?query=${etfSymbol}&exact=true`)}>
       {etfSymbol}
