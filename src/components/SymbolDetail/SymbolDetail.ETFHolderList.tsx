@@ -19,7 +19,7 @@ export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
     RustServiceETFHoldersWithTotalCount | undefined
   >(undefined);
 
-  const { page, setPage, totalPages, remaining } = usePagination({
+  const { page, setPage, totalPages } = usePagination({
     totalItems: etfHolders?.total_count,
   });
 
