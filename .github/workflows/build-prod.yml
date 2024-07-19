@@ -14,18 +14,19 @@ jobs:
 
       - name: Create mock data files
         run: |
-          mkdir -p /app/data
-          echo "mock data" > /app/data/datapack.data.enc
-          echo "mock data" > /app/data/datapack.image1.enc
-          echo "mock data" > /app/data/datapack.image2.enc
-          zip -j /app/data/datapack.data.zip /app/data/datapack.data.enc
-          zip -j /app/data/datapack.images.zip /app/data/datapack.image1.enc /app/data/datapack.image2.enc
+          mkdir -p $GITHUB_WORKSPACE/app/data
+          echo "mock data" > $GITHUB_WORKSPACE/app/data/datapack.data.enc
+          echo "mock data" > $GITHUB_WORKSPACE/app/data/datapack.image1.enc
+          echo "mock data" > $GITHUB_WORKSPACE/app/data/datapack.image2.enc
+          zip -j $GITHUB_WORKSPACE/app/data/datapack.data.zip $GITHUB_WORKSPACE/app/data/datapack.data.enc
+          zip -j $GITHUB_WORKSPACE/app/data/datapack.images.zip $GITHUB_WORKSPACE/app/data/datapack.image1.enc $GITHUB_WORKSPACE/app/data/datapack.image2.enc
 
       - name: Create mock .env file
-        run: echo "ENCRYPTED_PASSWORD=your_encrypted_password" > .env
+        run: echo "ENCRYPTED_PASSWORD=your_encrypted_password" > $GITHUB_WORKSPACE/.env
 
       - name: Set up environment
         run: sudo apt-get update && sudo apt-get install -y make cmake zip
 
       - name: Run build-prod
         run: make build-prod
+        working-directory: $GITHUB_WORKSPACE
