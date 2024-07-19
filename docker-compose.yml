@@ -6,8 +6,12 @@ x-base-service: &base-service
   build:
     context: .
     dockerfile: Dockerfile
+    args:
+      UID: ${UID:-1000} # Default to 1000 if UID is not set
+      GID: ${GID:-1000} # Default to 1000 if GID is not set
   environment:
     - FORCE_COLOR=1
+  user: "${UID:-1000}:${GID:-1000}" # Use default values if not set
 
 services:
   # Generate a production build

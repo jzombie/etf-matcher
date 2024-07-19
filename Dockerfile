@@ -1,5 +1,5 @@
 # Base image for building Rust projects
-FROM rust:1.79.0 as rust-base
+FROM rust:1.79.0 AS rust-base
 
 # Tell `validate_docker_env.sh` that we're in a Docker build
 ARG DOCKER_BUILD=1
@@ -23,7 +23,7 @@ RUN for script in /app/docker_build_helpers/*.sh; do \
 # ----- BEGIN DATAPACK_EXTRACT BUILD STAGE
 
 # Backend build stage
-FROM rust-base as datapack-extract
+FROM rust-base AS datapack-extract
 
 # Copy data files
 COPY data/ /app/data/
@@ -36,7 +36,7 @@ RUN import_datapacks
 # ----- BEGIN FRONTEND BUILD STAGE
 
 # Frontend build stage
-FROM rust-base as frontend-build
+FROM rust-base AS frontend-build
 
 COPY .env /app/.env
 
@@ -55,7 +55,7 @@ RUN build_rust_frontend
 # ----- END FRONTEND BUILD STAGE
 
 # Final stage
-FROM frontend-build as final
+FROM frontend-build AS final
 
 # Install necessary dependencies including Node.js
 RUN apt-get update && \
@@ -65,27 +65,41 @@ RUN apt-get update && \
     npm install -g vite && \
     rm -rf /var/lib/apt/lists/*
 
+# Create a non-root user with the same UID and GID as the local user
+ARG UID=1000
+ARG GID=1000
+
+# Create group if it doesn't exist
+RUN if ! getent group $GID; then \
+      groupadd -g $GID etfuser; \
+    else \
+      groupmod -n etfuser $(getent group $GID | cut -d: -f1); \
+    fi
+
+# Create user if it doesn't exist
+RUN if ! id -u $UID; then \
+      useradd -m -u $UID -g $GID -s /bin/bash etfuser; \
+    fi
+
 # Set the working directory
 WORKDIR /app
 
 COPY package.json package.json
 
-# TODO: Uncomment if not mounting locally
-#
-# Install JS project dependencies
-# RUN npm install --verbose
+# Create directories with the correct permissions
+RUN mkdir -p /build_artifacts/public/pkg /build_artifacts/public/data /build_artifacts/backend && \
+    chown -R $UID:$GID /build_artifacts /app
 
-# Create a directory to store build artifacts
-RUN mkdir -p /build_artifacts/public/pkg /build_artifacts/public/data /build_artifacts/backend
+# Switch to the non-root user
+USER etfuser
 
 # Copy build artifacts (this is so that volume mounts won't replace these)
-#
-COPY --from=datapack-extract /build_artifacts/public/data /build_artifacts/public/data
-COPY --from=frontend-build /app/public/pkg /build_artifacts/public/pkg
-COPY --from=frontend-build /app/.env /build_artifacts/.env
+COPY --chown=etfuser:etfuser --from=datapack-extract /build_artifacts/public/data /build_artifacts/public/data
+COPY --chown=etfuser:etfuser --from=frontend-build /app/public/pkg /build_artifacts/public/pkg
+COPY --chown=etfuser:etfuser --from=frontend-build /app/.env /build_artifacts/.env
 
 # Copy the rest of the project files
-COPY . .
+COPY --chown=etfuser:etfuser . .
 
 # Expose port 8000 for the web server
 EXPOSE 8000

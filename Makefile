@@ -17,6 +17,10 @@ CIRCLE_SYMBOL_RED := \033[31m●\033[0m
 CIRCLE_SYMBOL_GRAY := \033[90m●\033[0m
 CIRCLE_SYMBOL_YELLOW := \033[33m●\033[0m
 
+# Set UID and GID to match the local user
+UID := $(shell id -u)
+GID := $(shell id -g)
+
 # Function to check if the container is running
 define check_container_status
   @if [ $$(docker ps -q -f name=$(CONTAINER_NAME)) ]; then \
@@ -54,12 +58,12 @@ help:
 .PHONY: build-dev
 build-dev:
 	@echo "Building Docker container"
-	@DOCKER_BUILDKIT=0 FORCE_COLOR=1 docker compose build
+	@DOCKER_BUILDKIT=0 FORCE_COLOR=1 UID=$(UID) GID=$(GID) docker compose build
 
 .PHONY: start-dev
 start-dev:
 	@echo "Starting development container"
-	@docker compose up
+	@UID=$(UID) GID=$(GID) docker compose up
 
 .PHONY: enter-dev
 enter-dev:
@@ -74,19 +78,19 @@ stop-dev:
 .PHONY: import-dev
 import-dev:
 	@echo "Importing new datapacks"
-	@docker compose up dev-import
+	@UID=$(UID) GID=$(GID) docker compose up dev-import
 
 .PHONY: build-rust-dev
 build-rust-dev:
 	@echo "Building Rust frontend"
-	@docker compose up dev-build-rust
+	@UID=$(UID) GID=$(GID) docker compose up dev-build-rust
 
 .PHONY: test
 test:
 	@echo "Testing..."
-	@docker compose up dev-test
+	@UID=$(UID) GID=$(GID) docker compose up dev-test
 
 .PHONY: build-prod
 build-prod:
 	@echo "Generating production build..."
-	@docker compose build build-dist && docker compose up build-dist
+	@UID=$(UID) GID=$(GID) docker compose build build-dist && UID=$(UID) GID=$(GID) docker compose up build-dist
