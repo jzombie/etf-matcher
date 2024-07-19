@@ -15,7 +15,10 @@ import EncodedImage from "../EncodedImage";
 
 import ETFHolderList from "./SymbolDetail.ETFHolderList";
 
+import CircularProgress from "@mui/material/CircularProgress";
+
 import { useNavigate } from "react-router-dom";
+import { toTradingViewSymbolWithExchange } from "@utils/tradingView";
 
 export type SymbolDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerSymbol: string;
@@ -80,8 +83,11 @@ export default function SymbolDetail({
 
   const navigate = useNavigate();
 
-  // TODO: This needs to be unit tested and made to work explicity for TradingView
-  const symbolWithExchange = (`${symbolDetail?.exchange_short_name ? `${symbolDetail?.exchange_short_name}:` : ''}${symbolDetail?.symbol.replaceAll('-', '.')}`);
+  const symbolWithExchange = toTradingViewSymbolWithExchange(symbolDetail);
+
+  if (!symbolWithExchange) {
+    return <></>;
+  }
 
   return (
     <SymbolContainer
