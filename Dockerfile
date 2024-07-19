@@ -9,7 +9,31 @@ RUN apt-get update && \
     apt-get install -y cmake libz-dev python3 curl openssl && \
     rm -rf /var/lib/apt/lists/*
 
-# Create a new directory for the project
+# Create a non-root user with the same UID and GID as the local user
+ARG UID=1000
+ARG GID=1000
+
+# Create group if it doesn't exist
+RUN if ! getent group $GID; then \
+      groupadd -g $GID etfuser; \
+    else \
+      groupmod -n etfuser $(getent group $GID | cut -d: -f1); \
+    fi
+
+# Create user if it doesn't exist
+RUN if ! id -u $UID; then \
+      useradd -m -u $UID -g $GID -s /bin/bash etfuser; \
+    fi
+
+# Ensure the non-root user can access the cargo directory
+RUN chown -R $UID:$GID /usr/local/cargo
+
+# Create necessary directories with the correct permissions
+RUN mkdir -p /build_artifacts/public/pkg /build_artifacts/public/data /build_artifacts/backend && \
+    mkdir -p /app/public && \
+    chown -R $UID:$GID /build_artifacts /app/public
+
+# Set the working directory
 WORKDIR /app
 
 COPY docker_build_helpers/ ./docker_build_helpers/
@@ -20,13 +44,22 @@ RUN for script in /app/docker_build_helpers/*.sh; do \
         ln -s "$script" /usr/local/bin/$(basename "$script" .sh); \
     done
 
+# Switch to the non-root user
+USER etfuser
+
 # ----- BEGIN DATAPACK_EXTRACT BUILD STAGE
 
 # Backend build stage
 FROM rust-base AS datapack-extract
 
-# Copy data files
-COPY data/ /app/data/
+# Set the working directory
+WORKDIR /app
+
+# Copy data files with correct ownership
+COPY --chown=etfuser:etfuser data/ /app/data/
+
+# Switch to the non-root user
+USER etfuser
 
 # Run the extraction script
 RUN import_datapacks
@@ -37,6 +70,12 @@ RUN import_datapacks
 
 # Frontend build stage
 FROM rust-base AS frontend-build
+
+# Set the working directory
+WORKDIR /app
+
+# Switch to the non-root user
+USER etfuser
 
 COPY .env /app/.env
 
@@ -65,21 +104,8 @@ RUN apt-get update && \
     npm install -g vite && \
     rm -rf /var/lib/apt/lists/*
 
-# Create a non-root user with the same UID and GID as the local user
-ARG UID=1000
-ARG GID=1000
-
-# Create group if it doesn't exist
-RUN if ! getent group $GID; then \
-      groupadd -g $GID etfuser; \
-    else \
-      groupmod -n etfuser $(getent group $GID | cut -d: -f1); \
-    fi
-
-# Create user if it doesn't exist
-RUN if ! id -u $UID; then \
-      useradd -m -u $UID -g $GID -s /bin/bash etfuser; \
-    fi
+# Switch to the non-root user
+USER etfuser
 
 # Set the working directory
 WORKDIR /app
@@ -89,9 +115,6 @@ COPY package.json package.json
 # Create directories with the correct permissions
 RUN mkdir -p /build_artifacts/public/pkg /build_artifacts/public/data /build_artifacts/backend && \
     chown -R $UID:$GID /build_artifacts /app
-
-# Switch to the non-root user
-USER etfuser
 
 # Copy build artifacts (this is so that volume mounts won't replace these)
 COPY --chown=etfuser:etfuser --from=datapack-extract /build_artifacts/public/data /build_artifacts/public/data
