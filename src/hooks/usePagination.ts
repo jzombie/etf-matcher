@@ -24,7 +24,7 @@ export default function usePagination(
   const [pageSize, setPageSize] = useState<number>(mergedProps.initialPageSize);
 
   const totalPages = useMemo(
-    () => Math.ceil(mergedProps.totalItems / pageSize),
+    () => Math.ceil(mergedProps.totalItems / pageSize) || 1,
     [mergedProps.totalItems, pageSize]
   );
 
