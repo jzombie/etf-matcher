@@ -3,14 +3,11 @@ use aes::Aes256;
 use block_modes::{BlockMode, Cbc};
 use block_modes::block_padding::Pkcs7;
 use flate2::read::GzDecoder;
-use js_sys::Date;
 use std::convert::TryInto;
 use std::io::Read;
 use hex;
-use std::cell::RefCell;
 use futures::FutureExt;
 
-use crate::utils::{CACHE, CachedFuture};
 use crate::utils::decrypt::password::{
     Aes256Cbc,
     get_encrypted_password,
@@ -18,6 +15,8 @@ use crate::utils::decrypt::password::{
     decrypt_password
 };
 use crate::utils::xhr_fetch;
+use crate::utils::{get_cache_future, insert_cache_future, remove_cache_entry};
+
 
 pub async fn fetch_and_decompress_gz<T>(url: T, use_cache: bool) -> Result<Vec<u8>, JsValue>
 where
@@ -26,34 +25,22 @@ where
     let url_str: String = url.as_ref().to_string();
 
     if use_cache {
-        let shared_future = CACHE.with(|cache| {
-            let mut cache = cache.borrow_mut();
-            if let Some(cached_future) = cache.get(&url_str) {
-                *cached_future.last_accessed.borrow_mut() = Date::now();
-                *cached_future.access_count.borrow_mut() += 1;
-                cached_future.future.clone()
-            } else {
-                let future = decrypt_and_decompress_data(url_str.clone()).boxed_local().shared();
-                let cached_future = CachedFuture {
-                    future: future.clone(),
-                    added_at: Date::now(),
-                    last_accessed: RefCell::new(Date::now()),
-                    access_count: RefCell::new(1),
-                };
-                cache.insert(url_str.clone(), cached_future);
-                future
-            }
-        });
-
-        match shared_future.await {
-            Ok(result) => Ok(result),
-            Err(err) => {
-                CACHE.with(|cache| {
-                    cache.borrow_mut().remove(&url_str);
-                });
-                Err(JsValue::from_str(&format!("Error: {:?}", err)))
-            },
+        if let Some(shared_future) = get_cache_future(&url_str) {
+            let result = shared_future.await;
+            return result.map_err(|err| {
+                remove_cache_entry(&url_str);
+                JsValue::from_str(&format!("Error: {:?}", err))
+            });
         }
+
+        let future = decrypt_and_decompress_data(url_str.clone()).boxed_local().shared();
+        insert_cache_future(&url_str, future.clone());
+        let result = future.await;
+
+        result.map_err(|err| {
+            remove_cache_entry(&url_str);
+            JsValue::from_str(&format!("Error: {:?}", err))
+        })
     } else {
         web_sys::console::debug_1(&"Skipping cache".into());
         decrypt_and_decompress_data(url_str).await

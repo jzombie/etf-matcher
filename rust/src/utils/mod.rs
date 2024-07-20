@@ -7,7 +7,7 @@ pub mod cache;
 pub mod xhr_fetch;
 
 // Re-export cache methods to be accessible from other modules
-pub use cache::{CACHE, CachedFuture};
+pub use cache::{get_cache_future, insert_cache_future, remove_cache_entry};
 
 // Re-export to avoid doubled-up "uncompress_logo_filename::uncompress_logo_filename" in consumers
 mod uncompress_logo_filename;
