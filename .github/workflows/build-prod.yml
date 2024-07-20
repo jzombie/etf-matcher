@@ -1,4 +1,4 @@
-name: Build Production
+name: Build and Test
 
 on:
   push:
@@ -33,4 +33,22 @@ jobs:
 
       - name: Run build-prod
         run: make build-prod
+        working-directory: ${{ github.workspace }}
+
+  lint_and_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up environment
+        run: sudo apt-get update && sudo apt-get install -y make
+
+      - name: Run lint
+        run: make lint
+        working-directory: ${{ github.workspace }}
+
+      - name: Run tests
+        run: make test
         working-directory: ${{ github.workspace }}
