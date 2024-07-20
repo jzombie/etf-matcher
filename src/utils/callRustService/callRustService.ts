@@ -13,15 +13,32 @@ const messagePromises: {
 } = {};
 
 worker.onmessage = (event) => {
-  const { messageId, success, result, error } = event.data;
-  if (messageId in messagePromises) {
-    const { resolve, reject } = messagePromises[messageId];
-    if (success) {
-      resolve(result);
-    } else {
-      reject(new Error(error));
+  const {
+    messageId,
+    success,
+    result,
+    error,
+    envelopeType,
+    notifierEventType,
+    notifierArgs,
+  } = event.data;
+
+  if (envelopeType === "function") {
+    if (messageId in messagePromises) {
+      const { resolve, reject } = messagePromises[messageId];
+      if (success) {
+        resolve(result);
+      } else {
+        reject(new Error(error));
+      }
+      delete messagePromises[messageId];
     }
-    delete messagePromises[messageId];
+  } else if (envelopeType === "notifyEvent") {
+    customLogger.log(
+      "Received notification from worker:",
+      notifierEventType,
+      notifierArgs
+    );
   }
 };
 
