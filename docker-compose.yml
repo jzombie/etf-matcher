@@ -13,6 +13,14 @@ x-base-service: &base-service
     - FORCE_COLOR=1
   user: "${UID:-1000}:${GID:-1000}" # Use default values if not set
 
+x-base-dev-service: &base-dev-service
+  <<: *base-service
+  volumes:
+    - .:/app
+  environment:
+    - RUST_BACKTRACE=1
+    - FORCE_COLOR=1
+
 services:
   # Generate a production build
   #   Command: "docker compose build build-dist && docker compose up build-dist"
@@ -33,17 +41,12 @@ services:
       # Don't run by default
       - production-build
 
-  # --- The following is used for development environments
+  # --- The following are used for development environments
 
   dev:
-    <<: *base-service
-    build:
-      context: .
-      dockerfile: Dockerfile
+    <<: *base-dev-service
     ports:
       - "8000:8000"
-    volumes:
-      - .:/app
     entrypoint: ["/usr/bin/tini", "--"]
     command: |
       sh -c '
@@ -56,16 +59,12 @@ services:
       npm install &&
       npm run dev
       '
-    environment:
-      - RUST_BACKTRACE=1
 
   # Used for Rust auto-refresh (not quite HMR, but close)
   dev-rust-hmr:
-    <<: *base-service
+    <<: *base-dev-service
     depends_on:
       - dev
-    volumes:
-      - .:/app
     # Note: The convoluted code in here skips copying over backend files
     # that already exist
     command: |
@@ -85,22 +84,16 @@ services:
       done &&
       ./docker_build_helpers/inotify_rust.sh
       '
-    environment:
-      - RUST_BACKTRACE=1
 
   dev-import:
-    <<: *base-service
-    volumes:
-      - .:/app
+    <<: *base-dev-service
     command: "import_datapacks"
     profiles:
       # Don't run by default
       - import
 
   dev-build-rust:
-    <<: *base-service
-    volumes:
-      - .:/app
+    <<: *base-dev-service
     command: "build_rust_frontend"
     profiles:
       # Don't run by default
@@ -108,9 +101,7 @@ services:
 
   # TODO: This should also test the Rust
   dev-test:
-    <<: *base-service
-    volumes:
-      - .:/app
+    <<: *base-dev-service
     command: |
       sh -c '
       cp -rT /build_artifacts/public/pkg /app/public/pkg &&
@@ -118,17 +109,13 @@ services:
       npm install &&
       npm run test:ci
       '
-    environment:
-      - RUST_BACKTRACE=1
     profiles:
       # Don't run by default
       - test
 
   # TODO: This should also lint the Rust
   dev-lint:
-    <<: *base-service
-    volumes:
-      - .:/app
+    <<: *base-dev-service
     command: |
       sh -c '
       cp -rT /build_artifacts/public/pkg /app/public/pkg &&
