@@ -74,10 +74,10 @@ pub fn get_cache_details() -> JsValue {
     details
 }
 
-pub fn get_cache_future(url_str: &str) -> Option<Shared<LocalBoxFuture<'static, Result<Vec<u8>, JsValue>>>> {
+pub fn get_cache_future(url: &str) -> Option<Shared<LocalBoxFuture<'static, Result<Vec<u8>, JsValue>>>> {
     let result = CACHE.with(|cache| {
         let cache = cache.borrow_mut();
-        if let Some(cached_future) = cache.get(url_str) {
+        if let Some(cached_future) = cache.get(url) {
             *cached_future.last_accessed.borrow_mut() = Date::now();
             *cached_future.access_count.borrow_mut() += 1;
             Some(cached_future.future.clone())
@@ -89,7 +89,7 @@ pub fn get_cache_future(url_str: &str) -> Option<Shared<LocalBoxFuture<'static, 
     result
 }
 
-pub fn insert_cache_future(url_str: &str, future: Shared<LocalBoxFuture<'static, Result<Vec<u8>, JsValue>>>) {
+pub fn insert_cache_future(url: &str, future: Shared<LocalBoxFuture<'static, Result<Vec<u8>, JsValue>>>) {
     CACHE.with(|cache| {
         let mut cache = cache.borrow_mut();
         let cached_future = CachedFuture {
@@ -98,10 +98,10 @@ pub fn insert_cache_future(url_str: &str, future: Shared<LocalBoxFuture<'static,
             last_accessed: RefCell::new(Date::now()),
             access_count: RefCell::new(1),
         };
-        cache.insert(url_str.to_string(), cached_future);
+        cache.insert(url.to_string(), cached_future);
     });
 
-    Notifier::cache_inserted(url_str);
+    Notifier::cache_inserted(url);
 }
 
 pub fn remove_cache_entry(key: &str) {
@@ -116,6 +116,6 @@ pub fn clear_cache() {
     CACHE.with(|cache| {
         cache.borrow_mut().clear();
     });
-    
+
     Notifier::cache_cleared();
 }
