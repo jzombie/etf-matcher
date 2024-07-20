@@ -6,7 +6,6 @@ import {
   FormControl,
   FormHelperText,
 } from "@mui/material";
-import { PREVIEW_UNLOCK } from "@src/store";
 
 import lockScreenImg from "@assets/lock.jpg";
 
@@ -28,6 +27,7 @@ export type LockScreenProps = {
   onUnlock: () => void;
 };
 
+// This component should be removed once launched
 export default function LockScreen({ onUnlock }: LockScreenProps) {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -39,7 +39,8 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (password === PREVIEW_UNLOCK) {
+    // Very simple mechanism to prevent general preview access (and easily bypassed)
+    if (password === import.meta.env.VITE_PREVIEW_UNLOCK) {
       onUnlock();
     } else {
       setErrorMessage("Incorrect password");

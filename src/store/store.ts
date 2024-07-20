@@ -18,10 +18,6 @@ import debounceWithKey from "@utils/debounceWithKey";
 
 const IS_PROD = import.meta.env.PROD;
 
-// TODO: Remove once launched
-// Note: This is not intended to be very secure, or else it would not be hardcoded here!
-export const PREVIEW_UNLOCK = "growth";
-
 export type SymbolBucketProps = {
   name: string;
   symbols: string[];
