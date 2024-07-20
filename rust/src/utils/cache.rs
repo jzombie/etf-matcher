@@ -7,7 +7,7 @@ use futures::future::Shared;
 use futures::FutureExt;
 use futures::future::LocalBoxFuture;
 
-// use crate::utils::Notifier;
+use super::notifier::Notifier;
 
 // Global cache with futures for pending requests
 thread_local! {
@@ -15,14 +15,18 @@ thread_local! {
 }
 
 pub fn get_cache_size() -> usize {
-    CACHE.with(|cache| {
+    let size = CACHE.with(|cache| {
         let cache = cache.borrow();
         cache.values().map(|cached_future| {
             cached_future.future.clone().now_or_never().map_or(0, |result| {
                 result.map_or(0, |data| data.len())
             })
         }).sum()
-    })
+    });
+
+    Notifier::cache_accessed();
+
+    size
 }
 
 pub struct CachedFuture {
@@ -42,8 +46,7 @@ pub struct CacheEntry {
 }
 
 pub fn get_cache_details() -> JsValue {
-    // Notifier::cache_accessed();
-    CACHE.with(|cache| {
+    let details = CACHE.with(|cache| {
         let cache = cache.borrow();
         let now = Date::now();
         let details: Vec<CacheEntry> = cache.iter()
@@ -64,12 +67,15 @@ pub fn get_cache_details() -> JsValue {
             })
             .collect();
         serde_wasm_bindgen::to_value(&details).unwrap()
-    })
+    });
+
+    Notifier::cache_accessed();
+
+    details
 }
 
 pub fn get_cache_future(url_str: &str) -> Option<Shared<LocalBoxFuture<'static, Result<Vec<u8>, JsValue>>>> {
-    // Notifier::cache_accessed();
-    CACHE.with(|cache| {
+    let result = CACHE.with(|cache| {
         let cache = cache.borrow_mut();
         if let Some(cached_future) = cache.get(url_str) {
             *cached_future.last_accessed.borrow_mut() = Date::now();
@@ -78,11 +84,12 @@ pub fn get_cache_future(url_str: &str) -> Option<Shared<LocalBoxFuture<'static, 
         } else {
             None
         }
-    })
+    });
+    Notifier::cache_accessed();
+    result
 }
 
 pub fn insert_cache_future(url_str: &str, future: Shared<LocalBoxFuture<'static, Result<Vec<u8>, JsValue>>>) {
-    // Notifier::cache_inserted();
     CACHE.with(|cache| {
         let mut cache = cache.borrow_mut();
         let cached_future = CachedFuture {
@@ -93,18 +100,22 @@ pub fn insert_cache_future(url_str: &str, future: Shared<LocalBoxFuture<'static,
         };
         cache.insert(url_str.to_string(), cached_future);
     });
+
+    Notifier::cache_inserted(url_str);
 }
 
 pub fn remove_cache_entry(key: &str) {
-    // Notifier::cache_entry_removed(key);
     CACHE.with(|cache| {
         cache.borrow_mut().remove(key);
     });
+
+    Notifier::cache_entry_removed(key);
 }
 
 pub fn clear_cache() {
-    // Notifier::cache_cleared();
     CACHE.with(|cache| {
         cache.borrow_mut().clear();
     });
+    
+    Notifier::cache_cleared();
 }

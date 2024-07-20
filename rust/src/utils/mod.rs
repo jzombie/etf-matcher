@@ -1,4 +1,5 @@
 mod decrypt;
+mod notifier;
 
 pub mod fetch_and_decompress;
 pub mod parse;
