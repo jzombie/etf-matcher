@@ -116,7 +116,7 @@ services:
       cp -rT /build_artifacts/public/pkg /app/public/pkg &&
       cp -rT /build_artifacts/public/data /app/public/data &&
       npm install &&
-      npm run test:ci
+      npm run test:ci || exit 1
       '
     environment:
       - RUST_BACKTRACE=1
@@ -134,7 +134,7 @@ services:
       cp -rT /build_artifacts/public/pkg /app/public/pkg &&
       cp -rT /build_artifacts/public/data /app/public/data &&
       npm install &&
-      npm run lint
+      npm run lint || exit 1
       '
     profiles:
       # Don't run by default
