@@ -1,5 +1,6 @@
 import init, * as wasmModule from "../../../public/pkg/etf_matcher";
 import customLogger from "../customLogger";
+import { EnvelopeType } from "./workerMainBindings";
 
 interface CallQueueItem {
   functionName: string;
@@ -76,7 +77,7 @@ self.onmessage = async (event) => {
   promise
     .then((result) => {
       self.postMessage({
-        envelopeType: "function",
+        envelopeType: EnvelopeType.Function,
         success: true,
         result,
         messageId,
@@ -84,7 +85,7 @@ self.onmessage = async (event) => {
     })
     .catch((error) => {
       self.postMessage({
-        envelopeType: "function",
+        envelopeType: EnvelopeType.Function,
         success: false,
         error: error.message,
         messageId,
@@ -99,7 +100,7 @@ self.onmessage = async (event) => {
   }
 ).rustNotifyCallback = function (eventType: string, args: unknown[]) {
   self.postMessage({
-    envelopeType: "notifyEvent",
+    envelopeType: EnvelopeType.NotifiyEvent,
     notifierEventType: eventType,
     notifierArgs: args,
   });

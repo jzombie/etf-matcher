@@ -1,4 +1,5 @@
 import customLogger from "@utils/customLogger";
+import { EnvelopeType } from "./workerMainBindings";
 
 const worker = new Worker(new URL("./worker", import.meta.url), {
   type: "module",
@@ -23,7 +24,7 @@ worker.onmessage = (event) => {
     notifierArgs,
   } = event.data;
 
-  if (envelopeType === "function") {
+  if (envelopeType === EnvelopeType.Function) {
     if (messageId in messagePromises) {
       const { resolve, reject } = messagePromises[messageId];
       if (success) {
@@ -33,7 +34,7 @@ worker.onmessage = (event) => {
       }
       delete messagePromises[messageId];
     }
-  } else if (envelopeType === "notifyEvent") {
+  } else if (envelopeType === EnvelopeType.NotifiyEvent) {
     customLogger.log(
       "Received notification from worker:",
       notifierEventType,
