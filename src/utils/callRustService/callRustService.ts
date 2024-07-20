@@ -32,12 +32,51 @@ worker.onerror = (error) => {
 
 const callRustService = <T>(
   functionName: string,
-  args: unknown[] = []
+  args: unknown[] = [],
+  abortSignal?: AbortSignal
 ): Promise<T> => {
   const messageId = messageCounter++;
-  return new Promise((resolve, reject) => {
+
+  return new Promise<T>((resolve, reject) => {
     messagePromises[messageId] = { resolve, reject };
+
     worker.postMessage({ functionName, args, messageId });
+
+    const handleAbort = () => {
+      // Note: As of now the worker & Rust service do not yet support
+      // this action, but it should be safely ignored
+      worker.postMessage({ messageId, action: "abort" });
+      reject(new Error("Aborted"));
+      delete messagePromises[messageId];
+    };
+
+    if (abortSignal) {
+      abortSignal.addEventListener("abort", handleAbort);
+    }
+
+    // Cleanup function to remove the abort event listener
+    const cleanup = () => {
+      if (abortSignal) {
+        abortSignal.removeEventListener("abort", handleAbort);
+      }
+    };
+
+    // Handle resolving and rejecting to ensure cleanup is called
+    const wrappedResolve = (value: T) => {
+      cleanup();
+      resolve(value);
+    };
+
+    const wrappedReject = (reason?: unknown) => {
+      cleanup();
+      reject(reason);
+    };
+
+    // Replace the original promise handlers with the wrapped ones
+    messagePromises[messageId] = {
+      resolve: wrappedResolve,
+      reject: wrappedReject,
+    };
   });
 };
 
