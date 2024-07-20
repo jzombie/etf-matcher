@@ -35,14 +35,13 @@ export default function EncodedImage({
       setIsLoading(true);
       store
         .fetchImageBase64(encSrc)
-        .then((base64) => {
+        .then((base64: string) => {
           if (encSrcStaticRef.current === encSrc) {
             setBase64(base64);
             setHasError(false); // Reset error state if the image loads successfully
           }
         })
-        .catch((err) => {
-          console.error(err);
+        .catch(() => {
           setHasError(true); // Set error state if the image fails to load
         })
         .finally(() => setIsLoading(false));
