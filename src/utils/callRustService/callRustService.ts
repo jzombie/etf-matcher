@@ -13,6 +13,32 @@ const messagePromises: {
   };
 } = {};
 
+const [subscribe, invokeHooks] = (() => {
+  const subscribers: ((eventType: string, args: unknown[]) => void)[] = [];
+
+  const subscribe = (
+    callback: (eventType: string, args: unknown[]) => void
+  ) => {
+    subscribers.push(callback);
+
+    // Return the unsubscribe function
+    return () => {
+      const index = subscribers.indexOf(callback);
+      if (index !== -1) {
+        subscribers.splice(index, 1);
+      }
+    };
+  };
+
+  const invokeHooks = (eventType: string, args: unknown[]) => {
+    subscribers.forEach((hook) => hook(eventType, args));
+  };
+
+  return [subscribe, invokeHooks];
+})();
+
+export { subscribe, invokeHooks };
+
 worker.onmessage = (event) => {
   const {
     [PostMessageStructKey.MessageId]: messageId,
@@ -35,11 +61,7 @@ worker.onmessage = (event) => {
       delete messagePromises[messageId];
     }
   } else if (envelopeType === EnvelopeType.NotifiyEvent) {
-    customLogger.log(
-      "Received notification from worker:",
-      notifierEventType,
-      notifierArgs
-    );
+    invokeHooks(notifierEventType, notifierArgs);
   }
 };
 
