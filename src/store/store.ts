@@ -1,5 +1,4 @@
 import { ReactStateEmitter } from "@utils/StateEmitter";
-import EventEmitter from "events";
 import callRustService, {
   subscribe as libRustServiceSubscribe,
   NotifierEvent,
@@ -11,6 +10,11 @@ import {
   RustServiceCacheDetail,
   RustServiceETFAggregateDetail,
 } from "@utils/callRustService";
+import {
+  XHROpenedRequests,
+  CacheAccessedRequests,
+} from "./OpenedNetworkRequests";
+
 import detectHTMLJSVersionSync from "@utils/PROTO_detectHTMLJSVersionSync";
 import customLogger from "@utils/customLogger";
 
@@ -162,51 +166,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     // this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
 
-    class OpenedNetworkRequests extends Set {
-      public static PATH_OPENED = "path_opened";
-      public static PATH_CLOSED = "path_closed";
-
-      public emitter: EventEmitter;
-
-      constructor() {
-        super();
-
-        this.emitter = new EventEmitter();
-      }
-
-      add(pathName: string): this {
-        super.add(pathName);
-
-        this.emitter.emit(OpenedNetworkRequests.PATH_OPENED, pathName);
-
-        return this;
-      }
-
-      delete(pathName: string): boolean {
-        const resp = super.delete(pathName);
-
-        if (resp) {
-          this.emitter.emit(OpenedNetworkRequests.PATH_CLOSED, pathName);
-        }
-
-        return resp;
-      }
-    }
-
     const { xhrOpenedRequests, cacheAccessedRequests } = (() => {
-      class XHROpenedRequests extends OpenedNetworkRequests {}
-
-      class CacheOpenedRequests extends OpenedNetworkRequests {
-        add(pathName: string) {
-          setTimeout(() => {
-            this.delete(pathName);
-          }, 100);
-          return super.add(pathName);
-        }
-      }
-
       const xhrOpenedRequests = new XHROpenedRequests();
-      const cacheAccessedRequests = new CacheOpenedRequests();
+      const cacheAccessedRequests = new CacheAccessedRequests();
 
       xhrOpenedRequests.emitter.on(
         XHROpenedRequests.PATH_OPENED,
@@ -229,7 +191,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       );
 
       cacheAccessedRequests.emitter.on(
-        CacheOpenedRequests.PATH_OPENED,
+        CacheAccessedRequests.PATH_OPENED,
         (pathName: string) => {
           this.setState({
             latestCacheOpenedRequestPathName: pathName,
@@ -238,7 +200,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       );
 
       cacheAccessedRequests.emitter.on(
-        CacheOpenedRequests.PATH_CLOSED,
+        CacheAccessedRequests.PATH_CLOSED,
         (pathName: string) => {
           if (this.state.latestCacheOpenedRequestPathName === pathName) {
             this.setState({
