@@ -166,7 +166,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     // this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
 
-    class XHROpenedRequests extends Set {
+    class OpenedNetworkRequests extends Set {
       public emitter: EventEmitter;
 
       constructor() {
@@ -194,33 +194,14 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       }
     }
 
-    class CacheOpenedRequests extends Set {
-      public emitter: EventEmitter;
+    class XHROpenedRequests extends OpenedNetworkRequests {}
 
-      constructor() {
-        super();
-
-        this.emitter = new EventEmitter();
-      }
-
+    class CacheOpenedRequests extends OpenedNetworkRequests {
       add(pathName: string) {
-        this.emitter.emit("pathOpened", pathName);
-
         setTimeout(() => {
           this.delete(pathName);
         }, 100);
-
         return super.add(pathName);
-      }
-
-      delete(pathName: string): boolean {
-        const resp = super.delete(pathName);
-
-        if (resp) {
-          this.emitter.emit("pathClosed", pathName);
-        }
-
-        return resp;
       }
     }
 
