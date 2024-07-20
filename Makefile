@@ -88,14 +88,14 @@ build-rust-dev:
 .PHONY: test
 test:
 	@echo "Testing..."
-	@UID=$(UID) GID=$(GID) docker compose up dev-test
+	@UID=$(UID) GID=$(GID) docker compose up --exit-code-from dev-test dev-test
 
 .PHONY: lint
 lint:
 	@echo "Linting..."
-	@UID=$(UID) GID=$(GID) docker compose up dev-lint
+	@UID=$(UID) GID=$(GID) docker compose up --exit-code-from dev-lint dev-lint
 
 .PHONY: build-prod
 build-prod:
 	@echo "Generating production build..."
-	@UID=$(UID) GID=$(GID) docker compose build build-dist && UID=$(UID) GID=$(GID) docker compose up build-dist
+	@UID=$(UID) GID=$(GID) docker compose build build-dist && UID=$(UID) GID=$(GID) docker compose up --exit-code-from build-dist build-dist
