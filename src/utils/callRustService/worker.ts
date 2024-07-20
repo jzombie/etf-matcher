@@ -75,10 +75,20 @@ self.onmessage = async (event) => {
 
   promise
     .then((result) => {
-      self.postMessage({ success: true, result, messageId });
+      self.postMessage({
+        envelopeType: "function",
+        success: true,
+        result,
+        messageId,
+      });
     })
     .catch((error) => {
-      self.postMessage({ success: false, error: error.message, messageId });
+      self.postMessage({
+        envelopeType: "function",
+        success: false,
+        error: error.message,
+        messageId,
+      });
     });
 };
 
@@ -88,9 +98,9 @@ self.onmessage = async (event) => {
     rustNotifyCallback: (eventType: string, args: unknown[]) => void;
   }
 ).rustNotifyCallback = function (eventType: string, args: unknown[]) {
-  // TODO: Route to main
-  customLogger.log("Notifier event:", {
-    eventType,
-    args,
+  self.postMessage({
+    envelopeType: "notifyEvent",
+    notifierEventType: eventType,
+    notifierArgs: args,
   });
 };
