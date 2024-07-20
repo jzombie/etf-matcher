@@ -1,5 +1,5 @@
 import customLogger from "@utils/customLogger";
-import { EnvelopeType } from "./workerMainBindings";
+import { EnvelopeType, PostMessageStructKey } from "./workerMainBindings";
 
 const worker = new Worker(new URL("./worker", import.meta.url), {
   type: "module",
@@ -15,13 +15,13 @@ const messagePromises: {
 
 worker.onmessage = (event) => {
   const {
-    messageId,
-    success,
-    result,
-    error,
-    envelopeType,
-    notifierEventType,
-    notifierArgs,
+    [PostMessageStructKey.MessageId]: messageId,
+    [PostMessageStructKey.Success]: success,
+    [PostMessageStructKey.Result]: result,
+    [PostMessageStructKey.Error]: error,
+    [PostMessageStructKey.EnvelopeType]: envelopeType,
+    [PostMessageStructKey.NotifierEventType]: notifierEventType,
+    [PostMessageStructKey.NotifierArgs]: notifierArgs,
   } = event.data;
 
   if (envelopeType === EnvelopeType.Function) {

@@ -1,6 +1,6 @@
 import init, * as wasmModule from "../../../public/pkg/etf_matcher";
 import customLogger from "../customLogger";
-import { EnvelopeType } from "./workerMainBindings";
+import { EnvelopeType, PostMessageStructKey } from "./workerMainBindings";
 
 interface CallQueueItem {
   functionName: string;
@@ -77,18 +77,18 @@ self.onmessage = async (event) => {
   promise
     .then((result) => {
       self.postMessage({
-        envelopeType: EnvelopeType.Function,
-        success: true,
-        result,
-        messageId,
+        [PostMessageStructKey.EnvelopeType]: EnvelopeType.Function,
+        [PostMessageStructKey.Success]: true,
+        [PostMessageStructKey.Result]: result,
+        [PostMessageStructKey.MessageId]: messageId,
       });
     })
     .catch((error) => {
       self.postMessage({
-        envelopeType: EnvelopeType.Function,
-        success: false,
-        error: error.message,
-        messageId,
+        [PostMessageStructKey.EnvelopeType]: EnvelopeType.Function,
+        [PostMessageStructKey.Success]: false,
+        [PostMessageStructKey.Error]: error.message,
+        [PostMessageStructKey.MessageId]: messageId,
       });
     });
 };
@@ -100,8 +100,8 @@ self.onmessage = async (event) => {
   }
 ).rustNotifyCallback = function (eventType: string, args: unknown[]) {
   self.postMessage({
-    envelopeType: EnvelopeType.NotifiyEvent,
-    notifierEventType: eventType,
-    notifierArgs: args,
+    [PostMessageStructKey.EnvelopeType]: EnvelopeType.NotifiyEvent,
+    [PostMessageStructKey.NotifierEventType]: eventType,
+    [PostMessageStructKey.NotifierArgs]: args,
   });
 };
