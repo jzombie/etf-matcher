@@ -16,7 +16,7 @@ use hex;
 use std::collections::HashMap;
 use std::cell::RefCell;
 use futures::future::Shared;
-use futures::{FutureExt};
+use futures::FutureExt;
 use futures::future::LocalBoxFuture;
 
 use crate::constants::{
