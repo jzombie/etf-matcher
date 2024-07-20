@@ -1,7 +1,11 @@
 import React from "react";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 
-export default function NetworkRequestNotifier() {
+export type NetworkRequestNotifierProps = React.HTMLAttributes<HTMLElement>;
+
+export default function NetworkRequestNotifier({
+  ...rest
+}: NetworkRequestNotifierProps) {
   const { latestXHROpenedRequestPathName, latestCacheOpenedRequestPathName } =
     useStoreStateReader([
       "latestXHROpenedRequestPathName",
@@ -10,8 +14,9 @@ export default function NetworkRequestNotifier() {
 
   // TODO: Improve layout
   return (
-    <div>
-      {latestXHROpenedRequestPathName} | {latestCacheOpenedRequestPathName}
+    <div {...rest}>
+      {latestXHROpenedRequestPathName}
+      {latestCacheOpenedRequestPathName}
     </div>
   );
 }

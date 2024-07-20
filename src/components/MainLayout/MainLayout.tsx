@@ -55,7 +55,7 @@ export default function MainLayout() {
           )}
         </Content>
         <Footer>
-          <NetworkRequestNotifier />
+          <NetworkRequestNotifier style={{ float: "left", fontSize: ".9em" }} />
           <Typography variant="body2" color="textSecondary" align="right">
             {
               // TODO: Be more specific about which charts are provided by TradingView.

@@ -256,16 +256,18 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     })();
 
     const libRustServiceUnsubscribe = libRustServiceSubscribe(
-      (eventType, args) => {
-        // TODO: Route [potentially debounced] state to class state to trigger UI events
-
+      (eventType: NotifierEvent, args: unknown[]) => {
         const pathName: string = args[0] as string;
 
         if (eventType === NotifierEvent.XHR_REQUEST_CREATED) {
+          // Signal open XHR request
           xhrOpenedRequests.add(pathName);
         }
 
         if (eventType === NotifierEvent.XHR_REQUEST_ERROR) {
+          // Signal closed XHR request
+          xhrOpenedRequests.delete(pathName);
+
           const xhrRequestErrors = {
             ...this.state.rustServiceXHRRequestErrors,
             [pathName]: {
@@ -282,6 +284,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         }
 
         if (eventType === NotifierEvent.XHR_REQUEST_SENT) {
+          // Signal closed XHR request
           xhrOpenedRequests.delete(pathName);
 
           // If a subsequent XHR request path is the same as a previous error, delete the error
@@ -296,6 +299,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         }
 
         if (eventType === NotifierEvent.CACHE_ACCESSED) {
+          // Signal open cache request (auto-closes)
           cacheAccessedRequests.add(pathName);
         }
 
