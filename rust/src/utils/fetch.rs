@@ -16,7 +16,7 @@ use std::cell::RefCell;
 use futures::FutureExt;
 
 use crate::utils::{CACHE, CachedFuture};
-
+use crate::utils::decrypt::password::{get_encrypted_password, get_iv}; // Corrected Import Path
 
 use crate::constants::{
   FETCH_ERROR,
@@ -25,8 +25,6 @@ use crate::constants::{
   XML_HTTP_REQUEST_CACHE_CONTROL_SETTER_ERROR,
   XML_HTTP_REQUEST_SEND_ERROR
 };
-
-include!("../__AUTOGEN__generated_password.rs");
 
 pub fn decrypt_password(encrypted_password: &[u8], salt: &[u8]) -> Result<[u8; 32], JsValue> {
     // Derive the decryption key
