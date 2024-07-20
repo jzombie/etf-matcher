@@ -1,6 +1,22 @@
 pub struct Notifier;
 
 impl Notifier {
+    pub fn xhr_request_created(url: &str) {
+      web_sys::console::log_1(&format!("XHR request created: {}", url).into());
+    }
+
+    pub fn xhr_request_opened(url: &str) {
+        web_sys::console::log_1(&format!("XHR request opened: {}", url).into());
+    }
+
+    pub fn xhr_request_sent(url: &str) {
+        web_sys::console::log_1(&format!("XHR request sent: {}", url).into());
+    }
+
+    pub fn xhr_request_error(url: &str) {
+        web_sys::console::log_1(&format!("XHR request error: {}", url).into());
+    }
+
     pub fn cache_accessed() {
         web_sys::console::log_1(&"Cache accessed".into());
     }

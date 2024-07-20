@@ -4,67 +4,84 @@ use web_sys::XmlHttpRequest;
 use js_sys::{Promise, Date, Uint8Array};
 
 use crate::constants::{
-  FETCH_ERROR,
-  XML_HTTP_REQUEST_CREATE_ERROR,
-  XML_HTTP_REQUEST_OPEN_ERROR,
-  XML_HTTP_REQUEST_CACHE_CONTROL_SETTER_ERROR,
-  XML_HTTP_REQUEST_SEND_ERROR
+    FETCH_ERROR,
+    XML_HTTP_REQUEST_CREATE_ERROR,
+    XML_HTTP_REQUEST_OPEN_ERROR,
+    XML_HTTP_REQUEST_CACHE_CONTROL_SETTER_ERROR,
+    XML_HTTP_REQUEST_SEND_ERROR
 };
 
+use super::notifier::Notifier;
+
 pub async fn xhr_fetch(url: String) -> Result<Vec<u8>, JsValue> {
-  let xhr: XmlHttpRequest = XmlHttpRequest::new().map_err(|err: JsValue| {
-      web_sys::console::debug_1(&format!("{XML_HTTP_REQUEST_CREATE_ERROR}: {:?}", err).into());
-      JsValue::from_str(XML_HTTP_REQUEST_CREATE_ERROR)
-  })?;
+    Notifier::xhr_request_created(&url);
 
-  let timestamp: String = Date::now().to_string();
-  let no_cache_url: String = format!("{}?no_cache={}", url, timestamp);
+    let xhr: XmlHttpRequest = XmlHttpRequest::new().map_err(|err: JsValue| {
+        web_sys::console::debug_1(&format!("{XML_HTTP_REQUEST_CREATE_ERROR}: {:?}", err).into());
+        Notifier::xhr_request_error(&url);
+        JsValue::from_str(XML_HTTP_REQUEST_CREATE_ERROR)
+    })?;
 
-  xhr.open("GET", &no_cache_url).map_err(|err: JsValue| {
-      web_sys::console::debug_1(&format!("{XML_HTTP_REQUEST_OPEN_ERROR}: {:?}", err).into());
-      JsValue::from_str(XML_HTTP_REQUEST_OPEN_ERROR)
-  })?;
+    let timestamp: String = Date::now().to_string();
+    let no_cache_url: String = format!("{}?no_cache={}", url, timestamp);
 
-  xhr.set_response_type(web_sys::XmlHttpRequestResponseType::Arraybuffer);
+    xhr.open("GET", &no_cache_url).map_err(|err: JsValue| {
+        web_sys::console::debug_1(&format!("{XML_HTTP_REQUEST_OPEN_ERROR}: {:?}", err).into());
+        Notifier::xhr_request_error(&url);
+        JsValue::from_str(XML_HTTP_REQUEST_OPEN_ERROR)
+    })?;
 
-  xhr.set_request_header("Cache-Control", "no-cache").map_err(|err: JsValue| {
-      web_sys::console::debug_1(&format!("{XML_HTTP_REQUEST_CACHE_CONTROL_SETTER_ERROR}: {:?}", err).into());
-      JsValue::from_str(XML_HTTP_REQUEST_CACHE_CONTROL_SETTER_ERROR)
-  })?;
+    Notifier::xhr_request_opened(&url);
 
-  xhr.send().map_err(|err: JsValue| {
-      web_sys::console::debug_1(&format!("{XML_HTTP_REQUEST_SEND_ERROR}: {:?}", err).into());
-      JsValue::from_str(XML_HTTP_REQUEST_SEND_ERROR)
-  })?;
+    xhr.set_response_type(web_sys::XmlHttpRequestResponseType::Arraybuffer);
 
-  let promise: Promise = Promise::new(&mut |resolve, reject: js_sys::Function| {
-      let onload: Closure<dyn FnMut()> = Closure::wrap(Box::new(move || {
-          resolve.call1(&JsValue::NULL, &JsValue::NULL).unwrap();
-      }) as Box<dyn FnMut()>);
-      xhr.set_onload(Some(onload.as_ref().unchecked_ref()));
-      onload.forget();
+    xhr.set_request_header("Cache-Control", "no-cache").map_err(|err: JsValue| {
+        web_sys::console::debug_1(&format!("{XML_HTTP_REQUEST_CACHE_CONTROL_SETTER_ERROR}: {:?}", err).into());
+        Notifier::xhr_request_error(&url);
+        JsValue::from_str(XML_HTTP_REQUEST_CACHE_CONTROL_SETTER_ERROR)
+    })?;
 
-      let onerror: Closure<dyn FnMut()> = Closure::wrap(Box::new(move || {
-          reject.call1(&JsValue::NULL, &JsValue::from_str(FETCH_ERROR)).unwrap();
-      }) as Box<dyn FnMut()>);
-      xhr.set_onerror(Some(onerror.as_ref().unchecked_ref()));
-      onerror.forget();
-  });
+    xhr.send().map_err(|err: JsValue| {
+        web_sys::console::debug_1(&format!("{XML_HTTP_REQUEST_SEND_ERROR}: {:?}", err).into());
+        Notifier::xhr_request_error(&url);
+        JsValue::from_str(XML_HTTP_REQUEST_SEND_ERROR)
+    })?;
 
-  JsFuture::from(promise).await.map_err(|_| {
-      web_sys::console::debug_1(&FETCH_ERROR.into());
-      JsValue::from_str(FETCH_ERROR)
-  })?;
+    Notifier::xhr_request_sent(&url);
 
-  if xhr.status().unwrap() != 200 {
-      let status_code: u16 = xhr.status().unwrap();
-      web_sys::console::debug_1(&format!("Failed to load data, status code: {}", status_code).into());
-      return Err(JsValue::from_str(&format!("Failed to load data, status code: {}", status_code)));
-  }
+    let url_clone = url.clone();
+    let promise: Promise = Promise::new(&mut |resolve, reject: js_sys::Function| {
+        let url_clone_inner = url_clone.clone();
+        let onload: Closure<dyn FnMut()> = Closure::wrap(Box::new(move || {
+            resolve.call1(&JsValue::NULL, &JsValue::NULL).unwrap();
+        }) as Box<dyn FnMut()>);
+        xhr.set_onload(Some(onload.as_ref().unchecked_ref()));
+        onload.forget();
 
-  let array_buffer: JsValue = xhr.response().unwrap();
+        let onerror: Closure<dyn FnMut()> = Closure::wrap(Box::new(move || {
+            reject.call1(&JsValue::NULL, &JsValue::from_str(FETCH_ERROR)).unwrap();
+            Notifier::xhr_request_error(&url_clone_inner);
+        }) as Box<dyn FnMut()>);
+        xhr.set_onerror(Some(onerror.as_ref().unchecked_ref()));
+        onerror.forget();
+    });
 
-  let buffer: Uint8Array = Uint8Array::new(&array_buffer);
+    JsFuture::from(promise).await.map_err(|_| {
+        web_sys::console::debug_1(&FETCH_ERROR.into());
+        Notifier::xhr_request_error(&url);
+        JsValue::from_str(FETCH_ERROR)
+    })?;
 
-  Ok(buffer.to_vec())
+    if xhr.status().unwrap() != 200 {
+        let status_code: u16 = xhr.status().unwrap();
+        web_sys::console::debug_1(&format!("Failed to load data, status code: {}", status_code).into());
+        Notifier::xhr_request_error(&url);
+        return Err(JsValue::from_str(&format!("Failed to load data, status code: {}", status_code)));
+    }
+
+    let array_buffer: JsValue = xhr.response().unwrap();
+
+    let buffer: Uint8Array = Uint8Array::new(&array_buffer);
+
+    Ok(buffer.to_vec())
 }
