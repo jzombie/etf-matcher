@@ -5,18 +5,19 @@ import Padding from "@layoutKit/Padding";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import type {
   RustServiceSymbolDetail,
-  RustServiceETFHoldersWithTotalCount,
   RustServiceETFAggregateDetail,
-} from "@utils/callWorkerFunction";
-import { MiniChart } from "react-ts-tradingview-widgets";
+} from "@utils/callRustService";
+import { MiniChart, Timeline } from "react-ts-tradingview-widgets";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 import { styled } from "@mui/system";
 import EncodedImage from "../EncodedImage";
+import NewsIcon from "@mui/icons-material/Article";
 
 import ETFHolderList from "./SymbolDetail.ETFHolderList";
 
 import { useNavigate } from "react-router-dom";
 import formatSymbolWithExchange from "@utils/formatSymbolWithExchange";
+import formatCurrency from "@utils/formatCurrency";
 
 export type SymbolDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerSymbol: string;
@@ -57,17 +58,16 @@ export default function SymbolDetail({
   const [symbolDetail, setSymbolDetail] = useState<
     RustServiceSymbolDetail | undefined
   >(undefined);
-  const [etfHolders, setEtfHolders] = useState<
-    RustServiceETFHoldersWithTotalCount | undefined
-  >(undefined);
+
   const [etfAggregateDetail, setETFAggregateDetail] = useState<
     RustServiceETFAggregateDetail | undefined
   >(undefined);
 
+  const [showNews, setShowNews] = useState(false);
+
   useEffect(() => {
     if (tickerSymbol) {
       store.fetchSymbolDetail(tickerSymbol).then(setSymbolDetail);
-      store.fetchSymbolETFHolders(tickerSymbol).then(setEtfHolders);
     }
   }, [tickerSymbol]);
 
@@ -86,8 +86,8 @@ export default function SymbolDetail({
     [symbolDetail]
   );
 
-  if (!formattedSymbolWithExchange) {
-    return <></>;
+  if (!formattedSymbolWithExchange || !symbolDetail) {
+    return null;
   }
 
   return (
@@ -205,13 +205,11 @@ export default function SymbolDetail({
                         </Typography>
                         <Typography variant="body2">
                           Value:{" "}
-                          {etfAggregateDetail?.aggregate_market_value &&
+                          {etfAggregateDetail?.top_sector_market_value &&
                             etfAggregateDetail?.currency_code &&
-                            new Intl.NumberFormat("en-US", {
-                              style: "currency",
-                              currency: etfAggregateDetail?.currency_code,
-                            }).format(
-                              etfAggregateDetail?.aggregate_market_value
+                            formatCurrency(
+                              etfAggregateDetail.currency_code,
+                              etfAggregateDetail.top_sector_market_value
                             )}
                         </Typography>
                       </Grid>
@@ -227,7 +225,7 @@ export default function SymbolDetail({
                         </Typography>
                         <Typography variant="body2">
                           Weight:{" "}
-                          {etfAggregateDetail?.pct_market_weight.toFixed(2)}
+                          {etfAggregateDetail?.top_pct_sector_weight.toFixed(2)}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -239,7 +237,7 @@ export default function SymbolDetail({
         </InfoContainer>
       </SymbolDetailWrapper>
 
-      <div style={{ height: 200 }}>
+      <Box sx={{ height: 200 }}>
         <MiniChart
           symbol={formattedSymbolWithExchange}
           colorTheme="dark"
@@ -248,22 +246,51 @@ export default function SymbolDetail({
           copyrightStyles={tradingViewCopyrightStyles}
           dateRange="ALL"
         />
-      </div>
+      </Box>
 
-      {symbolBuckets
-        ?.filter((symbolBucket) => symbolBucket.isUserConfigurable)
-        .map((symbolBucket, idx) => (
-          <Button
-            key={idx}
-            onClick={() => store.addSymbolToBucket(tickerSymbol, symbolBucket)}
-          >
-            Add {tickerSymbol} to {symbolBucket.name}
-          </Button>
-        ))}
+      <Box sx={{ textAlign: "center" }}>
+        <Button onClick={() => setShowNews(!showNews)} startIcon={<NewsIcon />}>
+          {showNews ? "Hide News" : "View News"}
+        </Button>
+        {symbolBuckets
+          ?.filter((symbolBucket) => symbolBucket.isUserConfigurable)
+          .map((symbolBucket, idx) => (
+            <Button
+              key={idx}
+              onClick={() =>
+                store.addSymbolToBucket(tickerSymbol, symbolBucket)
+              }
+            >
+              Add {tickerSymbol} to {symbolBucket.name}
+            </Button>
+          ))}
+      </Box>
+
+      {showNews && (
+        // TODO: This seems out of date for `CRWD`, regardless if using `formattedSymbolWithExchange`
+        // or just the `tickerSymbol` itself. Other symbols seem to be okay.
+        <Timeline
+          feedMode="symbol"
+          colorTheme="dark"
+          symbol={formattedSymbolWithExchange}
+          width="100%"
+          copyrightStyles={tradingViewCopyrightStyles}
+        />
+      )}
+
+      {showNews && (
+        <Box mt={2}>
+          <Typography variant="h6">News</Typography>
+          <Typography variant="body2">
+            Placeholder for news articles related to {symbolDetail.symbol}.
+          </Typography>
+        </Box>
+      )}
+
       {
-        // TODO: Apply pagination to ETF holders
+        // TODO: Show `ETFHoldingList` (~inverse of `ETFHolderList`) if this is an ETF
       }
-      <ETFHolderList etfSymbols={etfHolders?.results} />
+      <ETFHolderList tickerSymbol={symbolDetail.symbol} />
     </SymbolContainer>
   );
 }

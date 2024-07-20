@@ -22,14 +22,16 @@ export type RustServiceSymbolDetail = {
 };
 
 export type RustServiceETFAggregateDetail = {
+  ticker_id: number;
   etf_symbol: string;
+  etf_name?: string;
   top_market_value_sector_name: string;
   top_market_value_industry_name: string;
-  aggregate_market_value: number;
+  top_sector_market_value: number;
   currency_code: string;
   top_pct_sector_name: string;
   top_pct_industry_name: string;
-  pct_market_weight: number;
+  top_pct_sector_weight: number;
 };
 
 export type RustServiceSearchResultsWithTotalCount = {

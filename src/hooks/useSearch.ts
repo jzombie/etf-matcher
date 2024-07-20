@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { store } from "@hooks/useStoreStateReader";
-import type { RustServiceSearchResult } from "@utils/callWorkerFunction";
+import type { RustServiceSearchResult } from "@utils/callRustService";
 import usePrevious from "./usePrevious";
 import useStableCurrentRef from "./useStableCurrentRef";
+import usePagination from "./usePagination";
+
+import debounceWithKey from "@utils/debounceWithKey";
 
 export type UseSearchProps = {
   initialQuery?: string;
@@ -40,16 +43,19 @@ export default function useSearch(
   >([]);
   const [totalSearchResults, _setTotalSearchResults] = useState<number>(0);
 
-  const [page, setPage] = useState<number>(mergedProps.initialPage);
-  const [pageSize, setPageSize] = useState<number>(mergedProps.initialPageSize);
-  const totalPages = useMemo(
-    () => Math.ceil(totalSearchResults / pageSize),
-    [totalSearchResults, pageSize]
-  );
-  const remaining = useMemo(
-    () => totalSearchResults - ((page - 1) * pageSize + searchResults.length),
-    [totalSearchResults, page, pageSize, searchResults]
-  );
+  const {
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    totalPages,
+    remaining,
+    resetPagination,
+  } = usePagination({
+    initialPage: mergedProps.initialPage,
+    initialPageSize: mergedProps.initialPageSize,
+    totalItems: totalSearchResults,
+  });
 
   const [selectedIndex, setSelectedIndex] = useState<number>(
     mergedProps.initialSelectedIndex
@@ -62,9 +68,9 @@ export default function useSearch(
     _setSearchQuery("");
     _setSearchResults([]);
     _setTotalSearchResults(0);
-    setPage(DEFAULT_PROPS.initialPage);
+    resetPagination();
     setSelectedIndex(DEFAULT_PROPS.initialSelectedIndex);
-  }, []);
+  }, [resetPagination]);
 
   const setSearchQuery = useCallback((searchQuery: string) => {
     _setSearchQuery(searchQuery.toUpperCase());
@@ -90,19 +96,32 @@ export default function useSearch(
 
       _setisLoading(true);
 
-      store
-        .searchSymbols(searchQuery, activePage, pageSize, onlyExactMatches)
-        .then((searchResultsWithTotalCount) => {
-          const { results, total_count } = searchResultsWithTotalCount;
+      // The `debouncedSearch` helps prevent potential infinite loop errors that can be
+      // caused by the user rapidly paginating through results. Usage of the AbortController
+      // AbortSignal didn't seem to alleviate this.
+      const debouncedSearch = debounceWithKey(
+        "use_search",
+        () => {
+          store
+            .searchSymbols(searchQuery, activePage, pageSize, onlyExactMatches)
+            .then((searchResultsWithTotalCount) => {
+              const { results, total_count } = searchResultsWithTotalCount;
 
-          _setSearchResults(results);
-          _setTotalSearchResults(total_count);
-          setPage(activePage);
-          setSelectedIndex(DEFAULT_PROPS.initialSelectedIndex);
-        })
-        .finally(() => {
-          _setisLoading(false);
-        });
+              _setSearchResults(results);
+              _setTotalSearchResults(total_count);
+              setPage(activePage);
+              setSelectedIndex(DEFAULT_PROPS.initialSelectedIndex);
+            })
+            .finally(() => {
+              _setisLoading(false);
+            });
+        },
+        50
+      );
+
+      return () => {
+        debouncedSearch.clear();
+      };
     }
   }, [
     searchQuery,
@@ -111,6 +130,7 @@ export default function useSearch(
     pageSize,
     resetSearch,
     onlyExactMatches,
+    setPage,
   ]);
 
   return {

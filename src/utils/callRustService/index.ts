@@ -1,5 +1,5 @@
-import callWorkerFunction from "./callWorkerFunction";
-export default callWorkerFunction;
+import callRustService from "./callRustService";
+export default callRustService;
 
 import type {
   RustServiceSearchResult,

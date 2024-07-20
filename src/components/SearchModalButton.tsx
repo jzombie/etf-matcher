@@ -302,8 +302,9 @@ export default function SearchModalButton({
                 count={totalPages}
                 page={page}
                 onChange={(event, nextPage) => setPage(nextPage)}
-                showFirstButton
-                showLastButton
+                // Note: Consider showing `showFirst/LastButton` if horizontal space allows
+                showFirstButton={false}
+                showLastButton={false}
                 sx={{ display: "inline-block" }}
               />
             </div>

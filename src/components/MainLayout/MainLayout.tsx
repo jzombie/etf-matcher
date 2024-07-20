@@ -32,53 +32,56 @@ export default function MainLayout() {
   }
 
   return (
-    <>
-      <FullViewport>
-        <Layout>
-          <Header>
-            <HeaderMenu />
-          </Header>
+    <FullViewport>
+      <Layout>
+        <Header>
+          <HeaderMenu />
+        </Header>
 
-          <Content>
-            {!isRustInit ? (
-              // Note: `<Full>` is not needed here, but is used for testing
-              <Full>
-                <Center>
-                  <Typography variant="h6" component="div" textAlign="center">
-                    Initializing...
-                  </Typography>
-                </Center>
-              </Full>
-            ) : (
-              <Outlet />
-            )}
-          </Content>
-          <Footer>
-            <Typography variant="body2" color="textSecondary" align="right">
-              Charts provided by{" "}
-              <a
-                href="https://www.tradingview.com/"
-                target="_blank"
-                rel="noreferrer"
-                style={{ color: theme.palette.primary.main }}
-              >
-                TradingView
-              </a>
-            </Typography>
-            <TickerTape
-              colorTheme="dark"
-              copyrightStyles={tradingViewCopyrightStyles}
-              symbols={SECTOR_SYMBOLS}
-            />
-          </Footer>
-        </Layout>
-        {isProfilingCacheOverlayOpen && (
-          <Cover clickThrough>
-            <Center>Profiling Cache</Center>
-          </Cover>
-        )}
-      </FullViewport>
-    </>
+        <Content>
+          {!isRustInit ? (
+            // Note: `<Full>` is not needed here, but is used for testing
+            <Full>
+              <Center>
+                <Typography variant="h6" component="div" textAlign="center">
+                  Initializing...
+                </Typography>
+              </Center>
+            </Full>
+          ) : (
+            <Outlet />
+          )}
+        </Content>
+        <Footer>
+          <Typography variant="body2" color="textSecondary" align="right">
+            {
+              // TODO: Be more specific about which charts are provided by TradingView.
+              // If possible to use their `TV` logo snippet as part of this string,
+              // that would be even better.
+            }
+            Charts provided by{" "}
+            <a
+              href="https://www.tradingview.com/"
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: theme.palette.primary.main }}
+            >
+              TradingView
+            </a>
+          </Typography>
+          <TickerTape
+            colorTheme="dark"
+            copyrightStyles={tradingViewCopyrightStyles}
+            symbols={SECTOR_SYMBOLS}
+          />
+        </Footer>
+      </Layout>
+      {isProfilingCacheOverlayOpen && (
+        <Cover clickThrough>
+          <Center>Profiling Cache</Center>
+        </Cover>
+      )}
+    </FullViewport>
   );
 }
 
