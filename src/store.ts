@@ -8,6 +8,7 @@ import type {
   RustServiceETFAggregateDetail,
 } from "@utils/callRustService";
 import detectHTMLJSVersionSync from "@utils/PROTO_detectHTMLJSVersionSync";
+import customLogger from "@utils/customLogger";
 
 import debounceWithKey from "@utils/debounceWithKey";
 
@@ -313,27 +314,29 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchSymbolWithId(tickerId: number) {
-    this._callRustService("get_symbol_with_id", [tickerId]).then(console.debug);
+    this._callRustService("get_symbol_with_id", [tickerId]).then(
+      customLogger.debug
+    );
   }
 
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchExchangeIdWithTickerId(tickerId: number) {
     this._callRustService("get_exchange_id_with_ticker_id", [tickerId]).then(
-      console.debug
+      customLogger.debug
     );
   }
 
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchSectorNameWithId(sectorId: number) {
     this._callRustService("get_sector_name_with_id", [sectorId]).then(
-      console.debug
+      customLogger.debug
     );
   }
 
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchIndustryNameWithId(industryId: number) {
     this._callRustService("get_industry_name_with_id", [industryId]).then(
-      console.debug
+      customLogger.debug
     );
   }
 

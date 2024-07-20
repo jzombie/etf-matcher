@@ -3,6 +3,7 @@ import { renderHook, act } from "@testing-library/react";
 import EmitterState from "../StateEmitter";
 import useStateEmitterReader from "./useStateEmitterReader";
 import { MockInstance } from "vitest";
+import customLogger from "@utils/customLogger";
 
 interface TestState {
   count: number;
@@ -21,7 +22,9 @@ describe("useStateEmitterReader", () => {
       items: ["item1"],
     });
 
-    consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    consoleWarnSpy = vi
+      .spyOn(customLogger, "warn")
+      .mockImplementation(() => {});
   });
 
   afterEach(() => {

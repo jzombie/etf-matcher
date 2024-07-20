@@ -18,6 +18,8 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import customLogger from "@utils/customLogger";
+
 import EncodedImage from "./EncodedImage";
 
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
@@ -167,7 +169,7 @@ export default function SearchModalButton({
   const isModalOpenStableRef = useStableCurrentRef(isModalOpen);
   useEffect(() => {
     if (location && isModalOpenStableRef.current) {
-      console.debug("Closing modal due to location change", location);
+      customLogger.debug("Closing modal due to location change", location);
       handleCancel();
     }
   }, [location, isModalOpenStableRef]);

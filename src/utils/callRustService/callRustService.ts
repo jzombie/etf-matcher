@@ -1,3 +1,5 @@
+import customLogger from "@utils/customLogger";
+
 const worker = new Worker(new URL("./worker", import.meta.url), {
   type: "module",
 });
@@ -24,7 +26,7 @@ worker.onmessage = (event) => {
 };
 
 worker.onerror = (error) => {
-  console.error("Worker error:", error);
+  customLogger.error("Worker error:", error);
   alert(
     `This application is likely not supported on your current browser version or device. If you are on iOS, version 15 may be the minimum that is supported.`
   );

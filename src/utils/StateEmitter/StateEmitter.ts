@@ -1,5 +1,6 @@
 import EventEmitter from "events";
 import deepFreeze from "@utils/deepFreeze";
+import customLogger from "@utils/customLogger";
 
 export enum StateEmitterDefaultEvents {
   UPDATE = "update",
@@ -25,7 +26,7 @@ export default class StateEmitter<T extends object> extends EventEmitter {
   set shouldDeepfreeze(shouldDeepfreeze: boolean) {
     this._shouldDeepfreeze = shouldDeepfreeze;
 
-    console.debug(
+    customLogger.debug(
       `Deepfreeze support ${this._shouldDeepfreeze ? "enabled" : "disabled"}.`
     );
   }
@@ -49,7 +50,7 @@ export default class StateEmitter<T extends object> extends EventEmitter {
     if (typeof structuredClone === "function") {
       this.initialState = deepFreeze(structuredClone(initialState));
     } else {
-      console.warn(
+      customLogger.warn(
         "structuredClone is not available. Initial state will not be deeply cloned, which will affect immutability."
       );
       this.initialState = initialState;

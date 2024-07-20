@@ -6,6 +6,7 @@ import { store } from "@hooks/useStoreStateReader";
 
 import type { RustServiceETFAggregateDetail } from "@utils/callRustService";
 import formatCurrency from "@utils/formatCurrency";
+import customLogger from "@utils/customLogger";
 
 export type ETFHolderProps = {
   etfSymbol: string;
@@ -25,7 +26,7 @@ export default function ETFHolderProps({ etfSymbol }: ETFHolderProps) {
   // TODO: Look up more information about this symbol (i.e. holdings, etc.)
 
   // TODO: Remove
-  console.log({ etfAggregateDetail });
+  customLogger.log({ etfAggregateDetail });
 
   if (!etfAggregateDetail) {
     return null;

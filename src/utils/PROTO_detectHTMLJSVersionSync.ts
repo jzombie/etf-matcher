@@ -1,4 +1,5 @@
 import { buildTime } from "../../public/buildTime.json";
+import customLogger from "./customLogger";
 
 export default function detectHTMLJSVersionSync(): boolean {
   const jsBuildTime = buildTime;
@@ -7,11 +8,11 @@ export default function detectHTMLJSVersionSync(): boolean {
     ?.getAttribute("content");
 
   if (jsBuildTime === htmlBuildTime) {
-    console.debug("HTML and JS versions are in sync");
+    customLogger.debug("HTML and JS versions are in sync");
 
     return true;
   } else {
-    console.warn("HTML and JS versions are not in sync!", {
+    customLogger.warn("HTML and JS versions are not in sync!", {
       jsBuildTime,
       htmlBuildTime,
     });

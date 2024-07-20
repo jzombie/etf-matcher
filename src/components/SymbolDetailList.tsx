@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import SymbolDetail from "./SymbolDetail";
 
+import customLogger from "@utils/customLogger";
+
 export type SymbolDetailListProps = {
   tickerSymbols: string[];
   lookAheadBufferSize?: number;
@@ -12,7 +14,7 @@ export default function SymbolDetailList({
 }: SymbolDetailListProps) {
   useEffect(() => {
     if (tickerSymbols.length !== [...new Set(tickerSymbols)].length) {
-      console.warn(
+      customLogger.warn(
         "`tickerSymbols` is not unique! Unpredictable results may occur."
       );
     }

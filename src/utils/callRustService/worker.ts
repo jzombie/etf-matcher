@@ -1,4 +1,5 @@
 import init, * as wasmModule from "../../../public/pkg/etf_matcher";
+import customLogger from "@utils/customLogger";
 
 interface CallQueueItem {
   functionName: string;
@@ -44,7 +45,7 @@ async function processQueue() {
         )[functionName](...args);
         resolve(result);
       } catch (error) {
-        console.error(
+        customLogger.error(
           `Worker encountered an error @ function "${functionName}" [${args.join(
             ","
           )}]:`,
@@ -58,7 +59,7 @@ async function processQueue() {
 
 self.onmessage = async (event) => {
   const { functionName, args, messageId } = event.data;
-  console.log(
+  customLogger.log(
     "Worker received message with functionName:",
     functionName,
     "and args:",

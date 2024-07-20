@@ -2,6 +2,8 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 
+import customLogger from "@utils/customLogger";
+
 const container = window.document.getElementById("app");
 createRoot(container!).render(
   <React.StrictMode>
@@ -23,7 +25,8 @@ createRoot(container!).render(
 
   // Correctly assign the onmessage handler
   worker.port.onmessage = (event) => {
-    console.log({ message: event.data });
+    // Not really a warn but keeping this for now
+    customLogger.warn({ message: event.data });
   };
 
   worker.port.postMessage("hello");

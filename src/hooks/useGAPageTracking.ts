@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import store from "@src/store";
 
+import customLogger from "@utils/customLogger";
+
 const GOOGLE_ANALYTICS_ID = import.meta.env.VITE_GOOGLE_ANALYTICS_ID;
 const IS_DEV = import.meta.env.DEV;
 
@@ -16,7 +18,7 @@ const IS_GTAG_ENABLED = typeof gtag === "function";
 export default function useGAPageTracking() {
   useEffect(() => {
     if (IS_DEV) {
-      console.debug(
+      customLogger.warn(
         "Skipping GA page tracking due to development environment."
       );
 
@@ -24,7 +26,7 @@ export default function useGAPageTracking() {
     }
 
     if (!GOOGLE_ANALYTICS_ID) {
-      console.warn(
+      customLogger.warn(
         "`GOOGLE_ANALYTICS_ID` was not obtained. Skipping GA page tracking."
       );
 
@@ -32,7 +34,7 @@ export default function useGAPageTracking() {
     }
 
     if (!IS_GTAG_ENABLED) {
-      console.warn("`gtag` is not enabled. Skipping GA page tracking.");
+      customLogger.warn("`gtag` is not enabled. Skipping GA page tracking.");
       return;
     }
 
