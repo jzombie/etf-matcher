@@ -58,7 +58,7 @@ export default function MainLayout() {
         </Content>
         <Footer>
           <NetworkRequestIndicator
-            style={{ position: "absolute", left: 0, top: 0 }}
+            style={{ position: "absolute", left: 8, top: 0 }}
             showNetworkURL={shouldShowNetworkURL}
           />
           <Typography
