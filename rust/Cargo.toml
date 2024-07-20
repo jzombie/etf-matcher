@@ -1,9 +1,13 @@
 [package]
-name = "etf_matcher"
+name = "etf-matcher"
 version = "0.1.0"
 authors = ["Jeremy Harris <jeremy.harris@zenosmosis.com>"]
 edition = "2018"
 build = "build.rs"
+description = "Discover ETFs that most closely match your investment goals."
+repository = "https://github.com/jzombie/etf-matcher"
+license = "MIT"
+publish = false
 
 [dependencies]
 console_error_panic_hook = "0.1"
