@@ -106,6 +106,7 @@ services:
       # Don't run by default
       - build_rust_frontend
 
+  # TODO: This should also test the Rust
   dev-test:
     <<: *base-service
     volumes:
@@ -122,3 +123,19 @@ services:
     profiles:
       # Don't run by default
       - test
+
+  # TODO: This should also lint the Rust
+  dev-lint:
+    <<: *base-service
+    volumes:
+      - .:/app
+    command: |
+      sh -c '
+      cp -rT /build_artifacts/public/pkg /app/public/pkg &&
+      cp -rT /build_artifacts/public/data /app/public/data &&
+      npm install &&
+      npm run lint
+      '
+    profiles:
+      # Don't run by default
+      - lint
