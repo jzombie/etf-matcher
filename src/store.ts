@@ -1,5 +1,7 @@
 import { ReactStateEmitter } from "@utils/StateEmitter";
-import libCallRustService from "@utils/callRustService";
+import libCallRustService, {
+  subscribe as libRustServiceSubscribe,
+} from "@utils/callRustService";
 import type {
   RustServiceSymbolDetail,
   RustServiceSearchResultsWithTotalCount,
@@ -111,7 +113,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         },
       ],
       isProfilingCacheOverlayOpen: false,
-      cacheProfilerWaitTime: 1000,
+      cacheProfilerWaitTime: 500,
       cacheDetails: [],
       cacheSize: 0,
       rustServiceFunctionErrors: {},
@@ -158,9 +160,38 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     // this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
 
+    const libRustServiceUnsubscribe = libRustServiceSubscribe(
+      (eventType, args) => {
+        // TODO: Route [potentially debounced] state to class state to trigger UI events
+
+        if (
+          // TODO: Typedef
+          ["cache_inserted", "cache_entry_removed", "cache_cleared"].includes(
+            eventType
+          )
+        ) {
+          // TODO: These can be removed from here once `notify` is put in place
+          debounceWithKey(
+            "store:cache_profiler",
+            () => {
+              libCallRustService<number>("get_cache_size").then((cacheSize) => {
+                this.setState({ cacheSize });
+              });
+              libCallRustService<RustServiceCacheDetail[]>(
+                "get_cache_details"
+              ).then((cacheDetails) => this.setState({ cacheDetails }));
+            },
+            this.state.cacheProfilerWaitTime
+          );
+        }
+      }
+    );
+
     return () => {
       window.removeEventListener("online", _handleOnlineStatus);
       window.removeEventListener("offline", _handleOnlineStatus);
+
+      libRustServiceUnsubscribe();
 
       // this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
     };
@@ -183,9 +214,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     });
   }
 
-  // TODO: Finish wrapping `callRustService`
+  // TODO: Finish wrapping `callRustService` (or just move everything to
+  // `libCallRustService` subscriber)
+  //   |
   //   |___  Include notification (and route to UI) showing data fetching status
-  //         (potentially show in red, just above the ticker tape)
+  //   |     (potentially show in red, just above the ticker tape)
   //   |___  Show errors in UI
   private async _callRustService<T>(
     functionName: string,
@@ -197,6 +230,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     try {
       resp = await libCallRustService<T>(functionName, args, abortSignal);
     } catch (err) {
+      // TODO: Move this to `libCallRustService` subscriber?
       const funcErrors = {
         ...this.state.rustServiceFunctionErrors,
         [functionName]: {
@@ -215,20 +249,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       } else {
         throw new Error(err?.toString());
       }
-    } finally {
-      // TODO: These can be removed from here once `notify` is put in place
-      debounceWithKey(
-        "store:cache_profiler",
-        () => {
-          libCallRustService<number>("get_cache_size").then((cacheSize) => {
-            this.setState({ cacheSize });
-          });
-          libCallRustService<RustServiceCacheDetail[]>(
-            "get_cache_details"
-          ).then((cacheDetails) => this.setState({ cacheDetails }));
-        },
-        this.state.cacheProfilerWaitTime
-      );
     }
 
     return resp;
