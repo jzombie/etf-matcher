@@ -12,14 +12,20 @@ pub fn extract_logo_filename(
     }
 }
 
-// #[cfg(test)]
-// mod tests {
-//   use super::*;
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-//   #[test]
-//   fn test_extract_logo_filename() {
-//       assert_eq!(extract_logo_filename(Some("s"), "AAPL"), Some("AAPL".to_string()));
-//       assert_eq!(extract_logo_filename(Some("GOOGL"), "GOOGL".to_string()));
-//       assert_eq!(extract_logo_filename(None, "MSFT"), None);
-//   }
-// }
+    #[test]
+    fn test_extract_logo_filename() {
+        assert_eq!(
+            extract_logo_filename(Some("s"), "AAPL"),
+            Some("AAPL.enc".to_string())
+        );
+        assert_eq!(
+            extract_logo_filename(Some("GOOGL"), "GOOGL"),
+            Some("GOOGL.enc".to_string())
+        );
+        assert_eq!(extract_logo_filename(None, "MSFT"), None);
+    }
+}

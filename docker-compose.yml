@@ -99,7 +99,6 @@ services:
       # Don't run by default
       - build_rust_frontend
 
-  # TODO: This should also test the Rust
   dev-test:
     <<: *base-dev-service
     command: |
@@ -107,13 +106,14 @@ services:
       cp -rT /build_artifacts/public/pkg /app/public/pkg &&
       cp -rT /build_artifacts/public/data /app/public/data &&
       npm install &&
-      npm run test:ci
+      npm run test:ci &&
+      cd rust && cargo test
       '
     profiles:
       # Don't run by default
       - test
 
-  # TODO: This should also lint the Rust
+  # TODO: This should also lint the Rust (`cargo clippy --fix` and `cargo fmt`)
   dev-lint:
     <<: *base-dev-service
     command: |
