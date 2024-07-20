@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { Dialog, DialogProps } from "@mui/material";
 import { styled } from "@mui/system";
 
 import FullViewport from "@layoutKit/FullViewport";
 
-const TransparentModalStyled = styled(Dialog)(({ theme }) => ({
+const TransparentModalStyled = styled(Dialog)(() => ({
   "& .MuiDialog-paper": {
     // width: "100vw",
     // height: "100vh",
