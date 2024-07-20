@@ -20,24 +20,7 @@ import Padding from "@layoutKit/Padding";
 import LogoNavButton from "./LogoNavButton";
 
 import { buildTime } from "../../public/buildTime.json";
-
-const formattedBuildTime = (() => {
-  // Convert the ISO string to a Date object
-  const date = new Date(buildTime);
-
-  // Format the date to a locale string with time zone information
-  const formattedDate = new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
-    timeZoneName: "short",
-  }).format(date);
-
-  return formattedDate;
-})();
+import formatLocalTime from "@utils/formatLocalTime";
 
 const LOCK_MESSAGE = "ETF Matcher is currently in limited preview.";
 
@@ -138,7 +121,7 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
           </Content>
           <Footer>
             <Typography variant="body2" sx={{ textAlign: "center" }}>
-              Build time: {formattedBuildTime}
+              Build time: {formatLocalTime(buildTime)}
             </Typography>
           </Footer>
         </Layout>

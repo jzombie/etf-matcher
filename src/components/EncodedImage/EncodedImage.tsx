@@ -47,6 +47,8 @@ export default function EncodedImage({
     return <CircularProgress />;
   }
 
+  // TODO: Handle error fallback (potentially no network so unable to load fallback image)
+
   return (
     <img
       src={base64 ? `data:image/png;base64,${base64}` : noImageAvailable}

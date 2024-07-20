@@ -15,6 +15,7 @@ import ProtoTable from "@components/PROTO_Table";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import formatByteSize from "@utils/formatByteSize";
+import formatLocalTime from "@utils/formatLocalTime";
 
 import usePageTitleSetter from "@utils/usePageTitleSetter";
 
@@ -35,7 +36,7 @@ export default function Settings() {
     symbolBuckets,
     cacheDetails,
     cacheSize,
-    rustServiceFunctionErrors,
+    rustServiceXHRRequestErrors,
   } = useStoreStateReader([
     "isHTMLJSVersionSynced",
     "isAppUnlocked",
@@ -50,7 +51,7 @@ export default function Settings() {
     "symbolBuckets",
     "cacheDetails",
     "cacheSize",
-    "rustServiceFunctionErrors",
+    "rustServiceXHRRequestErrors",
   ]);
 
   return (
@@ -138,14 +139,16 @@ export default function Settings() {
       <Padding>
         <h2>Rust Service Errors</h2>
 
-        {!Object.keys(rustServiceFunctionErrors).length ? (
+        {!Object.keys(rustServiceXHRRequestErrors).length ? (
           <div>No reported errors.</div>
         ) : (
-          Object.keys(rustServiceFunctionErrors).map((functionName) => {
-            const { errCount } = rustServiceFunctionErrors[functionName];
+          Object.keys(rustServiceXHRRequestErrors).map((pathName) => {
+            const { errCount, lastTimestamp } =
+              rustServiceXHRRequestErrors[pathName];
             return (
-              <div key={functionName}>
-                {functionName}: {errCount} error(s)
+              <div key={pathName}>
+                {pathName}: {errCount} error(s) (last:{" "}
+                {formatLocalTime(lastTimestamp)})
               </div>
             );
           })

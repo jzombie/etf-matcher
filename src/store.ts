@@ -1,5 +1,5 @@
 import { ReactStateEmitter } from "@utils/StateEmitter";
-import libCallRustService, {
+import callRustService, {
   subscribe as libRustServiceSubscribe,
 } from "@utils/callRustService";
 import type {
@@ -50,10 +50,10 @@ export type StoreStateProps = {
   cacheProfilerWaitTime: number;
   cacheDetails: RustServiceCacheDetail[];
   cacheSize: number;
-  rustServiceFunctionErrors: {
-    [functionName: string]: {
-      err: Error | unknown;
+  rustServiceXHRRequestErrors: {
+    [pathName: string]: {
       errCount: number;
+      lastTimestamp: string;
     };
   };
 };
@@ -116,7 +116,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       cacheProfilerWaitTime: 500,
       cacheDetails: [],
       cacheSize: 0,
-      rustServiceFunctionErrors: {},
+      rustServiceXHRRequestErrors: {},
     });
 
     // Only deepfreeze in development
@@ -164,8 +164,34 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       (eventType, args) => {
         // TODO: Route [potentially debounced] state to class state to trigger UI events
 
+        // TODO: Typedef using `notifier.rs`
+
+        if (eventType === "xhr_request_error") {
+          const pathName: string = args[0] as string;
+
+          const xhrRequestErrors = {
+            ...this.state.rustServiceXHRRequestErrors,
+            [pathName]: {
+              errCount: this.state.rustServiceXHRRequestErrors[pathName]
+                ?.errCount
+                ? this.state.rustServiceXHRRequestErrors[pathName]?.errCount + 1
+                : 1,
+              lastTimestamp: new Date().toISOString(),
+            },
+          };
+          this.setState({
+            rustServiceXHRRequestErrors: xhrRequestErrors,
+          });
+
+          console.error("xhr_request_error", {
+            eventType,
+            args,
+          });
+        }
+
+        // TODO: If a subsequnt xhr request is the same as a previous error, delete the error?
+
         if (
-          // TODO: Typedef
           ["cache_inserted", "cache_entry_removed", "cache_cleared"].includes(
             eventType
           )
@@ -174,10 +200,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           debounceWithKey(
             "store:cache_profiler",
             () => {
-              libCallRustService<number>("get_cache_size").then((cacheSize) => {
+              callRustService<number>("get_cache_size").then((cacheSize) => {
                 this.setState({ cacheSize });
               });
-              libCallRustService<RustServiceCacheDetail[]>(
+              callRustService<RustServiceCacheDetail[]>(
                 "get_cache_details"
               ).then((cacheDetails) => this.setState({ cacheDetails }));
             },
@@ -202,7 +228,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   private _fetchDataBuildInfo() {
-    this._callRustService("get_data_build_info").then((dataBuildInfo) => {
+    callRustService("get_data_build_info").then((dataBuildInfo) => {
       this.setState({
         isRustInit: true,
         // TODO: If data build time is already set as state, but this indicates otherwise, that's a signal the app needs to update
@@ -214,52 +240,12 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     });
   }
 
-  // TODO: Finish wrapping `callRustService` (or just move everything to
-  // `libCallRustService` subscriber)
-  //   |
-  //   |___  Include notification (and route to UI) showing data fetching status
-  //   |     (potentially show in red, just above the ticker tape)
-  //   |___  Show errors in UI
-  private async _callRustService<T>(
-    functionName: string,
-    args: unknown[] = [],
-    abortSignal?: AbortSignal
-  ): Promise<T> {
-    let resp: T;
-
-    try {
-      resp = await libCallRustService<T>(functionName, args, abortSignal);
-    } catch (err) {
-      // TODO: Move this to `libCallRustService` subscriber?
-      const funcErrors = {
-        ...this.state.rustServiceFunctionErrors,
-        [functionName]: {
-          err,
-          errCount: this.state.rustServiceFunctionErrors[functionName]?.errCount
-            ? this.state.rustServiceFunctionErrors[functionName]?.errCount + 1
-            : 1,
-        },
-      };
-      this.setState({
-        rustServiceFunctionErrors: funcErrors,
-      });
-
-      if (err instanceof Error) {
-        throw err;
-      } else {
-        throw new Error(err?.toString());
-      }
-    }
-
-    return resp;
-  }
-
   private async _preloadSymbolSearchCache() {
-    return this._callRustService("preload_symbol_search_cache");
+    return callRustService("preload_symbol_search_cache");
   }
 
   // PROTO_getCacheDetails() {
-  //   this._callRustService<RustServiceCacheDetail[]>("get_cache_details")
+  //   callRustService<RustServiceCacheDetail[]>("get_cache_details")
   //     .then(console.table)
   //     .catch((error) => console.error(error));
   // }
@@ -275,7 +261,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     onlyExactMatches: boolean = false,
     abortSignal?: AbortSignal
   ): Promise<RustServiceSearchResultsWithTotalCount> {
-    return this._callRustService<RustServiceSearchResultsWithTotalCount>(
+    return callRustService<RustServiceSearchResultsWithTotalCount>(
       "search_symbols",
       [query.trim(), page, pageSize, onlyExactMatches],
       abortSignal
@@ -286,14 +272,14 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     page: number = 1,
     pageSize: number = 20
   ): Promise<RustServiceETFHoldersWithTotalCount> {
-    return this._callRustService<RustServiceETFHoldersWithTotalCount>(
+    return callRustService<RustServiceETFHoldersWithTotalCount>(
       "get_symbol_etf_holders",
       [symbol, page, pageSize]
     );
   }
 
   async fetchSymbolDetail(symbol: string): Promise<RustServiceSymbolDetail> {
-    return this._callRustService<RustServiceSymbolDetail>("get_symbol_detail", [
+    return callRustService<RustServiceSymbolDetail>("get_symbol_detail", [
       symbol,
     ]);
   }
@@ -301,7 +287,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   async fetchETFAggregateDetail(
     etfSymbol: string
   ): Promise<RustServiceETFAggregateDetail> {
-    return this._callRustService<RustServiceETFAggregateDetail>(
+    return callRustService<RustServiceETFAggregateDetail>(
       "get_etf_aggregate_detail",
       [etfSymbol]
     );
@@ -330,45 +316,43 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   // }
 
   fetchImageBase64(filename: string): Promise<string> {
-    return this._callRustService<string>("get_image_base64", [filename]);
+    return callRustService<string>("get_image_base64", [filename]);
   }
 
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchSymbolWithId(tickerId: number) {
-    this._callRustService("get_symbol_with_id", [tickerId]).then(
-      customLogger.debug
-    );
+    callRustService("get_symbol_with_id", [tickerId]).then(customLogger.debug);
   }
 
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchExchangeIdWithTickerId(tickerId: number) {
-    this._callRustService("get_exchange_id_with_ticker_id", [tickerId]).then(
+    callRustService("get_exchange_id_with_ticker_id", [tickerId]).then(
       customLogger.debug
     );
   }
 
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchSectorNameWithId(sectorId: number) {
-    this._callRustService("get_sector_name_with_id", [sectorId]).then(
+    callRustService("get_sector_name_with_id", [sectorId]).then(
       customLogger.debug
     );
   }
 
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchIndustryNameWithId(industryId: number) {
-    this._callRustService("get_industry_name_with_id", [industryId]).then(
+    callRustService("get_industry_name_with_id", [industryId]).then(
       customLogger.debug
     );
   }
 
   PROTO_removeCacheEntry(key: string) {
     // TODO: Add rapid UI update
-    this._callRustService("remove_cache_entry", [key]);
+    callRustService("remove_cache_entry", [key]);
   }
 
   PROTO_clearCache() {
     // TODO: Add rapid UI update
-    this._callRustService("clear_cache");
+    callRustService("clear_cache");
   }
 
   addSymbolToBucket(symbol: string, symbolBucket: SymbolBucketProps) {
