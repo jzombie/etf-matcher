@@ -57,12 +57,12 @@ help:
 
 .PHONY: build-dev
 build-dev:
-	@echo "Building Docker container"
+	@echo "Building Docker container..."
 	@DOCKER_BUILDKIT=0 FORCE_COLOR=1 UID=$(UID) GID=$(GID) docker compose build
 
 .PHONY: start-dev
 start-dev:
-	@echo "Starting development container"
+	@echo "Starting development container..."
 	@UID=$(UID) GID=$(GID) docker compose up
 
 .PHONY: enter-dev
@@ -72,25 +72,30 @@ enter-dev:
 
 .PHONY: stop-dev
 stop-dev:
-	@echo "Stopping development container"
+	@echo "Stopping development container..."
 	@docker compose down
 
 .PHONY: import-dev
 import-dev:
-	@echo "Importing new datapacks"
+	@echo "Importing new datapacks..."
 	@UID=$(UID) GID=$(GID) docker compose up dev-import
 
 .PHONY: build-rust-dev
 build-rust-dev:
-	@echo "Building Rust frontend"
+	@echo "Building Rust frontend..."
 	@UID=$(UID) GID=$(GID) docker compose up dev-build-rust
 
 .PHONY: test
 test:
 	@echo "Testing..."
-	@UID=$(UID) GID=$(GID) docker compose up dev-test
+	@UID=$(UID) GID=$(GID) docker compose up --exit-code-from dev-test dev-test
+
+.PHONY: lint
+lint:
+	@echo "Linting..."
+	@UID=$(UID) GID=$(GID) docker compose up --exit-code-from dev-lint dev-lint
 
 .PHONY: build-prod
 build-prod:
 	@echo "Generating production build..."
-	@UID=$(UID) GID=$(GID) docker compose build build-dist && UID=$(UID) GID=$(GID) docker compose up build-dist
+	@UID=$(UID) GID=$(GID) docker compose build build-dist && UID=$(UID) GID=$(GID) docker compose up --exit-code-from build-dist build-dist

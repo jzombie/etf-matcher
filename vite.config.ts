@@ -17,7 +17,7 @@ dotenv.config();
 const DESTINATION_DIR = path.resolve(__dirname, "dist");
 
 // Function to get the current build time and write it to a file
-function writeBuildTime() {
+export function writeBuildTime() {
   const now = new Date();
   const buildTime = now.toISOString(); // Returns the build time in ISO format
   fs.writeFileSync(

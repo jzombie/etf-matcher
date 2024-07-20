@@ -44,7 +44,8 @@
         "name": "document",
         "message": "Use dependency injection or other methods to access document object."
       }
-    ]
+    ],
+    "no-console": "error" // Error on usage of console calls
   },
   "overrides": [
     {

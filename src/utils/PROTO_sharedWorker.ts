@@ -1,13 +1,16 @@
 // Inspect with:
 // chrome://inspect/#workers
 
+import customLogger from "./customLogger";
+
 // eslint-disable-next-line no-undef
 const workerSelf = self as unknown as SharedWorkerGlobalScope;
 
 const connections: MessagePort[] = [];
 
 workerSelf.onconnect = (event: MessageEvent) => {
-  console.log("Hello from SharedWorker");
+  // Not really a warn, but keeping this for now
+  customLogger.warn("Hello from SharedWorker");
 
   const port = event.ports[0];
   connections.push(port);

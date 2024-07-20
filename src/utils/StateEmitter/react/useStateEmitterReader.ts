@@ -7,6 +7,7 @@ import {
 } from "react";
 import EmitterState, { StateEmitterDefaultEvents } from "../StateEmitter";
 import deepEqual from "@utils/deepEqual";
+import customLogger from "@utils/customLogger";
 
 const useStateEmitterReader = <T extends object, K extends keyof T>(
   emitter: EmitterState<T>,
@@ -49,7 +50,7 @@ const useStateEmitterReader = <T extends object, K extends keyof T>(
 
   useMemo(() => {
     if (!stateKeys) {
-      console.warn(
+      customLogger.warn(
         "useStateEmitterReader should be called with `stateKeyOrKeys` to improve rendering performance."
       );
     }
