@@ -1,11 +1,8 @@
+use wasm_bindgen::prelude::*;
 use aes::Aes256;
 use block_modes::{BlockMode, Cbc};
 use block_modes::block_padding::Pkcs7;
 use flate2::read::GzDecoder;
-use hmac::Hmac;
-use pbkdf2::pbkdf2;
-use sha2::Sha256;
-use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 use web_sys::XmlHttpRequest;
 use js_sys::{Promise, Date, Uint8Array};
@@ -17,6 +14,7 @@ use futures::FutureExt;
 
 use crate::utils::{CACHE, CachedFuture};
 use crate::utils::decrypt::password::{get_encrypted_password, get_iv}; // Corrected Import Path
+use crate::utils::decrypt::{decrypt_password, Aes256Cbc};
 
 use crate::constants::{
   FETCH_ERROR,
@@ -25,17 +23,6 @@ use crate::constants::{
   XML_HTTP_REQUEST_CACHE_CONTROL_SETTER_ERROR,
   XML_HTTP_REQUEST_SEND_ERROR
 };
-
-pub fn decrypt_password(encrypted_password: &[u8], salt: &[u8]) -> Result<[u8; 32], JsValue> {
-    // Derive the decryption key
-    let mut key = [0u8; 32];
-    pbkdf2::<Hmac<Sha256>>(encrypted_password, salt, 10000, &mut key);
-    Ok(key)
-}
-
-type Aes256Cbc = Cbc<Aes256, Pkcs7>;
-
-
 
 pub async fn fetch_and_decompress_gz<T>(url: T) -> Result<Vec<u8>, JsValue>
 where
