@@ -1,16 +1,18 @@
-const numberFormatMap = new Map<string, Intl.NumberFormat>();
+import LRUCache from './LRUCache';
+
+const numberFormatCache = new LRUCache<string, Intl.NumberFormat>(100);
 
 export default function formatCurrency(
   currencyCode: string,
   monetaryValue: number
 ) {
-  let formatter = numberFormatMap.get(currencyCode);
+  let formatter = numberFormatCache.get(currencyCode);
   if (!formatter) {
     formatter = new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: currencyCode,
     });
-    numberFormatMap.set(currencyCode, formatter);
+    numberFormatCache.set(currencyCode, formatter);
   }
 
   const abbreviateNumber = (value: number) => {
