@@ -216,6 +216,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         throw new Error(err?.toString());
       }
     } finally {
+      // TODO: These can be removed from here once `notify` is put in place
       debounceWithKey(
         "store:cache_profiler",
         () => {
