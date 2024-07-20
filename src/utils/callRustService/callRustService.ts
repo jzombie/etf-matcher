@@ -67,7 +67,7 @@ const callRustService = <T>(
       resolve(value);
     };
 
-    const wrappedReject = (reason?: any) => {
+    const wrappedReject = (reason?: unknown) => {
       cleanup();
       reject(reason);
     };
