@@ -1,4 +1,5 @@
 import { ReactStateEmitter } from "@utils/StateEmitter";
+import EventEmitter from "events";
 import callRustService, {
   subscribe as libRustServiceSubscribe,
   NotifierEvent,
@@ -57,6 +58,8 @@ export type StoreStateProps = {
       lastTimestamp: string;
     };
   };
+  latestXHROpenedRequestPathName: string | null;
+  latestCacheOpenedRequestPathName: string | null;
 };
 
 class _Store extends ReactStateEmitter<StoreStateProps> {
@@ -118,6 +121,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       cacheDetails: [],
       cacheSize: 0,
       rustServiceXHRRequestErrors: {},
+      latestXHROpenedRequestPathName: null,
+      latestCacheOpenedRequestPathName: null,
     });
 
     // Only deepfreeze in development
@@ -161,13 +166,106 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     // this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
 
+    class XHROpenedRequests extends Set {
+      public emitter: EventEmitter;
+
+      constructor() {
+        super();
+
+        this.emitter = new EventEmitter();
+      }
+
+      add(pathName: string): this {
+        super.add(pathName);
+
+        this.emitter.emit("pathOpened", pathName);
+
+        return this;
+      }
+
+      delete(pathName: string): boolean {
+        const resp = super.delete(pathName);
+
+        if (resp) {
+          this.emitter.emit("pathClosed", pathName);
+        }
+
+        return resp;
+      }
+    }
+
+    class CacheOpenedRequests extends Set {
+      public emitter: EventEmitter;
+
+      constructor() {
+        super();
+
+        this.emitter = new EventEmitter();
+      }
+
+      add(pathName: string) {
+        this.emitter.emit("pathOpened", pathName);
+
+        setTimeout(() => {
+          this.delete(pathName);
+        }, 100);
+
+        return super.add(pathName);
+      }
+
+      delete(pathName: string): boolean {
+        const resp = super.delete(pathName);
+
+        if (resp) {
+          this.emitter.emit("pathClosed", pathName);
+        }
+
+        return resp;
+      }
+    }
+
+    const xhrOpenedRequests = new XHROpenedRequests();
+    const cacheAccessedRequests = new CacheOpenedRequests();
+
+    xhrOpenedRequests.emitter.on("pathOpened", (pathName: string) => {
+      this.setState({
+        latestXHROpenedRequestPathName: pathName,
+      });
+    });
+
+    xhrOpenedRequests.emitter.on("pathClosed", (pathName: string) => {
+      if (this.state.latestXHROpenedRequestPathName === pathName) {
+        this.setState({
+          latestXHROpenedRequestPathName: null,
+        });
+      }
+    });
+
+    cacheAccessedRequests.emitter.on("pathOpened", (pathName: string) => {
+      this.setState({
+        latestCacheOpenedRequestPathName: pathName,
+      });
+    });
+
+    cacheAccessedRequests.emitter.on("pathClosed", (pathName: string) => {
+      if (this.state.latestCacheOpenedRequestPathName === pathName) {
+        this.setState({
+          latestCacheOpenedRequestPathName: null,
+        });
+      }
+    });
+
     const libRustServiceUnsubscribe = libRustServiceSubscribe(
       (eventType, args) => {
         // TODO: Route [potentially debounced] state to class state to trigger UI events
 
-        if (eventType === NotifierEvent.XHR_REQUEST_ERROR) {
-          const pathName: string = args[0] as string;
+        const pathName: string = args[0] as string;
 
+        if (eventType === NotifierEvent.XHR_REQUEST_CREATED) {
+          xhrOpenedRequests.add(pathName);
+        }
+
+        if (eventType === NotifierEvent.XHR_REQUEST_ERROR) {
           const xhrRequestErrors = {
             ...this.state.rustServiceXHRRequestErrors,
             [pathName]: {
@@ -184,7 +282,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         }
 
         if (eventType === NotifierEvent.XHR_REQUEST_SENT) {
-          const pathName: string = args[0] as string;
+          xhrOpenedRequests.delete(pathName);
 
           // If a subsequent XHR request path is the same as a previous error, delete the error
           if (pathName in this.state.rustServiceXHRRequestErrors) {
@@ -195,6 +293,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
               rustServiceXHRRequestErrors: next,
             });
           }
+        }
+
+        if (eventType === NotifierEvent.CACHE_ACCESSED) {
+          cacheAccessedRequests.add(pathName);
         }
 
         if (

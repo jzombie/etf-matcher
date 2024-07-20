@@ -13,6 +13,8 @@ import Center from "@layoutKit/Center";
 import Cover from "@layoutKit/Cover";
 import Layout, { Header, Content, Footer } from "@layoutKit/Layout";
 
+import NetworkRequestNotifier from "@components/NetworkRequestNotifier";
+
 import LockScreen from "@components/LockScreen";
 
 export default function MainLayout() {
@@ -53,6 +55,7 @@ export default function MainLayout() {
           )}
         </Content>
         <Footer>
+          <NetworkRequestNotifier />
           <Typography variant="body2" color="textSecondary" align="right">
             {
               // TODO: Be more specific about which charts are provided by TradingView.
