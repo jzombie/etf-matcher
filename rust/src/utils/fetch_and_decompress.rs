@@ -19,55 +19,48 @@ use crate::utils::decrypt::password::{
 };
 use crate::utils::xhr_fetch;
 
-pub async fn fetch_and_decompress_gz<T>(url: T) -> Result<Vec<u8>, JsValue>
+pub async fn fetch_and_decompress_gz<T>(url: T, use_cache: bool) -> Result<Vec<u8>, JsValue>
 where
     T: AsRef<str> + Clone,
 {
     let url_str: String = url.as_ref().to_string();
 
-    let shared_future = CACHE.with(|cache| {
-        let mut cache = cache.borrow_mut();
-        if let Some(cached_future) = cache.get(&url_str) {
-            *cached_future.last_accessed.borrow_mut() = Date::now();
-            *cached_future.access_count.borrow_mut() += 1;
-            cached_future.future.clone()
-        } else {
-            let future = fetch_and_decompress_gz_internal(url_str.clone()).boxed_local().shared();
-            let cached_future = CachedFuture {
-                future: future.clone(),
-                added_at: Date::now(),
-                last_accessed: RefCell::new(Date::now()),
-                access_count: RefCell::new(1),
-            };
-            cache.insert(url_str.clone(), cached_future);
-            future
-        }
-    });
+    if use_cache {
+        let shared_future = CACHE.with(|cache| {
+            let mut cache = cache.borrow_mut();
+            if let Some(cached_future) = cache.get(&url_str) {
+                *cached_future.last_accessed.borrow_mut() = Date::now();
+                *cached_future.access_count.borrow_mut() += 1;
+                cached_future.future.clone()
+            } else {
+                let future = decrypt_and_decompress_data(url_str.clone()).boxed_local().shared();
+                let cached_future = CachedFuture {
+                    future: future.clone(),
+                    added_at: Date::now(),
+                    last_accessed: RefCell::new(Date::now()),
+                    access_count: RefCell::new(1),
+                };
+                cache.insert(url_str.clone(), cached_future);
+                future
+            }
+        });
 
-    match shared_future.await {
-        Ok(result) => Ok(result),
-        Err(err) => {
-            CACHE.with(|cache| {
-                cache.borrow_mut().remove(&url_str);
-            });
-            Err(JsValue::from_str(&format!("Error: {:?}", err)))
-        },
+        match shared_future.await {
+            Ok(result) => Ok(result),
+            Err(err) => {
+                CACHE.with(|cache| {
+                    cache.borrow_mut().remove(&url_str);
+                });
+                Err(JsValue::from_str(&format!("Error: {:?}", err)))
+            },
+        }
+    } else {
+        web_sys::console::debug_1(&"Skipping cache".into());
+        decrypt_and_decompress_data(url_str).await
     }
 }
 
-
-pub async fn fetch_and_decompress_gz_non_cached<T>(url: T) -> Result<Vec<u8>, JsValue>
-where
-    T: AsRef<str> + Clone,
-{
-    web_sys::console::debug_1(&"Skipping cache".into());
-    let url_str: String = url.as_ref().to_string();
-    fetch_and_decompress_gz_internal(url_str.clone()).await
-}
-
-
-
-async fn fetch_and_decompress_gz_internal(url: String) -> Result<Vec<u8>, JsValue> {
+async fn decrypt_and_decompress_data(url: String) -> Result<Vec<u8>, JsValue> {
     let encrypted_data: Vec<u8> = xhr_fetch(url).await?;
 
     let salt: &[u8] = &encrypted_data[0..16];

@@ -22,7 +22,7 @@ impl SymbolSearch {
         let url: String = DataURL::SymbolSearch.value().to_owned();
     
         // Fetch and decompress the data, properly awaiting the result and handling errors
-        fetch_and_decompress_gz(&url).await.map_err(|err| {
+        fetch_and_decompress_gz(&url, true).await.map_err(|err| {
             JsValue::from_str(&format!("Failed to fetch and decompress data: {:?}", err))
         })?;
         
@@ -56,7 +56,7 @@ impl SymbolSearch {
         }
 
         let url: String = DataURL::SymbolSearch.value().to_owned();
-        let csv_data = fetch_and_decompress_gz(&url).await?;
+        let csv_data = fetch_and_decompress_gz(&url, true).await?;
         let csv_string = String::from_utf8(csv_data).map_err(|err| {
             JsValue::from_str(&format!("Failed to convert data to String: {}", err))
         })?;

@@ -15,7 +15,7 @@ impl SectorById {
         let url: &str = &DataURL::SectorByIdIndex.value();
 
         // Fetch and decompress the CSV data
-        let csv_data = fetch_and_decompress_gz(&url).await?;
+        let csv_data = fetch_and_decompress_gz(&url, true).await?;
         let csv_string = String::from_utf8(csv_data).map_err(|err| {
             JsValue::from_str(&format!("Failed to convert data to String: {}", err))
         })?;
