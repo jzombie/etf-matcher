@@ -22,6 +22,11 @@
  * @returns A function that calls the original console method with the correct context.
  */
 const createLoggerMethod = (method: keyof Console) => {
+  // Don't log in production
+  if (import.meta.env.PROD) {
+    return () => null;
+  }
+
   if (Function.prototype.bind) {
     return Function.prototype.bind.call(console[method], console);
   } else {
