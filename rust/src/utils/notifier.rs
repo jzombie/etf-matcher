@@ -1,10 +1,11 @@
 pub struct Notifier;
 
+// TODO: Replace all console calls with JS callbacks
 impl Notifier {
     pub const WILDCARD: &'static str = "*";
 
     pub fn xhr_request_created(url: &str) {
-      web_sys::console::log_1(&format!("XHR request created: {}", url).into());
+        web_sys::console::log_1(&format!("XHR request created: {}", url).into());
     }
 
     pub fn xhr_request_opened(url: &str) {
@@ -16,7 +17,7 @@ impl Notifier {
     }
 
     pub fn xhr_request_error(url: &str) {
-        web_sys::console::log_1(&format!("XHR request error: {}", url).into());
+        web_sys::console::error_1(&format!("XHR request error: {}", url).into());
     }
 
     pub fn cache_accessed(key: &str) {
