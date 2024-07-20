@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 import clsx from "clsx";
 import styles from "./NetworkRequestIndicator.module.scss";
@@ -26,9 +26,7 @@ export default function NetworkRequestNotifier({
   const networkURL =
     latestXHROpenedRequestPathName ||
     latestCacheOpenedRequestPathName ||
-    isOnline
-      ? "Online"
-      : "Offline";
+    (isOnline ? "Online" : "Offline");
 
   const indicatorClass = clsx({
     [styles.indicator]: true,
@@ -39,10 +37,11 @@ export default function NetworkRequestNotifier({
       isOnline &&
       !latestXHROpenedRequestPathName &&
       !latestCacheOpenedRequestPathName,
+    [styles.offline]: !isOnline,
   });
 
   return (
-    <div className={clsx(styles.notifier)} {...rest}>
+    <div className={clsx(styles.notifier, className)} {...rest}>
       <span className={indicatorClass} />
       {showNetworkURL && (
         <span className={styles.networkURL}>{networkURL}</span>

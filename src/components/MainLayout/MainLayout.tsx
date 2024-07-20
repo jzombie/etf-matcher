@@ -20,7 +20,7 @@ import LockScreen from "@components/LockScreen";
 export default function MainLayout() {
   const theme = useTheme();
 
-  const isDesktop = useMediaQuery("@media (min-width:800px)");
+  const shouldShowNetworkURL = useMediaQuery("@media (min-width:480px)");
 
   const { isAppUnlocked, isRustInit, isProfilingCacheOverlayOpen } =
     useStoreStateReader([
@@ -59,7 +59,7 @@ export default function MainLayout() {
         <Footer>
           <NetworkRequestIndicator
             style={{ position: "absolute", left: 0, top: 0 }}
-            showNetworkURL={isDesktop}
+            showNetworkURL={shouldShowNetworkURL}
           />
           <Typography
             variant="body2"
