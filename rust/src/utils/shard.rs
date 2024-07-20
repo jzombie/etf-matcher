@@ -1,7 +1,7 @@
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use crate::JsValue;
-use crate::utils::fetch::fetch_and_decompress_gz;
+use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -12,7 +12,7 @@ struct ShardIndexEntry {
 }
 
 async fn parse_shard_index(shard_index_url: &str) -> Result<Vec<ShardIndexEntry>, JsValue> {
-    let csv_data = fetch_and_decompress_gz(shard_index_url).await?;
+    let csv_data = fetch_and_decompress_gz(shard_index_url, true).await?;
     let csv_string = String::from_utf8(csv_data).map_err(|err| {
         JsValue::from_str(&format!("Failed to convert data to String: {}", err))
     })?;
@@ -33,7 +33,7 @@ async fn fetch_and_parse_shard<T>(shard_url: &str) -> Result<Vec<T>, JsValue>
 where
     T: DeserializeOwned,
 {
-    let csv_data = fetch_and_decompress_gz(shard_url).await?;
+    let csv_data = fetch_and_decompress_gz(shard_url, true).await?;
     let csv_string = String::from_utf8(csv_data).map_err(|err| {
         JsValue::from_str(&format!("Failed to convert data to String: {}", err))
     })?;

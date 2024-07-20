@@ -1,6 +1,6 @@
 import React from "react";
 import { TickerTape } from "react-ts-tradingview-widgets";
-import { Typography, useTheme } from "@mui/material";
+import { Typography, useTheme, useMediaQuery } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import HeaderMenu from "./HeaderMenu";
 
@@ -13,10 +13,14 @@ import Center from "@layoutKit/Center";
 import Cover from "@layoutKit/Cover";
 import Layout, { Header, Content, Footer } from "@layoutKit/Layout";
 
+import NetworkRequestIndicator from "@components/NetworkRequestIndicator";
+
 import LockScreen from "@components/LockScreen";
 
 export default function MainLayout() {
   const theme = useTheme();
+
+  const shouldShowNetworkURL = useMediaQuery("@media (min-width:480px)");
 
   const { isAppUnlocked, isRustInit, isProfilingCacheOverlayOpen } =
     useStoreStateReader([
@@ -53,7 +57,16 @@ export default function MainLayout() {
           )}
         </Content>
         <Footer>
-          <Typography variant="body2" color="textSecondary" align="right">
+          <NetworkRequestIndicator
+            style={{ position: "absolute", left: 8, top: 0 }}
+            showNetworkURL={shouldShowNetworkURL}
+          />
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            align="right"
+            style={{ whiteSpace: "nowrap" }}
+          >
             {
               // TODO: Be more specific about which charts are provided by TradingView.
               // If possible to use their `TV` logo snippet as part of this string,

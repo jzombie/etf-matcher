@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use crate::JsValue;
-use crate::utils::fetch::fetch_and_decompress_gz;
+use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
 use crate::data_models::DataURL;
 
@@ -18,7 +18,7 @@ impl TickerById {
         let url: &str = &DataURL::TickerByIdIndex.value();
 
         // Fetch and decompress the CSV data
-        let csv_data = fetch_and_decompress_gz(&url).await?;
+        let csv_data = fetch_and_decompress_gz(&url, true).await?;
         let csv_string = String::from_utf8(csv_data).map_err(|err| {
             JsValue::from_str(&format!("Failed to convert data to String: {}", err))
         })?;
@@ -37,7 +37,7 @@ impl TickerById {
       let url: &str = &DataURL::TickerByIdIndex.value();
 
       // Fetch and decompress the CSV data
-      let csv_data = fetch_and_decompress_gz(&url).await?;
+      let csv_data = fetch_and_decompress_gz(&url, true).await?;
       let csv_string = String::from_utf8(csv_data).map_err(|err| {
           JsValue::from_str(&format!("Failed to convert data to String: {}", err))
       })?;

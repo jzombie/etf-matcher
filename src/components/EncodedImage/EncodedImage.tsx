@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
+import ErrorIcon from "@mui/icons-material/Error";
 
 import noImageAvailable from "@assets/no-image-available.png";
 
@@ -20,22 +21,28 @@ export default function EncodedImage({
 }: EncodedImageProps) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [base64, setBase64] = useState<string | null>(null);
+  const [hasError, setHasError] = useState<boolean>(false);
 
   const encSrcStaticRef = useStableCurrentRef(encSrc);
 
   useEffect(() => {
     if (encSrcStaticRef.current !== encSrc) {
       setBase64(null);
+      setHasError(false); // Reset error state on new image source
     }
 
     if (encSrc) {
       setIsLoading(true);
       store
         .fetchImageBase64(encSrc)
-        .then((base64) => {
+        .then((base64: string) => {
           if (encSrcStaticRef.current === encSrc) {
             setBase64(base64);
+            setHasError(false); // Reset error state if the image loads successfully
           }
+        })
+        .catch(() => {
+          setHasError(true); // Set error state if the image fails to load
         })
         .finally(() => setIsLoading(false));
     } else {
@@ -45,6 +52,10 @@ export default function EncodedImage({
 
   if (isLoading) {
     return <CircularProgress />;
+  }
+
+  if (hasError) {
+    return <ErrorIcon color="error" />; // Show error icon if there was an error
   }
 
   return (

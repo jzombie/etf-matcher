@@ -23,7 +23,7 @@ use crate::data_models::{
 use crate::data_models::image::get_image_base64 as lib_get_image_base64;
 
 // Rename the imported functions to avoid name conflicts
-use crate::utils::fetch::{
+use crate::utils::cache::{
     get_cache_size as lib_get_cache_size,
     get_cache_details as lib_get_cache_details,
     remove_cache_entry as lib_remove_cache_entry,

@@ -1,4 +1,9 @@
 import customLogger from "@utils/customLogger";
+import {
+  EnvelopeType,
+  PostMessageStructKey,
+  NotifierEvent,
+} from "./workerMainBindings";
 
 const worker = new Worker(new URL("./worker", import.meta.url), {
   type: "module",
@@ -12,16 +17,56 @@ const messagePromises: {
   };
 } = {};
 
+const [subscribe, invokeHooks] = (() => {
+  const subscribers: ((eventType: NotifierEvent, args: unknown[]) => void)[] =
+    [];
+
+  const subscribe = (
+    callback: (eventType: NotifierEvent, args: unknown[]) => void
+  ) => {
+    subscribers.push(callback);
+
+    // Return the unsubscribe function
+    return () => {
+      const index = subscribers.indexOf(callback);
+      if (index !== -1) {
+        subscribers.splice(index, 1);
+      }
+    };
+  };
+
+  const invokeHooks = (eventType: NotifierEvent, args: unknown[]) => {
+    subscribers.forEach((hook) => hook(eventType, args));
+  };
+
+  return [subscribe, invokeHooks];
+})();
+
+export { subscribe, invokeHooks };
+
 worker.onmessage = (event) => {
-  const { messageId, success, result, error } = event.data;
-  if (messageId in messagePromises) {
-    const { resolve, reject } = messagePromises[messageId];
-    if (success) {
-      resolve(result);
-    } else {
-      reject(new Error(error));
+  const {
+    [PostMessageStructKey.MessageId]: messageId,
+    [PostMessageStructKey.Success]: success,
+    [PostMessageStructKey.Result]: result,
+    [PostMessageStructKey.Error]: error,
+    [PostMessageStructKey.EnvelopeType]: envelopeType,
+    [PostMessageStructKey.NotifierEventType]: notifierEventType,
+    [PostMessageStructKey.NotifierArgs]: notifierArgs,
+  } = event.data;
+
+  if (envelopeType === EnvelopeType.Function) {
+    if (messageId in messagePromises) {
+      const { resolve, reject } = messagePromises[messageId];
+      if (success) {
+        resolve(result);
+      } else {
+        reject(new Error(error));
+      }
+      delete messagePromises[messageId];
     }
-    delete messagePromises[messageId];
+  } else if (envelopeType === EnvelopeType.NotifiyEvent) {
+    invokeHooks(notifierEventType, notifierArgs);
   }
 };
 

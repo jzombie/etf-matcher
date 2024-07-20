@@ -1,5 +1,6 @@
-import callRustService from "./callRustService";
+import callRustService, { subscribe } from "./callRustService";
 export default callRustService;
+export { subscribe };
 
 import type {
   RustServiceSearchResult,
@@ -17,3 +18,6 @@ export type {
   RustServiceETFHoldersWithTotalCount,
   RustServiceCacheDetail,
 };
+
+import { NotifierEvent } from "./workerMainBindings";
+export { NotifierEvent };

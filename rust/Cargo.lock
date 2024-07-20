@@ -202,7 +202,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "etf_matcher"
+name = "etf-matcher"
 version = "0.1.0"
 dependencies = [
  "aes",

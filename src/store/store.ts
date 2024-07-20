@@ -1,22 +1,26 @@
 import { ReactStateEmitter } from "@utils/StateEmitter";
-import libCallRustService from "@utils/callRustService";
-import type {
+import callRustService, {
+  subscribe as libRustServiceSubscribe,
+  NotifierEvent,
+} from "@utils/callRustService";
+import {
   RustServiceSymbolDetail,
   RustServiceSearchResultsWithTotalCount,
   RustServiceETFHoldersWithTotalCount,
   RustServiceCacheDetail,
   RustServiceETFAggregateDetail,
 } from "@utils/callRustService";
+import {
+  XHROpenedRequests,
+  CacheAccessedRequests,
+} from "./OpenedNetworkRequests";
+
 import detectHTMLJSVersionSync from "@utils/PROTO_detectHTMLJSVersionSync";
 import customLogger from "@utils/customLogger";
 
 import debounceWithKey from "@utils/debounceWithKey";
 
 const IS_PROD = import.meta.env.PROD;
-
-// TODO: Remove once launched
-// Note: This is not intended to be very secure, or else it would not be hardcoded here!
-export const PREVIEW_UNLOCK = "growth";
 
 export type SymbolBucketProps = {
   name: string;
@@ -48,12 +52,14 @@ export type StoreStateProps = {
   cacheProfilerWaitTime: number;
   cacheDetails: RustServiceCacheDetail[];
   cacheSize: number;
-  rustServiceFunctionErrors: {
-    [functionName: string]: {
-      err: Error | unknown;
+  rustServiceXHRRequestErrors: {
+    [pathName: string]: {
       errCount: number;
+      lastTimestamp: string;
     };
   };
+  latestXHROpenedRequestPathName: string | null;
+  latestCacheOpenedRequestPathName: string | null;
 };
 
 class _Store extends ReactStateEmitter<StoreStateProps> {
@@ -111,10 +117,12 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         },
       ],
       isProfilingCacheOverlayOpen: false,
-      cacheProfilerWaitTime: 1000,
+      cacheProfilerWaitTime: 500,
       cacheDetails: [],
       cacheSize: 0,
-      rustServiceFunctionErrors: {},
+      rustServiceXHRRequestErrors: {},
+      latestXHROpenedRequestPathName: null,
+      latestCacheOpenedRequestPathName: null,
     });
 
     // Only deepfreeze in development
@@ -158,9 +166,130 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     // this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
 
+    // Instantiate and set up event bindings for `OpenNetworkRequests`
+    const { xhrOpenedRequests, cacheAccessedRequests } = (() => {
+      const xhrOpenedRequests = new XHROpenedRequests();
+      const cacheAccessedRequests = new CacheAccessedRequests();
+
+      xhrOpenedRequests.emitter.on(
+        XHROpenedRequests.PATH_OPENED,
+        (pathName: string) => {
+          this.setState({
+            latestXHROpenedRequestPathName: pathName,
+          });
+        }
+      );
+
+      xhrOpenedRequests.emitter.on(
+        XHROpenedRequests.PATH_CLOSED,
+        (pathName: string) => {
+          if (this.state.latestXHROpenedRequestPathName === pathName) {
+            this.setState({
+              latestXHROpenedRequestPathName: null,
+            });
+          }
+        }
+      );
+
+      cacheAccessedRequests.emitter.on(
+        CacheAccessedRequests.PATH_OPENED,
+        (pathName: string) => {
+          this.setState({
+            latestCacheOpenedRequestPathName: pathName,
+          });
+        }
+      );
+
+      cacheAccessedRequests.emitter.on(
+        CacheAccessedRequests.PATH_CLOSED,
+        (pathName: string) => {
+          if (this.state.latestCacheOpenedRequestPathName === pathName) {
+            this.setState({
+              latestCacheOpenedRequestPathName: null,
+            });
+          }
+        }
+      );
+
+      return { xhrOpenedRequests, cacheAccessedRequests };
+    })();
+
+    const libRustServiceUnsubscribe = libRustServiceSubscribe(
+      (eventType: NotifierEvent, args: unknown[]) => {
+        const pathName: string = args[0] as string;
+
+        if (eventType === NotifierEvent.XHR_REQUEST_CREATED) {
+          // Signal open XHR request
+          xhrOpenedRequests.add(pathName);
+        }
+
+        if (eventType === NotifierEvent.XHR_REQUEST_ERROR) {
+          // Signal closed XHR request
+          xhrOpenedRequests.delete(pathName);
+
+          const xhrRequestErrors = {
+            ...this.state.rustServiceXHRRequestErrors,
+            [pathName]: {
+              errCount: this.state.rustServiceXHRRequestErrors[pathName]
+                ?.errCount
+                ? this.state.rustServiceXHRRequestErrors[pathName]?.errCount + 1
+                : 1,
+              lastTimestamp: new Date().toISOString(),
+            },
+          };
+          this.setState({
+            rustServiceXHRRequestErrors: xhrRequestErrors,
+          });
+        }
+
+        if (eventType === NotifierEvent.XHR_REQUEST_SENT) {
+          // Signal closed XHR request
+          xhrOpenedRequests.delete(pathName);
+
+          // If a subsequent XHR request path is the same as a previous error, delete the error
+          if (pathName in this.state.rustServiceXHRRequestErrors) {
+            const next = { ...this.state.rustServiceXHRRequestErrors };
+            delete next[pathName];
+
+            this.setState({
+              rustServiceXHRRequestErrors: next,
+            });
+          }
+        }
+
+        if (eventType === NotifierEvent.CACHE_ACCESSED) {
+          // Signal open cache request (auto-closes)
+          cacheAccessedRequests.add(pathName);
+        }
+
+        if (
+          [
+            NotifierEvent.CACHE_ENTRY_INSERTED,
+            NotifierEvent.CACHE_ENTRY_REMOVED,
+            NotifierEvent.CACHE_CLEARED,
+          ].includes(eventType)
+        ) {
+          debounceWithKey(
+            "store:cache_profiler",
+            () => {
+              callRustService<number>("get_cache_size").then((cacheSize) => {
+                this.setState({ cacheSize });
+              });
+              callRustService<RustServiceCacheDetail[]>(
+                "get_cache_details"
+              ).then((cacheDetails) => this.setState({ cacheDetails }));
+            },
+            this.state.cacheProfilerWaitTime
+          );
+        }
+      }
+    );
+
     return () => {
       window.removeEventListener("online", _handleOnlineStatus);
       window.removeEventListener("offline", _handleOnlineStatus);
+
+      libRustServiceUnsubscribe();
 
       // this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
     };
@@ -171,7 +300,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   private _fetchDataBuildInfo() {
-    this._callRustService("get_data_build_info").then((dataBuildInfo) => {
+    callRustService("get_data_build_info").then((dataBuildInfo) => {
       this.setState({
         isRustInit: true,
         // TODO: If data build time is already set as state, but this indicates otherwise, that's a signal the app needs to update
@@ -183,62 +312,12 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     });
   }
 
-  // TODO: Finish wrapping `callRustService`
-  //   |___  Include notification (and route to UI) showing data fetching status
-  //         (potentially show in red, just above the ticker tape)
-  //   |___  Show errors in UI
-  private async _callRustService<T>(
-    functionName: string,
-    args: unknown[] = [],
-    abortSignal?: AbortSignal
-  ): Promise<T> {
-    let resp: T;
-
-    try {
-      resp = await libCallRustService<T>(functionName, args, abortSignal);
-    } catch (err) {
-      const funcErrors = {
-        ...this.state.rustServiceFunctionErrors,
-        [functionName]: {
-          err,
-          errCount: this.state.rustServiceFunctionErrors[functionName]?.errCount
-            ? this.state.rustServiceFunctionErrors[functionName]?.errCount + 1
-            : 1,
-        },
-      };
-      this.setState({
-        rustServiceFunctionErrors: funcErrors,
-      });
-
-      if (err instanceof Error) {
-        throw err;
-      } else {
-        throw new Error(err?.toString());
-      }
-    } finally {
-      debounceWithKey(
-        "store:cache_profiler",
-        () => {
-          libCallRustService<number>("get_cache_size").then((cacheSize) => {
-            this.setState({ cacheSize });
-          });
-          libCallRustService<RustServiceCacheDetail[]>(
-            "get_cache_details"
-          ).then((cacheDetails) => this.setState({ cacheDetails }));
-        },
-        this.state.cacheProfilerWaitTime
-      );
-    }
-
-    return resp;
-  }
-
   private async _preloadSymbolSearchCache() {
-    return this._callRustService("preload_symbol_search_cache");
+    return callRustService("preload_symbol_search_cache");
   }
 
   // PROTO_getCacheDetails() {
-  //   this._callRustService<RustServiceCacheDetail[]>("get_cache_details")
+  //   callRustService<RustServiceCacheDetail[]>("get_cache_details")
   //     .then(console.table)
   //     .catch((error) => console.error(error));
   // }
@@ -254,7 +333,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     onlyExactMatches: boolean = false,
     abortSignal?: AbortSignal
   ): Promise<RustServiceSearchResultsWithTotalCount> {
-    return this._callRustService<RustServiceSearchResultsWithTotalCount>(
+    return callRustService<RustServiceSearchResultsWithTotalCount>(
       "search_symbols",
       [query.trim(), page, pageSize, onlyExactMatches],
       abortSignal
@@ -265,14 +344,14 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     page: number = 1,
     pageSize: number = 20
   ): Promise<RustServiceETFHoldersWithTotalCount> {
-    return this._callRustService<RustServiceETFHoldersWithTotalCount>(
+    return callRustService<RustServiceETFHoldersWithTotalCount>(
       "get_symbol_etf_holders",
       [symbol, page, pageSize]
     );
   }
 
   async fetchSymbolDetail(symbol: string): Promise<RustServiceSymbolDetail> {
-    return this._callRustService<RustServiceSymbolDetail>("get_symbol_detail", [
+    return callRustService<RustServiceSymbolDetail>("get_symbol_detail", [
       symbol,
     ]);
   }
@@ -280,7 +359,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   async fetchETFAggregateDetail(
     etfSymbol: string
   ): Promise<RustServiceETFAggregateDetail> {
-    return this._callRustService<RustServiceETFAggregateDetail>(
+    return callRustService<RustServiceETFAggregateDetail>(
       "get_etf_aggregate_detail",
       [etfSymbol]
     );
@@ -309,45 +388,43 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   // }
 
   fetchImageBase64(filename: string): Promise<string> {
-    return this._callRustService<string>("get_image_base64", [filename]);
+    return callRustService<string>("get_image_base64", [filename]);
   }
 
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchSymbolWithId(tickerId: number) {
-    this._callRustService("get_symbol_with_id", [tickerId]).then(
-      customLogger.debug
-    );
+    callRustService("get_symbol_with_id", [tickerId]).then(customLogger.debug);
   }
 
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchExchangeIdWithTickerId(tickerId: number) {
-    this._callRustService("get_exchange_id_with_ticker_id", [tickerId]).then(
+    callRustService("get_exchange_id_with_ticker_id", [tickerId]).then(
       customLogger.debug
     );
   }
 
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchSectorNameWithId(sectorId: number) {
-    this._callRustService("get_sector_name_with_id", [sectorId]).then(
+    callRustService("get_sector_name_with_id", [sectorId]).then(
       customLogger.debug
     );
   }
 
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchIndustryNameWithId(industryId: number) {
-    this._callRustService("get_industry_name_with_id", [industryId]).then(
+    callRustService("get_industry_name_with_id", [industryId]).then(
       customLogger.debug
     );
   }
 
   PROTO_removeCacheEntry(key: string) {
     // TODO: Add rapid UI update
-    this._callRustService("remove_cache_entry", [key]);
+    callRustService("remove_cache_entry", [key]);
   }
 
   PROTO_clearCache() {
     // TODO: Add rapid UI update
-    this._callRustService("clear_cache");
+    callRustService("clear_cache");
   }
 
   addSymbolToBucket(symbol: string, symbolBucket: SymbolBucketProps) {

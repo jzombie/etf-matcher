@@ -6,7 +6,6 @@ import {
   FormControl,
   FormHelperText,
 } from "@mui/material";
-import { PREVIEW_UNLOCK } from "@src/store";
 
 import lockScreenImg from "@assets/lock.jpg";
 
@@ -20,24 +19,7 @@ import Padding from "@layoutKit/Padding";
 import LogoNavButton from "./LogoNavButton";
 
 import { buildTime } from "../../public/buildTime.json";
-
-const formattedBuildTime = (() => {
-  // Convert the ISO string to a Date object
-  const date = new Date(buildTime);
-
-  // Format the date to a locale string with time zone information
-  const formattedDate = new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
-    timeZoneName: "short",
-  }).format(date);
-
-  return formattedDate;
-})();
+import formatLocalTime from "@utils/formatLocalTime";
 
 const LOCK_MESSAGE = "ETF Matcher is currently in limited preview.";
 
@@ -45,6 +27,7 @@ export type LockScreenProps = {
   onUnlock: () => void;
 };
 
+// This component should be removed once launched
 export default function LockScreen({ onUnlock }: LockScreenProps) {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -56,7 +39,8 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (password === PREVIEW_UNLOCK) {
+    // Very simple mechanism to prevent general preview access (and easily bypassed)
+    if (password === import.meta.env.VITE_PREVIEW_UNLOCK) {
       onUnlock();
     } else {
       setErrorMessage("Incorrect password");
@@ -138,7 +122,7 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
           </Content>
           <Footer>
             <Typography variant="body2" sx={{ textAlign: "center" }}>
-              Build time: {formattedBuildTime}
+              Build time: {formatLocalTime(buildTime)}
             </Typography>
           </Footer>
         </Layout>
