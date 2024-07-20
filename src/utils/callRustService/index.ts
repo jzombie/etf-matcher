@@ -18,3 +18,6 @@ export type {
   RustServiceETFHoldersWithTotalCount,
   RustServiceCacheDetail,
 };
+
+import { NotifierEvent } from "./workerMainBindings";
+export { NotifierEvent };

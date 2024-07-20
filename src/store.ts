@@ -1,8 +1,9 @@
 import { ReactStateEmitter } from "@utils/StateEmitter";
 import callRustService, {
   subscribe as libRustServiceSubscribe,
+  NotifierEvent,
 } from "@utils/callRustService";
-import type {
+import {
   RustServiceSymbolDetail,
   RustServiceSearchResultsWithTotalCount,
   RustServiceETFHoldersWithTotalCount,
@@ -164,9 +165,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       (eventType, args) => {
         // TODO: Route [potentially debounced] state to class state to trigger UI events
 
-        // TODO: Typedef using `notifier.rs`
-
-        if (eventType === "xhr_request_error") {
+        if (eventType === NotifierEvent.XHR_REQUEST_ERROR) {
           const pathName: string = args[0] as string;
 
           const xhrRequestErrors = {
@@ -184,7 +183,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           });
         }
 
-        if (eventType === "xhr_request_sent") {
+        if (eventType === NotifierEvent.XHR_REQUEST_SENT) {
           const pathName: string = args[0] as string;
 
           // If a subsequent XHR request path is the same as a previous error, delete the error
@@ -199,11 +198,12 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         }
 
         if (
-          ["cache_inserted", "cache_entry_removed", "cache_cleared"].includes(
-            eventType
-          )
+          [
+            NotifierEvent.CACHE_ENTRY_INSERTED,
+            NotifierEvent.CACHE_ENTRY_REMOVED,
+            NotifierEvent.CACHE_CLEARED,
+          ].includes(eventType)
         ) {
-          // TODO: These can be removed from here once `notify` is put in place
           debounceWithKey(
             "store:cache_profiler",
             () => {

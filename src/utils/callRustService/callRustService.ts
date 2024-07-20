@@ -1,5 +1,9 @@
 import customLogger from "@utils/customLogger";
-import { EnvelopeType, PostMessageStructKey } from "./workerMainBindings";
+import {
+  EnvelopeType,
+  PostMessageStructKey,
+  NotifierEvent,
+} from "./workerMainBindings";
 
 const worker = new Worker(new URL("./worker", import.meta.url), {
   type: "module",
@@ -14,10 +18,11 @@ const messagePromises: {
 } = {};
 
 const [subscribe, invokeHooks] = (() => {
-  const subscribers: ((eventType: string, args: unknown[]) => void)[] = [];
+  const subscribers: ((eventType: NotifierEvent, args: unknown[]) => void)[] =
+    [];
 
   const subscribe = (
-    callback: (eventType: string, args: unknown[]) => void
+    callback: (eventType: NotifierEvent, args: unknown[]) => void
   ) => {
     subscribers.push(callback);
 
@@ -30,7 +35,7 @@ const [subscribe, invokeHooks] = (() => {
     };
   };
 
-  const invokeHooks = (eventType: string, args: unknown[]) => {
+  const invokeHooks = (eventType: NotifierEvent, args: unknown[]) => {
     subscribers.forEach((hook) => hook(eventType, args));
   };
 

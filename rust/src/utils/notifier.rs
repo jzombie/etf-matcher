@@ -39,8 +39,8 @@ impl Notifier {
         Self::call_notify("cache_accessed", &[key]);
     }
 
-    pub fn cache_inserted(key: &str) {
-        Self::call_notify("cache_inserted", &[key]);
+    pub fn cache_entry_inserted(key: &str) {
+        Self::call_notify("cache_entry_inserted", &[key]);
     }
 
     pub fn cache_entry_removed(key: &str) {

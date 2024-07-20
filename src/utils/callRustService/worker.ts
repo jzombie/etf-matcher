@@ -1,6 +1,10 @@
 import init, * as wasmModule from "../../../public/pkg/etf_matcher";
 import customLogger from "../customLogger";
-import { EnvelopeType, PostMessageStructKey } from "./workerMainBindings";
+import {
+  EnvelopeType,
+  PostMessageStructKey,
+  NotifierEvent,
+} from "./workerMainBindings";
 
 interface CallQueueItem {
   functionName: string;
@@ -96,9 +100,9 @@ self.onmessage = async (event) => {
 // Invoked from Rust
 (
   self as unknown as {
-    rustNotifyCallback: (eventType: string, args: unknown[]) => void;
+    rustNotifyCallback: (eventType: NotifierEvent, args: unknown[]) => void;
   }
-).rustNotifyCallback = function (eventType: string, args: unknown[]) {
+).rustNotifyCallback = function (eventType: NotifierEvent, args: unknown[]) {
   self.postMessage({
     [PostMessageStructKey.EnvelopeType]: EnvelopeType.NotifiyEvent,
     [PostMessageStructKey.NotifierEventType]: eventType,

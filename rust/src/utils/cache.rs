@@ -1,11 +1,11 @@
-use wasm_bindgen::prelude::*;
-use js_sys::Date;
-use serde::Serialize;
-use std::collections::HashMap;
-use std::cell::RefCell;
+use futures::future::LocalBoxFuture;
 use futures::future::Shared;
 use futures::FutureExt;
-use futures::future::LocalBoxFuture;
+use js_sys::Date;
+use serde::Serialize;
+use std::cell::RefCell;
+use std::collections::HashMap;
+use wasm_bindgen::prelude::*;
 
 use super::notifier::Notifier;
 
@@ -17,11 +17,16 @@ thread_local! {
 pub fn get_cache_size() -> usize {
     let size = CACHE.with(|cache| {
         let cache = cache.borrow();
-        cache.values().map(|cached_future| {
-            cached_future.future.clone().now_or_never().map_or(0, |result| {
-                result.map_or(0, |data| data.len())
+        cache
+            .values()
+            .map(|cached_future| {
+                cached_future
+                    .future
+                    .clone()
+                    .now_or_never()
+                    .map_or(0, |result| result.map_or(0, |data| data.len()))
             })
-        }).sum()
+            .sum()
     });
 
     Notifier::cache_accessed(Notifier::WILDCARD);
@@ -49,11 +54,14 @@ pub fn get_cache_details() -> JsValue {
     let details = CACHE.with(|cache| {
         let cache = cache.borrow();
         let now = Date::now();
-        let details: Vec<CacheEntry> = cache.iter()
+        let details: Vec<CacheEntry> = cache
+            .iter()
             .map(|(key, cached_future)| {
-                let size = cached_future.future.clone().now_or_never().map_or(0, |result| {
-                    result.map_or(0, |data| data.len())
-                });
+                let size = cached_future
+                    .future
+                    .clone()
+                    .now_or_never()
+                    .map_or(0, |result| result.map_or(0, |data| data.len()));
                 let age = now - cached_future.added_at;
                 let last_accessed = now - *cached_future.last_accessed.borrow();
                 let access_count = *cached_future.access_count.borrow();
@@ -74,7 +82,9 @@ pub fn get_cache_details() -> JsValue {
     details
 }
 
-pub fn get_cache_future(url: &str) -> Option<Shared<LocalBoxFuture<'static, Result<Vec<u8>, JsValue>>>> {
+pub fn get_cache_future(
+    url: &str,
+) -> Option<Shared<LocalBoxFuture<'static, Result<Vec<u8>, JsValue>>>> {
     let result = CACHE.with(|cache| {
         let cache = cache.borrow_mut();
         if let Some(cached_future) = cache.get(url) {
@@ -89,7 +99,10 @@ pub fn get_cache_future(url: &str) -> Option<Shared<LocalBoxFuture<'static, Resu
     result
 }
 
-pub fn insert_cache_future(url: &str, future: Shared<LocalBoxFuture<'static, Result<Vec<u8>, JsValue>>>) {
+pub fn insert_cache_future(
+    url: &str,
+    future: Shared<LocalBoxFuture<'static, Result<Vec<u8>, JsValue>>>,
+) {
     CACHE.with(|cache| {
         let mut cache = cache.borrow_mut();
         let cached_future = CachedFuture {
@@ -101,7 +114,7 @@ pub fn insert_cache_future(url: &str, future: Shared<LocalBoxFuture<'static, Res
         cache.insert(url.to_string(), cached_future);
     });
 
-    Notifier::cache_inserted(url);
+    Notifier::cache_entry_inserted(url);
 }
 
 pub fn remove_cache_entry(key: &str) {
