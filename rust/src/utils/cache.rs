@@ -95,7 +95,9 @@ pub fn get_cache_future(
             None
         }
     });
+
     Notifier::cache_accessed(url);
+
     result
 }
 
