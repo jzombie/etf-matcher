@@ -24,7 +24,7 @@ pub fn get_cache_size() -> usize {
         }).sum()
     });
 
-    Notifier::cache_accessed();
+    Notifier::cache_accessed(Notifier::WILDCARD);
 
     size
 }
@@ -69,7 +69,7 @@ pub fn get_cache_details() -> JsValue {
         serde_wasm_bindgen::to_value(&details).unwrap()
     });
 
-    Notifier::cache_accessed();
+    Notifier::cache_accessed(Notifier::WILDCARD);
 
     details
 }
@@ -85,7 +85,7 @@ pub fn get_cache_future(url: &str) -> Option<Shared<LocalBoxFuture<'static, Resu
             None
         }
     });
-    Notifier::cache_accessed();
+    Notifier::cache_accessed(url);
     result
 }
 

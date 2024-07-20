@@ -1,6 +1,8 @@
 pub struct Notifier;
 
 impl Notifier {
+    pub const WILDCARD: &'static str = "*";
+
     pub fn xhr_request_created(url: &str) {
       web_sys::console::log_1(&format!("XHR request created: {}", url).into());
     }
@@ -17,8 +19,8 @@ impl Notifier {
         web_sys::console::log_1(&format!("XHR request error: {}", url).into());
     }
 
-    pub fn cache_accessed() {
-        web_sys::console::log_1(&"Cache accessed".into());
+    pub fn cache_accessed(key: &str) {
+        web_sys::console::log_1(&format!("Cache accessed: {}", key).into());
     }
 
     pub fn cache_inserted(key: &str) {
