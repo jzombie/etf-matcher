@@ -1,3 +1,4 @@
+import "./vite/common_prestart";
 import { defineConfig } from "vite";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 import path from "path";
@@ -8,24 +9,13 @@ import svgr from "vite-plugin-svgr";
 import eslint from "vite-plugin-eslint";
 import { createHtmlPlugin } from "vite-plugin-html";
 import sitemap from "vite-plugin-sitemap";
-import fs from "fs";
+
 import dotenv from "dotenv";
 
 // This is needed to get the .env variables to populate here
 dotenv.config();
 
 const DESTINATION_DIR = path.resolve(__dirname, "dist");
-
-// Function to get the current build time and write it to a file
-function writeBuildTime() {
-  const now = new Date();
-  const buildTime = now.toISOString(); // Returns the build time in ISO format
-  fs.writeFileSync(
-    path.resolve(__dirname, "public/buildTime.json"),
-    JSON.stringify({ buildTime })
-  );
-  return buildTime;
-}
 
 export default defineConfig({
   root: "./public",
