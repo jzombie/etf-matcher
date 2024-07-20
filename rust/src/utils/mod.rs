@@ -1,6 +1,6 @@
 mod decrypt;
 
-pub mod fetch;
+pub mod fetch_and_decompress;
 pub mod parse;
 pub mod shard;
 pub mod cache;

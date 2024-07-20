@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use crate::JsValue;
-use crate::utils::fetch::fetch_and_decompress_gz;
+use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
 use crate::utils::uncompress_logo_filename;
 use crate::data_models::{

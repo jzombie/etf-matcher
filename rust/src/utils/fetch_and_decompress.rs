@@ -19,7 +19,6 @@ use crate::utils::decrypt::password::{
 };
 use crate::utils::xhr_fetch;
 
-
 pub async fn fetch_and_decompress_gz<T>(url: T) -> Result<Vec<u8>, JsValue>
 where
     T: AsRef<str> + Clone,

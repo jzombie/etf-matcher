@@ -1,7 +1,7 @@
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use crate::JsValue;
-use crate::utils::fetch::fetch_and_decompress_gz;
+use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

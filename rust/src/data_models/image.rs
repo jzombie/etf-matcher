@@ -1,5 +1,5 @@
 use wasm_bindgen::prelude::*;
-use crate::utils::fetch::fetch_and_decompress_gz;
+use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use base64::{engine::general_purpose, Engine as _}; // Import the appropriate engine
 
 pub async fn get_image_base64(url: &str) -> Result<String, JsValue> {
