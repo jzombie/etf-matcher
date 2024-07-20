@@ -19,6 +19,9 @@ use futures::future::Shared;
 use futures::FutureExt;
 use futures::future::LocalBoxFuture;
 
+use crate::utils::{CACHE, CachedFuture, CacheEntry, get_cache_size, get_cache_details, remove_cache_entry, clear_cache};
+
+
 use crate::constants::{
   FETCH_ERROR,
   XML_HTTP_REQUEST_CREATE_ERROR,
@@ -36,76 +39,9 @@ pub fn decrypt_password(encrypted_password: &[u8], salt: &[u8]) -> Result<[u8; 3
     Ok(key)
 }
 
-pub fn get_cache_size() -> usize {
-    CACHE.with(|cache| {
-        let cache = cache.borrow();
-        cache.values().map(|cached_future| {
-            cached_future.future.clone().now_or_never().map_or(0, |result| {
-                result.map_or(0, |data| data.len())
-            })
-        }).sum()
-    })
-}
-
-struct CachedFuture {
-    future: Shared<LocalBoxFuture<'static, Result<Vec<u8>, JsValue>>>, // Adjusted to Vec<u8>
-    added_at: f64,
-    last_accessed: RefCell<f64>,
-    access_count: RefCell<u32>,
-}
-
-#[derive(Serialize)]
-struct CacheEntry {
-    key: String,
-    size: usize,
-    age: f64,           // Age in milliseconds
-    last_accessed: f64, // Last accessed time in milliseconds since UNIX_EPOCH
-    access_count: u32,  // Number of times accessed
-}
-
-pub fn get_cache_details() -> JsValue {
-    CACHE.with(|cache| {
-        let cache = cache.borrow();
-        let now = Date::now();
-        let details: Vec<CacheEntry> = cache.iter()
-            .map(|(key, cached_future)| {
-                let size = cached_future.future.clone().now_or_never().map_or(0, |result| {
-                    result.map_or(0, |data| data.len())
-                });
-                let age = now - cached_future.added_at;
-                let last_accessed = now - *cached_future.last_accessed.borrow();
-                let access_count = *cached_future.access_count.borrow();
-                CacheEntry {
-                    key: key.clone(),
-                    size,
-                    age,
-                    last_accessed,
-                    access_count,
-                }
-            })
-            .collect();
-        serde_wasm_bindgen::to_value(&details).unwrap()
-    })
-}
-
-pub fn remove_cache_entry(key: &str) {
-    CACHE.with(|cache| {
-        cache.borrow_mut().remove(key);
-    });
-}
-
-pub fn clear_cache() {
-    CACHE.with(|cache| {
-        cache.borrow_mut().clear();
-    });
-}
-
 type Aes256Cbc = Cbc<Aes256, Pkcs7>;
 
-// Global cache with futures for pending requests
-thread_local! {
-    static CACHE: RefCell<HashMap<String, CachedFuture>> = RefCell::new(HashMap::new());
-}
+
 
 pub async fn fetch_and_decompress_gz<T>(url: T) -> Result<Vec<u8>, JsValue>
 where
