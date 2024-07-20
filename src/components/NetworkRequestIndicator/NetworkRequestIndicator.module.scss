@@ -1,0 +1,43 @@
+$indicator-size: 10px;
+$blink-duration: 1s;
+$xhr-color: yellow; /* Change this to your desired color for XHR */
+$cache-color: purple; /* Change this to your desired color for Cache */
+$online-color: green; /* Change this to your desired color for Online */
+
+.notifier {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+
+  .indicator {
+    width: $indicator-size;
+    height: $indicator-size;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+
+    &.xhr {
+      background-color: $xhr-color;
+      animation: blink $blink-duration infinite;
+    }
+
+    &.cache {
+      background-color: $cache-color;
+      animation: blink $blink-duration infinite;
+    }
+
+    &.online {
+      background-color: $online-color;
+    }
+  }
+
+  .networkURL {
+    opacity: 0.5;
+  }
+
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+}
