@@ -82,8 +82,12 @@ self.onmessage = async (event) => {
     });
 };
 
-// Define the notify function globally
-(self as any).notify = function (eventType: string, args: any[]) {
+// Invoked from Rust
+(
+  self as unknown as {
+    rustNotifyCallback: (eventType: string, args: unknown[]) => void;
+  }
+).rustNotifyCallback = function (eventType: string, args: unknown[]) {
   customLogger.log("Notifier event:", {
     eventType,
     args,

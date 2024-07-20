@@ -3,7 +3,7 @@ use wasm_bindgen::prelude::*;
 // Declare the external JavaScript function
 #[wasm_bindgen]
 extern "C" {
-    fn notify(event_type: &str, args: &JsValue);
+    fn rustNotifyCallback(event_type: &str, args: &JsValue);
 }
 
 pub struct Notifier;
@@ -16,7 +16,7 @@ impl Notifier {
         for &arg in args {
             array.push(&JsValue::from(arg));
         }
-        notify(event_type, &array.into());
+        rustNotifyCallback(event_type, &array.into());
     }
 
     pub fn xhr_request_created(url: &str) {
