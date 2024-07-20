@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use crate::JsValue;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
-use crate::utils::uncompress_logo_filename;
+use crate::utils::extract_logo_filename;
 use crate::data_models::{
     DataURL,
     PaginatedResults,
@@ -64,7 +64,7 @@ impl SymbolSearch {
 
         // Uncompress the logo filename for each result
         for result in &mut results {
-            result.logo_filename = uncompress_logo_filename(result.logo_filename.as_deref(), &result.symbol);
+            result.logo_filename = extract_logo_filename(result.logo_filename.as_deref(), &result.symbol);
         }
 
         let alternatives: Vec<String> = SymbolSearch::generate_alternative_symbols(&trimmed_query);

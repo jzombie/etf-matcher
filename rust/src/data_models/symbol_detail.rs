@@ -1,7 +1,7 @@
 use serde::{Deserialize, Deserializer, Serialize};
 use crate::JsValue;
 use crate::utils::shard::query_shard_for_symbol;
-use crate::utils::uncompress_logo_filename;
+use crate::utils::extract_logo_filename;
 use crate::data_models::DataURL;
 
 // TODO: Move to `utils`
@@ -40,7 +40,7 @@ impl SymbolDetail {
         .ok_or_else(|| JsValue::from_str("Symbol not found"))?;
 
         // Uncompress the logo filename
-        detail.logo_filename = uncompress_logo_filename(detail.logo_filename.as_deref(), &detail.symbol);
+        detail.logo_filename = extract_logo_filename(detail.logo_filename.as_deref(), &detail.symbol);
 
         Ok(detail)
     }
