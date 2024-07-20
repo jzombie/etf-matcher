@@ -9,17 +9,13 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 use web_sys::XmlHttpRequest;
 use js_sys::{Promise, Date, Uint8Array};
-use serde::Serialize;
 use std::convert::TryInto;
 use std::io::Read;
 use hex;
-use std::collections::HashMap;
 use std::cell::RefCell;
-use futures::future::Shared;
 use futures::FutureExt;
-use futures::future::LocalBoxFuture;
 
-use crate::utils::{CACHE, CachedFuture, CacheEntry, get_cache_size, get_cache_details, remove_cache_entry, clear_cache};
+use crate::utils::{CACHE, CachedFuture};
 
 
 use crate::constants::{
