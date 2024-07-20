@@ -182,14 +182,21 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           this.setState({
             rustServiceXHRRequestErrors: xhrRequestErrors,
           });
-
-          console.error("xhr_request_error", {
-            eventType,
-            args,
-          });
         }
 
-        // TODO: If a subsequnt xhr request is the same as a previous error, delete the error?
+        if (eventType === "xhr_request_sent") {
+          const pathName: string = args[0] as string;
+
+          // If a subsequent XHR request path is the same as a previous error, delete the error
+          if (pathName in this.state.rustServiceXHRRequestErrors) {
+            const next = { ...this.state.rustServiceXHRRequestErrors };
+            delete next[pathName];
+
+            this.setState({
+              rustServiceXHRRequestErrors: next,
+            });
+          }
+        }
 
         if (
           ["cache_inserted", "cache_entry_removed", "cache_cleared"].includes(

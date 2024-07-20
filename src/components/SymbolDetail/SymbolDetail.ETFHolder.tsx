@@ -6,7 +6,7 @@ import { store } from "@hooks/useStoreStateReader";
 
 import type { RustServiceETFAggregateDetail } from "@utils/callRustService";
 import formatCurrency from "@utils/formatCurrency";
-import customLogger from "@utils/customLogger";
+// import customLogger from "@utils/customLogger";
 
 export type ETFHolderProps = {
   etfSymbol: string;
