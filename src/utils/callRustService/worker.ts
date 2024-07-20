@@ -88,6 +88,7 @@ self.onmessage = async (event) => {
     rustNotifyCallback: (eventType: string, args: unknown[]) => void;
   }
 ).rustNotifyCallback = function (eventType: string, args: unknown[]) {
+  // TODO: Route to main
   customLogger.log("Notifier event:", {
     eventType,
     args,
