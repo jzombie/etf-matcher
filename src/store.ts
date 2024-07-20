@@ -167,6 +167,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
 
     class OpenedNetworkRequests extends Set {
+      public static PATH_OPENED = "path_opened";
+      public static PATH_CLOSED = "path_closed";
+
       public emitter: EventEmitter;
 
       constructor() {
@@ -178,7 +181,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       add(pathName: string): this {
         super.add(pathName);
 
-        this.emitter.emit("pathOpened", pathName);
+        this.emitter.emit(OpenedNetworkRequests.PATH_OPENED, pathName);
 
         return this;
       }
@@ -187,54 +190,70 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         const resp = super.delete(pathName);
 
         if (resp) {
-          this.emitter.emit("pathClosed", pathName);
+          this.emitter.emit(OpenedNetworkRequests.PATH_CLOSED, pathName);
         }
 
         return resp;
       }
     }
 
-    class XHROpenedRequests extends OpenedNetworkRequests {}
+    const { xhrOpenedRequests, cacheAccessedRequests } = (() => {
+      class XHROpenedRequests extends OpenedNetworkRequests {}
 
-    class CacheOpenedRequests extends OpenedNetworkRequests {
-      add(pathName: string) {
-        setTimeout(() => {
-          this.delete(pathName);
-        }, 100);
-        return super.add(pathName);
+      class CacheOpenedRequests extends OpenedNetworkRequests {
+        add(pathName: string) {
+          setTimeout(() => {
+            this.delete(pathName);
+          }, 100);
+          return super.add(pathName);
+        }
       }
-    }
 
-    const xhrOpenedRequests = new XHROpenedRequests();
-    const cacheAccessedRequests = new CacheOpenedRequests();
+      const xhrOpenedRequests = new XHROpenedRequests();
+      const cacheAccessedRequests = new CacheOpenedRequests();
 
-    xhrOpenedRequests.emitter.on("pathOpened", (pathName: string) => {
-      this.setState({
-        latestXHROpenedRequestPathName: pathName,
-      });
-    });
+      xhrOpenedRequests.emitter.on(
+        XHROpenedRequests.PATH_OPENED,
+        (pathName: string) => {
+          this.setState({
+            latestXHROpenedRequestPathName: pathName,
+          });
+        }
+      );
 
-    xhrOpenedRequests.emitter.on("pathClosed", (pathName: string) => {
-      if (this.state.latestXHROpenedRequestPathName === pathName) {
-        this.setState({
-          latestXHROpenedRequestPathName: null,
-        });
-      }
-    });
+      xhrOpenedRequests.emitter.on(
+        XHROpenedRequests.PATH_CLOSED,
+        (pathName: string) => {
+          if (this.state.latestXHROpenedRequestPathName === pathName) {
+            this.setState({
+              latestXHROpenedRequestPathName: null,
+            });
+          }
+        }
+      );
 
-    cacheAccessedRequests.emitter.on("pathOpened", (pathName: string) => {
-      this.setState({
-        latestCacheOpenedRequestPathName: pathName,
-      });
-    });
+      cacheAccessedRequests.emitter.on(
+        CacheOpenedRequests.PATH_OPENED,
+        (pathName: string) => {
+          this.setState({
+            latestCacheOpenedRequestPathName: pathName,
+          });
+        }
+      );
 
-    cacheAccessedRequests.emitter.on("pathClosed", (pathName: string) => {
-      if (this.state.latestCacheOpenedRequestPathName === pathName) {
-        this.setState({
-          latestCacheOpenedRequestPathName: null,
-        });
-      }
-    });
+      cacheAccessedRequests.emitter.on(
+        CacheOpenedRequests.PATH_CLOSED,
+        (pathName: string) => {
+          if (this.state.latestCacheOpenedRequestPathName === pathName) {
+            this.setState({
+              latestCacheOpenedRequestPathName: null,
+            });
+          }
+        }
+      );
+
+      return { xhrOpenedRequests, cacheAccessedRequests };
+    })();
 
     const libRustServiceUnsubscribe = libRustServiceSubscribe(
       (eventType, args) => {
