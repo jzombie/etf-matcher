@@ -26,7 +26,7 @@ export default function ETFHolderProps({ etfSymbol }: ETFHolderProps) {
   // TODO: Look up more information about this symbol (i.e. holdings, etc.)
 
   // TODO: Remove
-  customLogger.log({ etfAggregateDetail });
+  // customLogger.log({ etfAggregateDetail });
 
   if (!etfAggregateDetail) {
     return null;

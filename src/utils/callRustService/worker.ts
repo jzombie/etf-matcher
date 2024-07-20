@@ -81,3 +81,11 @@ self.onmessage = async (event) => {
       self.postMessage({ success: false, error: error.message, messageId });
     });
 };
+
+// Define the notify function globally
+(self as any).notify = function (eventType: string, args: any[]) {
+  customLogger.log("Notifier event:", {
+    eventType,
+    args,
+  });
+};
