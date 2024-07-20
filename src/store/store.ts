@@ -166,6 +166,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     // this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
 
+    // Instantiate and set up event bindings for `OpenNetworkRequests`
     const { xhrOpenedRequests, cacheAccessedRequests } = (() => {
       const xhrOpenedRequests = new XHROpenedRequests();
       const cacheAccessedRequests = new CacheAccessedRequests();
