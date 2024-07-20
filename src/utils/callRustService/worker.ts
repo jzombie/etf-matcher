@@ -1,5 +1,5 @@
 import init, * as wasmModule from "../../../public/pkg/etf_matcher";
-import customLogger from "@utils/customLogger";
+import customLogger from "../customLogger";
 
 interface CallQueueItem {
   functionName: string;
