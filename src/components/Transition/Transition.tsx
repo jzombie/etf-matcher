@@ -2,13 +2,12 @@ import React, {
   useState,
   useEffect,
   ReactNode,
-  useMemo,
   useRef,
   isValidElement,
   ReactElement,
+  useMemo,
 } from "react";
 import "animate.css";
-
 import Full from "@layoutKit/Full";
 
 export type TransitionProps = {
@@ -36,8 +35,12 @@ const Transition = ({ children }: TransitionProps) => {
       const activeViewKey = activeViewElement?.key;
 
       if (nextChildKey !== activeViewKey) {
+        // Determine transition direction
         if (nextChildKey && activeViewKey) {
-          if (parseInt(nextChildKey, 10) > parseInt(activeViewKey, 10)) {
+          if (
+            parseInt(nextChildKey.toString(), 10) >
+            parseInt(activeViewKey.toString(), 10)
+          ) {
             setTransitionDirection("left");
           } else {
             setTransitionDirection("right");
@@ -49,6 +52,22 @@ const Transition = ({ children }: TransitionProps) => {
       }
     }
   }, [children, activeView]);
+
+  const { activeTransitionClass, nextTransitionClass } = useMemo(() => {
+    console.log({ transitionDirection });
+
+    if (transitionDirection === "left") {
+      return {
+        activeTransitionClass: "animate__slideOutLeft",
+        nextTransitionClass: "animate__slideInRight",
+      };
+    } else {
+      return {
+        activeTransitionClass: "animate__slideOutRight",
+        nextTransitionClass: "animate__slideInLeft",
+      };
+    }
+  }, [transitionDirection]);
 
   useEffect(() => {
     if (isTransitioning) {
@@ -69,7 +88,8 @@ const Transition = ({ children }: TransitionProps) => {
 
       // Ensure nextView starts its transition after activeView has started transitioning out
       if (nextViewElement) {
-        nextViewElement.classList.add("animate__slideInRight");
+        // Apply the transition class based on the direction
+        nextViewElement.classList.add(nextTransitionClass);
       }
 
       // Cleanup
@@ -82,23 +102,7 @@ const Transition = ({ children }: TransitionProps) => {
         }
       };
     }
-  }, [isTransitioning, nextView]);
-
-  const { activeTransitionClass, nextTransitionClass } = useMemo(() => {
-    console.log({ transitionDirection });
-
-    if (transitionDirection === "left") {
-      return {
-        activeTransitionClass: "animate__slideOutLeft",
-        nextTransitionClass: "animate__slideInRight",
-      };
-    } else {
-      return {
-        activeTransitionClass: "animate__slideOutRight",
-        nextTransitionClass: "animate__slideInLeft",
-      };
-    }
-  }, [transitionDirection]);
+  }, [isTransitioning, nextView, nextTransitionClass]);
 
   return (
     <Full>
@@ -107,7 +111,11 @@ const Transition = ({ children }: TransitionProps) => {
         className={`animate__animated ${
           isTransitioning ? activeTransitionClass : ""
         }`}
-        style={{ flex: 1 }}
+        style={{
+          position: "relative", // Ensure this parent contains the transitioning children
+          width: "100%",
+          height: "100%",
+        }}
       >
         {activeView}
       </div>
@@ -118,11 +126,11 @@ const Transition = ({ children }: TransitionProps) => {
             isTransitioning ? nextTransitionClass : ""
           }`}
           style={{
-            flex: 1,
             position: "absolute",
             top: 0,
             left: 0,
             width: "100%",
+            height: "100%", // Ensure nextView takes full size for smooth transition
           }}
         >
           {nextView}
