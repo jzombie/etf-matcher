@@ -8,26 +8,25 @@ import React, {
   ReactElement,
 } from "react";
 import TransitionChildView from "./Transition.ChildView";
-
 import "animate.css";
 import Full from "@layoutKit/Full";
-import Cover from "@layoutKit/Cover";
 import debounceWithKey from "@utils/debounceWithKey";
 
-export enum TransitionDirection {
-  LEFT = "left",
-  RIGHT = "right",
-}
+export type TransitionDirection = "left" | "right";
+
+export type TransitionType = "slide" | "fade";
 
 export type TransitionProps = {
   children: ReactNode;
-  explicitDirection?: TransitionDirection;
+  direction?: TransitionDirection;
+  transitionType?: TransitionType;
   transitionDurationMs?: number;
 };
 
 const Transition = ({
   children,
-  explicitDirection,
+  direction,
+  transitionType = "slide",
   transitionDurationMs = 200,
 }: TransitionProps) => {
   const [activeView, setActiveView] = useState<ReactNode>(children);
@@ -36,10 +35,6 @@ const Transition = ({
   const [activeTransitionHeight, setActiveTransitionHeight] = useState<
     number | null
   >(null);
-
-  const keyedTransitionDirectionRef = useRef<TransitionDirection>(
-    TransitionDirection.LEFT
-  );
 
   const activeViewRef = useRef<HTMLDivElement>(null);
   const nextViewRef = useRef<HTMLDivElement>(null);
@@ -64,15 +59,6 @@ const Transition = ({
           );
         }
 
-        if (nextChildKey && activeViewKey) {
-          // For auto-determining transition direction
-          keyedTransitionDirectionRef.current =
-            parseInt(nextChildKey.toString(), 10) >
-            parseInt(activeViewKey.toString(), 10)
-              ? TransitionDirection.LEFT
-              : TransitionDirection.RIGHT;
-        }
-
         setIsTransitioning(true);
         setNextView(children);
       }
@@ -80,11 +66,18 @@ const Transition = ({
   }, [children, activeView]);
 
   // Explicitly want the props to update on the following useMemo
-  const keyedTransitionDirection = keyedTransitionDirectionRef.current;
+  // const keyedTransitionDirection = keyedTransitionDirectionRef.current;
   const { activeTransitionClass, nextTransitionClass } = useMemo(() => {
-    const transitionDirection = explicitDirection || keyedTransitionDirection;
+    if (transitionType === "fade") {
+      return {
+        activeTransitionClass: "animate__fadeOut",
+        nextTransitionClass: "animate__fadeIn",
+      };
+    }
 
-    if (transitionDirection === TransitionDirection.LEFT) {
+    const transitionDirection = direction;
+
+    if (transitionDirection === "left") {
       return {
         activeTransitionClass: "animate__slideOutLeft",
         nextTransitionClass: "animate__slideInRight",
@@ -95,7 +88,7 @@ const Transition = ({
         nextTransitionClass: "animate__slideInLeft",
       };
     }
-  }, [explicitDirection, keyedTransitionDirection]);
+  }, [direction, transitionType]);
 
   useEffect(() => {
     if (isTransitioning) {
@@ -154,36 +147,34 @@ const Transition = ({
     <Full
       style={activeTransitionHeight ? { height: activeTransitionHeight } : {}}
     >
-      <Full
+      <TransitionChildView
         ref={activeViewRef}
-        className={`animate__animated ${
-          isTransitioning ? activeTransitionClass : ""
-        }`}
+        key={activeViewKey}
+        transitionClassName={isTransitioning ? activeTransitionClass : ""}
         style={{
           animationDuration: transitionDurationCSS,
+          height: activeTransitionHeight || "null",
         }}
       >
-        <Full>
-          <TransitionChildView key={`active-${activeViewKey}`}>
-            {activeView}
-          </TransitionChildView>
-        </Full>
-      </Full>
-      {nextView ? (
-        <Cover
+        {activeView}
+      </TransitionChildView>
+      {nextView && (
+        <TransitionChildView
           ref={nextViewRef}
-          className={`animate__animated ${
-            isTransitioning ? nextTransitionClass : ""
-          }`}
+          key={nextViewKey}
+          transitionClassName={isTransitioning ? nextTransitionClass : ""}
           style={{
             animationDuration: transitionDurationCSS,
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
           }}
         >
-          <TransitionChildView key={`next-${nextViewKey}`}>
-            {nextView}
-          </TransitionChildView>
-        </Cover>
-      ) : null}
+          {nextView}
+        </TransitionChildView>
+      )}
     </Full>
   );
 };
