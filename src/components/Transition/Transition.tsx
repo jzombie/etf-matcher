@@ -1,5 +1,14 @@
-import React, { useState, useEffect, ReactNode, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  ReactNode,
+  useRef,
+  isValidElement,
+  ReactElement,
+} from "react";
 import "animate.css";
+
+import Full from "@layoutKit/Full";
 
 export type TransitionProps = {
   children: ReactNode;
@@ -14,10 +23,19 @@ const Transition = ({ children }: TransitionProps) => {
   const nextViewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // if (children.key !== activeView.key) {
-    if (children !== activeView) {
-      setIsTransitioning(true);
-      setNextView(children);
+    const currentChild = React.Children.only(children);
+
+    if (isValidElement(currentChild)) {
+      const currentChildKey = (currentChild as ReactElement).key;
+      const activeViewElement = isValidElement(activeView)
+        ? (activeView as ReactElement)
+        : null;
+      const activeViewKey = activeViewElement?.key;
+
+      if (currentChildKey !== activeViewKey) {
+        setIsTransitioning(true);
+        setNextView(children);
+      }
     }
   }, [children, activeView]);
 
@@ -56,16 +74,18 @@ const Transition = ({ children }: TransitionProps) => {
   }, [isTransitioning, nextView]);
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        width: "100%",
-        height: "100%",
-        overflow: "hidden",
-        position: "relative",
-      }}
-    >
+    // <div
+    //   style={{
+    //     display: "flex",
+    //     flexDirection: "column",
+    //     width: "100%",
+    //     height: "100%",
+    //     overflow: "hidden",
+    //     position: "relative",
+    //   }}
+    // >
+
+    <Full>
       <div
         ref={activeViewRef}
         className={`animate__animated ${
@@ -86,7 +106,7 @@ const Transition = ({ children }: TransitionProps) => {
           {nextView}
         </div>
       ) : null}
-    </div>
+    </Full>
   );
 };
 
