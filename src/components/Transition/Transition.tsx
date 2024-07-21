@@ -154,6 +154,8 @@ const Transition = ({
     [transitionDurationMs]
   );
 
+  console.log({ transitionDurationCSS });
+
   return (
     <Full
       style={activeTransitionHeight ? { height: activeTransitionHeight } : {}}

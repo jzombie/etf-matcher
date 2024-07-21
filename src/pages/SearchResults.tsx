@@ -195,7 +195,10 @@ export default function SearchResults() {
           />
         </Box>
       )}
-      <Transition transitionType="fade" transitionDurationMs={1000}>
+      <Transition
+      // transitionType="fade"
+      // transitionDurationMs={1000}
+      >
         <SymbolDetailList
           key={`search-results-${searchResultSymbols.toString()}`}
           tickerSymbols={searchResultSymbols}
