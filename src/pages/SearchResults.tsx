@@ -201,7 +201,6 @@ export default function SearchResults() {
         explicitDirection={
           !previousPage || page > previousPage ? "left" : "right"
         }
-        // transitionType="fade" transitionDurationMs={1000}
       >
         <SymbolDetailList
           key={`search-results-${searchResultSymbols.toString()}`}
