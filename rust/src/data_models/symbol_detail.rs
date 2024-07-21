@@ -1,8 +1,8 @@
-use serde::{Deserialize, Deserializer, Serialize};
-use crate::JsValue;
-use crate::utils::shard::query_shard_for_symbol;
-use crate::utils::uncompress_logo_filename;
 use crate::data_models::DataURL;
+use crate::utils::extract_logo_filename;
+use crate::utils::shard::query_shard_for_symbol;
+use crate::JsValue;
+use serde::{Deserialize, Deserializer, Serialize};
 
 // TODO: Move to `utils`
 // Custom deserialization function to convert Option<i32> to Option<bool>
@@ -33,14 +33,14 @@ pub struct SymbolDetail {
 impl SymbolDetail {
     pub async fn get_symbol_detail(symbol: &str) -> Result<SymbolDetail, JsValue> {
         let url: &str = DataURL::SymbolDetailShardIndex.value();
-        let mut detail = query_shard_for_symbol(url, symbol, |detail: &SymbolDetail| {
-            Some(&detail.symbol)
-        })
-        .await?
-        .ok_or_else(|| JsValue::from_str("Symbol not found"))?;
+        let mut detail =
+            query_shard_for_symbol(url, symbol, |detail: &SymbolDetail| Some(&detail.symbol))
+                .await?
+                .ok_or_else(|| JsValue::from_str("Symbol not found"))?;
 
         // Uncompress the logo filename
-        detail.logo_filename = uncompress_logo_filename(detail.logo_filename.as_deref(), &detail.symbol);
+        detail.logo_filename =
+            extract_logo_filename(detail.logo_filename.as_deref(), &detail.symbol);
 
         Ok(detail)
     }

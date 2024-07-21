@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use crate::JsValue;
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PaginatedResults<T> {
@@ -9,9 +9,14 @@ pub struct PaginatedResults<T> {
 
 // TODO: This should be able to sort by columns
 impl<T> PaginatedResults<T> {
-    pub fn paginate(data: Vec<T>, page: usize, page_size: usize) -> Result<PaginatedResults<T>, JsValue> {
+    pub fn paginate(
+        data: Vec<T>,
+        page: usize,
+        page_size: usize,
+    ) -> Result<PaginatedResults<T>, JsValue> {
         let total_count = data.len();
-        let paginated_results: Vec<T> = data.into_iter()
+        let paginated_results: Vec<T> = data
+            .into_iter()
             .skip((page - 1) * page_size)
             .take(page_size)
             .collect();

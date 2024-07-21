@@ -85,9 +85,6 @@ RUN cargo install wasm-pack
 # Copy only Rust frontend files with correct ownership
 COPY --chown=etfuser:etfuser rust/ ./rust/
 
-# Set the ENCRYPTED_PASSWORD environment variable for build.rs
-ENV ENCRYPTED_PASSWORD your_encrypted_password
-
 # Make build script executable and run it
 RUN build_rust_frontend
 

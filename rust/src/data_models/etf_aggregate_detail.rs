@@ -1,7 +1,7 @@
-use serde::{Deserialize, Serialize};
-use crate::JsValue;
-use crate::utils::shard::query_shard_for_symbol;
 use crate::data_models::DataURL;
+use crate::utils::shard::query_shard_for_symbol;
+use crate::JsValue;
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ETFAggregateDetail {
@@ -20,9 +20,11 @@ pub struct ETFAggregateDetail {
 impl ETFAggregateDetail {
     pub async fn get_etf_aggregate_detail(etf_symbol: &str) -> Result<ETFAggregateDetail, JsValue> {
         let url: &str = DataURL::ETFAggregateDetailShardIndex.value();
-        let etf_aggregate_detail: ETFAggregateDetail = query_shard_for_symbol(url, etf_symbol, |etf_aggregate_detail: &ETFAggregateDetail| {
-            Some(&etf_aggregate_detail.etf_symbol)
-        })
+        let etf_aggregate_detail: ETFAggregateDetail = query_shard_for_symbol(
+            url,
+            etf_symbol,
+            |etf_aggregate_detail: &ETFAggregateDetail| Some(&etf_aggregate_detail.etf_symbol),
+        )
         .await?
         .ok_or_else(|| JsValue::from_str("ETF symbol not found"))?;
 
