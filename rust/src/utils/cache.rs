@@ -9,6 +9,9 @@ use wasm_bindgen::prelude::*;
 
 use super::notifier::Notifier;
 
+type CacheFuture = LocalBoxFuture<'static, Result<Vec<u8>, JsValue>>;
+type SharedCacheFuture = Shared<CacheFuture>;
+
 // Global cache with futures for pending requests
 thread_local! {
     pub static CACHE: RefCell<HashMap<String, CachedFuture>> = RefCell::new(HashMap::new());
@@ -35,7 +38,7 @@ pub fn get_cache_size() -> usize {
 }
 
 pub struct CachedFuture {
-    pub future: Shared<LocalBoxFuture<'static, Result<Vec<u8>, JsValue>>>, // Adjusted to Vec<u8>
+    pub future: SharedCacheFuture,
     pub added_at: f64,
     pub last_accessed: RefCell<f64>,
     pub access_count: RefCell<u32>,
@@ -82,9 +85,7 @@ pub fn get_cache_details() -> JsValue {
     details
 }
 
-pub fn get_cache_future(
-    url: &str,
-) -> Option<Shared<LocalBoxFuture<'static, Result<Vec<u8>, JsValue>>>> {
+pub fn get_cache_future(url: &str) -> Option<SharedCacheFuture> {
     let result = CACHE.with(|cache| {
         let cache = cache.borrow_mut();
         if let Some(cached_future) = cache.get(url) {
@@ -101,10 +102,7 @@ pub fn get_cache_future(
     result
 }
 
-pub fn insert_cache_future(
-    url: &str,
-    future: Shared<LocalBoxFuture<'static, Result<Vec<u8>, JsValue>>>,
-) {
+pub fn insert_cache_future(url: &str, future: SharedCacheFuture) {
     CACHE.with(|cache| {
         let mut cache = cache.borrow_mut();
         let cached_future = CachedFuture {
