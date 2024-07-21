@@ -8,10 +8,8 @@ import React, {
   ReactElement,
 } from "react";
 import TransitionChildView from "./Transition.ChildView";
-
 import "animate.css";
 import Full from "@layoutKit/Full";
-import Cover from "@layoutKit/Cover";
 import debounceWithKey from "@utils/debounceWithKey";
 
 export type TransitionDirection = "left" | "right";
@@ -20,14 +18,14 @@ export type TransitionType = "slide" | "fade";
 
 export type TransitionProps = {
   children: ReactNode;
-  explicitDirection?: TransitionDirection;
+  direction?: TransitionDirection;
   transitionType?: TransitionType;
   transitionDurationMs?: number;
 };
 
 const Transition = ({
   children,
-  explicitDirection,
+  direction,
   transitionType = "slide",
   transitionDurationMs = 200,
 }: TransitionProps) => {
@@ -63,15 +61,6 @@ const Transition = ({
           );
         }
 
-        if (nextChildKey && activeViewKey) {
-          // For auto-determining transition direction
-          keyedTransitionDirectionRef.current =
-            parseInt(nextChildKey.toString(), 10) >
-            parseInt(activeViewKey.toString(), 10)
-              ? "left"
-              : "right";
-        }
-
         setIsTransitioning(true);
         setNextView(children);
       }
@@ -79,7 +68,7 @@ const Transition = ({
   }, [children, activeView]);
 
   // Explicitly want the props to update on the following useMemo
-  const keyedTransitionDirection = keyedTransitionDirectionRef.current;
+  // const keyedTransitionDirection = keyedTransitionDirectionRef.current;
   const { activeTransitionClass, nextTransitionClass } = useMemo(() => {
     if (transitionType === "fade") {
       return {
@@ -88,7 +77,8 @@ const Transition = ({
       };
     }
 
-    const transitionDirection = explicitDirection || keyedTransitionDirection;
+    // const transitionDirection = direction || keyedTransitionDirection;
+    const transitionDirection = direction;
 
     if (transitionDirection === "left") {
       return {
@@ -101,7 +91,7 @@ const Transition = ({
         nextTransitionClass: "animate__slideInLeft",
       };
     }
-  }, [explicitDirection, keyedTransitionDirection, transitionType]);
+  }, [direction, transitionType]);
 
   useEffect(() => {
     if (isTransitioning) {
@@ -167,36 +157,33 @@ const Transition = ({
     <Full
       style={activeTransitionHeight ? { height: activeTransitionHeight } : {}}
     >
-      <Full
+      <TransitionChildView
         ref={activeViewRef}
-        className={`animate__animated ${
-          isTransitioning ? activeTransitionClass : ""
-        }`}
+        key={activeViewKey}
+        transitionClassName={isTransitioning ? activeTransitionClass : ""}
         style={{
           animationDuration: transitionDurationCSS,
           height: activeTransitionHeight || "null",
         }}
       >
-        <Full>
-          <TransitionChildView key={activeViewKey}>
-            {activeView}
-          </TransitionChildView>
-        </Full>
-      </Full>
+        {activeView}
+      </TransitionChildView>
       {nextView && (
-        <Cover
+        <TransitionChildView
           ref={nextViewRef}
-          className={`animate__animated ${
-            isTransitioning ? nextTransitionClass : ""
-          }`}
+          key={nextViewKey}
+          transitionClassName={isTransitioning ? nextTransitionClass : ""}
           style={{
             animationDuration: transitionDurationCSS,
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
           }}
         >
-          <TransitionChildView key={nextViewKey}>
-            {nextView}
-          </TransitionChildView>
-        </Cover>
+          {nextView}
+        </TransitionChildView>
       )}
     </Full>
   );

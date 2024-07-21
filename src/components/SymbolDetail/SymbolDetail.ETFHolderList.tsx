@@ -20,7 +20,7 @@ export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
     RustServiceETFHoldersWithTotalCount | undefined
   >(undefined);
 
-  const { page, setPage, totalPages } = usePagination({
+  const { page, previousPage, setPage, totalPages } = usePagination({
     totalItems: etfHolders?.total_count,
   });
 
@@ -63,7 +63,11 @@ export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
               />
             )}
 
-            <Transition>
+            <Transition
+              direction={
+                !previousPage || page > previousPage ? "left" : "right"
+              }
+            >
               <div key={page}>
                 {etfSymbols.map((etfSymbol) => (
                   <ETFHolder key={etfSymbol} etfSymbol={etfSymbol} />

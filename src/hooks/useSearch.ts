@@ -45,6 +45,7 @@ export default function useSearch(
 
   const {
     page,
+    previousPage,
     setPage,
     pageSize,
     setPageSize,
@@ -100,7 +101,7 @@ export default function useSearch(
       // caused by the user rapidly paginating through results. Usage of the AbortController
       // AbortSignal didn't seem to alleviate this.
       const debouncedSearch = debounceWithKey(
-        "use_search",
+        "use_search:search_symbols",
         () => {
           store
             .searchSymbols(searchQuery, activePage, pageSize, onlyExactMatches)
@@ -143,6 +144,7 @@ export default function useSearch(
     selectedIndex,
     setSelectedIndex,
     page,
+    previousPage,
     setPage,
     pageSize,
     setPageSize,
