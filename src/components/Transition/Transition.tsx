@@ -22,9 +22,14 @@ export enum TransitionDirection {
 export type TransitionProps = {
   children: ReactNode;
   explicitDirection?: TransitionDirection;
+  transitionDurationMs?: number;
 };
 
-const Transition = ({ children, explicitDirection }: TransitionProps) => {
+const Transition = ({
+  children,
+  explicitDirection,
+  transitionDurationMs = 200,
+}: TransitionProps) => {
   const [activeView, setActiveView] = useState<ReactNode>(children);
   const [nextView, setNextView] = useState<ReactNode | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -140,6 +145,11 @@ const Transition = ({ children, explicitDirection }: TransitionProps) => {
     ? (nextView as ReactElement).key
     : null;
 
+  const transitionDurationCSS = useMemo(
+    () => `${transitionDurationMs / 1000}s`,
+    [transitionDurationMs]
+  );
+
   return (
     <Full
       style={activeTransitionHeight ? { height: activeTransitionHeight } : {}}
@@ -150,7 +160,7 @@ const Transition = ({ children, explicitDirection }: TransitionProps) => {
           isTransitioning ? activeTransitionClass : ""
         }`}
         style={{
-          animationDuration: "0.2s",
+          animationDuration: transitionDurationCSS,
         }}
       >
         <Full>
@@ -166,7 +176,7 @@ const Transition = ({ children, explicitDirection }: TransitionProps) => {
             isTransitioning ? nextTransitionClass : ""
           }`}
           style={{
-            animationDuration: "0.2s",
+            animationDuration: transitionDurationCSS,
           }}
         >
           <TransitionChildView key={`next-${nextViewKey}`}>
