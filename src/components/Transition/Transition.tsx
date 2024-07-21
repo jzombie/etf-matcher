@@ -183,7 +183,7 @@ const Transition = ({
           </TransitionChildView>
         </Full>
       </Full>
-      {nextView ? (
+      {nextView && (
         <Cover
           ref={nextViewRef}
           className={`animate__animated ${
@@ -197,7 +197,7 @@ const Transition = ({
             {nextView}
           </TransitionChildView>
         </Cover>
-      ) : null}
+      )}
     </Full>
   );
 };
