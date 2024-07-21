@@ -1,7 +1,7 @@
 import React from "react";
 import { TickerTape } from "react-ts-tradingview-widgets";
 import { Typography, useTheme, useMediaQuery } from "@mui/material";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import HeaderMenu from "./HeaderMenu";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
@@ -13,12 +13,16 @@ import Center from "@layoutKit/Center";
 import Cover from "@layoutKit/Cover";
 import Layout, { Header, Content, Footer } from "@layoutKit/Layout";
 
+import Transition from "@components/Transition";
+
 import NetworkRequestIndicator from "@components/NetworkRequestIndicator";
 
 import LockScreen from "@components/LockScreen";
 
 export default function MainLayout() {
   const theme = useTheme();
+
+  const { pathname: locationPathname } = useLocation();
 
   const shouldShowNetworkURL = useMediaQuery("@media (min-width:480px)");
 
@@ -53,7 +57,9 @@ export default function MainLayout() {
               </Center>
             </Full>
           ) : (
-            <Outlet />
+            <Transition>
+              <Outlet key={locationPathname} />
+            </Transition>
           )}
         </Content>
         <Footer>
