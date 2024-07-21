@@ -163,7 +163,7 @@ const Transition = ({
       <TransitionChildView
         ref={activeViewRef}
         key={activeViewKey}
-        transitionClass={isTransitioning ? activeTransitionClass : ""}
+        transitionClassName={isTransitioning ? activeTransitionClass : ""}
         style={{
           animationDuration: transitionDurationCSS,
           height: activeTransitionHeight || "null",
@@ -175,7 +175,7 @@ const Transition = ({
         <TransitionChildView
           ref={nextViewRef}
           key={nextViewKey}
-          transitionClass={isTransitioning ? nextTransitionClass : ""}
+          transitionClassName={isTransitioning ? nextTransitionClass : ""}
           style={{
             animationDuration: transitionDurationCSS,
             position: "absolute",
