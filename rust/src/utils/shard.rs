@@ -23,12 +23,7 @@ fn find_shard_for_symbol<'a>(
     symbol: &str,
     shard_index: &'a [ShardIndexEntry],
 ) -> Option<&'a ShardIndexEntry> {
-    for entry in shard_index {
-        if symbol >= entry.first_symbol.as_str() && symbol <= entry.last_symbol.as_str() {
-            return Some(entry);
-        }
-    }
-    None
+    shard_index.iter().find(|&entry| symbol >= entry.first_symbol.as_str() && symbol <= entry.last_symbol.as_str())
 }
 
 async fn fetch_and_parse_shard<T>(shard_url: &str) -> Result<Vec<T>, JsValue>

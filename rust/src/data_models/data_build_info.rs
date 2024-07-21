@@ -12,7 +12,7 @@ pub struct DataBuildInfo {
 
 impl DataBuildInfo {
     pub async fn get_data_build_info() -> Result<DataBuildInfo, JsValue> {
-        let url: &str = &DataURL::DataBuildInfo.value();
+        let url: &str = DataURL::DataBuildInfo.value();
 
         // Fetch and decompress the CSV data, skipping the cache
         let csv_data = fetch_and_decompress_gz(&url, false).await?;

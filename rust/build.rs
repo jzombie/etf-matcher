@@ -18,9 +18,9 @@ fn main() {
         let iv_bytes: Vec<u8> = parse_env_variable_to_bytes(&iv).expect("Failed to parse IV");
 
         // Encode the byte arrays as hex strings
-        let encrypted_password_hex: String = hex::encode(&encrypted_password_bytes);
-        let _key_hex: String = hex::encode(&key_bytes); // Not used directly
-        let iv_hex: String = hex::encode(&iv_bytes);
+        let encrypted_password_hex: String = hex::encode(encrypted_password_bytes);
+        let _key_hex: String = hex::encode(key_bytes); // Not used directly
+        let iv_hex: String = hex::encode(iv_bytes);
 
         // Write the encrypted password, key, and IV to a Rust source file
         let mut file: File =
@@ -89,6 +89,6 @@ fn build_character_codes_matrix(input: &str) -> String {
         result.push_str(&row.join(", "));
         result.push_str("],\n");
     }
-    result.push_str("]");
+    result.push(']');
     result
 }

@@ -12,7 +12,7 @@ pub struct SectorById {
 
 impl SectorById {
     pub async fn get_sector_name_with_id(sector_id: i32) -> Result<String, JsValue> {
-        let url: &str = &DataURL::SectorByIdIndex.value();
+        let url: &str = DataURL::SectorByIdIndex.value();
 
         // Fetch and decompress the CSV data
         let csv_data = fetch_and_decompress_gz(&url, true).await?;

@@ -105,12 +105,8 @@ impl SymbolSearch {
                         if seen_symbols.insert(symbol_lower.clone()) {
                             contains_matches.push(result.clone());
                         }
-                    } else if reverse_partial_symbol_match_contains
-                        || reverse_partial_company_match_contains
-                    {
-                        if seen_symbols.insert(symbol_lower.clone()) {
-                            reverse_contains_matches.push(result.clone());
-                        }
+                    } else if (reverse_partial_symbol_match_contains || reverse_partial_company_match_contains) && seen_symbols.insert(symbol_lower.clone()) {
+                        reverse_contains_matches.push(result.clone());
                     }
                 }
             }
