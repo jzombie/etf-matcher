@@ -9,7 +9,7 @@ export default function usePrevious<T>(
   const previous = useMemo(() => {
     const previous = prevRef.current;
 
-    if (!onlyUpdateOnChange || prevRef.current !== value) {
+    if (!onlyUpdateOnChange || previous !== value) {
       prevRef.current = value;
     }
 
