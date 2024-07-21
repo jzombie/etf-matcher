@@ -7,6 +7,8 @@ import React, {
   ReactElement,
   useMemo,
 } from "react";
+import TransitionChildView from "./Transition.ChildView";
+
 import "animate.css";
 import Full from "@layoutKit/Full";
 import debounceWithKey from "@utils/debounceWithKey";
@@ -27,6 +29,7 @@ const Transition = ({ children }: TransitionProps) => {
 
   const activeViewRef = useRef<HTMLDivElement>(null);
   const nextViewRef = useRef<HTMLDivElement>(null);
+  const nextViewKey = useRef<string | number | null>(null);
 
   useEffect(() => {
     const currentChild = React.Children.only(children);
@@ -39,40 +42,32 @@ const Transition = ({ children }: TransitionProps) => {
       const activeViewKey = activeViewElement?.key;
 
       if (nextChildKey !== activeViewKey) {
-        // Begin transition
-
         if (activeViewRef.current) {
           const computedActiveViewStyle = window.getComputedStyle(
             activeViewRef.current
           );
-
           setActiveTransitionHeight(
             parseInt(computedActiveViewStyle.height, 10)
           );
         }
 
-        // Determine transition direction
-        // TODO: This needs improvement, and possibly the ability to define as a prop
         if (nextChildKey && activeViewKey) {
-          if (
+          setTransitionDirection(
             parseInt(nextChildKey.toString(), 10) >
-            parseInt(activeViewKey.toString(), 10)
-          ) {
-            setTransitionDirection("left");
-          } else {
-            setTransitionDirection("right");
-          }
+              parseInt(activeViewKey.toString(), 10)
+              ? "left"
+              : "right"
+          );
         }
 
         setIsTransitioning(true);
         setNextView(children);
+        nextViewKey.current = nextChildKey; // Store the key
       }
     }
   }, [children, activeView]);
 
   const { activeTransitionClass, nextTransitionClass } = useMemo(() => {
-    console.log({ transitionDirection });
-
     if (transitionDirection === "left") {
       return {
         activeTransitionClass: "animate__slideOutLeft",
@@ -93,7 +88,6 @@ const Transition = ({ children }: TransitionProps) => {
         setActiveView(nextView);
         setNextView(null);
 
-        // Helps prevent flash of content on my Android phone
         debounceWithKey(
           "post_transition:height_reset",
           () => {
@@ -112,13 +106,10 @@ const Transition = ({ children }: TransitionProps) => {
         });
       }
 
-      // Ensure nextView starts its transition after activeView has started transitioning out
       if (nextViewElement) {
-        // Apply the transition class based on the direction
         nextViewElement.classList.add(nextTransitionClass);
       }
 
-      // Cleanup
       return () => {
         if (activeViewElement) {
           activeViewElement.removeEventListener(
@@ -142,12 +133,16 @@ const Transition = ({ children }: TransitionProps) => {
         style={{
           display: "flex",
           flex: 1,
-          animationDuration: "0.2s", // Adjust this value to speed up,
+          animationDuration: "0.2s",
           flexDirection: "column",
           overflow: "hidden",
         }}
       >
-        <Full>{activeView}</Full>
+        <Full>
+          <TransitionChildView key={nextViewKey.current}>
+            {activeView}
+          </TransitionChildView>
+        </Full>
       </div>
       {nextView ? (
         <div
@@ -160,11 +155,13 @@ const Transition = ({ children }: TransitionProps) => {
             top: 0,
             left: 0,
             width: "100%",
-            height: "100%", // Ensure nextView takes full size for smooth transition
-            animationDuration: "0.2s", // Adjust this value to speed up
+            height: "100%",
+            animationDuration: "0.2s",
           }}
         >
-          {nextView}
+          <TransitionChildView key={nextViewKey.current}>
+            {nextView}
+          </TransitionChildView>
         </div>
       ) : null}
     </Full>
