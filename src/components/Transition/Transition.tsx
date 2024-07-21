@@ -143,17 +143,13 @@ const Transition = ({ children, explicitDirection }: TransitionProps) => {
     <Full
       style={activeTransitionHeight ? { height: activeTransitionHeight } : {}}
     >
-      <div
+      <Full
         ref={activeViewRef}
         className={`animate__animated ${
           isTransitioning ? activeTransitionClass : ""
         }`}
         style={{
-          display: "flex",
-          flex: 1,
           animationDuration: "0.2s",
-          flexDirection: "column",
-          overflow: "hidden",
         }}
       >
         <Full>
@@ -161,9 +157,9 @@ const Transition = ({ children, explicitDirection }: TransitionProps) => {
             {activeView}
           </TransitionChildView>
         </Full>
-      </div>
+      </Full>
       {nextView ? (
-        <div
+        <Full
           ref={nextViewRef}
           className={`animate__animated ${
             isTransitioning ? nextTransitionClass : ""
@@ -172,15 +168,13 @@ const Transition = ({ children, explicitDirection }: TransitionProps) => {
             position: "absolute",
             top: 0,
             left: 0,
-            width: "100%",
-            height: "100%",
             animationDuration: "0.2s",
           }}
         >
           <TransitionChildView key={`next-${nextViewKey}`}>
             {nextView}
           </TransitionChildView>
-        </div>
+        </Full>
       ) : null}
     </Full>
   );
