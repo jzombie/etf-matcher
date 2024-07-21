@@ -1,8 +1,8 @@
-use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
-use crate::JsValue;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
+use crate::JsValue;
+use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 struct ShardIndexEntry {
@@ -13,14 +13,16 @@ struct ShardIndexEntry {
 
 async fn parse_shard_index(shard_index_url: &str) -> Result<Vec<ShardIndexEntry>, JsValue> {
     let csv_data = fetch_and_decompress_gz(shard_index_url, true).await?;
-    let csv_string = String::from_utf8(csv_data).map_err(|err| {
-        JsValue::from_str(&format!("Failed to convert data to String: {}", err))
-    })?;
+    let csv_string = String::from_utf8(csv_data)
+        .map_err(|err| JsValue::from_str(&format!("Failed to convert data to String: {}", err)))?;
     let entries: Vec<ShardIndexEntry> = parse_csv_data(csv_string.as_bytes())?;
     Ok(entries)
 }
 
-fn find_shard_for_symbol<'a>(symbol: &str, shard_index: &'a [ShardIndexEntry]) -> Option<&'a ShardIndexEntry> {
+fn find_shard_for_symbol<'a>(
+    symbol: &str,
+    shard_index: &'a [ShardIndexEntry],
+) -> Option<&'a ShardIndexEntry> {
     for entry in shard_index {
         if symbol >= entry.first_symbol.as_str() && symbol <= entry.last_symbol.as_str() {
             return Some(entry);
@@ -34,9 +36,8 @@ where
     T: DeserializeOwned,
 {
     let csv_data = fetch_and_decompress_gz(shard_url, true).await?;
-    let csv_string = String::from_utf8(csv_data).map_err(|err| {
-        JsValue::from_str(&format!("Failed to convert data to String: {}", err))
-    })?;
+    let csv_string = String::from_utf8(csv_data)
+        .map_err(|err| JsValue::from_str(&format!("Failed to convert data to String: {}", err)))?;
     let entries: Vec<T> = parse_csv_data(csv_string.as_bytes())?;
     Ok(entries)
 }
