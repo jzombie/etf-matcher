@@ -61,15 +61,6 @@ const Transition = ({
           );
         }
 
-        if (nextChildKey && activeViewKey) {
-          // For auto-determining transition direction
-          keyedTransitionDirectionRef.current =
-            parseInt(nextChildKey.toString(), 10) >
-            parseInt(activeViewKey.toString(), 10)
-              ? "left"
-              : "right";
-        }
-
         setIsTransitioning(true);
         setNextView(children);
       }
@@ -77,7 +68,7 @@ const Transition = ({
   }, [children, activeView]);
 
   // Explicitly want the props to update on the following useMemo
-  const keyedTransitionDirection = keyedTransitionDirectionRef.current;
+  // const keyedTransitionDirection = keyedTransitionDirectionRef.current;
   const { activeTransitionClass, nextTransitionClass } = useMemo(() => {
     if (transitionType === "fade") {
       return {
@@ -86,7 +77,8 @@ const Transition = ({
       };
     }
 
-    const transitionDirection = explicitDirection || keyedTransitionDirection;
+    // const transitionDirection = explicitDirection || keyedTransitionDirection;
+    const transitionDirection = explicitDirection;
 
     if (transitionDirection === "left") {
       return {
@@ -99,7 +91,7 @@ const Transition = ({
         nextTransitionClass: "animate__slideInLeft",
       };
     }
-  }, [explicitDirection, keyedTransitionDirection, transitionType]);
+  }, [explicitDirection, transitionType]);
 
   useEffect(() => {
     if (isTransitioning) {
@@ -153,8 +145,6 @@ const Transition = ({
     () => `${transitionDurationMs / 1000}s`,
     [transitionDurationMs]
   );
-
-  console.log({ transitionDurationCSS });
 
   return (
     <Full
