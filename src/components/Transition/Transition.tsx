@@ -11,6 +11,7 @@ import TransitionChildView from "./Transition.ChildView";
 
 import "animate.css";
 import Full from "@layoutKit/Full";
+import Cover from "@layoutKit/Cover";
 import debounceWithKey from "@utils/debounceWithKey";
 
 export enum TransitionDirection {
@@ -159,22 +160,19 @@ const Transition = ({ children, explicitDirection }: TransitionProps) => {
         </Full>
       </Full>
       {nextView ? (
-        <Full
+        <Cover
           ref={nextViewRef}
           className={`animate__animated ${
             isTransitioning ? nextTransitionClass : ""
           }`}
           style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
             animationDuration: "0.2s",
           }}
         >
           <TransitionChildView key={`next-${nextViewKey}`}>
             {nextView}
           </TransitionChildView>
-        </Full>
+        </Cover>
       ) : null}
     </Full>
   );
