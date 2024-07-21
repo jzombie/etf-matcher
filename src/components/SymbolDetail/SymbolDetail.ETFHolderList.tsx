@@ -20,7 +20,7 @@ export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
     RustServiceETFHoldersWithTotalCount | undefined
   >(undefined);
 
-  const { page, setPage, totalPages } = usePagination({
+  const { page, previousPage, setPage, totalPages } = usePagination({
     totalItems: etfHolders?.total_count,
   });
 
@@ -50,7 +50,7 @@ export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
           // TODO: Show the actual symbol weight in each ETFHolder (send `tickerSymbol` to
           // it and make clear distinction between which symbol is what)
         }
-        {/* <Box sx={{ backgroundColor: "rgba(255,255,255,.05)", borderRadius: 4 }}>
+        <Box sx={{ backgroundColor: "rgba(255,255,255,.05)", borderRadius: 4 }}>
           <Padding>
             {totalPages > 1 && (
               // TODO: When paginating through the list retain the same vertical offset in
@@ -63,7 +63,11 @@ export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
               />
             )}
 
-            <Transition>
+            <Transition
+              explicitDirection={
+                !previousPage || page > previousPage ? "left" : "right"
+              }
+            >
               <div key={page}>
                 {etfSymbols.map((etfSymbol) => (
                   <ETFHolder key={etfSymbol} etfSymbol={etfSymbol} />
@@ -71,7 +75,7 @@ export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
               </div>
             </Transition>
           </Padding>
-        </Box> */}
+        </Box>
       </Padding>
     </Box>
   );
