@@ -12,6 +12,7 @@ import {
 import SearchModalButton from "@components/SearchModalButton";
 import useSearch from "@hooks/useSearch";
 import SymbolDetailList from "@components/SymbolDetailList";
+import Transition from "@components/Transition";
 
 import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
@@ -182,28 +183,33 @@ export default function SearchResults() {
         {totalSearchResults} search result{totalSearchResults !== 1 ? "s" : ""}{" "}
         for &quot;{searchQuery}&quot;
       </Padding>
-      {totalSearchResults > pageSize && !isLoading && (
-        <Box sx={{ textAlign: "center" }}>
+      {totalSearchResults > pageSize && (
+        <Box>
           <Pagination
             count={totalPages}
             page={page}
             onChange={(event, nextPage) => setPage(nextPage)}
             showFirstButton
             showLastButton
-            sx={{ display: "inline-block" }}
+            // sx={{ display: "inline-block" }}
           />
         </Box>
       )}
-      <SymbolDetailList tickerSymbols={searchResultSymbols} />
+      <Transition transitionType="fade" transitionDurationMs={1000}>
+        <SymbolDetailList
+          key={`search-results-${searchResultSymbols.toString()}`}
+          tickerSymbols={searchResultSymbols}
+        />
+      </Transition>
       {totalSearchResults > pageSize && !isLoading && (
-        <Box sx={{ textAlign: "center" }}>
+        <Box>
           <Pagination
             count={totalPages}
             page={page}
             onChange={(event, nextPage) => setPage(nextPage)}
             showFirstButton
             showLastButton
-            sx={{ display: "inline-block" }}
+            // sx={{ display: "inline-block" }}
           />
         </Box>
       )}

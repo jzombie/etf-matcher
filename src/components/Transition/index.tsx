@@ -1,5 +1,8 @@
-import Transition, { TransitionProps, TransitionDirection } from "./Transition";
+import Transition, {
+  TransitionProps,
+  TransitionDirection,
+  TransitionType,
+} from "./Transition";
 
 export default Transition;
-export { TransitionDirection };
-export type { TransitionProps };
+export type { TransitionProps, TransitionDirection, TransitionType };

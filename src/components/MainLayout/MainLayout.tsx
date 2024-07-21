@@ -1,12 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { TickerTape } from "react-ts-tradingview-widgets";
 import { Typography, useTheme, useMediaQuery } from "@mui/material";
 import { Outlet, useLocation } from "react-router-dom";
 import HeaderMenu from "./HeaderMenu";
 
-import useNavigationDirection, {
-  NavigationDirection,
-} from "@hooks/useNavigationDirection";
+import useNavigationDirection from "@hooks/useNavigationDirection";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 
@@ -16,7 +14,7 @@ import Center from "@layoutKit/Center";
 import Cover from "@layoutKit/Cover";
 import Layout, { Header, Content, Footer } from "@layoutKit/Layout";
 
-import Transition, { TransitionDirection } from "@components/Transition";
+import Transition from "@components/Transition";
 
 import NetworkRequestIndicator from "@components/NetworkRequestIndicator";
 
@@ -63,9 +61,7 @@ export default function MainLayout() {
           ) : (
             <Transition
               explicitDirection={
-                navigationDirection === NavigationDirection.BACKWARD
-                  ? TransitionDirection.RIGHT
-                  : TransitionDirection.LEFT
+                navigationDirection === "backward" ? "right" : "left"
               }
             >
               <Outlet key={locationPathname} />

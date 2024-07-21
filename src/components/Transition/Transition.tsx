@@ -14,20 +14,21 @@ import Full from "@layoutKit/Full";
 import Cover from "@layoutKit/Cover";
 import debounceWithKey from "@utils/debounceWithKey";
 
-export enum TransitionDirection {
-  LEFT = "left",
-  RIGHT = "right",
-}
+export type TransitionDirection = "left" | "right";
+
+export type TransitionType = "slide" | "fade";
 
 export type TransitionProps = {
   children: ReactNode;
   explicitDirection?: TransitionDirection;
+  transitionType?: TransitionType;
   transitionDurationMs?: number;
 };
 
 const Transition = ({
   children,
   explicitDirection,
+  transitionType = "slide",
   transitionDurationMs = 200,
 }: TransitionProps) => {
   const [activeView, setActiveView] = useState<ReactNode>(children);
@@ -37,9 +38,7 @@ const Transition = ({
     number | null
   >(null);
 
-  const keyedTransitionDirectionRef = useRef<TransitionDirection>(
-    TransitionDirection.LEFT
-  );
+  const keyedTransitionDirectionRef = useRef<TransitionDirection>("left");
 
   const activeViewRef = useRef<HTMLDivElement>(null);
   const nextViewRef = useRef<HTMLDivElement>(null);
@@ -69,8 +68,8 @@ const Transition = ({
           keyedTransitionDirectionRef.current =
             parseInt(nextChildKey.toString(), 10) >
             parseInt(activeViewKey.toString(), 10)
-              ? TransitionDirection.LEFT
-              : TransitionDirection.RIGHT;
+              ? "left"
+              : "right";
         }
 
         setIsTransitioning(true);
@@ -82,9 +81,16 @@ const Transition = ({
   // Explicitly want the props to update on the following useMemo
   const keyedTransitionDirection = keyedTransitionDirectionRef.current;
   const { activeTransitionClass, nextTransitionClass } = useMemo(() => {
+    if (transitionType === "fade") {
+      return {
+        activeTransitionClass: "animate__fadeOut",
+        nextTransitionClass: "animate__fadeIn",
+      };
+    }
+
     const transitionDirection = explicitDirection || keyedTransitionDirection;
 
-    if (transitionDirection === TransitionDirection.LEFT) {
+    if (transitionDirection === "left") {
       return {
         activeTransitionClass: "animate__slideOutLeft",
         nextTransitionClass: "animate__slideInRight",
@@ -95,7 +101,7 @@ const Transition = ({
         nextTransitionClass: "animate__slideInLeft",
       };
     }
-  }, [explicitDirection, keyedTransitionDirection]);
+  }, [explicitDirection, keyedTransitionDirection, transitionType]);
 
   useEffect(() => {
     if (isTransitioning) {
@@ -161,6 +167,7 @@ const Transition = ({
         }`}
         style={{
           animationDuration: transitionDurationCSS,
+          height: activeTransitionHeight || "null",
         }}
       >
         <Full>
