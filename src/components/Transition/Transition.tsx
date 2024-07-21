@@ -36,8 +36,6 @@ const Transition = ({
     number | null
   >(null);
 
-  const keyedTransitionDirectionRef = useRef<TransitionDirection>("left");
-
   const activeViewRef = useRef<HTMLDivElement>(null);
   const nextViewRef = useRef<HTMLDivElement>(null);
 
