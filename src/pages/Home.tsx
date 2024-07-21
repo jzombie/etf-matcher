@@ -1,12 +1,9 @@
 import React from "react";
 import { Button } from "@mui/material";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
-import heroImg from "@assets/hero.webp"; // Adjust the path as needed
+import heroImg from "@assets/hero.webp";
 
 import Scrollable from "@layoutKit/Scrollable";
-
-import Full from "@layoutKit/Full";
-import Center from "@layoutKit/Center";
 
 export default function Home() {
   const { isSearchModalOpen } = useStoreStateReader(["isSearchModalOpen"]);
