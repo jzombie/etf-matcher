@@ -1,12 +1,11 @@
 import React, {
   useState,
   useEffect,
-  ReactNode,
+  useMemo,
   useRef,
+  ReactNode,
   isValidElement,
   ReactElement,
-  useMemo,
-  useCallback,
 } from "react";
 import TransitionChildView from "./Transition.ChildView";
 
@@ -14,19 +13,27 @@ import "animate.css";
 import Full from "@layoutKit/Full";
 import debounceWithKey from "@utils/debounceWithKey";
 
+export enum TransitionDirection {
+  LEFT = "left",
+  RIGHT = "right",
+}
+
 export type TransitionProps = {
   children: ReactNode;
+  explicitDirection?: TransitionDirection;
 };
 
-const Transition = ({ children }: TransitionProps) => {
+const Transition = ({ children, explicitDirection }: TransitionProps) => {
   const [activeView, setActiveView] = useState<ReactNode>(children);
   const [nextView, setNextView] = useState<ReactNode | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [activeTransitionHeight, setActiveTransitionHeight] = useState<
     number | null
   >(null);
-  const [transitionDirection, setTransitionDirection] =
-    useState<string>("left");
+
+  const keyedTransitionDirectionRef = useRef<TransitionDirection>(
+    TransitionDirection.LEFT
+  );
 
   const activeViewRef = useRef<HTMLDivElement>(null);
   const nextViewRef = useRef<HTMLDivElement>(null);
@@ -52,12 +59,12 @@ const Transition = ({ children }: TransitionProps) => {
         }
 
         if (nextChildKey && activeViewKey) {
-          setTransitionDirection(
+          // For auto-determining transition direction
+          keyedTransitionDirectionRef.current =
             parseInt(nextChildKey.toString(), 10) >
-              parseInt(activeViewKey.toString(), 10)
-              ? "left"
-              : "right"
-          );
+            parseInt(activeViewKey.toString(), 10)
+              ? TransitionDirection.LEFT
+              : TransitionDirection.RIGHT;
         }
 
         setIsTransitioning(true);
@@ -66,8 +73,12 @@ const Transition = ({ children }: TransitionProps) => {
     }
   }, [children, activeView]);
 
+  // Explicitly want the props to update on the following useMemo
+  const keyedTransitionDirection = keyedTransitionDirectionRef.current;
   const { activeTransitionClass, nextTransitionClass } = useMemo(() => {
-    if (transitionDirection === "left") {
+    const transitionDirection = explicitDirection || keyedTransitionDirection;
+
+    if (transitionDirection === TransitionDirection.LEFT) {
       return {
         activeTransitionClass: "animate__slideOutLeft",
         nextTransitionClass: "animate__slideInRight",
@@ -78,7 +89,7 @@ const Transition = ({ children }: TransitionProps) => {
         nextTransitionClass: "animate__slideInLeft",
       };
     }
-  }, [transitionDirection]);
+  }, [explicitDirection, keyedTransitionDirection]);
 
   useEffect(() => {
     if (isTransitioning) {

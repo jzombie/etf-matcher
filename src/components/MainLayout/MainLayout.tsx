@@ -4,7 +4,9 @@ import { Typography, useTheme, useMediaQuery } from "@mui/material";
 import { Outlet, useLocation } from "react-router-dom";
 import HeaderMenu from "./HeaderMenu";
 
-// import useNavigationDirection from "@hooks/useNavigationDirection";
+import useNavigationDirection, {
+  NavigationDirection,
+} from "@hooks/useNavigationDirection";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 
@@ -14,7 +16,7 @@ import Center from "@layoutKit/Center";
 import Cover from "@layoutKit/Cover";
 import Layout, { Header, Content, Footer } from "@layoutKit/Layout";
 
-import Transition from "@components/Transition";
+import Transition, { TransitionDirection } from "@components/Transition";
 
 import NetworkRequestIndicator from "@components/NetworkRequestIndicator";
 
@@ -22,17 +24,11 @@ import LockScreen from "@components/LockScreen";
 
 export default function MainLayout() {
   const theme = useTheme();
-  // const navigationDirection = useNavigationDirection();
+  const navigationDirection = useNavigationDirection();
+
+  console.log({ navigationDirection });
 
   const { pathname: locationPathname } = useLocation();
-
-  // TODO: Remove
-  // useEffect(() => {
-  //   console.log({
-  //     navigationDirection,
-  //     locationPathname,
-  //   });
-  // }, [navigationDirection, locationPathname]);
 
   const shouldShowNetworkURL = useMediaQuery("@media (min-width:480px)");
 
@@ -67,8 +63,13 @@ export default function MainLayout() {
               </Center>
             </Full>
           ) : (
-            // TODO: Tie in navigationDirection into this transition to determine which way it should move
-            <Transition>
+            <Transition
+              explicitDirection={
+                navigationDirection === NavigationDirection.BACKWARD
+                  ? TransitionDirection.RIGHT
+                  : TransitionDirection.LEFT
+              }
+            >
               <Outlet key={locationPathname} />
             </Transition>
           )}
