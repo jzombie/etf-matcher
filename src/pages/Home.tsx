@@ -16,14 +16,6 @@ export default function Home() {
   };
 
   return (
-    // TODO: Just for debugging
-    <Full>
-      <Center>Hello</Center>
-    </Full>
-  );
-
-  // TODO: Uncomment
-  return (
     <Scrollable>
       <section style={heroSectionStyle}>
         <div style={overlayStyle}>
