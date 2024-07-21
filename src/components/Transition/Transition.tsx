@@ -156,7 +156,7 @@ const Transition = ({
         transitionClassName={isTransitioning ? activeTransitionClass : ""}
         style={{
           animationDuration: transitionDurationCSS,
-          height: activeTransitionHeight || "null",
+          height: activeTransitionHeight ? activeTransitionHeight : undefined,
         }}
       >
         {activeView}
