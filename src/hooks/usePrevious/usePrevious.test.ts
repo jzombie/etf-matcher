@@ -23,9 +23,9 @@ describe("usePrevious hook", () => {
     expect(result.current).toBe(2);
   });
 
-  it("should not update the previous value if the value is the same and onlyUpdateOnChange is true", () => {
+  it("should update the previous value if onlyUpdateOnChange is false", () => {
     const { result, rerender } = renderHook(
-      (value) => usePrevious(value, true),
+      (props) => usePrevious(props, false),
       {
         initialProps: 1,
       }
@@ -46,9 +46,9 @@ describe("usePrevious hook", () => {
     expect(result.current).toBe(2);
   });
 
-  it("should update the previous value if onlyUpdateOnChange is false", () => {
+  it("should not update the previous value if the value is the same and onlyUpdateOnChange is true", () => {
     const { result, rerender } = renderHook(
-      (props) => usePrevious(props, false),
+      (value) => usePrevious(value, true),
       {
         initialProps: 1,
       }
@@ -64,7 +64,15 @@ describe("usePrevious hook", () => {
     rerender(2);
     expect(result.current).toBe(1);
 
+    // Update with the same value (again)
+    rerender(2);
+    expect(result.current).toBe(1);
+
     // Update to a new value
+    rerender(3);
+    expect(result.current).toBe(2);
+
+    // Update with the same value
     rerender(3);
     expect(result.current).toBe(2);
   });
