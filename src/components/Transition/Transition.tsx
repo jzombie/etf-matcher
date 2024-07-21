@@ -30,9 +30,6 @@ const Transition = ({ children }: TransitionProps) => {
 
   const activeViewRef = useRef<HTMLDivElement>(null);
   const nextViewRef = useRef<HTMLDivElement>(null);
-  const [keyMap, setKeyMap] = useState<Map<ReactNode, string | number | null>>(
-    new Map()
-  );
 
   useEffect(() => {
     const currentChild = React.Children.only(children);
@@ -65,9 +62,6 @@ const Transition = ({ children }: TransitionProps) => {
 
         setIsTransitioning(true);
         setNextView(children);
-        setKeyMap((prev) =>
-          new Map(prev).set(children, nextChildKey as string | number | null)
-        ); // Cast the key
       }
     }
   }, [children, activeView]);
