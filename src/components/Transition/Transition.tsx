@@ -77,7 +77,6 @@ const Transition = ({
       };
     }
 
-    // const transitionDirection = direction || keyedTransitionDirection;
     const transitionDirection = direction;
 
     if (transitionDirection === "left") {
@@ -145,13 +144,6 @@ const Transition = ({
     () => `${transitionDurationMs / 1000}s`,
     [transitionDurationMs]
   );
-
-  // useEffect(() => {
-  //   console.log({
-  //     activeViewKey,
-  //     nextViewKey,
-  //   });
-  // }, [activeViewKey, nextViewKey]);
 
   return (
     <Full
