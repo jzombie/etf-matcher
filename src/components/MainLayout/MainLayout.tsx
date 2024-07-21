@@ -26,8 +26,6 @@ export default function MainLayout() {
   const theme = useTheme();
   const navigationDirection = useNavigationDirection();
 
-  console.log({ navigationDirection });
-
   const { pathname: locationPathname } = useLocation();
 
   const shouldShowNetworkURL = useMediaQuery("@media (min-width:480px)");
