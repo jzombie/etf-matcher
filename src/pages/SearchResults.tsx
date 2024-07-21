@@ -10,9 +10,10 @@ import {
 } from "@mui/material";
 
 import SearchModalButton from "@components/SearchModalButton";
-import useSearch from "@hooks/useSearch";
 import SymbolDetailList from "@components/SymbolDetailList";
 import Transition from "@components/Transition";
+
+import useSearch from "@hooks/useSearch";
 
 import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
@@ -35,6 +36,7 @@ export default function SearchResults() {
     totalSearchResults,
     pageSize,
     page,
+    previousPage,
     setPage: _setPage,
     totalPages,
     isLoading,
@@ -195,7 +197,9 @@ export default function SearchResults() {
           />
         </Box>
       )}
-      <Transition transitionType="fade" transitionDurationMs={1000}>
+      <Transition
+        direction={!previousPage || page > previousPage ? "left" : "right"}
+      >
         <SymbolDetailList
           key={`search-results-${searchResultSymbols.toString()}`}
           tickerSymbols={searchResultSymbols}
