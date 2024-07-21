@@ -45,6 +45,7 @@ export default function useSearch(
 
   const {
     page,
+    previousPage,
     setPage,
     pageSize,
     setPageSize,
@@ -143,6 +144,7 @@ export default function useSearch(
     selectedIndex,
     setSelectedIndex,
     page,
+    previousPage,
     setPage,
     pageSize,
     setPageSize,
