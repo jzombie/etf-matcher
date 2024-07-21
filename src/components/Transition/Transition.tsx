@@ -8,10 +8,8 @@ import React, {
   ReactElement,
 } from "react";
 import TransitionChildView from "./Transition.ChildView";
-
 import "animate.css";
 import Full from "@layoutKit/Full";
-import Cover from "@layoutKit/Cover";
 import debounceWithKey from "@utils/debounceWithKey";
 
 export type TransitionDirection = "left" | "right";
@@ -156,47 +154,37 @@ const Transition = ({
     [transitionDurationMs]
   );
 
-  // useEffect(() => {
-  //   console.log({
-  //     activeViewKey,
-  //     nextViewKey,
-  //   });
-  // }, [activeViewKey, nextViewKey]);
-
   return (
     <Full
       style={activeTransitionHeight ? { height: activeTransitionHeight } : {}}
     >
-      <Full
+      <TransitionChildView
         ref={activeViewRef}
-        className={`animate__animated ${
-          isTransitioning ? activeTransitionClass : ""
-        }`}
+        key={activeViewKey}
+        transitionClass={isTransitioning ? activeTransitionClass : ""}
         style={{
           animationDuration: transitionDurationCSS,
           height: activeTransitionHeight || "null",
         }}
       >
-        <Full>
-          <TransitionChildView key={activeViewKey}>
-            {activeView}
-          </TransitionChildView>
-        </Full>
-      </Full>
+        {activeView}
+      </TransitionChildView>
       {nextView && (
-        <Cover
+        <TransitionChildView
           ref={nextViewRef}
-          className={`animate__animated ${
-            isTransitioning ? nextTransitionClass : ""
-          }`}
+          key={nextViewKey}
+          transitionClass={isTransitioning ? nextTransitionClass : ""}
           style={{
             animationDuration: transitionDurationCSS,
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
           }}
         >
-          <TransitionChildView key={nextViewKey}>
-            {nextView}
-          </TransitionChildView>
-        </Cover>
+          {nextView}
+        </TransitionChildView>
       )}
     </Full>
   );
