@@ -15,7 +15,6 @@ const TransitionChildView = forwardRef<
   return (
     <Full
       ref={ref}
-      // className={`animate__animated ${transitionClass}`}
       className={clsx("animate__animated", transitionClassName, className)}
       {...rest}
     >
