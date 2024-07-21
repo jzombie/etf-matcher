@@ -2,13 +2,18 @@ import React from "react";
 import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
 import Layout from "./Layout";
+import Header from "./Header";
+import Content from "./Content";
+import Footer from "./Footer";
 import { describe, it, expect } from "vitest";
 
 describe("Layout Component", () => {
   it("renders children correctly", () => {
     const { getByText, asFragment } = render(
       <Layout>
-        <span>Test Content</span>
+        <Header>Test Header</Header>
+        <Content>Test Content</Content>
+        <Footer>Test Footer</Footer>
       </Layout>
     );
     expect(getByText("Test Content")).toBeInTheDocument();
@@ -17,9 +22,21 @@ describe("Layout Component", () => {
         <div
           class="layout"
         >
-          <span>
+          <header
+            class="header"
+          >
+            Test Header
+          </header>
+          <div
+            class="content"
+          >
             Test Content
-          </span>
+          </div>
+          <footer
+            class="footer"
+          >
+            Test Footer
+          </footer>
         </div>
       </DocumentFragment>
     `);
@@ -28,7 +45,9 @@ describe("Layout Component", () => {
   it("applies custom className", () => {
     const { container, asFragment } = render(
       <Layout className="custom-class">
-        <span>Test Content</span>
+        <Header>Test Header</Header>
+        <Content>Test Content</Content>
+        <Footer>Test Footer</Footer>
       </Layout>
     );
     expect(container.firstChild).toHaveClass("custom-class");
@@ -37,9 +56,21 @@ describe("Layout Component", () => {
         <div
           class="layout custom-class"
         >
-          <span>
+          <header
+            class="header"
+          >
+            Test Header
+          </header>
+          <div
+            class="content"
+          >
             Test Content
-          </span>
+          </div>
+          <footer
+            class="footer"
+          >
+            Test Footer
+          </footer>
         </div>
       </DocumentFragment>
     `);
@@ -49,7 +80,9 @@ describe("Layout Component", () => {
     const ref = React.createRef<HTMLDivElement>();
     render(
       <Layout ref={ref}>
-        <span>Test Content</span>
+        <Header>Test Header</Header>
+        <Content>Test Content</Content>
+        <Footer>Test Footer</Footer>
       </Layout>
     );
     expect(ref.current).toBeInstanceOf(HTMLElement);
