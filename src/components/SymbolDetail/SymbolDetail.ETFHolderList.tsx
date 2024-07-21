@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Box, Pagination } from "@mui/material";
 import ETFHolder from "./SymbolDetail.ETFHolder";
+import Transition from "@components/Transition";
 
 import usePagination from "@hooks/usePagination";
 
@@ -62,9 +63,13 @@ export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
               />
             )}
 
-            {etfSymbols.map((etfSymbol) => (
-              <ETFHolder key={etfSymbol} etfSymbol={etfSymbol} />
-            ))}
+            <Transition>
+              <div key={page}>
+                {etfSymbols.map((etfSymbol) => (
+                  <ETFHolder key={etfSymbol} etfSymbol={etfSymbol} />
+                ))}
+              </div>
+            </Transition>
           </Padding>
         </Box>
       </Padding>

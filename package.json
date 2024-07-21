@@ -15,7 +15,6 @@
     "coverage": "c8 vitest run",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
-  "dependencies": {},
   "devDependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
@@ -30,6 +29,7 @@
     "@typescript-eslint/eslint-plugin": "^7.15.0",
     "@typescript-eslint/parser": "^7.15.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "animate.css": "^4.1.1",
     "c8": "^10.1.2",
     "dotenv": "^16.4.5",
     "eslint": "^8.57.0",
