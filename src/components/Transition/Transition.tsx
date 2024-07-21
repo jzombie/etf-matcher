@@ -6,6 +6,7 @@ import React, {
   isValidElement,
   ReactElement,
   useMemo,
+  useCallback,
 } from "react";
 import TransitionChildView from "./Transition.ChildView";
 
@@ -29,7 +30,9 @@ const Transition = ({ children }: TransitionProps) => {
 
   const activeViewRef = useRef<HTMLDivElement>(null);
   const nextViewRef = useRef<HTMLDivElement>(null);
-  const nextViewKey = useRef<string | number | null>(null);
+  const [keyMap, setKeyMap] = useState<Map<ReactNode, string | number | null>>(
+    new Map()
+  );
 
   useEffect(() => {
     const currentChild = React.Children.only(children);
@@ -62,7 +65,9 @@ const Transition = ({ children }: TransitionProps) => {
 
         setIsTransitioning(true);
         setNextView(children);
-        nextViewKey.current = nextChildKey; // Store the key
+        setKeyMap((prev) =>
+          new Map(prev).set(children, nextChildKey as string | number | null)
+        ); // Cast the key
       }
     }
   }, [children, activeView]);
@@ -121,6 +126,14 @@ const Transition = ({ children }: TransitionProps) => {
     }
   }, [isTransitioning, nextView, nextTransitionClass]);
 
+  // Infer keys inline
+  const activeViewKey = isValidElement(activeView)
+    ? (activeView as ReactElement).key
+    : null;
+  const nextViewKey = isValidElement(nextView)
+    ? (nextView as ReactElement).key
+    : null;
+
   return (
     <Full
       style={activeTransitionHeight ? { height: activeTransitionHeight } : {}}
@@ -139,7 +152,7 @@ const Transition = ({ children }: TransitionProps) => {
         }}
       >
         <Full>
-          <TransitionChildView key={nextViewKey.current}>
+          <TransitionChildView key={`active-${activeViewKey}`}>
             {activeView}
           </TransitionChildView>
         </Full>
@@ -159,7 +172,7 @@ const Transition = ({ children }: TransitionProps) => {
             animationDuration: "0.2s",
           }}
         >
-          <TransitionChildView key={nextViewKey.current}>
+          <TransitionChildView key={`next-${nextViewKey}`}>
             {nextView}
           </TransitionChildView>
         </div>
