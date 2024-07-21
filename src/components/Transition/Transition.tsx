@@ -18,14 +18,14 @@ export type TransitionType = "slide" | "fade";
 
 export type TransitionProps = {
   children: ReactNode;
-  explicitDirection?: TransitionDirection;
+  direction?: TransitionDirection;
   transitionType?: TransitionType;
   transitionDurationMs?: number;
 };
 
 const Transition = ({
   children,
-  explicitDirection,
+  direction,
   transitionType = "slide",
   transitionDurationMs = 200,
 }: TransitionProps) => {
@@ -77,8 +77,8 @@ const Transition = ({
       };
     }
 
-    // const transitionDirection = explicitDirection || keyedTransitionDirection;
-    const transitionDirection = explicitDirection;
+    // const transitionDirection = direction || keyedTransitionDirection;
+    const transitionDirection = direction;
 
     if (transitionDirection === "left") {
       return {
@@ -91,7 +91,7 @@ const Transition = ({
         nextTransitionClass: "animate__slideInLeft",
       };
     }
-  }, [explicitDirection, transitionType]);
+  }, [direction, transitionType]);
 
   useEffect(() => {
     if (isTransitioning) {

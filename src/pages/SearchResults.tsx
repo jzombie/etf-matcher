@@ -198,9 +198,7 @@ export default function SearchResults() {
         </Box>
       )}
       <Transition
-        explicitDirection={
-          !previousPage || page > previousPage ? "left" : "right"
-        }
+        direction={!previousPage || page > previousPage ? "left" : "right"}
       >
         <SymbolDetailList
           key={`search-results-${searchResultSymbols.toString()}`}

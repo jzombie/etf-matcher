@@ -60,9 +60,7 @@ export default function MainLayout() {
             </Full>
           ) : (
             <Transition
-              explicitDirection={
-                navigationDirection === "backward" ? "right" : "left"
-              }
+              direction={navigationDirection === "backward" ? "right" : "left"}
             >
               <Outlet key={locationPathname} />
             </Transition>

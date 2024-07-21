@@ -1,4 +1,4 @@
-import React, { useEffect, forwardRef } from "react";
+import React, { forwardRef } from "react";
 import Full, { FullProps } from "@layoutKit/Full";
 import clsx from "clsx";
 
@@ -22,5 +22,7 @@ const TransitionChildView = forwardRef<
     </Full>
   );
 });
+
+TransitionChildView.displayName = "TransitionChildView";
 
 export default TransitionChildView;

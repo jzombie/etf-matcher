@@ -64,7 +64,7 @@ export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
             )}
 
             <Transition
-              explicitDirection={
+              direction={
                 !previousPage || page > previousPage ? "left" : "right"
               }
             >
