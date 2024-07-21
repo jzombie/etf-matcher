@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import "animate.css";
 import Full from "@layoutKit/Full";
+import debounceWithKey from "@utils/debounceWithKey";
 
 export type TransitionProps = {
   children: ReactNode;
@@ -18,6 +19,9 @@ const Transition = ({ children }: TransitionProps) => {
   const [activeView, setActiveView] = useState<ReactNode>(children);
   const [nextView, setNextView] = useState<ReactNode | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [activeTransitionHeight, setActiveTransitionHeight] = useState<
+    number | null
+  >(null);
   const [transitionDirection, setTransitionDirection] =
     useState<string>("left");
 
@@ -35,7 +39,20 @@ const Transition = ({ children }: TransitionProps) => {
       const activeViewKey = activeViewElement?.key;
 
       if (nextChildKey !== activeViewKey) {
+        // Begin transition
+
+        if (activeViewRef.current) {
+          const computedActiveViewStyle = window.getComputedStyle(
+            activeViewRef.current
+          );
+
+          setActiveTransitionHeight(
+            parseInt(computedActiveViewStyle.height, 10)
+          );
+        }
+
         // Determine transition direction
+        // TODO: This needs improvement, and possibly the ability to define as a prop
         if (nextChildKey && activeViewKey) {
           if (
             parseInt(nextChildKey.toString(), 10) >
@@ -75,6 +92,15 @@ const Transition = ({ children }: TransitionProps) => {
         setIsTransitioning(false);
         setActiveView(nextView);
         setNextView(null);
+
+        // Helps prevent flash of content on my Android phone
+        debounceWithKey(
+          "post_transition:height_reset",
+          () => {
+            setActiveTransitionHeight(null);
+          },
+          500
+        );
       };
 
       const activeViewElement = activeViewRef.current;
@@ -105,7 +131,9 @@ const Transition = ({ children }: TransitionProps) => {
   }, [isTransitioning, nextView, nextTransitionClass]);
 
   return (
-    <Full>
+    <Full
+      style={activeTransitionHeight ? { height: activeTransitionHeight } : {}}
+    >
       <div
         ref={activeViewRef}
         className={`animate__animated ${
