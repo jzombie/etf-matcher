@@ -85,4 +85,14 @@ describe("Scrollable Component", () => {
       </DocumentFragment>
     `);
   });
+
+  it("forwards ref correctly", () => {
+    const ref = React.createRef<HTMLDivElement>();
+    render(
+      <Scrollable ref={ref}>
+        <span>Test Content</span>
+      </Scrollable>
+    );
+    expect(ref.current).toBeInstanceOf(HTMLElement);
+  });
 });

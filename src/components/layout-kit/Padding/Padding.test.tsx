@@ -44,4 +44,14 @@ describe("Padding Component", () => {
       </DocumentFragment>
     `);
   });
+
+  it("forwards ref correctly", () => {
+    const ref = React.createRef<HTMLElement>();
+    render(
+      <Padding ref={ref}>
+        <span>Test Content</span>
+      </Padding>
+    );
+    expect(ref.current).toBeInstanceOf(HTMLElement);
+  });
 });

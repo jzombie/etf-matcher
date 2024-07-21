@@ -44,4 +44,14 @@ describe("Full Component", () => {
       </DocumentFragment>
     `);
   });
+
+  it("forwards ref correctly", () => {
+    const ref = React.createRef<HTMLDivElement>();
+    render(
+      <Full ref={ref}>
+        <span>Test Content</span>
+      </Full>
+    );
+    expect(ref.current).toBeInstanceOf(HTMLDivElement);
+  });
 });

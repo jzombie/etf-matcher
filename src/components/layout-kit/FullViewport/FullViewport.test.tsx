@@ -54,4 +54,14 @@ describe("FullViewport Component", () => {
       </DocumentFragment>
     `);
   });
+
+  it("forwards ref correctly", () => {
+    const ref = React.createRef<HTMLDivElement>();
+    render(
+      <FullViewport ref={ref}>
+        <span>Test Content</span>
+      </FullViewport>
+    );
+    expect(ref.current).toBeInstanceOf(HTMLDivElement);
+  });
 });

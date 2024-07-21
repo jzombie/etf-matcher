@@ -1,16 +1,22 @@
-import React from "react";
+import React, { forwardRef, HTMLAttributes } from "react";
 import clsx from "clsx";
 import styles from "./Layout.module.scss";
 
-export type HeaderProps = React.HTMLAttributes<HTMLElement> & {
+export type HeaderProps = HTMLAttributes<HTMLElement> & {
   children: React.ReactNode;
   className?: string;
 };
 
-export default function Header({ children, className, ...rest }: HeaderProps) {
-  return (
-    <header className={clsx(styles.header, className)} {...rest}>
-      {children}
-    </header>
-  );
-}
+const Header = forwardRef<HTMLElement, HeaderProps>(
+  ({ children, className, ...rest }, ref) => {
+    return (
+      <header ref={ref} className={clsx(styles.header, className)} {...rest}>
+        {children}
+      </header>
+    );
+  }
+);
+
+Header.displayName = "Header";
+
+export default Header;

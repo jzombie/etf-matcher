@@ -44,4 +44,14 @@ describe("Content Component", () => {
       </DocumentFragment>
     `);
   });
+
+  it("forwards ref correctly", () => {
+    const ref = React.createRef<HTMLDivElement>();
+    render(
+      <Content ref={ref}>
+        <span>Test Content</span>
+      </Content>
+    );
+    expect(ref.current).toBeInstanceOf(HTMLElement);
+  });
 });

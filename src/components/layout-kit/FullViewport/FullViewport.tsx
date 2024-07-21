@@ -1,34 +1,37 @@
-import React from "react";
+import React, { forwardRef, HTMLAttributes } from "react";
 import clsx from "clsx";
 import styles from "./FullViewport.module.scss";
 
-export type FullViewportProps = React.HTMLAttributes<HTMLElement> & {
+export type FullViewportProps = HTMLAttributes<HTMLDivElement> & {
   children: React.ReactNode;
   className?: string;
 };
 
 const supportsDvhUnit = testSupportsDvhUnit();
 
-export default function FullViewport({
-  children,
-  className,
-  ...rest
-}: FullViewportProps) {
-  return (
-    <div className={styles.full_viewport}>
-      <div
-        className={clsx(
-          styles.content_wrap,
-          { [styles.dvh]: supportsDvhUnit },
-          className
-        )}
-        {...rest}
-      >
-        {children}
+const FullViewport = forwardRef<HTMLDivElement, FullViewportProps>(
+  ({ children, className, ...rest }, ref) => {
+    return (
+      <div className={styles.full_viewport}>
+        <div
+          ref={ref}
+          className={clsx(
+            styles.content_wrap,
+            { [styles.dvh]: supportsDvhUnit },
+            className
+          )}
+          {...rest}
+        >
+          {children}
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
+);
+
+FullViewport.displayName = "FullViewport";
+
+export default FullViewport;
 
 // Test if the browser supports the 'dvh' (dynamic viewport height) unit.
 //

@@ -44,4 +44,14 @@ describe("Header Component", () => {
       </DocumentFragment>
     `);
   });
+
+  it("forwards ref correctly", () => {
+    const ref = React.createRef<HTMLDivElement>();
+    render(
+      <Header ref={ref}>
+        <span>Test Content</span>
+      </Header>
+    );
+    expect(ref.current).toBeInstanceOf(HTMLElement);
+  });
 });
