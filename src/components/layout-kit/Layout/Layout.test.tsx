@@ -44,4 +44,14 @@ describe("Layout Component", () => {
       </DocumentFragment>
     `);
   });
+
+  it("forwards ref correctly", () => {
+    const ref = React.createRef<HTMLDivElement>();
+    render(
+      <Layout ref={ref}>
+        <span>Test Content</span>
+      </Layout>
+    );
+    expect(ref.current).toBeInstanceOf(HTMLElement);
+  });
 });

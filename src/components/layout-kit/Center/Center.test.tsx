@@ -52,4 +52,14 @@ describe("Center Component", () => {
       </DocumentFragment>
     `);
   });
+
+  it("forwards ref correctly", () => {
+    const ref = React.createRef<HTMLDivElement>();
+    render(
+      <Center ref={ref}>
+        <span>Test Content</span>
+      </Center>
+    );
+    expect(ref.current).toBeInstanceOf(HTMLDivElement);
+  });
 });
