@@ -5,6 +5,9 @@ import heroImg from "@assets/hero.webp"; // Adjust the path as needed
 
 import Scrollable from "@layoutKit/Scrollable";
 
+import Full from "@layoutKit/Full";
+import Center from "@layoutKit/Center";
+
 export default function Home() {
   const { isSearchModalOpen } = useStoreStateReader(["isSearchModalOpen"]);
 
@@ -12,6 +15,14 @@ export default function Home() {
     store.setState({ isSearchModalOpen: true });
   };
 
+  return (
+    // TODO: Just for debugging
+    <Full>
+      <Center>Hello</Center>
+    </Full>
+  );
+
+  // TODO: Uncomment
   return (
     <Scrollable>
       <section style={heroSectionStyle}>

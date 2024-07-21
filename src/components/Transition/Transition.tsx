@@ -112,13 +112,14 @@ const Transition = ({ children }: TransitionProps) => {
           isTransitioning ? activeTransitionClass : ""
         }`}
         style={{
-          position: "relative", // Ensure this parent contains the transitioning children
-          width: "100%",
-          height: "100%",
-          animationDuration: "0.2s", // Adjust this value to speed up
+          display: "flex",
+          flex: 1,
+          animationDuration: "0.2s", // Adjust this value to speed up,
+          flexDirection: "column",
+          overflow: "hidden",
         }}
       >
-        {activeView}
+        <Full>{activeView}</Full>
       </div>
       {nextView ? (
         <div
