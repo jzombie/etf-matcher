@@ -156,6 +156,13 @@ const Transition = ({
     [transitionDurationMs]
   );
 
+  // useEffect(() => {
+  //   console.log({
+  //     activeViewKey,
+  //     nextViewKey,
+  //   });
+  // }, [activeViewKey, nextViewKey]);
+
   return (
     <Full
       style={activeTransitionHeight ? { height: activeTransitionHeight } : {}}
@@ -171,7 +178,7 @@ const Transition = ({
         }}
       >
         <Full>
-          <TransitionChildView key={`active-${activeViewKey}`}>
+          <TransitionChildView key={activeViewKey}>
             {activeView}
           </TransitionChildView>
         </Full>
@@ -186,7 +193,7 @@ const Transition = ({
             animationDuration: transitionDurationCSS,
           }}
         >
-          <TransitionChildView key={`next-${nextViewKey}`}>
+          <TransitionChildView key={nextViewKey}>
             {nextView}
           </TransitionChildView>
         </Cover>
