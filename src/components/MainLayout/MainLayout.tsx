@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { TickerTape } from "react-ts-tradingview-widgets";
 import { Typography, useTheme, useMediaQuery } from "@mui/material";
 import { Outlet, useLocation } from "react-router-dom";
 import HeaderMenu from "./HeaderMenu";
 
+// import useNavigationDirection from "@hooks/useNavigationDirection";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 
@@ -21,8 +22,17 @@ import LockScreen from "@components/LockScreen";
 
 export default function MainLayout() {
   const theme = useTheme();
+  // const navigationDirection = useNavigationDirection();
 
   const { pathname: locationPathname } = useLocation();
+
+  // TODO: Remove
+  // useEffect(() => {
+  //   console.log({
+  //     navigationDirection,
+  //     locationPathname,
+  //   });
+  // }, [navigationDirection, locationPathname]);
 
   const shouldShowNetworkURL = useMediaQuery("@media (min-width:480px)");
 
@@ -57,6 +67,7 @@ export default function MainLayout() {
               </Center>
             </Full>
           ) : (
+            // TODO: Tie in navigationDirection into this transition to determine which way it should move
             <Transition>
               <Outlet key={locationPathname} />
             </Transition>
