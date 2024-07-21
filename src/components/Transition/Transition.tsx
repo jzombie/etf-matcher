@@ -115,6 +115,7 @@ const Transition = ({ children }: TransitionProps) => {
           position: "relative", // Ensure this parent contains the transitioning children
           width: "100%",
           height: "100%",
+          animationDuration: "0.2s", // Adjust this value to speed up
         }}
       >
         {activeView}
@@ -131,6 +132,7 @@ const Transition = ({ children }: TransitionProps) => {
             left: 0,
             width: "100%",
             height: "100%", // Ensure nextView takes full size for smooth transition
+            animationDuration: "0.2s", // Adjust this value to speed up
           }}
         >
           {nextView}
