@@ -233,14 +233,6 @@ export default function SearchModalButton({
           }}
         >
           <form noValidate autoComplete="off">
-            <div
-              style={{
-                position: "sticky",
-                top: 0,
-                backgroundColor: "transparent",
-                zIndex: 1,
-              }}
-            ></div>
             <List>
               {searchResults.map((searchResult, idx) => (
                 <ButtonBase

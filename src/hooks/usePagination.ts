@@ -20,8 +20,22 @@ export default function usePagination(
     [props]
   );
 
-  const [page, setPage] = useState<number>(mergedProps.initialPage);
+  const [page, _setPage] = useState<number>(mergedProps.initialPage);
+  const [previousPage, _setPreviousPage] = useState<number | undefined>(
+    undefined
+  );
+
   const [pageSize, setPageSize] = useState<number>(mergedProps.initialPageSize);
+
+  const handleSetPage = useCallback((nextPage: number) => {
+    _setPage((currentPage) => {
+      if (currentPage !== nextPage) {
+        _setPreviousPage(currentPage);
+        return nextPage;
+      }
+      return currentPage;
+    });
+  }, []);
 
   const totalPages = useMemo(
     () => Math.ceil(mergedProps.totalItems / pageSize) || 1,
@@ -30,16 +44,18 @@ export default function usePagination(
 
   const remaining = useMemo(() => {
     const calc = mergedProps.totalItems - page * pageSize;
-
     return calc > 0 ? calc : 0;
   }, [mergedProps.totalItems, page, pageSize]);
+
   const resetPagination = useCallback(() => {
-    setPage(DEFAULT_PAGINATION_PROPS.initialPage);
+    _setPage(DEFAULT_PAGINATION_PROPS.initialPage);
+    _setPreviousPage(undefined);
   }, []);
 
   return {
     page,
-    setPage,
+    previousPage,
+    setPage: handleSetPage,
     pageSize,
     setPageSize,
     totalPages,

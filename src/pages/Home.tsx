@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@mui/material";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
-import heroImg from "@assets/hero.webp"; // Adjust the path as needed
+import heroImg from "@assets/hero.webp";
 
 import Scrollable from "@layoutKit/Scrollable";
 

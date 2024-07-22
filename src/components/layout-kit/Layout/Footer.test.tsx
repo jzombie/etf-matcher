@@ -44,4 +44,14 @@ describe("Footer Component", () => {
       </DocumentFragment>
     `);
   });
+
+  it("forwards ref correctly", () => {
+    const ref = React.createRef<HTMLDivElement>();
+    render(
+      <Footer ref={ref}>
+        <span>Test Content</span>
+      </Footer>
+    );
+    expect(ref.current).toBeInstanceOf(HTMLElement);
+  });
 });

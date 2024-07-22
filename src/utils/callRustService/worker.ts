@@ -64,12 +64,12 @@ async function processQueue() {
 
 self.onmessage = async (event) => {
   const { functionName, args, messageId } = event.data;
-  customLogger.log(
-    "Worker received message with functionName:",
-    functionName,
-    "and args:",
-    args
-  );
+  // customLogger.debug(
+  //   "Worker received message with functionName:",
+  //   functionName,
+  //   "and args:",
+  //   args
+  // );
 
   const promise = new Promise((resolve, reject) => {
     callQueue.push({ functionName, args, resolve, reject });

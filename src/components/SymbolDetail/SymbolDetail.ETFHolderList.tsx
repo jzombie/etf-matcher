@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Box, Pagination } from "@mui/material";
 import ETFHolder from "./SymbolDetail.ETFHolder";
+import Transition from "@components/Transition";
 
 import usePagination from "@hooks/usePagination";
 
@@ -19,7 +20,7 @@ export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
     RustServiceETFHoldersWithTotalCount | undefined
   >(undefined);
 
-  const { page, setPage, totalPages } = usePagination({
+  const { page, previousPage, setPage, totalPages } = usePagination({
     totalItems: etfHolders?.total_count,
   });
 
@@ -61,10 +62,18 @@ export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
                 onChange={(event, nextPage) => setPage(nextPage)}
               />
             )}
-
-            {etfSymbols.map((etfSymbol) => (
-              <ETFHolder key={etfSymbol} etfSymbol={etfSymbol} />
-            ))}
+            <Transition
+              direction={
+                !previousPage || page > previousPage ? "left" : "right"
+              }
+              trigger={page}
+            >
+              <div>
+                {etfSymbols.map((etfSymbol) => (
+                  <ETFHolder key={etfSymbol} etfSymbol={etfSymbol} />
+                ))}
+              </div>
+            </Transition>
           </Padding>
         </Box>
       </Padding>

@@ -1,20 +1,22 @@
-import React from "react";
+import React, { forwardRef, HTMLAttributes } from "react";
 import clsx from "clsx";
 import styles from "./Padding.module.scss";
 
-export type PaddingProps = React.HTMLAttributes<HTMLElement> & {
+export type PaddingProps = HTMLAttributes<HTMLElement> & {
   children: React.ReactNode;
   className?: string;
 };
 
-export default function Padding({
-  children,
-  className,
-  ...rest
-}: PaddingProps) {
-  return (
-    <section className={clsx(styles.padding, className)} {...rest}>
-      {children}
-    </section>
-  );
-}
+const Padding = forwardRef<HTMLElement, PaddingProps>(
+  ({ children, className, ...rest }, ref) => {
+    return (
+      <section ref={ref} className={clsx(styles.padding, className)} {...rest}>
+        {children}
+      </section>
+    );
+  }
+);
+
+Padding.displayName = "Padding";
+
+export default Padding;

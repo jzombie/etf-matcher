@@ -1,16 +1,22 @@
-import React from "react";
+import React, { forwardRef, HTMLAttributes } from "react";
 import clsx from "clsx";
 import styles from "./Full.module.scss";
 
-export type FullProps = React.HTMLAttributes<HTMLElement> & {
+export type FullProps = HTMLAttributes<HTMLDivElement> & {
   children: React.ReactNode;
   className?: string;
 };
 
-export default function Full({ children, className, ...rest }: FullProps) {
-  return (
-    <div className={clsx(styles.full, className)} {...rest}>
-      {children}
-    </div>
-  );
-}
+const Full = forwardRef<HTMLDivElement, FullProps>(
+  ({ children, className, ...rest }, ref) => {
+    return (
+      <div className={clsx(styles.full, className)} ref={ref} {...rest}>
+        {children}
+      </div>
+    );
+  }
+);
+
+Full.displayName = "Full";
+
+export default Full;

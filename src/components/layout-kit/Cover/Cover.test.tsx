@@ -62,4 +62,14 @@ describe("Cover Component", () => {
     );
     expect(container.firstChild).not.toHaveClass("clickThrough");
   });
+
+  it("forwards ref correctly", () => {
+    const ref = React.createRef<HTMLDivElement>();
+    render(
+      <Cover ref={ref}>
+        <span>Test Content</span>
+      </Cover>
+    );
+    expect(ref.current).toBeInstanceOf(HTMLDivElement);
+  });
 });

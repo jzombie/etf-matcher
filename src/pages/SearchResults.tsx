@@ -10,8 +10,10 @@ import {
 } from "@mui/material";
 
 import SearchModalButton from "@components/SearchModalButton";
-import useSearch from "@hooks/useSearch";
 import SymbolDetailList from "@components/SymbolDetailList";
+import Transition from "@components/Transition";
+
+import useSearch from "@hooks/useSearch";
 
 import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
@@ -34,6 +36,7 @@ export default function SearchResults() {
     totalSearchResults,
     pageSize,
     page,
+    previousPage,
     setPage: _setPage,
     totalPages,
     isLoading,
@@ -69,14 +72,12 @@ export default function SearchResults() {
     } else {
       searchParams.delete("exact");
     }
+    searchParams.set("page", "1");
 
     navigate({
       pathname: location.pathname,
       search: searchParams.toString(),
     });
-
-    _setOnlyExactMatches(newExactValue);
-    _setPage(1);
   };
 
   const setPage = useCallback(
@@ -103,12 +104,6 @@ export default function SearchResults() {
   );
 
   usePageTitleSetter(searchQuery ? `Search results for: ${searchQuery}` : null);
-
-  // Reset the scrollbar position on search query updates
-  const scrollableKey = useMemo(
-    () => JSON.stringify({ searchQuery, onlyExactMatches, page }),
-    [searchQuery, onlyExactMatches, page]
-  );
 
   if (!searchResultSymbols.length) {
     if (isLoading) {
@@ -161,7 +156,7 @@ export default function SearchResults() {
   }
 
   return (
-    <Scrollable key={scrollableKey}>
+    <Scrollable resetTrigger={searchResultSymbols}>
       <Padding>
         <Box
           display="flex"
@@ -182,8 +177,8 @@ export default function SearchResults() {
         {totalSearchResults} search result{totalSearchResults !== 1 ? "s" : ""}{" "}
         for &quot;{searchQuery}&quot;
       </Padding>
-      {totalSearchResults > pageSize && !isLoading && (
-        <Box sx={{ textAlign: "center" }}>
+      {totalSearchResults > pageSize && (
+        <Box style={{ textAlign: "center" }}>
           <Pagination
             count={totalPages}
             page={page}
@@ -194,9 +189,15 @@ export default function SearchResults() {
           />
         </Box>
       )}
-      <SymbolDetailList tickerSymbols={searchResultSymbols} />
+      <Transition
+        direction={!previousPage || page > previousPage ? "left" : "right"}
+        trigger={searchResultSymbols}
+      >
+        <SymbolDetailList tickerSymbols={searchResultSymbols} />
+      </Transition>
+
       {totalSearchResults > pageSize && !isLoading && (
-        <Box sx={{ textAlign: "center" }}>
+        <Box style={{ textAlign: "center" }}>
           <Pagination
             count={totalPages}
             page={page}
