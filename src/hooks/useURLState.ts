@@ -1,13 +1,72 @@
-// TODO: This hook is designed to fix an issue where querying for an exact symbol
-// and immediately toggling `Toggle Exact Match` does not alter the state.
-//
-// It is designed to replace the convoluted `toggleExactMatch` and the `useEffect`
-// above it in `SearchResults.tsx`, and anywhere else in the app that might need
-// a suitable replacement.
-//
-// This essentially should act as helper for `react-router-dom` to intercept and
-// build URL locations in a consistent manner.
+import { useLocation, useNavigate } from "react-router-dom";
+import { useCallback, useMemo } from "react";
 
-// export default function useURLState() {
-//
-// }
+type URLState = {
+  [key: string]: string | null;
+};
+
+type URLStateUpdater = (prevState: URLState) => URLState;
+
+export default function useURLState() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const urlState = useMemo(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const params: URLState = {};
+    searchParams.forEach((value, key) => {
+      params[key] = value;
+    });
+    return params;
+  }, [location.search]);
+
+  const setURLState = useCallback(
+    (nextState: URLState | URLStateUpdater, isMerge = true) => {
+      const searchParams = new URLSearchParams(isMerge ? location.search : "");
+
+      const stateToApply =
+        typeof nextState === "function" ? nextState(urlState) : nextState;
+
+      // Apply new state
+      Object.keys(stateToApply).forEach((key) => {
+        const value = stateToApply[key];
+        if (value !== null && value !== undefined) {
+          searchParams.set(key, value);
+        } else {
+          searchParams.delete(key);
+        }
+      });
+
+      navigate(
+        {
+          pathname: location.pathname,
+          search: searchParams.toString(),
+        },
+        { replace: true }
+      );
+    },
+    [location, navigate, urlState]
+  );
+
+  const getBooleanParam = useCallback(
+    (key: string, defaultValue: boolean = false): boolean => {
+      const currentValue = urlState[key];
+      if (currentValue === undefined || currentValue === null) {
+        return defaultValue;
+      }
+      return currentValue === "true" || currentValue === "1";
+    },
+    [urlState]
+  );
+
+  const toBooleanParam = useCallback((value: boolean): string => {
+    return value === true ? "true" : "false";
+  }, []);
+
+  return {
+    urlState,
+    setURLState,
+    getBooleanParam,
+    toBooleanParam,
+  };
+}

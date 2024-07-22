@@ -9,6 +9,8 @@ import {
   Pagination,
 } from "@mui/material";
 
+import useURLState from "@hooks/useURLState";
+
 import SearchModalButton from "@components/SearchModalButton";
 import SymbolDetailList from "@components/SymbolDetailList";
 import Transition from "@components/Transition";
@@ -42,43 +44,35 @@ export default function SearchResults() {
     isLoading,
   } = useSearch();
 
+  const { urlState, setURLState, getBooleanParam, toBooleanParam } =
+    useURLState();
+
   useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    searchParams.forEach((value, key) => {
-      if (key === "query") {
-        _setSearchQuery(value.trim());
-      }
-      if (key === "exact") {
-        _setOnlyExactMatches(value === "true" || value === "1");
-      } else {
-        _setOnlyExactMatches(false);
-      }
-      if (key === "page") {
-        _setPage(parseInt(value, 10));
-      }
-    });
-    // Default to first page
-    if (!searchParams.has("page")) {
-      _setPage(1);
+    const { query, page } = urlState;
+
+    if (query) {
+      _setSearchQuery(query.trim());
     }
-  }, [location, _setSearchQuery, _setOnlyExactMatches, _setPage]);
 
-  const toggleExactMatch = () => {
-    const searchParams = new URLSearchParams(location.search);
-    const newExactValue = !(searchParams.get("exact") === "true");
-
-    if (newExactValue) {
-      searchParams.set("exact", "true");
+    if (getBooleanParam("exact")) {
+      _setOnlyExactMatches(true);
     } else {
-      searchParams.delete("exact");
+      _setOnlyExactMatches(false);
     }
-    searchParams.set("page", "1");
 
-    navigate({
-      pathname: location.pathname,
-      search: searchParams.toString(),
-    });
-  };
+    if (!page) {
+      _setPage(1);
+    } else {
+      _setPage(parseInt(page, 10));
+    }
+  }, [urlState, getBooleanParam, _setSearchQuery, _setOnlyExactMatches]);
+
+  const toggleExactMatch = useCallback(() => {
+    setURLState(() => ({
+      exact: toBooleanParam(!getBooleanParam("exact")),
+      page: "1",
+    }));
+  }, [setURLState, getBooleanParam]);
 
   const setPage = useCallback(
     (page: number) => {
