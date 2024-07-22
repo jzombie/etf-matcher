@@ -16,7 +16,7 @@ import {
   ButtonBase,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 import customLogger from "@utils/customLogger";
 
@@ -25,6 +25,7 @@ import EncodedImage from "./EncodedImage";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import useSearch from "@hooks/useSearch";
+import useURLState from "@hooks/useURLState";
 
 // TODO: Replace modal with `TransparentModal`
 
@@ -58,7 +59,10 @@ export default function SearchModalButton({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const location = useLocation();
-  const navigate = useNavigate();
+  const { setURLState, toBooleanParam } = useURLState<{
+    query: string | null;
+    exact: string | null;
+  }>();
 
   // Handle auto-focus when the modal opens
   useEffect(() => {
@@ -111,12 +115,13 @@ export default function SearchModalButton({
     const locSearchQuery = exactSearchValue || searchQuery;
 
     if (searchQuery.length) {
-      const searchParams = new URLSearchParams({ query: locSearchQuery });
-
-      navigate(
-        `/search?${searchParams.toString()}${
-          exactSearchValue ? "&exact=true" : ""
-        }`
+      setURLState(
+        {
+          query: locSearchQuery,
+          exact: toBooleanParam(Boolean(exactSearchValue), true),
+        },
+        false,
+        "/search"
       );
     }
   };

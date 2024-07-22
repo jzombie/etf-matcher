@@ -15,7 +15,7 @@ import NewsIcon from "@mui/icons-material/Article";
 
 import ETFHolderList from "./SymbolDetail.ETFHolderList";
 
-import { useNavigate } from "react-router-dom";
+import useURLState from "@hooks/useURLState";
 import formatSymbolWithExchange from "@utils/formatSymbolWithExchange";
 import formatCurrency from "@utils/formatCurrency";
 
@@ -79,12 +79,15 @@ export default function SymbolDetail({
     }
   }, [symbolDetail]);
 
-  const navigate = useNavigate();
-
   const formattedSymbolWithExchange = useMemo(
     () => symbolDetail && formatSymbolWithExchange(symbolDetail),
     [symbolDetail]
   );
+
+  const { setURLState, toBooleanParam } = useURLState<{
+    query: string | null;
+    exact: string | null;
+  }>();
 
   if (!formattedSymbolWithExchange || !symbolDetail) {
     return null;
@@ -101,7 +104,10 @@ export default function SymbolDetail({
         <LogoContainer>
           <ButtonBase
             onClick={() =>
-              navigate(`/search?query=${symbolDetail?.symbol}&exact=true`)
+              setURLState({
+                query: symbolDetail?.symbol,
+                exact: toBooleanParam(true),
+              })
             }
           >
             <EncodedImage

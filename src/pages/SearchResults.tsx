@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useCallback, useMemo } from "react";
 import {
   Box,
   Switch,
@@ -8,6 +7,8 @@ import {
   Button,
   Pagination,
 } from "@mui/material";
+
+import useURLState from "@hooks/useURLState";
 
 import SearchModalButton from "@components/SearchModalButton";
 import SymbolDetailList from "@components/SymbolDetailList";
@@ -24,9 +25,6 @@ import usePageTitleSetter from "@utils/usePageTitleSetter";
 import CircularProgress from "@mui/material/CircularProgress";
 
 export default function SearchResults() {
-  const location = useLocation();
-  const navigate = useNavigate();
-
   const {
     searchQuery,
     setSearchQuery: _setSearchQuery,
@@ -42,60 +40,36 @@ export default function SearchResults() {
     isLoading,
   } = useSearch();
 
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    searchParams.forEach((value, key) => {
-      if (key === "query") {
-        _setSearchQuery(value.trim());
-      }
-      if (key === "exact") {
-        _setOnlyExactMatches(value === "true" || value === "1");
-      } else {
-        _setOnlyExactMatches(false);
-      }
-      if (key === "page") {
-        _setPage(parseInt(value, 10));
-      }
-    });
-    // Default to first page
-    if (!searchParams.has("page")) {
-      _setPage(1);
+  const { setURLState, getBooleanParam, toBooleanParam } = useURLState<{
+    query: string | null;
+    page: string | null;
+    exact: string | null;
+  }>((urlState) => {
+    const { query, page } = urlState;
+
+    if (query) {
+      _setSearchQuery(query.trim());
     }
-  }, [location, _setSearchQuery, _setOnlyExactMatches, _setPage]);
 
-  const toggleExactMatch = () => {
-    const searchParams = new URLSearchParams(location.search);
-    const newExactValue = !(searchParams.get("exact") === "true");
+    _setOnlyExactMatches(getBooleanParam("exact"));
 
-    if (newExactValue) {
-      searchParams.set("exact", "true");
-    } else {
-      searchParams.delete("exact");
-    }
-    searchParams.set("page", "1");
+    _setPage(!page ? 1 : parseInt(page, 10));
+  });
 
-    navigate({
-      pathname: location.pathname,
-      search: searchParams.toString(),
-    });
-  };
+  const toggleExactMatch = useCallback(() => {
+    setURLState(() => ({
+      // Don't log `exact=true`
+      exact: toBooleanParam(!getBooleanParam("exact"), false),
+      // Reset page on change
+      page: null,
+    }));
+  }, [setURLState, getBooleanParam]);
 
   const setPage = useCallback(
     (page: number) => {
-      const searchParams = new URLSearchParams(location.search);
-
-      if (page > 1) {
-        searchParams.set("page", page.toString());
-      } else {
-        searchParams.delete("page");
-      }
-
-      navigate({
-        pathname: location.pathname,
-        search: searchParams.toString(),
-      });
+      setURLState({ page: page > 1 ? page.toString() : null });
     },
-    [location, navigate]
+    [setURLState]
   );
 
   const searchResultSymbols = useMemo(
