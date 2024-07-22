@@ -11,12 +11,34 @@ const triggerAnimationEnd = (element: HTMLElement) => {
 
 describe("Transition Component", () => {
   it("handles transition when trigger changes", async () => {
-    const { rerender } = render(
+    const { rerender, asFragment } = render(
       <Transition trigger="initial">
         <div className="view">Initial View</div>
       </Transition>
     );
     expect(screen.getByText("Initial View")).toBeDefined();
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="full"
+        >
+          <div
+            class="full animate__animated"
+            style="animation-duration: 0.5s; transform: translateZ(0);"
+          >
+            <div
+              class="full"
+            >
+              <div
+                class="view"
+              >
+                Initial View
+              </div>
+            </div>
+          </div>
+        </div>
+      </DocumentFragment>
+    `);
 
     act(() => {
       rerender(
@@ -26,6 +48,43 @@ describe("Transition Component", () => {
       );
     });
 
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="full"
+        >
+          <div
+            class="full animate__animated animate__slideOutRight"
+            style="animation-duration: 0.5s; transform: translateZ(0);"
+          >
+            <div
+              class="full"
+            >
+              <div
+                class="view"
+              >
+                Initial View
+              </div>
+            </div>
+          </div>
+          <div
+            class="full animate__animated animate__slideInLeft"
+            style="animation-duration: 0.5s; position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; transform: translateZ(0);"
+          >
+            <div
+              class="full"
+            >
+              <div
+                class="view"
+              >
+                Next View
+              </div>
+            </div>
+          </div>
+        </div>
+      </DocumentFragment>
+    `);
+
     await waitFor(() => {
       const activeElement = screen.getByText("Initial View").parentElement;
       if (activeElement) triggerAnimationEnd(activeElement);
@@ -34,6 +93,28 @@ describe("Transition Component", () => {
     await waitFor(() => {
       expect(screen.queryByText("Initial View")).toBeNull();
       expect(screen.getByText("Next View")).toBeDefined();
+      expect(asFragment()).toMatchInlineSnapshot(`
+        <DocumentFragment>
+          <div
+            class="full"
+          >
+            <div
+              class="full animate__animated"
+              style="animation-duration: 0.5s; transform: translateZ(0);"
+            >
+              <div
+                class="full"
+              >
+                <div
+                  class="view"
+                >
+                  Next View
+                </div>
+              </div>
+            </div>
+          </div>
+        </DocumentFragment>
+      `);
     });
   });
 
@@ -44,13 +125,35 @@ describe("Transition Component", () => {
       return <div className="spy-view">{text}</div>;
     };
 
-    const { rerender } = render(
+    const { rerender, asFragment } = render(
       <Transition trigger="initial">
         <SpyComponent text="Initial View" />
       </Transition>
     );
     expect(screen.getByText("Initial View")).toBeDefined();
     expect(renderSpy).toHaveBeenCalledTimes(1);
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="full"
+        >
+          <div
+            class="full animate__animated"
+            style="animation-duration: 0.5s; transform: translateZ(0);"
+          >
+            <div
+              class="full"
+            >
+              <div
+                class="spy-view"
+              >
+                Initial View
+              </div>
+            </div>
+          </div>
+        </div>
+      </DocumentFragment>
+    `);
 
     act(() => {
       rerender(
@@ -60,6 +163,43 @@ describe("Transition Component", () => {
       );
     });
 
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="full"
+        >
+          <div
+            class="full animate__animated animate__slideOutRight"
+            style="animation-duration: 0.5s; transform: translateZ(0);"
+          >
+            <div
+              class="full"
+            >
+              <div
+                class="spy-view"
+              >
+                Initial View
+              </div>
+            </div>
+          </div>
+          <div
+            class="full animate__animated animate__slideInLeft"
+            style="animation-duration: 0.5s; position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; transform: translateZ(0);"
+          >
+            <div
+              class="full"
+            >
+              <div
+                class="spy-view"
+              >
+                Spy View
+              </div>
+            </div>
+          </div>
+        </div>
+      </DocumentFragment>
+    `);
+
     await waitFor(() => {
       const activeElement = screen.getByText("Initial View").parentElement;
       if (activeElement) triggerAnimationEnd(activeElement);
@@ -68,9 +208,32 @@ describe("Transition Component", () => {
     await waitFor(() => {
       expect(screen.getByText("Spy View")).toBeDefined();
       expect(renderSpy).toHaveBeenCalledTimes(2);
+      expect(asFragment()).toMatchInlineSnapshot(`
+        <DocumentFragment>
+          <div
+            class="full"
+          >
+            <div
+              class="full animate__animated"
+              style="animation-duration: 0.5s; transform: translateZ(0);"
+            >
+              <div
+                class="full"
+              >
+                <div
+                  class="spy-view"
+                >
+                  Spy View
+                </div>
+              </div>
+            </div>
+          </div>
+        </DocumentFragment>
+      `);
     });
   });
 
+  // Additional tests for verifying re-renders and unnecessary renders
   it("does not re-render when trigger does not change", async () => {
     const renderSpy = vi.fn();
     const SpyComponent = ({ text }: { text: string }) => {
@@ -78,13 +241,35 @@ describe("Transition Component", () => {
       return <div className="spy-view">{text}</div>;
     };
 
-    const { rerender } = render(
+    const { rerender, asFragment } = render(
       <Transition trigger="initial">
         <SpyComponent text="Initial View" />
       </Transition>
     );
     expect(screen.getByText("Initial View")).toBeDefined();
     expect(renderSpy).toHaveBeenCalledTimes(1);
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="full"
+        >
+          <div
+            class="full animate__animated"
+            style="animation-duration: 0.5s; transform: translateZ(0);"
+          >
+            <div
+              class="full"
+            >
+              <div
+                class="spy-view"
+              >
+                Initial View
+              </div>
+            </div>
+          </div>
+        </div>
+      </DocumentFragment>
+    `);
 
     act(() => {
       rerender(
@@ -97,6 +282,28 @@ describe("Transition Component", () => {
     await waitFor(() => {
       expect(screen.getByText("Initial View")).toBeDefined();
       expect(renderSpy).toHaveBeenCalledTimes(1);
+      expect(asFragment()).toMatchInlineSnapshot(`
+        <DocumentFragment>
+          <div
+            class="full"
+          >
+            <div
+              class="full animate__animated"
+              style="animation-duration: 0.5s; transform: translateZ(0);"
+            >
+              <div
+                class="full"
+              >
+                <div
+                  class="spy-view"
+                >
+                  Initial View
+                </div>
+              </div>
+            </div>
+          </div>
+        </DocumentFragment>
+      `);
     });
   });
 
@@ -107,13 +314,35 @@ describe("Transition Component", () => {
       return <div className="spy-view">{text}</div>;
     };
 
-    const { rerender } = render(
+    const { rerender, asFragment } = render(
       <Transition trigger="initial">
         <SpyComponent text="Initial View" />
       </Transition>
     );
     expect(screen.getByText("Initial View")).toBeDefined();
     expect(renderSpy).toHaveBeenCalledTimes(1);
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="full"
+        >
+          <div
+            class="full animate__animated"
+            style="animation-duration: 0.5s; transform: translateZ(0);"
+          >
+            <div
+              class="full"
+            >
+              <div
+                class="spy-view"
+              >
+                Initial View
+              </div>
+            </div>
+          </div>
+        </div>
+      </DocumentFragment>
+    `);
 
     act(() => {
       rerender(
@@ -128,6 +357,43 @@ describe("Transition Component", () => {
       );
     });
 
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="full"
+        >
+          <div
+            class="full animate__animated animate__slideOutRight"
+            style="animation-duration: 0.5s; transform: translateZ(0);"
+          >
+            <div
+              class="full"
+            >
+              <div
+                class="spy-view"
+              >
+                Initial View
+              </div>
+            </div>
+          </div>
+          <div
+            class="full animate__animated animate__slideInLeft"
+            style="animation-duration: 0.5s; position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; transform: translateZ(0);"
+          >
+            <div
+              class="full"
+            >
+              <div
+                class="spy-view"
+              >
+                Spy View 2
+              </div>
+            </div>
+          </div>
+        </div>
+      </DocumentFragment>
+    `);
+
     await waitFor(() => {
       const activeElement = screen.getByText("Initial View").parentElement;
       if (activeElement) triggerAnimationEnd(activeElement);
@@ -136,6 +402,28 @@ describe("Transition Component", () => {
     await waitFor(() => {
       expect(screen.getByText("Spy View 2")).toBeDefined();
       expect(renderSpy).toHaveBeenCalledTimes(2);
+      expect(asFragment()).toMatchInlineSnapshot(`
+        <DocumentFragment>
+          <div
+            class="full"
+          >
+            <div
+              class="full animate__animated"
+              style="animation-duration: 0.5s; transform: translateZ(0);"
+            >
+              <div
+                class="full"
+              >
+                <div
+                  class="spy-view"
+                >
+                  Spy View 2
+                </div>
+              </div>
+            </div>
+          </div>
+        </DocumentFragment>
+      `);
     });
   });
 
@@ -146,13 +434,35 @@ describe("Transition Component", () => {
       return <div className="spy-view">{text}</div>;
     };
 
-    const { rerender } = render(
+    const { rerender, asFragment } = render(
       <Transition trigger="initial">
         <SpyComponent text="Initial View" />
       </Transition>
     );
     expect(screen.getByText("Initial View")).toBeDefined();
     expect(renderSpy).toHaveBeenCalledTimes(1);
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="full"
+        >
+          <div
+            class="full animate__animated"
+            style="animation-duration: 0.5s; transform: translateZ(0);"
+          >
+            <div
+              class="full"
+            >
+              <div
+                class="spy-view"
+              >
+                Initial View
+              </div>
+            </div>
+          </div>
+        </div>
+      </DocumentFragment>
+    `);
 
     act(() => {
       rerender(
@@ -165,6 +475,28 @@ describe("Transition Component", () => {
     await waitFor(() => {
       expect(screen.getByText("Initial View")).toBeDefined();
       expect(renderSpy).toHaveBeenCalledTimes(1);
+      expect(asFragment()).toMatchInlineSnapshot(`
+        <DocumentFragment>
+          <div
+            class="full"
+          >
+            <div
+              class="full animate__animated"
+              style="animation-duration: 0.5s; transform: translateZ(0);"
+            >
+              <div
+                class="full"
+              >
+                <div
+                  class="spy-view"
+                >
+                  Initial View
+                </div>
+              </div>
+            </div>
+          </div>
+        </DocumentFragment>
+      `);
     });
 
     act(() => {
@@ -183,6 +515,28 @@ describe("Transition Component", () => {
     await waitFor(() => {
       expect(screen.getByText("Next View")).toBeDefined();
       expect(renderSpy).toHaveBeenCalledTimes(2);
+      expect(asFragment()).toMatchInlineSnapshot(`
+        <DocumentFragment>
+          <div
+            class="full"
+          >
+            <div
+              class="full animate__animated"
+              style="animation-duration: 0.5s; transform: translateZ(0);"
+            >
+              <div
+                class="full"
+              >
+                <div
+                  class="spy-view"
+                >
+                  Next View
+                </div>
+              </div>
+            </div>
+          </div>
+        </DocumentFragment>
+      `);
     });
   });
 });
