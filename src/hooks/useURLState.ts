@@ -63,9 +63,18 @@ export default function useURLState(
     [urlState]
   );
 
-  const toBooleanParam = useCallback((value: boolean): string => {
-    return value === true ? "true" : "false";
-  }, []);
+  const toBooleanParam = useCallback(
+    (value: boolean, defaultValue?: boolean): string | null => {
+      console.log({ value, defaultValue });
+
+      if (defaultValue !== undefined && value === defaultValue) {
+        return null;
+      }
+
+      return value === true ? "true" : "false";
+    },
+    []
+  );
 
   const onURLStateChangeStableRef = useStableCurrentRef(onURLStateChange);
   useEffect(() => {
