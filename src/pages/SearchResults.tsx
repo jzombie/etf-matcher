@@ -67,20 +67,9 @@ export default function SearchResults() {
 
   const setPage = useCallback(
     (page: number) => {
-      const searchParams = new URLSearchParams(location.search);
-
-      if (page > 1) {
-        searchParams.set("page", page.toString());
-      } else {
-        searchParams.delete("page");
-      }
-
-      navigate({
-        pathname: location.pathname,
-        search: searchParams.toString(),
-      });
+      setURLState({ page: page > 1 ? page.toString() : null });
     },
-    [location, navigate]
+    [setURLState]
   );
 
   const searchResultSymbols = useMemo(
