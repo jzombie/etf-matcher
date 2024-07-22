@@ -24,10 +24,10 @@ function CustomOutlet() {
   const location = useLocation();
   const element = useOutlet();
 
-  const [renderedChild, setRenderedChild] = useState(null);
+  const [renderedChildren, setRenderedChildren] = useState(null);
 
   useEffect(() => {
-    setRenderedChild((prev) => {
+    setRenderedChildren((prev) => {
       if (prev) {
         return prev;
       } else {
@@ -38,8 +38,8 @@ function CustomOutlet() {
 
   return (
     <>
-      {renderedChild &&
-        React.cloneElement(renderedChild, {
+      {renderedChildren &&
+        React.cloneElement(renderedChildren, {
           key: location.pathname,
         })}
     </>
