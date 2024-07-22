@@ -131,7 +131,6 @@ export default function HeaderMenu() {
                   },
                 }}
               >
-                {item.icon}
                 <Typography variant="subtitle1">{item.label}</Typography>
                 {
                   // TODO: Only show badges on "Portfolios" and "Watchlists", indicating new items that have not been
@@ -143,7 +142,9 @@ export default function HeaderMenu() {
                       alignItems: "center",
                       marginRight: theme.spacing(1),
                     }}
-                  ></Box>
+                  >
+                    {item.icon}
+                  </Box>
                 </Badge>
               </Box>
             ))}
