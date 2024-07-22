@@ -62,13 +62,13 @@ export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
                 onChange={(event, nextPage) => setPage(nextPage)}
               />
             )}
-
             <Transition
               direction={
                 !previousPage || page > previousPage ? "left" : "right"
               }
+              trigger={page}
             >
-              <div key={page}>
+              <div>
                 {etfSymbols.map((etfSymbol) => (
                   <ETFHolder key={etfSymbol} etfSymbol={etfSymbol} />
                 ))}

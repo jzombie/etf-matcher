@@ -61,8 +61,9 @@ export default function MainLayout() {
           ) : (
             <Transition
               direction={navigationDirection === "backward" ? "right" : "left"}
+              trigger={locationPathname}
             >
-              <Outlet key={locationPathname} />
+              <Outlet />
             </Transition>
           )}
         </Content>

@@ -6,11 +6,12 @@ import React, {
   ReactNode,
   isValidElement,
   ReactElement,
+  useCallback,
 } from "react";
+import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import TransitionChildView from "./Transition.ChildView";
 import "animate.css";
 import Full from "@layoutKit/Full";
-import debounceWithKey from "@utils/debounceWithKey";
 
 export type TransitionDirection = "left" | "right";
 
@@ -21,52 +22,71 @@ export type TransitionProps = {
   direction?: TransitionDirection;
   transitionType?: TransitionType;
   transitionDurationMs?: number;
+  trigger?: unknown;
 };
 
 const Transition = ({
   children,
   direction,
   transitionType = "slide",
-  transitionDurationMs = 200,
+  transitionDurationMs = 500,
+  trigger,
 }: TransitionProps) => {
+  const initialTriggerLockRef = useRef<unknown>(trigger);
+
+  const initialKey = useMemo(() => {
+    const currentChild = React.Children.only(children);
+    return isValidElement(currentChild)
+      ? currentChild.key?.toString() || Math.random().toString(36).substr(2, 9)
+      : Math.random().toString(36).substr(2, 9);
+  }, [children]);
+
   const [activeView, setActiveView] = useState<ReactNode>(children);
   const [nextView, setNextView] = useState<ReactNode | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [activeTransitionHeight, setActiveTransitionHeight] = useState<
-    number | null
-  >(null);
+  const [activeKey, setActiveKey] = useState<string | null>(initialKey);
+  const [nextKey, setNextKey] = useState<string | null>(null);
 
   const activeViewRef = useRef<HTMLDivElement>(null);
   const nextViewRef = useRef<HTMLDivElement>(null);
 
+  const childrenStableRef = useStableCurrentRef(children);
+  const activeViewStableRef = useStableCurrentRef(activeView);
+
   useEffect(() => {
+    if (trigger === initialTriggerLockRef.current) {
+      // Don't run on initial render (it doesn't work nicely here)
+      return;
+    } else {
+      // Clear the initial trigger set so that we can navigate
+      // back to it (i.e. first page in pagination)
+      initialTriggerLockRef.current = null;
+    }
+
+    const children = childrenStableRef.current;
+    const activeView = activeViewStableRef.current;
+
     const currentChild = React.Children.only(children);
 
     if (isValidElement(currentChild)) {
-      const nextChildKey = (currentChild as ReactElement).key;
       const activeViewElement = isValidElement(activeView)
         ? (activeView as ReactElement)
         : null;
-      const activeViewKey = activeViewElement?.key;
 
-      if (nextChildKey !== activeViewKey) {
-        if (activeViewRef.current) {
-          const computedActiveViewStyle = window.getComputedStyle(
-            activeViewRef.current
-          );
-          setActiveTransitionHeight(
-            parseInt(computedActiveViewStyle.height, 10)
-          );
-        }
-
+      if (
+        trigger !== undefined ||
+        currentChild.key !== activeViewElement?.key
+      ) {
+        setNextKey(
+          currentChild.key?.toString() ||
+            Math.random().toString(36).substr(2, 9)
+        );
         setIsTransitioning(true);
         setNextView(children);
       }
     }
-  }, [children, activeView]);
+  }, [childrenStableRef, activeViewStableRef, trigger]);
 
-  // Explicitly want the props to update on the following useMemo
-  // const keyedTransitionDirection = keyedTransitionDirectionRef.current;
   const { activeTransitionClass, nextTransitionClass } = useMemo(() => {
     if (transitionType === "fade") {
       return {
@@ -90,22 +110,15 @@ const Transition = ({
     }
   }, [direction, transitionType]);
 
+  const handleAnimationEnd = useCallback(() => {
+    setIsTransitioning(false);
+    setActiveKey(nextKey);
+    setActiveView(nextView);
+    setNextView(null);
+  }, [nextKey, nextView]);
+
   useEffect(() => {
     if (isTransitioning) {
-      const handleAnimationEnd = () => {
-        setIsTransitioning(false);
-        setActiveView(nextView);
-        setNextView(null);
-
-        debounceWithKey(
-          "post_transition:height_reset",
-          () => {
-            setActiveTransitionHeight(null);
-          },
-          500
-        );
-      };
-
       const activeViewElement = activeViewRef.current;
       const nextViewElement = nextViewRef.current;
 
@@ -128,15 +141,7 @@ const Transition = ({
         }
       };
     }
-  }, [isTransitioning, nextView, nextTransitionClass]);
-
-  // Infer keys inline
-  const activeViewKey = isValidElement(activeView)
-    ? (activeView as ReactElement).key
-    : null;
-  const nextViewKey = isValidElement(nextView)
-    ? (nextView as ReactElement).key
-    : null;
+  }, [isTransitioning, nextTransitionClass, handleAnimationEnd]);
 
   const transitionDurationCSS = useMemo(
     () => `${transitionDurationMs / 1000}s`,
@@ -144,16 +149,14 @@ const Transition = ({
   );
 
   return (
-    <Full
-      style={activeTransitionHeight ? { height: activeTransitionHeight } : {}}
-    >
+    <Full>
       <TransitionChildView
         ref={activeViewRef}
-        key={activeViewKey}
+        key={activeKey}
         transitionClassName={isTransitioning ? activeTransitionClass : ""}
         style={{
           animationDuration: transitionDurationCSS,
-          height: activeTransitionHeight || "null",
+          transform: "translateZ(0)",
         }}
       >
         {activeView}
@@ -161,7 +164,7 @@ const Transition = ({
       {nextView && (
         <TransitionChildView
           ref={nextViewRef}
-          key={nextViewKey}
+          key={nextKey}
           transitionClassName={isTransitioning ? nextTransitionClass : ""}
           style={{
             animationDuration: transitionDurationCSS,
@@ -170,6 +173,7 @@ const Transition = ({
             left: 0,
             width: "100%",
             height: "100%",
+            transform: "translateZ(0)",
           }}
         >
           {nextView}

@@ -1,4 +1,4 @@
-import React, { forwardRef, HTMLAttributes } from "react";
+import React, { useEffect, useRef, HTMLAttributes } from "react";
 import clsx from "clsx";
 import styles from "./Scrollable.module.scss";
 
@@ -7,13 +7,41 @@ export type ScrollableProps = HTMLAttributes<HTMLDivElement> & {
   className?: string;
   scrollX?: boolean;
   scrollY?: boolean;
+  resetTrigger?: unknown;
 };
 
-const Scrollable = forwardRef<HTMLDivElement, ScrollableProps>(
-  ({ children, className, scrollX = false, scrollY = true, ...rest }, ref) => {
+const Scrollable = React.forwardRef<HTMLDivElement, ScrollableProps>(
+  (
+    {
+      children,
+      className,
+      scrollX = false,
+      scrollY = true,
+      resetTrigger,
+      ...rest
+    },
+    ref
+  ) => {
+    const scrollableRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+      if (scrollableRef.current) {
+        scrollableRef.current.scrollTop = 0;
+        scrollableRef.current.scrollLeft = 0;
+      }
+    }, [resetTrigger]);
+
     return (
       <div
-        ref={ref}
+        ref={(node) => {
+          scrollableRef.current = node;
+          if (typeof ref === "function") {
+            ref(node);
+          } else if (ref) {
+            (ref as React.MutableRefObject<HTMLDivElement | null>).current =
+              node;
+          }
+        }}
         className={clsx(
           styles.scrollable,
           {

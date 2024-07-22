@@ -72,14 +72,12 @@ export default function SearchResults() {
     } else {
       searchParams.delete("exact");
     }
+    searchParams.set("page", "1");
 
     navigate({
       pathname: location.pathname,
       search: searchParams.toString(),
     });
-
-    _setOnlyExactMatches(newExactValue);
-    _setPage(1);
   };
 
   const setPage = useCallback(
@@ -106,12 +104,6 @@ export default function SearchResults() {
   );
 
   usePageTitleSetter(searchQuery ? `Search results for: ${searchQuery}` : null);
-
-  // Reset the scrollbar position on search query updates
-  const scrollableKey = useMemo(
-    () => JSON.stringify({ searchQuery, onlyExactMatches, page }),
-    [searchQuery, onlyExactMatches, page]
-  );
 
   if (!searchResultSymbols.length) {
     if (isLoading) {
@@ -164,7 +156,7 @@ export default function SearchResults() {
   }
 
   return (
-    <Scrollable key={scrollableKey}>
+    <Scrollable resetTrigger={searchResultSymbols}>
       <Padding>
         <Box
           display="flex"
@@ -186,34 +178,33 @@ export default function SearchResults() {
         for &quot;{searchQuery}&quot;
       </Padding>
       {totalSearchResults > pageSize && (
-        <Box>
+        <Box style={{ textAlign: "center" }}>
           <Pagination
             count={totalPages}
             page={page}
             onChange={(event, nextPage) => setPage(nextPage)}
             showFirstButton
             showLastButton
-            // sx={{ display: "inline-block" }}
+            sx={{ display: "inline-block" }}
           />
         </Box>
       )}
       <Transition
         direction={!previousPage || page > previousPage ? "left" : "right"}
+        trigger={searchResultSymbols}
       >
-        <SymbolDetailList
-          key={`search-results-${searchResultSymbols.toString()}`}
-          tickerSymbols={searchResultSymbols}
-        />
+        <SymbolDetailList tickerSymbols={searchResultSymbols} />
       </Transition>
+
       {totalSearchResults > pageSize && !isLoading && (
-        <Box>
+        <Box style={{ textAlign: "center" }}>
           <Pagination
             count={totalPages}
             page={page}
             onChange={(event, nextPage) => setPage(nextPage)}
             showFirstButton
             showLastButton
-            // sx={{ display: "inline-block" }}
+            sx={{ display: "inline-block" }}
           />
         </Box>
       )}

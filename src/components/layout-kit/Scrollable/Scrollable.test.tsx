@@ -6,6 +6,34 @@ import { describe, it } from "vitest";
 import styles from "./Scrollable.module.scss";
 
 describe("Scrollable Component", () => {
+  it("resets scroll position when trigger changes", () => {
+    const { container, rerender } = render(
+      <Scrollable resetTrigger="initial">
+        <span>Test Content</span>
+      </Scrollable>
+    );
+
+    const scrollableDiv = container.firstChild as HTMLDivElement;
+
+    // Simulate scrolling
+    scrollableDiv.scrollTop = 100;
+    scrollableDiv.scrollLeft = 100;
+
+    expect(scrollableDiv.scrollTop).toBe(100);
+    expect(scrollableDiv.scrollLeft).toBe(100);
+
+    // Change the trigger prop
+    rerender(
+      <Scrollable resetTrigger="updated">
+        <span>Test Content</span>
+      </Scrollable>
+    );
+
+    // Check that the scroll position has been reset
+    expect(scrollableDiv.scrollTop).toBe(0);
+    expect(scrollableDiv.scrollLeft).toBe(0);
+  });
+
   it("renders children correctly", () => {
     const { getByText, asFragment } = render(
       <Scrollable>
