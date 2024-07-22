@@ -1,10 +1,8 @@
 import React from "react";
 import { TickerTape } from "react-ts-tradingview-widgets";
 import { Typography, useTheme, useMediaQuery } from "@mui/material";
-import { Outlet, useLocation } from "react-router-dom";
 import HeaderMenu from "./HeaderMenu";
 
-import useNavigationDirection from "@hooks/useNavigationDirection";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 
@@ -14,7 +12,7 @@ import Center from "@layoutKit/Center";
 import Cover from "@layoutKit/Cover";
 import Layout, { Header, Content, Footer } from "@layoutKit/Layout";
 
-import Transition from "@components/Transition";
+import TransitionOutlet from "./TransitionOutlet";
 
 import NetworkRequestIndicator from "@components/NetworkRequestIndicator";
 
@@ -22,9 +20,6 @@ import LockScreen from "@components/LockScreen";
 
 export default function MainLayout() {
   const theme = useTheme();
-  const navigationDirection = useNavigationDirection();
-
-  const { pathname: locationPathname } = useLocation();
 
   const shouldShowNetworkURL = useMediaQuery("@media (min-width:480px)");
 
@@ -59,12 +54,7 @@ export default function MainLayout() {
               </Center>
             </Full>
           ) : (
-            <Transition
-              direction={navigationDirection === "backward" ? "right" : "left"}
-              trigger={locationPathname}
-            >
-              <Outlet />
-            </Transition>
+            <TransitionOutlet />
           )}
         </Content>
         <Footer>

@@ -53,17 +53,23 @@ const Transition = ({
       >
         {activeView}
       </TransitionChildView>
-      {nextView && (
-        <TransitionChildView
-          ref={nextViewRef}
-          key={nextKey}
-          transitionClassName={isTransitioning ? nextTransitionClass : ""}
-          animationDurationCSS={animationDurationCSS}
-          asNextView
-        >
-          {nextView}
-        </TransitionChildView>
-      )}
+      {
+        // Note: This check regarding `nextKey` !== `activeKey` bypasses the
+        // transition entirely so that it doesn't freak React out. This situation
+        // can occur if rapidly toggling a transition and the behavior could likely
+        // be improved.
+        nextView && nextKey !== activeKey && (
+          <TransitionChildView
+            ref={nextViewRef}
+            key={nextKey}
+            transitionClassName={isTransitioning ? nextTransitionClass : ""}
+            animationDurationCSS={animationDurationCSS}
+            asNextView
+          >
+            {nextView}
+          </TransitionChildView>
+        )
+      }
     </Full>
   );
 };
