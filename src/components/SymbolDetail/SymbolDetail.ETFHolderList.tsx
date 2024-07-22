@@ -50,8 +50,6 @@ export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
           // TODO: Show the actual symbol weight in each ETFHolder (send `tickerSymbol` to
           // it and make clear distinction between which symbol is what)
         }
-        {/* 
-        // TODO: Uncomment
         <Box sx={{ backgroundColor: "rgba(255,255,255,.05)", borderRadius: 4 }}>
           <Padding>
             {totalPages > 1 && (
@@ -64,21 +62,20 @@ export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
                 onChange={(event, nextPage) => setPage(nextPage)}
               />
             )}
-
-            // TODO: Switch to trigger-based
             <Transition
               direction={
                 !previousPage || page > previousPage ? "left" : "right"
               }
+              trigger={page}
             >
-              <div key={page}>
+              <div>
                 {etfSymbols.map((etfSymbol) => (
                   <ETFHolder key={etfSymbol} etfSymbol={etfSymbol} />
                 ))}
               </div>
             </Transition>
           </Padding>
-        </Box> */}
+        </Box>
       </Padding>
     </Box>
   );

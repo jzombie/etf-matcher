@@ -201,8 +201,6 @@ export default function SearchResults() {
       )}
       <Transition
         direction={!previousPage || page > previousPage ? "left" : "right"}
-        // transitionType="fade"
-        transitionDurationMs={10000}
         trigger={searchResultSymbols.toString()}
       >
         <SymbolDetailList

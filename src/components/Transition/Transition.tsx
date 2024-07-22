@@ -29,7 +29,7 @@ const Transition = ({
   children,
   direction,
   transitionType = "slide",
-  transitionDurationMs = 200,
+  transitionDurationMs = 500,
   trigger,
 }: TransitionProps) => {
   const initialTriggerRef = useRef(trigger);
