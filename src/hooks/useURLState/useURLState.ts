@@ -9,6 +9,11 @@ type URLState = {
 
 type URLStateUpdater<T> = (prevState: T) => T;
 
+/**
+ * This React hook serves as a helper for `react-router-dom`, ensuring
+ * consistent interception and construction of URL locations throughout
+ * the app.
+ */
 export default function useURLState<T extends URLState>(
   onURLStateChange?: (urlState: T) => void
 ) {
