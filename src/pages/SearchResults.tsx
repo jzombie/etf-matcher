@@ -52,17 +52,9 @@ export default function SearchResults() {
         _setSearchQuery(query.trim());
       }
 
-      if (getBooleanParam("exact")) {
-        _setOnlyExactMatches(true);
-      } else {
-        _setOnlyExactMatches(false);
-      }
+      _setOnlyExactMatches(getBooleanParam("exact"));
 
-      if (!page) {
-        _setPage(1);
-      } else {
-        _setPage(parseInt(page, 10));
-      }
+      _setPage(!page ? 1 : parseInt(page, 10));
     }
   );
 
