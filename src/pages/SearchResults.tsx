@@ -63,7 +63,7 @@ export default function SearchResults() {
       // Reset page on change
       page: null,
     }));
-  }, [setURLState, getBooleanParam]);
+  }, [setURLState, getBooleanParam, toBooleanParam]);
 
   const setPage = useCallback(
     (page: number) => {
