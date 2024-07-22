@@ -107,14 +107,6 @@ export default function SearchResults() {
 
   usePageTitleSetter(searchQuery ? `Search results for: ${searchQuery}` : null);
 
-  // TODO: Perhaps have a way to scroll to top, but don't re-key the scrollbar
-  //
-  // Reset the scrollbar position on search query updates
-  // const scrollableKey = useMemo(
-  //   () => JSON.stringify({ searchQuery, onlyExactMatches, page }),
-  //   [searchQuery, onlyExactMatches, page]
-  // );
-
   if (!searchResultSymbols.length) {
     if (isLoading) {
       return (
