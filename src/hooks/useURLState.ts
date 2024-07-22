@@ -7,10 +7,10 @@ type URLState = {
   [key: string]: string | null;
 };
 
-type URLStateUpdater = (prevState: URLState) => URLState;
+type URLStateUpdater<T> = (prevState: T) => T;
 
-export default function useURLState(
-  onURLStateChange?: (urlState: URLState) => void
+export default function useURLState<T extends URLState>(
+  onURLStateChange?: (urlState: T) => void
 ) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -21,11 +21,11 @@ export default function useURLState(
     searchParams.forEach((value, key) => {
       params[key] = value;
     });
-    return params;
+    return params as T;
   }, [location.search]);
 
   const setURLState = useCallback(
-    (nextState: URLState | URLStateUpdater, isMerge = true) => {
+    (nextState: Partial<T> | URLStateUpdater<Partial<T>>, isMerge = true) => {
       const searchParams = new URLSearchParams(isMerge ? location.search : "");
 
       const stateToApply =
@@ -65,8 +65,6 @@ export default function useURLState(
 
   const toBooleanParam = useCallback(
     (value: boolean, defaultValue?: boolean): string | null => {
-      console.log({ value, defaultValue });
-
       if (defaultValue !== undefined && value === defaultValue) {
         return null;
       }
