@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { TickerTape } from "react-ts-tradingview-widgets";
 import { Typography, useTheme, useMediaQuery } from "@mui/material";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useOutlet } from "react-router-dom";
 import HeaderMenu from "./HeaderMenu";
 
 import useNavigationDirection from "@hooks/useNavigationDirection";
@@ -19,6 +19,32 @@ import Transition from "@components/Transition";
 import NetworkRequestIndicator from "@components/NetworkRequestIndicator";
 
 import LockScreen from "@components/LockScreen";
+
+function CustomOutlet() {
+  const location = useLocation();
+  const element = useOutlet();
+
+  const [renderedChild, setRenderedChild] = useState(null);
+
+  useEffect(() => {
+    setRenderedChild((prev) => {
+      if (prev) {
+        return prev;
+      } else {
+        return element?.props.children;
+      }
+    });
+  }, [element?.props.children]);
+
+  return (
+    <Full>
+      {renderedChild &&
+        React.cloneElement(renderedChild, {
+          key: location.pathname,
+        })}
+    </Full>
+  );
+}
 
 export default function MainLayout() {
   const theme = useTheme();
@@ -63,7 +89,9 @@ export default function MainLayout() {
               direction={navigationDirection === "backward" ? "right" : "left"}
               trigger={locationPathname}
             >
-              <Outlet />
+              <Full key={locationPathname}>
+                <CustomOutlet />
+              </Full>
             </Transition>
           )}
         </Content>
