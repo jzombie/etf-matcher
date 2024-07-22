@@ -29,7 +29,7 @@ const Transition = ({
     activeKey,
     isTransitioning,
     activeTransitionClass,
-    transitionDurationCSS,
+    animationDurationCSS,
     activeView,
     nextView,
     nextViewRef,
@@ -49,12 +49,7 @@ const Transition = ({
         ref={activeViewRef}
         key={activeKey}
         transitionClassName={isTransitioning ? activeTransitionClass : ""}
-        style={{
-          // TODO: Make this a prop
-          animationDuration: transitionDurationCSS,
-          // TODO: Use SCSS
-          transform: "translateZ(0)",
-        }}
+        animationDurationCSS={animationDurationCSS}
       >
         {activeView}
       </TransitionChildView>
@@ -63,17 +58,8 @@ const Transition = ({
           ref={nextViewRef}
           key={nextKey}
           transitionClassName={isTransitioning ? nextTransitionClass : ""}
-          style={{
-            // TODO: Make this a prop
-            animationDuration: transitionDurationCSS,
-            // TODO: Use SCSS
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            transform: "translateZ(0)",
-          }}
+          animationDurationCSS={animationDurationCSS}
+          asNextView
         >
           {nextView}
         </TransitionChildView>

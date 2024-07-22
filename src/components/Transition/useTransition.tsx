@@ -130,7 +130,7 @@ export default function useTransition({
     }
   }, [isTransitioning, nextTransitionClass, handleAnimationEnd]);
 
-  const transitionDurationCSS = useMemo(
+  const animationDurationCSS = useMemo<string>(
     () => `${transitionDurationMs / 1000}s`,
     [transitionDurationMs]
   );
@@ -140,7 +140,7 @@ export default function useTransition({
     activeKey,
     isTransitioning,
     activeTransitionClass,
-    transitionDurationCSS,
+    animationDurationCSS,
     activeView,
     nextView,
     nextViewRef,
