@@ -1,5 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useEffect } from "react";
+
+import useStableCurrentRef from "./useStableCurrentRef";
 
 type URLState = {
   [key: string]: string | null;
@@ -7,7 +9,9 @@ type URLState = {
 
 type URLStateUpdater = (prevState: URLState) => URLState;
 
-export default function useURLState() {
+export default function useURLState(
+  onURLStateChange?: (urlState: URLState) => void
+) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -62,6 +66,15 @@ export default function useURLState() {
   const toBooleanParam = useCallback((value: boolean): string => {
     return value === true ? "true" : "false";
   }, []);
+
+  const onURLStateChangeStableRef = useStableCurrentRef(onURLStateChange);
+  useEffect(() => {
+    const onURLStateChange = onURLStateChangeStableRef.current;
+
+    if (typeof onURLStateChange === "function") {
+      onURLStateChange(urlState);
+    }
+  }, [urlState, onURLStateChangeStableRef]);
 
   return {
     urlState,

@@ -44,28 +44,27 @@ export default function SearchResults() {
     isLoading,
   } = useSearch();
 
-  const { urlState, setURLState, getBooleanParam, toBooleanParam } =
-    useURLState();
+  const { setURLState, getBooleanParam, toBooleanParam } = useURLState(
+    (urlState) => {
+      const { query, page } = urlState;
 
-  useEffect(() => {
-    const { query, page } = urlState;
+      if (query) {
+        _setSearchQuery(query.trim());
+      }
 
-    if (query) {
-      _setSearchQuery(query.trim());
+      if (getBooleanParam("exact")) {
+        _setOnlyExactMatches(true);
+      } else {
+        _setOnlyExactMatches(false);
+      }
+
+      if (!page) {
+        _setPage(1);
+      } else {
+        _setPage(parseInt(page, 10));
+      }
     }
-
-    if (getBooleanParam("exact")) {
-      _setOnlyExactMatches(true);
-    } else {
-      _setOnlyExactMatches(false);
-    }
-
-    if (!page) {
-      _setPage(1);
-    } else {
-      _setPage(parseInt(page, 10));
-    }
-  }, [urlState, getBooleanParam, _setSearchQuery, _setOnlyExactMatches]);
+  );
 
   const toggleExactMatch = useCallback(() => {
     setURLState(() => ({
