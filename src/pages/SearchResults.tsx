@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useCallback, useMemo } from "react";
 import {
   Box,
   Switch,
@@ -26,9 +25,6 @@ import usePageTitleSetter from "@utils/usePageTitleSetter";
 import CircularProgress from "@mui/material/CircularProgress";
 
 export default function SearchResults() {
-  const location = useLocation();
-  const navigate = useNavigate();
-
   const {
     searchQuery,
     setSearchQuery: _setSearchQuery,

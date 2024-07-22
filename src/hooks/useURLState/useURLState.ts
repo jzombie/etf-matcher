@@ -14,7 +14,7 @@ type URLStateUpdater<T> = (prevState: T) => T;
  * consistent interception and construction of URL locations throughout
  * the app.
  *
- * As a rule of thumb, this should replace `useNavigate` in the app.
+ * In general this should replace `useNavigate` in the app.
  */
 export default function useURLState<T extends URLState>(
   onURLStateChange?: (urlState: T) => void
