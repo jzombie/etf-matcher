@@ -65,6 +65,7 @@ export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
               />
             )}
 
+            // TODO: Switch to trigger-based
             <Transition
               direction={
                 !previousPage || page > previousPage ? "left" : "right"

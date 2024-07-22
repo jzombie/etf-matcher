@@ -208,7 +208,9 @@ export default function SearchResults() {
           tickerSymbols={searchResultSymbols}
         />
       </Transition>
-      {/* {totalSearchResults > pageSize && !isLoading && (
+      {
+        // TODO: Uncomment
+        /* {totalSearchResults > pageSize && !isLoading && (
         <Box>
           <Pagination
             count={totalPages}
@@ -219,7 +221,8 @@ export default function SearchResults() {
             // sx={{ display: "inline-block" }}
           />
         </Box>
-      )} */}
+      )} */
+      }
     </Scrollable>
   );
 }
