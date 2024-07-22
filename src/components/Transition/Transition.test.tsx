@@ -23,8 +23,8 @@ describe("Transition Component", () => {
           class="full"
         >
           <div
-            class="full animate__animated"
-            style="animation-duration: 0.5s; transform: translateZ(0);"
+            class="full transition_child_view animate__animated"
+            style="animation-duration: 0.5s;"
           >
             <div
               class="full"
@@ -54,8 +54,8 @@ describe("Transition Component", () => {
           class="full"
         >
           <div
-            class="full animate__animated animate__slideOutRight"
-            style="animation-duration: 0.5s; transform: translateZ(0);"
+            class="full transition_child_view animate__animated animate__slideOutRight"
+            style="animation-duration: 0.5s;"
           >
             <div
               class="full"
@@ -68,8 +68,8 @@ describe("Transition Component", () => {
             </div>
           </div>
           <div
-            class="full animate__animated animate__slideInLeft"
-            style="animation-duration: 0.5s; position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; transform: translateZ(0);"
+            class="full transition_child_view next_view animate__animated animate__slideInLeft"
+            style="animation-duration: 0.5s;"
           >
             <div
               class="full"
@@ -99,8 +99,8 @@ describe("Transition Component", () => {
             class="full"
           >
             <div
-              class="full animate__animated"
-              style="animation-duration: 0.5s; transform: translateZ(0);"
+              class="full transition_child_view animate__animated"
+              style="animation-duration: 0.5s;"
             >
               <div
                 class="full"
@@ -138,8 +138,8 @@ describe("Transition Component", () => {
           class="full"
         >
           <div
-            class="full animate__animated"
-            style="animation-duration: 0.5s; transform: translateZ(0);"
+            class="full transition_child_view animate__animated"
+            style="animation-duration: 0.5s;"
           >
             <div
               class="full"
@@ -169,8 +169,8 @@ describe("Transition Component", () => {
           class="full"
         >
           <div
-            class="full animate__animated animate__slideOutRight"
-            style="animation-duration: 0.5s; transform: translateZ(0);"
+            class="full transition_child_view animate__animated animate__slideOutRight"
+            style="animation-duration: 0.5s;"
           >
             <div
               class="full"
@@ -183,8 +183,8 @@ describe("Transition Component", () => {
             </div>
           </div>
           <div
-            class="full animate__animated animate__slideInLeft"
-            style="animation-duration: 0.5s; position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; transform: translateZ(0);"
+            class="full transition_child_view next_view animate__animated animate__slideInLeft"
+            style="animation-duration: 0.5s;"
           >
             <div
               class="full"
@@ -214,8 +214,8 @@ describe("Transition Component", () => {
             class="full"
           >
             <div
-              class="full animate__animated"
-              style="animation-duration: 0.5s; transform: translateZ(0);"
+              class="full transition_child_view animate__animated"
+              style="animation-duration: 0.5s;"
             >
               <div
                 class="full"
@@ -254,8 +254,8 @@ describe("Transition Component", () => {
           class="full"
         >
           <div
-            class="full animate__animated"
-            style="animation-duration: 0.5s; transform: translateZ(0);"
+            class="full transition_child_view animate__animated"
+            style="animation-duration: 0.5s;"
           >
             <div
               class="full"
@@ -288,8 +288,8 @@ describe("Transition Component", () => {
             class="full"
           >
             <div
-              class="full animate__animated"
-              style="animation-duration: 0.5s; transform: translateZ(0);"
+              class="full transition_child_view animate__animated"
+              style="animation-duration: 0.5s;"
             >
               <div
                 class="full"
@@ -327,8 +327,8 @@ describe("Transition Component", () => {
           class="full"
         >
           <div
-            class="full animate__animated"
-            style="animation-duration: 0.5s; transform: translateZ(0);"
+            class="full transition_child_view animate__animated"
+            style="animation-duration: 0.5s;"
           >
             <div
               class="full"
@@ -363,8 +363,8 @@ describe("Transition Component", () => {
           class="full"
         >
           <div
-            class="full animate__animated animate__slideOutRight"
-            style="animation-duration: 0.5s; transform: translateZ(0);"
+            class="full transition_child_view animate__animated animate__slideOutRight"
+            style="animation-duration: 0.5s;"
           >
             <div
               class="full"
@@ -377,8 +377,8 @@ describe("Transition Component", () => {
             </div>
           </div>
           <div
-            class="full animate__animated animate__slideInLeft"
-            style="animation-duration: 0.5s; position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; transform: translateZ(0);"
+            class="full transition_child_view next_view animate__animated animate__slideInLeft"
+            style="animation-duration: 0.5s;"
           >
             <div
               class="full"
@@ -408,8 +408,8 @@ describe("Transition Component", () => {
             class="full"
           >
             <div
-              class="full animate__animated"
-              style="animation-duration: 0.5s; transform: translateZ(0);"
+              class="full transition_child_view animate__animated"
+              style="animation-duration: 0.5s;"
             >
               <div
                 class="full"
@@ -447,8 +447,8 @@ describe("Transition Component", () => {
           class="full"
         >
           <div
-            class="full animate__animated"
-            style="animation-duration: 0.5s; transform: translateZ(0);"
+            class="full transition_child_view animate__animated"
+            style="animation-duration: 0.5s;"
           >
             <div
               class="full"
@@ -481,8 +481,8 @@ describe("Transition Component", () => {
             class="full"
           >
             <div
-              class="full animate__animated"
-              style="animation-duration: 0.5s; transform: translateZ(0);"
+              class="full transition_child_view animate__animated"
+              style="animation-duration: 0.5s;"
             >
               <div
                 class="full"
@@ -521,8 +521,8 @@ describe("Transition Component", () => {
             class="full"
           >
             <div
-              class="full animate__animated"
-              style="animation-duration: 0.5s; transform: translateZ(0);"
+              class="full transition_child_view animate__animated"
+              style="animation-duration: 0.5s;"
             >
               <div
                 class="full"
