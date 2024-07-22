@@ -45,6 +45,7 @@ const Transition = ({
   const activeViewStableRef = useStableCurrentRef(activeView);
 
   useEffect(() => {
+    // Don't run on initial trigger (prevents symbols from loading)
     if (trigger === initialTriggerRef.current) {
       return;
     }
