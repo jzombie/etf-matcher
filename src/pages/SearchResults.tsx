@@ -195,10 +195,7 @@ export default function SearchResults() {
         direction={!previousPage || page > previousPage ? "left" : "right"}
         trigger={searchResultSymbols.toString()}
       >
-        <SymbolDetailList
-          // key={`search-results-${searchResultSymbols.toString()}`}
-          tickerSymbols={searchResultSymbols}
-        />
+        <SymbolDetailList tickerSymbols={searchResultSymbols} />
       </Transition>
 
       {totalSearchResults > pageSize && !isLoading && (
