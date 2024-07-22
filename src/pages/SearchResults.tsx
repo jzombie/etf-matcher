@@ -166,7 +166,7 @@ export default function SearchResults() {
   }
 
   return (
-    <Scrollable key={scrollableKey}>
+    <Scrollable>
       <Padding>
         <Box
           display="flex"
@@ -202,7 +202,7 @@ export default function SearchResults() {
       <Transition
         direction={!previousPage || page > previousPage ? "left" : "right"}
         // transitionType="fade"
-        transitionDurationMs={1000}
+        transitionDurationMs={10000}
         trigger={searchResultSymbols.toString()}
       >
         <SymbolDetailList

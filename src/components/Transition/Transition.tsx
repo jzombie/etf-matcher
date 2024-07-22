@@ -11,7 +11,6 @@ import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import TransitionChildView from "./Transition.ChildView";
 import "animate.css";
 import Full from "@layoutKit/Full";
-// import debounceWithKey from "@utils/debounceWithKey";
 
 export type TransitionDirection = "left" | "right";
 
@@ -64,8 +63,11 @@ const Transition = ({
         trigger !== undefined ||
         currentChild.key !== activeViewElement?.key
       ) {
+        const clonedNextView = React.cloneElement(currentChild, {
+          key: `cloned-${currentChild.key}`,
+        });
         setIsTransitioning(true);
-        setNextView(children);
+        setNextView(clonedNextView);
       }
     }
   }, [childrenStableRef, activeViewStableRef, trigger]);
@@ -99,14 +101,6 @@ const Transition = ({
         setIsTransitioning(false);
         setActiveView(nextView);
         setNextView(null);
-
-        // debounceWithKey(
-        //   "post_transition:height_reset",
-        //   () => {
-        //     setActiveTransitionHeight(null);
-        //   },
-        //   500
-        // );
       };
 
       const activeViewElement = activeViewRef.current;
