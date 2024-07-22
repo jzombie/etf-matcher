@@ -54,9 +54,12 @@ const Transition = ({
   const activeViewStableRef = useStableCurrentRef(activeView);
 
   useEffect(() => {
-    // Don't run on initial trigger (prevents symbols from loading)
     if (trigger === initialTriggerRef.current) {
+      // Don't run on initial trigger (prevents symbols from loading)
       return;
+    } else {
+      // Clear the initial trigger set so that we can navigate back to it (i.e. first page in pagination)
+      initialTriggerRef.current = null;
     }
 
     const children = childrenStableRef.current;
