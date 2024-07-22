@@ -6,6 +6,7 @@ import React, {
   ReactNode,
   isValidElement,
   ReactElement,
+  useCallback,
 } from "react";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import TransitionChildView from "./Transition.ChildView";
@@ -33,9 +34,18 @@ const Transition = ({
 }: TransitionProps) => {
   const initialTriggerRef = useRef(trigger);
 
+  const initialKey = useMemo(() => {
+    const currentChild = React.Children.only(children);
+    return isValidElement(currentChild)
+      ? currentChild.key?.toString() || Math.random().toString(36).substr(2, 9)
+      : Math.random().toString(36).substr(2, 9);
+  }, [children]);
+
   const [activeView, setActiveView] = useState<ReactNode>(children);
   const [nextView, setNextView] = useState<ReactNode | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [activeKey, setActiveKey] = useState<string | null>(initialKey);
+  const [nextKey, setNextKey] = useState<string | null>(null);
 
   const activeViewRef = useRef<HTMLDivElement>(null);
   const nextViewRef = useRef<HTMLDivElement>(null);
@@ -63,11 +73,12 @@ const Transition = ({
         trigger !== undefined ||
         currentChild.key !== activeViewElement?.key
       ) {
-        const clonedNextView = React.cloneElement(currentChild, {
-          key: `cloned-${currentChild.key}`,
-        });
+        setNextKey(
+          currentChild.key?.toString() ||
+            Math.random().toString(36).substr(2, 9)
+        );
         setIsTransitioning(true);
-        setNextView(clonedNextView);
+        setNextView(children);
       }
     }
   }, [childrenStableRef, activeViewStableRef, trigger]);
@@ -95,14 +106,15 @@ const Transition = ({
     }
   }, [direction, transitionType]);
 
+  const handleAnimationEnd = useCallback(() => {
+    setIsTransitioning(false);
+    setActiveKey(nextKey);
+    setActiveView(nextView);
+    setNextView(null);
+  }, [nextKey, nextView]);
+
   useEffect(() => {
     if (isTransitioning) {
-      const handleAnimationEnd = () => {
-        setIsTransitioning(false);
-        setActiveView(nextView);
-        setNextView(null);
-      };
-
       const activeViewElement = activeViewRef.current;
       const nextViewElement = nextViewRef.current;
 
@@ -125,7 +137,7 @@ const Transition = ({
         }
       };
     }
-  }, [isTransitioning, nextView, nextTransitionClass]);
+  }, [isTransitioning, nextTransitionClass, handleAnimationEnd]);
 
   const transitionDurationCSS = useMemo(
     () => `${transitionDurationMs / 1000}s`,
@@ -136,6 +148,7 @@ const Transition = ({
     <Full>
       <TransitionChildView
         ref={activeViewRef}
+        key={activeKey}
         transitionClassName={isTransitioning ? activeTransitionClass : ""}
         style={{
           animationDuration: transitionDurationCSS,
@@ -147,6 +160,7 @@ const Transition = ({
       {nextView && (
         <TransitionChildView
           ref={nextViewRef}
+          key={nextKey}
           transitionClassName={isTransitioning ? nextTransitionClass : ""}
           style={{
             animationDuration: transitionDurationCSS,
