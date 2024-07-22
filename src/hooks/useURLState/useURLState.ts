@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCallback, useMemo, useEffect } from "react";
 
-import useStableCurrentRef from "./useStableCurrentRef";
+import useStableCurrentRef from "../useStableCurrentRef";
 
 type URLState = {
   [key: string]: string | null;
