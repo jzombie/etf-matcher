@@ -11,6 +11,7 @@ describe("Transition Component", () => {
       </Transition>
     );
     expect(screen.getByText("Initial View")).toBeDefined();
+
     act(() => {
       rerender(
         <Transition trigger="next">
@@ -18,7 +19,7 @@ describe("Transition Component", () => {
         </Transition>
       );
     });
-    // Using setTimeout to wait for the transition to complete
+
     setTimeout(() => {
       expect(screen.queryByText("Initial View")).toBeNull();
       expect(screen.getByText("Next View")).toBeDefined();
@@ -31,6 +32,7 @@ describe("Transition Component", () => {
       renderSpy();
       return <div className="spy-view">{text}</div>;
     };
+
     const { rerender } = render(
       <Transition trigger="initial">
         <SpyComponent text="Initial View" />
@@ -38,6 +40,7 @@ describe("Transition Component", () => {
     );
     expect(screen.getByText("Initial View")).toBeDefined();
     expect(renderSpy).toHaveBeenCalledTimes(1);
+
     act(() => {
       rerender(
         <Transition trigger="next">
@@ -45,9 +48,72 @@ describe("Transition Component", () => {
         </Transition>
       );
     });
-    // Using setTimeout to wait for the transition to complete
+
     setTimeout(() => {
       expect(screen.getByText("Spy View")).toBeDefined();
+      expect(renderSpy).toHaveBeenCalledTimes(2);
+    }, 500);
+  });
+
+  it("does not re-render when trigger does not change", () => {
+    const renderSpy = vi.fn();
+    const SpyComponent = ({ text }: { text: string }) => {
+      renderSpy();
+      return <div className="spy-view">{text}</div>;
+    };
+
+    const { rerender } = render(
+      <Transition trigger="initial">
+        <SpyComponent text="Initial View" />
+      </Transition>
+    );
+    expect(screen.getByText("Initial View")).toBeDefined();
+    expect(renderSpy).toHaveBeenCalledTimes(1);
+
+    act(() => {
+      rerender(
+        <Transition trigger="initial">
+          <SpyComponent text="Initial View" />
+        </Transition>
+      );
+    });
+
+    setTimeout(() => {
+      expect(screen.getByText("Initial View")).toBeDefined();
+      expect(renderSpy).toHaveBeenCalledTimes(1);
+    }, 500);
+  });
+
+  it("re-renders only once when trigger changes multiple times in quick succession", () => {
+    const renderSpy = vi.fn();
+    const SpyComponent = ({ text }: { text: string }) => {
+      renderSpy();
+      return <div className="spy-view">{text}</div>;
+    };
+
+    const { rerender } = render(
+      <Transition trigger="initial">
+        <SpyComponent text="Initial View" />
+      </Transition>
+    );
+    expect(screen.getByText("Initial View")).toBeDefined();
+    expect(renderSpy).toHaveBeenCalledTimes(1);
+
+    act(() => {
+      rerender(
+        <Transition trigger="next1">
+          <SpyComponent text="Spy View 1" />
+        </Transition>
+      );
+      rerender(
+        <Transition trigger="next2">
+          <SpyComponent text="Spy View 2" />
+        </Transition>
+      );
+    });
+
+    setTimeout(() => {
+      expect(screen.getByText("Spy View 2")).toBeDefined();
       expect(renderSpy).toHaveBeenCalledTimes(2);
     }, 500);
   });
