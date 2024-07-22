@@ -32,7 +32,7 @@ const Transition = ({
   transitionDurationMs = 500,
   trigger,
 }: TransitionProps) => {
-  const initialTriggerRef = useRef(trigger);
+  const initialTriggerLockRef = useRef<unknown>(trigger);
 
   const initialKey = useMemo(() => {
     const currentChild = React.Children.only(children);
@@ -54,12 +54,13 @@ const Transition = ({
   const activeViewStableRef = useStableCurrentRef(activeView);
 
   useEffect(() => {
-    if (trigger === initialTriggerRef.current) {
-      // Don't run on initial trigger (prevents symbols from loading)
+    if (trigger === initialTriggerLockRef.current) {
+      // Don't run on initial render (it doesn't work nicely here)
       return;
     } else {
-      // Clear the initial trigger set so that we can navigate back to it (i.e. first page in pagination)
-      initialTriggerRef.current = null;
+      // Clear the initial trigger set so that we can navigate
+      // back to it (i.e. first page in pagination)
+      initialTriggerLockRef.current = null;
     }
 
     const children = childrenStableRef.current;
