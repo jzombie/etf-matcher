@@ -64,7 +64,7 @@ async function processQueue() {
 
 self.onmessage = async (event) => {
   const { functionName, args, messageId } = event.data;
-  // customLogger.log(
+  // customLogger.debug(
   //   "Worker received message with functionName:",
   //   functionName,
   //   "and args:",
