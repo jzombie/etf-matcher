@@ -72,14 +72,12 @@ export default function SearchResults() {
     } else {
       searchParams.delete("exact");
     }
+    searchParams.set("page", "1");
 
     navigate({
       pathname: location.pathname,
       search: searchParams.toString(),
     });
-
-    _setOnlyExactMatches(newExactValue);
-    _setPage(1);
   };
 
   const setPage = useCallback(
@@ -158,7 +156,7 @@ export default function SearchResults() {
   }
 
   return (
-    <Scrollable resetTrigger={searchResultSymbols.toString()}>
+    <Scrollable resetTrigger={searchResultSymbols}>
       <Padding>
         <Box
           display="flex"
@@ -180,33 +178,33 @@ export default function SearchResults() {
         for &quot;{searchQuery}&quot;
       </Padding>
       {totalSearchResults > pageSize && (
-        <Box>
+        <Box style={{ textAlign: "center" }}>
           <Pagination
             count={totalPages}
             page={page}
             onChange={(event, nextPage) => setPage(nextPage)}
             showFirstButton
             showLastButton
-            // sx={{ display: "inline-block" }}
+            sx={{ display: "inline-block" }}
           />
         </Box>
       )}
       <Transition
         direction={!previousPage || page > previousPage ? "left" : "right"}
-        trigger={searchResultSymbols.toString()}
+        trigger={searchResultSymbols}
       >
         <SymbolDetailList tickerSymbols={searchResultSymbols} />
       </Transition>
 
       {totalSearchResults > pageSize && !isLoading && (
-        <Box>
+        <Box style={{ textAlign: "center" }}>
           <Pagination
             count={totalPages}
             page={page}
             onChange={(event, nextPage) => setPage(nextPage)}
             showFirstButton
             showLastButton
-            // sx={{ display: "inline-block" }}
+            sx={{ display: "inline-block" }}
           />
         </Box>
       )}
