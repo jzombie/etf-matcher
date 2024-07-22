@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { TickerTape } from "react-ts-tradingview-widgets";
 import { Typography, useTheme, useMediaQuery } from "@mui/material";
-import { useLocation, useOutlet } from "react-router-dom";
 import HeaderMenu from "./HeaderMenu";
 
-import useNavigationDirection from "@hooks/useNavigationDirection";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 
@@ -14,43 +12,14 @@ import Center from "@layoutKit/Center";
 import Cover from "@layoutKit/Cover";
 import Layout, { Header, Content, Footer } from "@layoutKit/Layout";
 
-import Transition from "@components/Transition";
+import TransitionOutlet from "./TransitionOutlet";
 
 import NetworkRequestIndicator from "@components/NetworkRequestIndicator";
 
 import LockScreen from "@components/LockScreen";
 
-function CustomOutlet() {
-  const location = useLocation();
-  const element = useOutlet();
-
-  const [renderedChildren, setRenderedChildren] = useState(null);
-
-  useEffect(() => {
-    setRenderedChildren((prev) => {
-      if (prev) {
-        return prev;
-      } else {
-        return element?.props.children;
-      }
-    });
-  }, [element?.props.children]);
-
-  return (
-    <>
-      {renderedChildren &&
-        React.cloneElement(renderedChildren, {
-          key: location.pathname,
-        })}
-    </>
-  );
-}
-
 export default function MainLayout() {
   const theme = useTheme();
-  const navigationDirection = useNavigationDirection();
-
-  const { pathname: locationPathname } = useLocation();
 
   const shouldShowNetworkURL = useMediaQuery("@media (min-width:480px)");
 
@@ -85,12 +54,7 @@ export default function MainLayout() {
               </Center>
             </Full>
           ) : (
-            <Transition
-              direction={navigationDirection === "backward" ? "right" : "left"}
-              trigger={locationPathname}
-            >
-              <CustomOutlet />
-            </Transition>
+            <TransitionOutlet />
           )}
         </Content>
         <Footer>
