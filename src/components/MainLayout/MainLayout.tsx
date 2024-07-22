@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { TickerTape } from "react-ts-tradingview-widgets";
 import { Typography, useTheme, useMediaQuery } from "@mui/material";
-import { Outlet, useLocation, useOutlet } from "react-router-dom";
+import { useLocation, useOutlet } from "react-router-dom";
 import HeaderMenu from "./HeaderMenu";
 
 import useNavigationDirection from "@hooks/useNavigationDirection";
@@ -37,12 +37,12 @@ function CustomOutlet() {
   }, [element?.props.children]);
 
   return (
-    <Full>
+    <>
       {renderedChild &&
         React.cloneElement(renderedChild, {
           key: location.pathname,
         })}
-    </Full>
+    </>
   );
 }
 
@@ -89,9 +89,7 @@ export default function MainLayout() {
               direction={navigationDirection === "backward" ? "right" : "left"}
               trigger={locationPathname}
             >
-              <Full key={locationPathname}>
-                <CustomOutlet />
-              </Full>
+              <CustomOutlet />
             </Transition>
           )}
         </Content>
