@@ -7,10 +7,11 @@ import React, {
   isValidElement,
   ReactElement,
 } from "react";
+import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import TransitionChildView from "./Transition.ChildView";
 import "animate.css";
 import Full from "@layoutKit/Full";
-import debounceWithKey from "@utils/debounceWithKey";
+// import debounceWithKey from "@utils/debounceWithKey";
 
 export type TransitionDirection = "left" | "right";
 
@@ -21,6 +22,7 @@ export type TransitionProps = {
   direction?: TransitionDirection;
   transitionType?: TransitionType;
   transitionDurationMs?: number;
+  trigger?: any;
 };
 
 const Transition = ({
@@ -28,18 +30,28 @@ const Transition = ({
   direction,
   transitionType = "slide",
   transitionDurationMs = 200,
+  trigger,
 }: TransitionProps) => {
+  const initialTriggerRef = useRef(trigger);
+
   const [activeView, setActiveView] = useState<ReactNode>(children);
   const [nextView, setNextView] = useState<ReactNode | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  // const [activeTransitionHeight, setActiveTransitionHeight] = useState<
-  //   number | null
-  // >(null);
 
   const activeViewRef = useRef<HTMLDivElement>(null);
   const nextViewRef = useRef<HTMLDivElement>(null);
 
+  const childrenStableRef = useStableCurrentRef(children);
+  const activeViewStableRef = useStableCurrentRef(activeView);
+
   useEffect(() => {
+    if (trigger === initialTriggerRef.current) {
+      return;
+    }
+
+    const children = childrenStableRef.current;
+    const activeView = activeViewStableRef.current;
+
     const currentChild = React.Children.only(children);
 
     if (isValidElement(currentChild)) {
@@ -47,21 +59,15 @@ const Transition = ({
         ? (activeView as ReactElement)
         : null;
 
-      if (currentChild.key !== activeViewElement?.key) {
-        // if (activeViewRef.current) {
-        //   const computedActiveViewStyle = window.getComputedStyle(
-        //     activeViewRef.current
-        //   );
-        //   // setActiveTransitionHeight(
-        //   //   parseInt(computedActiveViewStyle.height, 10)
-        //   // );
-        // }
-
+      if (
+        trigger !== undefined ||
+        currentChild.key !== activeViewElement?.key
+      ) {
         setIsTransitioning(true);
         setNextView(children);
       }
     }
-  }, [children, activeView]);
+  }, [childrenStableRef, activeViewStableRef, trigger]);
 
   const { activeTransitionClass, nextTransitionClass } = useMemo(() => {
     if (transitionType === "fade") {
@@ -132,16 +138,12 @@ const Transition = ({
   );
 
   return (
-    <Full
-    // style={activeTransitionHeight ? { height: activeTransitionHeight } : {}}
-    // style={{ minHeight: 1000 }}
-    >
+    <Full>
       <TransitionChildView
         ref={activeViewRef}
         transitionClassName={isTransitioning ? activeTransitionClass : ""}
         style={{
           animationDuration: transitionDurationCSS,
-          // height: activeTransitionHeight ? activeTransitionHeight : undefined,
           transform: "translateZ(0)",
         }}
       >

@@ -201,9 +201,10 @@ export default function SearchResults() {
         direction={!previousPage || page > previousPage ? "left" : "right"}
         // transitionType="fade"
         transitionDurationMs={1000}
+        trigger={searchResultSymbols.toString()}
       >
         <SymbolDetailList
-          key={`search-results-${searchResultSymbols.toString()}`}
+          // key={`search-results-${searchResultSymbols.toString()}`}
           tickerSymbols={searchResultSymbols}
         />
       </Transition>
