@@ -13,6 +13,8 @@ type URLStateUpdater<T> = (prevState: T) => T;
  * This React hook serves as a helper for `react-router-dom`, ensuring
  * consistent interception and construction of URL locations throughout
  * the app.
+ *
+ * As a rule of thumb, this should replace `useNavigate` in the app.
  */
 export default function useURLState<T extends URLState>(
   onURLStateChange?: (urlState: T) => void
@@ -30,7 +32,11 @@ export default function useURLState<T extends URLState>(
   }, [location.search]);
 
   const setURLState = useCallback(
-    (nextState: Partial<T> | URLStateUpdater<Partial<T>>, isMerge = true) => {
+    (
+      nextState: Partial<T> | URLStateUpdater<Partial<T>>,
+      isMerge = true,
+      newPathname?: string
+    ) => {
       const searchParams = new URLSearchParams(isMerge ? location.search : "");
 
       const stateToApply =
@@ -46,9 +52,11 @@ export default function useURLState<T extends URLState>(
         }
       });
 
+      const finalPathname = newPathname || location.pathname;
+
       navigate(
         {
-          pathname: location.pathname,
+          pathname: finalPathname,
           search: searchParams.toString(),
         },
         { replace: true }

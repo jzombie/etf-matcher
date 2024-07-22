@@ -171,4 +171,33 @@ describe("useURLState hook", () => {
 
     expect(result.current.getBooleanParam("nonexistent", true)).toBe(true);
   });
+
+  it("should use new pathname if provided", () => {
+    const { result, rerender } = renderHook(() => useURLState(), {
+      wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
+    });
+
+    act(() => {
+      result.current.setURLState({ search: "test" }, true, "/new-path");
+    });
+
+    // Mocking useLocation to return the updated search params
+    (useLocation as ReturnType<typeof vi.fn>).mockReturnValue({
+      pathname: "/new-path",
+      search: "?search=test",
+    });
+
+    rerender();
+
+    expect(result.current.urlState).toEqual({ search: "test" });
+
+    const navigateMock = useNavigate();
+    expect(navigateMock).toHaveBeenCalledWith(
+      {
+        pathname: "/new-path",
+        search: "search=test",
+      },
+      { replace: true }
+    );
+  });
 });
