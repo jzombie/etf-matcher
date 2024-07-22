@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useOutlet } from "react-router-dom";
 
-export default function WrappedOutlet() {
+export default function SingleUseOutlet() {
   const location = useLocation();
-  const element = useOutlet();
+  const outlet = useOutlet();
 
   const [renderedChildren, setRenderedChildren] = useState(null);
 
+  // The children are what change, not the outlet itself. Determine the children,
+  // and if not currently rendering children, render them.
   useEffect(() => {
     setRenderedChildren((prev) => {
       if (prev) {
         return prev;
       } else {
-        return element?.props.children;
+        return outlet?.props.children;
       }
     });
-  }, [element?.props.children]);
+  }, [outlet?.props.children]);
 
   return (
     <>

@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import useNavigationDirection from "@hooks/useNavigationDirection";
 
 import Transition from "@components/Transition";
-import WrappedOutlet from "./WrappedOutlet";
+import SingleUseOutlet from "./SingleUseOutlet";
 
 export default function TransitionOutlet() {
   const navigationDirection = useNavigationDirection();
@@ -15,7 +15,12 @@ export default function TransitionOutlet() {
       direction={navigationDirection === "backward" ? "right" : "left"}
       trigger={locationPathname}
     >
-      <WrappedOutlet />
+      {
+        // The `Transition` component creates multiple versions of the
+        // `SingleUseOutlet`, each of which have a single use-case to the
+        // current set of children given by `react-router-dom`.
+      }
+      <SingleUseOutlet />
     </Transition>
   );
 }
