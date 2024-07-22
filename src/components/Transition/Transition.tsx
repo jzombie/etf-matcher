@@ -22,7 +22,7 @@ export type TransitionProps = {
   direction?: TransitionDirection;
   transitionType?: TransitionType;
   transitionDurationMs?: number;
-  trigger?: any;
+  trigger?: unknown;
 };
 
 const Transition = ({
