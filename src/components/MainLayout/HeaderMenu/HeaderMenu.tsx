@@ -131,7 +131,11 @@ export default function HeaderMenu() {
                   },
                 }}
               >
+                {item.icon}
                 <Typography variant="subtitle1">{item.label}</Typography>
+                {
+                  // TODO: Only show badges on "Portfolios" and "Watchlists", indicating new items that have not been
+                }
                 <Badge badgeContent={4} color="secondary">
                   <Box
                     sx={{
@@ -139,9 +143,7 @@ export default function HeaderMenu() {
                       alignItems: "center",
                       marginRight: theme.spacing(1),
                     }}
-                  >
-                    {item.icon}
-                  </Box>
+                  ></Box>
                 </Badge>
               </Box>
             ))}
