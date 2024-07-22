@@ -32,9 +32,9 @@ const Transition = ({
   const [activeView, setActiveView] = useState<ReactNode>(children);
   const [nextView, setNextView] = useState<ReactNode | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [activeTransitionHeight, setActiveTransitionHeight] = useState<
-    number | null
-  >(null);
+  // const [activeTransitionHeight, setActiveTransitionHeight] = useState<
+  //   number | null
+  // >(null);
 
   const activeViewRef = useRef<HTMLDivElement>(null);
   const nextViewRef = useRef<HTMLDivElement>(null);
@@ -43,21 +43,19 @@ const Transition = ({
     const currentChild = React.Children.only(children);
 
     if (isValidElement(currentChild)) {
-      const nextChildKey = (currentChild as ReactElement).key;
       const activeViewElement = isValidElement(activeView)
         ? (activeView as ReactElement)
         : null;
-      const activeViewKey = activeViewElement?.key;
 
-      if (nextChildKey !== activeViewKey) {
-        if (activeViewRef.current) {
-          const computedActiveViewStyle = window.getComputedStyle(
-            activeViewRef.current
-          );
-          setActiveTransitionHeight(
-            parseInt(computedActiveViewStyle.height, 10)
-          );
-        }
+      if (currentChild.key !== activeViewElement?.key) {
+        // if (activeViewRef.current) {
+        //   const computedActiveViewStyle = window.getComputedStyle(
+        //     activeViewRef.current
+        //   );
+        //   // setActiveTransitionHeight(
+        //   //   parseInt(computedActiveViewStyle.height, 10)
+        //   // );
+        // }
 
         setIsTransitioning(true);
         setNextView(children);
@@ -65,8 +63,6 @@ const Transition = ({
     }
   }, [children, activeView]);
 
-  // Explicitly want the props to update on the following useMemo
-  // const keyedTransitionDirection = keyedTransitionDirectionRef.current;
   const { activeTransitionClass, nextTransitionClass } = useMemo(() => {
     if (transitionType === "fade") {
       return {
@@ -97,13 +93,13 @@ const Transition = ({
         setActiveView(nextView);
         setNextView(null);
 
-        debounceWithKey(
-          "post_transition:height_reset",
-          () => {
-            setActiveTransitionHeight(null);
-          },
-          500
-        );
+        // debounceWithKey(
+        //   "post_transition:height_reset",
+        //   () => {
+        //     setActiveTransitionHeight(null);
+        //   },
+        //   500
+        // );
       };
 
       const activeViewElement = activeViewRef.current;
@@ -130,14 +126,6 @@ const Transition = ({
     }
   }, [isTransitioning, nextView, nextTransitionClass]);
 
-  // Infer keys inline
-  const activeViewKey = isValidElement(activeView)
-    ? (activeView as ReactElement).key
-    : null;
-  const nextViewKey = isValidElement(nextView)
-    ? (nextView as ReactElement).key
-    : null;
-
   const transitionDurationCSS = useMemo(
     () => `${transitionDurationMs / 1000}s`,
     [transitionDurationMs]
@@ -145,15 +133,16 @@ const Transition = ({
 
   return (
     <Full
-      style={activeTransitionHeight ? { height: activeTransitionHeight } : {}}
+    // style={activeTransitionHeight ? { height: activeTransitionHeight } : {}}
+    // style={{ minHeight: 1000 }}
     >
       <TransitionChildView
         ref={activeViewRef}
-        key={activeViewKey}
         transitionClassName={isTransitioning ? activeTransitionClass : ""}
         style={{
           animationDuration: transitionDurationCSS,
-          height: activeTransitionHeight ? activeTransitionHeight : undefined,
+          // height: activeTransitionHeight ? activeTransitionHeight : undefined,
+          transform: "translateZ(0)",
         }}
       >
         {activeView}
@@ -161,7 +150,6 @@ const Transition = ({
       {nextView && (
         <TransitionChildView
           ref={nextViewRef}
-          key={nextViewKey}
           transitionClassName={isTransitioning ? nextTransitionClass : ""}
           style={{
             animationDuration: transitionDurationCSS,
@@ -170,6 +158,7 @@ const Transition = ({
             left: 0,
             width: "100%",
             height: "100%",
+            transform: "translateZ(0)",
           }}
         >
           {nextView}

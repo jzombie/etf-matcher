@@ -199,13 +199,15 @@ export default function SearchResults() {
       )}
       <Transition
         direction={!previousPage || page > previousPage ? "left" : "right"}
+        // transitionType="fade"
+        transitionDurationMs={1000}
       >
         <SymbolDetailList
           key={`search-results-${searchResultSymbols.toString()}`}
           tickerSymbols={searchResultSymbols}
         />
       </Transition>
-      {totalSearchResults > pageSize && !isLoading && (
+      {/* {totalSearchResults > pageSize && !isLoading && (
         <Box>
           <Pagination
             count={totalPages}
@@ -216,7 +218,7 @@ export default function SearchResults() {
             // sx={{ display: "inline-block" }}
           />
         </Box>
-      )}
+      )} */}
     </Scrollable>
   );
 }
