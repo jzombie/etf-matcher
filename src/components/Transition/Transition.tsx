@@ -50,7 +50,9 @@ const Transition = ({
         key={activeKey}
         transitionClassName={isTransitioning ? activeTransitionClass : ""}
         style={{
+          // TODO: Make this a prop
           animationDuration: transitionDurationCSS,
+          // TODO: Use SCSS
           transform: "translateZ(0)",
         }}
       >
@@ -62,7 +64,9 @@ const Transition = ({
           key={nextKey}
           transitionClassName={isTransitioning ? nextTransitionClass : ""}
           style={{
+            // TODO: Make this a prop
             animationDuration: transitionDurationCSS,
+            // TODO: Use SCSS
             position: "absolute",
             top: 0,
             left: 0,
