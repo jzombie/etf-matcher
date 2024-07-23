@@ -13,7 +13,9 @@ export default function useImageBackgroundColor(
   useEffect(() => {
     if (imageFilename) {
       store.fetchImageInfo(imageFilename).then((imageInfo) => {
-        // If fully transparent, just return null
+        // If fully transparent, just return null (this is so that components
+        // can determine their own handling for fully-transparent background
+        // states [i.e. `SymbolDetail` currently relies on this])
         if (imageInfo.rgba !== FULLY_TRANSPARENT) {
           setImageBackgroundColor(imageInfo.rgba);
         }
