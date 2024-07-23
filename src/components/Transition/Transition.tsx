@@ -1,21 +1,10 @@
 import React, { ReactNode } from "react";
-import TransitionChildView from "./Transition.ChildView";
+import { TransitionProps, TransitionDirection, TransitionType } from "./types";
 import "animate.css";
+
+import TransitionChildView from "./Transition.ChildView";
 import Full from "@layoutKit/Full";
-
 import useTransition from "./useTransition";
-
-export type TransitionDirection = "left" | "right";
-
-export type TransitionType = "slide" | "fade";
-
-export type TransitionProps = {
-  children: ReactNode;
-  direction?: TransitionDirection;
-  transitionType?: TransitionType;
-  transitionDurationMs?: number;
-  trigger?: unknown;
-};
 
 /**
  * IMPORTANT: Ensure that `trigger` is invoked *after* all asynchronous actions

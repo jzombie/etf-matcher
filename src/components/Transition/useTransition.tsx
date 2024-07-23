@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
-import type { TransitionProps } from "./Transition";
+import type { TransitionProps } from "./types";
 
 export default function useTransition({
   children,
