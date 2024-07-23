@@ -5,10 +5,11 @@ use crate::data_models::{DataURL, PaginatedResults, ExchangeById};
 use crate::utils::extract_logo_filename;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
-use crate::types::ExchangeId;
+use crate::types::{TickerId, ExchangeId};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SymbolSearch {
+    pub ticker_id: TickerId,
     pub symbol: String,
     pub exchange_id: Option<ExchangeId>,
     pub company_name: Option<String>,
@@ -17,6 +18,7 @@ pub struct SymbolSearch {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SymbolSearchResult {
+    pub ticker_id: TickerId,
     pub symbol: String,
     pub exchange_short_name: Option<String>,
     pub company_name: Option<String>,
@@ -145,6 +147,7 @@ impl SymbolSearch {
             };
 
             search_results.push(SymbolSearchResult {
+                ticker_id: result.ticker_id,
                 symbol: result.symbol,
                 exchange_short_name,
                 company_name: result.company_name,

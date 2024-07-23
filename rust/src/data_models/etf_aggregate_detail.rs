@@ -1,11 +1,12 @@
+use serde::{Deserialize, Serialize};
 use crate::data_models::DataURL;
 use crate::utils::shard::query_shard_for_symbol;
 use crate::JsValue;
-use serde::{Deserialize, Serialize};
+use crate::types::TickerId;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ETFAggregateDetail {
-    pub ticker_id: i32,
+    pub ticker_id: TickerId,
     pub etf_symbol: String,
     pub etf_name: Option<String>,
     pub top_market_value_sector_name: String,

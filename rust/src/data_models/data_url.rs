@@ -1,6 +1,6 @@
 pub enum DataURL {
     DataBuildInfo,
-    TickerByIdIndex,
+    // TickerByIdIndex,
     ExchangeByIdIndex,
     SectorByIdIndex,
     IndustryByIdIndex,
@@ -15,7 +15,7 @@ impl DataURL {
     pub fn value(&self) -> &'static str {
         match self {
             DataURL::DataBuildInfo => "/data/data_build_info.enc",
-            DataURL::TickerByIdIndex => "/data/ticker_by_id_index.enc",
+            // DataURL::TickerByIdIndex => "/data/ticker_by_id_index.enc",
             DataURL::ExchangeByIdIndex => "/data/exchange_by_id_index.enc",
             DataURL::SectorByIdIndex => "/data/sector_by_id_index.enc",
             DataURL::IndustryByIdIndex => "/data/industry_by_id_index.enc",
