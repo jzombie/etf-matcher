@@ -132,26 +132,24 @@ export default function HeaderMenu() {
                 }}
               >
                 {item.icon}
-
-                {
-                  // TODO: Only show badges on "Portfolios" and "Watchlists", indicating new items that have not been
-                  //
-                  // https://mui.com/material-ui/react-badge/
-                }
-                <Badge badgeContent={1} color="secondary">
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      // TODO: Badge presence shouldn't determine paddding
-                      // marginRight: theme.spacing(1),
-                    }}
-                  >
-                    <Typography variant="subtitle1" sx={{ marginLeft: 0.5 }}>
-                      {item.label}
-                    </Typography>
-                  </Box>
-                </Badge>
+                {["/portfolios", "/watchlists"].includes(item.key) ? (
+                  <Badge badgeContent={1} color="secondary">
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Typography variant="subtitle1" sx={{ marginLeft: 0.5 }}>
+                        {item.label}
+                      </Typography>
+                    </Box>
+                  </Badge>
+                ) : (
+                  <Typography variant="subtitle1" sx={{ marginLeft: 0.5 }}>
+                    {item.label}
+                  </Typography>
+                )}
               </Box>
             ))}
             <SearchModalButton highlight={shouldHighlightSearchButton} />
@@ -206,9 +204,13 @@ export default function HeaderMenu() {
                         color: item.key === selectedKey ? "white" : "inherit",
                       }}
                     >
-                      <Badge badgeContent={4} color="secondary">
-                        {item.icon}
-                      </Badge>
+                      {["/portfolios", "/watchlists"].includes(item.key) ? (
+                        <Badge badgeContent={4} color="secondary">
+                          {item.icon}
+                        </Badge>
+                      ) : (
+                        item.icon
+                      )}
                     </ListItemIcon>
                     <ListItemText primary={item.label} />
                   </ListItem>
