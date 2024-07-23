@@ -31,7 +31,7 @@ pub struct SymbolDetail {
 }
 
 impl SymbolDetail {
-    // TODO: Query by `ticker_id` instead
+    // TODO: Add `exchange` to query
     pub async fn get_symbol_detail(symbol: &str) -> Result<SymbolDetail, JsValue> {
         let url: &str = DataURL::SymbolDetailShardIndex.value();
         let mut detail =

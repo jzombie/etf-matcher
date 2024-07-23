@@ -10,7 +10,7 @@ pub struct SymbolETFHolder {
 }
 
 impl SymbolETFHolder {
-    // TODO: Query by `ticker_id` instead
+    // TODO: Add `exchange` to query
     pub async fn get_symbol_etf_holders(
         symbol: &str,
         page: usize,
