@@ -138,7 +138,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // Only deepfreeze in development
     this.shouldDeepfreeze = !IS_PROD;
 
-    this._initLocalEvents();
+    // Note: This returns an unsubscribe callback which could be handed if the store
+    // were to be torn down
+    this._initLocalSubscription();
 
     // TODO: Poll for data build info once every "x" to ensure the data is always running the latest version
     this._fetchDataBuildInfo();
@@ -147,7 +149,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     this._preloadSymbolSearchCache();
   }
 
-  private _initLocalEvents() {
+  private _initLocalSubscription(): () => void {
     const _handleOnlineStatus = () => {
       this.setState({ isOnline: Boolean(navigator.onLine) });
     };
