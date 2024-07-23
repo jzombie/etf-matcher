@@ -8,6 +8,7 @@ export type SymbolDetailListProps = {
   lookAheadBufferSize?: number;
 };
 
+// TODO: This should use exchanges as well, for greater accuracy
 export default function SymbolDetailList({
   tickerSymbols,
   lookAheadBufferSize = 2,

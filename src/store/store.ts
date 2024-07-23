@@ -26,9 +26,15 @@ import debounceWithKey from "@utils/debounceWithKey";
 
 const IS_PROD = import.meta.env.PROD;
 
+type SymbolBucketTicker = {
+  exchange: string;
+  symbol: string;
+  quantity: number;
+};
+
 export type SymbolBucketProps = {
   name: string;
-  symbols: string[];
+  tickers: SymbolBucketTicker[];
   type:
     | "watchlist"
     | "portfolio"
@@ -84,28 +90,28 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       symbolBuckets: [
         {
           name: "My Portfolio",
-          symbols: [],
+          tickers: [],
           type: "portfolio",
           requiresQuantity: true,
           isUserConfigurable: true,
         },
         {
           name: "My Watchlist",
-          symbols: [],
+          tickers: [],
           type: "watchlist",
           requiresQuantity: false,
           isUserConfigurable: true,
         },
         {
           name: "My Ticker Tape",
-          symbols: [],
+          tickers: [],
           type: "ticker_tape",
           requiresQuantity: false,
           isUserConfigurable: true,
         },
         {
           name: "My Recently Viewed",
-          symbols: [],
+          tickers: [],
           type: "recently_viewed",
           requiresQuantity: false,
           isUserConfigurable: false,
@@ -114,7 +120,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         // symbols and the frequency of the most common ETFs that hold those symbols
         {
           name: "My Attention Tracker",
-          symbols: [],
+          tickers: [],
           type: "attention_tracker",
           requiresQuantity: false,
           isUserConfigurable: false,
@@ -431,13 +437,24 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     callRustService("clear_cache");
   }
 
+  // TODO: Rename to `addTickerToBucket` and take a quantity
   addSymbolToBucket(symbol: string, symbolBucket: SymbolBucketProps) {
     this.setState((prevState) => {
       const symbolBuckets = prevState.symbolBuckets.map((bucket) => {
         if (bucket.name === symbolBucket.name) {
           return {
             ...bucket,
-            symbols: Array.from(new Set([...bucket.symbols, symbol])),
+            tickers: Array.from(
+              new Set([
+                ...bucket.tickers,
+                {
+                  exchange: "TODO: Set",
+                  symbol,
+                  // TODO: Set
+                  quantity: 1,
+                },
+              ])
+            ),
           };
         }
         return bucket;
