@@ -1,7 +1,7 @@
 import React from "react";
 import BucketList from "@components/BucketList";
-
 import Scrollable from "@layoutKit/Scrollable";
+import PortfolioForm from "@components/PortfolioForm";
 
 import usePageTitleSetter from "@utils/usePageTitleSetter";
 
@@ -10,6 +10,8 @@ export default function Portfolios() {
 
   return (
     <Scrollable>
+      <PortfolioForm />
+
       <BucketList symbolBucketType="portfolio" />
     </Scrollable>
   );
