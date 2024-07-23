@@ -66,7 +66,7 @@ export default function ETFHolderList({ tickerSymbol }: ETFHolderListProps) {
               direction={
                 !previousPage || page > previousPage ? "left" : "right"
               }
-              trigger={page}
+              trigger={etfSymbols}
             >
               <div>
                 {etfSymbols.map((etfSymbol) => (

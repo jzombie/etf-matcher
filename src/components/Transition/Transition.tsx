@@ -17,6 +17,12 @@ export type TransitionProps = {
   trigger?: unknown;
 };
 
+/**
+ * IMPORTANT: `trigger` should be caused by a post async action.
+ * Example: Setting it to page number might be problemetic if the page number is
+ * known before the resulting data. It is best to set the trigger as the resulting
+ * data itself, as the result of the asynchronous action.
+ */
 const Transition = ({
   children,
   direction,
