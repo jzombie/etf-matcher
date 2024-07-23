@@ -4,7 +4,7 @@ use base64::{engine::general_purpose, Engine as _};
 use wasm_bindgen::JsValue;
 use image::{GenericImageView, Pixel, Rgba};
 use std::collections::HashMap;
-use web_sys::console;
+// use web_sys::console;
 
 #[derive(Serialize)]
 pub struct ImageInfo {
@@ -53,7 +53,7 @@ pub async fn get_image_info(url: &str) -> Result<ImageInfo, JsValue> {
         "Could not determine background color".to_string()
     };
 
-    console::log_1(&rgba_string.clone().into());
+    // console::debug_1(&rgba_string.clone().into());
 
     // Encode the image data to base64
     let base64_data = general_purpose::STANDARD.encode(image_data);
