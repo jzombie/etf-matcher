@@ -11,7 +11,7 @@ use crate::types::{TickerId, SectorId, IndustryId};
 
 use crate::data_models::{
     DataBuildInfo, DataURL, ETFAggregateDetail, IndustryById, PaginatedResults, SectorById,
-    SymbolDetail, SymbolETFHolder, SymbolSearch, TickerById,
+    SymbolDetail, SymbolETFHolder, SymbolSearch, SymbolSearchResult, TickerById,
 };
 
 use crate::data_models::image::get_image_info as lib_get_image_info;
@@ -99,7 +99,7 @@ pub async fn search_symbols(
     page_size: usize,
     only_exact_matches: Option<bool>,
 ) -> Result<JsValue, JsValue> {
-    let results: PaginatedResults<SymbolSearch> =
+    let results: PaginatedResults<SymbolSearchResult> =
         SymbolSearch::search_symbols(query, page, page_size, only_exact_matches).await?;
     to_value(&results)
         .map_err(|err| JsValue::from_str(&format!("Failed to serialize results: {}", err)))

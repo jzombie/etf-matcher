@@ -6,6 +6,7 @@ export type RustServiceSearchResult = {
   symbol: string;
   company_name: string;
   logo_filename?: string;
+  exchange_short_name?: string;
 };
 
 // "Level 2"

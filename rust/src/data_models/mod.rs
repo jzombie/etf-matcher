@@ -9,6 +9,7 @@ pub mod symbol_detail;
 pub mod symbol_etf_holder;
 pub mod symbol_search;
 pub mod ticker_by_id;
+pub mod exchange_by_id;
 
 pub use data_build_info::DataBuildInfo;
 pub use data_url::DataURL;
@@ -18,5 +19,6 @@ pub use paginated_results::PaginatedResults;
 pub use sector_by_id::SectorById;
 pub use symbol_detail::SymbolDetail;
 pub use symbol_etf_holder::SymbolETFHolder;
-pub use symbol_search::SymbolSearch;
+pub use symbol_search::{SymbolSearch, SymbolSearchResult};
 pub use ticker_by_id::TickerById;
+pub use exchange_by_id::ExchangeById;

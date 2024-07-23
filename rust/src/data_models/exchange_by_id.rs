@@ -1,7 +1,7 @@
 use crate::data_models::DataURL;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
-use create::types::ExchangeId;
+use crate::types::ExchangeId;
 use crate::JsValue;
 use serde::{Deserialize, Serialize};
 
