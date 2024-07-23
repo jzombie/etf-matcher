@@ -13,11 +13,11 @@ export default function Portfolios() {
   return (
     <Scrollable>
       <Padding>
-        <BucketManager />
+        <BucketManager bucketType="portfolio" />
 
         <PortfolioForm />
 
-        <BucketList symbolBucketType="portfolio" />
+        <BucketList bucketType="portfolio" />
       </Padding>
     </Scrollable>
   );

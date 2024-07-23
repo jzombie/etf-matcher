@@ -11,9 +11,9 @@ export default function Watchlists() {
   return (
     <Scrollable>
       <Padding>
-        <BucketManager />
+        <BucketManager bucketType="watchlist" />
 
-        <BucketList symbolBucketType="watchlist" />
+        <BucketList bucketType="watchlist" />
       </Padding>
     </Scrollable>
   );

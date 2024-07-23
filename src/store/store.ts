@@ -35,6 +35,7 @@ type SymbolBucketTicker = {
 export type SymbolBucketProps = {
   name: string;
   tickers: SymbolBucketTicker[];
+  // TODO: Rename to `bucketType`
   type:
     | "watchlist"
     | "portfolio"

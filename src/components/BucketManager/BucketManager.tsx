@@ -1,10 +1,13 @@
 import React from "react";
 import { Button } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import type { SymbolBucketProps } from "@src/store";
 
-export type BucketManagerProps = {};
+export type BucketManagerProps = {
+  bucketType: SymbolBucketProps["type"];
+};
 
-export default function BucketManager({}: BucketManagerProps) {
+export default function BucketManager({ bucketType }: BucketManagerProps) {
   return (
     <div>
       <Button
@@ -14,7 +17,10 @@ export default function BucketManager({}: BucketManagerProps) {
         // onClick={handleAddFields}
         disabled
       >
-        Create New [Bucket of Type]
+        {
+          // TODO: Format this better
+        }
+        Create New {bucketType}
       </Button>
     </div>
   );
