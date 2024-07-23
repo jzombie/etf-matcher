@@ -2,6 +2,7 @@ use crate::data_models::DataURL;
 use crate::utils::extract_logo_filename;
 use crate::utils::shard::query_shard_for_symbol;
 use crate::JsValue;
+use crate::types::TickerId;
 use serde::{Deserialize, Deserializer, Serialize};
 
 // TODO: Move to `utils`
@@ -10,13 +11,13 @@ fn from_numeric_to_option_bool<'de, D>(deserializer: D) -> Result<Option<bool>, 
 where
     D: Deserializer<'de>,
 {
-    let num: Option<i32> = Option::deserialize(deserializer)?;
+    let num: Option<i32> = Option::deserialize(deserializer)?; // TODO: Use smaller, unsigned type?
     Ok(num.map(|n| n != 0))
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SymbolDetail {
-    pub ticker_id: i32, // TODO: Convert to u64
+    pub ticker_id: TickerId,
     pub symbol: String,
     pub exchange_short_name: Option<String>,
     pub company_name: String,

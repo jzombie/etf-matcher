@@ -1,6 +1,7 @@
 pub enum DataURL {
     DataBuildInfo,
     TickerByIdIndex,
+    ExchangeByIdIndex,
     SectorByIdIndex,
     IndustryByIdIndex,
     SymbolSearch,
@@ -15,6 +16,7 @@ impl DataURL {
         match self {
             DataURL::DataBuildInfo => "/data/data_build_info.enc",
             DataURL::TickerByIdIndex => "/data/ticker_by_id_index.enc",
+            DataURL::ExchangeByIdIndex => "/data/exchange_by_id_index.enc",
             DataURL::SectorByIdIndex => "/data/sector_by_id_index.enc",
             DataURL::IndustryByIdIndex => "/data/industry_by_id_index.enc",
             DataURL::SymbolSearch => "/data/symbol_search_dict.enc",

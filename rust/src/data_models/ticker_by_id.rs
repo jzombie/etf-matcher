@@ -2,17 +2,18 @@ use crate::data_models::DataURL;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
 use crate::JsValue;
+use crate::types::{TickerId, ExchangeId};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TickerById {
-    pub ticker_id: i32, // TODO: Convert to u64
+    pub ticker_id: TickerId,
     pub symbol: String,
-    pub exchange_id: i32, // TODO: Convert to Option<u32> ("null" represented values are -1, as preprocessed by data exporter)
+    pub exchange_id: ExchangeId, // TODO: Convert to Option<u32> ("null" represented values are -1, as preprocessed by data exporter)
 }
 
 impl TickerById {
-    pub async fn get_symbol_with_ticker_id(ticker_id: i32) -> Result<String, JsValue> {
+    pub async fn get_symbol_with_ticker_id(ticker_id: TickerId) -> Result<String, JsValue> {
         let url: &str = DataURL::TickerByIdIndex.value();
 
         // Fetch and decompress the CSV data
@@ -31,7 +32,7 @@ impl TickerById {
             .ok_or_else(|| JsValue::from_str("Symbol ID not found"))
     }
 
-    pub async fn get_exchange_id_with_ticker_id(ticker_id: i32) -> Result<i32, JsValue> {
+    pub async fn get_exchange_id_with_ticker_id(ticker_id: TickerId) -> Result<ExchangeId, JsValue> {
         let url: &str = DataURL::TickerByIdIndex.value();
 
         // Fetch and decompress the CSV data
@@ -50,7 +51,7 @@ impl TickerById {
             .ok_or_else(|| JsValue::from_str("Symbol ID not found"))
     }
 
-    pub async fn get_ticker_ids_with_symbol(symbol: &str) -> Result<Vec<i32>, JsValue> {
+    pub async fn get_ticker_ids_with_symbol(symbol: &str) -> Result<Vec<TickerId>, JsValue> {
         let url: &str = DataURL::TickerByIdIndex.value();
 
         // Fetch and decompress the CSV data
@@ -66,7 +67,7 @@ impl TickerById {
         let search_symbol = symbol.trim().to_lowercase();
 
         // Find the matching records
-        let ticker_ids: Vec<i32> = data.into_iter()
+        let ticker_ids: Vec<TickerId> = data.into_iter()
             .filter(|ticker| ticker.symbol.trim().to_lowercase() == search_symbol)
             .map(|ticker| ticker.ticker_id)
             .collect();

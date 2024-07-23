@@ -1,14 +1,16 @@
+use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 use crate::data_models::{DataURL, PaginatedResults};
 use crate::utils::extract_logo_filename;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
 use crate::JsValue;
-use serde::{Deserialize, Serialize};
-use std::collections::HashSet;
+use crate::types::TickerId;
+
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SymbolSearch {
-    pub ticker_id: u32, // TODO: Convert to u64
+    pub ticker_id: TickerId,
     pub symbol: String,
     pub company_name: Option<String>,
     pub logo_filename: Option<String>,
