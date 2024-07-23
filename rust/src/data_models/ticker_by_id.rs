@@ -8,8 +8,7 @@ use serde::{Deserialize, Serialize};
 pub struct TickerById {
     pub ticker_id: i32, // TODO: Convert to u64
     pub symbol: String,
-    // "null" represented values are -1, as preprocessed by data exporter
-    pub exchange_id: i32, // TODO: Convert to u32
+    pub exchange_id: i32, // TODO: Convert to Option<u32> ("null" represented values are -1, as preprocessed by data exporter)
 }
 
 impl TickerById {
