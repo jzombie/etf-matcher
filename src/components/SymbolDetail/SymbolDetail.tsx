@@ -58,9 +58,10 @@ export default function SymbolDetail({
   const [symbolDetail, setSymbolDetail] = useState<
     RustServiceSymbolDetail | undefined
   >(undefined);
+
+  // TODO: Migrate to a hook
   const [logoBackgroundColorOverride, setLogoBackgroundColorOverride] =
     useState<string | null>(null);
-
   useEffect(() => {
     if (symbolDetail?.logo_filename) {
       store.fetchImageInfo(symbolDetail.logo_filename).then((imageInfo) => {
