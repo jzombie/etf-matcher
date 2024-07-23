@@ -18,7 +18,7 @@ for zip_file in /app/data/*.zip; do
         if [ -d "$dir" ]; then
             # Remove unnecessary files
             find "$dir" -name ".__MACOSX" -exec rm -rf {} + -o -name "._.DS_Store" -exec rm -f {} +
-            cp -r "$dir"/* /build_artifacts/public/data/
+            cp -r "$dir" /build_artifacts/public/data/
         else
             mv "$dir" /build_artifacts/public/data/
         fi
