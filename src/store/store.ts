@@ -35,8 +35,7 @@ type SymbolBucketTicker = {
 export type SymbolBucketProps = {
   name: string;
   tickers: SymbolBucketTicker[];
-  // TODO: Rename to `bucketType`
-  type:
+  bucketType:
     | "watchlist"
     | "portfolio"
     | "ticker_tape"
@@ -44,6 +43,16 @@ export type SymbolBucketProps = {
     | "attention_tracker";
   requiresQuantity: boolean;
   isUserConfigurable: boolean;
+};
+
+export const symbolBucketDefaultNames: Readonly<
+  Record<SymbolBucketProps["bucketType"], string>
+> = {
+  watchlist: "Watchlist",
+  portfolio: "Portfolio",
+  ticker_tape: "Ticker Tape",
+  recently_viewed: "Recently Viewed",
+  attention_tracker: "Attention Tracker",
 };
 
 export type StoreStateProps = {
@@ -92,28 +101,28 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         {
           name: "My Portfolio",
           tickers: [],
-          type: "portfolio",
+          bucketType: "portfolio",
           requiresQuantity: true,
           isUserConfigurable: true,
         },
         {
           name: "My Watchlist",
           tickers: [],
-          type: "watchlist",
+          bucketType: "watchlist",
           requiresQuantity: false,
           isUserConfigurable: true,
         },
         {
           name: "My Ticker Tape",
           tickers: [],
-          type: "ticker_tape",
+          bucketType: "ticker_tape",
           requiresQuantity: false,
           isUserConfigurable: true,
         },
         {
           name: "My Recently Viewed",
           tickers: [],
-          type: "recently_viewed",
+          bucketType: "recently_viewed",
           requiresQuantity: false,
           isUserConfigurable: false,
         },
@@ -122,7 +131,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         {
           name: "My Attention Tracker",
           tickers: [],
-          type: "attention_tracker",
+          bucketType: "attention_tracker",
           requiresQuantity: false,
           isUserConfigurable: false,
         },

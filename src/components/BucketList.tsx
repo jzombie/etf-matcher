@@ -11,7 +11,7 @@ import useStoreStateReader from "@hooks/useStoreStateReader";
 import type { SymbolBucketProps } from "@src/store";
 
 export type BucketListProps = {
-  bucketType: SymbolBucketProps["type"];
+  bucketType: SymbolBucketProps["bucketType"];
 };
 
 export default function BucketList({ bucketType }: BucketListProps) {
@@ -19,7 +19,9 @@ export default function BucketList({ bucketType }: BucketListProps) {
 
   const localSymbolBucket = useMemo(
     () =>
-      symbolBuckets?.filter((symbolBucket) => symbolBucket.type === bucketType),
+      symbolBuckets?.filter(
+        (symbolBucket) => symbolBucket.bucketType === bucketType
+      ),
     [symbolBuckets, bucketType]
   );
 
