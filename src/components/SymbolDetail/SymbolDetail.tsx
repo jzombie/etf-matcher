@@ -276,7 +276,7 @@ export default function SymbolDetail({
             <Button
               key={idx}
               onClick={() =>
-                // TODO: Don't hardcode values
+                // TODO: Don't hardcode values, needs to add the ticker ID
                 store.addTickerToBucket(tickerSymbol, "N/A", 1, symbolBucket)
               }
             >

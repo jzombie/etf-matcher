@@ -21,6 +21,7 @@ interface Asset {
 const PortfolioForm: React.FC = () => {
   const [assets, setAssets] = useState<Asset[]>([{ symbol: "", shares: 0 }]);
 
+  // TODO: Query symbols while typing
   const handleInputChange = (
     index: number,
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

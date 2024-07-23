@@ -18,6 +18,7 @@ pub struct ETFAggregateDetail {
 }
 
 impl ETFAggregateDetail {
+    // TODO: Query by `ticker_id` instead
     pub async fn get_etf_aggregate_detail(etf_symbol: &str) -> Result<ETFAggregateDetail, JsValue> {
         let url: &str = DataURL::ETFAggregateDetailShardIndex.value();
         let etf_aggregate_detail: ETFAggregateDetail = query_shard_for_symbol(
