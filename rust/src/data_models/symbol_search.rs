@@ -60,7 +60,7 @@ impl SymbolSearch {
         })?;
         let mut results: Vec<SymbolSearch> = parse_csv_data(csv_string.as_bytes())?;
 
-        // Uncompress the logo filename for each result
+        // Extract the logo filename for each result
         for result in &mut results {
             result.logo_filename =
                 extract_logo_filename(result.logo_filename.as_deref(), &result.symbol);
