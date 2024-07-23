@@ -7,11 +7,10 @@ mod data_models;
 mod utils;
 mod types;
 
-use crate::types::{TickerId, SectorId, IndustryId};
 
 use crate::data_models::{
-    DataBuildInfo, DataURL, ETFAggregateDetail, IndustryById, PaginatedResults, SectorById,
-    SymbolDetail, SymbolETFHolder, SymbolSearch, SymbolSearchResult, TickerById,
+    DataBuildInfo, DataURL, ETFAggregateDetail, PaginatedResults,
+    SymbolDetail, SymbolETFHolder, SymbolSearch, SymbolSearchResult,
 };
 
 use crate::data_models::image::get_image_info as lib_get_image_info;
