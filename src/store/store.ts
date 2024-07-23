@@ -437,8 +437,13 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     callRustService("clear_cache");
   }
 
-  // TODO: Rename to `addTickerToBucket` and take a quantity
-  addSymbolToBucket(symbol: string, symbolBucket: SymbolBucketProps) {
+  // TODO: Combine `symbol` and `exchange` into `ticker`
+  addTickerToBucket(
+    symbol: string,
+    exchange: string,
+    quantity: number,
+    symbolBucket: SymbolBucketProps
+  ) {
     this.setState((prevState) => {
       const symbolBuckets = prevState.symbolBuckets.map((bucket) => {
         if (bucket.name === symbolBucket.name) {
@@ -448,10 +453,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
               new Set([
                 ...bucket.tickers,
                 {
-                  exchange: "TODO: Set",
+                  exchange,
                   symbol,
-                  // TODO: Set
-                  quantity: 1,
+                  quantity: quantity,
                 },
               ])
             ),
