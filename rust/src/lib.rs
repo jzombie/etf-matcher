@@ -54,6 +54,14 @@ pub async fn get_exchange_id_with_ticker_id(ticker_id: i32) -> Result<JsValue, J
 }
 
 #[wasm_bindgen]
+pub async fn get_ticker_ids_with_symbol(symbol: &str) -> Result<JsValue, JsValue> {
+    let ticker_ids: Vec<i32> = TickerById::get_ticker_ids_with_symbol(symbol).await?;
+    to_value(&ticker_ids).map_err(|err: serde_wasm_bindgen::Error| {
+        JsValue::from_str(&format!("Failed to convert Vec<i32> to JsValue: {}", err))
+    })
+}
+
+#[wasm_bindgen]
 pub async fn get_sector_name_with_id(sector_id: i32) -> Result<JsValue, JsValue> {
     let data: String = SectorById::get_sector_name_with_id(sector_id).await?;
     to_value(&data).map_err(|err: serde_wasm_bindgen::Error| {

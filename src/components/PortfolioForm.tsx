@@ -12,6 +12,8 @@ import {
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 
+import store from "@src/store";
+
 interface Asset {
   // TODO: Needs to account for exchange! The only way to do this effectively is tie this into the symbol search mechanism.
   symbol: string;
@@ -21,7 +23,6 @@ interface Asset {
 const PortfolioForm: React.FC = () => {
   const [assets, setAssets] = useState<Asset[]>([{ symbol: "", shares: 0 }]);
 
-  // TODO: Query symbols while typing
   const handleInputChange = (
     index: number,
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -32,6 +33,9 @@ const PortfolioForm: React.FC = () => {
     if (name === "shares") {
       values[index].shares = parseInt(value, 10);
     } else if (name === "symbol") {
+      // TODO: Implement query symbols while typing
+      store.PROTO_getTickerIdsWithSymbol(value);
+
       values[index].symbol = value;
     }
     setAssets(values);

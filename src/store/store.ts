@@ -375,6 +375,12 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return callRustService<RustServiceImageInfo>("get_image_info", [filename]);
   }
 
+  PROTO_getTickerIdsWithSymbol(symbol: string) {
+    callRustService("get_ticker_ids_with_symbol", [symbol]).then(
+      customLogger.debug
+    );
+  }
+
   // TODO: Remove; just debugging; probably don't need to expose this
   PROTO_fetchSymbolWithId(tickerId: number) {
     callRustService("get_symbol_with_id", [tickerId]).then(customLogger.debug);
