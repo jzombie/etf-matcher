@@ -11,7 +11,7 @@ pub struct IndustryById {
 }
 
 impl IndustryById {
-    pub async fn get_industry_name_with_id(sector_id: i32) -> Result<String, JsValue> {
+    pub async fn get_industry_name_with_id(industry_id: i32) -> Result<String, JsValue> {
         let url: &str = DataURL::IndustryByIdIndex.value();
 
         // Fetch and decompress the CSV data
@@ -25,7 +25,7 @@ impl IndustryById {
 
         // Find the matching record
         data.into_iter()
-            .find(|industry| industry.industry_id == sector_id)
+            .find(|industry| industry.industry_id == industry_id)
             .map(|industry| industry.industry_name)
             .ok_or_else(|| JsValue::from_str("Industry ID not found"))
     }
