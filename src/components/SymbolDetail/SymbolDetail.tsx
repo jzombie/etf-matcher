@@ -113,9 +113,6 @@ export default function SymbolDetail({
       {...rest}
     >
       <SymbolDetailWrapper>
-        {
-          // TODO: Adjust background color as needed
-        }
         <LogoContainer
           style={
             logoBackgroundColorOverride
