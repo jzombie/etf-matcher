@@ -275,7 +275,15 @@ export default function SearchModalButton({
                     </ListItemIcon>
                     <ListItemText
                       sx={{ marginLeft: 1 }}
-                      primary={searchResult.symbol}
+                      primary={
+                        <div style={{ overflow: "auto" }}>
+                          {searchResult.symbol}
+
+                          <span style={{ float: "right", opacity: 0.2 }}>
+                            {searchResult.exchange_short_name}
+                          </span>
+                        </div>
+                      }
                       secondary={
                         <Typography variant="body2" style={{ opacity: 0.5 }}>
                           {searchResult.company_name}

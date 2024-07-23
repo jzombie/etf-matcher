@@ -2,11 +2,10 @@
 
 // "Level 1"
 export type RustServiceSearchResult = {
-  ticker_id: number;
   symbol: string;
+  exchange_short_name?: string;
   company_name: string;
   logo_filename?: string;
-  exchange_short_name?: string;
 };
 
 // "Level 2"

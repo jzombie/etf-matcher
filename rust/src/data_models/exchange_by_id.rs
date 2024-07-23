@@ -8,8 +8,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ExchangeById {
     pub exchange_id: ExchangeId,
-    pub short_name: String,
-    pub name: String
+    pub exchange_short_name: String,
+    pub exchange_name: String
 }
 
 impl ExchangeById {
@@ -28,7 +28,7 @@ impl ExchangeById {
         // Find the matching record
         data.into_iter()
             .find(|exchange| exchange.exchange_id == exchange_id)
-            .map(|exchange| exchange.short_name)
+            .map(|exchange| exchange.exchange_short_name)
             .ok_or_else(|| JsValue::from_str("Exchange ID not found"))
     }
 }

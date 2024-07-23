@@ -1,32 +1,26 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
-use crate::data_models::{DataURL, PaginatedResults, ExchangeById, TickerById};
+use crate::JsValue;
+use crate::data_models::{DataURL, PaginatedResults, ExchangeById};
 use crate::utils::extract_logo_filename;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
-use crate::JsValue;
-use crate::types::TickerId;
+use crate::types::ExchangeId;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SymbolSearch {
-    pub ticker_id: TickerId,
     pub symbol: String,
+    pub exchange_id: Option<ExchangeId>,
     pub company_name: Option<String>,
     pub logo_filename: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SymbolSearchResult {
-    pub ticker_id: TickerId,
     pub symbol: String,
+    pub exchange_short_name: Option<String>,
     pub company_name: Option<String>,
     pub logo_filename: Option<String>,
-    pub exchange_short_name: Option<String>,
-}
-
-// Helper function to get exchange ID from ticker ID
-async fn get_exchange_id_with_ticker_id(ticker_id: TickerId) -> Result<Option<i32>, JsValue> {
-    TickerById::get_exchange_id_with_ticker_id(ticker_id).await.map(Some).or_else(|_| Ok(None))
 }
 
 impl SymbolSearch {
@@ -141,22 +135,20 @@ impl SymbolSearch {
         // Fetch exchange short names for the paginated results
         let mut search_results: Vec<SymbolSearchResult> = Vec::with_capacity(paginated_results.results.len());
         for result in paginated_results.results {
-            let exchange_short_name = match get_exchange_id_with_ticker_id(result.ticker_id).await {
-                Ok(Some(exchange_id)) => {
-                    match ExchangeById::get_short_name_by_exchange_id(exchange_id).await {
-                        Ok(name) => Some(name),
-                        Err(_) => None,
-                    }
+            let exchange_short_name = if let Some(exchange_id) = result.exchange_id {
+                match ExchangeById::get_short_name_by_exchange_id(exchange_id).await {
+                    Ok(name) => Some(name),
+                    Err(_) => None,
                 }
-                _ => None,
+            } else {
+                None
             };
 
             search_results.push(SymbolSearchResult {
-                ticker_id: result.ticker_id,
                 symbol: result.symbol,
+                exchange_short_name,
                 company_name: result.company_name,
                 logo_filename: result.logo_filename,
-                exchange_short_name,
             });
         }
 
