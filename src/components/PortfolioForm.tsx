@@ -13,24 +13,31 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 
 interface Asset {
+  // TODO: Needs to account for exchange! The only way to do this effectively is tie this into the symbol search mechanism.
   symbol: string;
-  weight: string;
+  shares: number;
 }
 
 const PortfolioForm: React.FC = () => {
-  const [assets, setAssets] = useState<Asset[]>([{ symbol: "", weight: "" }]);
+  const [assets, setAssets] = useState<Asset[]>([{ symbol: "", shares: 0 }]);
 
   const handleInputChange = (
     index: number,
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
+    const { name, value } = event.target;
     const values = [...assets];
-    values[index][event.target.name as keyof Asset] = event.target.value;
+
+    if (name === "shares") {
+      values[index].shares = parseInt(value, 10);
+    } else if (name === "symbol") {
+      values[index].symbol = value;
+    }
     setAssets(values);
   };
 
   const handleAddFields = () => {
-    setAssets([...assets, { symbol: "", weight: "" }]);
+    setAssets([...assets, { symbol: "", shares: 1 }]);
   };
 
   const handleRemoveFields = (index: number) => {
@@ -67,12 +74,13 @@ const PortfolioForm: React.FC = () => {
                 </Grid>
                 <Grid item xs={5}>
                   <TextField
-                    name="weight"
-                    label="Weight"
+                    name="shares"
+                    label="Shares"
                     variant="outlined"
                     fullWidth
                     required
-                    value={asset.weight}
+                    type="number"
+                    value={asset.shares}
                     onChange={(event) => handleInputChange(index, event)}
                   />
                 </Grid>
