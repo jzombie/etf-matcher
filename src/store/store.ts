@@ -145,13 +145,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     // Make initial searches faster
     this._preloadSymbolSearchCache();
-
-    // TODO: Remove temporary
-    // setInterval(() => {
-    //   this.setState((prev) => ({
-    //     isDirtyState: !prev.isDirtyState,
-    //   }));
-    // }, 1000);
   }
 
   private _initLocalEvents() {
@@ -326,15 +319,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return callRustService("preload_symbol_search_cache");
   }
 
-  // PROTO_getCacheDetails() {
-  //   callRustService<RustServiceCacheDetail[]>("get_cache_details")
-  //     .then(console.table)
-  //     .catch((error) => console.error(error));
-  // }
-
-  // TODO: For the following `PROTO` functions, it might be best to not retain a duplicate copy here,
-  // except where absolutely needed (and utilize Rust for more `composite` metric generation).
-
   // TODO: Update type (use pagination type with generics)
   async searchSymbols(
     query: string,
@@ -374,28 +358,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       [etfSymbol]
     );
   }
-
-  // PROTO_countEtfsPerExchange() {
-  //   callRustService("count_etfs_per_exchange")
-  //     .then((countsPerExchange) =>
-  //       console.log({
-  //         countsPerExchange,
-  //       })
-  //     )
-  //     .catch((error) => console.error(error));
-  // }
-
-  // PROTO_getEtfHolderAssetCount() {
-  //   const ETF_HOLDER_SYMBOL = "SPY";
-  //   callRustService("get_etf_holder_asset_count", ETF_HOLDER_SYMBOL)
-  //     .then((assetCount) =>
-  //       console.log({
-  //         etfHolder: ETF_HOLDER_SYMBOL,
-  //         assetCount,
-  //       })
-  //     )
-  //     .catch((error) => console.error(error));
-  // }
 
   fetchImageInfo(filename: string): Promise<RustServiceImageInfo> {
     return callRustService<RustServiceImageInfo>("get_image_info", [filename]);
