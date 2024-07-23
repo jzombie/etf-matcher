@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct IndustryById {
-    pub industry_id: i32,
+    pub industry_id: i32, // TODO: Convert to u32
     pub industry_name: String,
 }
 

@@ -16,7 +16,7 @@ where
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SymbolDetail {
-    pub ticker_id: i32,
+    pub ticker_id: i32, // TODO: Convert to u64
     pub symbol: String,
     pub exchange_short_name: Option<String>,
     pub company_name: String,

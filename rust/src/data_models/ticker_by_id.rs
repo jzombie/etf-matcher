@@ -6,10 +6,10 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TickerById {
-    pub ticker_id: i32, // TODO: Convert to unsigned type
+    pub ticker_id: i32, // TODO: Convert to u64
     pub symbol: String,
     // "null" represented values are -1, as preprocessed by data exporter
-    pub exchange_id: i32, // TODO: Convert to unsigned type
+    pub exchange_id: i32, // TODO: Convert to u32
 }
 
 impl TickerById {

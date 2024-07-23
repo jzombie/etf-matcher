@@ -8,7 +8,7 @@ use std::collections::HashSet;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SymbolSearch {
-    pub ticker_id: u32,
+    pub ticker_id: u32, // TODO: Convert to u64
     pub symbol: String,
     pub company_name: Option<String>,
     pub logo_filename: Option<String>,
