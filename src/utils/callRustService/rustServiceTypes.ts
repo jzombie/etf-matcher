@@ -2,6 +2,7 @@
 
 // "Level 1"
 export type RustServiceSearchResult = {
+  ticker_id: number;
   symbol: string;
   company_name: string;
   logo_filename?: string;
