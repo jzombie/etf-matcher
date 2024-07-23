@@ -131,19 +131,25 @@ export default function HeaderMenu() {
                   },
                 }}
               >
-                <Typography variant="subtitle1">{item.label}</Typography>
+                {item.icon}
+
                 {
                   // TODO: Only show badges on "Portfolios" and "Watchlists", indicating new items that have not been
+                  //
+                  // https://mui.com/material-ui/react-badge/
                 }
-                <Badge badgeContent={4} color="secondary">
+                <Badge badgeContent={1} color="secondary">
                   <Box
                     sx={{
                       display: "flex",
                       alignItems: "center",
-                      marginRight: theme.spacing(1),
+                      // TODO: Badge presence shouldn't determine paddding
+                      // marginRight: theme.spacing(1),
                     }}
                   >
-                    {item.icon}
+                    <Typography variant="subtitle1" sx={{ marginLeft: 0.5 }}>
+                      {item.label}
+                    </Typography>
                   </Box>
                 </Badge>
               </Box>
