@@ -18,10 +18,16 @@ export type TransitionProps = {
 };
 
 /**
- * IMPORTANT: `trigger` should be caused by a post async action.
+ * IMPORTANT: `trigger` should be invoked *after* any asynchronous actions have completed
+ * on the underlying data view or unpredicatable results can occur.
+ * *
  * Example: Setting it to page number might be problemetic if the page number is
  * known before the resulting data. It is best to set the trigger as the resulting
  * data itself, as the result of the asynchronous action.
+ *
+ * During view transitions, the view which is being transitioned from and the view
+ * that is being transitioned to will be present in the DOM at once. This can be problematic
+ * if their children rely on DOM IDs.
  */
 const Transition = ({
   children,
