@@ -131,18 +131,25 @@ export default function HeaderMenu() {
                   },
                 }}
               >
-                <Typography variant="subtitle1">{item.label}</Typography>
-                <Badge badgeContent={4} color="secondary">
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      marginRight: theme.spacing(1),
-                    }}
-                  >
-                    {item.icon}
-                  </Box>
-                </Badge>
+                {item.icon}
+                {["/portfolios", "/watchlists"].includes(item.key) ? (
+                  <Badge badgeContent={1} color="secondary">
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Typography variant="subtitle1" sx={{ marginLeft: 0.5 }}>
+                        {item.label}
+                      </Typography>
+                    </Box>
+                  </Badge>
+                ) : (
+                  <Typography variant="subtitle1" sx={{ marginLeft: 0.5 }}>
+                    {item.label}
+                  </Typography>
+                )}
               </Box>
             ))}
             <SearchModalButton highlight={shouldHighlightSearchButton} />
@@ -197,9 +204,13 @@ export default function HeaderMenu() {
                         color: item.key === selectedKey ? "white" : "inherit",
                       }}
                     >
-                      <Badge badgeContent={4} color="secondary">
-                        {item.icon}
-                      </Badge>
+                      {["/portfolios", "/watchlists"].includes(item.key) ? (
+                        <Badge badgeContent={4} color="secondary">
+                          {item.icon}
+                        </Badge>
+                      ) : (
+                        item.icon
+                      )}
                     </ListItemIcon>
                     <ListItemText primary={item.label} />
                   </ListItem>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import type { RustServiceImageInfo } from "@utils/callRustService";
 import CircularProgress from "@mui/material/CircularProgress";
 import ErrorIcon from "@mui/icons-material/Error";
 
@@ -34,10 +35,10 @@ export default function EncodedImage({
     if (encSrc) {
       setIsLoading(true);
       store
-        .fetchImageBase64(encSrc)
-        .then((base64: string) => {
+        .fetchImageInfo(encSrc)
+        .then((imageInfo: RustServiceImageInfo) => {
           if (encSrcStaticRef.current === encSrc) {
-            setBase64(base64);
+            setBase64(imageInfo.base64);
             setHasError(false); // Reset error state if the image loads successfully
           }
         })
