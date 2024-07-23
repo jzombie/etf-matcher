@@ -1,4 +1,3 @@
-// use wasm_bindgen::prelude::*;
 use serde::Serialize;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use base64::{engine::general_purpose, Engine as _};
@@ -12,16 +11,6 @@ pub struct ImageInfo {
     base64: String,
     rgba: String,
 }
-
-// impl ImageInfo {
-//     pub fn base64(&self) -> String {
-//         self.base64.clone()
-//     }
-
-//     pub fn rgba(&self) -> String {
-//         self.rgba.clone()
-//     }
-// }
 
 pub async fn get_image_info(url: &str) -> Result<ImageInfo, JsValue> {
     // Fetch and decompress the image data
