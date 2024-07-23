@@ -15,7 +15,9 @@ import NewsIcon from "@mui/icons-material/Article";
 
 import ETFHolderList from "./SymbolDetail.ETFHolderList";
 
+import useImageBackgroundColor from "@hooks/useImageBackgroundColor";
 import useURLState from "@hooks/useURLState";
+
 import formatSymbolWithExchange from "@utils/formatSymbolWithExchange";
 import formatCurrency from "@utils/formatCurrency";
 
@@ -59,6 +61,10 @@ export default function SymbolDetail({
     RustServiceSymbolDetail | undefined
   >(undefined);
 
+  const logoBackgroundColorOverride = useImageBackgroundColor(
+    symbolDetail?.logo_filename
+  );
+
   const [etfAggregateDetail, setETFAggregateDetail] = useState<
     RustServiceETFAggregateDetail | undefined
   >(undefined);
@@ -101,7 +107,13 @@ export default function SymbolDetail({
       {...rest}
     >
       <SymbolDetailWrapper>
-        <LogoContainer>
+        <LogoContainer
+          style={
+            logoBackgroundColorOverride
+              ? { backgroundColor: logoBackgroundColorOverride }
+              : {}
+          }
+        >
           <ButtonBase
             onClick={() =>
               setURLState({

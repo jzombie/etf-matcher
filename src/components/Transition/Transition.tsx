@@ -1,5 +1,5 @@
-import React, { ReactNode } from "react";
-import { TransitionProps, TransitionDirection, TransitionType } from "./types";
+import React from "react";
+import { TransitionProps } from "./types";
 import "animate.css";
 
 import TransitionChildView from "./Transition.ChildView";

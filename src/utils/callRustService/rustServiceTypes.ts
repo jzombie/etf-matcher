@@ -51,3 +51,8 @@ export type RustServiceCacheDetail = {
   last_accessed: number;
   access_count: number;
 };
+
+export type RustServiceImageInfo = {
+  base64: string;
+  rgba: string;
+};
