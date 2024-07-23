@@ -59,8 +59,8 @@ export default function Settings() {
       <Padding>
         <h2>Proto</h2>
 
-        <Button onClick={() => store.PROTO_fetchSymbolWithId(2221)}>
-          PROTO_fetchSymbolWithId
+        <Button onClick={() => store.PROTO_fetchSymbolWithTickerId(2221)}>
+          PROTO_fetchSymbolWithTickerId
         </Button>
         <Button onClick={() => store.PROTO_fetchExchangeIdWithTickerId(2221)}>
           PROTO_fetchExchangeIdWithTickerId

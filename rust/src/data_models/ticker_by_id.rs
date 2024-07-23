@@ -13,8 +13,7 @@ pub struct TickerById {
 }
 
 impl TickerById {
-    // TODO: Rename to `get_symbol_with_ticker_id`
-    pub async fn get_symbol_with_id(ticker_id: i32) -> Result<String, JsValue> {
+    pub async fn get_symbol_with_ticker_id(ticker_id: i32) -> Result<String, JsValue> {
         let url: &str = DataURL::TickerByIdIndex.value();
 
         // Fetch and decompress the CSV data
