@@ -35,7 +35,7 @@ export default function EncodedImage({
     if (encSrc) {
       setIsLoading(true);
       store
-        .fetchImageBase64(encSrc)
+        .fetchImageInfo(encSrc)
         .then((imageInfo: RustServiceImageInfo) => {
           if (encSrcStaticRef.current === encSrc) {
             setBase64(imageInfo.base64);

@@ -63,7 +63,7 @@ export default function SymbolDetail({
 
   useEffect(() => {
     if (symbolDetail?.logo_filename) {
-      store.fetchImageBase64(symbolDetail.logo_filename).then((imageInfo) => {
+      store.fetchImageInfo(symbolDetail.logo_filename).then((imageInfo) => {
         if (imageInfo.rgba !== "rgba(0, 0, 0, 0)") {
           setLogoBackgroundColorOverride(imageInfo.rgba);
         }

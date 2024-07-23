@@ -23,7 +23,7 @@ pub struct ImageInfo {
 //     }
 // }
 
-pub async fn get_image_base64(url: &str) -> Result<ImageInfo, JsValue> {
+pub async fn get_image_info(url: &str) -> Result<ImageInfo, JsValue> {
     // Fetch and decompress the image data
     let image_data = fetch_and_decompress_gz(url.to_string(), true).await?;
     

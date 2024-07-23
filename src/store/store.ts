@@ -388,10 +388,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   //     .catch((error) => console.error(error));
   // }
 
-  fetchImageBase64(filename: string): Promise<RustServiceImageInfo> {
-    return callRustService<RustServiceImageInfo>("get_image_base64", [
-      filename,
-    ]);
+  fetchImageInfo(filename: string): Promise<RustServiceImageInfo> {
+    return callRustService<RustServiceImageInfo>("get_image_info", [filename]);
   }
 
   // TODO: Remove; just debugging; probably don't need to expose this

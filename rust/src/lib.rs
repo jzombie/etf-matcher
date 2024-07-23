@@ -11,7 +11,7 @@ use crate::data_models::{
     SymbolDetail, SymbolETFHolder, SymbolSearch, TickerById,
 };
 
-use crate::data_models::image::get_image_base64 as lib_get_image_base64;
+use crate::data_models::image::get_image_info as lib_get_image_info;
 
 // Rename the imported functions to avoid name conflicts
 use crate::utils::cache::{
@@ -129,9 +129,9 @@ pub async fn get_etf_aggregate_detail(etf_symbol: &str) -> Result<JsValue, JsVal
 }
 
 #[wasm_bindgen]
-pub async fn get_image_base64(filename: &str) -> Result<JsValue, JsValue> {
+pub async fn get_image_info(filename: &str) -> Result<JsValue, JsValue> {
     let image_url = DataURL::Image(filename.to_string()).image_url();
-    let image_info = lib_get_image_base64(&image_url).await?;
+    let image_info = lib_get_image_info(&image_url).await?;
     Ok(to_value(&image_info).map_err(|e| JsValue::from_str(&e.to_string()))?)
 }
 
