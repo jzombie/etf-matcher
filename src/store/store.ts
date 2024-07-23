@@ -1,3 +1,6 @@
+// TODO: Add in session persistence so that portfolios and watchlists (`symbolBuckets`) can be saved.
+// Ideally this should happen via the `SharedWorker` so that multiple tabs can retain the same store.
+
 import { ReactStateEmitter } from "@utils/StateEmitter";
 import callRustService, {
   subscribe as libRustServiceSubscribe,
