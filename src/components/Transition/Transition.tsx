@@ -1,22 +1,24 @@
 import React, { ReactNode } from "react";
-import TransitionChildView from "./Transition.ChildView";
+import { TransitionProps, TransitionDirection, TransitionType } from "./types";
 import "animate.css";
-import Full from "@layoutKit/Full";
 
+import TransitionChildView from "./Transition.ChildView";
+import Full from "@layoutKit/Full";
 import useTransition from "./useTransition";
 
-export type TransitionDirection = "left" | "right";
-
-export type TransitionType = "slide" | "fade";
-
-export type TransitionProps = {
-  children: ReactNode;
-  direction?: TransitionDirection;
-  transitionType?: TransitionType;
-  transitionDurationMs?: number;
-  trigger?: unknown;
-};
-
+/**
+ * IMPORTANT: Ensure that `trigger` is invoked *after* all asynchronous actions
+ * on the underlying data view have completed to avoid unpredictable results.
+ *
+ * Example: If setting `trigger` to a page number, it may cause issues if the
+ * page number is known before the resulting data is available. Instead, set the
+ * `trigger` as the resulting data itself, which is the outcome of the
+ * asynchronous action.
+ *
+ * During view transitions, both the view being transitioned from and the view
+ * being transitioned to will coexist in the DOM temporarily. This can cause
+ * problems if their children elements rely on unique DOM IDs.
+ */
 const Transition = ({
   children,
   direction,
