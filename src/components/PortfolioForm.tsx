@@ -12,7 +12,7 @@ import {
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 
-import store from "@src/store";
+// import store from "@src/store";
 
 interface Asset {
   // TODO: Needs to account for exchange! The only way to do this effectively is tie this into the symbol search mechanism.
@@ -34,7 +34,9 @@ const PortfolioForm: React.FC = () => {
       values[index].shares = parseInt(value, 10);
     } else if (name === "symbol") {
       // TODO: Implement query symbols while typing
-      store.PROTO_getTickerIdsWithSymbol(value);
+      //  |
+      //  |_ Perform a regular symbol search
+      // store.PROTO_getTickerIdsWithSymbol(value);
 
       values[index].symbol = value;
     }
@@ -67,6 +69,9 @@ const PortfolioForm: React.FC = () => {
             {assets.map((asset, index) => (
               <React.Fragment key={index}>
                 <Grid item xs={5}>
+                  {
+                    // TODO: Enable typical symbol/company search here; show icon for results, etc.
+                  }
                   <TextField
                     name="symbol"
                     label="Symbol"
