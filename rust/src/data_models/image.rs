@@ -1,13 +1,29 @@
+// use wasm_bindgen::prelude::*;
+use serde::Serialize;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use base64::{engine::general_purpose, Engine as _};
-use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 use image::{GenericImageView, Pixel, Rgba};
 use std::collections::HashMap;
 use web_sys::console;
 
+#[derive(Serialize)]
+pub struct ImageInfo {
+    base64: String,
+    rgba: String,
+}
 
-pub async fn get_image_base64(url: &str) -> Result<String, JsValue> {
+// impl ImageInfo {
+//     pub fn base64(&self) -> String {
+//         self.base64.clone()
+//     }
+
+//     pub fn rgba(&self) -> String {
+//         self.rgba.clone()
+//     }
+// }
+
+pub async fn get_image_base64(url: &str) -> Result<ImageInfo, JsValue> {
     // Fetch and decompress the image data
     let image_data = fetch_and_decompress_gz(url.to_string(), true).await?;
     
@@ -35,7 +51,7 @@ pub async fn get_image_base64(url: &str) -> Result<String, JsValue> {
     // Determine the most common color
     let background_color = color_counts.into_iter().max_by_key(|&(_, count)| count).map(|(color, _)| color);
 
-    if let Some(background_color) = background_color {
+    let rgba_string = if let Some(background_color) = background_color {
         let (r, g, b, a) = (
             background_color[0],
             background_color[1],
@@ -43,13 +59,18 @@ pub async fn get_image_base64(url: &str) -> Result<String, JsValue> {
             background_color[3],
         );
 
-        let bg_color_info = format!("rgba({}, {}, {}, {})", r, g, b, a as f32 / 255.0);
-        console::log_1(&bg_color_info.into());
+        format!("rgba({}, {}, {}, {})", r, g, b, a as f32 / 255.0)
     } else {
-        console::log_1(&"Could not determine background color".into());
-    }
+        "Could not determine background color".to_string()
+    };
+
+    console::log_1(&rgba_string.clone().into());
 
     // Encode the image data to base64
     let base64_data = general_purpose::STANDARD.encode(image_data);
-    Ok(base64_data)
+
+    Ok(ImageInfo {
+        base64: base64_data,
+        rgba: rgba_string,
+    })
 }

@@ -131,8 +131,8 @@ pub async fn get_etf_aggregate_detail(etf_symbol: &str) -> Result<JsValue, JsVal
 #[wasm_bindgen]
 pub async fn get_image_base64(filename: &str) -> Result<JsValue, JsValue> {
     let image_url = DataURL::Image(filename.to_string()).image_url();
-    let base64_data = lib_get_image_base64(&image_url).await?;
-    Ok(JsValue::from_str(&base64_data))
+    let image_info = lib_get_image_base64(&image_url).await?;
+    Ok(to_value(&image_info).map_err(|e| JsValue::from_str(&e.to_string()))?)
 }
 
 #[wasm_bindgen]

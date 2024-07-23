@@ -9,6 +9,7 @@ import type {
   RustServiceSearchResultsWithTotalCount,
   RustServiceETFHoldersWithTotalCount,
   RustServiceCacheDetail,
+  RustServiceImageInfo,
 } from "./rustServiceTypes";
 export type {
   RustServiceSearchResult,
@@ -17,6 +18,7 @@ export type {
   RustServiceSearchResultsWithTotalCount,
   RustServiceETFHoldersWithTotalCount,
   RustServiceCacheDetail,
+  RustServiceImageInfo,
 };
 
 import { NotifierEvent } from "./workerMainBindings";

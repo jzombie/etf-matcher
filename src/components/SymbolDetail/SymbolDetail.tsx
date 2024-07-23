@@ -58,6 +58,18 @@ export default function SymbolDetail({
   const [symbolDetail, setSymbolDetail] = useState<
     RustServiceSymbolDetail | undefined
   >(undefined);
+  const [logoBackgroundColorOverride, setLogoBackgroundColorOverride] =
+    useState<string | null>(null);
+
+  useEffect(() => {
+    if (symbolDetail?.logo_filename) {
+      store.fetchImageBase64(symbolDetail.logo_filename).then((imageInfo) => {
+        if (imageInfo.rgba !== "rgba(0, 0, 0, 0)") {
+          setLogoBackgroundColorOverride(imageInfo.rgba);
+        }
+      });
+    }
+  }, [symbolDetail]);
 
   const [etfAggregateDetail, setETFAggregateDetail] = useState<
     RustServiceETFAggregateDetail | undefined
@@ -101,7 +113,16 @@ export default function SymbolDetail({
       {...rest}
     >
       <SymbolDetailWrapper>
-        <LogoContainer>
+        {
+          // TODO: Adjust background color as needed
+        }
+        <LogoContainer
+          style={
+            logoBackgroundColorOverride
+              ? { backgroundColor: logoBackgroundColorOverride }
+              : {}
+          }
+        >
           <ButtonBase
             onClick={() =>
               setURLState({
