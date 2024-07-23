@@ -57,22 +57,6 @@ export default function Settings() {
   return (
     <Scrollable>
       <Padding>
-        <h2>Proto</h2>
-
-        <Button onClick={() => store.PROTO_fetchSymbolWithTickerId(2221)}>
-          PROTO_fetchSymbolWithTickerId
-        </Button>
-        <Button onClick={() => store.PROTO_fetchExchangeIdWithTickerId(2221)}>
-          PROTO_fetchExchangeIdWithTickerId
-        </Button>
-        <Button onClick={() => store.PROTO_fetchSectorNameWithId(14312)}>
-          PROTO_fetchSectorNameWithId
-        </Button>
-        <Button onClick={() => store.PROTO_fetchIndustryNameWithId(14324)}>
-          PROTO_fetchIndustryNameWithId
-        </Button>
-      </Padding>
-      <Padding>
         <h2>User Data</h2>
 
         <Button variant="outlined">TODO: Implement::Clear all user data</Button>

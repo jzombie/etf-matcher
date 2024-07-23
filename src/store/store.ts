@@ -375,41 +375,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return callRustService<RustServiceImageInfo>("get_image_info", [filename]);
   }
 
-  // TDOO: Remove
-  // PROTO_getTickerIdsWithSymbol(symbol: string) {
-  //   callRustService("get_ticker_ids_with_symbol", [symbol]).then(
-  //     customLogger.debug
-  //   );
-  // }
-
-  // TODO: Remove; just debugging; probably don't need to expose this
-  PROTO_fetchSymbolWithTickerId(tickerId: number) {
-    callRustService("get_symbol_with_ticker_id", [tickerId]).then(
-      customLogger.debug
-    );
-  }
-
-  // TODO: Remove; just debugging; probably don't need to expose this
-  PROTO_fetchExchangeIdWithTickerId(tickerId: number) {
-    callRustService("get_exchange_id_with_ticker_id", [tickerId]).then(
-      customLogger.debug
-    );
-  }
-
-  // TODO: Remove; just debugging; probably don't need to expose this
-  PROTO_fetchSectorNameWithId(sectorId: number) {
-    callRustService("get_sector_name_with_id", [sectorId]).then(
-      customLogger.debug
-    );
-  }
-
-  // TODO: Remove; just debugging; probably don't need to expose this
-  PROTO_fetchIndustryNameWithId(industryId: number) {
-    callRustService("get_industry_name_with_id", [industryId]).then(
-      customLogger.debug
-    );
-  }
-
   PROTO_removeCacheEntry(key: string) {
     // TODO: Add rapid UI update
     callRustService("remove_cache_entry", [key]);

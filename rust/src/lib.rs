@@ -40,51 +40,6 @@ pub async fn get_data_build_info() -> Result<JsValue, JsValue> {
     })
 }
 
-// TODO: Don't expose (frontend shouldn't be aware of IDs)
-#[wasm_bindgen]
-pub async fn get_symbol_with_ticker_id(ticker_id: TickerId) -> Result<JsValue, JsValue> {
-    let data: String = TickerById::get_symbol_with_ticker_id(ticker_id).await?;
-    to_value(&data).map_err(|err: serde_wasm_bindgen::Error| {
-        JsValue::from_str(&format!("Failed to convert String to JsValue: {}", err))
-    })
-}
-
-// TODO: Don't expose (frontend shouldn't need IDs to query)
-#[wasm_bindgen]
-pub async fn get_exchange_id_with_ticker_id(ticker_id: TickerId) -> Result<JsValue, JsValue> {
-    let data: i32 = TickerById::get_exchange_id_with_ticker_id(ticker_id).await?;
-    to_value(&data).map_err(|err: serde_wasm_bindgen::Error| {
-        JsValue::from_str(&format!("Failed to convert i32 to JsValue: {}", err))
-    })
-}
-
-// TODO: Don't expose (frontend shouldn't need IDs to query)
-#[wasm_bindgen]
-pub async fn get_ticker_ids_with_symbol(symbol: &str) -> Result<JsValue, JsValue> {
-    let ticker_ids: Vec<i32> = TickerById::get_ticker_ids_with_symbol(symbol).await?;
-    to_value(&ticker_ids).map_err(|err: serde_wasm_bindgen::Error| {
-        JsValue::from_str(&format!("Failed to convert Vec<i32> to JsValue: {}", err))
-    })
-}
-
-// TODO: Don't expose (frontend shouldn't need IDs to query)
-#[wasm_bindgen]
-pub async fn get_sector_name_with_id(sector_id: SectorId) -> Result<JsValue, JsValue> {
-    let data: String = SectorById::get_sector_name_with_id(sector_id).await?;
-    to_value(&data).map_err(|err: serde_wasm_bindgen::Error| {
-        JsValue::from_str(&format!("Failed to convert String to JsValue: {}", err))
-    })
-}
-
-// TODO: Don't expose (frontend shouldn't need IDs to query)
-#[wasm_bindgen]
-pub async fn get_industry_name_with_id(industry_id: IndustryId) -> Result<JsValue, JsValue> {
-    let data: String = IndustryById::get_industry_name_with_id(industry_id).await?;
-    to_value(&data).map_err(|err: serde_wasm_bindgen::Error| {
-        JsValue::from_str(&format!("Failed to convert String to JsValue: {}", err))
-    })
-}
-
 #[wasm_bindgen]
 pub async fn preload_symbol_search_cache() -> Result<JsValue, JsValue> {
     SymbolSearch::preload_symbol_search_cache().await.map(|_| {
