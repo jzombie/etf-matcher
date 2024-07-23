@@ -22,7 +22,7 @@ const PortfolioForm: React.FC = () => {
 
   const handleInputChange = (
     index: number,
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const values = [...assets];
     values[index][event.target.name as keyof Asset] = event.target.value;
