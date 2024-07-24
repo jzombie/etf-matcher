@@ -58,9 +58,6 @@ export default function ETFHolderList({ symbolDetail }: ETFHolderListProps) {
         <Box sx={{ backgroundColor: "rgba(255,255,255,.05)", borderRadius: 4 }}>
           <Padding>
             {totalPages > 1 && (
-              // TODO: When paginating through the list retain the same vertical offset in
-              // the `Box` wrapping layer to avoid flash of content issues causing subsequent
-              // symbols to reload from the cache
               <Pagination
                 count={totalPages}
                 page={page}
