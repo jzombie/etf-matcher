@@ -58,7 +58,7 @@ impl TickerETFHolder {
             .await?
             .ok_or_else(|| {
                 // console::debug_1(&format!("Symbol not found in shard for ticker_id: {}", ticker_id).into());
-                JsValue::from_str("Symbol not found")
+                JsValue::from_str("Ticker not found")
             })?;
 
         // console::debug_1(&format!("Found holder for ticker_id: {}", ticker_id).into());
