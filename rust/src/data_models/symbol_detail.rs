@@ -1,17 +1,16 @@
 use crate::data_models::DataURL;
 use crate::utils::logo_utils::extract_logo_filename;
-use crate::utils::shard::query_shard_for_symbol;
+use crate::utils::shard_ng::query_shard_for_value;
 use crate::JsValue;
 use crate::types::TickerId;
 use serde::{Deserialize, Deserializer, Serialize};
 
-// TODO: Move to `utils`
 // Custom deserialization function to convert Option<i32> to Option<bool>
 fn from_numeric_to_option_bool<'de, D>(deserializer: D) -> Result<Option<bool>, D::Error>
 where
     D: Deserializer<'de>,
 {
-    let num: Option<i32> = Option::deserialize(deserializer)?; // TODO: Use smaller, unsigned type?
+    let num: Option<i32> = Option::deserialize(deserializer)?;
     Ok(num.map(|n| n != 0))
 }
 
@@ -35,10 +34,13 @@ impl SymbolDetail {
     // TODO: Add `exchange` to query
     pub async fn get_symbol_detail(symbol: &str) -> Result<SymbolDetail, JsValue> {
         let url: &str = DataURL::SymbolDetailShardIndex.value();
-        let mut detail =
-            query_shard_for_symbol(url, symbol, |detail: &SymbolDetail| Some(&detail.symbol))
-                .await?
-                .ok_or_else(|| JsValue::from_str("Symbol not found"))?;
+        let mut detail: SymbolDetail = query_shard_for_value(
+            url,
+            &symbol.to_string(),
+            |detail: &SymbolDetail| Some(&detail.symbol),
+        )
+        .await?
+        .ok_or_else(|| JsValue::from_str("Symbol not found"))?;
 
         // Uncompress the logo filename
         detail.logo_filename =
