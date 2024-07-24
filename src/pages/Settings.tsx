@@ -66,9 +66,12 @@ export default function Settings() {
         }
         <Button
           onClick={() =>
-            callRustService("get_ticker_etf_holders", [3416, 1, 20]).then(
-              console.debug
-            )
+            callRustService("get_ticker_etf_holders", [
+              "AAPL",
+              "NASDAQ",
+              1,
+              20,
+            ]).then(console.debug)
           }
         >
           PROTO::get_ticker_etf_holders
