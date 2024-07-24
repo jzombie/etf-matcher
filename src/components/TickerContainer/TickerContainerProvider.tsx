@@ -22,7 +22,7 @@ export type TickerContainerContextProps = {
 
 export default function TickerContainerProvider({
   children,
-  perSymbolThreshold = 0.5,
+  perSymbolThreshold = 0.1,
 }: TickerContainerContextProps) {
   const metadataMapRef = useRef(
     new Map<
@@ -35,10 +35,11 @@ export default function TickerContainerProvider({
   );
   const visibleSymbolMapRef = useRef(new Map<Element, number>());
 
-  const syncVisibleSymbols = useCallback(() => {
+  const syncVisibleTickers = useCallback(() => {
     const uniqueVisibleTickerIds = [
       ...new Set(visibleSymbolMapRef.current.values()),
     ];
+
     store.setVisibleTickers(uniqueVisibleTickerIds);
   }, []);
 
@@ -59,9 +60,9 @@ export default function TickerContainerProvider({
         }
       });
 
-      syncVisibleSymbols();
+      syncVisibleTickers();
     },
-    [syncVisibleSymbols]
+    [syncVisibleTickers]
   );
 
   const { observe, unobserve } = useIntersectionObserver(
@@ -90,10 +91,10 @@ export default function TickerContainerProvider({
         unobserve(el);
         metadataMapRef.current.delete(el);
         visibleSymbolMapRef.current.delete(el);
-        syncVisibleSymbols();
+        syncVisibleTickers();
       }
     },
-    [unobserve, syncVisibleSymbols]
+    [unobserve, syncVisibleTickers]
   );
 
   return (

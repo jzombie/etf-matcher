@@ -1,7 +1,10 @@
 // TODO: Add in session persistence so that portfolios and watchlists (`symbolBuckets`) can be saved.
 // Ideally this should happen via the `SharedWorker` so that multiple tabs can retain the same store.
 
-import { ReactStateEmitter } from "@utils/StateEmitter";
+import {
+  ReactStateEmitter,
+  StateEmitterDefaultEvents,
+} from "@utils/StateEmitter";
 import callRustService, {
   subscribe as libRustServiceSubscribe,
   NotifierEvent,
@@ -169,17 +172,15 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     window.addEventListener("online", _handleOnlineStatus);
     window.addEventListener("offline", _handleOnlineStatus);
 
-    // TODO: Reintegrate or use this pattern as needed
-    // const _handleVisibleSymbolsUpdate = (keys: (keyof StoreStateProps)[]) => {
-    //   if (keys.includes("visibleSymbols")) {
-    //     const { visibleSymbols } = this.getState(["visibleSymbols"]);
+    const _handleVisibleTickersUpdate = (keys: (keyof StoreStateProps)[]) => {
+      if (keys.includes("visibleTickerIds")) {
+        const { visibleTickerIds } = this.getState(["visibleTickerIds"]);
 
-    //     // TODO: Handle this tracking
-    //     // console.log({ visibleSymbols });
-    //   }
-    // };
-
-    // this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
+        // TODO: Handle this tracking
+        customLogger.debug({ visibleTickerIds });
+      }
+    };
+    this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
 
     // Instantiate and set up event bindings for `OpenNetworkRequests`
     const { xhrOpenedRequests, cacheAccessedRequests } = (() => {
@@ -306,7 +307,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
       libRustServiceUnsubscribe();
 
-      // this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
+      this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
     };
   }
 
