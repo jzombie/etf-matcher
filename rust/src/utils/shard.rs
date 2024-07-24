@@ -4,13 +4,11 @@ use crate::JsValue;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 
-// TODO: Rename all `symbol` references to `id` (or equiv.)
-
 #[derive(Serialize, Deserialize, Debug, Clone)]
 struct ShardIndexEntry<T> {
     pub shard_file: String,
-    pub first_symbol: T, // TODO: Rename
-    pub last_symbol: T, // TODO: Rename
+    pub first_id: T,
+    pub last_id: T,
 }
 
 async fn parse_shard_index<T>(shard_index_url: &str) -> Result<Vec<ShardIndexEntry<T>>, JsValue>
@@ -31,7 +29,7 @@ fn find_shard_for_value<'a, T>(
 where
     T: PartialOrd,
 {
-    shard_index.iter().find(|&entry| value >= &entry.first_symbol && value <= &entry.last_symbol)
+    shard_index.iter().find(|&entry| value >= &entry.first_id && value <= &entry.last_id)
 }
 
 async fn fetch_and_parse_shard<T>(shard_url: &str) -> Result<Vec<T>, JsValue>
