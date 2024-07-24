@@ -15,7 +15,7 @@ where
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct SymbolDetail {
+pub struct TickerDetail {
     pub ticker_id: TickerId,
     pub symbol: String,
     pub exchange_short_name: Option<String>,
@@ -30,19 +30,18 @@ pub struct SymbolDetail {
     pub logo_filename: Option<String>,
 }
 
-impl SymbolDetail {
-    // TODO: Add `exchange` to query
-    pub async fn get_symbol_detail(symbol: &str) -> Result<SymbolDetail, JsValue> {
-        let url: &str = DataURL::SymbolDetailShardIndex.value();
-        let mut detail: SymbolDetail = query_shard_for_value(
+impl TickerDetail {
+    pub async fn get_ticker_detail(ticker_id: TickerId) -> Result<TickerDetail, JsValue> {
+        let url: &str = DataURL::TickerDetailShardIndex.value();
+        let mut detail: TickerDetail = query_shard_for_value(
             url,
-            &symbol.to_string(),
-            |detail: &SymbolDetail| Some(&detail.symbol),
+            &ticker_id,
+            |detail: &TickerDetail| Some(&detail.ticker_id),
         )
         .await?
         .ok_or_else(|| JsValue::from_str("Symbol not found"))?;
 
-        // Uncompress the logo filename
+        // Extract the logo filename
         detail.logo_filename =
             extract_logo_filename(detail.logo_filename.as_deref(), &detail.symbol);
 

@@ -11,7 +11,7 @@ use crate::types::TickerId;
 
 use crate::data_models::{
     DataBuildInfo, DataURL, ETFAggregateDetail, PaginatedResults,
-    SymbolDetail, TickerETFHolder, SymbolSearch, SymbolSearchResult,
+    TickerDetail, TickerETFHolder, SymbolSearch, SymbolSearchResult,
 };
 
 use crate::data_models::image::get_image_info as lib_get_image_info;
@@ -73,11 +73,11 @@ pub async fn search_symbols(
 }
 
 #[wasm_bindgen]
-pub async fn get_symbol_detail(symbol: &str) -> Result<JsValue, JsValue> {
-    let detail: SymbolDetail = SymbolDetail::get_symbol_detail(symbol).await?;
+pub async fn get_ticker_detail(ticker_id: TickerId) -> Result<JsValue, JsValue> {
+    let detail: TickerDetail = TickerDetail::get_ticker_detail(ticker_id).await?;
     to_value(&detail).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
-            "Failed to convert SymbolDetail to JsValue: {}",
+            "Failed to convert TickerDetail to JsValue: {}",
             err
         ))
     })
