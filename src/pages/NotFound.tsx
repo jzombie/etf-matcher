@@ -35,5 +35,7 @@ export default function NotFound() {
     walkBackPath();
   }, [location, navigate]);
 
+  // TODO: Though it should never wind up on this screen, due to the
+  // `walkBackPath` logic, improve this anyway.
   return <div>Redirecting...</div>;
 }
