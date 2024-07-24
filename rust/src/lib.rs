@@ -22,6 +22,18 @@ use crate::utils::cache::{
     get_cache_size as lib_get_cache_size, remove_cache_entry as lib_remove_cache_entry,
 };
 
+#[wasm_bindgen]
+pub async fn get_symbol_and_exchange_by_ticker_id(ticker_id: TickerId) -> Result<JsValue, JsValue> {
+    let result: (String, Option<String>) =
+        utils::ticker_utils::get_symbol_and_exchange_by_ticker_id(ticker_id).await?;
+    to_value(&result).map_err(|err: serde_wasm_bindgen::Error| {
+        JsValue::from_str(&format!(
+            "Failed to convert result to JsValue: {}",
+            err
+        ))
+    })
+}
+
 #[wasm_bindgen(start)]
 pub fn main() -> Result<(), JsValue> {
     web_sys::console::debug_1(&"Hello from Rust!".into());

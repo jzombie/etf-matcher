@@ -5,6 +5,40 @@ use crate::JsValue;
 use crate::types::TickerId;
 // use web_sys::console;
 
+pub async fn get_symbol_and_exchange_by_ticker_id(ticker_id: TickerId) -> Result<(String, Option<String>), JsValue> {
+    // Fetch and decompress the SymbolSearch CSV data
+    let url = DataURL::SymbolSearch.value().to_owned();
+    let csv_data = fetch_and_decompress_gz(&url, true).await?;
+    let csv_string = String::from_utf8(csv_data).map_err(|err| {
+        JsValue::from_str(&format!("Failed to convert data to String: {}", err))
+    })?;
+    let symbol_search_results: Vec<SymbolSearch> = parse_csv_data(csv_string.as_bytes())?;
+
+    // Find the symbol and exchange_id for the given ticker_id
+    let symbol_search_entry = symbol_search_results.iter().find(|result| result.ticker_id == ticker_id)
+        .ok_or_else(|| JsValue::from_str("Ticker ID not found"))?;
+    let symbol = symbol_search_entry.symbol.clone();
+    let exchange_id = symbol_search_entry.exchange_id;
+
+    // Fetch and decompress the ExchangeById CSV data if exchange_id is present
+    let exchange_short_name = if let Some(exchange_id) = exchange_id {
+        let exchange_url = DataURL::ExchangeByIdIndex.value().to_owned();
+        let exchange_csv_data = fetch_and_decompress_gz(&exchange_url, true).await?;
+        let exchange_csv_string = String::from_utf8(exchange_csv_data).map_err(|err| {
+            JsValue::from_str(&format!("Failed to convert data to String: {}", err))
+        })?;
+        let exchange_results: Vec<ExchangeById> = parse_csv_data(exchange_csv_string.as_bytes())?;
+
+        // Find the exchange short name for the given exchange_id
+        exchange_results.iter().find(|exchange| exchange.exchange_id == exchange_id)
+            .map(|exchange| exchange.exchange_short_name.clone())
+    } else {
+        None
+    };
+
+    Ok((symbol, exchange_short_name))
+}
+
 pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<TickerId, JsValue> {
     // Fetch and decompress the SymbolSearch CSV data
     let url = DataURL::SymbolSearch.value().to_owned();

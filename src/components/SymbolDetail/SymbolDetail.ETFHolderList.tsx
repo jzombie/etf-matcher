@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Pagination } from "@mui/material";
 import ETFHolder from "./SymbolDetail.ETFHolder";
 import Transition from "@components/Transition";
@@ -7,15 +7,21 @@ import usePagination from "@hooks/usePagination";
 
 import Padding from "@layoutKit/Padding";
 
-import type { RustServiceETFHoldersWithTotalCount } from "@utils/callRustService";
+import type {
+  RustServiceETFHoldersWithTotalCount,
+  RustServiceSymbolDetail,
+} from "@utils/callRustService";
 
 import { store } from "@hooks/useStoreStateReader";
 
 export type ETFHolderListProps = {
-  tickerId: number;
+  symbolDetail: RustServiceSymbolDetail;
 };
 
-export default function ETFHolderList({ tickerId }: ETFHolderListProps) {
+export default function ETFHolderList({ symbolDetail }: ETFHolderListProps) {
+  const tickerId = symbolDetail.ticker_id;
+  const tickerSymbol = symbolDetail.symbol;
+
   const [paginatedETFHolders, setPaginatedETFHolders] =
     useState<RustServiceETFHoldersWithTotalCount | null>(null);
 
@@ -31,20 +37,6 @@ export default function ETFHolderList({ tickerId }: ETFHolderListProps) {
     }
   }, [tickerId, page]);
 
-  // const etfSymbols = useMemo<string[] | undefined>(
-  //   () => paginatedETFHolders?.results,
-  //   [etfHolders]
-  // );
-
-  // if (!etfSymbols || !etfHolders) {
-  //   return null;
-  // }
-
-  // // TODO: Remove
-  // console.log({ etfHolders });
-
-  // return null;
-
   if (!paginatedETFHolders) {
     return null;
   }
@@ -54,10 +46,11 @@ export default function ETFHolderList({ tickerId }: ETFHolderListProps) {
   return (
     <Box>
       <Padding>
-        {/* <h3>
-          {tickerSymbol} is found in the following {etfHolders.total_count} ETF
-          {etfHolders.total_count !== 1 ? "s" : ""}:
-        </h3> */}
+        <h3>
+          {tickerSymbol} is found in the following{" "}
+          {paginatedETFHolders.total_count} ETF
+          {paginatedETFHolders.total_count !== 1 ? "s" : ""}:
+        </h3>
         {
           // TODO: Show the actual symbol weight in each ETFHolder (send `tickerSymbol` to
           // it and make clear distinction between which symbol is what)
@@ -82,7 +75,10 @@ export default function ETFHolderList({ tickerId }: ETFHolderListProps) {
             >
               <div>
                 {paginatedResults.map((etfHolder) => (
-                  <ETFHolder etfAggregateDetail={etfHolder} />
+                  <ETFHolder
+                    key={etfHolder.ticker_id}
+                    etfAggregateDetail={etfHolder}
+                  />
                 ))}
               </div>
             </Transition>
