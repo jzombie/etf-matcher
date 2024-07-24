@@ -11,6 +11,7 @@ export type RustServiceSearchResult = {
 
 // "Level 2"
 export type RustServiceSymbolDetail = {
+  ticker_id: number;
   symbol: string;
   exchange_short_name?: string;
   company_name: string;

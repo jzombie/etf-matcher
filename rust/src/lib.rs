@@ -72,14 +72,15 @@ pub async fn get_symbol_detail(symbol: &str) -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
-pub async fn get_ticker_etf_holders(
-    symbol: &str,
-    exchange_short_name: &str,
+pub async fn get_ticker_etf_holders_by_ticker_id(
+    // symbol: &str,
+    // exchange_short_name: &str,
+    ticker_id: TickerId,
     page: usize,
     page_size: usize,
 ) -> Result<JsValue, JsValue> {
     let etf_symbols: PaginatedResults<TickerId> =
-    TickerETFHolder::get_ticker_etf_holders(symbol, exchange_short_name, page, page_size).await?;
+    TickerETFHolder::get_ticker_etf_holders_by_ticker_id(ticker_id, page, page_size).await?;
     to_value(&etf_symbols).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
             // TODO: Update this as necessary, once changing type

@@ -345,14 +345,14 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       abortSignal
     );
   }
-  async fetchSymbolETFHolders(
-    symbol: string,
+  async fetchTickerETFHoldersByTickerId(
+    tickerId: number,
     page: number = 1,
     pageSize: number = 20
   ): Promise<RustServiceETFHoldersWithTotalCount> {
     return callRustService<RustServiceETFHoldersWithTotalCount>(
-      "get_symbol_etf_holders",
-      [symbol, page, pageSize]
+      "get_ticker_etf_holders_by_ticker_id",
+      [tickerId, page, pageSize]
     );
   }
 

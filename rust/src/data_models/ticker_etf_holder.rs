@@ -1,7 +1,7 @@
 use crate::data_models::{DataURL, PaginatedResults};
 use serde::{Deserialize, Serialize};
 use crate::utils::shard::query_shard_for_value;
-use crate::utils::ticker_utils::get_ticker_id;
+// use crate::utils::ticker_utils::get_ticker_id;
 use crate::JsValue;
 use crate::types::TickerId;
 // use web_sys::console;
@@ -13,9 +13,10 @@ pub struct TickerETFHolder {
 }
 
 impl TickerETFHolder {
-    pub async fn get_ticker_etf_holders(
-        symbol: &str,
-        exchange_short_name: &str,
+    pub async fn get_ticker_etf_holders_by_ticker_id(
+        // symbol: &str,
+        // exchange_short_name: &str,
+        ticker_id: TickerId,
         page: usize,
         page_size: usize,
     ) -> Result<PaginatedResults<TickerId>, JsValue> {
@@ -23,7 +24,7 @@ impl TickerETFHolder {
         // console::debug_1(&format!("Fetching ticker ETF holders for symbol: {}, exchange: {}", symbol, exchange_short_name).into());
 
         // Get the ticker_id using the utility function
-        let ticker_id = get_ticker_id(symbol, exchange_short_name).await?;
+        // let ticker_id = get_ticker_id(symbol, exchange_short_name).await?;
 
         let url: &str = DataURL::TickerETFHoldersShardIndex.value();
 
