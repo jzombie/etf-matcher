@@ -4,8 +4,7 @@ mod notifier;
 pub mod cache;
 pub mod fetch_and_decompress;
 pub mod parse;
-pub mod shard; // TODO: Remove
-pub mod shard_ng;
+pub mod shard;
 pub mod ticker_utils;
 
 pub mod logo_utils;
