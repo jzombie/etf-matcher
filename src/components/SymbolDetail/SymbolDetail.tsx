@@ -4,7 +4,7 @@ import { Button, ButtonBase, Typography, Grid, Box } from "@mui/material";
 import Padding from "@layoutKit/Padding";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import type {
-  RustServiceSymbolDetail,
+  RustServiceTickerDetail,
   RustServiceETFAggregateDetail,
 } from "@utils/callRustService";
 import { MiniChart, Timeline } from "react-ts-tradingview-widgets";
@@ -58,7 +58,7 @@ export default function SymbolDetail({
 }: SymbolDetailProps) {
   const { symbolBuckets } = useStoreStateReader(["symbolBuckets"]);
   const [symbolDetail, setSymbolDetail] = useState<
-    RustServiceSymbolDetail | undefined
+    RustServiceTickerDetail | undefined
   >(undefined);
 
   const logoBackgroundColorOverride = useImageBackgroundColor(

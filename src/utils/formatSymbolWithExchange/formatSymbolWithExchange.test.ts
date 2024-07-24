@@ -1,13 +1,13 @@
 import { describe, it, expect } from "vitest";
 import formatSymbolWithExchange from "./formatSymbolWithExchange";
-import type { RustServiceSymbolDetail } from "@utils/callRustService";
+import type { RustServiceTickerDetail } from "@utils/callRustService";
 
 describe("formatSymbolWithExchange", () => {
   it("should format symbol with exchange prefix", () => {
     const symbolDetail = {
       symbol: "AAPL",
       exchange_short_name: "NASDAQ",
-    } as RustServiceSymbolDetail;
+    } as RustServiceTickerDetail;
 
     const result = formatSymbolWithExchange(symbolDetail);
     expect(result).toBe("NASDAQ:AAPL");
@@ -17,7 +17,7 @@ describe("formatSymbolWithExchange", () => {
     const symbolDetail = {
       symbol: "AAPL",
       exchange_short_name: undefined,
-    } as RustServiceSymbolDetail;
+    } as RustServiceTickerDetail;
 
     const result = formatSymbolWithExchange(symbolDetail);
     expect(result).toBe("AAPL");
@@ -27,7 +27,7 @@ describe("formatSymbolWithExchange", () => {
     const symbolDetail = {
       symbol: "AAPL",
       exchange_short_name: null,
-    } as unknown as RustServiceSymbolDetail;
+    } as unknown as RustServiceTickerDetail;
 
     const result = formatSymbolWithExchange(symbolDetail);
     expect(result).toBe("AAPL");
@@ -37,7 +37,7 @@ describe("formatSymbolWithExchange", () => {
     const symbolDetail = {
       symbol: "AAPL",
       exchange_short_name: "",
-    } as RustServiceSymbolDetail;
+    } as RustServiceTickerDetail;
 
     const result = formatSymbolWithExchange(symbolDetail);
     expect(result).toBe("AAPL");
@@ -47,7 +47,7 @@ describe("formatSymbolWithExchange", () => {
     const symbolDetail = {
       symbol: "BRK-B",
       exchange_short_name: "NYSE",
-    } as RustServiceSymbolDetail;
+    } as RustServiceTickerDetail;
 
     const result = formatSymbolWithExchange(symbolDetail);
     expect(result).toBe("NYSE:BRK.B");
@@ -57,7 +57,7 @@ describe("formatSymbolWithExchange", () => {
     const symbolDetail = {
       symbol: "BRK-B",
       exchange_short_name: "",
-    } as RustServiceSymbolDetail;
+    } as RustServiceTickerDetail;
 
     const result = formatSymbolWithExchange(symbolDetail);
     expect(result).toBe("BRK.B");
@@ -67,7 +67,7 @@ describe("formatSymbolWithExchange", () => {
     const symbolDetail = {
       symbol: "",
       exchange_short_name: "NASDAQ",
-    } as RustServiceSymbolDetail;
+    } as RustServiceTickerDetail;
 
     const result = formatSymbolWithExchange(symbolDetail);
     expect(result).toBe("");
@@ -77,7 +77,7 @@ describe("formatSymbolWithExchange", () => {
     const symbolDetail = {
       symbol: undefined,
       exchange_short_name: "NASDAQ",
-    } as unknown as RustServiceSymbolDetail;
+    } as unknown as RustServiceTickerDetail;
 
     const result = formatSymbolWithExchange(symbolDetail);
     expect(result).toBe("");

@@ -9,13 +9,13 @@ import Padding from "@layoutKit/Padding";
 
 import type {
   RustServiceETFHoldersWithTotalCount,
-  RustServiceSymbolDetail,
+  RustServiceTickerDetail,
 } from "@utils/callRustService";
 
 import { store } from "@hooks/useStoreStateReader";
 
 export type ETFHolderListProps = {
-  symbolDetail: RustServiceSymbolDetail;
+  symbolDetail: RustServiceTickerDetail;
 };
 
 export default function ETFHolderList({ symbolDetail }: ETFHolderListProps) {

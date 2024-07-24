@@ -7,7 +7,7 @@ import callRustService, {
   NotifierEvent,
 } from "@utils/callRustService";
 import {
-  RustServiceSymbolDetail,
+  RustServiceTickerDetail,
   RustServiceSearchResultsWithTotalCount,
   RustServiceETFHoldersWithTotalCount,
   RustServiceCacheDetail,
@@ -357,8 +357,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
-  async fetchSymbolDetail(symbol: string): Promise<RustServiceSymbolDetail> {
-    return callRustService<RustServiceSymbolDetail>("get_symbol_detail", [
+  async fetchSymbolDetail(symbol: string): Promise<RustServiceTickerDetail> {
+    return callRustService<RustServiceTickerDetail>("get_symbol_detail", [
       symbol,
     ]);
   }

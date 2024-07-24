@@ -4,7 +4,7 @@ export { subscribe };
 
 import type {
   RustServiceSearchResult,
-  RustServiceSymbolDetail,
+  RustServiceTickerDetail,
   RustServiceETFAggregateDetail,
   RustServiceSearchResultsWithTotalCount,
   RustServiceETFHoldersWithTotalCount,
@@ -13,7 +13,7 @@ import type {
 } from "./rustServiceTypes";
 export type {
   RustServiceSearchResult,
-  RustServiceSymbolDetail,
+  RustServiceTickerDetail,
   RustServiceETFAggregateDetail,
   RustServiceSearchResultsWithTotalCount,
   RustServiceETFHoldersWithTotalCount,
