@@ -42,9 +42,10 @@ export type RustServiceSearchResultsWithTotalCount = {
   results: RustServiceSearchResult[];
 };
 
+// TODO: Rename type
 export type RustServiceETFHoldersWithTotalCount = {
   total_count: number;
-  results: string[];
+  results: RustServiceETFAggregateDetail[];
 };
 
 export type RustServiceCacheDetail = {

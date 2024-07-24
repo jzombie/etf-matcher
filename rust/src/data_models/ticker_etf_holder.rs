@@ -1,9 +1,9 @@
 use crate::data_models::{DataURL, PaginatedResults};
+use crate::JsValue;
 use serde::{Deserialize, Serialize};
 use crate::utils::shard::query_shard_for_value;
-// use crate::utils::ticker_utils::get_ticker_id;
-use crate::JsValue;
 use crate::types::TickerId;
+use crate::ETFAggregateDetail;
 // use web_sys::console;
 
 
@@ -14,9 +14,32 @@ pub struct TickerETFHolder {
 }
 
 impl TickerETFHolder {
-    pub async fn get_ticker_etf_holders_by_ticker_id(
-        // symbol: &str,
-        // exchange_short_name: &str,
+    pub async fn get_ticker_etf_holder_aggregate_detail_by_ticker_id(
+        ticker_id: TickerId,
+        page: usize,
+        page_size: usize,
+    ) -> Result<PaginatedResults<ETFAggregateDetail>, JsValue> {
+        let paginated_etf_holder_ids = TickerETFHolder::get_ticker_etf_holder_ids_by_ticker_id(ticker_id, page, page_size).await?;
+
+        let mut etf_aggregate_details = Vec::new();
+
+        for etf_ticker_id in paginated_etf_holder_ids.results {
+            match ETFAggregateDetail::get_etf_aggregate_detail_by_ticker_id(etf_ticker_id).await {
+                Ok(detail) => etf_aggregate_details.push(detail),
+                Err(e) => return Err(JsValue::from_str(&format!("Failed to fetch ETF aggregate detail: {:?}", e))),
+            }
+        }
+
+        // Create paginated results for the ETF aggregate details
+        let paginated_results = PaginatedResults {
+            results: etf_aggregate_details,
+            total_count: paginated_etf_holder_ids.total_count,
+        };
+
+        Ok(paginated_results)
+    }
+
+    async fn get_ticker_etf_holder_ids_by_ticker_id(
         ticker_id: TickerId,
         page: usize,
         page_size: usize,

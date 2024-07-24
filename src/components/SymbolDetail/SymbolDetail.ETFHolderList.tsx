@@ -16,72 +16,79 @@ export type ETFHolderListProps = {
 };
 
 export default function ETFHolderList({ tickerId }: ETFHolderListProps) {
-  const [etfHolders, setEtfHolders] = useState<
-    RustServiceETFHoldersWithTotalCount | undefined
-  >(undefined);
+  const [paginatedETFHolders, setPaginatedETFHolders] =
+    useState<RustServiceETFHoldersWithTotalCount | null>(null);
 
   const { page, previousPage, setPage, totalPages } = usePagination({
-    totalItems: etfHolders?.total_count,
+    totalItems: paginatedETFHolders?.total_count,
   });
 
   useEffect(() => {
     if (tickerId) {
-      store.fetchTickerETFHoldersByTickerId(tickerId, page).then(setEtfHolders);
+      store
+        .fetchTickerETFHolderAggregateDetailByTickerId(tickerId, page)
+        .then(setPaginatedETFHolders);
     }
   }, [tickerId, page]);
 
-  const etfSymbols = useMemo<string[] | undefined>(
-    () => etfHolders?.results,
-    [etfHolders]
-  );
+  // const etfSymbols = useMemo<string[] | undefined>(
+  //   () => paginatedETFHolders?.results,
+  //   [etfHolders]
+  // );
 
-  if (!etfSymbols || !etfHolders) {
+  // if (!etfSymbols || !etfHolders) {
+  //   return null;
+  // }
+
+  // // TODO: Remove
+  // console.log({ etfHolders });
+
+  // return null;
+
+  if (!paginatedETFHolders) {
     return null;
   }
 
-  // TODO: Remove
-  console.log({ etfHolders });
+  const paginatedResults = paginatedETFHolders.results;
 
-  return null;
-
-  // return (
-  //   <Box>
-  //     <Padding>
-  //       <h3>
-  //         {tickerSymbol} is found in the following {etfHolders.total_count} ETF
-  //         {etfHolders.total_count !== 1 ? "s" : ""}:
-  //       </h3>
-  //       {
-  //         // TODO: Show the actual symbol weight in each ETFHolder (send `tickerSymbol` to
-  //         // it and make clear distinction between which symbol is what)
-  //       }
-  //       <Box sx={{ backgroundColor: "rgba(255,255,255,.05)", borderRadius: 4 }}>
-  //         <Padding>
-  //           {totalPages > 1 && (
-  //             // TODO: When paginating through the list retain the same vertical offset in
-  //             // the `Box` wrapping layer to avoid flash of content issues causing subsequent
-  //             // symbols to reload from the cache
-  //             <Pagination
-  //               count={totalPages}
-  //               page={page}
-  //               onChange={(event, nextPage) => setPage(nextPage)}
-  //             />
-  //           )}
-  //           <Transition
-  //             direction={
-  //               !previousPage || page > previousPage ? "left" : "right"
-  //             }
-  //             trigger={etfSymbols}
-  //           >
-  //             <div>
-  //               {etfSymbols.map((etfSymbol) => (
-  //                 <ETFHolder key={etfSymbol} etfSymbol={etfSymbol} />
-  //               ))}
-  //             </div>
-  //           </Transition>
-  //         </Padding>
-  //       </Box>
-  //     </Padding>
-  //   </Box>
-  // );
+  return (
+    <Box>
+      <Padding>
+        {/* <h3>
+          {tickerSymbol} is found in the following {etfHolders.total_count} ETF
+          {etfHolders.total_count !== 1 ? "s" : ""}:
+        </h3> */}
+        {
+          // TODO: Show the actual symbol weight in each ETFHolder (send `tickerSymbol` to
+          // it and make clear distinction between which symbol is what)
+        }
+        <Box sx={{ backgroundColor: "rgba(255,255,255,.05)", borderRadius: 4 }}>
+          <Padding>
+            {totalPages > 1 && (
+              // TODO: When paginating through the list retain the same vertical offset in
+              // the `Box` wrapping layer to avoid flash of content issues causing subsequent
+              // symbols to reload from the cache
+              <Pagination
+                count={totalPages}
+                page={page}
+                onChange={(event, nextPage) => setPage(nextPage)}
+              />
+            )}
+            <Transition
+              direction={
+                !previousPage || page > previousPage ? "left" : "right"
+              }
+              trigger={paginatedETFHolders}
+            >
+              <div>
+                {paginatedResults.map((etfHolder) => (
+                  <ETFHolder etfAggregateDetail={etfHolder} />
+                ))}
+              </div>
+            </Transition>
+          </Padding>
+        </Box>
+      </Padding>
+    </Box>
+  );
 }
