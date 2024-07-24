@@ -15,12 +15,12 @@ import type {
 import { store } from "@hooks/useStoreStateReader";
 
 export type ETFHolderListProps = {
-  symbolDetail: RustServiceTickerDetail;
+  tickerDetail: RustServiceTickerDetail;
 };
 
-export default function ETFHolderList({ symbolDetail }: ETFHolderListProps) {
-  const tickerId = symbolDetail.ticker_id;
-  const tickerSymbol = symbolDetail.symbol;
+export default function ETFHolderList({ tickerDetail }: ETFHolderListProps) {
+  const tickerId = tickerDetail.ticker_id;
+  const tickerSymbol = tickerDetail.symbol;
 
   const [paginatedETFHolders, setPaginatedETFHolders] =
     useState<RustServiceETFHoldersWithTotalCount | null>(null);

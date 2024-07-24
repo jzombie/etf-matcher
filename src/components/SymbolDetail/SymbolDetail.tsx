@@ -57,12 +57,12 @@ export default function SymbolDetail({
   ...rest
 }: SymbolDetailProps) {
   const { symbolBuckets } = useStoreStateReader(["symbolBuckets"]);
-  const [symbolDetail, setSymbolDetail] = useState<
+  const [tickerDetail, setSymbolDetail] = useState<
     RustServiceTickerDetail | undefined
   >(undefined);
 
   const logoBackgroundColorOverride = useImageBackgroundColor(
-    symbolDetail?.logo_filename
+    tickerDetail?.logo_filename
   );
 
   const [etfAggregateDetail, setETFAggregateDetail] = useState<
@@ -73,21 +73,21 @@ export default function SymbolDetail({
 
   useEffect(() => {
     if (tickerSymbol) {
-      store.fetchSymbolDetail(tickerSymbol).then(setSymbolDetail);
+      store.fetchTickerDetail(tickerSymbol).then(setSymbolDetail);
     }
   }, [tickerSymbol]);
 
   useEffect(() => {
-    if (symbolDetail?.is_etf) {
+    if (tickerDetail?.is_etf) {
       store
-        .fetchETFAggregateDetailByTickerId(symbolDetail.ticker_id)
+        .fetchETFAggregateDetailByTickerId(tickerDetail.ticker_id)
         .then(setETFAggregateDetail);
     }
-  }, [symbolDetail]);
+  }, [tickerDetail]);
 
   const formattedSymbolWithExchange = useMemo(
-    () => symbolDetail && formatSymbolWithExchange(symbolDetail),
-    [symbolDetail]
+    () => tickerDetail && formatSymbolWithExchange(tickerDetail),
+    [tickerDetail]
   );
 
   const { setURLState, toBooleanParam } = useURLState<{
@@ -95,7 +95,7 @@ export default function SymbolDetail({
     exact: string | null;
   }>();
 
-  if (!formattedSymbolWithExchange || !symbolDetail) {
+  if (!formattedSymbolWithExchange || !tickerDetail) {
     return null;
   }
 
@@ -117,14 +117,14 @@ export default function SymbolDetail({
           <ButtonBase
             onClick={() =>
               setURLState({
-                query: symbolDetail?.symbol,
+                query: tickerDetail?.symbol,
                 exact: toBooleanParam(true),
               })
             }
           >
             <EncodedImage
-              encSrc={symbolDetail?.logo_filename}
-              title={`${symbolDetail?.symbol} logo`}
+              encSrc={tickerDetail?.logo_filename}
+              title={`${tickerDetail?.symbol} logo`}
               style={{ width: 80, height: 80 }}
             />
           </ButtonBase>
@@ -138,7 +138,7 @@ export default function SymbolDetail({
                   Company
                 </Typography>
                 <Typography variant="body2">
-                  {symbolDetail?.company_name}
+                  {tickerDetail?.company_name}
                   &nbsp;
                   {`(${formattedSymbolWithExchange})`}
                 </Typography>
@@ -148,8 +148,8 @@ export default function SymbolDetail({
                   Durability Rating
                 </Typography>
                 <Typography variant="body2">
-                  {(symbolDetail?.score_avg_dca &&
-                    `${symbolDetail?.score_avg_dca.toFixed(2)} / 5.00`) ||
+                  {(tickerDetail?.score_avg_dca &&
+                    `${tickerDetail?.score_avg_dca.toFixed(2)} / 5.00`) ||
                     "N/A"}
                 </Typography>
               </Grid>
@@ -158,10 +158,10 @@ export default function SymbolDetail({
                   Sector
                 </Typography>
                 <Typography variant="body2">
-                  {symbolDetail?.sector_name || "N/A"}
+                  {tickerDetail?.sector_name || "N/A"}
                   <>
                     {etfAggregateDetail?.top_market_value_sector_name &&
-                      symbolDetail?.sector_name !==
+                      tickerDetail?.sector_name !==
                         etfAggregateDetail?.top_market_value_sector_name && (
                         <>
                           {" "}
@@ -176,10 +176,10 @@ export default function SymbolDetail({
                   Industry
                 </Typography>
                 <Typography variant="body2">
-                  {symbolDetail?.industry_name || "N/A"}
+                  {tickerDetail?.industry_name || "N/A"}
                   <>
                     {etfAggregateDetail?.top_market_value_industry_name &&
-                      symbolDetail?.industry_name !==
+                      tickerDetail?.industry_name !==
                         etfAggregateDetail?.top_market_value_industry_name && (
                         <>
                           {" "}
@@ -193,7 +193,7 @@ export default function SymbolDetail({
                 <Typography variant="h6" component="div">
                   ETF Status
                 </Typography>
-                {!symbolDetail?.is_etf ? (
+                {!tickerDetail?.is_etf ? (
                   <>Not ETF</>
                 ) : (
                   <div
@@ -301,7 +301,7 @@ export default function SymbolDetail({
         <Box mt={2}>
           <Typography variant="h6">News</Typography>
           <Typography variant="body2">
-            Placeholder for news articles related to {symbolDetail.symbol}.
+            Placeholder for news articles related to {tickerDetail.symbol}.
           </Typography>
         </Box>
       )}
@@ -309,7 +309,7 @@ export default function SymbolDetail({
       {
         // TODO: Show `ETFHoldingList` (~inverse of `ETFHolderList`) if this is an ETF
       }
-      <ETFHolderList symbolDetail={symbolDetail} />
+      <ETFHolderList tickerDetail={tickerDetail} />
     </SymbolContainer>
   );
 }
