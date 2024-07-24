@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use crate::data_models::DataURL;
-use crate::utils::shard::query_shard_for_symbol;
+use crate::utils::shard_ng::query_shard_for_value;
 use crate::JsValue;
 use crate::types::TickerId;
 
@@ -22,9 +22,9 @@ impl ETFAggregateDetail {
     // TODO: Add `exchange` to query
     pub async fn get_etf_aggregate_detail(etf_symbol: &str) -> Result<ETFAggregateDetail, JsValue> {
         let url: &str = DataURL::ETFAggregateDetailShardIndex.value();
-        let etf_aggregate_detail: ETFAggregateDetail = query_shard_for_symbol(
+        let etf_aggregate_detail: ETFAggregateDetail = query_shard_for_value(
             url,
-            etf_symbol,
+            &etf_symbol.to_string(),
             |etf_aggregate_detail: &ETFAggregateDetail| Some(&etf_aggregate_detail.etf_symbol),
         )
         .await?
