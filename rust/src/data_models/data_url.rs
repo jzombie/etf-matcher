@@ -6,7 +6,7 @@ pub enum DataURL {
     IndustryByIdIndex,
     SymbolSearch,
     SymbolDetailShardIndex,
-    SymbolETFHoldersShardIndex,
+    TickerETFHoldersShardIndex,
     ETFAggregateDetailShardIndex,
     Image(String),
 }
@@ -21,7 +21,7 @@ impl DataURL {
             DataURL::IndustryByIdIndex => "/data/industry_by_id_index.enc",
             DataURL::SymbolSearch => "/data/symbol_search_dict.enc",
             DataURL::SymbolDetailShardIndex => "/data/symbol_detail_shard_index.enc",
-            DataURL::SymbolETFHoldersShardIndex => "/data/symbol_etf_holders_shard_index.enc",
+            DataURL::TickerETFHoldersShardIndex => "/data/ticker_etf_holders_shard_index.enc",
             DataURL::ETFAggregateDetailShardIndex => "/data/etf_aggregate_detail_shard_index.enc",
             DataURL::Image(_) => panic!("Use image_url() for image paths"), // Prevent calling value() for images
         }

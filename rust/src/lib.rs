@@ -7,10 +7,11 @@ mod data_models;
 mod utils;
 mod types;
 
+use crate::types::TickerId;
 
 use crate::data_models::{
     DataBuildInfo, DataURL, ETFAggregateDetail, PaginatedResults,
-    SymbolDetail, SymbolETFHolder, SymbolSearch, SymbolSearchResult,
+    SymbolDetail, TickerETFHolder, SymbolSearch, SymbolSearchResult,
 };
 
 use crate::data_models::image::get_image_info as lib_get_image_info;
@@ -71,16 +72,17 @@ pub async fn get_symbol_detail(symbol: &str) -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
-pub async fn get_symbol_etf_holders(
-    symbol: &str,
+pub async fn get_ticker_etf_holders(
+    ticker_id: TickerId,
     page: usize,
     page_size: usize,
 ) -> Result<JsValue, JsValue> {
-    let etf_symbols: PaginatedResults<String> =
-        SymbolETFHolder::get_symbol_etf_holders(symbol, page, page_size).await?;
+    let etf_symbols: PaginatedResults<TickerId> =
+    TickerETFHolder::get_ticker_etf_holders(ticker_id, page, page_size).await?;
     to_value(&etf_symbols).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
-            "Failed to convert Vec<String> to JsValue: {}",
+            // TODO: Update this as necessary, once changing type
+            "Failed to convert Vec<TickerId> to JsValue: {}",
             err
         ))
     })

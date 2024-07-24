@@ -19,6 +19,8 @@ import formatLocalTime from "@utils/formatLocalTime";
 
 import usePageTitleSetter from "@utils/usePageTitleSetter";
 
+import callRustService from "@utils/callRustService";
+
 export default function Settings() {
   usePageTitleSetter("Settings");
 
@@ -56,6 +58,23 @@ export default function Settings() {
 
   return (
     <Scrollable>
+      <Padding>
+        <h2>Prototype</h2>
+
+        {
+          // TODO: Remove
+        }
+        <Button
+          onClick={() =>
+            callRustService("get_ticker_etf_holders", [3416, 1, 20]).then(
+              console.debug
+            )
+          }
+        >
+          PROTO::get_ticker_etf_holders
+        </Button>
+      </Padding>
+
       <Padding>
         <h2>User Data</h2>
 
