@@ -8,6 +8,7 @@ use crate::types::TickerId;
 pub struct ETFAggregateDetail {
     pub ticker_id: TickerId,
     pub etf_symbol: String,
+    // TODO: Add `exchange_short_name`?
     pub etf_name: Option<String>,
     pub top_market_value_sector_name: String,
     pub top_market_value_industry_name: String,
@@ -19,16 +20,15 @@ pub struct ETFAggregateDetail {
 }
 
 impl ETFAggregateDetail {
-    // TODO: Add `exchange` to query
-    pub async fn get_etf_aggregate_detail(etf_symbol: &str) -> Result<ETFAggregateDetail, JsValue> {
+    pub async fn get_etf_aggregate_detail_by_ticker_id(ticker_id: TickerId) -> Result<ETFAggregateDetail, JsValue> {
         let url: &str = DataURL::ETFAggregateDetailShardIndex.value();
         let etf_aggregate_detail: ETFAggregateDetail = query_shard_for_value(
             url,
-            &etf_symbol.to_string(),
-            |etf_aggregate_detail: &ETFAggregateDetail| Some(&etf_aggregate_detail.etf_symbol),
+            &ticker_id,
+            |etf_aggregate_detail: &ETFAggregateDetail| Some(&etf_aggregate_detail.ticker_id),
         )
         .await?
-        .ok_or_else(|| JsValue::from_str("ETF symbol not found"))?;
+        .ok_or_else(|| JsValue::from_str("ETF ticker not found"))?;
 
         Ok(etf_aggregate_detail)
     }

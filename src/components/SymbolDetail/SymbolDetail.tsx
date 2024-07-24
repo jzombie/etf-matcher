@@ -80,7 +80,7 @@ export default function SymbolDetail({
   useEffect(() => {
     if (symbolDetail?.is_etf) {
       store
-        .fetchETFAggregateDetail(symbolDetail.symbol)
+        .fetchETFAggregateDetailByTickerId(symbolDetail.ticker_id)
         .then(setETFAggregateDetail);
     }
   }, [symbolDetail]);

@@ -79,11 +79,11 @@ pub async fn get_ticker_etf_holders_by_ticker_id(
     page: usize,
     page_size: usize,
 ) -> Result<JsValue, JsValue> {
-    let etf_symbols: PaginatedResults<TickerId> =
+    let etf_ticker_ids: PaginatedResults<TickerId> =
     TickerETFHolder::get_ticker_etf_holders_by_ticker_id(ticker_id, page, page_size).await?;
-    to_value(&etf_symbols).map_err(|err: serde_wasm_bindgen::Error| {
+    to_value(&etf_ticker_ids).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
-            // TODO: Update this as necessary, once changing type
+            // TODO: Update this as necessary, if changing type
             "Failed to convert Vec<TickerId> to JsValue: {}",
             err
         ))
@@ -91,9 +91,9 @@ pub async fn get_ticker_etf_holders_by_ticker_id(
 }
 
 #[wasm_bindgen]
-pub async fn get_etf_aggregate_detail(etf_symbol: &str) -> Result<JsValue, JsValue> {
+pub async fn get_etf_aggregate_detail_by_ticker_id(ticker_id: TickerId) -> Result<JsValue, JsValue> {
     let etf_detail: ETFAggregateDetail =
-        ETFAggregateDetail::get_etf_aggregate_detail(etf_symbol).await?;
+        ETFAggregateDetail::get_etf_aggregate_detail_by_ticker_id(ticker_id).await?;
     to_value(&etf_detail).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
             "Failed to convert ETFAggregateDetail to JsValue: {}",

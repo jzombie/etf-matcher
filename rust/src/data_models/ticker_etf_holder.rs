@@ -6,6 +6,7 @@ use crate::JsValue;
 use crate::types::TickerId;
 // use web_sys::console;
 
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TickerETFHolder {
     pub ticker_id: TickerId,

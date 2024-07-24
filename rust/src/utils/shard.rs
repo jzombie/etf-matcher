@@ -4,6 +4,11 @@ use crate::JsValue;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 
+// TODO: Caching shard values instead of caching their results could significantly
+// reduce cache storage (the index could stay cached, if necessary). This would need
+// to be implemented carefully because some shards may need to be queried multiple
+// in rapid succession for certain types of searches.
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
 struct ShardIndexEntry<T> {
     pub shard_file: String,
@@ -22,6 +27,7 @@ where
     Ok(entries)
 }
 
+// TODO: Rename to `find_shard_for_id`
 fn find_shard_for_value<'a, T>(
     value: &T,
     shard_index: &'a [ShardIndexEntry<T>],
@@ -29,7 +35,9 @@ fn find_shard_for_value<'a, T>(
 where
     T: PartialOrd,
 {
-    shard_index.iter().find(|&entry| value >= &entry.first_id && value <= &entry.last_id)
+    shard_index
+        .iter()
+        .find(|&entry| value >= &entry.first_id && value <= &entry.last_id)
 }
 
 async fn fetch_and_parse_shard<T>(shard_url: &str) -> Result<Vec<T>, JsValue>
@@ -43,7 +51,7 @@ where
     Ok(entries)
 }
 
-
+// TODO: Rename to `query_shard_for_id`
 pub async fn query_shard_for_value<T, F, V>(
     shard_index_url: &str,
     value: &V,
