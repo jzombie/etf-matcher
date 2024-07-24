@@ -1,5 +1,5 @@
 use crate::data_models::DataURL;
-use crate::utils::extract_logo_filename;
+use crate::utils::logo_utils::extract_logo_filename;
 use crate::utils::shard::query_shard_for_symbol;
 use crate::JsValue;
 use crate::types::TickerId;
