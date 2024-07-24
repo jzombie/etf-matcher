@@ -20,44 +20,37 @@ export default function TickerDetailList({
     }
   }, [tickerIds]);
 
-  // const tickerSymbols = tickerDetailList.map(({ symbol }) => symbol);
+  const [maxIntersectionIndex, setMaxIntersectionIndex] = useState<number>(0);
 
-  // const [maxIntersectionIndex, setMaxIntersectionIndex] = useState<number>(0);
+  const handleIntersectionStateChange = useCallback(
+    (tickerId: number, isIntersecting: boolean) => {
+      if (isIntersecting) {
+        const intersectionIndex = tickerIds.indexOf(tickerId);
 
-  // const handleIntersectionStateChange = useCallback(
-  //   (tickerSymbol: string, isIntersecting: boolean) => {
-  //     if (isIntersecting) {
-  //       const intersectionIndex = tickerSymbols.indexOf(tickerSymbol);
-
-  //       if (intersectionIndex > maxIntersectionIndex) {
-  //         setMaxIntersectionIndex(intersectionIndex);
-  //       }
-  //     }
-  //   },
-  //   [tickerSymbols, maxIntersectionIndex]
-  // );
+        if (intersectionIndex > maxIntersectionIndex) {
+          setMaxIntersectionIndex(intersectionIndex);
+        }
+      }
+    },
+    [tickerIds, maxIntersectionIndex]
+  );
 
   return (
     <>
       {tickerIds.map((tickerId, idx) => {
-        // TODO: Uncomment
-        // if (idx <= maxIntersectionIndex + lookAheadBufferSize) {
-        return (
-          // TODO: Rename to `TickerDetail`
+        if (idx <= maxIntersectionIndex + lookAheadBufferSize) {
+          return (
+            // TODO: Rename to `TickerDetail`
 
-          <SymbolDetail
-            key={tickerId}
-            tickerId={tickerId}
-            // TODO: Uncomment
-            // onIntersectionStateChange={(isIntersecting) =>
-            //   handleIntersectionStateChange(
-            //     tickerDetail.symbol,
-            //     isIntersecting
-            //   )
-            // }
-          />
-        );
-        // }
+            <SymbolDetail
+              key={tickerId}
+              tickerId={tickerId}
+              onIntersectionStateChange={(isIntersecting) =>
+                handleIntersectionStateChange(tickerId, isIntersecting)
+              }
+            />
+          );
+        }
       })}
     </>
   );
