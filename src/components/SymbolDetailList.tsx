@@ -4,52 +4,61 @@ import SymbolDetail from "./SymbolDetail";
 import customLogger from "@utils/customLogger";
 
 export type SymbolDetailListProps = {
-  tickerSymbols: string[];
+  tickerIds: number[];
   lookAheadBufferSize?: number;
 };
 
 // TODO: This should use exchanges as well, for greater accuracy
 export default function SymbolDetailList({
-  tickerSymbols,
+  tickerIds,
   lookAheadBufferSize = 2,
 }: SymbolDetailListProps) {
   useEffect(() => {
-    if (tickerSymbols.length !== [...new Set(tickerSymbols)].length) {
+    if (tickerIds.length !== [...new Set(tickerIds)].length) {
       customLogger.warn(
-        "`tickerSymbols` is not unique! Unpredictable results may occur."
+        "`tickerIds` is not unique! Unpredictable results may occur."
       );
     }
-  }, [tickerSymbols]);
+  }, [tickerIds]);
 
-  const [maxIntersectionIndex, setMaxIntersectionIndex] = useState<number>(0);
+  // const tickerSymbols = tickerDetailList.map(({ symbol }) => symbol);
 
-  const handleIntersectionStateChange = useCallback(
-    (tickerSymbol: string, isIntersecting: boolean) => {
-      if (isIntersecting) {
-        const intersectionIndex = tickerSymbols.indexOf(tickerSymbol);
+  // const [maxIntersectionIndex, setMaxIntersectionIndex] = useState<number>(0);
 
-        if (intersectionIndex > maxIntersectionIndex) {
-          setMaxIntersectionIndex(intersectionIndex);
-        }
-      }
-    },
-    [tickerSymbols, maxIntersectionIndex]
-  );
+  // const handleIntersectionStateChange = useCallback(
+  //   (tickerSymbol: string, isIntersecting: boolean) => {
+  //     if (isIntersecting) {
+  //       const intersectionIndex = tickerSymbols.indexOf(tickerSymbol);
+
+  //       if (intersectionIndex > maxIntersectionIndex) {
+  //         setMaxIntersectionIndex(intersectionIndex);
+  //       }
+  //     }
+  //   },
+  //   [tickerSymbols, maxIntersectionIndex]
+  // );
 
   return (
     <>
-      {tickerSymbols.map((tickerSymbol, idx) => {
-        if (idx <= maxIntersectionIndex + lookAheadBufferSize) {
-          return (
-            <SymbolDetail
-              key={tickerSymbol}
-              tickerSymbol={tickerSymbol}
-              onIntersectionStateChange={(isIntersecting) =>
-                handleIntersectionStateChange(tickerSymbol, isIntersecting)
-              }
-            />
-          );
-        }
+      {tickerIds.map((tickerId, idx) => {
+        // TODO: Uncomment
+        // if (idx <= maxIntersectionIndex + lookAheadBufferSize) {
+        return (
+          // TODO: Rename to `TickerDetail`
+
+          <SymbolDetail
+            key={tickerId}
+            tickerId={tickerId}
+            // TODO: Uncomment
+            // onIntersectionStateChange={(isIntersecting) =>
+            //   handleIntersectionStateChange(
+            //     tickerDetail.symbol,
+            //     isIntersecting
+            //   )
+            // }
+          />
+        );
+        // }
       })}
     </>
   );

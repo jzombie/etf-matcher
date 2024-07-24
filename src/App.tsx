@@ -5,7 +5,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 
 import { RouterProvider } from "react-router-dom";
 import router from "./router";
-import { SymbolContainerProvider } from "@components/SymbolContainer";
+import { TickerContainerProvider } from "@components/TickerContainer";
 
 import useGAPageTracking from "@hooks/useGAPageTracking";
 
@@ -77,9 +77,9 @@ export default function App() {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-      <SymbolContainerProvider>
+      <TickerContainerProvider>
         <RouterProvider router={router} />
-      </SymbolContainerProvider>
+      </TickerContainerProvider>
     </ThemeProvider>
   );
 }

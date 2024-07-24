@@ -2,28 +2,28 @@ import React, { createContext, useCallback, useRef } from "react";
 import { store } from "@hooks/useStoreStateReader";
 import useIntersectionObserver from "@hooks/useIntersectionObserver";
 
-export type SymbolContainerContextType = {
+export type TickerContainerContextType = {
   observe: (
     el: HTMLElement,
-    tickerSymbol: string,
+    tickerSymbol: string, // TODO: Replace with `tickerId`?
     onIntersectionStateChange?: (isIntersecting: boolean) => void
   ) => void;
   unobserve: (el?: HTMLElement) => void;
 };
 
-export const SymbolContainerContext = createContext<SymbolContainerContextType>(
-  {} as SymbolContainerContextType
+export const TickerContainerContext = createContext<TickerContainerContextType>(
+  {} as TickerContainerContextType
 );
 
-export type SymbolContainerContextProps = {
+export type TickerContainerContextProps = {
   children: React.ReactNode;
   perSymbolThreshold?: number;
 };
 
-export default function SymbolContainerProvider({
+export default function TickerContainerProvider({
   children,
   perSymbolThreshold = 0.5,
-}: SymbolContainerContextProps) {
+}: TickerContainerContextProps) {
   const metadataMapRef = useRef(
     new Map<
       Element,
@@ -97,13 +97,13 @@ export default function SymbolContainerProvider({
   );
 
   return (
-    <SymbolContainerContext.Provider
+    <TickerContainerContext.Provider
       value={{
         observe: handleObserve,
         unobserve: handleUnobserve,
       }}
     >
       {children}
-    </SymbolContainerContext.Provider>
+    </TickerContainerContext.Provider>
   );
 }

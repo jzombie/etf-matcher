@@ -50,9 +50,12 @@ export default function BucketList({ bucketType }: BucketListProps) {
             )}
           </Padding>
 
-          <SymbolDetailList
+          {
+            // TODO: Reimplement
+          }
+          {/* <SymbolDetailList
             tickerSymbols={symbolBucket.tickers.map(({ symbol }) => symbol)}
-          />
+          /> */}
         </React.Fragment>
       ))}
     </>

@@ -357,10 +357,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
-  // TODO: Update method once `get_ticker_detail` transition is complete
-  async fetchTickerDetail(symbol: string): Promise<RustServiceTickerDetail> {
-    return callRustService<RustServiceTickerDetail>("get_symbol_detail", [
-      symbol,
+  async fetchTickerDetail(tickerId: number): Promise<RustServiceTickerDetail> {
+    return callRustService<RustServiceTickerDetail>("get_ticker_detail", [
+      tickerId,
     ]);
   }
 

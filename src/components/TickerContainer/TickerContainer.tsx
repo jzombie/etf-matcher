@@ -1,21 +1,22 @@
 import React, { useCallback, useContext, useEffect, useRef } from "react";
-import { SymbolContainerContext } from "./SymbolContainerProvider";
+import { TickerContainerContext } from "./TickerContainerProvider";
 
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
-export type SymbolContainerProps = React.HTMLAttributes<HTMLDivElement> & {
+export type TickerContainerProps = React.HTMLAttributes<HTMLDivElement> & {
+  // TODO: Replace w/ tickerId?
   tickerSymbol: string;
   onIntersectionStateChange?: (isIntersecting: boolean) => void;
   children: React.ReactNode;
 };
 
-export default function SymbolContainer({
+export default function TickerContainer({
   tickerSymbol,
   onIntersectionStateChange,
   children,
   ...rest
-}: SymbolContainerProps) {
-  const { observe, unobserve } = useContext(SymbolContainerContext);
+}: TickerContainerProps) {
+  const { observe, unobserve } = useContext(TickerContainerContext);
 
   const elementRef = useRef<HTMLDivElement>(null);
 

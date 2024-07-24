@@ -79,6 +79,11 @@ export default function SearchResults() {
 
   usePageTitleSetter(searchQuery ? `Search results for: ${searchQuery}` : null);
 
+  const tickerIds = useMemo(
+    () => searchResults.map(({ ticker_id }) => ticker_id),
+    [searchResults]
+  );
+
   if (!searchResultSymbols.length) {
     if (isLoading) {
       return (
@@ -167,7 +172,10 @@ export default function SearchResults() {
         direction={!previousPage || page > previousPage ? "left" : "right"}
         trigger={searchResultSymbols}
       >
-        <SymbolDetailList tickerSymbols={searchResultSymbols} />
+        {
+          // TODO: Rename to `TickerDetailList`
+        }
+        <SymbolDetailList tickerIds={tickerIds} />
       </Transition>
 
       {totalSearchResults > pageSize && !isLoading && (
