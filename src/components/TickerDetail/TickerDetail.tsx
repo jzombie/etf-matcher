@@ -13,7 +13,7 @@ import { styled } from "@mui/system";
 import EncodedImage from "../EncodedImage";
 import NewsIcon from "@mui/icons-material/Article";
 
-import ETFHolderList from "./SymbolDetail.ETFHolderList";
+import ETFHolderList from "./TickerDetail.ETFHolderList";
 
 import useImageBackgroundColor from "@hooks/useImageBackgroundColor";
 import useURLState from "@hooks/useURLState";
@@ -21,7 +21,7 @@ import useURLState from "@hooks/useURLState";
 import formatSymbolWithExchange from "@utils/formatSymbolWithExchange";
 import formatCurrency from "@utils/formatCurrency";
 
-export type SymbolDetailProps = React.HTMLAttributes<HTMLDivElement> & {
+export type TickerDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerId: number;
   onIntersectionStateChange?: (isIntersecting: boolean) => void;
 };
@@ -51,12 +51,11 @@ const SymbolDetailWrapper = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(4),
 }));
 
-// TODO: Rename to `TickerDetail`
-export default function SymbolDetail({
+export default function TickerDetail({
   tickerId,
   onIntersectionStateChange,
   ...rest
-}: SymbolDetailProps) {
+}: TickerDetailProps) {
   const { symbolBuckets } = useStoreStateReader(["symbolBuckets"]);
   const [tickerDetail, setSymbolDetail] = useState<
     RustServiceTickerDetail | undefined

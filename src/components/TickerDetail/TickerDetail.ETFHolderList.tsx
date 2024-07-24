@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Pagination } from "@mui/material";
-import ETFHolder from "./SymbolDetail.ETFHolder";
+import ETFHolder from "./TickerDetail.ETFHolder";
 import Transition from "@components/Transition";
 
 import usePagination from "@hooks/usePagination";

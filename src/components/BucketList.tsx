@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import SymbolDetailList from "@components/SymbolDetailList";
+import SymbolDetailList from "@components/TickerDetailList";
 
 import Typography from "@mui/material/Typography";
 

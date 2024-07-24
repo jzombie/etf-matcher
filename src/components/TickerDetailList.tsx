@@ -1,18 +1,17 @@
 import React, { useCallback, useEffect, useState } from "react";
-import SymbolDetail from "./SymbolDetail";
+import SymbolDetail from "./TickerDetail";
 
 import customLogger from "@utils/customLogger";
 
-export type SymbolDetailListProps = {
+export type TickerDetailListProps = {
   tickerIds: number[];
   lookAheadBufferSize?: number;
 };
 
-// TODO: This should use exchanges as well, for greater accuracy
-export default function SymbolDetailList({
+export default function TickerDetailList({
   tickerIds,
   lookAheadBufferSize = 2,
-}: SymbolDetailListProps) {
+}: TickerDetailListProps) {
   useEffect(() => {
     if (tickerIds.length !== [...new Set(tickerIds)].length) {
       customLogger.warn(

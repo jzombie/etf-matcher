@@ -11,7 +11,7 @@ import {
 import useURLState from "@hooks/useURLState";
 
 import SearchModalButton from "@components/SearchModalButton";
-import SymbolDetailList from "@components/SymbolDetailList";
+import SymbolDetailList from "@components/TickerDetailList";
 import Transition from "@components/Transition";
 
 import useSearch from "@hooks/useSearch";
