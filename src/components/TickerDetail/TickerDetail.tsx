@@ -104,7 +104,7 @@ export default function TickerDetail({
   return (
     <TickerContainer
       style={{ marginBottom: 12 }}
-      tickerSymbol={tickerSymbol}
+      tickerId={tickerDetail.ticker_id}
       onIntersectionStateChange={onIntersectionStateChange}
       {...rest}
     >

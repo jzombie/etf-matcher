@@ -31,7 +31,7 @@ export default function Settings() {
     isRustInit,
     prettyDataBuildTime,
     isDirtyState,
-    visibleSymbols,
+    visibleTickerIds,
     isOnline,
     isProfilingCacheOverlayOpen,
     isGAPageTrackingEnabled,
@@ -46,7 +46,7 @@ export default function Settings() {
     "isRustInit",
     "prettyDataBuildTime",
     "isDirtyState",
-    "visibleSymbols",
+    "visibleTickerIds",
     "isOnline",
     "isProfilingCacheOverlayOpen",
     "isGAPageTrackingEnabled",
@@ -197,7 +197,7 @@ export default function Settings() {
           {" | "}
           {isRustInit ? "Rust Service Init" : "Rust Service Not Init"}
           {" | "}
-          {visibleSymbols?.toString()}
+          {visibleTickerIds?.toString()}
         </Typography>
       </Padding>
     </Scrollable>

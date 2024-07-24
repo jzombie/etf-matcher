@@ -5,7 +5,7 @@ import useIntersectionObserver from "@hooks/useIntersectionObserver";
 export type TickerContainerContextType = {
   observe: (
     el: HTMLElement,
-    tickerSymbol: string, // TODO: Replace with `tickerId`?
+    tickerId: number,
     onIntersectionStateChange?: (isIntersecting: boolean) => void
   ) => void;
   unobserve: (el?: HTMLElement) => void;
@@ -28,18 +28,18 @@ export default function TickerContainerProvider({
     new Map<
       Element,
       {
-        symbol: string;
+        tickerId: number;
         intersectionCallback?: (isIntersecting: boolean) => void;
       }
     >()
   );
-  const visibleSymbolMapRef = useRef(new Map<Element, string>());
+  const visibleSymbolMapRef = useRef(new Map<Element, number>());
 
   const syncVisibleSymbols = useCallback(() => {
-    const uniqueVisibleSymbols = [
+    const uniqueVisibleTickerIds = [
       ...new Set(visibleSymbolMapRef.current.values()),
     ];
-    store.setVisibleSymbols(uniqueVisibleSymbols);
+    store.setVisibleTickers(uniqueVisibleTickerIds);
   }, []);
 
   const observerCallback = useCallback(
@@ -47,9 +47,9 @@ export default function TickerContainerProvider({
       entries.forEach((entry) => {
         const metadata = metadataMapRef.current.get(entry.target);
         if (metadata) {
-          const { symbol, intersectionCallback } = metadata;
+          const { tickerId, intersectionCallback } = metadata;
           if (entry.isIntersecting) {
-            visibleSymbolMapRef.current.set(entry.target, symbol);
+            visibleSymbolMapRef.current.set(entry.target, tickerId);
           } else {
             visibleSymbolMapRef.current.delete(entry.target);
           }
@@ -72,12 +72,12 @@ export default function TickerContainerProvider({
   const handleObserve = useCallback(
     (
       el: HTMLElement,
-      tickerSymbol: string,
+      tickerId: number,
       onIntersectionStateChange?: (isIntersecting: boolean) => void
     ) => {
       observe(el);
       metadataMapRef.current.set(el, {
-        symbol: tickerSymbol,
+        tickerId,
         intersectionCallback: onIntersectionStateChange,
       });
     },

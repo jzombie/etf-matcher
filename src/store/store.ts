@@ -65,9 +65,9 @@ export type StoreStateProps = {
   dataBuildTime: string;
   prettyDataBuildTime: string;
   isDirtyState: boolean;
-  visibleSymbols: string[];
+  visibleTickerIds: number[];
   isSearchModalOpen: boolean;
-  symbolBuckets: SymbolBucketProps[];
+  symbolBuckets: SymbolBucketProps[]; // TODO: `tickerBuckets`
   isProfilingCacheOverlayOpen: boolean;
   cacheProfilerWaitTime: number;
   cacheDetails: RustServiceCacheDetail[];
@@ -95,7 +95,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       dataBuildTime: "",
       prettyDataBuildTime: "",
       isDirtyState: false,
-      visibleSymbols: [],
+      visibleTickerIds: [],
       isSearchModalOpen: false,
       symbolBuckets: [
         {
@@ -310,8 +310,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     };
   }
 
-  setVisibleSymbols(visibleSymbols: string[]) {
-    this.setState({ visibleSymbols });
+  setVisibleTickers(visibleTickerIds: number[]) {
+    this.setState({ visibleTickerIds });
   }
 
   private _fetchDataBuildInfo() {

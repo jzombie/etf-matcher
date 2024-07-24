@@ -4,14 +4,13 @@ import { TickerContainerContext } from "./TickerContainerProvider";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 export type TickerContainerProps = React.HTMLAttributes<HTMLDivElement> & {
-  // TODO: Replace w/ tickerId?
-  tickerSymbol: string;
+  tickerId: number;
   onIntersectionStateChange?: (isIntersecting: boolean) => void;
   children: React.ReactNode;
 };
 
 export default function TickerContainer({
-  tickerSymbol,
+  tickerId,
   onIntersectionStateChange,
   children,
   ...rest
@@ -38,13 +37,13 @@ export default function TickerContainer({
   useEffect(() => {
     if (elementRef.current) {
       const el = elementRef.current;
-      observe(el, tickerSymbol, handleOnIntersectionStateChange);
+      observe(el, tickerId, handleOnIntersectionStateChange);
 
       return () => {
         unobserve(el as HTMLElement);
       };
     }
-  }, [tickerSymbol, observe, unobserve, handleOnIntersectionStateChange]);
+  }, [tickerId, observe, unobserve, handleOnIntersectionStateChange]);
 
   return (
     <div ref={elementRef} {...rest}>
