@@ -35,18 +35,22 @@ impl Notifier {
         Self::call_notify("xhr_request_error", &[url]);
     }
 
+    // TODO: Rename to `network_cache_accessed`
     pub fn cache_accessed(key: &str) {
         Self::call_notify("cache_accessed", &[key]);
     }
 
+    // TODO: Rename to `network_cache_entry_inserted`
     pub fn cache_entry_inserted(key: &str) {
         Self::call_notify("cache_entry_inserted", &[key]);
     }
 
+    // TODO: Rename to `network_cache_entry_removed`
     pub fn cache_entry_removed(key: &str) {
         Self::call_notify("cache_entry_removed", &[key]);
     }
 
+    // TODO: Rename to `network_cache_cleared`
     pub fn cache_cleared() {
         Self::call_notify("cache_cleared", &[]);
     }
