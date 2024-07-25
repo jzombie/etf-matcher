@@ -1,6 +1,11 @@
 // TODO: Mark `optional` the types which are `Option` types in Rust
 // TODO: Rename all `...WithTotalCount` to `Paginated...`
 
+export type RustServicePaginatedResults<T> = {
+  total_count: number;
+  results: T[];
+};
+
 // "Level 1"
 export type RustServiceSearchResult = {
   ticker_id: number;
@@ -39,16 +44,13 @@ export type RustServiceETFAggregateDetail = {
   top_pct_sector_weight: number;
 };
 
-export type RustServiceSearchResultsWithTotalCount = {
-  total_count: number;
-  results: RustServiceSearchResult[];
-};
+// TODO: Rename type
+export type RustServiceSearchResultsWithTotalCount =
+  RustServicePaginatedResults<RustServiceSearchResult>;
 
 // TODO: Rename type
-export type RustServiceETFHoldersWithTotalCount = {
-  total_count: number;
-  results: RustServiceETFAggregateDetail[];
-};
+export type RustServiceETFHoldersWithTotalCount =
+  RustServicePaginatedResults<RustServiceETFAggregateDetail>;
 
 export type RustServiceCacheDetail = {
   key: string;
