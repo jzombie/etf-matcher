@@ -23,6 +23,7 @@ export type RustServiceTickerDetail = {
   industry_name?: string;
   sector_name?: string;
   is_etf: boolean;
+  is_held_in_etf: boolean;
   score_avg_dca: number;
   logo_filename?: string;
 };

@@ -8,12 +8,12 @@ use crate::SectorById;
 use crate::types::{TickerId, IndustryId, SectorId};
 
 // Custom deserialization function to convert Option<i32> to Option<bool>
-fn from_numeric_to_option_bool<'de, D>(deserializer: D) -> Result<Option<bool>, D::Error>
+fn from_numeric_to_bool<'de, D>(deserializer: D) -> Result<bool, D::Error>
 where
     D: Deserializer<'de>,
 {
-    let num: Option<i32> = Option::deserialize(deserializer)?;
-    Ok(num.map(|n| n != 0))
+    let num: i32 = i32::deserialize(deserializer)?;
+    Ok(num != 0)
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -26,8 +26,10 @@ pub struct TickerDetail {
     pub country_code: Option<String>,
     pub industry_id: Option<IndustryId>,
     pub sector_id: Option<SectorId>,
-    #[serde(deserialize_with = "from_numeric_to_option_bool")]
-    pub is_etf: Option<bool>,
+    #[serde(deserialize_with = "from_numeric_to_bool")]
+    pub is_etf: bool,
+    #[serde(deserialize_with = "from_numeric_to_bool")]
+    pub is_held_in_etf: bool,
     pub score_avg_dca: Option<f32>,
     pub logo_filename: Option<String>,
 }
@@ -43,6 +45,7 @@ pub struct TickerDetailResponse {
     pub industry_name: Option<String>,
     pub sector_name: Option<String>,
     pub is_etf: bool,
+    pub is_held_in_etf: bool,
     pub score_avg_dca: Option<f32>,
     pub logo_filename: Option<String>,
 }
@@ -74,8 +77,6 @@ impl TickerDetail {
             None => None,
         };
 
-        let is_etf = detail.is_etf.unwrap_or(false);
-
         // Construct the response
         Ok(TickerDetailResponse {
             ticker_id: detail.ticker_id,
@@ -86,7 +87,8 @@ impl TickerDetail {
             country_code: detail.country_code,
             industry_name,
             sector_name,
-            is_etf,
+            is_etf: detail.is_etf,
+            is_held_in_etf: detail.is_held_in_etf,
             score_avg_dca: detail.score_avg_dca,
             logo_filename: detail.logo_filename,
         })
