@@ -19,8 +19,6 @@ import formatLocalTime from "@utils/formatLocalTime";
 
 import usePageTitleSetter from "@utils/usePageTitleSetter";
 
-import callRustService from "@utils/callRustService";
-
 export default function Settings() {
   usePageTitleSetter("Settings");
 
