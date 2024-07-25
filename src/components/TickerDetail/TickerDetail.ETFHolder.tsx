@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Box, ButtonBase } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";
-// import { store } from "@hooks/useStoreStateReader";
 
 import type { RustServiceETFAggregateDetail } from "@src/types";
 import formatCurrency from "@utils/formatCurrency";
@@ -13,16 +12,6 @@ export type ETFHolderProps = {
 
 export default function ETFHolderProps({ etfAggregateDetail }: ETFHolderProps) {
   const navigate = useNavigate();
-
-  // const [etfAggregateDetail, setETFAggregateDetail] = useState<
-  //   RustServiceETFAggregateDetail | undefined
-  // >(undefined);
-
-  // useEffect(() => {
-  //   store
-  //     .fetchETFAggregateDetailByTickerId(etfTickerId)
-  //     .then(setETFAggregateDetail);
-  // }, [etfTickerId]);
 
   // TODO: Look up more information about this symbol (i.e. holdings, etc.)
 
