@@ -2,44 +2,45 @@ import React, { createContext, useCallback, useRef } from "react";
 import { store } from "@hooks/useStoreStateReader";
 import useIntersectionObserver from "@hooks/useIntersectionObserver";
 
-export type SymbolContainerContextType = {
+export type TickerContainerContextType = {
   observe: (
     el: HTMLElement,
-    tickerSymbol: string,
+    tickerId: number,
     onIntersectionStateChange?: (isIntersecting: boolean) => void
   ) => void;
   unobserve: (el?: HTMLElement) => void;
 };
 
-export const SymbolContainerContext = createContext<SymbolContainerContextType>(
-  {} as SymbolContainerContextType
+export const TickerContainerContext = createContext<TickerContainerContextType>(
+  {} as TickerContainerContextType
 );
 
-export type SymbolContainerContextProps = {
+export type TickerContainerContextProps = {
   children: React.ReactNode;
   perSymbolThreshold?: number;
 };
 
-export default function SymbolContainerProvider({
+export default function TickerContainerProvider({
   children,
-  perSymbolThreshold = 0.5,
-}: SymbolContainerContextProps) {
+  perSymbolThreshold = 0.1,
+}: TickerContainerContextProps) {
   const metadataMapRef = useRef(
     new Map<
       Element,
       {
-        symbol: string;
+        tickerId: number;
         intersectionCallback?: (isIntersecting: boolean) => void;
       }
     >()
   );
-  const visibleSymbolMapRef = useRef(new Map<Element, string>());
+  const visibleSymbolMapRef = useRef(new Map<Element, number>());
 
-  const syncVisibleSymbols = useCallback(() => {
-    const uniqueVisibleSymbols = [
+  const syncVisibleTickers = useCallback(() => {
+    const uniqueVisibleTickerIds = [
       ...new Set(visibleSymbolMapRef.current.values()),
     ];
-    store.setVisibleSymbols(uniqueVisibleSymbols);
+
+    store.setVisibleTickers(uniqueVisibleTickerIds);
   }, []);
 
   const observerCallback = useCallback(
@@ -47,9 +48,9 @@ export default function SymbolContainerProvider({
       entries.forEach((entry) => {
         const metadata = metadataMapRef.current.get(entry.target);
         if (metadata) {
-          const { symbol, intersectionCallback } = metadata;
+          const { tickerId, intersectionCallback } = metadata;
           if (entry.isIntersecting) {
-            visibleSymbolMapRef.current.set(entry.target, symbol);
+            visibleSymbolMapRef.current.set(entry.target, tickerId);
           } else {
             visibleSymbolMapRef.current.delete(entry.target);
           }
@@ -59,9 +60,9 @@ export default function SymbolContainerProvider({
         }
       });
 
-      syncVisibleSymbols();
+      syncVisibleTickers();
     },
-    [syncVisibleSymbols]
+    [syncVisibleTickers]
   );
 
   const { observe, unobserve } = useIntersectionObserver(
@@ -72,12 +73,12 @@ export default function SymbolContainerProvider({
   const handleObserve = useCallback(
     (
       el: HTMLElement,
-      tickerSymbol: string,
+      tickerId: number,
       onIntersectionStateChange?: (isIntersecting: boolean) => void
     ) => {
       observe(el);
       metadataMapRef.current.set(el, {
-        symbol: tickerSymbol,
+        tickerId,
         intersectionCallback: onIntersectionStateChange,
       });
     },
@@ -90,20 +91,20 @@ export default function SymbolContainerProvider({
         unobserve(el);
         metadataMapRef.current.delete(el);
         visibleSymbolMapRef.current.delete(el);
-        syncVisibleSymbols();
+        syncVisibleTickers();
       }
     },
-    [unobserve, syncVisibleSymbols]
+    [unobserve, syncVisibleTickers]
   );
 
   return (
-    <SymbolContainerContext.Provider
+    <TickerContainerContext.Provider
       value={{
         observe: handleObserve,
         unobserve: handleUnobserve,
       }}
     >
       {children}
-    </SymbolContainerContext.Provider>
+    </TickerContainerContext.Provider>
   );
 }

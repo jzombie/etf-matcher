@@ -1,16 +1,22 @@
-import { ReactStateEmitter } from "@utils/StateEmitter";
+// TODO: Add in session persistence so that portfolios and watchlists (`symbolBuckets`) can be saved.
+// Ideally this should happen via the `SharedWorker` so that multiple tabs can retain the same store.
+
+import {
+  ReactStateEmitter,
+  StateEmitterDefaultEvents,
+} from "@utils/StateEmitter";
 import callRustService, {
   subscribe as libRustServiceSubscribe,
   NotifierEvent,
 } from "@utils/callRustService";
-import {
-  RustServiceSymbolDetail,
-  RustServiceSearchResultsWithTotalCount,
+import type {
+  RustServiceTickerDetail,
+  RustServicePaginatedTickerSearchResults,
   RustServiceETFHoldersWithTotalCount,
   RustServiceCacheDetail,
   RustServiceETFAggregateDetail,
   RustServiceImageInfo,
-} from "@utils/callRustService";
+} from "@src/types";
 import {
   XHROpenedRequests,
   CacheAccessedRequests,
@@ -23,10 +29,16 @@ import debounceWithKey from "@utils/debounceWithKey";
 
 const IS_PROD = import.meta.env.PROD;
 
+type SymbolBucketTicker = {
+  exchange: string;
+  symbol: string;
+  quantity: number;
+};
+
 export type SymbolBucketProps = {
   name: string;
-  symbols: string[];
-  type:
+  tickers: SymbolBucketTicker[];
+  bucketType:
     | "watchlist"
     | "portfolio"
     | "ticker_tape"
@@ -34,6 +46,16 @@ export type SymbolBucketProps = {
     | "attention_tracker";
   requiresQuantity: boolean;
   isUserConfigurable: boolean;
+};
+
+export const symbolBucketDefaultNames: Readonly<
+  Record<SymbolBucketProps["bucketType"], string>
+> = {
+  watchlist: "Watchlist",
+  portfolio: "Portfolio",
+  ticker_tape: "Ticker Tape",
+  recently_viewed: "Recently Viewed",
+  attention_tracker: "Attention Tracker",
 };
 
 export type StoreStateProps = {
@@ -46,9 +68,9 @@ export type StoreStateProps = {
   dataBuildTime: string;
   prettyDataBuildTime: string;
   isDirtyState: boolean;
-  visibleSymbols: string[];
+  visibleTickerIds: number[];
   isSearchModalOpen: boolean;
-  symbolBuckets: SymbolBucketProps[];
+  symbolBuckets: SymbolBucketProps[]; // TODO: `tickerBuckets`
   isProfilingCacheOverlayOpen: boolean;
   cacheProfilerWaitTime: number;
   cacheDetails: RustServiceCacheDetail[];
@@ -76,34 +98,34 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       dataBuildTime: "",
       prettyDataBuildTime: "",
       isDirtyState: false,
-      visibleSymbols: [],
+      visibleTickerIds: [],
       isSearchModalOpen: false,
       symbolBuckets: [
         {
           name: "My Portfolio",
-          symbols: [],
-          type: "portfolio",
+          tickers: [],
+          bucketType: "portfolio",
           requiresQuantity: true,
           isUserConfigurable: true,
         },
         {
           name: "My Watchlist",
-          symbols: [],
-          type: "watchlist",
+          tickers: [],
+          bucketType: "watchlist",
           requiresQuantity: false,
           isUserConfigurable: true,
         },
         {
           name: "My Ticker Tape",
-          symbols: [],
-          type: "ticker_tape",
+          tickers: [],
+          bucketType: "ticker_tape",
           requiresQuantity: false,
           isUserConfigurable: true,
         },
         {
           name: "My Recently Viewed",
-          symbols: [],
-          type: "recently_viewed",
+          tickers: [],
+          bucketType: "recently_viewed",
           requiresQuantity: false,
           isUserConfigurable: false,
         },
@@ -111,8 +133,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         // symbols and the frequency of the most common ETFs that hold those symbols
         {
           name: "My Attention Tracker",
-          symbols: [],
-          type: "attention_tracker",
+          tickers: [],
+          bucketType: "attention_tracker",
           requiresQuantity: false,
           isUserConfigurable: false,
         },
@@ -129,23 +151,18 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // Only deepfreeze in development
     this.shouldDeepfreeze = !IS_PROD;
 
-    this._initLocalEvents();
+    // Note: This returns an unsubscribe callback which could be handed if the store
+    // were to be torn down
+    this._initLocalSubscription();
 
     // TODO: Poll for data build info once every "x" to ensure the data is always running the latest version
     this._fetchDataBuildInfo();
 
     // Make initial searches faster
-    this._preloadSymbolSearchCache();
-
-    // TODO: Remove temporary
-    // setInterval(() => {
-    //   this.setState((prev) => ({
-    //     isDirtyState: !prev.isDirtyState,
-    //   }));
-    // }, 1000);
+    this._preloadTickerSearchCache();
   }
 
-  private _initLocalEvents() {
+  private _initLocalSubscription(): () => void {
     const _handleOnlineStatus = () => {
       this.setState({ isOnline: Boolean(navigator.onLine) });
     };
@@ -155,17 +172,15 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     window.addEventListener("online", _handleOnlineStatus);
     window.addEventListener("offline", _handleOnlineStatus);
 
-    // TODO: Reintegrate or use this pattern as needed
-    // const _handleVisibleSymbolsUpdate = (keys: (keyof StoreStateProps)[]) => {
-    //   if (keys.includes("visibleSymbols")) {
-    //     const { visibleSymbols } = this.getState(["visibleSymbols"]);
+    const _handleVisibleTickersUpdate = (keys: (keyof StoreStateProps)[]) => {
+      if (keys.includes("visibleTickerIds")) {
+        const { visibleTickerIds } = this.getState(["visibleTickerIds"]);
 
-    //     // TODO: Handle this tracking
-    //     // console.log({ visibleSymbols });
-    //   }
-    // };
-
-    // this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
+        // TODO: Handle this tracking
+        customLogger.debug({ visibleTickerIds });
+      }
+    };
+    this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
 
     // Instantiate and set up event bindings for `OpenNetworkRequests`
     const { xhrOpenedRequests, cacheAccessedRequests } = (() => {
@@ -258,16 +273,16 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           }
         }
 
-        if (eventType === NotifierEvent.CACHE_ACCESSED) {
+        if (eventType === NotifierEvent.NETWORK_CACHE_ACCESSED) {
           // Signal open cache request (auto-closes)
           cacheAccessedRequests.add(pathName);
         }
 
         if (
           [
-            NotifierEvent.CACHE_ENTRY_INSERTED,
-            NotifierEvent.CACHE_ENTRY_REMOVED,
-            NotifierEvent.CACHE_CLEARED,
+            NotifierEvent.NETWORK_CACHE_ENTRY_INSERTED,
+            NotifierEvent.NETWORK_CACHE_ENTRY_REMOVED,
+            NotifierEvent.NETWORK_CACHE_CLEARED,
           ].includes(eventType)
         ) {
           debounceWithKey(
@@ -292,12 +307,12 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
       libRustServiceUnsubscribe();
 
-      // this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleSymbolsUpdate);
+      this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
     };
   }
 
-  setVisibleSymbols(visibleSymbols: string[]) {
-    this.setState({ visibleSymbols });
+  setVisibleTickers(visibleTickerIds: number[]) {
+    this.setState({ visibleTickerIds });
   }
 
   private _fetchDataBuildInfo() {
@@ -313,109 +328,53 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     });
   }
 
-  private async _preloadSymbolSearchCache() {
+  private async _preloadTickerSearchCache() {
     return callRustService("preload_symbol_search_cache");
   }
 
-  // PROTO_getCacheDetails() {
-  //   callRustService<RustServiceCacheDetail[]>("get_cache_details")
-  //     .then(console.table)
-  //     .catch((error) => console.error(error));
-  // }
-
-  // TODO: For the following `PROTO` functions, it might be best to not retain a duplicate copy here,
-  // except where absolutely needed (and utilize Rust for more `composite` metric generation).
-
   // TODO: Update type (use pagination type with generics)
-  async searchSymbols(
+  async searchTickers(
     query: string,
     page: number = 1,
     pageSize: number = 20,
     onlyExactMatches: boolean = false,
     abortSignal?: AbortSignal
-  ): Promise<RustServiceSearchResultsWithTotalCount> {
-    return callRustService<RustServiceSearchResultsWithTotalCount>(
-      "search_symbols",
+  ): Promise<RustServicePaginatedTickerSearchResults> {
+    return callRustService<RustServicePaginatedTickerSearchResults>(
+      "search_tickers",
       [query.trim(), page, pageSize, onlyExactMatches],
       abortSignal
     );
   }
-  async fetchSymbolETFHolders(
-    symbol: string,
+  async fetchETFHoldersAggregateDetailByTickerId(
+    tickerId: number,
     page: number = 1,
     pageSize: number = 20
+    // TODO: Update type
   ): Promise<RustServiceETFHoldersWithTotalCount> {
     return callRustService<RustServiceETFHoldersWithTotalCount>(
-      "get_symbol_etf_holders",
-      [symbol, page, pageSize]
+      "get_etf_holders_aggregate_detail_by_ticker_id",
+      [tickerId, page, pageSize]
     );
   }
 
-  async fetchSymbolDetail(symbol: string): Promise<RustServiceSymbolDetail> {
-    return callRustService<RustServiceSymbolDetail>("get_symbol_detail", [
-      symbol,
+  async fetchTickerDetail(tickerId: number): Promise<RustServiceTickerDetail> {
+    return callRustService<RustServiceTickerDetail>("get_ticker_detail", [
+      tickerId,
     ]);
   }
 
-  async fetchETFAggregateDetail(
-    etfSymbol: string
+  async fetchETFAggregateDetailByTickerId(
+    etfTickerId: number
   ): Promise<RustServiceETFAggregateDetail> {
     return callRustService<RustServiceETFAggregateDetail>(
-      "get_etf_aggregate_detail",
-      [etfSymbol]
+      "get_etf_aggregate_detail_by_ticker_id",
+      [etfTickerId]
     );
   }
-
-  // PROTO_countEtfsPerExchange() {
-  //   callRustService("count_etfs_per_exchange")
-  //     .then((countsPerExchange) =>
-  //       console.log({
-  //         countsPerExchange,
-  //       })
-  //     )
-  //     .catch((error) => console.error(error));
-  // }
-
-  // PROTO_getEtfHolderAssetCount() {
-  //   const ETF_HOLDER_SYMBOL = "SPY";
-  //   callRustService("get_etf_holder_asset_count", ETF_HOLDER_SYMBOL)
-  //     .then((assetCount) =>
-  //       console.log({
-  //         etfHolder: ETF_HOLDER_SYMBOL,
-  //         assetCount,
-  //       })
-  //     )
-  //     .catch((error) => console.error(error));
-  // }
 
   fetchImageInfo(filename: string): Promise<RustServiceImageInfo> {
     return callRustService<RustServiceImageInfo>("get_image_info", [filename]);
-  }
-
-  // TODO: Remove; just debugging; probably don't need to expose this
-  PROTO_fetchSymbolWithId(tickerId: number) {
-    callRustService("get_symbol_with_id", [tickerId]).then(customLogger.debug);
-  }
-
-  // TODO: Remove; just debugging; probably don't need to expose this
-  PROTO_fetchExchangeIdWithTickerId(tickerId: number) {
-    callRustService("get_exchange_id_with_ticker_id", [tickerId]).then(
-      customLogger.debug
-    );
-  }
-
-  // TODO: Remove; just debugging; probably don't need to expose this
-  PROTO_fetchSectorNameWithId(sectorId: number) {
-    callRustService("get_sector_name_with_id", [sectorId]).then(
-      customLogger.debug
-    );
-  }
-
-  // TODO: Remove; just debugging; probably don't need to expose this
-  PROTO_fetchIndustryNameWithId(industryId: number) {
-    callRustService("get_industry_name_with_id", [industryId]).then(
-      customLogger.debug
-    );
   }
 
   PROTO_removeCacheEntry(key: string) {
@@ -428,13 +387,28 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     callRustService("clear_cache");
   }
 
-  addSymbolToBucket(symbol: string, symbolBucket: SymbolBucketProps) {
+  // TODO: Combine `symbol` and `exchange` into `ticker`
+  addTickerToBucket(
+    symbol: string,
+    exchange: string,
+    quantity: number,
+    symbolBucket: SymbolBucketProps
+  ) {
     this.setState((prevState) => {
       const symbolBuckets = prevState.symbolBuckets.map((bucket) => {
         if (bucket.name === symbolBucket.name) {
           return {
             ...bucket,
-            symbols: Array.from(new Set([...bucket.symbols, symbol])),
+            tickers: Array.from(
+              new Set([
+                ...bucket.tickers,
+                {
+                  exchange,
+                  symbol,
+                  quantity: quantity,
+                },
+              ])
+            ),
           };
         }
         return bucket;

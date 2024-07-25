@@ -1,16 +1,18 @@
 mod decrypt;
 mod notifier;
 
-pub mod cache;
+pub mod network_cache;
 pub mod fetch_and_decompress;
 pub mod parse;
 pub mod shard;
-pub mod xhr_fetch;
+pub mod ticker_utils;
+
+pub mod logo_utils;
+pub use logo_utils::extract_logo_filename;
+
+pub mod xhr_utils;
+pub use xhr_utils::xhr_fetch;
 
 // Re-export cache methods to be accessible from other modules
-pub use cache::{get_cache_future, insert_cache_future, remove_cache_entry};
+pub use network_cache::{get_cache_future, insert_cache_future, remove_cache_entry};
 
-// Re-export to avoid doubled-up "extract_logo_filename::extract_logo_filename" in consumers
-mod extract_logo_filename;
-pub use extract_logo_filename::extract_logo_filename;
-pub use xhr_fetch::xhr_fetch;

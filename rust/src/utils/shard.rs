@@ -4,26 +4,39 @@ use crate::JsValue;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 
+// TODO: Caching shard values instead of caching their results could significantly
+// reduce cache storage (the index could stay cached, if necessary). This would need
+// to be implemented carefully because some shards may need to be queried multiple
+// in rapid succession for certain types of searches.
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
-struct ShardIndexEntry {
+struct ShardIndexEntry<T> {
     pub shard_file: String,
-    pub first_symbol: String,
-    pub last_symbol: String,
+    pub first_id: T,
+    pub last_id: T,
 }
 
-async fn parse_shard_index(shard_index_url: &str) -> Result<Vec<ShardIndexEntry>, JsValue> {
+async fn parse_shard_index<T>(shard_index_url: &str) -> Result<Vec<ShardIndexEntry<T>>, JsValue>
+where
+    T: DeserializeOwned,
+{
     let csv_data = fetch_and_decompress_gz(shard_index_url, true).await?;
     let csv_string = String::from_utf8(csv_data)
         .map_err(|err| JsValue::from_str(&format!("Failed to convert data to String: {}", err)))?;
-    let entries: Vec<ShardIndexEntry> = parse_csv_data(csv_string.as_bytes())?;
+    let entries: Vec<ShardIndexEntry<T>> = parse_csv_data(csv_string.as_bytes())?;
     Ok(entries)
 }
 
-fn find_shard_for_symbol<'a>(
-    symbol: &str,
-    shard_index: &'a [ShardIndexEntry],
-) -> Option<&'a ShardIndexEntry> {
-    shard_index.iter().find(|&entry| symbol >= entry.first_symbol.as_str() && symbol <= entry.last_symbol.as_str())
+fn find_shard_for_id<'a, T>(
+    value: &T,
+    shard_index: &'a [ShardIndexEntry<T>],
+) -> Option<&'a ShardIndexEntry<T>>
+where
+    T: PartialOrd,
+{
+    shard_index
+        .iter()
+        .find(|&entry| value >= &entry.first_id && value <= &entry.last_id)
 }
 
 async fn fetch_and_parse_shard<T>(shard_url: &str) -> Result<Vec<T>, JsValue>
@@ -37,22 +50,21 @@ where
     Ok(entries)
 }
 
-// TODO: Add `query_shard_for_ticker_id` and deprecate `query_shard_for_symbol` and related tooling
-
-pub async fn query_shard_for_symbol<T, F>(
+pub async fn query_shard_for_id<T, F, V>(
     shard_index_url: &str,
-    symbol: &str,
-    get_symbol: F,
+    value: &V,
+    get_value: F,
 ) -> Result<Option<T>, JsValue>
 where
     T: DeserializeOwned,
-    F: Fn(&T) -> Option<&str>,
+    V: PartialOrd + DeserializeOwned,
+    F: Fn(&T) -> Option<&V>,
 {
     // Parse the shard index
-    let shard_index: Vec<ShardIndexEntry> = parse_shard_index(shard_index_url).await?;
+    let shard_index: Vec<ShardIndexEntry<V>> = parse_shard_index(shard_index_url).await?;
 
-    // Find the appropriate shard for the given symbol
-    if let Some(shard_entry) = find_shard_for_symbol(symbol, &shard_index) {
+    // Find the appropriate shard for the given value
+    if let Some(shard_entry) = find_shard_for_id(value, &shard_index) {
         // Determine the base path from the shard_index_url
         let base_path: &str = if let Some(pos) = shard_index_url.rfind('/') {
             &shard_index_url[..pos + 1]
@@ -68,7 +80,7 @@ where
 
         // Find the specific entry in the shard
         for entry in shard_data {
-            if get_symbol(&entry) == Some(symbol) {
+            if get_value(&entry) == Some(value) {
                 return Ok(Some(entry));
             }
         }

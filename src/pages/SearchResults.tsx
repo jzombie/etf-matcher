@@ -11,7 +11,7 @@ import {
 import useURLState from "@hooks/useURLState";
 
 import SearchModalButton from "@components/SearchModalButton";
-import SymbolDetailList from "@components/SymbolDetailList";
+import TickerDetailList from "@components/TickerDetailList";
 import Transition from "@components/Transition";
 
 import useSearch from "@hooks/useSearch";
@@ -78,6 +78,11 @@ export default function SearchResults() {
   );
 
   usePageTitleSetter(searchQuery ? `Search results for: ${searchQuery}` : null);
+
+  const tickerIds = useMemo(
+    () => searchResults.map(({ ticker_id }) => ticker_id),
+    [searchResults]
+  );
 
   if (!searchResultSymbols.length) {
     if (isLoading) {
@@ -167,7 +172,7 @@ export default function SearchResults() {
         direction={!previousPage || page > previousPage ? "left" : "right"}
         trigger={searchResultSymbols}
       >
-        <SymbolDetailList tickerSymbols={searchResultSymbols} />
+        <TickerDetailList tickerIds={tickerIds} />
       </Transition>
 
       {totalSearchResults > pageSize && !isLoading && (

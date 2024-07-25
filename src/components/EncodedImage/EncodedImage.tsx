@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import type { RustServiceImageInfo } from "@utils/callRustService";
+import type { RustServiceImageInfo } from "@src/types";
 import CircularProgress from "@mui/material/CircularProgress";
 import ErrorIcon from "@mui/icons-material/Error";
 

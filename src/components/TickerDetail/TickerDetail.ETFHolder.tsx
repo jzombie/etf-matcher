@@ -1,42 +1,32 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Box, ButtonBase } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";
-import { store } from "@hooks/useStoreStateReader";
 
-import type { RustServiceETFAggregateDetail } from "@utils/callRustService";
+import type { RustServiceETFAggregateDetail } from "@src/types";
 import formatCurrency from "@utils/formatCurrency";
 
 export type ETFHolderProps = {
-  etfSymbol: string;
+  etfAggregateDetail: RustServiceETFAggregateDetail;
 };
 
-export default function ETFHolderProps({ etfSymbol }: ETFHolderProps) {
+export default function ETFHolderProps({ etfAggregateDetail }: ETFHolderProps) {
   const navigate = useNavigate();
 
-  const [etfAggregateDetail, setETFAggregateDetail] = useState<
-    RustServiceETFAggregateDetail | undefined
-  >(undefined);
-
-  useEffect(() => {
-    store.fetchETFAggregateDetail(etfSymbol).then(setETFAggregateDetail);
-  }, [etfSymbol]);
-
   // TODO: Look up more information about this symbol (i.e. holdings, etc.)
-
-  if (!etfAggregateDetail) {
-    return null;
-  }
 
   return (
     <Box sx={{ paddingBottom: 2 }}>
       <ButtonBase
-        onClick={() => navigate(`/search?query=${etfSymbol}&exact=true`)}
+        onClick={() =>
+          // TODO: Use setURLState
+          navigate(`/search?query=${etfAggregateDetail.etf_symbol}&exact=true`)
+        }
         sx={{ display: "block", width: "100%", textAlign: "left" }}
       >
         <div>
           <div style={{ fontWeight: "bold" }}>
-            {etfAggregateDetail.etf_name} ({etfSymbol})
+            {etfAggregateDetail.etf_name} ({etfAggregateDetail.etf_symbol})
           </div>
           <div>
             Top Sector Market Value:{" "}

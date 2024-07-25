@@ -12,25 +12,39 @@ import {
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 
+// import store from "@src/store";
+
 interface Asset {
+  // TODO: Needs to account for exchange! The only way to do this effectively is tie this into the symbol search mechanism.
   symbol: string;
-  weight: string;
+  shares: number;
 }
 
 const PortfolioForm: React.FC = () => {
-  const [assets, setAssets] = useState<Asset[]>([{ symbol: "", weight: "" }]);
+  const [assets, setAssets] = useState<Asset[]>([{ symbol: "", shares: 0 }]);
 
   const handleInputChange = (
     index: number,
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
+    const { name, value } = event.target;
     const values = [...assets];
-    values[index][event.target.name as keyof Asset] = event.target.value;
+
+    if (name === "shares") {
+      values[index].shares = parseInt(value, 10);
+    } else if (name === "symbol") {
+      // TODO: Implement query symbols while typing
+      //  |
+      //  |_ Perform a regular symbol search
+      // store.PROTO_getTickerIdsWithSymbol(value);
+
+      values[index].symbol = value;
+    }
     setAssets(values);
   };
 
   const handleAddFields = () => {
-    setAssets([...assets, { symbol: "", weight: "" }]);
+    setAssets([...assets, { symbol: "", shares: 1 }]);
   };
 
   const handleRemoveFields = (index: number) => {
@@ -55,6 +69,9 @@ const PortfolioForm: React.FC = () => {
             {assets.map((asset, index) => (
               <React.Fragment key={index}>
                 <Grid item xs={5}>
+                  {
+                    // TODO: Enable typical symbol/company search here; show icon for results, etc.
+                  }
                   <TextField
                     name="symbol"
                     label="Symbol"
@@ -67,12 +84,13 @@ const PortfolioForm: React.FC = () => {
                 </Grid>
                 <Grid item xs={5}>
                   <TextField
-                    name="weight"
-                    label="Weight"
+                    name="shares"
+                    label="Shares"
                     variant="outlined"
                     fullWidth
                     required
-                    value={asset.weight}
+                    type="number"
+                    value={asset.shares}
                     onChange={(event) => handleInputChange(index, event)}
                   />
                 </Grid>

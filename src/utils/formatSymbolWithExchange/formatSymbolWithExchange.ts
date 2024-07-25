@@ -1,18 +1,18 @@
-import type { RustServiceSymbolDetail } from "@utils/callRustService";
+import type { RustServiceTickerDetail } from "@src/types";
 
 // Converts a symbol detail object into a formatted symbol with exchange identifier
 export default function formatSymbolWithExchange(
-  symbolDetail: RustServiceSymbolDetail
+  tickerDetail: RustServiceTickerDetail
 ): string {
-  if (!symbolDetail.symbol) {
+  if (!tickerDetail.symbol) {
     return "";
   }
 
-  const exchangePrefix = symbolDetail.exchange_short_name
-    ? `${symbolDetail.exchange_short_name}:`
+  const exchangePrefix = tickerDetail.exchange_short_name
+    ? `${tickerDetail.exchange_short_name}:`
     : "";
 
-  const formattedSymbol = symbolDetail.symbol?.replaceAll("-", ".");
+  const formattedSymbol = tickerDetail.symbol?.replaceAll("-", ".");
 
   return `${exchangePrefix}${formattedSymbol}`;
 }

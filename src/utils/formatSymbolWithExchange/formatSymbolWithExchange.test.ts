@@ -1,85 +1,85 @@
 import { describe, it, expect } from "vitest";
 import formatSymbolWithExchange from "./formatSymbolWithExchange";
-import type { RustServiceSymbolDetail } from "@utils/callRustService";
+import type { RustServiceTickerDetail } from "@src/types";
 
 describe("formatSymbolWithExchange", () => {
   it("should format symbol with exchange prefix", () => {
-    const symbolDetail = {
+    const tickerDetail = {
       symbol: "AAPL",
       exchange_short_name: "NASDAQ",
-    } as RustServiceSymbolDetail;
+    } as RustServiceTickerDetail;
 
-    const result = formatSymbolWithExchange(symbolDetail);
+    const result = formatSymbolWithExchange(tickerDetail);
     expect(result).toBe("NASDAQ:AAPL");
   });
 
   it("should handle undefined exchange_short_name", () => {
-    const symbolDetail = {
+    const tickerDetail = {
       symbol: "AAPL",
       exchange_short_name: undefined,
-    } as RustServiceSymbolDetail;
+    } as RustServiceTickerDetail;
 
-    const result = formatSymbolWithExchange(symbolDetail);
+    const result = formatSymbolWithExchange(tickerDetail);
     expect(result).toBe("AAPL");
   });
 
   it("should handle null exchange_short_name", () => {
-    const symbolDetail = {
+    const tickerDetail = {
       symbol: "AAPL",
       exchange_short_name: null,
-    } as unknown as RustServiceSymbolDetail;
+    } as unknown as RustServiceTickerDetail;
 
-    const result = formatSymbolWithExchange(symbolDetail);
+    const result = formatSymbolWithExchange(tickerDetail);
     expect(result).toBe("AAPL");
   });
 
   it("should format symbol without exchange prefix if exchange_short_name is empty", () => {
-    const symbolDetail = {
+    const tickerDetail = {
       symbol: "AAPL",
       exchange_short_name: "",
-    } as RustServiceSymbolDetail;
+    } as RustServiceTickerDetail;
 
-    const result = formatSymbolWithExchange(symbolDetail);
+    const result = formatSymbolWithExchange(tickerDetail);
     expect(result).toBe("AAPL");
   });
 
   it("should replace hyphens with dots in symbol", () => {
-    const symbolDetail = {
+    const tickerDetail = {
       symbol: "BRK-B",
       exchange_short_name: "NYSE",
-    } as RustServiceSymbolDetail;
+    } as RustServiceTickerDetail;
 
-    const result = formatSymbolWithExchange(symbolDetail);
+    const result = formatSymbolWithExchange(tickerDetail);
     expect(result).toBe("NYSE:BRK.B");
   });
 
   it("should handle symbol with no exchange_short_name and hyphens", () => {
-    const symbolDetail = {
+    const tickerDetail = {
       symbol: "BRK-B",
       exchange_short_name: "",
-    } as RustServiceSymbolDetail;
+    } as RustServiceTickerDetail;
 
-    const result = formatSymbolWithExchange(symbolDetail);
+    const result = formatSymbolWithExchange(tickerDetail);
     expect(result).toBe("BRK.B");
   });
 
   it("should return empty string if symbol is empty", () => {
-    const symbolDetail = {
+    const tickerDetail = {
       symbol: "",
       exchange_short_name: "NASDAQ",
-    } as RustServiceSymbolDetail;
+    } as RustServiceTickerDetail;
 
-    const result = formatSymbolWithExchange(symbolDetail);
+    const result = formatSymbolWithExchange(tickerDetail);
     expect(result).toBe("");
   });
 
   it("should handle undefined symbol", () => {
-    const symbolDetail = {
+    const tickerDetail = {
       symbol: undefined,
       exchange_short_name: "NASDAQ",
-    } as unknown as RustServiceSymbolDetail;
+    } as unknown as RustServiceTickerDetail;
 
-    const result = formatSymbolWithExchange(symbolDetail);
+    const result = formatSymbolWithExchange(tickerDetail);
     expect(result).toBe("");
   });
 });

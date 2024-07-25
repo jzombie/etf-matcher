@@ -1,50 +1,52 @@
 import React, { useCallback, useEffect, useState } from "react";
-import SymbolDetail from "./SymbolDetail";
+import SymbolDetail from "./TickerDetail";
 
 import customLogger from "@utils/customLogger";
 
-export type SymbolDetailListProps = {
-  tickerSymbols: string[];
+export type TickerDetailListProps = {
+  tickerIds: number[];
   lookAheadBufferSize?: number;
 };
 
-export default function SymbolDetailList({
-  tickerSymbols,
+export default function TickerDetailList({
+  tickerIds,
   lookAheadBufferSize = 2,
-}: SymbolDetailListProps) {
+}: TickerDetailListProps) {
   useEffect(() => {
-    if (tickerSymbols.length !== [...new Set(tickerSymbols)].length) {
+    if (tickerIds.length !== [...new Set(tickerIds)].length) {
       customLogger.warn(
-        "`tickerSymbols` is not unique! Unpredictable results may occur."
+        "`tickerIds` is not unique! Unpredictable results may occur."
       );
     }
-  }, [tickerSymbols]);
+  }, [tickerIds]);
 
   const [maxIntersectionIndex, setMaxIntersectionIndex] = useState<number>(0);
 
   const handleIntersectionStateChange = useCallback(
-    (tickerSymbol: string, isIntersecting: boolean) => {
+    (tickerId: number, isIntersecting: boolean) => {
       if (isIntersecting) {
-        const intersectionIndex = tickerSymbols.indexOf(tickerSymbol);
+        const intersectionIndex = tickerIds.indexOf(tickerId);
 
         if (intersectionIndex > maxIntersectionIndex) {
           setMaxIntersectionIndex(intersectionIndex);
         }
       }
     },
-    [tickerSymbols, maxIntersectionIndex]
+    [tickerIds, maxIntersectionIndex]
   );
 
   return (
     <>
-      {tickerSymbols.map((tickerSymbol, idx) => {
+      {tickerIds.map((tickerId, idx) => {
         if (idx <= maxIntersectionIndex + lookAheadBufferSize) {
           return (
+            // TODO: Rename to `TickerDetail`
+
             <SymbolDetail
-              key={tickerSymbol}
-              tickerSymbol={tickerSymbol}
+              key={tickerId}
+              tickerId={tickerId}
               onIntersectionStateChange={(isIntersecting) =>
-                handleIntersectionStateChange(tickerSymbol, isIntersecting)
+                handleIntersectionStateChange(tickerId, isIntersecting)
               }
             />
           );

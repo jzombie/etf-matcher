@@ -1,19 +1,19 @@
 import React, { useEffect, useMemo, useState } from "react";
-import SymbolContainer from "../SymbolContainer";
+import TickerContainer from "../TickerContainer";
 import { Button, ButtonBase, Typography, Grid, Box } from "@mui/material";
 import Padding from "@layoutKit/Padding";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import type {
-  RustServiceSymbolDetail,
+  RustServiceTickerDetail,
   RustServiceETFAggregateDetail,
-} from "@utils/callRustService";
+} from "@src/types";
 import { MiniChart, Timeline } from "react-ts-tradingview-widgets";
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 import { styled } from "@mui/system";
 import EncodedImage from "../EncodedImage";
 import NewsIcon from "@mui/icons-material/Article";
 
-import ETFHolderList from "./SymbolDetail.ETFHolderList";
+import ETFHolderList from "./TickerDetail.ETFHolderList";
 
 import useImageBackgroundColor from "@hooks/useImageBackgroundColor";
 import useURLState from "@hooks/useURLState";
@@ -21,8 +21,8 @@ import useURLState from "@hooks/useURLState";
 import formatSymbolWithExchange from "@utils/formatSymbolWithExchange";
 import formatCurrency from "@utils/formatCurrency";
 
-export type SymbolDetailProps = React.HTMLAttributes<HTMLDivElement> & {
-  tickerSymbol: string;
+export type TickerDetailProps = React.HTMLAttributes<HTMLDivElement> & {
+  tickerId: number;
   onIntersectionStateChange?: (isIntersecting: boolean) => void;
 };
 
@@ -51,18 +51,18 @@ const SymbolDetailWrapper = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(4),
 }));
 
-export default function SymbolDetail({
-  tickerSymbol,
+export default function TickerDetail({
+  tickerId,
   onIntersectionStateChange,
   ...rest
-}: SymbolDetailProps) {
+}: TickerDetailProps) {
   const { symbolBuckets } = useStoreStateReader(["symbolBuckets"]);
-  const [symbolDetail, setSymbolDetail] = useState<
-    RustServiceSymbolDetail | undefined
+  const [tickerDetail, setSymbolDetail] = useState<
+    RustServiceTickerDetail | undefined
   >(undefined);
 
   const logoBackgroundColorOverride = useImageBackgroundColor(
-    symbolDetail?.logo_filename
+    tickerDetail?.logo_filename
   );
 
   const [etfAggregateDetail, setETFAggregateDetail] = useState<
@@ -72,22 +72,22 @@ export default function SymbolDetail({
   const [showNews, setShowNews] = useState(false);
 
   useEffect(() => {
-    if (tickerSymbol) {
-      store.fetchSymbolDetail(tickerSymbol).then(setSymbolDetail);
+    if (tickerId) {
+      store.fetchTickerDetail(tickerId).then(setSymbolDetail);
     }
-  }, [tickerSymbol]);
+  }, [tickerId]);
 
   useEffect(() => {
-    if (symbolDetail?.is_etf) {
+    if (tickerDetail?.is_etf) {
       store
-        .fetchETFAggregateDetail(symbolDetail.symbol)
+        .fetchETFAggregateDetailByTickerId(tickerDetail.ticker_id)
         .then(setETFAggregateDetail);
     }
-  }, [symbolDetail]);
+  }, [tickerDetail]);
 
   const formattedSymbolWithExchange = useMemo(
-    () => symbolDetail && formatSymbolWithExchange(symbolDetail),
-    [symbolDetail]
+    () => tickerDetail && formatSymbolWithExchange(tickerDetail),
+    [tickerDetail]
   );
 
   const { setURLState, toBooleanParam } = useURLState<{
@@ -95,14 +95,16 @@ export default function SymbolDetail({
     exact: string | null;
   }>();
 
-  if (!formattedSymbolWithExchange || !symbolDetail) {
+  if (!formattedSymbolWithExchange || !tickerDetail) {
     return null;
   }
 
+  const tickerSymbol = tickerDetail.symbol;
+
   return (
-    <SymbolContainer
+    <TickerContainer
       style={{ marginBottom: 12 }}
-      tickerSymbol={tickerSymbol}
+      tickerId={tickerDetail.ticker_id}
       onIntersectionStateChange={onIntersectionStateChange}
       {...rest}
     >
@@ -117,14 +119,14 @@ export default function SymbolDetail({
           <ButtonBase
             onClick={() =>
               setURLState({
-                query: symbolDetail?.symbol,
+                query: tickerDetail?.symbol,
                 exact: toBooleanParam(true),
               })
             }
           >
             <EncodedImage
-              encSrc={symbolDetail?.logo_filename}
-              title={`${symbolDetail?.symbol} logo`}
+              encSrc={tickerDetail?.logo_filename}
+              title={`${tickerDetail?.symbol} logo`}
               style={{ width: 80, height: 80 }}
             />
           </ButtonBase>
@@ -138,7 +140,7 @@ export default function SymbolDetail({
                   Company
                 </Typography>
                 <Typography variant="body2">
-                  {symbolDetail?.company_name}
+                  {tickerDetail?.company_name}
                   &nbsp;
                   {`(${formattedSymbolWithExchange})`}
                 </Typography>
@@ -148,8 +150,8 @@ export default function SymbolDetail({
                   Durability Rating
                 </Typography>
                 <Typography variant="body2">
-                  {(symbolDetail?.score_avg_dca &&
-                    `${symbolDetail?.score_avg_dca.toFixed(2)} / 5.00`) ||
+                  {(tickerDetail?.score_avg_dca &&
+                    `${tickerDetail?.score_avg_dca.toFixed(2)} / 5.00`) ||
                     "N/A"}
                 </Typography>
               </Grid>
@@ -158,10 +160,10 @@ export default function SymbolDetail({
                   Sector
                 </Typography>
                 <Typography variant="body2">
-                  {symbolDetail?.sector_name || "N/A"}
+                  {tickerDetail?.sector_name || "N/A"}
                   <>
                     {etfAggregateDetail?.top_market_value_sector_name &&
-                      symbolDetail?.sector_name !==
+                      tickerDetail?.sector_name !==
                         etfAggregateDetail?.top_market_value_sector_name && (
                         <>
                           {" "}
@@ -176,10 +178,10 @@ export default function SymbolDetail({
                   Industry
                 </Typography>
                 <Typography variant="body2">
-                  {symbolDetail?.industry_name || "N/A"}
+                  {tickerDetail?.industry_name || "N/A"}
                   <>
                     {etfAggregateDetail?.top_market_value_industry_name &&
-                      symbolDetail?.industry_name !==
+                      tickerDetail?.industry_name !==
                         etfAggregateDetail?.top_market_value_industry_name && (
                         <>
                           {" "}
@@ -193,61 +195,75 @@ export default function SymbolDetail({
                 <Typography variant="h6" component="div">
                   ETF Status
                 </Typography>
-                {!symbolDetail?.is_etf ? (
+                {!tickerDetail?.is_etf ? (
                   <>Not ETF</>
                 ) : (
-                  <div
-                    style={{
-                      border: "1px rgba(255,255,255,.1) solid",
-                      borderRadius: 2,
-                      marginTop: 1,
-                      padding: 1,
-                      margin: 4,
-                    }}
-                  >
-                    <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-                      Top Holdings
-                    </Typography>
-                    <Grid container spacing={1}>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle1">
-                          Market Value
+                  <>
+                    {etfAggregateDetail ? (
+                      <div
+                        style={{
+                          border: "1px rgba(255,255,255,.1) solid",
+                          borderRadius: 2,
+                          marginTop: 1,
+                          padding: 1,
+                          margin: 4,
+                        }}
+                      >
+                        <Typography
+                          variant="subtitle1"
+                          sx={{ fontWeight: "bold" }}
+                        >
+                          Top Holdings
                         </Typography>
-                        <Typography variant="body2">
-                          Sector:{" "}
-                          {etfAggregateDetail?.top_market_value_sector_name}
-                        </Typography>
-                        <Typography variant="body2">
-                          Industry:{" "}
-                          {etfAggregateDetail?.top_market_value_industry_name}
-                        </Typography>
-                        <Typography variant="body2">
-                          Value:{" "}
-                          {etfAggregateDetail?.top_sector_market_value &&
-                            etfAggregateDetail?.currency_code &&
-                            formatCurrency(
-                              etfAggregateDetail.currency_code,
-                              etfAggregateDetail.top_sector_market_value
-                            )}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle1">
-                          Percentage Weight
-                        </Typography>
-                        <Typography variant="body2">
-                          Sector: {etfAggregateDetail?.top_pct_sector_name}
-                        </Typography>
-                        <Typography variant="body2">
-                          Industry: {etfAggregateDetail?.top_pct_industry_name}
-                        </Typography>
-                        <Typography variant="body2">
-                          Weight:{" "}
-                          {etfAggregateDetail?.top_pct_sector_weight.toFixed(2)}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </div>
+                        <Grid container spacing={1}>
+                          <Grid item xs={6}>
+                            <Typography variant="subtitle1">
+                              Market Value
+                            </Typography>
+                            <Typography variant="body2">
+                              Sector:{" "}
+                              {etfAggregateDetail?.top_market_value_sector_name}
+                            </Typography>
+                            <Typography variant="body2">
+                              Industry:{" "}
+                              {
+                                etfAggregateDetail?.top_market_value_industry_name
+                              }
+                            </Typography>
+                            <Typography variant="body2">
+                              Value:{" "}
+                              {etfAggregateDetail?.top_sector_market_value &&
+                                etfAggregateDetail?.currency_code &&
+                                formatCurrency(
+                                  etfAggregateDetail.currency_code,
+                                  etfAggregateDetail.top_sector_market_value
+                                )}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="subtitle1">
+                              Percentage Weight
+                            </Typography>
+                            <Typography variant="body2">
+                              Sector: {etfAggregateDetail?.top_pct_sector_name}
+                            </Typography>
+                            <Typography variant="body2">
+                              Industry:{" "}
+                              {etfAggregateDetail?.top_pct_industry_name}
+                            </Typography>
+                            <Typography variant="body2">
+                              Weight:{" "}
+                              {etfAggregateDetail?.top_pct_sector_weight.toFixed(
+                                2
+                              )}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </div>
+                    ) : (
+                      <div>ETF</div>
+                    )}
+                  </>
                 )}
               </Grid>
             </Grid>
@@ -276,7 +292,8 @@ export default function SymbolDetail({
             <Button
               key={idx}
               onClick={() =>
-                store.addSymbolToBucket(tickerSymbol, symbolBucket)
+                // TODO: Don't hardcode values, needs to add the ticker ID
+                store.addTickerToBucket(tickerSymbol, "N/A", 1, symbolBucket)
               }
             >
               Add {tickerSymbol} to {symbolBucket.name}
@@ -300,7 +317,7 @@ export default function SymbolDetail({
         <Box mt={2}>
           <Typography variant="h6">News</Typography>
           <Typography variant="body2">
-            Placeholder for news articles related to {symbolDetail.symbol}.
+            Placeholder for news articles related to {tickerDetail.symbol}.
           </Typography>
         </Box>
       )}
@@ -308,7 +325,9 @@ export default function SymbolDetail({
       {
         // TODO: Show `ETFHoldingList` (~inverse of `ETFHolderList`) if this is an ETF
       }
-      <ETFHolderList tickerSymbol={symbolDetail.symbol} />
-    </SymbolContainer>
+      {tickerDetail?.is_held_in_etf && (
+        <ETFHolderList tickerDetail={tickerDetail} />
+      )}
+    </TickerContainer>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import SymbolDetailList from "@components/SymbolDetailList";
+import SymbolDetailList from "@components/TickerDetailList";
 
 import Typography from "@mui/material/Typography";
 
@@ -10,21 +10,19 @@ import SearchModalButton from "./SearchModalButton";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 import type { SymbolBucketProps } from "@src/store";
 
-export type ScrollableBucketListProps = {
-  symbolBucketType: SymbolBucketProps["type"];
+export type BucketListProps = {
+  bucketType: SymbolBucketProps["bucketType"];
 };
 
-export default function ScrollableBucketList({
-  symbolBucketType,
-}: ScrollableBucketListProps) {
+export default function BucketList({ bucketType }: BucketListProps) {
   const { symbolBuckets } = useStoreStateReader("symbolBuckets");
 
   const localSymbolBucket = useMemo(
     () =>
       symbolBuckets?.filter(
-        (symbolBucket) => symbolBucket.type === symbolBucketType
+        (symbolBucket) => symbolBucket.bucketType === bucketType
       ),
-    [symbolBuckets, symbolBucketType]
+    [symbolBuckets, bucketType]
   );
 
   return (
@@ -34,7 +32,7 @@ export default function ScrollableBucketList({
           <Padding>
             <h2>{symbolBucket.name}</h2>
 
-            {!symbolBucket.symbols.length && (
+            {!symbolBucket.tickers.length && (
               <>
                 <Typography variant="body2" color="textSecondary">
                   No items in &quot;{symbolBucket.name}&quot;.
@@ -52,7 +50,12 @@ export default function ScrollableBucketList({
             )}
           </Padding>
 
-          <SymbolDetailList tickerSymbols={symbolBucket.symbols} />
+          {
+            // TODO: Reimplement
+          }
+          {/* <SymbolDetailList
+            tickerSymbols={symbolBucket.tickers.map(({ symbol }) => symbol)}
+          /> */}
         </React.Fragment>
       ))}
     </>

@@ -1,22 +1,34 @@
-use crate::data_models::{DataURL, PaginatedResults};
+use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
+use crate::JsValue;
+use crate::data_models::{DataURL, PaginatedResults, ExchangeById};
 use crate::utils::extract_logo_filename;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
-use crate::JsValue;
-use serde::{Deserialize, Serialize};
-use std::collections::HashSet;
+use crate::types::{TickerId, ExchangeId};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct SymbolSearch {
+pub struct TickerSearch {
+    pub ticker_id: TickerId,
     pub symbol: String,
+    pub exchange_id: Option<ExchangeId>,
     pub company_name: Option<String>,
     pub logo_filename: Option<String>,
 }
 
-impl SymbolSearch {
+#[derive(Serialize, Deserialize, Debug)]
+pub struct TickerSearchResult {
+    pub ticker_id: TickerId,
+    pub symbol: String,
+    pub exchange_short_name: Option<String>,
+    pub company_name: Option<String>,
+    pub logo_filename: Option<String>,
+}
+
+impl TickerSearch {
     // Make initial searches faster
     pub async fn preload_symbol_search_cache() -> Result<(), JsValue> {
-        let url: String = DataURL::SymbolSearch.value().to_owned();
+        let url: String = DataURL::TickerSearch.value().to_owned();
 
         // Fetch and decompress the data, properly awaiting the result and handling errors
         fetch_and_decompress_gz(&url, true).await.map_err(|err| {
@@ -36,12 +48,12 @@ impl SymbolSearch {
         alternatives
     }
 
-    pub async fn search_symbols(
+    pub async fn search_tickers(
         query: &str,
         page: usize,
         page_size: usize,
         only_exact_matches: Option<bool>,
-    ) -> Result<PaginatedResults<SymbolSearch>, JsValue> {
+    ) -> Result<PaginatedResults<TickerSearchResult>, JsValue> {
         let trimmed_query: String = query.trim().to_lowercase();
         let only_exact_matches = only_exact_matches.unwrap_or(false);
 
@@ -52,34 +64,30 @@ impl SymbolSearch {
             });
         }
 
-        let url: String = DataURL::SymbolSearch.value().to_owned();
+        let url: String = DataURL::TickerSearch.value().to_owned();
         let csv_data = fetch_and_decompress_gz(&url, true).await?;
         let csv_string = String::from_utf8(csv_data).map_err(|err| {
             JsValue::from_str(&format!("Failed to convert data to String: {}", err))
         })?;
-        let mut results: Vec<SymbolSearch> = parse_csv_data(csv_string.as_bytes())?;
+        let mut results: Vec<TickerSearch> = parse_csv_data(csv_string.as_bytes())?;
 
-        // Uncompress the logo filename for each result
+        // Extract the logo filename for each result
         for result in &mut results {
-            result.logo_filename =
-                extract_logo_filename(result.logo_filename.as_deref(), &result.symbol);
+            result.logo_filename = extract_logo_filename(result.logo_filename.as_deref(), &result.symbol);
         }
 
-        let alternatives: Vec<String> = SymbolSearch::generate_alternative_symbols(&trimmed_query);
-        let mut exact_symbol_matches: Vec<SymbolSearch> = vec![];
-        let mut starts_with_matches: Vec<SymbolSearch> = vec![];
-        let mut contains_matches: Vec<SymbolSearch> = vec![];
-        let mut reverse_contains_matches: Vec<SymbolSearch> = vec![];
+        let alternatives: Vec<String> = TickerSearch::generate_alternative_symbols(&trimmed_query);
+        let mut exact_symbol_matches: Vec<TickerSearch> = vec![];
+        let mut starts_with_matches: Vec<TickerSearch> = vec![];
+        let mut contains_matches: Vec<TickerSearch> = vec![];
+        let mut reverse_contains_matches: Vec<TickerSearch> = vec![];
         let mut seen_symbols: HashSet<String> = HashSet::new();
 
         for alternative in &alternatives {
             let query_lower: String = alternative.to_lowercase();
             for result in &results {
                 let symbol_lower = result.symbol.to_lowercase();
-                let company_lower = result
-                    .company_name
-                    .as_deref()
-                    .map_or("".to_string(), |company_name| company_name.to_lowercase());
+                let company_lower = result.company_name.as_deref().map_or("".to_string(), |company_name| company_name.to_lowercase());
 
                 let symbol_match = symbol_lower == query_lower;
                 let company_match = company_lower == query_lower;
@@ -94,8 +102,7 @@ impl SymbolSearch {
                     let partial_symbol_match_contains = symbol_lower.contains(&query_lower);
                     let partial_company_match_contains = company_lower.contains(&query_lower);
                     let reverse_partial_symbol_match_contains = query_lower.contains(&symbol_lower);
-                    let reverse_partial_company_match_contains =
-                        query_lower.contains(&company_lower);
+                    let reverse_partial_company_match_contains = query_lower.contains(&company_lower);
 
                     if partial_symbol_match_same_start || partial_company_match_same_start {
                         if seen_symbols.insert(symbol_lower.clone()) {
@@ -113,11 +120,8 @@ impl SymbolSearch {
         }
 
         // Combine matches in the desired order
-        let mut matches: Vec<SymbolSearch> = Vec::with_capacity(
-            exact_symbol_matches.len()
-                + starts_with_matches.len()
-                + contains_matches.len()
-                + reverse_contains_matches.len(),
+        let mut matches: Vec<TickerSearch> = Vec::with_capacity(
+            exact_symbol_matches.len() + starts_with_matches.len() + contains_matches.len() + reverse_contains_matches.len(),
         );
         matches.append(&mut exact_symbol_matches);
 
@@ -127,6 +131,36 @@ impl SymbolSearch {
             matches.append(&mut reverse_contains_matches);
         }
 
-        PaginatedResults::paginate(matches, page, page_size)
+        // Paginate the results first
+        let paginated_results = PaginatedResults::paginate(matches.clone(), page, page_size)?;
+
+        // Fetch exchange short names for the paginated results
+        let mut search_results: Vec<TickerSearchResult> = Vec::with_capacity(paginated_results.results.len());
+        for result in paginated_results.results {
+            let exchange_short_name = if let Some(exchange_id) = result.exchange_id {
+                match ExchangeById::get_short_name_by_exchange_id(exchange_id).await {
+                    Ok(name) => Some(name),
+                    Err(_) => None,
+                }
+            } else {
+                None
+            };
+
+            search_results.push(TickerSearchResult {
+                ticker_id: result.ticker_id,
+                symbol: result.symbol,
+                exchange_short_name,
+                company_name: result.company_name,
+                logo_filename: result.logo_filename,
+            });
+        }
+
+        // Constructing the final PaginatedResults<TickerSearchResult>
+        // This creates a new PaginatedResults instance with the total_count from paginated_results
+        // and the results from search_results, which now includes the exchange short names.
+        Ok(PaginatedResults {
+            total_count: paginated_results.total_count,
+            results: search_results,
+        })
     }
 }
