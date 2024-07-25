@@ -1,5 +1,4 @@
 use wasm_bindgen::prelude::*;
-use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::to_value;
 use std::panic;
 
@@ -18,7 +17,7 @@ use crate::data_models::{
 use crate::data_models::image::get_image_info as lib_get_image_info;
 
 // Rename the imported functions to avoid name conflicts
-use crate::utils::cache::{
+use crate::utils::network_cache::{
     clear_cache as lib_clear_cache, get_cache_details as lib_get_cache_details,
     get_cache_size as lib_get_cache_size, remove_cache_entry as lib_remove_cache_entry,
 };

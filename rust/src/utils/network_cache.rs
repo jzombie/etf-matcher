@@ -34,7 +34,7 @@ pub fn get_cache_size() -> usize {
             .sum()
     });
 
-    Notifier::cache_accessed(Notifier::WILDCARD);
+    Notifier::network_cache_accessed(Notifier::WILDCARD);
 
     size
 }
@@ -82,7 +82,7 @@ pub fn get_cache_details() -> JsValue {
         serde_wasm_bindgen::to_value(&details).unwrap()
     });
 
-    Notifier::cache_accessed(Notifier::WILDCARD);
+    Notifier::network_cache_accessed(Notifier::WILDCARD);
 
     details
 }
@@ -99,7 +99,7 @@ pub fn get_cache_future(url: &str) -> Option<SharedCacheFuture> {
         }
     });
 
-    Notifier::cache_accessed(url);
+    Notifier::network_cache_accessed(url);
 
     result
 }
@@ -116,7 +116,7 @@ pub fn insert_cache_future(url: &str, future: SharedCacheFuture) {
         cache.insert(url.to_string(), cached_future);
     });
 
-    Notifier::cache_entry_inserted(url);
+    Notifier::network_cache_entry_inserted(url);
 }
 
 pub fn remove_cache_entry(key: &str) {
@@ -124,7 +124,7 @@ pub fn remove_cache_entry(key: &str) {
         cache.borrow_mut().remove(key);
     });
 
-    Notifier::cache_entry_removed(key);
+    Notifier::network_cache_entry_removed(key);
 }
 
 pub fn clear_cache() {
@@ -132,5 +132,5 @@ pub fn clear_cache() {
         cache.borrow_mut().clear();
     });
 
-    Notifier::cache_cleared();
+    Notifier::network_cache_cleared();
 }

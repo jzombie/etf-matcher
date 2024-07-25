@@ -273,16 +273,16 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           }
         }
 
-        if (eventType === NotifierEvent.CACHE_ACCESSED) {
+        if (eventType === NotifierEvent.NETWORK_CACHE_ACCESSED) {
           // Signal open cache request (auto-closes)
           cacheAccessedRequests.add(pathName);
         }
 
         if (
           [
-            NotifierEvent.CACHE_ENTRY_INSERTED,
-            NotifierEvent.CACHE_ENTRY_REMOVED,
-            NotifierEvent.CACHE_CLEARED,
+            NotifierEvent.NETWORK_CACHE_ENTRY_INSERTED,
+            NotifierEvent.NETWORK_CACHE_ENTRY_REMOVED,
+            NotifierEvent.NETWORK_CACHE_CLEARED,
           ].includes(eventType)
         ) {
           debounceWithKey(

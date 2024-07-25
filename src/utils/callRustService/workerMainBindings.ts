@@ -19,8 +19,8 @@ export enum NotifierEvent {
   XHR_REQUEST_OPENED = "xhr_request_opened",
   XHR_REQUEST_SENT = "xhr_request_sent",
   XHR_REQUEST_ERROR = "xhr_request_error",
-  CACHE_ACCESSED = "cache_accessed",
-  CACHE_ENTRY_INSERTED = "cache_entry_inserted",
-  CACHE_ENTRY_REMOVED = "cache_entry_removed",
-  CACHE_CLEARED = "cache_cleared",
+  NETWORK_CACHE_ACCESSED = "network_cache_accessed",
+  NETWORK_CACHE_ENTRY_INSERTED = "network_cache_entry_inserted",
+  NETWORK_CACHE_ENTRY_REMOVED = "network_cache_entry_removed",
+  NETWORK_CACHE_CLEARED = "network_cache_cleared",
 }
