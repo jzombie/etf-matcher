@@ -10,7 +10,7 @@ import Padding from "@layoutKit/Padding";
 import type {
   RustServiceETFHoldersWithTotalCount,
   RustServiceTickerDetail,
-} from "@utils/callRustService";
+} from "@src/types";
 
 import { store } from "@hooks/useStoreStateReader";
 

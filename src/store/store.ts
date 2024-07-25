@@ -9,14 +9,14 @@ import callRustService, {
   subscribe as libRustServiceSubscribe,
   NotifierEvent,
 } from "@utils/callRustService";
-import {
+import type {
   RustServiceTickerDetail,
   RustServiceSearchResultsWithTotalCount,
   RustServiceETFHoldersWithTotalCount,
   RustServiceCacheDetail,
   RustServiceETFAggregateDetail,
   RustServiceImageInfo,
-} from "@utils/callRustService";
+} from "@src/types";
 import {
   XHROpenedRequests,
   CacheAccessedRequests,

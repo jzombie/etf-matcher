@@ -1,4 +1,4 @@
-import type { RustServiceTickerDetail } from "@utils/callRustService";
+import type { RustServiceTickerDetail } from "@src/types";
 
 // Converts a symbol detail object into a formatted symbol with exchange identifier
 export default function formatSymbolWithExchange(

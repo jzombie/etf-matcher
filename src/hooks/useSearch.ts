@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { store } from "@hooks/useStoreStateReader";
-import type { RustServiceSearchResult } from "@utils/callRustService";
+import type { RustServiceSearchResult } from "@src/types";
 import usePagination from "./usePagination";
 import debounceWithKey from "@utils/debounceWithKey";
 

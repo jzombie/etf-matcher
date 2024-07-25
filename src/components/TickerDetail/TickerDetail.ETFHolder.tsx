@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Box, ButtonBase } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";
-import { store } from "@hooks/useStoreStateReader";
+// import { store } from "@hooks/useStoreStateReader";
 
-import type { RustServiceETFAggregateDetail } from "@utils/callRustService";
+import type { RustServiceETFAggregateDetail } from "@src/types";
 import formatCurrency from "@utils/formatCurrency";
 
 export type ETFHolderProps = {
