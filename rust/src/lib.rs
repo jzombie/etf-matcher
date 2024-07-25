@@ -85,13 +85,13 @@ pub async fn get_ticker_detail(ticker_id: TickerId) -> Result<JsValue, JsValue> 
 }
 
 #[wasm_bindgen]
-pub async fn get_ticker_etf_holder_aggregate_detail_by_ticker_id(
+pub async fn get_etf_holders_aggregate_detail_by_ticker_id(
     ticker_id: TickerId,
     page: usize,
     page_size: usize,
 ) -> Result<JsValue, JsValue> {
     let paginated_etf_aggregate_details: PaginatedResults<ETFAggregateDetailResponse> =
-    TickerETFHolder::get_ticker_etf_holder_aggregate_detail_by_ticker_id(ticker_id, page, page_size).await?;
+    TickerETFHolder::get_etf_holders_aggregate_detail_by_ticker_id(ticker_id, page, page_size).await?;
     to_value(&paginated_etf_aggregate_details).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
             "Failed to convert PaginatedResults<ETFAggregateDetail> to JsValue: {}",

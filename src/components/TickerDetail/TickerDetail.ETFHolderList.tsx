@@ -32,7 +32,7 @@ export default function ETFHolderList({ tickerDetail }: ETFHolderListProps) {
   useEffect(() => {
     if (tickerId) {
       store
-        .fetchTickerETFHolderAggregateDetailByTickerId(tickerId, page)
+        .fetchETFHoldersAggregateDetailByTickerId(tickerId, page)
         .then(setPaginatedETFHolders);
     }
   }, [tickerId, page]);

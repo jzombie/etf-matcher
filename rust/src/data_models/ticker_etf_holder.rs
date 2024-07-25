@@ -13,7 +13,7 @@ pub struct TickerETFHolder {
 }
 
 impl TickerETFHolder {
-    pub async fn get_ticker_etf_holder_aggregate_detail_by_ticker_id(
+    pub async fn get_etf_holders_aggregate_detail_by_ticker_id(
         ticker_id: TickerId,
         page: usize,
         page_size: usize,

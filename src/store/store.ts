@@ -346,14 +346,14 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       abortSignal
     );
   }
-  async fetchTickerETFHolderAggregateDetailByTickerId(
+  async fetchETFHoldersAggregateDetailByTickerId(
     tickerId: number,
     page: number = 1,
     pageSize: number = 20
     // TODO: Update type
   ): Promise<RustServiceETFHoldersWithTotalCount> {
     return callRustService<RustServiceETFHoldersWithTotalCount>(
-      "get_ticker_etf_holder_aggregate_detail_by_ticker_id",
+      "get_etf_holders_aggregate_detail_by_ticker_id",
       [tickerId, page, pageSize]
     );
   }
