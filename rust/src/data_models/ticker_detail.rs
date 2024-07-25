@@ -1,6 +1,6 @@
 use crate::data_models::DataURL;
 use crate::utils::logo_utils::extract_logo_filename;
-use crate::utils::shard::query_shard_for_value;
+use crate::utils::shard::query_shard_for_id;
 use crate::JsValue;
 use crate::types::TickerId;
 use serde::{Deserialize, Deserializer, Serialize};
@@ -33,7 +33,7 @@ pub struct TickerDetail {
 impl TickerDetail {
     pub async fn get_ticker_detail(ticker_id: TickerId) -> Result<TickerDetail, JsValue> {
         let url: &str = DataURL::TickerDetailShardIndex.value();
-        let mut detail: TickerDetail = query_shard_for_value(
+        let mut detail: TickerDetail = query_shard_for_id(
             url,
             &ticker_id,
             |detail: &TickerDetail| Some(&detail.ticker_id),

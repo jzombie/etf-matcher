@@ -27,8 +27,7 @@ where
     Ok(entries)
 }
 
-// TODO: Rename to `find_shard_for_id`
-fn find_shard_for_value<'a, T>(
+fn find_shard_for_id<'a, T>(
     value: &T,
     shard_index: &'a [ShardIndexEntry<T>],
 ) -> Option<&'a ShardIndexEntry<T>>
@@ -51,8 +50,7 @@ where
     Ok(entries)
 }
 
-// TODO: Rename to `query_shard_for_id`
-pub async fn query_shard_for_value<T, F, V>(
+pub async fn query_shard_for_id<T, F, V>(
     shard_index_url: &str,
     value: &V,
     get_value: F,
@@ -66,7 +64,7 @@ where
     let shard_index: Vec<ShardIndexEntry<V>> = parse_shard_index(shard_index_url).await?;
 
     // Find the appropriate shard for the given value
-    if let Some(shard_entry) = find_shard_for_value(value, &shard_index) {
+    if let Some(shard_entry) = find_shard_for_id(value, &shard_index) {
         // Determine the base path from the shard_index_url
         let base_path: &str = if let Some(pos) = shard_index_url.rfind('/') {
             &shard_index_url[..pos + 1]

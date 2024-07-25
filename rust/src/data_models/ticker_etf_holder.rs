@@ -1,7 +1,7 @@
 use crate::data_models::{DataURL, PaginatedResults};
 use crate::JsValue;
 use serde::{Deserialize, Serialize};
-use crate::utils::shard::query_shard_for_value;
+use crate::utils::shard::query_shard_for_id;
 use crate::types::TickerId;
 use crate::{ETFAggregateDetail, ETFAggregateDetailResponse};
 
@@ -58,7 +58,7 @@ impl TickerETFHolder {
 
         // Query shard for the ticker_id
         // console::debug_1(&format!("Querying shard for ticker_id: {}", ticker_id).into());
-        let holder = query_shard_for_value(url, &ticker_id, |detail: &TickerETFHolder| Some(&detail.ticker_id))
+        let holder = query_shard_for_id(url, &ticker_id, |detail: &TickerETFHolder| Some(&detail.ticker_id))
             .await?
             .ok_or_else(|| {
                 // console::debug_1(&format!("Symbol not found in shard for ticker_id: {}", ticker_id).into());
