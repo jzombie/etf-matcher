@@ -42,7 +42,7 @@ pub struct TickerDetailResponse {
     pub country_code: Option<String>,
     pub industry_name: Option<String>,
     pub sector_name: Option<String>,
-    pub is_etf: Option<bool>,
+    pub is_etf: bool,
     pub score_avg_dca: Option<f32>,
     pub logo_filename: Option<String>,
 }
@@ -63,18 +63,18 @@ impl TickerDetail {
             extract_logo_filename(detail.logo_filename.as_deref(), &detail.symbol);
 
         // Retrieve industry name if industry_id is present
-        let industry_name = if let Some(industry_id) = detail.industry_id {
-            IndustryById::get_industry_name_with_id(industry_id).await.ok()
-        } else {
-            None
+        let industry_name = match detail.industry_id {
+            Some(industry_id) => IndustryById::get_industry_name_with_id(industry_id).await.ok(),
+            None => None,
         };
 
         // Retrieve sector name if sector_id is present
-        let sector_name = if let Some(sector_id) = detail.sector_id {
-            SectorById::get_sector_name_with_id(sector_id).await.ok()
-        } else {
-            None
+        let sector_name = match detail.sector_id {
+            Some(sector_id) => SectorById::get_sector_name_with_id(sector_id).await.ok(),
+            None => None,
         };
+
+        let is_etf = detail.is_etf.unwrap_or(false);
 
         // Construct the response
         Ok(TickerDetailResponse {
@@ -86,7 +86,7 @@ impl TickerDetail {
             country_code: detail.country_code,
             industry_name,
             sector_name,
-            is_etf: detail.is_etf,
+            is_etf,
             score_avg_dca: detail.score_avg_dca,
             logo_filename: detail.logo_filename,
         })

@@ -1,6 +1,3 @@
-// TODO: Mark `optional` the types which are `Option` types in Rust
-// TODO: Rename all `...WithTotalCount` to `Paginated...`
-
 export type RustServicePaginatedResults<T> = {
   total_count: number;
   results: T[];
@@ -23,8 +20,8 @@ export type RustServiceTickerDetail = {
   company_name: string;
   cik: string;
   country_code: string;
-  industry_name: string;
-  sector_name: string;
+  industry_name?: string;
+  sector_name?: string;
   is_etf: boolean;
   score_avg_dca: number;
   logo_filename?: string;

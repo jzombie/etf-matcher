@@ -51,28 +51,25 @@ impl ETFAggregateDetail {
         // Fetch the symbol and exchange short name
         let (etf_symbol, exchange_short_name) = get_symbol_and_exchange_by_ticker_id(ticker_id).await?;
 
-        let top_market_value_sector_name = if let Some(top_market_value_sector_id) = etf_aggregate_detail.top_market_value_sector_id {
-            SectorById::get_sector_name_with_id(top_market_value_sector_id).await.ok()
-        } else {
-            None
+        let top_market_value_sector_name = match etf_aggregate_detail.top_market_value_sector_id {
+            Some(top_market_value_sector_id) => SectorById::get_sector_name_with_id(top_market_value_sector_id).await.ok(),
+            None => None,
         };
-        let top_market_value_industry_name = if let Some(top_market_value_industry_id) = etf_aggregate_detail.top_market_value_industry_id {
-             IndustryById::get_industry_name_with_id(top_market_value_industry_id).await.ok()
-        } else {
-            None
+        
+        let top_market_value_industry_name = match etf_aggregate_detail.top_market_value_industry_id {
+            Some(top_market_value_industry_id) => IndustryById::get_industry_name_with_id(top_market_value_industry_id).await.ok(),
+            None => None,
         };
-
-        let top_pct_sector_name = if let Some(top_pct_sector_id) = etf_aggregate_detail.top_pct_sector_id {
-            SectorById::get_sector_name_with_id(top_pct_sector_id).await.ok()
-        } else {
-            None
+        
+        let top_pct_sector_name = match etf_aggregate_detail.top_pct_sector_id {
+            Some(top_pct_sector_id) => SectorById::get_sector_name_with_id(top_pct_sector_id).await.ok(),
+            None => None,
         };
-        let top_pct_industry_name = if let Some(top_pct_industry_id) = etf_aggregate_detail.top_pct_industry_id {
-            IndustryById::get_industry_name_with_id(top_pct_industry_id).await.ok()
-        } else {
-            None
+        
+        let top_pct_industry_name = match etf_aggregate_detail.top_pct_industry_id {
+            Some(top_pct_industry_id) => IndustryById::get_industry_name_with_id(top_pct_industry_id).await.ok(),
+            None => None,
         };
-
 
         let response = ETFAggregateDetailResponse {
             ticker_id: etf_aggregate_detail.ticker_id,
