@@ -11,7 +11,7 @@ import {
 import useURLState from "@hooks/useURLState";
 
 import SearchModalButton from "@components/SearchModalButton";
-import SymbolDetailList from "@components/TickerDetailList";
+import TickerDetailList from "@components/TickerDetailList";
 import Transition from "@components/Transition";
 
 import useSearch from "@hooks/useSearch";
@@ -172,10 +172,7 @@ export default function SearchResults() {
         direction={!previousPage || page > previousPage ? "left" : "right"}
         trigger={searchResultSymbols}
       >
-        {
-          // TODO: Rename to `TickerDetailList`
-        }
-        <SymbolDetailList tickerIds={tickerIds} />
+        <TickerDetailList tickerIds={tickerIds} />
       </Transition>
 
       {totalSearchResults > pageSize && !isLoading && (
