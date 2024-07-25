@@ -1,4 +1,5 @@
 use wasm_bindgen::prelude::*;
+use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::to_value;
 use std::panic;
 
@@ -10,7 +11,7 @@ mod types;
 use crate::types::TickerId;
 
 use crate::data_models::{
-    DataBuildInfo, DataURL, ETFAggregateDetail, PaginatedResults,
+    DataBuildInfo, DataURL, ETFAggregateDetail, ETFAggregateDetailResponse, PaginatedResults,
     TickerDetail, TickerETFHolder, SymbolSearch, SymbolSearchResult,
 };
 
@@ -89,9 +90,9 @@ pub async fn get_ticker_etf_holder_aggregate_detail_by_ticker_id(
     page: usize,
     page_size: usize,
 ) -> Result<JsValue, JsValue> {
-    let etf_ticker_ids: PaginatedResults<ETFAggregateDetail> =
+    let paginated_etf_aggregate_details: PaginatedResults<ETFAggregateDetailResponse> =
     TickerETFHolder::get_ticker_etf_holder_aggregate_detail_by_ticker_id(ticker_id, page, page_size).await?;
-    to_value(&etf_ticker_ids).map_err(|err: serde_wasm_bindgen::Error| {
+    to_value(&paginated_etf_aggregate_details).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
             "Failed to convert PaginatedResults<ETFAggregateDetail> to JsValue: {}",
             err
@@ -101,7 +102,7 @@ pub async fn get_ticker_etf_holder_aggregate_detail_by_ticker_id(
 
 #[wasm_bindgen]
 pub async fn get_etf_aggregate_detail_by_ticker_id(ticker_id: TickerId) -> Result<JsValue, JsValue> {
-    let etf_detail: ETFAggregateDetail =
+    let etf_detail: ETFAggregateDetailResponse =
         ETFAggregateDetail::get_etf_aggregate_detail_by_ticker_id(ticker_id).await?;
     to_value(&etf_detail).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(

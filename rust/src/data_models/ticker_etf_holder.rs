@@ -3,8 +3,7 @@ use crate::JsValue;
 use serde::{Deserialize, Serialize};
 use crate::utils::shard::query_shard_for_value;
 use crate::types::TickerId;
-use crate::ETFAggregateDetail;
-// use web_sys::console;
+use crate::{ETFAggregateDetail, ETFAggregateDetailResponse};
 
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -18,7 +17,7 @@ impl TickerETFHolder {
         ticker_id: TickerId,
         page: usize,
         page_size: usize,
-    ) -> Result<PaginatedResults<ETFAggregateDetail>, JsValue> {
+    ) -> Result<PaginatedResults<ETFAggregateDetailResponse>, JsValue> {
         let paginated_etf_holder_ids = TickerETFHolder::get_ticker_etf_holder_ids_by_ticker_id(ticker_id, page, page_size).await?;
 
         let mut etf_aggregate_details = Vec::new();
@@ -26,7 +25,12 @@ impl TickerETFHolder {
         for etf_ticker_id in paginated_etf_holder_ids.results {
             match ETFAggregateDetail::get_etf_aggregate_detail_by_ticker_id(etf_ticker_id).await {
                 Ok(detail) => etf_aggregate_details.push(detail),
-                Err(e) => return Err(JsValue::from_str(&format!("Failed to fetch ETF aggregate detail: {:?}", e))),
+                Err(e) => {
+                    web_sys::console::warn_2(
+                        &format!("Failed to fetch ETF aggregate detail (ticker_id: {}): {:?}", etf_ticker_id, e).into(),
+                        &e,
+                    );
+                }
             }
         }
 
