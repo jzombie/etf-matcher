@@ -12,15 +12,7 @@ lazy_static! {
     static ref SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE: Mutex<HashMap<TickerId, (String, Option<String>)>> = Mutex::new(HashMap::new());
 }
 
-pub async fn get_symbol_and_exchange_by_ticker_id(ticker_id: TickerId) -> Result<(String, Option<String>), JsValue> {
-    {
-        // Check if the result is already in the cache
-        let cache = SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE.lock().unwrap();
-        if let Some(result) = cache.get(&ticker_id) {
-            return Ok(result.clone());
-        }
-    }
-
+async fn preload_symbol_and_exchange_cache() -> Result<(), JsValue> {
     // Fetch and decompress the SymbolSearch CSV data
     let url = DataURL::SymbolSearch.value().to_owned();
     let csv_data = fetch_and_decompress_gz(&url, true).await?;
@@ -29,37 +21,39 @@ pub async fn get_symbol_and_exchange_by_ticker_id(ticker_id: TickerId) -> Result
     })?;
     let symbol_search_results: Vec<SymbolSearch> = parse_csv_data(csv_string.as_bytes())?;
 
-    // Find the symbol and exchange_id for the given ticker_id
-    let symbol_search_entry = symbol_search_results.iter().find(|result| result.ticker_id == ticker_id)
-        .ok_or_else(|| JsValue::from_str("Ticker ID not found"))?;
-    let symbol = symbol_search_entry.symbol.clone();
-    let exchange_id = symbol_search_entry.exchange_id;
+    // Fetch and decompress the ExchangeById CSV data
+    let exchange_url = DataURL::ExchangeByIdIndex.value().to_owned();
+    let exchange_csv_data = fetch_and_decompress_gz(&exchange_url, true).await?;
+    let exchange_csv_string = String::from_utf8(exchange_csv_data).map_err(|err| {
+        JsValue::from_str(&format!("Failed to convert data to String: {}", err))
+    })?;
+    let exchange_results: Vec<ExchangeById> = parse_csv_data(exchange_csv_string.as_bytes())?;
 
-    // Fetch and decompress the ExchangeById CSV data if exchange_id is present
-    let exchange_short_name = if let Some(exchange_id) = exchange_id {
-        let exchange_url = DataURL::ExchangeByIdIndex.value().to_owned();
-        let exchange_csv_data = fetch_and_decompress_gz(&exchange_url, true).await?;
-        let exchange_csv_string = String::from_utf8(exchange_csv_data).map_err(|err| {
-            JsValue::from_str(&format!("Failed to convert data to String: {}", err))
-        })?;
-        let exchange_results: Vec<ExchangeById> = parse_csv_data(exchange_csv_string.as_bytes())?;
+    let exchange_map: HashMap<TickerId, String> = exchange_results
+        .into_iter()
+        .map(|exchange| (exchange.exchange_id, exchange.exchange_short_name))
+        .collect();
 
-        // Find the exchange short name for the given exchange_id
-        exchange_results.iter().find(|exchange| exchange.exchange_id == exchange_id)
-            .map(|exchange| exchange.exchange_short_name.clone())
-    } else {
-        None
-    };
+    let mut cache = SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE.lock().unwrap();
 
-    let result = (symbol.clone(), exchange_short_name.clone());
-
-    // Store the result in the cache
-    {
-        let mut cache = SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE.lock().unwrap();
-        cache.insert(ticker_id, result.clone());
+    for entry in symbol_search_results {
+        let exchange_short_name = entry.exchange_id.and_then(|id| exchange_map.get(&id).cloned());
+        cache.insert(entry.ticker_id, (entry.symbol.clone(), exchange_short_name));
     }
 
-    Ok(result)
+    Ok(())
+}
+
+pub async fn get_symbol_and_exchange_by_ticker_id(ticker_id: TickerId) -> Result<(String, Option<String>), JsValue> {
+    // Ensure cache is preloaded
+    if SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE.lock().unwrap().is_empty() {
+        preload_symbol_and_exchange_cache().await?;
+    }
+
+    let cache = SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE.lock().unwrap();
+    cache.get(&ticker_id)
+        .cloned()
+        .ok_or_else(|| JsValue::from_str("Ticker ID not found"))
 }
 
 // TODO: Reimplement, with local caching
