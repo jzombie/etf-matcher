@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { store } from "@hooks/useStoreStateReader";
-import type { RustServiceSearchResult } from "@src/types";
+import type { RustServiceTickerSearchResult } from "@src/types";
 import usePagination from "./usePagination";
 import debounceWithKey from "@utils/debounceWithKey";
 
@@ -36,7 +36,7 @@ export default function useSearch(
   );
 
   const [searchResults, _setSearchResults] = useState<
-    RustServiceSearchResult[]
+    RustServiceTickerSearchResult[]
   >([]);
   const [totalSearchResults, _setTotalSearchResults] = useState<number>(0);
 

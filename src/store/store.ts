@@ -11,7 +11,7 @@ import callRustService, {
 } from "@utils/callRustService";
 import type {
   RustServiceTickerDetail,
-  RustServiceSearchResultsWithTotalCount,
+  RustServicePaginatedTickerSearchResults,
   RustServiceETFHoldersWithTotalCount,
   RustServiceCacheDetail,
   RustServiceETFAggregateDetail,
@@ -339,8 +339,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     pageSize: number = 20,
     onlyExactMatches: boolean = false,
     abortSignal?: AbortSignal
-  ): Promise<RustServiceSearchResultsWithTotalCount> {
-    return callRustService<RustServiceSearchResultsWithTotalCount>(
+  ): Promise<RustServicePaginatedTickerSearchResults> {
+    return callRustService<RustServicePaginatedTickerSearchResults>(
       "search_tickers",
       [query.trim(), page, pageSize, onlyExactMatches],
       abortSignal

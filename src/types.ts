@@ -7,7 +7,7 @@ export type RustServicePaginatedResults<T> = {
 };
 
 // "Level 1"
-export type RustServiceSearchResult = {
+export type RustServiceTickerSearchResult = {
   ticker_id: number;
   symbol: string;
   exchange_short_name?: string;
@@ -45,8 +45,8 @@ export type RustServiceETFAggregateDetail = {
 };
 
 // TODO: Rename type
-export type RustServiceSearchResultsWithTotalCount =
-  RustServicePaginatedResults<RustServiceSearchResult>;
+export type RustServicePaginatedTickerSearchResults =
+  RustServicePaginatedResults<RustServiceTickerSearchResult>;
 
 // TODO: Rename type
 export type RustServiceETFHoldersWithTotalCount =
