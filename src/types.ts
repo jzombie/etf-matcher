@@ -44,11 +44,9 @@ export type RustServiceETFAggregateDetail = {
   top_pct_sector_weight: number;
 };
 
-// TODO: Rename type
 export type RustServicePaginatedTickerSearchResults =
   RustServicePaginatedResults<RustServiceTickerSearchResult>;
 
-// TODO: Rename type
 export type RustServiceETFHoldersWithTotalCount =
   RustServicePaginatedResults<RustServiceETFAggregateDetail>;
 
