@@ -198,58 +198,72 @@ export default function TickerDetail({
                 {!tickerDetail?.is_etf ? (
                   <>Not ETF</>
                 ) : (
-                  <div
-                    style={{
-                      border: "1px rgba(255,255,255,.1) solid",
-                      borderRadius: 2,
-                      marginTop: 1,
-                      padding: 1,
-                      margin: 4,
-                    }}
-                  >
-                    <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-                      Top Holdings
-                    </Typography>
-                    <Grid container spacing={1}>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle1">
-                          Market Value
+                  <>
+                    {etfAggregateDetail ? (
+                      <div
+                        style={{
+                          border: "1px rgba(255,255,255,.1) solid",
+                          borderRadius: 2,
+                          marginTop: 1,
+                          padding: 1,
+                          margin: 4,
+                        }}
+                      >
+                        <Typography
+                          variant="subtitle1"
+                          sx={{ fontWeight: "bold" }}
+                        >
+                          Top Holdings
                         </Typography>
-                        <Typography variant="body2">
-                          Sector:{" "}
-                          {etfAggregateDetail?.top_market_value_sector_name}
-                        </Typography>
-                        <Typography variant="body2">
-                          Industry:{" "}
-                          {etfAggregateDetail?.top_market_value_industry_name}
-                        </Typography>
-                        <Typography variant="body2">
-                          Value:{" "}
-                          {etfAggregateDetail?.top_sector_market_value &&
-                            etfAggregateDetail?.currency_code &&
-                            formatCurrency(
-                              etfAggregateDetail.currency_code,
-                              etfAggregateDetail.top_sector_market_value
-                            )}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle1">
-                          Percentage Weight
-                        </Typography>
-                        <Typography variant="body2">
-                          Sector: {etfAggregateDetail?.top_pct_sector_name}
-                        </Typography>
-                        <Typography variant="body2">
-                          Industry: {etfAggregateDetail?.top_pct_industry_name}
-                        </Typography>
-                        <Typography variant="body2">
-                          Weight:{" "}
-                          {etfAggregateDetail?.top_pct_sector_weight.toFixed(2)}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </div>
+                        <Grid container spacing={1}>
+                          <Grid item xs={6}>
+                            <Typography variant="subtitle1">
+                              Market Value
+                            </Typography>
+                            <Typography variant="body2">
+                              Sector:{" "}
+                              {etfAggregateDetail?.top_market_value_sector_name}
+                            </Typography>
+                            <Typography variant="body2">
+                              Industry:{" "}
+                              {
+                                etfAggregateDetail?.top_market_value_industry_name
+                              }
+                            </Typography>
+                            <Typography variant="body2">
+                              Value:{" "}
+                              {etfAggregateDetail?.top_sector_market_value &&
+                                etfAggregateDetail?.currency_code &&
+                                formatCurrency(
+                                  etfAggregateDetail.currency_code,
+                                  etfAggregateDetail.top_sector_market_value
+                                )}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="subtitle1">
+                              Percentage Weight
+                            </Typography>
+                            <Typography variant="body2">
+                              Sector: {etfAggregateDetail?.top_pct_sector_name}
+                            </Typography>
+                            <Typography variant="body2">
+                              Industry:{" "}
+                              {etfAggregateDetail?.top_pct_industry_name}
+                            </Typography>
+                            <Typography variant="body2">
+                              Weight:{" "}
+                              {etfAggregateDetail?.top_pct_sector_weight.toFixed(
+                                2
+                              )}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </div>
+                    ) : (
+                      <div>ETF</div>
+                    )}
+                  </>
                 )}
               </Grid>
             </Grid>
