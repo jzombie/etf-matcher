@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 use lazy_static::lazy_static;
 // use serde::{Deserialize, Serialize};
-use crate::data_models::{DataURL, SymbolSearch, ExchangeById};
+use crate::data_models::{DataURL, TickerSearch, ExchangeById};
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
 use crate::JsValue;
@@ -13,13 +13,13 @@ lazy_static! {
 }
 
 async fn preload_symbol_and_exchange_cache() -> Result<(), JsValue> {
-    // Fetch and decompress the SymbolSearch CSV data
-    let url = DataURL::SymbolSearch.value().to_owned();
+    // Fetch and decompress the TickerSearch CSV data
+    let url = DataURL::TickerSearch.value().to_owned();
     let csv_data = fetch_and_decompress_gz(&url, true).await?;
     let csv_string = String::from_utf8(csv_data).map_err(|err| {
         JsValue::from_str(&format!("Failed to convert data to String: {}", err))
     })?;
-    let symbol_search_results: Vec<SymbolSearch> = parse_csv_data(csv_string.as_bytes())?;
+    let symbol_search_results: Vec<TickerSearch> = parse_csv_data(csv_string.as_bytes())?;
 
     // Fetch and decompress the ExchangeById CSV data
     let exchange_url = DataURL::ExchangeByIdIndex.value().to_owned();
@@ -58,16 +58,16 @@ pub async fn get_symbol_and_exchange_by_ticker_id(ticker_id: TickerId) -> Result
 
 // TODO: Reimplement, with local caching
 // pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<TickerId, JsValue> {
-//     // Fetch and decompress the SymbolSearch CSV data
-//     let url = DataURL::SymbolSearch.value().to_owned();
-//     // console::debug_1(&format!("Fetching SymbolSearch data from: {}", url).into());
+//     // Fetch and decompress the TickerSearch CSV data
+//     let url = DataURL::TickerSearch.value().to_owned();
+//     // console::debug_1(&format!("Fetching TickerSearch data from: {}", url).into());
 //     let csv_data = fetch_and_decompress_gz(&url, true).await?;
 //     let csv_string = String::from_utf8(csv_data).map_err(|err| {
-//         // console::debug_1(&format!("Failed to convert SymbolSearch data to String: {}", err).into());
+//         // console::debug_1(&format!("Failed to convert TickerSearch data to String: {}", err).into());
 //         JsValue::from_str(&format!("Failed to convert data to String: {}", err))
 //     })?;
-//     let symbol_search_results: Vec<SymbolSearch> = parse_csv_data(csv_string.as_bytes())?;
-//     // console::debug_1(&format!("Parsed {} SymbolSearch results", symbol_search_results.len()).into());
+//     let symbol_search_results: Vec<TickerSearch> = parse_csv_data(csv_string.as_bytes())?;
+//     // console::debug_1(&format!("Parsed {} TickerSearch results", symbol_search_results.len()).into());
 
 //     // Fetch and decompress the ExchangeById CSV data
 //     let exchange_url = DataURL::ExchangeByIdIndex.value().to_owned();

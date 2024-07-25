@@ -7,7 +7,7 @@ pub mod paginated_results;
 // pub mod sector_by_id;
 pub mod ticker_detail;
 pub mod ticker_etf_holder;
-pub mod symbol_search;
+pub mod ticker_search;
 // pub mod ticker_by_id;
 pub mod exchange_by_id;
 
@@ -19,6 +19,6 @@ pub use paginated_results::PaginatedResults;
 // pub use sector_by_id::SectorById;
 pub use ticker_detail::TickerDetail;
 pub use ticker_etf_holder::TickerETFHolder;
-pub use symbol_search::{SymbolSearch, SymbolSearchResult};
+pub use ticker_search::{TickerSearch, TickerSearchResult};
 // pub use ticker_by_id::TickerById;
 pub use exchange_by_id::ExchangeById;

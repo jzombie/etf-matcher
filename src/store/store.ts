@@ -159,7 +159,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     this._fetchDataBuildInfo();
 
     // Make initial searches faster
-    this._preloadSymbolSearchCache();
+    this._preloadTickerSearchCache();
   }
 
   private _initLocalSubscription(): () => void {
@@ -328,12 +328,12 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     });
   }
 
-  private async _preloadSymbolSearchCache() {
+  private async _preloadTickerSearchCache() {
     return callRustService("preload_symbol_search_cache");
   }
 
   // TODO: Update type (use pagination type with generics)
-  async searchSymbols(
+  async searchTickers(
     query: string,
     page: number = 1,
     pageSize: number = 20,
@@ -341,7 +341,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     abortSignal?: AbortSignal
   ): Promise<RustServiceSearchResultsWithTotalCount> {
     return callRustService<RustServiceSearchResultsWithTotalCount>(
-      "search_symbols",
+      "search_tickers",
       [query.trim(), page, pageSize, onlyExactMatches],
       abortSignal
     );

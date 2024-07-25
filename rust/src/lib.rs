@@ -11,7 +11,7 @@ use crate::types::TickerId;
 
 use crate::data_models::{
     DataBuildInfo, DataURL, ETFAggregateDetail, ETFAggregateDetailResponse, PaginatedResults,
-    TickerDetail, TickerETFHolder, SymbolSearch, SymbolSearchResult,
+    TickerDetail, TickerETFHolder, TickerSearch, TickerSearchResult,
 };
 
 use crate::data_models::image::get_image_info as lib_get_image_info;
@@ -54,20 +54,20 @@ pub async fn get_data_build_info() -> Result<JsValue, JsValue> {
 
 #[wasm_bindgen]
 pub async fn preload_symbol_search_cache() -> Result<JsValue, JsValue> {
-    SymbolSearch::preload_symbol_search_cache().await.map(|_| {
+    TickerSearch::preload_symbol_search_cache().await.map(|_| {
         JsValue::NULL // Returning an empty JsValue on success
     })
 }
 
 #[wasm_bindgen]
-pub async fn search_symbols(
+pub async fn search_tickers(
     query: &str,
     page: usize,
     page_size: usize,
     only_exact_matches: Option<bool>,
 ) -> Result<JsValue, JsValue> {
-    let results: PaginatedResults<SymbolSearchResult> =
-        SymbolSearch::search_symbols(query, page, page_size, only_exact_matches).await?;
+    let results: PaginatedResults<TickerSearchResult> =
+        TickerSearch::search_tickers(query, page, page_size, only_exact_matches).await?;
     to_value(&results)
         .map_err(|err| JsValue::from_str(&format!("Failed to serialize results: {}", err)))
 }
