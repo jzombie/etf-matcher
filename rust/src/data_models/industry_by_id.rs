@@ -12,6 +12,7 @@ pub struct IndustryById {
 }
 
 impl IndustryById {
+    // TODO: Use cache preloading
     pub async fn get_industry_name_with_id(industry_id: IndustryId) -> Result<String, JsValue> {
         let url: &str = DataURL::IndustryByIdIndex.value();
 
