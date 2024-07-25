@@ -1,4 +1,5 @@
 // TODO: Mark `optional` the types which are `Option` types in Rust
+// TODO: Rename all `...WithTotalCount` to `Paginated...`
 
 // "Level 1"
 export type RustServiceSearchResult = {
