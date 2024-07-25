@@ -1,10 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { store } from "@hooks/useStoreStateReader";
 import type { RustServiceSearchResult } from "@utils/callRustService";
-import usePrevious from "./usePrevious";
-import useStableCurrentRef from "./useStableCurrentRef";
 import usePagination from "./usePagination";
-
 import debounceWithKey from "@utils/debounceWithKey";
 
 export type UseSearchProps = {
@@ -77,15 +74,14 @@ export default function useSearch(
     _setSearchQuery(searchQuery.toUpperCase());
   }, []);
 
-  const previousSearchQuery = usePrevious(searchQuery);
-  const previousSearchQueryStableRef = useStableCurrentRef(previousSearchQuery);
+  const previousSearchQueryRef = useRef(searchQuery);
 
   // Perform search or reset
   useEffect(() => {
     if (!searchQuery.trim().length) {
       resetSearch();
     } else {
-      const previousSearchQuery = previousSearchQueryStableRef.current;
+      const previousSearchQuery = previousSearchQueryRef.current;
 
       let activePage = page;
       if (
@@ -120,19 +116,13 @@ export default function useSearch(
         50
       );
 
+      previousSearchQueryRef.current = searchQuery;
+
       return () => {
         debouncedSearch.clear();
       };
     }
-  }, [
-    searchQuery,
-    previousSearchQueryStableRef,
-    page,
-    pageSize,
-    resetSearch,
-    onlyExactMatches,
-    setPage,
-  ]);
+  }, [searchQuery, page, pageSize, resetSearch, onlyExactMatches, setPage]);
 
   return {
     searchQuery,
