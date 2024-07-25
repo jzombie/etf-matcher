@@ -59,26 +59,6 @@ export default function Settings() {
   return (
     <Scrollable>
       <Padding>
-        <h2>Prototype</h2>
-
-        {
-          // TODO: Remove
-        }
-        <Button
-          onClick={() =>
-            callRustService("get_ticker_etf_holders", [
-              "AAPL",
-              "NASDAQ",
-              1,
-              20,
-            ]).then(console.debug)
-          }
-        >
-          PROTO::get_ticker_etf_holders
-        </Button>
-      </Padding>
-
-      <Padding>
         <h2>User Data</h2>
 
         <Button variant="outlined">TODO: Implement::Clear all user data</Button>
