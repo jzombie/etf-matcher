@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { symbolBucketDefaultNames } from "@src/store";
+import { tickerBucketDefaultNames } from "@src/store";
 import type { SymbolBucketProps } from "@src/store";
 
 export type BucketManagerProps = {
@@ -21,7 +21,7 @@ export default function BucketManager({ bucketType }: BucketManagerProps) {
         {
           // TODO: Format this better
         }
-        Create New {symbolBucketDefaultNames[bucketType]}
+        Create New {tickerBucketDefaultNames[bucketType]}
       </Button>
     </div>
   );

@@ -33,7 +33,7 @@ export default function Settings() {
     isOnline,
     isProfilingCacheOverlayOpen,
     isGAPageTrackingEnabled,
-    symbolBuckets,
+    tickerBuckets,
     cacheDetails,
     cacheSize,
     rustServiceXHRRequestErrors,
@@ -48,7 +48,7 @@ export default function Settings() {
     "isOnline",
     "isProfilingCacheOverlayOpen",
     "isGAPageTrackingEnabled",
-    "symbolBuckets",
+    "tickerBuckets",
     "cacheDetails",
     "cacheSize",
     "rustServiceXHRRequestErrors",
@@ -63,9 +63,9 @@ export default function Settings() {
 
         <h3>Buckets</h3>
 
-        {symbolBuckets?.map((symbolBucket, idx) => (
+        {tickerBuckets?.map((tickerBucket, idx) => (
           <Typography key={idx} variant="body1">
-            {symbolBucket.name}
+            {tickerBucket.name}
           </Typography>
         ))}
       </Padding>

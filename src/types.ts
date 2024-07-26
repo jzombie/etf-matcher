@@ -42,12 +42,6 @@ export type RustServiceETFAggregateDetail = {
   top_pct_sector_weight: number;
 };
 
-export type RustServicePaginatedTickerSearchResults =
-  RustServicePaginatedResults<RustServiceTickerSearchResult>;
-
-export type RustServiceETFHoldersWithTotalCount =
-  RustServicePaginatedResults<RustServiceETFAggregateDetail>;
-
 export type RustServiceCacheDetail = {
   key: string;
   size: string;

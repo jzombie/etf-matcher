@@ -8,7 +8,8 @@ import usePagination from "@hooks/usePagination";
 import Padding from "@layoutKit/Padding";
 
 import type {
-  RustServiceETFHoldersWithTotalCount,
+  RustServicePaginatedResults,
+  RustServiceETFAggregateDetail,
   RustServiceTickerDetail,
 } from "@src/types";
 
@@ -23,7 +24,9 @@ export default function ETFHolderList({ tickerDetail }: ETFHolderListProps) {
   const tickerSymbol = tickerDetail.symbol;
 
   const [paginatedETFHolders, setPaginatedETFHolders] =
-    useState<RustServiceETFHoldersWithTotalCount | null>(null);
+    useState<RustServicePaginatedResults<RustServiceETFAggregateDetail> | null>(
+      null
+    );
 
   const { page, previousPage, setPage, totalPages } = usePagination({
     totalItems: paginatedETFHolders?.total_count,

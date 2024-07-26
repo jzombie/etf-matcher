@@ -56,7 +56,7 @@ export default function TickerDetail({
   onIntersectionStateChange,
   ...rest
 }: TickerDetailProps) {
-  const { symbolBuckets } = useStoreStateReader(["symbolBuckets"]);
+  const { tickerBuckets } = useStoreStateReader(["tickerBuckets"]);
   const [tickerDetail, setSymbolDetail] = useState<
     RustServiceTickerDetail | undefined
   >(undefined);
@@ -286,17 +286,16 @@ export default function TickerDetail({
         <Button onClick={() => setShowNews(!showNews)} startIcon={<NewsIcon />}>
           {showNews ? "Hide News" : "View News"}
         </Button>
-        {symbolBuckets
-          ?.filter((symbolBucket) => symbolBucket.isUserConfigurable)
-          .map((symbolBucket, idx) => (
+        {tickerBuckets
+          ?.filter((tickerBucket) => tickerBucket.isUserConfigurable)
+          .map((tickerBucket, idx) => (
             <Button
               key={idx}
               onClick={() =>
-                // TODO: Don't hardcode values, needs to add the ticker ID
-                store.addTickerToBucket(tickerSymbol, "N/A", 1, symbolBucket)
+                store.addTickerToBucket(tickerDetail.ticker_id, 1, tickerBucket)
               }
             >
-              Add {tickerSymbol} to {symbolBucket.name}
+              Add {tickerSymbol} to {tickerBucket.name}
             </Button>
           ))}
       </Box>
