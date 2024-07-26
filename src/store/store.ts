@@ -378,7 +378,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
-  fetchImageInfo(filename: string): Promise<RustServiceImageInfo> {
+  async fetchImageInfo(filename: string): Promise<RustServiceImageInfo> {
     return callRustService<RustServiceImageInfo>("get_image_info", [filename]);
   }
 
