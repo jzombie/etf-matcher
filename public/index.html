@@ -5,10 +5,95 @@
 
     <meta name="html_build_time" content="<%= buildTime %>" />
 
-    <title>ETF Matcher</title>
+    <title>ETF Matcher - Find the Best ETFs for Your Investment Goals</title>
+    <meta
+      name="description"
+      content="Customize a virtual portfolio with potential fractional shares and find ETFs that closely match your investment goals."
+    />
+    <meta
+      name="keywords"
+      content="ETF Matcher, exchange-traded funds, ETF search, virtual portfolio, fractional shares, investment goals, ETFs, portfolio customization, ETF comparison, online trading, investment management, ETF selection, investment tool, customize portfolio, find ETFs"
+    />
+    <meta name="author" content="Your Name or Your Company Name" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/static/etf-matcher-logo-bw-180x180.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/static/etf-matcher-logo-bw-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/static/etf-matcher-logo-bw-16x16.png"
+    />
+    <link rel="manifest" href="/manifest.json" />
 
-    <!-- // Very simple no-cache mechanism. This may need to be improved if making the app a PWA. -->
+    <!-- Open Graph Meta Tags -->
+    <meta
+      property="og:title"
+      content="ETF Matcher - Find the Best ETFs for Your Investment Goals"
+    />
+    <meta
+      property="og:description"
+      content="Customize a virtual portfolio with potential fractional shares and find ETFs that closely match your investment goals."
+    />
+    <meta
+      property="og:image"
+      content="https://etfmatcher.com/static/etf-matcher-logo-bw-1200x630.png"
+    />
+    <meta property="og:url" content="https://etfmatcher.com" />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="ETF Matcher - Find the Best ETFs for Your Investment Goals"
+    />
+    <meta
+      name="twitter:description"
+      content="Customize a virtual portfolio with potential fractional shares and find ETFs that closely match your investment goals."
+    />
+    <meta
+      name="twitter:image"
+      content="https://etfmatcher.com/static/etf-matcher-logo-bw-1200x628.png"
+    />
+    <!--
+      <meta name="twitter:site" content="@your_twitter_handle" />
+    -->
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "ETF Matcher",
+        "url": "https://etfmatcher.com",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://etfmatcher.com/search?query={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "url": "https://etfmatcher.com",
+        "logo": "https://etfmatcher.com/static/etf-matcher-logo-bw-250x250.png"
+      }
+    </script>
+
+    <!-- Very simple no-cache mechanism. This may need to be improved if making the app a PWA. -->
     <script>
       (function () {
         const NO_CACHE_KEY = "no_cache";
@@ -83,15 +168,6 @@
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
-
-    <meta
-      name="description"
-      content="Discover ETFs that most closely match your investment goals."
-    />
-    <meta
-      name="keywords"
-      content="ETF Matcher, exchange-traded funds, ETF search, virtual portfolio, fractional shares, investment goals, ETFs, portfolio customization, ETF comparison, online trading, investment management, ETF selection, investment tool, customize portfolio, find ETFs"
     />
 
     <style>
