@@ -51,7 +51,7 @@ export default function SearchResults() {
       _setSearchQuery(query.trim());
     }
 
-    _setOnlyExactMatches(getBooleanParam("exact"));
+    _setOnlyExactMatches(getBooleanParam("exact", true));
 
     _setPage(!page ? 1 : parseInt(page, 10));
   });
