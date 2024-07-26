@@ -311,7 +311,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     this.setState({ visibleTickerIds });
   }
 
-  private async _syncCacheDetails() {
+  private async _syncCacheDetails(): Promise<void> {
     callRustService<number>("get_cache_size").then((cacheSize) => {
       this.setState({ cacheSize });
     });
