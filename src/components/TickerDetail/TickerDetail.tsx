@@ -1,7 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
 import TickerContainer from "../TickerContainer";
-import { Button, ButtonBase, Typography, Grid, Box } from "@mui/material";
+import {
+  Button,
+  ButtonBase,
+  Typography,
+  Grid,
+  Box,
+  CircularProgress,
+} from "@mui/material";
 import Padding from "@layoutKit/Padding";
+import Center from "@layoutKit/Center";
 import store from "@src/store";
 import type {
   RustServiceTickerDetail,
@@ -57,23 +65,29 @@ export default function TickerDetail({
   onIntersectionStateChange,
   ...rest
 }: TickerDetailProps) {
-  const [tickerDetail, setSymbolDetail] = useState<
-    RustServiceTickerDetail | undefined
-  >(undefined);
+  const [isLoadingTickerDetail, setIsLoadingTickerDetail] =
+    useState<boolean>(false);
+
+  const [tickerDetail, setSymbolDetail] =
+    useState<RustServiceTickerDetail | null>(null);
 
   const logoBackgroundColorOverride = useImageBackgroundColor(
     tickerDetail?.logo_filename
   );
 
-  const [etfAggregateDetail, setETFAggregateDetail] = useState<
-    RustServiceETFAggregateDetail | undefined
-  >(undefined);
+  const [etfAggregateDetail, setETFAggregateDetail] =
+    useState<RustServiceETFAggregateDetail | null>(null);
 
   const [showNews, setShowNews] = useState(false);
 
   useEffect(() => {
     if (tickerId) {
-      store.fetchTickerDetail(tickerId).then(setSymbolDetail);
+      setIsLoadingTickerDetail(true);
+
+      store
+        .fetchTickerDetail(tickerId)
+        .then(setSymbolDetail)
+        .finally(() => setIsLoadingTickerDetail(false));
     }
   }, [tickerId]);
 
@@ -94,6 +108,14 @@ export default function TickerDetail({
     query: string | null;
     exact: string | null;
   }>();
+
+  if (isLoadingTickerDetail) {
+    return (
+      <Center>
+        <CircularProgress />
+      </Center>
+    );
+  }
 
   if (!formattedSymbolWithExchange || !tickerDetail) {
     return null;
