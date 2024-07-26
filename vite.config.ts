@@ -115,6 +115,10 @@ export default defineConfig(({ mode }) => {
                   dest: path.resolve(DESTINATION_DIR),
                 },
                 {
+                  src: "manifest.json",
+                  dest: path.resolve(DESTINATION_DIR),
+                },
+                {
                   src: "./static/*",
                   dest: path.resolve(DESTINATION_DIR, "static"),
                 },
