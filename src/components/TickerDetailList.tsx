@@ -1,16 +1,20 @@
 import React, { useCallback, useEffect, useState } from "react";
-import SymbolDetail from "./TickerDetail";
+import TickerDetail from "./TickerDetail";
 
 import customLogger from "@utils/customLogger";
 
 export type TickerDetailListProps = {
   tickerIds: number[];
   lookAheadBufferSize?: number;
+  // Note: This executes on every `TickerDetail` load. Adjust as necessary
+  // if the ticker information should be sent as an argument.
+  onLoad?: () => void;
 };
 
 export default function TickerDetailList({
   tickerIds,
   lookAheadBufferSize = 2,
+  onLoad,
 }: TickerDetailListProps) {
   useEffect(() => {
     if (tickerIds.length !== [...new Set(tickerIds)].length) {
@@ -40,14 +44,15 @@ export default function TickerDetailList({
       {tickerIds.map((tickerId, idx) => {
         if (idx <= maxIntersectionIndex + lookAheadBufferSize) {
           return (
-            // TODO: Rename to `TickerDetail`
-
-            <SymbolDetail
+            <TickerDetail
               key={tickerId}
               tickerId={tickerId}
               onIntersectionStateChange={(isIntersecting) =>
                 handleIntersectionStateChange(tickerId, isIntersecting)
               }
+              onLoad={onLoad}
+              // Prevent stacked-up loading spinners
+              preventLoadingSpinner={idx > 0}
             />
           );
         }
