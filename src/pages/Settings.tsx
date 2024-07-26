@@ -113,7 +113,7 @@ export default function Settings() {
           <Button
             variant="contained"
             color="error"
-            onClick={() => store.PROTO_clearCache()}
+            onClick={() => store.clearCache()}
           >
             Clear Cache
           </Button>

@@ -424,14 +424,12 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     });
   }
 
-  // TODO: Remove `PROTO` prefix
-  PROTO_removeCacheEntry(key: string) {
+  removeCacheEntry(key: string) {
     // TODO: Add rapid UI update
     callRustService("remove_cache_entry", [key]);
   }
 
-  // TODO: Remove `PROTO` prefix
-  PROTO_clearCache() {
+  clearCache() {
     // TODO: Add rapid UI update
     callRustService("clear_cache");
   }
