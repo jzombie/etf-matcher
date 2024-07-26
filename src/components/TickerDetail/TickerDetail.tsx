@@ -20,6 +20,7 @@ import useURLState from "@hooks/useURLState";
 
 import formatSymbolWithExchange from "@utils/formatSymbolWithExchange";
 import formatCurrency from "@utils/formatCurrency";
+import TickerDetailBucketManager from "./TickerDetail.BucketManager";
 
 export type TickerDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerId: number;
@@ -56,7 +57,6 @@ export default function TickerDetail({
   onIntersectionStateChange,
   ...rest
 }: TickerDetailProps) {
-  const { tickerBuckets } = useStoreStateReader(["tickerBuckets"]);
   const [tickerDetail, setSymbolDetail] = useState<
     RustServiceTickerDetail | undefined
   >(undefined);
@@ -286,21 +286,7 @@ export default function TickerDetail({
         <Button onClick={() => setShowNews(!showNews)} startIcon={<NewsIcon />}>
           {showNews ? "Hide News" : "View News"}
         </Button>
-        {
-          // TODO: Move into a component that manages this a bit better
-        }
-        {tickerBuckets
-          ?.filter((tickerBucket) => tickerBucket.isUserConfigurable)
-          .map((tickerBucket, idx) => (
-            <Button
-              key={idx}
-              onClick={() =>
-                store.addTickerToBucket(tickerDetail.ticker_id, 1, tickerBucket)
-              }
-            >
-              Add {tickerSymbol} to {tickerBucket.name}
-            </Button>
-          ))}
+        <TickerDetailBucketManager tickerDetail={tickerDetail} />
       </Box>
 
       {showNews && (
