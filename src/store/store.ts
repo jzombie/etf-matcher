@@ -66,8 +66,7 @@ export type StoreStateProps = {
   isProductionBuild: boolean;
   isOnline: boolean;
   isRustInit: boolean;
-  dataBuildTime: string;
-  prettyDataBuildTime: string;
+  dataBuildTime: string | null;
   isDirtyState: boolean;
   visibleTickerIds: number[];
   isSearchModalOpen: boolean;
@@ -96,8 +95,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       isProductionBuild: IS_PROD,
       isOnline: false,
       isRustInit: false,
-      dataBuildTime: "",
-      prettyDataBuildTime: "",
+      dataBuildTime: null,
       isDirtyState: false,
       visibleTickerIds: [],
       isSearchModalOpen: false,
@@ -326,9 +324,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         isRustInit: true,
         // TODO: If data build time is already set as state, but this indicates otherwise, that's a signal the app needs to update
         dataBuildTime: (dataBuildInfo as { [key: string]: string }).time,
-        prettyDataBuildTime: new Date(
-          (dataBuildInfo as { [key: string]: string }).time
-        ).toLocaleString(),
       });
     });
   }

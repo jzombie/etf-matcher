@@ -27,7 +27,7 @@ export default function Settings() {
     isAppUnlocked,
     isProductionBuild,
     isRustInit,
-    prettyDataBuildTime,
+    dataBuildTime,
     isDirtyState,
     visibleTickerIds,
     isOnline,
@@ -42,7 +42,7 @@ export default function Settings() {
     "isAppUnlocked",
     "isProductionBuild",
     "isRustInit",
-    "prettyDataBuildTime",
+    "dataBuildTime",
     "isDirtyState",
     "visibleTickerIds",
     "isOnline",
@@ -159,7 +159,9 @@ export default function Settings() {
           color="textSecondary"
           sx={{ float: "left" }}
         >
-          {prettyDataBuildTime ? `Data build time: ${prettyDataBuildTime}` : ""}
+          {dataBuildTime
+            ? `Data build time: ${formatLocalTime(dataBuildTime)}`
+            : ""}
           {" | "}
           {isProductionBuild ? "PROD" : "DEV"}
           {" | "}
