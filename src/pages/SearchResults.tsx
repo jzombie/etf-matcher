@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Box,
   Switch,
@@ -40,6 +40,8 @@ export default function SearchResults() {
     isLoading,
   } = useSearch();
 
+  usePageTitleSetter(searchQuery ? `Search results for: ${searchQuery}` : null);
+
   const { setURLState, getBooleanParam, toBooleanParam } = useURLState<{
     query: string | null;
     page: string | null;
@@ -51,7 +53,7 @@ export default function SearchResults() {
       _setSearchQuery(query.trim());
     }
 
-    _setOnlyExactMatches(getBooleanParam("exact"));
+    _setOnlyExactMatches(getBooleanParam("exact", true));
 
     _setPage(!page ? 1 : parseInt(page, 10));
   });
@@ -77,12 +79,20 @@ export default function SearchResults() {
     [searchResults]
   );
 
-  usePageTitleSetter(searchQuery ? `Search results for: ${searchQuery}` : null);
-
   const tickerIds = useMemo(
     () => searchResults.map(({ ticker_id }) => ticker_id),
     [searchResults]
   );
+
+  // Note: This `useState`/`useEffect` combination is intended to hide the second
+  // `Pagination` component so that it doesn't show doubled-up while it is still loading.
+  const [isTickerDetailListLoading, setIsTickerDetailListLoading] =
+    useState<boolean>(false);
+  useEffect(() => {
+    if (tickerIds) {
+      setIsTickerDetailListLoading(true);
+    }
+  }, [tickerIds]);
 
   if (!searchResultSymbols.length) {
     if (isLoading) {
@@ -159,6 +169,7 @@ export default function SearchResults() {
       {totalSearchResults > pageSize && (
         <Box style={{ textAlign: "center" }}>
           <Pagination
+            disabled={isTickerDetailListLoading}
             count={totalPages}
             page={page}
             onChange={(event, nextPage) => setPage(nextPage)}
@@ -172,21 +183,27 @@ export default function SearchResults() {
         direction={!previousPage || page > previousPage ? "left" : "right"}
         trigger={searchResultSymbols}
       >
-        <TickerDetailList tickerIds={tickerIds} />
+        <TickerDetailList
+          tickerIds={tickerIds}
+          onLoad={() => setIsTickerDetailListLoading(false)}
+        />
       </Transition>
 
-      {totalSearchResults > pageSize && !isLoading && (
-        <Box style={{ textAlign: "center" }}>
-          <Pagination
-            count={totalPages}
-            page={page}
-            onChange={(event, nextPage) => setPage(nextPage)}
-            showFirstButton
-            showLastButton
-            sx={{ display: "inline-block" }}
-          />
-        </Box>
-      )}
+      {!isTickerDetailListLoading &&
+        totalSearchResults > pageSize &&
+        !isLoading && (
+          <Box style={{ textAlign: "center" }}>
+            <Pagination
+              disabled={isTickerDetailListLoading}
+              count={totalPages}
+              page={page}
+              onChange={(event, nextPage) => setPage(nextPage)}
+              showFirstButton
+              showLastButton
+              sx={{ display: "inline-block" }}
+            />
+          </Box>
+        )}
     </Scrollable>
   );
 }

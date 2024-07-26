@@ -24,6 +24,7 @@ import NewsIcon from "@mui/icons-material/Article";
 import ETFHolderList from "./TickerDetail.ETFHolderList";
 
 import useImageBackgroundColor from "@hooks/useImageBackgroundColor";
+import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useURLState from "@hooks/useURLState";
 
 import formatSymbolWithExchange from "@utils/formatSymbolWithExchange";
@@ -33,6 +34,8 @@ import TickerDetailBucketManager from "./TickerDetail.BucketManager";
 export type TickerDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerId: number;
   onIntersectionStateChange?: (isIntersecting: boolean) => void;
+  onLoad?: () => void;
+  preventLoadingSpinner?: boolean;
 };
 
 const LogoContainer = styled(Box)(({ theme }) => ({
@@ -63,6 +66,8 @@ const SymbolDetailWrapper = styled(Box)(({ theme }) => ({
 export default function TickerDetail({
   tickerId,
   onIntersectionStateChange,
+  onLoad,
+  preventLoadingSpinner = false,
   ...rest
 }: TickerDetailProps) {
   const [isLoadingTickerDetail, setIsLoadingTickerDetail] =
@@ -80,6 +85,8 @@ export default function TickerDetail({
 
   const [showNews, setShowNews] = useState(false);
 
+  const onLoadStableCurrentRef = useStableCurrentRef(onLoad);
+
   useEffect(() => {
     if (tickerId) {
       setIsLoadingTickerDetail(true);
@@ -87,9 +94,15 @@ export default function TickerDetail({
       store
         .fetchTickerDetail(tickerId)
         .then(setSymbolDetail)
-        .finally(() => setIsLoadingTickerDetail(false));
+        .finally(() => {
+          setIsLoadingTickerDetail(false);
+
+          if (typeof onLoadStableCurrentRef.current === "function") {
+            onLoadStableCurrentRef.current();
+          }
+        });
     }
-  }, [tickerId]);
+  }, [onLoadStableCurrentRef, tickerId]);
 
   useEffect(() => {
     if (tickerDetail?.is_etf) {
@@ -109,7 +122,7 @@ export default function TickerDetail({
     exact: string | null;
   }>();
 
-  if (isLoadingTickerDetail) {
+  if (isLoadingTickerDetail && !preventLoadingSpinner) {
     return (
       <Center>
         <CircularProgress />
