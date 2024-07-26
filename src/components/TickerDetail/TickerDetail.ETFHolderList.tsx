@@ -53,7 +53,7 @@ export default function ETFHolderList({ tickerDetail }: ETFHolderListProps) {
 
   const paginatedResults = paginatedETFHolders.results;
 
-  if (isLoadingETFHolders) {
+  if (!paginatedETFHolders && isLoadingETFHolders) {
     return (
       <Center>
         <CircularProgress />
@@ -88,14 +88,20 @@ export default function ETFHolderList({ tickerDetail }: ETFHolderListProps) {
               }
               trigger={paginatedETFHolders}
             >
-              <div>
-                {paginatedResults.map((etfHolder) => (
-                  <ETFHolder
-                    key={etfHolder.ticker_id}
-                    etfAggregateDetail={etfHolder}
-                  />
-                ))}
-              </div>
+              {isLoadingETFHolders ? (
+                <Center>
+                  <CircularProgress />
+                </Center>
+              ) : (
+                <div>
+                  {paginatedResults.map((etfHolder) => (
+                    <ETFHolder
+                      key={etfHolder.ticker_id}
+                      etfAggregateDetail={etfHolder}
+                    />
+                  ))}
+                </div>
+              )}
             </Transition>
           </Padding>
         </Box>
