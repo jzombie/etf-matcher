@@ -133,7 +133,8 @@ export default function HeaderMenu() {
               >
                 {item.icon}
                 {["/portfolios", "/watchlists"].includes(item.key) ? (
-                  <Badge badgeContent={1} color="secondary">
+                  // TODO: Don't hardcode badge content
+                  <Badge badgeContent={"+1"} color="secondary">
                     <Box
                       sx={{
                         display: "flex",
@@ -205,7 +206,8 @@ export default function HeaderMenu() {
                       }}
                     >
                       {["/portfolios", "/watchlists"].includes(item.key) ? (
-                        <Badge badgeContent={4} color="secondary">
+                        // TODO: Don't hardcode badge content
+                        <Badge badgeContent={"+1"} color="secondary">
                           {item.icon}
                         </Badge>
                       ) : (
