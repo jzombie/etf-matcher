@@ -289,12 +289,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           debounceWithKey(
             "store:cache_profiler",
             () => {
-              callRustService<number>("get_cache_size").then((cacheSize) => {
-                this.setState({ cacheSize });
-              });
-              callRustService<RustServiceCacheDetail[]>(
-                "get_cache_details"
-              ).then((cacheDetails) => this.setState({ cacheDetails }));
+              this._syncCacheDetails();
             },
             this.state.cacheProfilerWaitTime
           );
@@ -314,6 +309,15 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
   setVisibleTickers(visibleTickerIds: number[]) {
     this.setState({ visibleTickerIds });
+  }
+
+  private async _syncCacheDetails() {
+    callRustService<number>("get_cache_size").then((cacheSize) => {
+      this.setState({ cacheSize });
+    });
+    callRustService<RustServiceCacheDetail[]>("get_cache_details").then(
+      (cacheDetails) => this.setState({ cacheDetails })
+    );
   }
 
   private _fetchDataBuildInfo() {
@@ -450,13 +454,19 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   removeCacheEntry(key: string) {
-    // TODO: Add rapid UI update
     callRustService("remove_cache_entry", [key]);
+
+    // For rapid UI update
+    // This forces an immediate sync so that the UI does not appear laggy when clearing cache entries
+    this._syncCacheDetails();
   }
 
   clearCache() {
-    // TODO: Add rapid UI update
     callRustService("clear_cache");
+
+    // For rapid UI update
+    // This forces an immediate sync so that the UI does not appear laggy when clearing cache entries
+    this._syncCacheDetails();
   }
 }
 
