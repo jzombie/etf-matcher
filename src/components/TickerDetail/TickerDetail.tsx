@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import TickerContainer from "../TickerContainer";
 import { Button, ButtonBase, Typography, Grid, Box } from "@mui/material";
 import Padding from "@layoutKit/Padding";
-import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
+import store from "@src/store";
 import type {
   RustServiceTickerDetail,
   RustServiceETFAggregateDetail,
@@ -98,8 +98,6 @@ export default function TickerDetail({
   if (!formattedSymbolWithExchange || !tickerDetail) {
     return null;
   }
-
-  const tickerSymbol = tickerDetail.symbol;
 
   return (
     <TickerContainer
