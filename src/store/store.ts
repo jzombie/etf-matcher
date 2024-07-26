@@ -422,8 +422,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       });
       return { tickerBuckets };
     });
-
-    // TODO: Show UI notification
   }
 
   // TODO: Remove `PROTO` prefix
