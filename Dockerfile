@@ -6,7 +6,7 @@ ARG DOCKER_BUILD=1
 
 # Install necessary dependencies
 RUN apt-get update && \
-    apt-get install -y cmake libz-dev python3 curl openssl zip && \
+    apt-get install -y cmake libz-dev python3 curl openssl zip rsync && \
     rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user with the same UID and GID as the local user

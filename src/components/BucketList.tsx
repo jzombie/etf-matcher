@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import SymbolDetailList from "@components/TickerDetailList";
+import TickerDetailList from "@components/TickerDetailList";
 
 import Typography from "@mui/material/Typography";
 
@@ -8,34 +8,34 @@ import Padding from "@layoutKit/Padding";
 import SearchModalButton from "./SearchModalButton";
 
 import useStoreStateReader from "@hooks/useStoreStateReader";
-import type { SymbolBucketProps } from "@src/store";
+import type { TickerBucketProps } from "@src/store";
 
 export type BucketListProps = {
-  bucketType: SymbolBucketProps["bucketType"];
+  bucketType: TickerBucketProps["bucketType"];
 };
 
 export default function BucketList({ bucketType }: BucketListProps) {
-  const { symbolBuckets } = useStoreStateReader("symbolBuckets");
+  const { tickerBuckets } = useStoreStateReader("tickerBuckets");
 
-  const localSymbolBucket = useMemo(
+  const localTickerBucket = useMemo(
     () =>
-      symbolBuckets?.filter(
-        (symbolBucket) => symbolBucket.bucketType === bucketType
+      tickerBuckets?.filter(
+        (tickerBucket) => tickerBucket.bucketType === bucketType
       ),
-    [symbolBuckets, bucketType]
+    [tickerBuckets, bucketType]
   );
 
   return (
     <>
-      {localSymbolBucket?.map((symbolBucket, idx) => (
+      {localTickerBucket?.map((tickerBucket, idx) => (
         <React.Fragment key={idx}>
           <Padding>
-            <h2>{symbolBucket.name}</h2>
+            <h2>{tickerBucket.name}</h2>
 
-            {!symbolBucket.tickers.length && (
+            {!tickerBucket.tickers.length && (
               <>
                 <Typography variant="body2" color="textSecondary">
-                  No items in &quot;{symbolBucket.name}&quot;.
+                  No items in &quot;{tickerBucket.name}&quot;.
                 </Typography>
                 <Typography
                   variant="body2"
@@ -50,12 +50,9 @@ export default function BucketList({ bucketType }: BucketListProps) {
             )}
           </Padding>
 
-          {
-            // TODO: Reimplement
-          }
-          {/* <SymbolDetailList
-            tickerSymbols={symbolBucket.tickers.map(({ symbol }) => symbol)}
-          /> */}
+          <TickerDetailList
+            tickerIds={tickerBucket.tickers.map(({ tickerId }) => tickerId)}
+          />
         </React.Fragment>
       ))}
     </>

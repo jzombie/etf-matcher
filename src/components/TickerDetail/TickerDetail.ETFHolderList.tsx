@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Box, Pagination } from "@mui/material";
+import { Box, Pagination, CircularProgress } from "@mui/material";
 import ETFHolder from "./TickerDetail.ETFHolder";
 import Transition from "@components/Transition";
 
 import usePagination from "@hooks/usePagination";
 
+import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
 
 import type {
-  RustServiceETFHoldersWithTotalCount,
+  RustServicePaginatedResults,
+  RustServiceETFAggregateDetail,
   RustServiceTickerDetail,
 } from "@src/types";
 
@@ -22,8 +24,13 @@ export default function ETFHolderList({ tickerDetail }: ETFHolderListProps) {
   const tickerId = tickerDetail.ticker_id;
   const tickerSymbol = tickerDetail.symbol;
 
+  const [isLoadingETFHolders, setIsLoadingETFHolders] =
+    useState<boolean>(false);
+
   const [paginatedETFHolders, setPaginatedETFHolders] =
-    useState<RustServiceETFHoldersWithTotalCount | null>(null);
+    useState<RustServicePaginatedResults<RustServiceETFAggregateDetail> | null>(
+      null
+    );
 
   const { page, previousPage, setPage, totalPages } = usePagination({
     totalItems: paginatedETFHolders?.total_count,
@@ -31,9 +38,12 @@ export default function ETFHolderList({ tickerDetail }: ETFHolderListProps) {
 
   useEffect(() => {
     if (tickerId) {
+      setIsLoadingETFHolders(true);
+
       store
         .fetchETFHoldersAggregateDetailByTickerId(tickerId, page)
-        .then(setPaginatedETFHolders);
+        .then(setPaginatedETFHolders)
+        .finally(() => setIsLoadingETFHolders(false));
     }
   }, [tickerId, page]);
 
@@ -42,6 +52,14 @@ export default function ETFHolderList({ tickerDetail }: ETFHolderListProps) {
   }
 
   const paginatedResults = paginatedETFHolders.results;
+
+  if (isLoadingETFHolders) {
+    return (
+      <Center>
+        <CircularProgress />
+      </Center>
+    );
+  }
 
   return (
     <Box>

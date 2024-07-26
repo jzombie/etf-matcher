@@ -2,17 +2,17 @@ import React, { forwardRef, HTMLAttributes } from "react";
 import clsx from "clsx";
 import styles from "./Layout.module.scss";
 
-export type ContentProps = HTMLAttributes<HTMLDivElement> & {
+export type ContentProps = HTMLAttributes<HTMLElement> & {
   children: React.ReactNode;
   className?: string;
 };
 
-const Content = forwardRef<HTMLDivElement, ContentProps>(
+const Content = forwardRef<HTMLElement, ContentProps>(
   ({ children, className, ...rest }, ref) => {
     return (
-      <div ref={ref} className={clsx(styles.content, className)} {...rest}>
+      <main ref={ref} className={clsx(styles.content, className)} {...rest}>
         {children}
-      </div>
+      </main>
     );
   }
 );

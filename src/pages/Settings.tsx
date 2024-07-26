@@ -27,13 +27,13 @@ export default function Settings() {
     isAppUnlocked,
     isProductionBuild,
     isRustInit,
-    prettyDataBuildTime,
+    dataBuildTime,
     isDirtyState,
     visibleTickerIds,
     isOnline,
     isProfilingCacheOverlayOpen,
     isGAPageTrackingEnabled,
-    symbolBuckets,
+    tickerBuckets,
     cacheDetails,
     cacheSize,
     rustServiceXHRRequestErrors,
@@ -42,13 +42,13 @@ export default function Settings() {
     "isAppUnlocked",
     "isProductionBuild",
     "isRustInit",
-    "prettyDataBuildTime",
+    "dataBuildTime",
     "isDirtyState",
     "visibleTickerIds",
     "isOnline",
     "isProfilingCacheOverlayOpen",
     "isGAPageTrackingEnabled",
-    "symbolBuckets",
+    "tickerBuckets",
     "cacheDetails",
     "cacheSize",
     "rustServiceXHRRequestErrors",
@@ -63,9 +63,9 @@ export default function Settings() {
 
         <h3>Buckets</h3>
 
-        {symbolBuckets?.map((symbolBucket, idx) => (
+        {tickerBuckets?.map((tickerBucket, idx) => (
           <Typography key={idx} variant="body1">
-            {symbolBucket.name}
+            {tickerBucket.name}
           </Typography>
         ))}
       </Padding>
@@ -113,7 +113,7 @@ export default function Settings() {
           <Button
             variant="contained"
             color="error"
-            onClick={() => store.PROTO_clearCache()}
+            onClick={() => store.clearCache()}
           >
             Clear Cache
           </Button>
@@ -159,7 +159,9 @@ export default function Settings() {
           color="textSecondary"
           sx={{ float: "left" }}
         >
-          {prettyDataBuildTime ? `Data build time: ${prettyDataBuildTime}` : ""}
+          {dataBuildTime
+            ? `Data build time: ${formatLocalTime(dataBuildTime)}`
+            : ""}
           {" | "}
           {isProductionBuild ? "PROD" : "DEV"}
           {" | "}

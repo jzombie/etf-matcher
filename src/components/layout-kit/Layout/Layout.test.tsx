@@ -27,11 +27,11 @@ describe("Layout Component", () => {
           >
             Test Header
           </header>
-          <div
+          <main
             class="content"
           >
             Test Content
-          </div>
+          </main>
           <footer
             class="footer"
           >
@@ -61,11 +61,11 @@ describe("Layout Component", () => {
           >
             Test Header
           </header>
-          <div
+          <main
             class="content"
           >
             Test Content
-          </div>
+          </main>
           <footer
             class="footer"
           >

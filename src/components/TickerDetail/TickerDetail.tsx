@@ -1,8 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
 import TickerContainer from "../TickerContainer";
-import { Button, ButtonBase, Typography, Grid, Box } from "@mui/material";
+import {
+  Button,
+  ButtonBase,
+  Typography,
+  Grid,
+  Box,
+  CircularProgress,
+} from "@mui/material";
 import Padding from "@layoutKit/Padding";
-import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
+import Center from "@layoutKit/Center";
+import store from "@src/store";
 import type {
   RustServiceTickerDetail,
   RustServiceETFAggregateDetail,
@@ -20,6 +28,7 @@ import useURLState from "@hooks/useURLState";
 
 import formatSymbolWithExchange from "@utils/formatSymbolWithExchange";
 import formatCurrency from "@utils/formatCurrency";
+import TickerDetailBucketManager from "./TickerDetail.BucketManager";
 
 export type TickerDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerId: number;
@@ -56,24 +65,29 @@ export default function TickerDetail({
   onIntersectionStateChange,
   ...rest
 }: TickerDetailProps) {
-  const { symbolBuckets } = useStoreStateReader(["symbolBuckets"]);
-  const [tickerDetail, setSymbolDetail] = useState<
-    RustServiceTickerDetail | undefined
-  >(undefined);
+  const [isLoadingTickerDetail, setIsLoadingTickerDetail] =
+    useState<boolean>(false);
+
+  const [tickerDetail, setSymbolDetail] =
+    useState<RustServiceTickerDetail | null>(null);
 
   const logoBackgroundColorOverride = useImageBackgroundColor(
     tickerDetail?.logo_filename
   );
 
-  const [etfAggregateDetail, setETFAggregateDetail] = useState<
-    RustServiceETFAggregateDetail | undefined
-  >(undefined);
+  const [etfAggregateDetail, setETFAggregateDetail] =
+    useState<RustServiceETFAggregateDetail | null>(null);
 
   const [showNews, setShowNews] = useState(false);
 
   useEffect(() => {
     if (tickerId) {
-      store.fetchTickerDetail(tickerId).then(setSymbolDetail);
+      setIsLoadingTickerDetail(true);
+
+      store
+        .fetchTickerDetail(tickerId)
+        .then(setSymbolDetail)
+        .finally(() => setIsLoadingTickerDetail(false));
     }
   }, [tickerId]);
 
@@ -95,11 +109,17 @@ export default function TickerDetail({
     exact: string | null;
   }>();
 
+  if (isLoadingTickerDetail) {
+    return (
+      <Center>
+        <CircularProgress />
+      </Center>
+    );
+  }
+
   if (!formattedSymbolWithExchange || !tickerDetail) {
     return null;
   }
-
-  const tickerSymbol = tickerDetail.symbol;
 
   return (
     <TickerContainer
@@ -286,19 +306,7 @@ export default function TickerDetail({
         <Button onClick={() => setShowNews(!showNews)} startIcon={<NewsIcon />}>
           {showNews ? "Hide News" : "View News"}
         </Button>
-        {symbolBuckets
-          ?.filter((symbolBucket) => symbolBucket.isUserConfigurable)
-          .map((symbolBucket, idx) => (
-            <Button
-              key={idx}
-              onClick={() =>
-                // TODO: Don't hardcode values, needs to add the ticker ID
-                store.addTickerToBucket(tickerSymbol, "N/A", 1, symbolBucket)
-              }
-            >
-              Add {tickerSymbol} to {symbolBucket.name}
-            </Button>
-          ))}
+        <TickerDetailBucketManager tickerDetail={tickerDetail} />
       </Box>
 
       {showNews && (

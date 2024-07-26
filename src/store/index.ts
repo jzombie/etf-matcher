@@ -1,9 +1,9 @@
 import store, {
-  SymbolBucketProps,
+  TickerBucketProps,
   StoreStateProps,
-  symbolBucketDefaultNames,
+  tickerBucketDefaultNames,
 } from "./store";
 
 export default store;
-export { symbolBucketDefaultNames };
-export type { SymbolBucketProps, StoreStateProps };
+export { tickerBucketDefaultNames };
+export type { TickerBucketProps, StoreStateProps };

@@ -1,4 +1,4 @@
-// TODO: Add in session persistence so that portfolios and watchlists (`symbolBuckets`) can be saved.
+// TODO: Add in session persistence so that portfolios and watchlists (`tickerBuckets`) can be saved.
 // Ideally this should happen via the `SharedWorker` so that multiple tabs can retain the same store.
 
 import {
@@ -10,9 +10,9 @@ import callRustService, {
   NotifierEvent,
 } from "@utils/callRustService";
 import type {
+  RustServicePaginatedResults,
+  RustServiceTickerSearchResult,
   RustServiceTickerDetail,
-  RustServicePaginatedTickerSearchResults,
-  RustServiceETFHoldersWithTotalCount,
   RustServiceCacheDetail,
   RustServiceETFAggregateDetail,
   RustServiceImageInfo,
@@ -29,15 +29,16 @@ import debounceWithKey from "@utils/debounceWithKey";
 
 const IS_PROD = import.meta.env.PROD;
 
-type SymbolBucketTicker = {
-  exchange: string;
+type TickerBucketTicker = {
+  tickerId: number;
   symbol: string;
+  exchange_short_name: string;
   quantity: number;
 };
 
-export type SymbolBucketProps = {
+export type TickerBucketProps = {
   name: string;
-  tickers: SymbolBucketTicker[];
+  tickers: TickerBucketTicker[];
   bucketType:
     | "watchlist"
     | "portfolio"
@@ -48,8 +49,8 @@ export type SymbolBucketProps = {
   isUserConfigurable: boolean;
 };
 
-export const symbolBucketDefaultNames: Readonly<
-  Record<SymbolBucketProps["bucketType"], string>
+export const tickerBucketDefaultNames: Readonly<
+  Record<TickerBucketProps["bucketType"], string>
 > = {
   watchlist: "Watchlist",
   portfolio: "Portfolio",
@@ -65,12 +66,11 @@ export type StoreStateProps = {
   isProductionBuild: boolean;
   isOnline: boolean;
   isRustInit: boolean;
-  dataBuildTime: string;
-  prettyDataBuildTime: string;
+  dataBuildTime: string | null;
   isDirtyState: boolean;
   visibleTickerIds: number[];
   isSearchModalOpen: boolean;
-  symbolBuckets: SymbolBucketProps[]; // TODO: `tickerBuckets`
+  tickerBuckets: TickerBucketProps[];
   isProfilingCacheOverlayOpen: boolean;
   cacheProfilerWaitTime: number;
   cacheDetails: RustServiceCacheDetail[];
@@ -95,12 +95,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       isProductionBuild: IS_PROD,
       isOnline: false,
       isRustInit: false,
-      dataBuildTime: "",
-      prettyDataBuildTime: "",
+      dataBuildTime: null,
       isDirtyState: false,
       visibleTickerIds: [],
       isSearchModalOpen: false,
-      symbolBuckets: [
+      tickerBuckets: [
         {
           name: "My Portfolio",
           tickers: [],
@@ -288,12 +287,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           debounceWithKey(
             "store:cache_profiler",
             () => {
-              callRustService<number>("get_cache_size").then((cacheSize) => {
-                this.setState({ cacheSize });
-              });
-              callRustService<RustServiceCacheDetail[]>(
-                "get_cache_details"
-              ).then((cacheDetails) => this.setState({ cacheDetails }));
+              this._syncCacheDetails();
             },
             this.state.cacheProfilerWaitTime
           );
@@ -315,15 +309,21 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     this.setState({ visibleTickerIds });
   }
 
+  private async _syncCacheDetails(): Promise<void> {
+    callRustService<number>("get_cache_size").then((cacheSize) => {
+      this.setState({ cacheSize });
+    });
+    callRustService<RustServiceCacheDetail[]>("get_cache_details").then(
+      (cacheDetails) => this.setState({ cacheDetails })
+    );
+  }
+
   private _fetchDataBuildInfo() {
     callRustService("get_data_build_info").then((dataBuildInfo) => {
       this.setState({
         isRustInit: true,
         // TODO: If data build time is already set as state, but this indicates otherwise, that's a signal the app needs to update
         dataBuildTime: (dataBuildInfo as { [key: string]: string }).time,
-        prettyDataBuildTime: new Date(
-          (dataBuildInfo as { [key: string]: string }).time
-        ).toLocaleString(),
       });
     });
   }
@@ -332,30 +332,34 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return callRustService("preload_symbol_search_cache");
   }
 
-  // TODO: Update type (use pagination type with generics)
   async searchTickers(
     query: string,
     page: number = 1,
     pageSize: number = 20,
     onlyExactMatches: boolean = false,
     abortSignal?: AbortSignal
-  ): Promise<RustServicePaginatedTickerSearchResults> {
-    return callRustService<RustServicePaginatedTickerSearchResults>(
+  ): Promise<RustServicePaginatedResults<RustServiceTickerSearchResult>> {
+    return callRustService<
+      RustServicePaginatedResults<RustServiceTickerSearchResult>
+    >(
       "search_tickers",
       [query.trim(), page, pageSize, onlyExactMatches],
       abortSignal
     );
   }
+
   async fetchETFHoldersAggregateDetailByTickerId(
     tickerId: number,
     page: number = 1,
     pageSize: number = 20
-    // TODO: Update type
-  ): Promise<RustServiceETFHoldersWithTotalCount> {
-    return callRustService<RustServiceETFHoldersWithTotalCount>(
-      "get_etf_holders_aggregate_detail_by_ticker_id",
-      [tickerId, page, pageSize]
-    );
+  ): Promise<RustServicePaginatedResults<RustServiceETFAggregateDetail>> {
+    return callRustService<
+      RustServicePaginatedResults<RustServiceETFAggregateDetail>
+    >("get_etf_holders_aggregate_detail_by_ticker_id", [
+      tickerId,
+      page,
+      pageSize,
+    ]);
   }
 
   async fetchTickerDetail(tickerId: number): Promise<RustServiceTickerDetail> {
@@ -373,39 +377,41 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
-  fetchImageInfo(filename: string): Promise<RustServiceImageInfo> {
+  async fetchImageInfo(filename: string): Promise<RustServiceImageInfo> {
     return callRustService<RustServiceImageInfo>("get_image_info", [filename]);
   }
 
-  PROTO_removeCacheEntry(key: string) {
-    // TODO: Add rapid UI update
-    callRustService("remove_cache_entry", [key]);
+  async fetchSymbolAndExchangeByTickerId(
+    tickerId: number
+  ): Promise<[string, string]> {
+    return callRustService("get_symbol_and_exchange_by_ticker_id", [tickerId]);
   }
 
-  PROTO_clearCache() {
-    // TODO: Add rapid UI update
-    callRustService("clear_cache");
-  }
-
-  // TODO: Combine `symbol` and `exchange` into `ticker`
-  addTickerToBucket(
-    symbol: string,
-    exchange: string,
+  async addTickerToBucket(
+    tickerId: number,
     quantity: number,
-    symbolBucket: SymbolBucketProps
+    tickerBucket: TickerBucketProps
   ) {
+    const tickerAndExchange = await this.fetchSymbolAndExchangeByTickerId(
+      tickerId
+    );
+
+    const symbol = tickerAndExchange[0];
+    const exchange_short_name = tickerAndExchange[1];
+
     this.setState((prevState) => {
-      const symbolBuckets = prevState.symbolBuckets.map((bucket) => {
-        if (bucket.name === symbolBucket.name) {
+      const tickerBuckets = prevState.tickerBuckets.map((bucket) => {
+        if (bucket.name === tickerBucket.name) {
           return {
             ...bucket,
             tickers: Array.from(
               new Set([
                 ...bucket.tickers,
                 {
-                  exchange,
+                  tickerId,
                   symbol,
-                  quantity: quantity,
+                  exchange_short_name,
+                  quantity,
                 },
               ])
             ),
@@ -413,11 +419,49 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         }
         return bucket;
       });
-
-      return { symbolBuckets };
+      return { tickerBuckets };
     });
 
-    // TODO: Show UI notification
+    // TODO: Emit custom event for this
+  }
+
+  removeTickerFromBucket(tickerId: number, tickerBucket: TickerBucketProps) {
+    this.setState((prevState) => {
+      const tickerBuckets = prevState.tickerBuckets.map((bucket) => {
+        if (bucket.name === tickerBucket.name) {
+          return {
+            ...bucket,
+            tickers: bucket.tickers.filter(
+              (ticker) => ticker.tickerId !== tickerId
+            ),
+          };
+        }
+        return bucket;
+      });
+      return { tickerBuckets };
+    });
+
+    // TODO: Emit custom event for this
+  }
+
+  bucketHasTicker(tickerId: number, tickerBucket: TickerBucketProps): boolean {
+    return tickerBucket.tickers.some((ticker) => ticker.tickerId === tickerId);
+  }
+
+  removeCacheEntry(key: string) {
+    callRustService("remove_cache_entry", [key]);
+
+    // For rapid UI update
+    // This forces an immediate sync so that the UI does not appear laggy when clearing cache entries
+    this._syncCacheDetails();
+  }
+
+  clearCache() {
+    callRustService("clear_cache");
+
+    // For rapid UI update
+    // This forces an immediate sync so that the UI does not appear laggy when clearing cache entries
+    this._syncCacheDetails();
   }
 }
 
