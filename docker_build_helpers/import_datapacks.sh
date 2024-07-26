@@ -18,9 +18,11 @@ for zip_file in /app/data/*.zip; do
         if [ -d "$dir" ]; then
             # Remove unnecessary files
             find "$dir" -name ".__MACOSX" -exec rm -rf {} + -o -name "._.DS_Store" -exec rm -f {} +
-            cp -r "$dir" /build_artifacts/public/data/
+            # Sync files ensuring only newer files are copied, preserving directory structure
+            rsync -a --update "$dir/" /build_artifacts/public/data/"$(basename "$dir")"/
         else
-            mv "$dir" /build_artifacts/public/data/
+            # Handle case where dir is a file
+            rsync -a --update "$dir" /build_artifacts/public/data/
         fi
     done
     # Clean up the temporary directory for the next extraction
@@ -39,4 +41,4 @@ fi
 mkdir -p /app/public
 
 # Copy (instead of move) so that volume mounts can still obtain the artifacts
-cp -r /build_artifacts/public/data /app/public/
+rsync -a /build_artifacts/public/data/ /app/public/data/
