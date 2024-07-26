@@ -14,15 +14,15 @@ mkdir -p /build_artifacts/public/data /tmp/unzip_temp
 for zip_file in /app/data/*.zip; do
     unzip -o "$zip_file" -d /tmp/unzip_temp
     # Move the contents of each extracted directory to the final directory
-    for dir in /tmp/unzip_temp/*; do
-        if [ -d "$dir" ]; then
+    for entry in /tmp/unzip_temp/*; do
+        if [ -d "$entry" ]; then
             # Remove unnecessary files
-            find "$dir" -name ".__MACOSX" -exec rm -rf {} + -o -name "._.DS_Store" -exec rm -f {} +
+            find "$entry" -name ".__MACOSX" -exec rm -rf {} + -o -name "._.DS_Store" -exec rm -f {} +
             # Sync files ensuring only newer files are copied, preserving directory structure
-            rsync -a --update "$dir/" /build_artifacts/public/data/"$(basename "$dir")"/
+            rsync -a --update "$entry/" /build_artifacts/public/data/"$(basename "$entry")"/
         else
-            # Handle case where dir is a file
-            rsync -a --update "$dir" /build_artifacts/public/data/
+            # Handle case where entry is a file
+            rsync -a --update "$entry" /build_artifacts/public/data/
         fi
     done
     # Clean up the temporary directory for the next extraction
