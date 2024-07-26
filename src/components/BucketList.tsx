@@ -8,16 +8,16 @@ import Padding from "@layoutKit/Padding";
 import SearchModalButton from "./SearchModalButton";
 
 import useStoreStateReader from "@hooks/useStoreStateReader";
-import type { SymbolBucketProps } from "@src/store";
+import type { TickerBucketProps } from "@src/store";
 
 export type BucketListProps = {
-  bucketType: SymbolBucketProps["bucketType"];
+  bucketType: TickerBucketProps["bucketType"];
 };
 
 export default function BucketList({ bucketType }: BucketListProps) {
   const { tickerBuckets } = useStoreStateReader("tickerBuckets");
 
-  const localSymbolBucket = useMemo(
+  const localTickerBucket = useMemo(
     () =>
       tickerBuckets?.filter(
         (tickerBucket) => tickerBucket.bucketType === bucketType
@@ -27,7 +27,7 @@ export default function BucketList({ bucketType }: BucketListProps) {
 
   return (
     <>
-      {localSymbolBucket?.map((tickerBucket, idx) => (
+      {localTickerBucket?.map((tickerBucket, idx) => (
         <React.Fragment key={idx}>
           <Padding>
             <h2>{tickerBucket.name}</h2>

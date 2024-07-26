@@ -286,6 +286,9 @@ export default function TickerDetail({
         <Button onClick={() => setShowNews(!showNews)} startIcon={<NewsIcon />}>
           {showNews ? "Hide News" : "View News"}
         </Button>
+        {
+          // TODO: Move into a component that manages this a bit better
+        }
         {tickerBuckets
           ?.filter((tickerBucket) => tickerBucket.isUserConfigurable)
           .map((tickerBucket, idx) => (

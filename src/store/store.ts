@@ -29,16 +29,16 @@ import debounceWithKey from "@utils/debounceWithKey";
 
 const IS_PROD = import.meta.env.PROD;
 
-type SymbolBucketTicker = {
+type TickerBucketTicker = {
   tickerId: number;
   symbol: string;
   exchange_short_name: string;
   quantity: number;
 };
 
-export type SymbolBucketProps = {
+export type TickerBucketProps = {
   name: string;
-  tickers: SymbolBucketTicker[];
+  tickers: TickerBucketTicker[];
   bucketType:
     | "watchlist"
     | "portfolio"
@@ -50,7 +50,7 @@ export type SymbolBucketProps = {
 };
 
 export const tickerBucketDefaultNames: Readonly<
-  Record<SymbolBucketProps["bucketType"], string>
+  Record<TickerBucketProps["bucketType"], string>
 > = {
   watchlist: "Watchlist",
   portfolio: "Portfolio",
@@ -71,7 +71,7 @@ export type StoreStateProps = {
   isDirtyState: boolean;
   visibleTickerIds: number[];
   isSearchModalOpen: boolean;
-  tickerBuckets: SymbolBucketProps[]; // TODO: `tickerBuckets`
+  tickerBuckets: TickerBucketProps[];
   isProfilingCacheOverlayOpen: boolean;
   cacheProfilerWaitTime: number;
   cacheDetails: RustServiceCacheDetail[];
@@ -391,7 +391,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   async addTickerToBucket(
     tickerId: number,
     quantity: number,
-    tickerBucket: SymbolBucketProps
+    tickerBucket: TickerBucketProps
   ) {
     const tickerAndExchange = await this.fetchSymbolAndExchangeByTickerId(
       tickerId
@@ -422,6 +422,31 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       });
       return { tickerBuckets };
     });
+
+    // TODO: Emit custom event for this
+  }
+
+  removeTickerFromBucket(tickerId: number, tickerBucket: TickerBucketProps) {
+    this.setState((prevState) => {
+      const tickerBuckets = prevState.tickerBuckets.map((bucket) => {
+        if (bucket.name === tickerBucket.name) {
+          return {
+            ...bucket,
+            tickers: bucket.tickers.filter(
+              (ticker) => ticker.tickerId !== tickerId
+            ),
+          };
+        }
+        return bucket;
+      });
+      return { tickerBuckets };
+    });
+
+    // TODO: Emit custom event for this
+  }
+
+  bucketHasTicker(tickerId: number, tickerBucket: TickerBucketProps): boolean {
+    return tickerBucket.tickers.some((ticker) => ticker.tickerId === tickerId);
   }
 
   removeCacheEntry(key: string) {
