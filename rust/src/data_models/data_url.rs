@@ -19,7 +19,7 @@ impl DataURL {
             DataURL::ExchangeByIdIndex => "/data/exchange_by_id_index.enc",
             DataURL::SectorByIdIndex => "/data/sector_by_id_index.enc",
             DataURL::IndustryByIdIndex => "/data/industry_by_id_index.enc",
-            DataURL::TickerSearch => "/data/symbol_search_dict.enc",
+            DataURL::TickerSearch => "/data/ticker_search_dict.enc",
             DataURL::TickerDetailShardIndex => "/data/ticker_detail_shard_index.enc",
             DataURL::TickerETFHoldersShardIndex => "/data/ticker_etf_holders_shard_index.enc",
             DataURL::ETFAggregateDetailShardIndex => "/data/etf_aggregate_detail_shard_index.enc",
