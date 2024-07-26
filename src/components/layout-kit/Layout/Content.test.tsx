@@ -14,13 +14,13 @@ describe("Content Component", () => {
     expect(getByText("Test Content")).toBeInTheDocument();
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
-        <div
+        <main
           class="content"
         >
           <span>
             Test Content
           </span>
-        </div>
+        </main>
       </DocumentFragment>
     `);
   });
@@ -34,13 +34,13 @@ describe("Content Component", () => {
     expect(container.firstChild).toHaveClass("custom-class");
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
-        <div
+        <main
           class="content custom-class"
         >
           <span>
             Test Content
           </span>
-        </div>
+        </main>
       </DocumentFragment>
     `);
   });
