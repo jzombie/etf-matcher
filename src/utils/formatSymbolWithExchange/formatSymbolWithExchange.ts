@@ -2,7 +2,7 @@ import type { RustServiceTickerDetail } from "@src/types";
 
 // Converts a symbol detail object into a formatted symbol with exchange identifier
 export default function formatSymbolWithExchange(
-  tickerDetail: RustServiceTickerDetail
+  tickerDetail: RustServiceTickerDetail,
 ): string {
   if (!tickerDetail.symbol) {
     return "";

@@ -7,7 +7,7 @@ import React, { useRef } from "react";
  * value passed to the hook.
  */
 export default function useStableCurrentRef<T>(
-  currentValue: T
+  currentValue: T,
 ): React.MutableRefObject<T> {
   const activeRef = useRef(currentValue);
 

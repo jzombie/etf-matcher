@@ -1,9 +1,10 @@
 /// <reference types="vite-plugin-svgr/client" />
 import React from "react";
-import { Link } from "react-router-dom";
+
 import { styled } from "@mui/system";
 
 import Logo from "@assets/etf-matcher.logo.white.svg?react";
+import { Link } from "react-router-dom";
 
 const StyledNavButton = styled(Link)(({ theme }) => ({
   display: "flex",

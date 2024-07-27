@@ -1,25 +1,26 @@
 import React, { useEffect, useMemo, useState } from "react";
+
 import {
   Box,
-  Switch,
-  FormControlLabel,
-  Typography,
   Button,
+  FormControlLabel,
   Pagination,
+  Switch,
+  Typography,
 } from "@mui/material";
-
-import SearchModalButton from "@components/SearchModalButton";
-import TickerDetailList from "@components/TickerDetailList";
-import Transition from "@components/Transition";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
-import usePageTitleSetter from "@utils/usePageTitleSetter";
-import useSearchResultsURLState from "./useSearchResultsURLState";
+import SearchModalButton from "@components/SearchModalButton";
+import TickerDetailList from "@components/TickerDetailList";
+import Transition from "@components/Transition";
 
-import CircularProgress from "@mui/material/CircularProgress";
+import usePageTitleSetter from "@utils/usePageTitleSetter";
+
+import useSearchResultsURLState from "./useSearchResultsURLState";
 
 export default function SearchResults() {
   const {
@@ -40,12 +41,12 @@ export default function SearchResults() {
 
   const searchResultSymbols = useMemo(
     () => searchResults.map((searchResult) => searchResult.symbol),
-    [searchResults]
+    [searchResults],
   );
 
   const tickerIds = useMemo(
     () => searchResults.map(({ ticker_id }) => ticker_id),
-    [searchResults]
+    [searchResults],
   );
 
   // Note: This `useState`/`useEffect` combination is intended to hide the second

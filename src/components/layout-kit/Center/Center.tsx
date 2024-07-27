@@ -1,5 +1,7 @@
-import React, { forwardRef, HTMLAttributes } from "react";
+import React, { HTMLAttributes, forwardRef } from "react";
+
 import clsx from "clsx";
+
 import styles from "./Center.module.scss";
 
 export type CenterProps = HTMLAttributes<HTMLDivElement> & {
@@ -14,7 +16,7 @@ const Center = forwardRef<HTMLDivElement, CenterProps>(
         <div className={styles.content_wrap}>{children}</div>
       </div>
     );
-  }
+  },
 );
 
 Center.displayName = "Center";

@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Button, TextField, Box, Typography } from "@mui/material";
+
+import { Box, Button, TextField, Typography } from "@mui/material";
+
 import store, { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucketProps } from "@src/store";
 

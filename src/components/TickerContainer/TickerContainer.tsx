@@ -1,7 +1,8 @@
 import React, { useCallback, useContext, useEffect, useRef } from "react";
-import { TickerContainerContext } from "./TickerContainerProvider";
 
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
+
+import { TickerContainerContext } from "./TickerContainerProvider";
 
 export type TickerContainerProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerId: number;
@@ -20,7 +21,7 @@ export default function TickerContainer({
   const elementRef = useRef<HTMLDivElement>(null);
 
   const onIntersectionStateChangeStableRef = useStableCurrentRef(
-    onIntersectionStateChange
+    onIntersectionStateChange,
   );
 
   const handleOnIntersectionStateChange = useCallback(
@@ -31,7 +32,7 @@ export default function TickerContainer({
         onIntersectionStateChangeStableRef.current(isIntersecting);
       }
     },
-    [onIntersectionStateChangeStableRef]
+    [onIntersectionStateChangeStableRef],
   );
 
   useEffect(() => {

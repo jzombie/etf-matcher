@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { store } from "@hooks/useStoreStateReader";
+
 import type { RustServiceTickerSearchResult } from "@src/types";
-import usePagination from "./usePagination";
+
+import { store } from "@hooks/useStoreStateReader";
+
 import debounceWithKey from "@utils/debounceWithKey";
+
+import usePagination from "./usePagination";
 
 export type UseSearchProps = {
   initialQuery?: string;
@@ -21,18 +25,18 @@ const DEFAULT_PROPS: Required<UseSearchProps> = {
 };
 
 export default function useSearch(
-  props: Partial<UseSearchProps> = DEFAULT_PROPS
+  props: Partial<UseSearchProps> = DEFAULT_PROPS,
 ) {
   const mergedProps: Required<UseSearchProps> = useMemo(
     () => ({ ...DEFAULT_PROPS, ...props }),
-    [props]
+    [props],
   );
 
   const [searchQuery, _setSearchQuery] = useState<string>(
-    mergedProps.initialQuery
+    mergedProps.initialQuery,
   );
   const [onlyExactMatches, setOnlyExactMatches] = useState<boolean>(
-    mergedProps.initialOnlyExactMatches
+    mergedProps.initialOnlyExactMatches,
   );
 
   const [searchResults, _setSearchResults] = useState<
@@ -56,7 +60,7 @@ export default function useSearch(
   });
 
   const [selectedIndex, setSelectedIndex] = useState<number>(
-    mergedProps.initialSelectedIndex
+    mergedProps.initialSelectedIndex,
   );
 
   const [isLoading, _setisLoading] = useState<boolean>(false);
@@ -113,7 +117,7 @@ export default function useSearch(
               _setisLoading(false);
             });
         },
-        50
+        50,
       );
 
       previousSearchQueryRef.current = searchQuery;

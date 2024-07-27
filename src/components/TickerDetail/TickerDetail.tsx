@@ -1,35 +1,37 @@
 import React, { useEffect, useMemo, useState } from "react";
-import TickerContainer from "../TickerContainer";
+
+import NewsIcon from "@mui/icons-material/Article";
 import {
+  Box,
   Button,
   ButtonBase,
-  Typography,
-  Grid,
-  Box,
   CircularProgress,
+  Grid,
+  Typography,
 } from "@mui/material";
-import Padding from "@layoutKit/Padding";
+import { styled } from "@mui/system";
+
+import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 import Center from "@layoutKit/Center";
+import Padding from "@layoutKit/Padding";
 import store from "@src/store";
 import type {
-  RustServiceTickerDetail,
   RustServiceETFAggregateDetail,
+  RustServiceTickerDetail,
 } from "@src/types";
 import { MiniChart, Timeline } from "react-ts-tradingview-widgets";
-import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
-import { styled } from "@mui/system";
-import EncodedImage from "../EncodedImage";
-import NewsIcon from "@mui/icons-material/Article";
-
-import ETFHolderList from "./TickerDetail.ETFHolderList";
 
 import useImageBackgroundColor from "@hooks/useImageBackgroundColor";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useURLState from "@hooks/useURLState";
 
-import formatSymbolWithExchange from "@utils/formatSymbolWithExchange";
 import formatCurrency from "@utils/formatCurrency";
+import formatSymbolWithExchange from "@utils/formatSymbolWithExchange";
+
+import EncodedImage from "../EncodedImage";
+import TickerContainer from "../TickerContainer";
 import TickerDetailBucketManager from "./TickerDetail.BucketManager";
+import ETFHolderList from "./TickerDetail.ETFHolderList";
 
 export type TickerDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerId: number;
@@ -77,7 +79,7 @@ export default function TickerDetail({
     useState<RustServiceTickerDetail | null>(null);
 
   const logoBackgroundColorOverride = useImageBackgroundColor(
-    tickerDetail?.logo_filename
+    tickerDetail?.logo_filename,
   );
 
   const [etfAggregateDetail, setETFAggregateDetail] =
@@ -114,7 +116,7 @@ export default function TickerDetail({
 
   const formattedSymbolWithExchange = useMemo(
     () => tickerDetail && formatSymbolWithExchange(tickerDetail),
-    [tickerDetail]
+    [tickerDetail],
   );
 
   const { setURLState, toBooleanParam } = useURLState<{
@@ -157,7 +159,7 @@ export default function TickerDetail({
                   exact: toBooleanParam(true),
                 },
                 false,
-                "/search"
+                "/search",
               )
             }
           >
@@ -273,7 +275,7 @@ export default function TickerDetail({
                                 etfAggregateDetail?.currency_code &&
                                 formatCurrency(
                                   etfAggregateDetail.currency_code,
-                                  etfAggregateDetail.top_sector_market_value
+                                  etfAggregateDetail.top_sector_market_value,
                                 )}
                             </Typography>
                           </Grid>
@@ -291,7 +293,7 @@ export default function TickerDetail({
                             <Typography variant="body2">
                               Weight:{" "}
                               {etfAggregateDetail?.top_pct_sector_weight.toFixed(
-                                2
+                                2,
                               )}
                             </Typography>
                           </Grid>

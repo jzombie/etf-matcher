@@ -1,15 +1,18 @@
 import React from "react";
+
 import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
+
+import { describe, expect, it } from "vitest";
+
 import Header from "./Header";
-import { describe, it, expect } from "vitest";
 
 describe("Header Component", () => {
   it("renders children correctly", () => {
     const { getByText, asFragment } = render(
       <Header>
         <span>Test Content</span>
-      </Header>
+      </Header>,
     );
     expect(getByText("Test Content")).toBeInTheDocument();
     expect(asFragment()).toMatchInlineSnapshot(`
@@ -29,7 +32,7 @@ describe("Header Component", () => {
     const { container, asFragment } = render(
       <Header className="custom-class">
         <span>Test Content</span>
-      </Header>
+      </Header>,
     );
     expect(container.firstChild).toHaveClass("custom-class");
     expect(asFragment()).toMatchInlineSnapshot(`
@@ -50,7 +53,7 @@ describe("Header Component", () => {
     render(
       <Header ref={ref}>
         <span>Test Content</span>
-      </Header>
+      </Header>,
     );
     expect(ref.current).toBeInstanceOf(HTMLElement);
   });

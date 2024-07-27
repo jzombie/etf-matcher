@@ -1,8 +1,7 @@
 import { useCallback } from "react";
 
-import useURLState from "@hooks/useURLState";
-
 import useSearch from "@hooks/useSearch";
+import useURLState from "@hooks/useURLState";
 
 import usePageTitleSetter from "@utils/usePageTitleSetter";
 
@@ -40,7 +39,7 @@ export default function useSearchResultsURLState() {
         // First, take the inverse of the `exact` parameter (defaulting to `true`)
         !getBooleanParam("exact", true),
         // Then, apply `true` default to remove it from the URL if `true`
-        true
+        true,
       ),
       // Reset page on change
       page: null,
@@ -51,7 +50,7 @@ export default function useSearchResultsURLState() {
     (page: number) => {
       setURLState({ page: page > 1 ? page.toString() : null });
     },
-    [setURLState]
+    [setURLState],
   );
 
   return {

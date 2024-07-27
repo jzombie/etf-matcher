@@ -1,11 +1,14 @@
 import React from "react";
+
 import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
-import Layout from "./Layout";
-import Header from "./Header";
+
+import { describe, expect, it } from "vitest";
+
 import Content from "./Content";
 import Footer from "./Footer";
-import { describe, it, expect } from "vitest";
+import Header from "./Header";
+import Layout from "./Layout";
 
 describe("Layout Component", () => {
   it("renders children correctly", () => {
@@ -14,7 +17,7 @@ describe("Layout Component", () => {
         <Header>Test Header</Header>
         <Content>Test Content</Content>
         <Footer>Test Footer</Footer>
-      </Layout>
+      </Layout>,
     );
     expect(getByText("Test Content")).toBeInTheDocument();
     expect(asFragment()).toMatchInlineSnapshot(`
@@ -48,7 +51,7 @@ describe("Layout Component", () => {
         <Header>Test Header</Header>
         <Content>Test Content</Content>
         <Footer>Test Footer</Footer>
-      </Layout>
+      </Layout>,
     );
     expect(container.firstChild).toHaveClass("custom-class");
     expect(asFragment()).toMatchInlineSnapshot(`
@@ -83,7 +86,7 @@ describe("Layout Component", () => {
         <Header>Test Header</Header>
         <Content>Test Content</Content>
         <Footer>Test Footer</Footer>
-      </Layout>
+      </Layout>,
     );
     expect(ref.current).toBeInstanceOf(HTMLElement);
   });

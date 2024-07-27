@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import type { RustServiceImageInfo } from "@src/types";
-import CircularProgress from "@mui/material/CircularProgress";
+
 import ErrorIcon from "@mui/icons-material/Error";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import noImageAvailable from "@assets/no-image-available.png";
-
 import store from "@src/store";
+import type { RustServiceImageInfo } from "@src/types";
+
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 export type EncodedImageProps = React.HTMLAttributes<HTMLImageElement> & {

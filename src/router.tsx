@@ -1,15 +1,16 @@
 import React from "react";
+
 import Home from "@pages/Home";
+// import About from "@pages/About";
+import NotFound from "@pages/NotFound";
 // import Sectors from "@pages/Sectors";
 // import SectorDetail from "@pages/SectorDetail";
 import Portfolios from "@pages/Portfolios";
-import Watchlists from "@pages/Watchlists";
 import SearchResults from "@pages/SearchResults";
 import Settings from "@pages/Settings";
-// import About from "@pages/About";
-import NotFound from "@pages/NotFound";
+import Watchlists from "@pages/Watchlists";
+import { RouteObject, createBrowserRouter } from "react-router-dom";
 
-import { createBrowserRouter, RouteObject } from "react-router-dom";
 import MainLayout from "@components/MainLayout";
 
 export const routes: RouteObject[] = [

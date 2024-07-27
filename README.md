@@ -4,14 +4,14 @@ Source code for up and coming [ETFMatcher.com](https://etfmatcher.com).
 
 ## Requirements
 
-  - A Unix terminal shell (such as Bash or Zsh)
-  - Docker version 26.1.3 (may work with earlier versions of Docker)
-  - Data (data is not provided directly in this open-source repo; you may need to mock it yourself)
-  - A compatible .env file (no documentation provided on what to use for this)
+- A Unix terminal shell (such as Bash or Zsh)
+- Docker version 26.1.3 (may work with earlier versions of Docker)
+- Data (data is not provided directly in this open-source repo; you may need to mock it yourself)
+- A compatible .env file (no documentation provided on what to use for this)
 
 ### Optional
 
-  - make (utility) - Helpful.
+- make (utility) - Helpful.
 
 You can skip using Docker altogether if that's your thing, but it will be harder to build.
 

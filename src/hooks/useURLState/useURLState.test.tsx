@@ -1,7 +1,10 @@
 import React from "react";
-import { renderHook, act } from "@testing-library/react";
+
+import { act, renderHook } from "@testing-library/react";
+
 import { MemoryRouter, useLocation, useNavigate } from "react-router-dom";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import useURLState from "./useURLState";
 
 // Mock the useLocation and useNavigate hooks from react-router-dom
@@ -21,7 +24,7 @@ describe("useURLState hook", () => {
       search: "",
     });
     (useNavigate as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
-      vi.fn()
+      vi.fn(),
     );
   });
 
@@ -197,7 +200,7 @@ describe("useURLState hook", () => {
         pathname: "/new-path",
         search: "search=test",
       },
-      { replace: true }
+      { replace: true },
     );
   });
 });

@@ -3,12 +3,12 @@ import { useCallback, useEffect, useRef } from "react";
 // Patch for ESLint not seeing browser's IntersectionObserverCallback
 type IntersectionObserverCallback = (
   entries: IntersectionObserverEntry[],
-  observer: IntersectionObserver
+  observer: IntersectionObserver,
 ) => void;
 
 export default function useIntersectionObserver(
   callback: IntersectionObserverCallback,
-  threshold = 0.5
+  threshold = 0.5,
 ) {
   const observerRef = useRef<IntersectionObserver | null>(null);
 

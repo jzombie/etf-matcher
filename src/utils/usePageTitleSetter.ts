@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+
 import { useLocation } from "react-router-dom";
 
 const DEFAULT_PAGE_TITLE = window.document.title;

@@ -1,9 +1,9 @@
 import { StateEmitterDefaultEvents } from "../StateEmitter";
-import useStateEmitterReader from "./useStateEmitterReader";
 import StateEmitter from "../StateEmitter";
+import useStateEmitterReader from "./useStateEmitterReader";
 
 export default class ReactStateEmitter<
-  T extends object
+  T extends object,
 > extends StateEmitter<T> {
   /**
    * Creates a custom React hook for reading specific parts of the state
@@ -22,7 +22,7 @@ export default class ReactStateEmitter<
   createReactHookStateReader() {
     return <K extends keyof T>(
       stateKeyOrKeys: K | K[],
-      eventOrEventNames: string | string[] = StateEmitterDefaultEvents.UPDATE
+      eventOrEventNames: string | string[] = StateEmitterDefaultEvents.UPDATE,
     ) => useStateEmitterReader<T, K>(this, stateKeyOrKeys, eventOrEventNames);
   }
 }

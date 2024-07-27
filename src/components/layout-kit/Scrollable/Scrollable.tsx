@@ -1,5 +1,7 @@
-import React, { useEffect, useRef, HTMLAttributes } from "react";
+import React, { HTMLAttributes, useEffect, useRef } from "react";
+
 import clsx from "clsx";
+
 import styles from "./Scrollable.module.scss";
 
 export type ScrollableProps = HTMLAttributes<HTMLDivElement> & {
@@ -20,7 +22,7 @@ const Scrollable = React.forwardRef<HTMLDivElement, ScrollableProps>(
       resetTrigger,
       ...rest
     },
-    ref
+    ref,
   ) => {
     const scrollableRef = useRef<HTMLDivElement | null>(null);
 
@@ -48,14 +50,14 @@ const Scrollable = React.forwardRef<HTMLDivElement, ScrollableProps>(
             [styles.scroll_x]: scrollX,
             [styles.scroll_y]: scrollY,
           },
-          className
+          className,
         )}
         {...rest}
       >
         {children}
       </div>
     );
-  }
+  },
 );
 
 Scrollable.displayName = "Scrollable";

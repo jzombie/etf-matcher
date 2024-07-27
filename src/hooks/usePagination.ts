@@ -13,16 +13,16 @@ const DEFAULT_PAGINATION_PROPS: Required<UsePaginationProps> = {
 };
 
 export default function usePagination(
-  props: Partial<UsePaginationProps> = DEFAULT_PAGINATION_PROPS
+  props: Partial<UsePaginationProps> = DEFAULT_PAGINATION_PROPS,
 ) {
   const mergedProps: Required<UsePaginationProps> = useMemo(
     () => ({ ...DEFAULT_PAGINATION_PROPS, ...props }),
-    [props]
+    [props],
   );
 
   const [page, _setPage] = useState<number>(mergedProps.initialPage);
   const [previousPage, _setPreviousPage] = useState<number | undefined>(
-    undefined
+    undefined,
   );
 
   const [pageSize, setPageSize] = useState<number>(mergedProps.initialPageSize);
@@ -39,7 +39,7 @@ export default function usePagination(
 
   const totalPages = useMemo(
     () => Math.ceil(mergedProps.totalItems / pageSize) || 1,
-    [mergedProps.totalItems, pageSize]
+    [mergedProps.totalItems, pageSize],
   );
 
   const remaining = useMemo(() => {

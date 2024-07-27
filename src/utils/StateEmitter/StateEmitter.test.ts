@@ -1,6 +1,8 @@
-import { describe, it, expect, vi } from "vitest";
-import StateEmitter, { StateEmitterDefaultEvents } from "./StateEmitter";
+import { describe, expect, it, vi } from "vitest";
+
 import deepFreeze from "@utils/deepFreeze";
+
+import StateEmitter, { StateEmitterDefaultEvents } from "./StateEmitter";
 
 interface TestState {
   count: number;
@@ -32,7 +34,7 @@ describe("StateEmitter", () => {
 
     emitter.setState((prevState) => ({ text: prevState.text + " world" }));
     expect(emitter.state).toEqual(
-      deepFreeze({ count: 1, text: "hello world" })
+      deepFreeze({ count: 1, text: "hello world" }),
     );
   });
 
@@ -63,7 +65,7 @@ describe("StateEmitter", () => {
     const listener = vi.fn();
     const unsubscribe = emitter.subscribe(
       StateEmitterDefaultEvents.UPDATE,
-      listener
+      listener,
     );
 
     emitter.setState({ count: 1 });
@@ -147,7 +149,7 @@ describe("StateEmitter - Deepfreeze Tests", () => {
       (emitter.state.nested as any).count = 2;
     }).toThrow();
     expect(emitter.state).toEqual(
-      deepFreeze({ nested: { count: 1, text: "hello" } })
+      deepFreeze({ nested: { count: 1, text: "hello" } }),
     );
   });
 
