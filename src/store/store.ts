@@ -408,6 +408,20 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     }));
   }
 
+  deleteTickerBucket(tickerBucket: TickerBucketProps) {
+    this.setState((prevState) => {
+      const tickerBuckets = prevState.tickerBuckets.filter(
+        (cachedBucket) =>
+          !(
+            cachedBucket.name === tickerBucket.name &&
+            cachedBucket.type === tickerBucket.type
+          )
+      );
+      return { tickerBuckets };
+    });
+
+    // TODO: Emit custom event for this
+  }
   async addTickerToBucket(
     tickerId: number,
     quantity: number,
