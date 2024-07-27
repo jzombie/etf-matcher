@@ -9,12 +9,14 @@ import {
   Typography,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import TickerDetailList from "@components/TickerDetailList";
 import Padding from "@layoutKit/Padding";
 import SearchModalButton from "@components/SearchModalButton";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 import store from "@src/store";
 import type { TickerBucketProps } from "@src/store";
+import BucketForm from "./BucketManager.BucketForm";
 
 export type BucketListProps = {
   bucketType: TickerBucketProps["type"];
@@ -30,6 +32,7 @@ export default function BucketList({ bucketType }: BucketListProps) {
   );
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedBucket, setSelectedBucket] =
     useState<TickerBucketProps | null>(null);
 
@@ -38,8 +41,14 @@ export default function BucketList({ bucketType }: BucketListProps) {
     setIsDeleteDialogOpen(true);
   };
 
+  const handleEditClick = (bucket: TickerBucketProps) => {
+    setSelectedBucket(bucket);
+    setIsEditDialogOpen(true);
+  };
+
   const handleClose = () => {
     setIsDeleteDialogOpen(false);
+    setIsEditDialogOpen(false);
     setSelectedBucket(null);
   };
 
@@ -67,6 +76,14 @@ export default function BucketList({ bucketType }: BucketListProps) {
                 onClick={() => handleDeleteClick(tickerBucket)}
               >
                 Delete
+              </Button>
+              <Button
+                color="primary"
+                variant="outlined"
+                startIcon={<EditIcon />}
+                onClick={() => handleEditClick(tickerBucket)}
+              >
+                Edit
               </Button>
             </div>
 
@@ -116,6 +133,14 @@ export default function BucketList({ bucketType }: BucketListProps) {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {isEditDialogOpen && selectedBucket && (
+        <BucketForm
+          bucketType={bucketType}
+          existingBucket={selectedBucket}
+          onClose={handleClose}
+        />
+      )}
     </>
   );
 }
