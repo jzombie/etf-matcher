@@ -11,7 +11,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import TickerDetailList from "@components/TickerDetailList";
 import Padding from "@layoutKit/Padding";
-import SearchModalButton from "./SearchModalButton";
+import SearchModalButton from "@components/SearchModalButton";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 import store from "@src/store";
 import type { TickerBucketProps } from "@src/store";

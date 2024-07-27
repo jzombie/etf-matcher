@@ -1,5 +1,4 @@
 import React from "react";
-import BucketList from "@components/BucketList";
 import Scrollable from "@layoutKit/Scrollable";
 import Padding from "@layoutKit/Padding";
 import BucketManager from "@components/BucketManager";
@@ -12,8 +11,6 @@ export default function Watchlists() {
     <Scrollable>
       <Padding>
         <BucketManager bucketType="watchlist" />
-
-        <BucketList bucketType="watchlist" />
       </Padding>
     </Scrollable>
   );
