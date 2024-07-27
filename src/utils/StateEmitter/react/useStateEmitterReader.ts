@@ -14,7 +14,13 @@ import EmitterState, { StateEmitterDefaultEvents } from "../StateEmitter";
 const useStateEmitterReader = <T extends object, K extends keyof T>(
   emitter: EmitterState<T>,
   stateKeyOrKeys: K | K[],
-  eventOrEventNames: string | string[] = StateEmitterDefaultEvents.UPDATE,
+  eventOrEventNames:
+    | keyof T
+    | StateEmitterDefaultEvents
+    | (
+        | keyof T
+        | StateEmitterDefaultEvents
+      )[] = StateEmitterDefaultEvents.UPDATE,
 ) => {
   // Dynamically apply `maxListeners` offset
   //
@@ -32,11 +38,11 @@ const useStateEmitterReader = <T extends object, K extends keyof T>(
     };
   }, [emitter]);
 
-  const eventNames: K[] = useMemo(
+  const eventNames = useMemo(
     () =>
-      (Array.isArray(eventOrEventNames)
+      Array.isArray(eventOrEventNames)
         ? eventOrEventNames
-        : [eventOrEventNames]) as K[],
+        : [eventOrEventNames],
     [eventOrEventNames],
   );
 
@@ -58,7 +64,7 @@ const useStateEmitterReader = <T extends object, K extends keyof T>(
     }
   }, [stateKeys]);
 
-  const prevSnapshotRef = useRef<T | Partial<T> | null>(null);
+  const prevSnapshotRef = useRef<T | Pick<T, K> | null>(null);
 
   const subscribe = (callback: () => void) => {
     const wrappedCallback = () => {
@@ -72,7 +78,7 @@ const useStateEmitterReader = <T extends object, K extends keyof T>(
     };
   };
 
-  const getSnapshot = useCallback((): T | Partial<T> => {
+  const getSnapshot = useCallback((): T | Pick<T, K> => {
     const newSnapshot = stateKeys
       ? emitter.getState(stateKeys)
       : emitter.getState();
