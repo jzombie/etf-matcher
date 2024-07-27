@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { Button, TextField, Box, Typography } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import CancelIcon from "@mui/icons-material/Cancel";
 import store, { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucketProps } from "@src/store";
 
@@ -15,12 +16,17 @@ export default function BucketManager({ bucketType }: BucketManagerProps) {
   const [bucketDescription, setBucketDescription] = useState<string>("");
 
   const handleSaveBucket = useCallback(() => {
-    return store.createTickerBucket({
+    store.createTickerBucket({
       name: bucketName,
       type: bucketType,
       description: bucketDescription,
       isUserConfigurable: true,
     });
+
+    // Reset fields
+    setIsAddingNewTickerBucket(false);
+    setBucketName("");
+    setBucketDescription("");
   }, [bucketType, bucketName, bucketDescription]);
 
   const handleCancel = useCallback(() => {
@@ -36,7 +42,9 @@ export default function BucketManager({ bucketType }: BucketManagerProps) {
       <Button
         variant={!isAddingNewTickerBucket ? "contained" : "text"}
         color={!isAddingNewTickerBucket ? "primary" : "error"}
-        startIcon={<AddCircleOutlineIcon />}
+        startIcon={
+          !isAddingNewTickerBucket ? <AddCircleOutlineIcon /> : <CancelIcon />
+        }
         onClick={() => setIsAddingNewTickerBucket((prev) => !prev)}
       >
         {!isAddingNewTickerBucket ? "Create" : "Cancel"} New{" "}
