@@ -87,6 +87,14 @@ export default function BucketList({ bucketType }: BucketListProps) {
               </Button>
             </div>
 
+            {isEditDialogOpen && selectedBucket === tickerBucket && (
+              <BucketForm
+                bucketType={bucketType}
+                existingBucket={selectedBucket}
+                onClose={handleClose}
+              />
+            )}
+
             {!tickerBucket.tickers.length && (
               <>
                 <Typography variant="body2" color="textSecondary">
@@ -133,14 +141,6 @@ export default function BucketList({ bucketType }: BucketListProps) {
           </Button>
         </DialogActions>
       </Dialog>
-
-      {isEditDialogOpen && selectedBucket && (
-        <BucketForm
-          bucketType={bucketType}
-          existingBucket={selectedBucket}
-          onClose={handleClose}
-        />
-      )}
     </>
   );
 }
