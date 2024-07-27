@@ -26,13 +26,11 @@ export default function BucketForm({
 
   const handleSaveBucket = useCallback(() => {
     if (existingBucket) {
-      alert("TODO: Handle");
-
-      // store.updateTickerBucket({
-      //   ...existingBucket,
-      //   name: bucketName,
-      //   description: bucketDescription,
-      // });
+      store.updateTickerBucket(existingBucket, {
+        ...existingBucket,
+        name: bucketName,
+        description: bucketDescription,
+      });
     } else {
       store.createTickerBucket({
         name: bucketName,

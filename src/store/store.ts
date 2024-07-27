@@ -408,6 +408,23 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     }));
   }
 
+  updateTickerBucket(
+    prevBucket: TickerBucketProps,
+    updatedBucket: TickerBucketProps
+  ) {
+    this.setState((prevState) => {
+      const tickerBuckets = prevState.tickerBuckets.map((bucket) =>
+        bucket.name === prevBucket.name && bucket.type === prevBucket.type
+          ? { ...bucket, ...updatedBucket }
+          : bucket
+      );
+
+      return { tickerBuckets };
+    });
+
+    // TODO: Emit custom event for this
+  }
+
   deleteTickerBucket(tickerBucket: TickerBucketProps) {
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.filter(
