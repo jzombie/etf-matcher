@@ -61,7 +61,7 @@ export default function SearchResults() {
   const toggleExactMatch = useCallback(() => {
     setURLState(() => ({
       // Don't log `exact=true`
-      exact: toBooleanParam(!getBooleanParam("exact"), false),
+      exact: toBooleanParam(!getBooleanParam("exact", true), true),
       // Reset page on change
       page: null,
     }));
