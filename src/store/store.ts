@@ -45,7 +45,7 @@ export type TickerBucketProps = {
     | "ticker_tape"
     | "recently_viewed"
     | "attention_tracker";
-  requiresQuantity: boolean;
+  bucketDescription: string;
   isUserConfigurable: boolean;
 };
 
@@ -104,28 +104,28 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           name: "My Portfolio",
           tickers: [],
           bucketType: "portfolio",
-          requiresQuantity: true,
+          bucketDescription: "Default portfolio",
           isUserConfigurable: true,
         },
         {
           name: "My Watchlist",
           tickers: [],
           bucketType: "watchlist",
-          requiresQuantity: false,
+          bucketDescription: "Default watchlist",
           isUserConfigurable: true,
         },
         {
           name: "My Ticker Tape",
           tickers: [],
           bucketType: "ticker_tape",
-          requiresQuantity: false,
+          bucketDescription: "Ticker tape",
           isUserConfigurable: true,
         },
         {
           name: "My Recently Viewed",
           tickers: [],
           bucketType: "recently_viewed",
-          requiresQuantity: false,
+          bucketDescription: "Recently viewed tickers",
           isUserConfigurable: false,
         },
         // TODO: Infer potential ETFs that a user may be interested in based on searched
@@ -134,7 +134,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           name: "My Attention Tracker",
           tickers: [],
           bucketType: "attention_tracker",
-          requiresQuantity: false,
+          bucketDescription: "For suggestions",
           isUserConfigurable: false,
         },
       ],
@@ -385,6 +385,27 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     tickerId: number
   ): Promise<[string, string]> {
     return callRustService("get_symbol_and_exchange_by_ticker_id", [tickerId]);
+  }
+
+  createTickerBucket({
+    name,
+    bucketType,
+    bucketDescription,
+    isUserConfigurable,
+  }: Omit<TickerBucketProps, "tickers">) {
+    const nextBucket: TickerBucketProps = {
+      name,
+      tickers: [],
+      bucketType,
+      bucketDescription,
+      isUserConfigurable,
+    };
+
+    // TODO: Prevent bucket from being added if of same name and type
+
+    this.setState((prev) => ({
+      tickerBuckets: [nextBucket, ...prev.tickerBuckets],
+    }));
   }
 
   async addTickerToBucket(

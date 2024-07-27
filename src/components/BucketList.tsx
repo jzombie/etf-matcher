@@ -32,6 +32,8 @@ export default function BucketList({ bucketType }: BucketListProps) {
           <Padding>
             <h2>{tickerBucket.name}</h2>
 
+            <div>{tickerBucket.bucketDescription}</div>
+
             {!tickerBucket.tickers.length && (
               <>
                 <Typography variant="body2" color="textSecondary">
