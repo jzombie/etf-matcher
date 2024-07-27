@@ -136,7 +136,12 @@ export default function SearchModalButton({
   };
 
   const handleInputKeyDown = (evt: React.KeyboardEvent) => {
-    if (evt.code === "Enter") {
+    //
+
+    if (
+      evt.code === "Enter" ||
+      evt.key === "Enter" /* Android keyboard fallback */
+    ) {
       if (selectedIndex == -1) {
         handleOk(evt);
       } else if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
