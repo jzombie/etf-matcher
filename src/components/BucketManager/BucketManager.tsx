@@ -8,6 +8,7 @@ import { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucketProps } from "@src/store";
 import BucketList from "./BucketManager.BucketList";
 import BucketForm from "./BucketManager.BucketForm";
+import Section from "@components/Section";
 
 export type BucketManagerProps = {
   bucketType: TickerBucketProps["type"];
@@ -23,7 +24,7 @@ export default function BucketManager({ bucketType }: BucketManagerProps) {
 
   return (
     <>
-      <Box sx={{ p: 2, border: "1px solid #ccc", borderRadius: "8px" }}>
+      <Section>
         <Button
           variant={!isAddingNewTickerBucket ? "contained" : "text"}
           color={!isAddingNewTickerBucket ? "primary" : "error"}
@@ -39,7 +40,8 @@ export default function BucketManager({ bucketType }: BucketManagerProps) {
         {isAddingNewTickerBucket && (
           <BucketForm bucketType={bucketType} onClose={handleCancel} />
         )}
-      </Box>
+      </Section>
+
       <BucketList bucketType={bucketType} />
     </>
   );

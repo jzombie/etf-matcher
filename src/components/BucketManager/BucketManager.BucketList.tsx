@@ -11,7 +11,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import TickerDetailList from "@components/TickerDetailList";
-import Padding from "@layoutKit/Padding";
+import Section from "@components/Section";
 import SearchModalButton from "@components/SearchModalButton";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 import store from "@src/store";
@@ -63,29 +63,27 @@ export default function BucketList({ bucketType }: BucketListProps) {
     <>
       {localTickerBucket?.map((tickerBucket, idx) => (
         <React.Fragment key={idx}>
-          <Padding>
-            <div>
-              <h2>{tickerBucket.name}</h2>
+          <Section>
+            <h2>{tickerBucket.name}</h2>
 
-              <div>{tickerBucket.description}</div>
+            <div>{tickerBucket.description}</div>
 
-              <Button
-                color="error"
-                variant="outlined"
-                startIcon={<DeleteIcon />}
-                onClick={() => handleDeleteClick(tickerBucket)}
-              >
-                Delete
-              </Button>
-              <Button
-                color="primary"
-                variant="outlined"
-                startIcon={<EditIcon />}
-                onClick={() => handleEditClick(tickerBucket)}
-              >
-                Edit
-              </Button>
-            </div>
+            <Button
+              color="error"
+              variant="outlined"
+              startIcon={<DeleteIcon />}
+              onClick={() => handleDeleteClick(tickerBucket)}
+            >
+              Delete
+            </Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              startIcon={<EditIcon />}
+              onClick={() => handleEditClick(tickerBucket)}
+            >
+              Edit
+            </Button>
 
             {isEditDialogOpen && selectedBucket === tickerBucket && (
               <BucketForm
@@ -111,7 +109,7 @@ export default function BucketList({ bucketType }: BucketListProps) {
                 <SearchModalButton />
               </>
             )}
-          </Padding>
+          </Section>
 
           <TickerDetailList
             tickerIds={tickerBucket.tickers.map(({ tickerId }) => tickerId)}

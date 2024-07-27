@@ -9,6 +9,7 @@ import {
 
 import Scrollable from "@layoutKit/Scrollable";
 import Padding from "@layoutKit/Padding";
+import Section from "@components/Section";
 
 import ProtoPieChart from "@components/PROTO_PieChart";
 import ProtoTable from "@components/PROTO_Table";
@@ -57,21 +58,25 @@ export default function Settings() {
   return (
     <Scrollable>
       <Padding>
-        <h2>User Data</h2>
+        <Section>
+          <h2>User Data</h2>
 
-        <Button variant="outlined">TODO: Implement::Clear all user data</Button>
+          <Button variant="outlined">
+            TODO: Implement::Clear all user data
+          </Button>
 
-        <h3>Buckets</h3>
+          <h3>Buckets</h3>
 
-        {tickerBuckets?.map((tickerBucket, idx) => (
-          <Typography key={idx} variant="body1">
-            {tickerBucket.name}
-          </Typography>
-        ))}
+          {tickerBuckets?.map((tickerBucket, idx) => (
+            <Typography key={idx} variant="body1">
+              {tickerBucket.name}
+            </Typography>
+          ))}
+        </Section>
       </Padding>
 
-      <div>
-        <Padding>
+      <Padding>
+        <Section>
           <h2>Rust Service Cache</h2>
 
           <Box
@@ -89,11 +94,13 @@ export default function Settings() {
           </Box>
 
           <ProtoPieChart />
-        </Padding>
+        </Section>
+      </Padding>
 
-        <ProtoTable />
+      <ProtoTable />
 
-        <Padding>
+      <Padding style={{ textAlign: "center" }}>
+        <Section>
           <FormControlLabel
             control={
               <Switch
@@ -107,9 +114,7 @@ export default function Settings() {
             }
             label="Enable Cache Profiling Overlay"
           />
-        </Padding>
 
-        <Padding>
           <Button
             variant="contained"
             color="error"
@@ -117,40 +122,44 @@ export default function Settings() {
           >
             Clear Cache
           </Button>
-        </Padding>
-      </div>
-
-      <Padding>
-        <h2>Rust Service Errors</h2>
-
-        {!Object.keys(rustServiceXHRRequestErrors).length ? (
-          <div>No reported errors.</div>
-        ) : (
-          Object.keys(rustServiceXHRRequestErrors).map((pathName) => {
-            const { errCount, lastTimestamp } =
-              rustServiceXHRRequestErrors[pathName];
-            return (
-              <div key={pathName}>
-                {pathName}: {errCount} error(s) (last:{" "}
-                {formatLocalTime(lastTimestamp)})
-              </div>
-            );
-          })
-        )}
+        </Section>
       </Padding>
 
       <Padding>
-        <h2>Notifications</h2>
+        <Section>
+          <h2>Rust Service Errors</h2>
 
-        <div>GA Events: {isGAPageTrackingEnabled ? "On" : "Off"}</div>
+          {!Object.keys(rustServiceXHRRequestErrors).length ? (
+            <div>No reported errors.</div>
+          ) : (
+            Object.keys(rustServiceXHRRequestErrors).map((pathName) => {
+              const { errCount, lastTimestamp } =
+                rustServiceXHRRequestErrors[pathName];
+              return (
+                <div key={pathName}>
+                  {pathName}: {errCount} error(s) (last:{" "}
+                  {formatLocalTime(lastTimestamp)})
+                </div>
+              );
+            })
+          )}
+        </Section>
+      </Padding>
 
-        {
-          // Add prototype notifications code here
-        }
+      <Padding>
+        <Section>
+          <h2>Notifications</h2>
 
-        {
-          // TODO: Add configuration options to adjust tickers which show in the ticker tape in the footer
-        }
+          <div>GA Events: {isGAPageTrackingEnabled ? "On" : "Off"}</div>
+
+          {
+            // Add prototype notifications code here
+          }
+
+          {
+            // TODO: Add configuration options to adjust tickers which show in the ticker tape in the footer
+          }
+        </Section>
       </Padding>
 
       <Padding>

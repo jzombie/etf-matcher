@@ -4,6 +4,7 @@ import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import heroImg from "@assets/hero.webp";
 
 import Scrollable from "@layoutKit/Scrollable";
+import Section from "@components/Section";
 
 export default function Home() {
   const { isSearchModalOpen } = useStoreStateReader(["isSearchModalOpen"]);
