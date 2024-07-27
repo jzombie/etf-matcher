@@ -198,10 +198,19 @@ export default function SearchModalButton({
         onClose={handleCancel}
         PaperProps={{
           sx: {
-            width: "50vw",
-            maxWidth: "500px",
+            width: {
+              xs: "100vw", // Full width for extra small screens
+              sm: "50vw", // 50% width for small screens and up
+            },
+            maxWidth: {
+              xs: "100vw", // Full width for extra small screens
+              sm: "500px", // Max width of 500px for small screens and up
+            },
             minWidth: "300px",
-            height: "60vh",
+            height: {
+              xs: "100vh", // Full height for extra small screens
+              sm: "60vh", // 60% height for small screens and up
+            },
             minHeight: 300,
             maxHeight: "80vh",
             margin: "auto",
@@ -211,6 +220,14 @@ export default function SearchModalButton({
             backgroundColor: "rgba(31,31,31,.8)",
             border: "2px rgba(38,100,100,.8) solid",
             backdropFilter: "blur(10px)",
+            "@media (max-width: 728px)": {
+              width: "100vw",
+              height: "100dvh", // Assuming the browser supports `dvh`
+              maxWidth: "100vw",
+              maxHeight: "100dvh", // Assuming the browser supports `dvh`
+              border: "none",
+              borderRadius: 0,
+            },
           },
         }}
       >
@@ -333,6 +350,7 @@ export default function SearchModalButton({
           <Button
             onClick={handleCancel}
             variant={!searchResults.length ? "contained" : "text"}
+            color="error"
           >
             Cancel
           </Button>
