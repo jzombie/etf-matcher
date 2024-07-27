@@ -1,14 +1,16 @@
 import React from "react";
+
 import { createRoot } from "react-dom/client";
-import App from "./App";
 
 import customLogger from "@utils/customLogger";
+
+import App from "./App";
 
 const container = window.document.getElementById("app");
 createRoot(container!).render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>
+  </React.StrictMode>,
 );
 
 // TODO: Remove
@@ -17,7 +19,7 @@ createRoot(container!).render(
     new URL("./utils/PROTO_sharedWorker.ts", import.meta.url),
     {
       type: "module",
-    }
+    },
   );
 
   // Start the worker port

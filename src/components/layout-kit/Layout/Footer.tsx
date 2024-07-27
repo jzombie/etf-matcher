@@ -1,5 +1,7 @@
-import React, { forwardRef, HTMLAttributes } from "react";
+import React, { HTMLAttributes, forwardRef } from "react";
+
 import clsx from "clsx";
+
 import styles from "./Layout.module.scss";
 
 export type FooterProps = HTMLAttributes<HTMLDivElement> & {
@@ -14,7 +16,7 @@ const Footer = forwardRef<HTMLDivElement, FooterProps>(
         {children}
       </footer>
     );
-  }
+  },
 );
 
 Footer.displayName = "Footer";

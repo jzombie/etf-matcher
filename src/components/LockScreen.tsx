@@ -1,25 +1,25 @@
 import React, { useState } from "react";
+
 import {
-  Typography,
-  TextField,
   Button,
   FormControl,
   FormHelperText,
+  TextField,
+  Typography,
 } from "@mui/material";
 
 import lockScreenImg from "@assets/lock.jpg";
-
-import FullViewport from "@layoutKit/FullViewport";
-import Full from "@layoutKit/Full";
-import Cover from "@layoutKit/Cover";
 import Center from "@layoutKit/Center";
+import Cover from "@layoutKit/Cover";
+import Full from "@layoutKit/Full";
+import FullViewport from "@layoutKit/FullViewport";
 import Layout, { Content, Footer } from "@layoutKit/Layout";
 import Padding from "@layoutKit/Padding";
 
-import LogoNavButton from "./LogoNavButton";
+import formatLocalTime from "@utils/formatLocalTime";
 
 import { buildTime } from "../../public/buildTime.json";
-import formatLocalTime from "@utils/formatLocalTime";
+import LogoNavButton from "./LogoNavButton";
 
 const LOCK_MESSAGE = "ETF Matcher is currently in limited preview.";
 

@@ -1,8 +1,12 @@
 import React from "react";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 import useStoreStateReader from "@hooks/useStoreStateReader";
-import formatByteSize from "@utils/formatByteSize"; // Import the utility function
+
+import formatByteSize from "@utils/formatByteSize";
+
+// Import the utility function
 
 // TODO: Centralize somewhere else
 const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#00C49F"];

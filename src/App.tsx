@@ -1,18 +1,20 @@
 import React from "react";
-import "animate.css";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+
 import CssBaseline from "@mui/material/CssBaseline";
-
-import { RouterProvider } from "react-router-dom";
-import router from "./router";
-import { TickerContainerProvider } from "@components/TickerContainer";
-
-import useGAPageTracking from "@hooks/useGAPageTracking";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import "animate.css";
+import { RouterProvider } from "react-router-dom";
+
+import { TickerContainerProvider } from "@components/TickerContainer";
+
+import useGAPageTracking from "@hooks/useGAPageTracking";
+
+import router from "./router";
 
 const darkTheme = createTheme({
   palette: {

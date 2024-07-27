@@ -1,7 +1,7 @@
 import TickerContainer, { TickerContainerProps } from "./TickerContainer";
 import TickerContainerProvider, {
-  TickerContainerContextProps,
   TickerContainerContext,
+  TickerContainerContextProps,
 } from "./TickerContainerProvider";
 
 export default TickerContainer;

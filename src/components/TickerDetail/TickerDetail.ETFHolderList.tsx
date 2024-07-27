@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Box, Pagination, CircularProgress } from "@mui/material";
-import ETFHolder from "./TickerDetail.ETFHolder";
-import Transition from "@components/Transition";
 
-import usePagination from "@hooks/usePagination";
+import { Box, CircularProgress, Pagination } from "@mui/material";
 
 import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
-
 import type {
-  RustServicePaginatedResults,
   RustServiceETFAggregateDetail,
+  RustServicePaginatedResults,
   RustServiceTickerDetail,
 } from "@src/types";
 
+import Transition from "@components/Transition";
+
+import usePagination from "@hooks/usePagination";
 import { store } from "@hooks/useStoreStateReader";
+
+import ETFHolder from "./TickerDetail.ETFHolder";
 
 export type ETFHolderListProps = {
   tickerDetail: RustServiceTickerDetail;
@@ -29,7 +30,7 @@ export default function ETFHolderList({ tickerDetail }: ETFHolderListProps) {
 
   const [paginatedETFHolders, setPaginatedETFHolders] =
     useState<RustServicePaginatedResults<RustServiceETFAggregateDetail> | null>(
-      null
+      null,
     );
 
   const { page, previousPage, setPage, totalPages } = usePagination({

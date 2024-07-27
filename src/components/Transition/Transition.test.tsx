@@ -1,6 +1,9 @@
 import React from "react";
-import { render, screen, act, waitFor } from "@testing-library/react";
-import { describe, it, vi, expect } from "vitest";
+
+import { act, render, screen, waitFor } from "@testing-library/react";
+
+import { describe, expect, it, vi } from "vitest";
+
 import Transition from "./Transition";
 
 // Mock the animation end event
@@ -14,7 +17,7 @@ describe("Transition Component", () => {
     const { rerender, asFragment } = render(
       <Transition trigger="initial">
         <div className="view">Initial View</div>
-      </Transition>
+      </Transition>,
     );
     expect(screen.getByText("Initial View")).toBeDefined();
     expect(asFragment()).toMatchInlineSnapshot(`
@@ -44,7 +47,7 @@ describe("Transition Component", () => {
       rerender(
         <Transition trigger="next">
           <div className="view">Next View</div>
-        </Transition>
+        </Transition>,
       );
     });
 
@@ -128,7 +131,7 @@ describe("Transition Component", () => {
     const { rerender, asFragment } = render(
       <Transition trigger="initial">
         <SpyComponent text="Initial View" />
-      </Transition>
+      </Transition>,
     );
     expect(screen.getByText("Initial View")).toBeDefined();
     expect(renderSpy).toHaveBeenCalledTimes(1);
@@ -159,7 +162,7 @@ describe("Transition Component", () => {
       rerender(
         <Transition trigger="next">
           <SpyComponent text="Spy View" />
-        </Transition>
+        </Transition>,
       );
     });
 
@@ -244,7 +247,7 @@ describe("Transition Component", () => {
     const { rerender, asFragment } = render(
       <Transition trigger="initial">
         <SpyComponent text="Initial View" />
-      </Transition>
+      </Transition>,
     );
     expect(screen.getByText("Initial View")).toBeDefined();
     expect(renderSpy).toHaveBeenCalledTimes(1);
@@ -275,7 +278,7 @@ describe("Transition Component", () => {
       rerender(
         <Transition trigger="initial">
           <SpyComponent text="Initial View" />
-        </Transition>
+        </Transition>,
       );
     });
 
@@ -317,7 +320,7 @@ describe("Transition Component", () => {
     const { rerender, asFragment } = render(
       <Transition trigger="initial">
         <SpyComponent text="Initial View" />
-      </Transition>
+      </Transition>,
     );
     expect(screen.getByText("Initial View")).toBeDefined();
     expect(renderSpy).toHaveBeenCalledTimes(1);
@@ -348,12 +351,12 @@ describe("Transition Component", () => {
       rerender(
         <Transition trigger="next1">
           <SpyComponent text="Spy View 1" />
-        </Transition>
+        </Transition>,
       );
       rerender(
         <Transition trigger="next2">
           <SpyComponent text="Spy View 2" />
-        </Transition>
+        </Transition>,
       );
     });
 
@@ -437,7 +440,7 @@ describe("Transition Component", () => {
     const { rerender, asFragment } = render(
       <Transition trigger="initial">
         <SpyComponent text="Initial View" />
-      </Transition>
+      </Transition>,
     );
     expect(screen.getByText("Initial View")).toBeDefined();
     expect(renderSpy).toHaveBeenCalledTimes(1);
@@ -468,7 +471,7 @@ describe("Transition Component", () => {
       rerender(
         <Transition trigger="initial">
           <SpyComponent text="Initial View" />
-        </Transition>
+        </Transition>,
       );
     });
 
@@ -503,7 +506,7 @@ describe("Transition Component", () => {
       rerender(
         <Transition trigger="next">
           <SpyComponent text="Next View" />
-        </Transition>
+        </Transition>,
       );
     });
 

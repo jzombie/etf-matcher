@@ -1,10 +1,10 @@
-import LRUCache from './LRUCache';
+import LRUCache from "./LRUCache";
 
 const numberFormatCache = new LRUCache<string, Intl.NumberFormat>(100);
 
 export default function formatCurrency(
   currencyCode: string,
-  monetaryValue: number
+  monetaryValue: number,
 ) {
   let formatter = numberFormatCache.get(currencyCode);
   if (!formatter) {

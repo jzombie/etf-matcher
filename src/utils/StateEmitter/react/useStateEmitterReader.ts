@@ -5,14 +5,16 @@ import {
   useRef,
   useSyncExternalStore,
 } from "react";
-import EmitterState, { StateEmitterDefaultEvents } from "../StateEmitter";
-import deepEqual from "@utils/deepEqual";
+
 import customLogger from "@utils/customLogger";
+import deepEqual from "@utils/deepEqual";
+
+import EmitterState, { StateEmitterDefaultEvents } from "../StateEmitter";
 
 const useStateEmitterReader = <T extends object, K extends keyof T>(
   emitter: EmitterState<T>,
   stateKeyOrKeys: K | K[],
-  eventOrEventNames: string | string[] = StateEmitterDefaultEvents.UPDATE
+  eventOrEventNames: string | string[] = StateEmitterDefaultEvents.UPDATE,
 ) => {
   // Dynamically apply `maxListeners` offset
   //
@@ -35,7 +37,7 @@ const useStateEmitterReader = <T extends object, K extends keyof T>(
       (Array.isArray(eventOrEventNames)
         ? eventOrEventNames
         : [eventOrEventNames]) as K[],
-    [eventOrEventNames]
+    [eventOrEventNames],
   );
 
   const stateKeys = useMemo(
@@ -43,15 +45,15 @@ const useStateEmitterReader = <T extends object, K extends keyof T>(
       Array.isArray(stateKeyOrKeys)
         ? stateKeyOrKeys
         : stateKeyOrKeys
-        ? [stateKeyOrKeys]
-        : undefined,
-    [stateKeyOrKeys]
+          ? [stateKeyOrKeys]
+          : undefined,
+    [stateKeyOrKeys],
   );
 
   useMemo(() => {
     if (!stateKeys) {
       customLogger.warn(
-        "useStateEmitterReader should be called with `stateKeyOrKeys` to improve rendering performance."
+        "useStateEmitterReader should be called with `stateKeyOrKeys` to improve rendering performance.",
       );
     }
   }, [stateKeys]);
@@ -98,7 +100,7 @@ const useStateEmitterReader = <T extends object, K extends keyof T>(
   const state = useSyncExternalStore(
     subscribe,
     getCachedSnapshot,
-    getCachedSnapshot
+    getCachedSnapshot,
   );
 
   return state as Pick<T, K>;

@@ -1,14 +1,17 @@
 // src/components/BucketManager/BucketManager.tsx
-
 import React, { useCallback, useState } from "react";
-import { Button } from "@mui/material";
+
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { Button } from "@mui/material";
+
 import { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucketProps } from "@src/store";
-import BucketList from "./BucketManager.BucketList";
-import BucketForm from "./BucketManager.BucketForm";
+
 import Section from "@components/Section";
+
+import BucketForm from "./BucketManager.BucketForm";
+import BucketList from "./BucketManager.BucketList";
 
 export type BucketManagerProps = {
   bucketType: TickerBucketProps["type"];

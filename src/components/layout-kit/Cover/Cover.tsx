@@ -1,7 +1,9 @@
-import React, { forwardRef, HTMLAttributes } from "react";
+import React, { HTMLAttributes, forwardRef } from "react";
+
 import clsx from "clsx";
-import styles from "./Cover.module.scss";
+
 import Full from "../Full";
+import styles from "./Cover.module.scss";
 
 export type CoverProps = HTMLAttributes<HTMLDivElement> & {
   children: React.ReactNode;
@@ -22,7 +24,7 @@ const Cover = forwardRef<HTMLDivElement, CoverProps>(
         {children}
       </Full>
     );
-  }
+  },
 );
 
 Cover.displayName = "Cover";

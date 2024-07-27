@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Button,
   Dialog,
@@ -7,10 +9,11 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
-import type { RustServiceTickerDetail } from "@src/types";
+
 import type { TickerBucketProps } from "@src/store";
+import type { RustServiceTickerDetail } from "@src/types";
+
+import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
 export type TickerDetailBucketManagerProps = {
   tickerDetail: RustServiceTickerDetail;
@@ -46,7 +49,7 @@ export default function TickerDetailBucketManager({
     <>
       {tickerBuckets
         ?.filter(
-          (tickerBucket: TickerBucketProps) => tickerBucket.isUserConfigurable
+          (tickerBucket: TickerBucketProps) => tickerBucket.isUserConfigurable,
         )
         .map((tickerBucket: TickerBucketProps, idx: number) => {
           if (!store.bucketHasTicker(tickerDetail.ticker_id, tickerBucket)) {
@@ -57,7 +60,7 @@ export default function TickerDetailBucketManager({
                   store.addTickerToBucket(
                     tickerDetail.ticker_id,
                     1,
-                    tickerBucket
+                    tickerBucket,
                   )
                 }
               >

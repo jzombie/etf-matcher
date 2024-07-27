@@ -1,5 +1,6 @@
 // deepEqual.test.ts
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+
 import deepEqual from "./deepEqual";
 
 describe("deepEqual function", () => {

@@ -1,18 +1,19 @@
 import React, { createContext, useCallback, useRef } from "react";
-import { store } from "@hooks/useStoreStateReader";
+
 import useIntersectionObserver from "@hooks/useIntersectionObserver";
+import { store } from "@hooks/useStoreStateReader";
 
 export type TickerContainerContextType = {
   observe: (
     el: HTMLElement,
     tickerId: number,
-    onIntersectionStateChange?: (isIntersecting: boolean) => void
+    onIntersectionStateChange?: (isIntersecting: boolean) => void,
   ) => void;
   unobserve: (el?: HTMLElement) => void;
 };
 
 export const TickerContainerContext = createContext<TickerContainerContextType>(
-  {} as TickerContainerContextType
+  {} as TickerContainerContextType,
 );
 
 export type TickerContainerContextProps = {
@@ -31,7 +32,7 @@ export default function TickerContainerProvider({
         tickerId: number;
         intersectionCallback?: (isIntersecting: boolean) => void;
       }
-    >()
+    >(),
   );
   const visibleSymbolMapRef = useRef(new Map<Element, number>());
 
@@ -62,19 +63,19 @@ export default function TickerContainerProvider({
 
       syncVisibleTickers();
     },
-    [syncVisibleTickers]
+    [syncVisibleTickers],
   );
 
   const { observe, unobserve } = useIntersectionObserver(
     observerCallback,
-    perSymbolThreshold
+    perSymbolThreshold,
   );
 
   const handleObserve = useCallback(
     (
       el: HTMLElement,
       tickerId: number,
-      onIntersectionStateChange?: (isIntersecting: boolean) => void
+      onIntersectionStateChange?: (isIntersecting: boolean) => void,
     ) => {
       observe(el);
       metadataMapRef.current.set(el, {
@@ -82,7 +83,7 @@ export default function TickerContainerProvider({
         intersectionCallback: onIntersectionStateChange,
       });
     },
-    [observe]
+    [observe],
   );
 
   const handleUnobserve = useCallback(
@@ -94,7 +95,7 @@ export default function TickerContainerProvider({
         syncVisibleTickers();
       }
     },
-    [unobserve, syncVisibleTickers]
+    [unobserve, syncVisibleTickers],
   );
 
   return (

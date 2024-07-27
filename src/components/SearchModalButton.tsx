@@ -1,31 +1,33 @@
-import React, { useEffect, useRef, SyntheticEvent } from "react";
+import React, { SyntheticEvent, useEffect, useRef } from "react";
+
+import SearchIcon from "@mui/icons-material/Search";
 import {
   Button,
+  ButtonBase,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  TextField,
   IconButton,
   List,
   ListItem,
-  ListItemText,
-  Typography,
-  Pagination,
   ListItemIcon,
-  ButtonBase,
+  ListItemText,
+  Pagination,
+  TextField,
+  Typography,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+
 import { useLocation } from "react-router-dom";
+
+import useSearch from "@hooks/useSearch";
+import useStableCurrentRef from "@hooks/useStableCurrentRef";
+import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
+import useURLState from "@hooks/useURLState";
 
 import customLogger from "@utils/customLogger";
 
 import EncodedImage from "./EncodedImage";
-
-import useStableCurrentRef from "@hooks/useStableCurrentRef";
-import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
-import useSearch from "@hooks/useSearch";
-import useURLState from "@hooks/useURLState";
 
 // TODO: Replace modal with `TransparentModal`
 
@@ -121,7 +123,7 @@ export default function SearchModalButton({
           exact: toBooleanParam(Boolean(exactSearchValue), true),
         },
         false,
-        "/search"
+        "/search",
       );
     }
   };
@@ -153,7 +155,7 @@ export default function SearchModalButton({
       setSelectedIndex((prevIndex) => {
         const newIndex = Math.min(prevIndex + 1, searchResults.length - 1);
         const selectedListItem = window.document.getElementById(
-          `search-result-${newIndex}`
+          `search-result-${newIndex}`,
         );
         selectedListItem?.scrollIntoView({
           block: "nearest",
@@ -165,7 +167,7 @@ export default function SearchModalButton({
       setSelectedIndex((prevIndex) => {
         const newIndex = Math.max(prevIndex - 1, 0);
         const selectedListItem = window.document.getElementById(
-          `search-result-${newIndex}`
+          `search-result-${newIndex}`,
         );
         selectedListItem?.scrollIntoView({
           block: "nearest",

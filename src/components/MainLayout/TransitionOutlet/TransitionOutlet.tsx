@@ -1,10 +1,12 @@
 import React from "react";
+
 import { useLocation } from "react-router-dom";
+
+import Transition from "@components/Transition";
 
 import useLazy from "@hooks/useLazy";
 import useNavigationDirection from "@hooks/useNavigationDirection";
 
-import Transition from "@components/Transition";
 import SingleUseOutlet from "./SingleUseOutlet";
 
 export default function TransitionOutlet() {

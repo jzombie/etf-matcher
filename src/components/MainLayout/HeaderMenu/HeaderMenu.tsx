@@ -1,36 +1,38 @@
-import React, { useState, useRef } from "react";
+import React, { useRef, useState } from "react";
+
 import {
-  IconButton,
+  Assessment as AssessmentIcon,
+  Home,
+  ListAlt as ListAltIcon,
+  Menu as MenuIcon,
+  Search as SearchIcon,
+  Settings as SettingsIcon,
+} from "@mui/icons-material";
+import {
+  AppBar,
+  Badge,
+  Box,
   Drawer,
+  IconButton,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  AppBar,
   Toolbar,
   Typography,
-  Box,
   useMediaQuery,
   useTheme,
-  Badge,
 } from "@mui/material";
-import {
-  Home,
-  Settings as SettingsIcon,
-  Menu as MenuIcon,
-  Assessment as AssessmentIcon,
-  ListAlt as ListAltIcon,
-  Search as SearchIcon,
-} from "@mui/icons-material";
-import { Link, useLocation, matchPath } from "react-router-dom";
-import SearchModalButton from "@components/SearchModalButton";
-import clsx from "clsx";
 import { styled } from "@mui/system";
-import LogoNavButton from "@components/LogoNavButton";
-
-import SlidingBackground from "./HeaderMenu.SlidingBackground";
 
 import store from "@src/store";
+import clsx from "clsx";
+import { Link, matchPath, useLocation } from "react-router-dom";
+
+import LogoNavButton from "@components/LogoNavButton";
+import SearchModalButton from "@components/SearchModalButton";
+
+import SlidingBackground from "./HeaderMenu.SlidingBackground";
 
 export default function HeaderMenu() {
   const location = useLocation();
@@ -69,7 +71,7 @@ export default function HeaderMenu() {
   const selectedKey = menuItems.find(
     (item) =>
       matchPath({ path: item.key, end: true }, location.pathname) ||
-      matchPath({ path: `${item.key}/*`, end: false }, location.pathname)
+      matchPath({ path: `${item.key}/*`, end: false }, location.pathname),
   )?.key;
 
   const shouldHighlightSearchButton = !selectedKey;

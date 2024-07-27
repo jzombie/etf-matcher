@@ -1,23 +1,24 @@
 import React from "react";
+
 import {
-  Button,
-  Switch,
-  FormControlLabel,
-  Typography,
   Box,
+  Button,
+  FormControlLabel,
+  Switch,
+  Typography,
 } from "@mui/material";
 
-import Scrollable from "@layoutKit/Scrollable";
 import Padding from "@layoutKit/Padding";
-import Section from "@components/Section";
+import Scrollable from "@layoutKit/Scrollable";
 
 import ProtoPieChart from "@components/PROTO_PieChart";
 import ProtoTable from "@components/PROTO_Table";
+import Section from "@components/Section";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
+
 import formatByteSize from "@utils/formatByteSize";
 import formatLocalTime from "@utils/formatLocalTime";
-
 import usePageTitleSetter from "@utils/usePageTitleSetter";
 
 export default function Settings() {

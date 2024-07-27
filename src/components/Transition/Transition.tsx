@@ -1,9 +1,10 @@
 import React from "react";
-import { TransitionProps } from "./types";
+
+import Full from "@layoutKit/Full";
 import "animate.css";
 
 import TransitionChildView from "./Transition.ChildView";
-import Full from "@layoutKit/Full";
+import { TransitionProps } from "./types";
 import useTransition from "./useTransition";
 
 /**

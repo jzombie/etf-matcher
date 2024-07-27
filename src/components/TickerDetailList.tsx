@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
-import TickerDetail from "./TickerDetail";
 
 import customLogger from "@utils/customLogger";
+
+import TickerDetail from "./TickerDetail";
 
 export type TickerDetailListProps = {
   tickerIds: number[];
@@ -19,7 +20,7 @@ export default function TickerDetailList({
   useEffect(() => {
     if (tickerIds.length !== [...new Set(tickerIds)].length) {
       customLogger.warn(
-        "`tickerIds` is not unique! Unpredictable results may occur."
+        "`tickerIds` is not unique! Unpredictable results may occur.",
       );
     }
   }, [tickerIds]);
@@ -36,7 +37,7 @@ export default function TickerDetailList({
         }
       }
     },
-    [tickerIds, maxIntersectionIndex]
+    [tickerIds, maxIntersectionIndex],
   );
 
   return (

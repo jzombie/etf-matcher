@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
 import store from "@src/store";
 
 // Derived from `image.rs` @ `format!("rgba({}, {}, {}, {})", r, g, b, a as f32 / 255.0)`
 const FULLY_TRANSPARENT = "rgba(0, 0, 0, 0)";
 
 export default function useImageBackgroundColor(
-  imageFilename?: string
+  imageFilename?: string,
 ): string | null {
   const [imageBackgroundColor, setImageBackgroundColor] = useState<
     string | null

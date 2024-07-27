@@ -1,5 +1,6 @@
+import { useCallback, useEffect, useMemo } from "react";
+
 import { useLocation, useNavigate } from "react-router-dom";
-import { useCallback, useMemo, useEffect } from "react";
 
 import useStableCurrentRef from "../useStableCurrentRef";
 
@@ -17,7 +18,7 @@ type URLStateUpdater<T> = (prevState: T) => T;
  * In general this should replace `useNavigate` in the app.
  */
 export default function useURLState<T extends URLState>(
-  onURLStateChange?: (urlState: T) => void
+  onURLStateChange?: (urlState: T) => void,
 ) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ export default function useURLState<T extends URLState>(
     (
       nextState: Partial<T> | URLStateUpdater<Partial<T>>,
       isMerge = true,
-      newPathname?: string
+      newPathname?: string,
     ) => {
       const searchParams = new URLSearchParams(isMerge ? location.search : "");
 
@@ -59,10 +60,10 @@ export default function useURLState<T extends URLState>(
           pathname: finalPathname,
           search: searchParams.toString(),
         },
-        { replace: true }
+        { replace: true },
       );
     },
-    [location, navigate, urlState]
+    [location, navigate, urlState],
   );
 
   const getBooleanParam = useCallback(
@@ -73,7 +74,7 @@ export default function useURLState<T extends URLState>(
       }
       return currentValue === "true" || currentValue === "1";
     },
-    [urlState]
+    [urlState],
   );
 
   const toBooleanParam = useCallback(
@@ -84,7 +85,7 @@ export default function useURLState<T extends URLState>(
 
       return value === true ? "true" : "false";
     },
-    []
+    [],
   );
 
   const onURLStateChangeStableRef = useStableCurrentRef(onURLStateChange);

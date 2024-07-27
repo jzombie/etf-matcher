@@ -1,4 +1,5 @@
 import React, { forwardRef } from "react";
+
 import Full, { FullProps } from "@layoutKit/Full";
 import clsx from "clsx";
 
@@ -25,7 +26,7 @@ const TransitionChildView = forwardRef<
       asNextView = false,
       ...rest
     },
-    ref
+    ref,
   ) => {
     return (
       <Full
@@ -37,7 +38,7 @@ const TransitionChildView = forwardRef<
           },
           "animate__animated",
           transitionClassName,
-          className
+          className,
         )}
         style={{ animationDuration: animationDurationCSS }}
         {...rest}
@@ -45,7 +46,7 @@ const TransitionChildView = forwardRef<
         <Full>{children}</Full>
       </Full>
     );
-  }
+  },
 );
 
 TransitionChildView.displayName = "TransitionChildView";

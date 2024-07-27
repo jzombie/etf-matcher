@@ -1,15 +1,18 @@
 import React from "react";
+
 import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
+
+import { describe, expect, it } from "vitest";
+
 import Padding from "./Padding";
-import { describe, it, expect } from "vitest";
 
 describe("Padding Component", () => {
   it("renders children correctly", () => {
     const { getByText, asFragment } = render(
       <Padding>
         <span>Test Content</span>
-      </Padding>
+      </Padding>,
     );
     expect(getByText("Test Content")).toBeInTheDocument();
     expect(asFragment()).toMatchInlineSnapshot(`
@@ -29,7 +32,7 @@ describe("Padding Component", () => {
     const { container, asFragment } = render(
       <Padding className="custom-class">
         <span>Test Content</span>
-      </Padding>
+      </Padding>,
     );
     expect(container.firstChild).toHaveClass("custom-class");
     expect(asFragment()).toMatchInlineSnapshot(`
@@ -50,7 +53,7 @@ describe("Padding Component", () => {
     render(
       <Padding ref={ref}>
         <span>Test Content</span>
-      </Padding>
+      </Padding>,
     );
     expect(ref.current).toBeInstanceOf(HTMLElement);
   });

@@ -1,10 +1,12 @@
 import React from "react";
+
 import { Box, ButtonBase } from "@mui/material";
 
 import type { RustServiceETFAggregateDetail } from "@src/types";
-import formatCurrency from "@utils/formatCurrency";
 
 import useURLState from "@hooks/useURLState";
+
+import formatCurrency from "@utils/formatCurrency";
 
 export type ETFHolderProps = {
   etfAggregateDetail: RustServiceETFAggregateDetail;
@@ -26,7 +28,7 @@ export default function ETFHolderProps({ etfAggregateDetail }: ETFHolderProps) {
               query: etfAggregateDetail.etf_symbol,
             },
             false,
-            "/search"
+            "/search",
           );
         }}
         sx={{ display: "block", width: "100%", textAlign: "left" }}
@@ -39,7 +41,7 @@ export default function ETFHolderProps({ etfAggregateDetail }: ETFHolderProps) {
             Top Sector Market Value:{" "}
             {formatCurrency(
               etfAggregateDetail.currency_code,
-              etfAggregateDetail.top_sector_market_value
+              etfAggregateDetail.top_sector_market_value,
             )}{" "}
             ({etfAggregateDetail.currency_code})
           </div>

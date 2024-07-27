@@ -1,6 +1,6 @@
 import store, {
-  TickerBucketProps,
   StoreStateProps,
+  TickerBucketProps,
   tickerBucketDefaultNames,
 } from "./store";
 

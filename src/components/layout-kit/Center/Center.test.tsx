@@ -1,15 +1,18 @@
 import React from "react";
+
 import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
+
+import { describe, expect, it } from "vitest";
+
 import Center from "./Center";
-import { describe, it, expect } from "vitest";
 
 describe("Center Component", () => {
   it("renders children correctly", () => {
     const { getByText, asFragment } = render(
       <Center>
         <span>Test Content</span>
-      </Center>
+      </Center>,
     );
     expect(getByText("Test Content")).toBeInTheDocument();
     expect(asFragment()).toMatchInlineSnapshot(`
@@ -33,7 +36,7 @@ describe("Center Component", () => {
     const { container, asFragment } = render(
       <Center className="custom-class">
         <span>Test Content</span>
-      </Center>
+      </Center>,
     );
     expect(container.firstChild).toHaveClass("custom-class");
     expect(asFragment()).toMatchInlineSnapshot(`
@@ -58,7 +61,7 @@ describe("Center Component", () => {
     render(
       <Center ref={ref}>
         <span>Test Content</span>
-      </Center>
+      </Center>,
     );
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
   });

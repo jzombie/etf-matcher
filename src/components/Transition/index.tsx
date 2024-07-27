@@ -1,9 +1,10 @@
 import Transition from "./Transition";
-
-export default Transition;
 import type {
-  TransitionProps,
   TransitionDirection,
+  TransitionProps,
   TransitionType,
 } from "./types";
+
+export default Transition;
+
 export type { TransitionProps, TransitionDirection, TransitionType };

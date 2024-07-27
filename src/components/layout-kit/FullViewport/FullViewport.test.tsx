@@ -1,15 +1,18 @@
 import React from "react";
+
 import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
+
+import { describe, expect, it } from "vitest";
+
 import FullViewport from "./FullViewport";
-import { describe, it, expect } from "vitest";
 
 describe("FullViewport Component", () => {
   it("renders children correctly", () => {
     const { getByText, asFragment } = render(
       <FullViewport>
         <span>Test Content</span>
-      </FullViewport>
+      </FullViewport>,
     );
     expect(getByText("Test Content")).toBeInTheDocument();
     expect(asFragment()).toMatchInlineSnapshot(`
@@ -33,10 +36,10 @@ describe("FullViewport Component", () => {
     const { container, asFragment } = render(
       <FullViewport className="custom-class">
         <span>Test Content</span>
-      </FullViewport>
+      </FullViewport>,
     );
     expect(container.querySelector(".content_wrap")).toHaveClass(
-      "custom-class"
+      "custom-class",
     );
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
@@ -60,7 +63,7 @@ describe("FullViewport Component", () => {
     render(
       <FullViewport ref={ref}>
         <span>Test Content</span>
-      </FullViewport>
+      </FullViewport>,
     );
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
   });

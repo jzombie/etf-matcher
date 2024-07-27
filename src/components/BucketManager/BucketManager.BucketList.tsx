@@ -1,4 +1,7 @@
 import React, { useMemo, useState } from "react";
+
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import {
   Button,
   Dialog,
@@ -8,14 +11,16 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import TickerDetailList from "@components/TickerDetailList";
-import Section from "@components/Section";
-import SearchModalButton from "@components/SearchModalButton";
-import useStoreStateReader from "@hooks/useStoreStateReader";
+
 import store from "@src/store";
 import type { TickerBucketProps } from "@src/store";
+
+import SearchModalButton from "@components/SearchModalButton";
+import Section from "@components/Section";
+import TickerDetailList from "@components/TickerDetailList";
+
+import useStoreStateReader from "@hooks/useStoreStateReader";
+
 import BucketForm from "./BucketManager.BucketForm";
 
 export type BucketListProps = {
@@ -28,7 +33,7 @@ export default function BucketList({ bucketType }: BucketListProps) {
   const localTickerBucket = useMemo(
     () =>
       tickerBuckets?.filter((tickerBucket) => tickerBucket.type === bucketType),
-    [tickerBuckets, bucketType]
+    [tickerBuckets, bucketType],
   );
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
