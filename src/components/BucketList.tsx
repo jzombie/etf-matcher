@@ -1,13 +1,17 @@
-import React, { useMemo } from "react";
-import { Button } from "@mui/material";
+import React, { useMemo, useState } from "react";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Typography,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import TickerDetailList from "@components/TickerDetailList";
-
-import Typography from "@mui/material/Typography";
-
 import Padding from "@layoutKit/Padding";
-
 import SearchModalButton from "./SearchModalButton";
-
 import useStoreStateReader from "@hooks/useStoreStateReader";
 import store from "@src/store";
 import type { TickerBucketProps } from "@src/store";
@@ -25,6 +29,27 @@ export default function BucketList({ bucketType }: BucketListProps) {
     [tickerBuckets, bucketType]
   );
 
+  const [open, setOpen] = useState(false);
+  const [selectedBucket, setSelectedBucket] =
+    useState<TickerBucketProps | null>(null);
+
+  const handleDeleteClick = (bucket: TickerBucketProps) => {
+    setSelectedBucket(bucket);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedBucket(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedBucket) {
+      store.deleteTickerBucket(selectedBucket);
+      handleClose();
+    }
+  };
+
   return (
     <>
       {localTickerBucket?.map((tickerBucket, idx) => (
@@ -38,13 +63,10 @@ export default function BucketList({ bucketType }: BucketListProps) {
               <Button
                 color="error"
                 variant="outlined"
-                onClick={() => {
-                  // TODO: Show confirmation modal before delete (or trigger
-                  // async confirmation via store to unify the process)
-                  store.deleteTickerBucket(tickerBucket);
-                }}
+                startIcon={<DeleteIcon />}
+                onClick={() => handleDeleteClick(tickerBucket)}
               >
-                Delete Bucket
+                Delete
               </Button>
             </div>
 
@@ -71,6 +93,29 @@ export default function BucketList({ bucketType }: BucketListProps) {
           />
         </React.Fragment>
       ))}
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete the bucket "{selectedBucket?.name}"?
+            This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmDelete} color="error" autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
