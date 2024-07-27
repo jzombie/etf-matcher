@@ -11,7 +11,7 @@ import useStoreStateReader from "@hooks/useStoreStateReader";
 import type { TickerBucketProps } from "@src/store";
 
 export type BucketListProps = {
-  bucketType: TickerBucketProps["bucketType"];
+  bucketType: TickerBucketProps["type"];
 };
 
 export default function BucketList({ bucketType }: BucketListProps) {
@@ -19,9 +19,7 @@ export default function BucketList({ bucketType }: BucketListProps) {
 
   const localTickerBucket = useMemo(
     () =>
-      tickerBuckets?.filter(
-        (tickerBucket) => tickerBucket.bucketType === bucketType
-      ),
+      tickerBuckets?.filter((tickerBucket) => tickerBucket.type === bucketType),
     [tickerBuckets, bucketType]
   );
 
@@ -32,7 +30,7 @@ export default function BucketList({ bucketType }: BucketListProps) {
           <Padding>
             <h2>{tickerBucket.name}</h2>
 
-            <div>{tickerBucket.bucketDescription}</div>
+            <div>{tickerBucket.description}</div>
 
             {!tickerBucket.tickers.length && (
               <>

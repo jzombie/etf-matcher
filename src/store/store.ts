@@ -39,18 +39,18 @@ type TickerBucketTicker = {
 export type TickerBucketProps = {
   name: string;
   tickers: TickerBucketTicker[];
-  bucketType:
+  type:
     | "watchlist"
     | "portfolio"
     | "ticker_tape"
     | "recently_viewed"
     | "attention_tracker";
-  bucketDescription: string;
+  description: string;
   isUserConfigurable: boolean;
 };
 
 export const tickerBucketDefaultNames: Readonly<
-  Record<TickerBucketProps["bucketType"], string>
+  Record<TickerBucketProps["type"], string>
 > = {
   watchlist: "Watchlist",
   portfolio: "Portfolio",
@@ -103,29 +103,29 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         {
           name: "My Portfolio",
           tickers: [],
-          bucketType: "portfolio",
-          bucketDescription: "Default portfolio",
+          type: "portfolio",
+          description: "Default portfolio",
           isUserConfigurable: true,
         },
         {
           name: "My Watchlist",
           tickers: [],
-          bucketType: "watchlist",
-          bucketDescription: "Default watchlist",
+          type: "watchlist",
+          description: "Default watchlist",
           isUserConfigurable: true,
         },
         {
           name: "My Ticker Tape",
           tickers: [],
-          bucketType: "ticker_tape",
-          bucketDescription: "Ticker tape",
+          type: "ticker_tape",
+          description: "Ticker tape",
           isUserConfigurable: true,
         },
         {
           name: "My Recently Viewed",
           tickers: [],
-          bucketType: "recently_viewed",
-          bucketDescription: "Recently viewed tickers",
+          type: "recently_viewed",
+          description: "Recently viewed tickers",
           isUserConfigurable: false,
         },
         // TODO: Infer potential ETFs that a user may be interested in based on searched
@@ -133,8 +133,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         {
           name: "My Attention Tracker",
           tickers: [],
-          bucketType: "attention_tracker",
-          bucketDescription: "For suggestions",
+          type: "attention_tracker",
+          description: "For suggestions",
           isUserConfigurable: false,
         },
       ],
@@ -389,15 +389,15 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
   createTickerBucket({
     name,
-    bucketType,
-    bucketDescription,
+    type,
+    description,
     isUserConfigurable,
   }: Omit<TickerBucketProps, "tickers">) {
     const nextBucket: TickerBucketProps = {
       name,
       tickers: [],
-      bucketType,
-      bucketDescription,
+      type,
+      description,
       isUserConfigurable,
     };
 

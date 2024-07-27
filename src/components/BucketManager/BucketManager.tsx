@@ -5,7 +5,7 @@ import store, { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucketProps } from "@src/store";
 
 export type BucketManagerProps = {
-  bucketType: TickerBucketProps["bucketType"];
+  bucketType: TickerBucketProps["type"];
 };
 
 export default function BucketManager({ bucketType }: BucketManagerProps) {
@@ -17,8 +17,8 @@ export default function BucketManager({ bucketType }: BucketManagerProps) {
   const handleSaveBucket = useCallback(() => {
     return store.createTickerBucket({
       name: bucketName,
-      bucketType,
-      bucketDescription,
+      type: bucketType,
+      description: bucketDescription,
       isUserConfigurable: true,
     });
   }, [bucketType, bucketName, bucketDescription]);
