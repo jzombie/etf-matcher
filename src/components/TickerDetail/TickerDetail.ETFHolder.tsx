@@ -1,27 +1,34 @@
 import React from "react";
 import { Box, ButtonBase } from "@mui/material";
 
-import { useNavigate } from "react-router-dom";
-
 import type { RustServiceETFAggregateDetail } from "@src/types";
 import formatCurrency from "@utils/formatCurrency";
+
+import useURLState from "@hooks/useURLState";
 
 export type ETFHolderProps = {
   etfAggregateDetail: RustServiceETFAggregateDetail;
 };
 
 export default function ETFHolderProps({ etfAggregateDetail }: ETFHolderProps) {
-  const navigate = useNavigate();
+  const { setURLState } = useURLState();
+
+  // const navigate = useNavigate();
 
   // TODO: Look up more information about this symbol (i.e. holdings, etc.)
 
   return (
     <Box sx={{ paddingBottom: 2 }}>
       <ButtonBase
-        onClick={() =>
-          // TODO: Use setURLState
-          navigate(`/search?query=${etfAggregateDetail.etf_symbol}&exact=true`)
-        }
+        onClick={() => {
+          setURLState(
+            {
+              query: etfAggregateDetail.etf_symbol,
+            },
+            false,
+            "/search"
+          );
+        }}
         sx={{ display: "block", width: "100%", textAlign: "left" }}
       >
         <div>

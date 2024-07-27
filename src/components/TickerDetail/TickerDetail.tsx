@@ -151,10 +151,14 @@ export default function TickerDetail({
         >
           <ButtonBase
             onClick={() =>
-              setURLState({
-                query: tickerDetail?.symbol,
-                exact: toBooleanParam(true),
-              })
+              setURLState(
+                {
+                  query: tickerDetail?.symbol,
+                  exact: toBooleanParam(true),
+                },
+                false,
+                "/search"
+              )
             }
           >
             <EncodedImage
