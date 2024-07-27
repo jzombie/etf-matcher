@@ -29,17 +29,17 @@ export default function BucketList({ bucketType }: BucketListProps) {
     [tickerBuckets, bucketType]
   );
 
-  const [open, setOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedBucket, setSelectedBucket] =
     useState<TickerBucketProps | null>(null);
 
   const handleDeleteClick = (bucket: TickerBucketProps) => {
     setSelectedBucket(bucket);
-    setOpen(true);
+    setIsDeleteDialogOpen(true);
   };
 
   const handleClose = () => {
-    setOpen(false);
+    setIsDeleteDialogOpen(false);
     setSelectedBucket(null);
   };
 
@@ -95,7 +95,7 @@ export default function BucketList({ bucketType }: BucketListProps) {
       ))}
 
       <Dialog
-        open={open}
+        open={isDeleteDialogOpen}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
@@ -103,8 +103,8 @@ export default function BucketList({ bucketType }: BucketListProps) {
         <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure you want to delete the bucket "{selectedBucket?.name}"?
-            This action cannot be undone.
+            Are you sure you want to delete the bucket &quot;
+            {selectedBucket?.name}&quot;? This action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
