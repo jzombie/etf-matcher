@@ -1,6 +1,6 @@
 # ETF Matcher
 
-Source code for up and coming [ETF Matcher](https://etfmatcher.com).
+Source code for up and coming [ETFMatcher.com](https://etfmatcher.com).
 
 ## Requirements
 
