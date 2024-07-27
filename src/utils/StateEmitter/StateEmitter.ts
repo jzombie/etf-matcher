@@ -17,7 +17,6 @@ export default class StateEmitter<T extends object> extends EventEmitter {
   );
 
   private _state!: T;
-
   private _shouldDeepfreeze: boolean = true;
 
   get shouldDeepfreeze(): boolean {
@@ -26,7 +25,6 @@ export default class StateEmitter<T extends object> extends EventEmitter {
 
   set shouldDeepfreeze(shouldDeepfreeze: boolean) {
     this._shouldDeepfreeze = shouldDeepfreeze;
-
     customLogger.debug(
       `Deepfreeze support ${this._shouldDeepfreeze ? "enabled" : "disabled"}.`,
     );
@@ -54,7 +52,7 @@ export default class StateEmitter<T extends object> extends EventEmitter {
       customLogger.warn(
         "structuredClone is not available. Initial state will not be deeply cloned, which will affect immutability.",
       );
-      this.initialState = initialState;
+      this.initialState = deepFreeze({ ...initialState });
     }
   }
 
@@ -103,17 +101,20 @@ export default class StateEmitter<T extends object> extends EventEmitter {
   }
 
   // Use a getter to provide read-only access to the state
-  getState(keys?: (keyof T)[]): Partial<T> | T {
-    const slice: T | Partial<T> = (() => {
-      if (!keys) {
-        return this._state;
-      }
+  getState<K extends keyof T>(keys?: K[]): Pick<T, K> | T {
+    if (!keys) {
+      return this._shouldDeepfreeze ? deepFreeze(this._state) : this._state;
+    }
 
-      return keys.reduce((acc, key) => {
-        acc[key] = this._state[key];
+    const slice = keys.reduce(
+      (acc, key) => {
+        if (key in this._state) {
+          acc[key] = this._state[key];
+        }
         return acc;
-      }, {} as Partial<T>);
-    })();
+      },
+      {} as Pick<T, K>,
+    );
 
     return this._shouldDeepfreeze ? deepFreeze(slice) : slice;
   }
