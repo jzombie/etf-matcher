@@ -56,38 +56,47 @@ export default function BucketManager({ bucketType }: BucketManagerProps) {
           <Typography variant="h6">
             Add New {tickerBucketDefaultNames[bucketType]}
           </Typography>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
-            <TextField
-              label="Bucket Name"
-              value={bucketName}
-              onChange={(e) => setBucketName(e.target.value)}
-              variant="outlined"
-              fullWidth
-              required
-            />
-            <TextField
-              label="Bucket Description"
-              value={bucketDescription}
-              onChange={(e) => setBucketDescription(e.target.value)}
-              variant="outlined"
-              fullWidth
-              multiline
-              rows={4}
-            />
-            <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-              <Button
-                variant="contained"
-                color="success"
-                onClick={handleSaveBucket}
-                disabled={!isFormValid}
-              >
-                Save New {tickerBucketDefaultNames[bucketType]}
-              </Button>
-              <Button variant="outlined" color="error" onClick={handleCancel}>
-                Cancel
-              </Button>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSaveBucket();
+            }}
+          >
+            <Box
+              sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}
+            >
+              <TextField
+                label="Bucket Name"
+                value={bucketName}
+                onChange={(e) => setBucketName(e.target.value)}
+                variant="outlined"
+                fullWidth
+                required
+              />
+              <TextField
+                label="Bucket Description"
+                value={bucketDescription}
+                onChange={(e) => setBucketDescription(e.target.value)}
+                variant="outlined"
+                fullWidth
+                multiline
+                rows={4}
+              />
+              <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  type="submit"
+                  disabled={!isFormValid}
+                >
+                  Save New {tickerBucketDefaultNames[bucketType]}
+                </Button>
+                <Button variant="outlined" color="error" onClick={handleCancel}>
+                  Cancel
+                </Button>
+              </Box>
             </Box>
-          </Box>
+          </form>
         </Box>
       )}
     </Box>
