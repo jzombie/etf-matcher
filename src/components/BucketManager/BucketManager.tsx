@@ -1,7 +1,7 @@
 // src/components/BucketManager/BucketManager.tsx
 
 import React, { useCallback, useState } from "react";
-import { Button, Box } from "@mui/material";
+import { Button } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { tickerBucketDefaultNames } from "@src/store";
