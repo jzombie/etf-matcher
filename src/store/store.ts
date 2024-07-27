@@ -9,6 +9,7 @@ import type {
   RustServiceTickerSearchResult,
 } from "@src/types";
 
+import IndexedDBInterface from "@utils/IndexedDBInterface";
 import detectHTMLJSVersionSync from "@utils/PROTO_detectHTMLJSVersionSync";
 import {
   ReactStateEmitter,
@@ -85,6 +86,10 @@ export type StoreStateProps = {
 };
 
 class _Store extends ReactStateEmitter<StoreStateProps> {
+  private _indexedDBInterface: IndexedDBInterface<{
+    tickerBuckets: TickerBucketProps[];
+  }>;
+
   constructor() {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
     super({
@@ -158,6 +163,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     // Make initial searches faster
     this._preloadTickerSearchCache();
+
+    this._indexedDBInterface = new IndexedDBInterface();
   }
 
   private _initLocalSubscription(): () => void {
@@ -294,6 +301,15 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       },
     );
 
+    const _handleTickerBucketsUpdate = (keys: (keyof StoreStateProps)[]) => {
+      if (keys.includes("tickerBuckets")) {
+        const { tickerBuckets } = this.getState(["tickerBuckets"]);
+
+        // this._indexedDBInterface.setItem("tickerBuckets", tickerBuckets);
+      }
+    };
+    this.on(StateEmitterDefaultEvents.UPDATE, _handleTickerBucketsUpdate);
+
     return () => {
       window.removeEventListener("online", _handleOnlineStatus);
       window.removeEventListener("offline", _handleOnlineStatus);
@@ -301,6 +317,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       libRustServiceUnsubscribe();
 
       this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
+
+      this.on(StateEmitterDefaultEvents.UPDATE, _handleTickerBucketsUpdate);
     };
   }
 
