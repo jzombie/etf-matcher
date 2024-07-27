@@ -1,9 +1,11 @@
 import React from "react";
+
 import { Box, ButtonBase } from "@mui/material";
 
-import { useNavigate } from "react-router-dom";
-
 import type { RustServiceETFAggregateDetail } from "@src/types";
+
+import useURLState from "@hooks/useURLState";
+
 import formatCurrency from "@utils/formatCurrency";
 
 export type ETFHolderProps = {
@@ -11,17 +13,24 @@ export type ETFHolderProps = {
 };
 
 export default function ETFHolderProps({ etfAggregateDetail }: ETFHolderProps) {
-  const navigate = useNavigate();
+  const { setURLState } = useURLState();
+
+  // const navigate = useNavigate();
 
   // TODO: Look up more information about this symbol (i.e. holdings, etc.)
 
   return (
     <Box sx={{ paddingBottom: 2 }}>
       <ButtonBase
-        onClick={() =>
-          // TODO: Use setURLState
-          navigate(`/search?query=${etfAggregateDetail.etf_symbol}&exact=true`)
-        }
+        onClick={() => {
+          setURLState(
+            {
+              query: etfAggregateDetail.etf_symbol,
+            },
+            false,
+            "/search",
+          );
+        }}
         sx={{ display: "block", width: "100%", textAlign: "left" }}
       >
         <div>
@@ -32,7 +41,7 @@ export default function ETFHolderProps({ etfAggregateDetail }: ETFHolderProps) {
             Top Sector Market Value:{" "}
             {formatCurrency(
               etfAggregateDetail.currency_code,
-              etfAggregateDetail.top_sector_market_value
+              etfAggregateDetail.top_sector_market_value,
             )}{" "}
             ({etfAggregateDetail.currency_code})
           </div>

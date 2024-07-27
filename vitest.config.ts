@@ -1,6 +1,7 @@
-import { defineConfig } from "vitest/config";
-import tsconfigPaths from "vite-tsconfig-paths";
 import checker from "vite-plugin-checker";
+import tsconfigPaths from "vite-tsconfig-paths";
+import { defineConfig } from "vitest/config";
+
 import { writeBuildTime } from "./vite.config";
 
 // Fixes an async issue where TypeScript complains about `public/buildTime.json`

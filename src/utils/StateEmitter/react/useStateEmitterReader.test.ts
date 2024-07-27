@@ -1,9 +1,12 @@
-import { vi, describe, beforeEach, afterEach, expect, it } from "vitest";
-import { renderHook, act } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
+
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { MockInstance } from "vitest";
+
+import customLogger from "@utils/customLogger";
+
 import EmitterState from "../StateEmitter";
 import useStateEmitterReader from "./useStateEmitterReader";
-import { MockInstance } from "vitest";
-import customLogger from "@utils/customLogger";
 
 interface TestState {
   count: number;
@@ -41,7 +44,7 @@ describe("useStateEmitterReader", () => {
     });
 
     expect(consoleWarnSpy).toHaveBeenCalledWith(
-      "useStateEmitterReader should be called with `stateKeyOrKeys` to improve rendering performance."
+      "useStateEmitterReader should be called with `stateKeyOrKeys` to improve rendering performance.",
     );
   });
 
@@ -70,13 +73,13 @@ describe("useStateEmitterReader", () => {
     });
 
     expect(consoleWarnSpy).toHaveBeenCalledWith(
-      "useStateEmitterReader should be called with `stateKeyOrKeys` to improve rendering performance."
+      "useStateEmitterReader should be called with `stateKeyOrKeys` to improve rendering performance.",
     );
   });
 
   it("should only subscribe to specific state keys (single string)", () => {
     const { result } = renderHook(() =>
-      useStateEmitterReader(emitter, "count")
+      useStateEmitterReader(emitter, "count"),
     );
 
     expect(result.current).toEqual({ count: 0 });
@@ -96,7 +99,7 @@ describe("useStateEmitterReader", () => {
 
   it("should only subscribe to specific state keys (array of strings)", () => {
     const { result } = renderHook(() =>
-      useStateEmitterReader(emitter, ["count", "text"])
+      useStateEmitterReader(emitter, ["count", "text"]),
     );
 
     expect(result.current).toEqual({ count: 0, text: "initial" });
@@ -144,7 +147,7 @@ describe("useStateEmitterReader", () => {
     });
 
     const { result } = renderHook(() =>
-      useStateEmitterReader(emitter, ["count"])
+      useStateEmitterReader(emitter, ["count"]),
     );
 
     expect(result.current).toEqual({ count: obj });
@@ -311,7 +314,7 @@ describe("useStateEmitterReader", () => {
 
   it("should not allow direct modification of the state", () => {
     const { result } = renderHook(() =>
-      useStateEmitterReader(emitter, ["items"])
+      useStateEmitterReader(emitter, ["items"]),
     );
     expect(result.current).toEqual({ items: ["item1"] });
 

@@ -1,87 +1,52 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+
 import {
   Box,
-  Switch,
-  FormControlLabel,
-  Typography,
   Button,
+  FormControlLabel,
   Pagination,
+  Switch,
+  Typography,
 } from "@mui/material";
-
-import useURLState from "@hooks/useURLState";
-
-import SearchModalButton from "@components/SearchModalButton";
-import TickerDetailList from "@components/TickerDetailList";
-import Transition from "@components/Transition";
-
-import useSearch from "@hooks/useSearch";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
+import SearchModalButton from "@components/SearchModalButton";
+import TickerDetailList from "@components/TickerDetailList";
+import Transition from "@components/Transition";
+
 import usePageTitleSetter from "@utils/usePageTitleSetter";
 
-import CircularProgress from "@mui/material/CircularProgress";
+import useSearchResultsURLState from "./useSearchResultsURLState";
 
 export default function SearchResults() {
   const {
     searchQuery,
-    setSearchQuery: _setSearchQuery,
-    onlyExactMatches,
-    setOnlyExactMatches: _setOnlyExactMatches,
     searchResults,
-    totalSearchResults,
-    pageSize,
-    page,
-    previousPage,
-    setPage: _setPage,
-    totalPages,
     isLoading,
-  } = useSearch();
+    onlyExactMatches,
+    toggleExactMatch,
+    totalSearchResults,
+    page,
+    setPage,
+    pageSize,
+    totalPages,
+    previousPage,
+  } = useSearchResultsURLState();
 
   usePageTitleSetter(searchQuery ? `Search results for: ${searchQuery}` : null);
 
-  const { setURLState, getBooleanParam, toBooleanParam } = useURLState<{
-    query: string | null;
-    page: string | null;
-    exact: string | null;
-  }>((urlState) => {
-    const { query, page } = urlState;
-
-    if (query) {
-      _setSearchQuery(query.trim());
-    }
-
-    _setOnlyExactMatches(getBooleanParam("exact", true));
-
-    _setPage(!page ? 1 : parseInt(page, 10));
-  });
-
-  const toggleExactMatch = useCallback(() => {
-    setURLState(() => ({
-      // Don't log `exact=true`
-      exact: toBooleanParam(!getBooleanParam("exact"), false),
-      // Reset page on change
-      page: null,
-    }));
-  }, [setURLState, getBooleanParam, toBooleanParam]);
-
-  const setPage = useCallback(
-    (page: number) => {
-      setURLState({ page: page > 1 ? page.toString() : null });
-    },
-    [setURLState]
-  );
-
   const searchResultSymbols = useMemo(
     () => searchResults.map((searchResult) => searchResult.symbol),
-    [searchResults]
+    [searchResults],
   );
 
   const tickerIds = useMemo(
     () => searchResults.map(({ ticker_id }) => ticker_id),
-    [searchResults]
+    [searchResults],
   );
 
   // Note: This `useState`/`useEffect` combination is intended to hide the second

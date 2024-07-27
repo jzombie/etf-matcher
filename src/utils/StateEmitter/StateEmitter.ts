@@ -1,6 +1,7 @@
 import EventEmitter from "events";
-import deepFreeze from "@utils/deepFreeze";
+
 import customLogger from "@utils/customLogger";
+import deepFreeze from "@utils/deepFreeze";
 
 export enum StateEmitterDefaultEvents {
   UPDATE = "update",
@@ -12,7 +13,7 @@ export default class StateEmitter<T extends object> extends EventEmitter {
   // Individual state keys can be subscribed to, so it's best to ensure that they don't
   // conflict with default events
   protected _reservedStateKeys: string[] = Object.keys(
-    StateEmitterDefaultEvents
+    StateEmitterDefaultEvents,
   );
 
   private _state!: T;
@@ -27,7 +28,7 @@ export default class StateEmitter<T extends object> extends EventEmitter {
     this._shouldDeepfreeze = shouldDeepfreeze;
 
     customLogger.debug(
-      `Deepfreeze support ${this._shouldDeepfreeze ? "enabled" : "disabled"}.`
+      `Deepfreeze support ${this._shouldDeepfreeze ? "enabled" : "disabled"}.`,
     );
   }
 
@@ -51,7 +52,7 @@ export default class StateEmitter<T extends object> extends EventEmitter {
       this.initialState = deepFreeze(structuredClone(initialState));
     } else {
       customLogger.warn(
-        "structuredClone is not available. Initial state will not be deeply cloned, which will affect immutability."
+        "structuredClone is not available. Initial state will not be deeply cloned, which will affect immutability.",
       );
       this.initialState = initialState;
     }
@@ -68,7 +69,7 @@ export default class StateEmitter<T extends object> extends EventEmitter {
 
   subscribe<K extends keyof T | StateEmitterDefaultEvents>(
     eventOrEventNames: K | K[],
-    listener: () => void
+    listener: () => void,
   ): () => void {
     const eventNames = Array.isArray(eventOrEventNames)
       ? eventOrEventNames

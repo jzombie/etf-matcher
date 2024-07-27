@@ -1,8 +1,8 @@
 import React from "react";
-import BucketList from "@components/BucketList";
-import Scrollable from "@layoutKit/Scrollable";
+
 import Padding from "@layoutKit/Padding";
-import PortfolioForm from "@components/PortfolioForm";
+import Scrollable from "@layoutKit/Scrollable";
+
 import BucketManager from "@components/BucketManager";
 
 import usePageTitleSetter from "@utils/usePageTitleSetter";
@@ -14,10 +14,6 @@ export default function Portfolios() {
     <Scrollable>
       <Padding>
         <BucketManager bucketType="portfolio" />
-
-        <PortfolioForm />
-
-        <BucketList bucketType="portfolio" />
       </Padding>
     </Scrollable>
   );

@@ -1,8 +1,9 @@
 import customLogger from "@utils/customLogger";
+
 import {
   EnvelopeType,
-  PostMessageStructKey,
   NotifierEvent,
+  PostMessageStructKey,
 } from "./workerMainBindings";
 
 const worker = new Worker(new URL("./worker", import.meta.url), {
@@ -22,7 +23,7 @@ const [subscribe, invokeHooks] = (() => {
     [];
 
   const subscribe = (
-    callback: (eventType: NotifierEvent, args: unknown[]) => void
+    callback: (eventType: NotifierEvent, args: unknown[]) => void,
   ) => {
     subscribers.push(callback);
 
@@ -73,14 +74,14 @@ worker.onmessage = (event) => {
 worker.onerror = (error) => {
   customLogger.error("Worker error:", error);
   alert(
-    `This application is likely not supported on your current browser version or device. If you are on iOS, version 15 may be the minimum that is supported.`
+    `This application is likely not supported on your current browser version or device. If you are on iOS, version 15 may be the minimum that is supported.`,
   );
 };
 
 const callRustService = <T>(
   functionName: string,
   args: unknown[] = [],
-  abortSignal?: AbortSignal
+  abortSignal?: AbortSignal,
 ): Promise<T> => {
   const messageId = messageCounter++;
 

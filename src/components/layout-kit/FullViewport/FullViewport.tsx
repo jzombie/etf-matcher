@@ -1,5 +1,7 @@
-import React, { forwardRef, HTMLAttributes } from "react";
+import React, { HTMLAttributes, forwardRef } from "react";
+
 import clsx from "clsx";
+
 import styles from "./FullViewport.module.scss";
 
 export type FullViewportProps = HTMLAttributes<HTMLDivElement> & {
@@ -18,7 +20,7 @@ const FullViewport = forwardRef<HTMLDivElement, FullViewportProps>(
           className={clsx(
             styles.content_wrap,
             { [styles.dvh]: supportsDvhUnit },
-            className
+            className,
           )}
           {...rest}
         >
@@ -26,7 +28,7 @@ const FullViewport = forwardRef<HTMLDivElement, FullViewportProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 FullViewport.displayName = "FullViewport";

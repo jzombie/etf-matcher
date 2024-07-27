@@ -2,8 +2,8 @@ import init, * as wasmModule from "../../../public/pkg/etf_matcher";
 import customLogger from "../customLogger";
 import {
   EnvelopeType,
-  PostMessageStructKey,
   NotifierEvent,
+  PostMessageStructKey,
 } from "./workerMainBindings";
 
 interface CallQueueItem {
@@ -52,9 +52,9 @@ async function processQueue() {
       } catch (error) {
         customLogger.error(
           `Worker encountered an error @ function "${functionName}" [${args.join(
-            ","
+            ",",
           )}]:`,
-          error
+          error,
         );
         reject(error);
       }

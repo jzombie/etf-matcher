@@ -1,22 +1,22 @@
 import React from "react";
-import { TickerTape } from "react-ts-tradingview-widgets";
-import { Typography, useTheme, useMediaQuery } from "@mui/material";
-import HeaderMenu from "./HeaderMenu";
 
-import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
+import { Typography, useMediaQuery, useTheme } from "@mui/material";
+
 import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
-
-import FullViewport from "@layoutKit/FullViewport";
-import Full from "@layoutKit/Full";
 import Center from "@layoutKit/Center";
 import Cover from "@layoutKit/Cover";
-import Layout, { Header, Content, Footer } from "@layoutKit/Layout";
-
-import TransitionOutlet from "./TransitionOutlet";
-
-import NetworkRequestIndicator from "@components/NetworkRequestIndicator";
+import Full from "@layoutKit/Full";
+import FullViewport from "@layoutKit/FullViewport";
+import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
+import { TickerTape } from "react-ts-tradingview-widgets";
 
 import LockScreen from "@components/LockScreen";
+import NetworkRequestIndicator from "@components/NetworkRequestIndicator";
+
+import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
+
+import HeaderMenu from "./HeaderMenu";
+import TransitionOutlet from "./TransitionOutlet";
 
 export default function MainLayout() {
   const theme = useTheme();

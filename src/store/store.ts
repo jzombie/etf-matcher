@@ -1,31 +1,30 @@
 // TODO: Add in session persistence so that portfolios and watchlists (`tickerBuckets`) can be saved.
 // Ideally this should happen via the `SharedWorker` so that multiple tabs can retain the same store.
+import type {
+  RustServiceCacheDetail,
+  RustServiceETFAggregateDetail,
+  RustServiceImageInfo,
+  RustServicePaginatedResults,
+  RustServiceTickerDetail,
+  RustServiceTickerSearchResult,
+} from "@src/types";
 
+import detectHTMLJSVersionSync from "@utils/PROTO_detectHTMLJSVersionSync";
 import {
   ReactStateEmitter,
   StateEmitterDefaultEvents,
 } from "@utils/StateEmitter";
 import callRustService, {
-  subscribe as libRustServiceSubscribe,
   NotifierEvent,
+  subscribe as libRustServiceSubscribe,
 } from "@utils/callRustService";
-import type {
-  RustServicePaginatedResults,
-  RustServiceTickerSearchResult,
-  RustServiceTickerDetail,
-  RustServiceCacheDetail,
-  RustServiceETFAggregateDetail,
-  RustServiceImageInfo,
-} from "@src/types";
-import {
-  XHROpenedRequests,
-  CacheAccessedRequests,
-} from "./OpenedNetworkRequests";
-
-import detectHTMLJSVersionSync from "@utils/PROTO_detectHTMLJSVersionSync";
 import customLogger from "@utils/customLogger";
-
 import debounceWithKey from "@utils/debounceWithKey";
+
+import {
+  CacheAccessedRequests,
+  XHROpenedRequests,
+} from "./OpenedNetworkRequests";
 
 const IS_PROD = import.meta.env.PROD;
 
@@ -39,18 +38,18 @@ type TickerBucketTicker = {
 export type TickerBucketProps = {
   name: string;
   tickers: TickerBucketTicker[];
-  bucketType:
+  type:
     | "watchlist"
     | "portfolio"
     | "ticker_tape"
     | "recently_viewed"
     | "attention_tracker";
-  requiresQuantity: boolean;
+  description: string;
   isUserConfigurable: boolean;
 };
 
 export const tickerBucketDefaultNames: Readonly<
-  Record<TickerBucketProps["bucketType"], string>
+  Record<TickerBucketProps["type"], string>
 > = {
   watchlist: "Watchlist",
   portfolio: "Portfolio",
@@ -103,29 +102,29 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         {
           name: "My Portfolio",
           tickers: [],
-          bucketType: "portfolio",
-          requiresQuantity: true,
+          type: "portfolio",
+          description: "Default portfolio",
           isUserConfigurable: true,
         },
         {
           name: "My Watchlist",
           tickers: [],
-          bucketType: "watchlist",
-          requiresQuantity: false,
+          type: "watchlist",
+          description: "Default watchlist",
           isUserConfigurable: true,
         },
         {
           name: "My Ticker Tape",
           tickers: [],
-          bucketType: "ticker_tape",
-          requiresQuantity: false,
+          type: "ticker_tape",
+          description: "Ticker tape",
           isUserConfigurable: true,
         },
         {
           name: "My Recently Viewed",
           tickers: [],
-          bucketType: "recently_viewed",
-          requiresQuantity: false,
+          type: "recently_viewed",
+          description: "Recently viewed tickers",
           isUserConfigurable: false,
         },
         // TODO: Infer potential ETFs that a user may be interested in based on searched
@@ -133,8 +132,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         {
           name: "My Attention Tracker",
           tickers: [],
-          bucketType: "attention_tracker",
-          requiresQuantity: false,
+          type: "attention_tracker",
+          description: "For suggestions",
           isUserConfigurable: false,
         },
       ],
@@ -192,7 +191,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           this.setState({
             latestXHROpenedRequestPathName: pathName,
           });
-        }
+        },
       );
 
       xhrOpenedRequests.emitter.on(
@@ -203,7 +202,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
               latestXHROpenedRequestPathName: null,
             });
           }
-        }
+        },
       );
 
       cacheAccessedRequests.emitter.on(
@@ -212,7 +211,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           this.setState({
             latestCacheOpenedRequestPathName: pathName,
           });
-        }
+        },
       );
 
       cacheAccessedRequests.emitter.on(
@@ -223,7 +222,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
               latestCacheOpenedRequestPathName: null,
             });
           }
-        }
+        },
       );
 
       return { xhrOpenedRequests, cacheAccessedRequests };
@@ -289,10 +288,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
             () => {
               this._syncCacheDetails();
             },
-            this.state.cacheProfilerWaitTime
+            this.state.cacheProfilerWaitTime,
           );
         }
-      }
+      },
     );
 
     return () => {
@@ -314,7 +313,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       this.setState({ cacheSize });
     });
     callRustService<RustServiceCacheDetail[]>("get_cache_details").then(
-      (cacheDetails) => this.setState({ cacheDetails })
+      (cacheDetails) => this.setState({ cacheDetails }),
     );
   }
 
@@ -337,21 +336,21 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     page: number = 1,
     pageSize: number = 20,
     onlyExactMatches: boolean = false,
-    abortSignal?: AbortSignal
+    abortSignal?: AbortSignal,
   ): Promise<RustServicePaginatedResults<RustServiceTickerSearchResult>> {
     return callRustService<
       RustServicePaginatedResults<RustServiceTickerSearchResult>
     >(
       "search_tickers",
       [query.trim(), page, pageSize, onlyExactMatches],
-      abortSignal
+      abortSignal,
     );
   }
 
   async fetchETFHoldersAggregateDetailByTickerId(
     tickerId: number,
     page: number = 1,
-    pageSize: number = 20
+    pageSize: number = 20,
   ): Promise<RustServicePaginatedResults<RustServiceETFAggregateDetail>> {
     return callRustService<
       RustServicePaginatedResults<RustServiceETFAggregateDetail>
@@ -369,11 +368,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   async fetchETFAggregateDetailByTickerId(
-    etfTickerId: number
+    etfTickerId: number,
   ): Promise<RustServiceETFAggregateDetail> {
     return callRustService<RustServiceETFAggregateDetail>(
       "get_etf_aggregate_detail_by_ticker_id",
-      [etfTickerId]
+      [etfTickerId],
     );
   }
 
@@ -382,19 +381,70 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   async fetchSymbolAndExchangeByTickerId(
-    tickerId: number
+    tickerId: number,
   ): Promise<[string, string]> {
     return callRustService("get_symbol_and_exchange_by_ticker_id", [tickerId]);
   }
 
+  createTickerBucket({
+    name,
+    type,
+    description,
+    isUserConfigurable,
+  }: Omit<TickerBucketProps, "tickers">) {
+    const nextBucket: TickerBucketProps = {
+      name,
+      tickers: [],
+      type,
+      description,
+      isUserConfigurable,
+    };
+
+    // TODO: Prevent bucket from being added if of same name and type
+
+    this.setState((prev) => ({
+      tickerBuckets: [nextBucket, ...prev.tickerBuckets],
+    }));
+  }
+
+  updateTickerBucket(
+    prevBucket: TickerBucketProps,
+    updatedBucket: TickerBucketProps,
+  ) {
+    this.setState((prevState) => {
+      const tickerBuckets = prevState.tickerBuckets.map((bucket) =>
+        bucket.name === prevBucket.name && bucket.type === prevBucket.type
+          ? { ...bucket, ...updatedBucket }
+          : bucket,
+      );
+
+      return { tickerBuckets };
+    });
+
+    // TODO: Emit custom event for this
+  }
+
+  deleteTickerBucket(tickerBucket: TickerBucketProps) {
+    this.setState((prevState) => {
+      const tickerBuckets = prevState.tickerBuckets.filter(
+        (cachedBucket) =>
+          !(
+            cachedBucket.name === tickerBucket.name &&
+            cachedBucket.type === tickerBucket.type
+          ),
+      );
+      return { tickerBuckets };
+    });
+
+    // TODO: Emit custom event for this
+  }
   async addTickerToBucket(
     tickerId: number,
     quantity: number,
-    tickerBucket: TickerBucketProps
+    tickerBucket: TickerBucketProps,
   ) {
-    const tickerAndExchange = await this.fetchSymbolAndExchangeByTickerId(
-      tickerId
-    );
+    const tickerAndExchange =
+      await this.fetchSymbolAndExchangeByTickerId(tickerId);
 
     const symbol = tickerAndExchange[0];
     const exchange_short_name = tickerAndExchange[1];
@@ -413,7 +463,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
                   exchange_short_name,
                   quantity,
                 },
-              ])
+              ]),
             ),
           };
         }
@@ -432,7 +482,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           return {
             ...bucket,
             tickers: bucket.tickers.filter(
-              (ticker) => ticker.tickerId !== tickerId
+              (ticker) => ticker.tickerId !== tickerId,
             ),
           };
         }

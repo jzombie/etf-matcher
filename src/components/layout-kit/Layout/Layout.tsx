@@ -1,5 +1,7 @@
-import React, { forwardRef, HTMLAttributes } from "react";
+import React, { HTMLAttributes, forwardRef } from "react";
+
 import clsx from "clsx";
+
 import styles from "./Layout.module.scss";
 
 export type LayoutProps = HTMLAttributes<HTMLDivElement> & {
@@ -14,7 +16,7 @@ const Layout = forwardRef<HTMLDivElement, LayoutProps>(
         {children}
       </div>
     );
-  }
+  },
 );
 
 Layout.displayName = "Layout";

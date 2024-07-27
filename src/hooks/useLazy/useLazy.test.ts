@@ -1,6 +1,8 @@
 // useLazy.test.tsx
-import { renderHook, act } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
+
 import { vi } from "vitest";
+
 import useLazy from "./useLazy";
 
 describe("useLazy", () => {
@@ -44,7 +46,7 @@ describe("useLazy", () => {
       ({ value, timeout }) => useLazy(value, timeout),
       {
         initialProps: { value: "initial", timeout: 100 },
-      }
+      },
     );
 
     expect(result.current).toBe("initial");
@@ -77,7 +79,7 @@ describe("useLazy", () => {
       ({ value }) => useLazy(value, 100),
       {
         initialProps: { value: "initial" },
-      }
+      },
     );
 
     expect(result.current).toBe("initial");

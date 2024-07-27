@@ -1,6 +1,9 @@
 import React from "react";
-import useStoreStateReader from "@hooks/useStoreStateReader";
+
 import clsx from "clsx";
+
+import useStoreStateReader from "@hooks/useStoreStateReader";
+
 import styles from "./NetworkRequestIndicator.module.scss";
 
 export type NetworkRequestIndicatorProps = React.HTMLAttributes<HTMLElement> & {

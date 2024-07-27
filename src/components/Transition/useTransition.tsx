@@ -1,13 +1,14 @@
 import React, {
-  useState,
+  ReactElement,
+  ReactNode,
+  isValidElement,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
-  ReactNode,
-  isValidElement,
-  ReactElement,
-  useCallback,
+  useState,
 } from "react";
+
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 import type { TransitionProps } from "./types";
@@ -66,7 +67,7 @@ export default function useTransition({
       ) {
         setNextKey(
           currentChild.key?.toString() ||
-            Math.random().toString(36).substr(2, 9)
+            Math.random().toString(36).substr(2, 9),
         );
         setIsTransitioning(true);
         setNextView(children);
@@ -123,7 +124,7 @@ export default function useTransition({
         if (activeViewElement) {
           activeViewElement.removeEventListener(
             "animationend",
-            handleAnimationEnd
+            handleAnimationEnd,
           );
         }
       };
@@ -132,7 +133,7 @@ export default function useTransition({
 
   const animationDurationCSS = useMemo<string>(
     () => `${transitionDurationMs / 1000}s`,
-    [transitionDurationMs]
+    [transitionDurationMs],
   );
 
   return {

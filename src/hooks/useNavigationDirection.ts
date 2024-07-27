@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+
 import { useLocation, useNavigationType } from "react-router-dom";
 
 export type NavigationDirection = "forward" | "backward";

@@ -1,4 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import debounceWithKey from "./debounceWithKey";
 
 describe("debounceWithKey", () => {
@@ -42,13 +43,13 @@ describe("debounceWithKey", () => {
       "key1",
       mockFunction,
       300,
-      false
+      false,
     );
     const debouncedFunction2 = debounceWithKey(
       "key2",
       mockFunction2,
       300,
-      false
+      false,
     );
 
     debouncedFunction1();
@@ -103,7 +104,7 @@ describe("debounceWithKey", () => {
       "test",
       func.bind(context),
       300,
-      false
+      false,
     );
 
     debouncedFunction();
@@ -151,7 +152,7 @@ describe("debounceWithKey", () => {
       true,
       1,
       2,
-      3
+      3,
     );
 
     vi.runAllTimers(); // Advance timers to ensure debounced function is called

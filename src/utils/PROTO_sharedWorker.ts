@@ -1,6 +1,5 @@
 // Inspect with:
 // chrome://inspect/#workers
-
 import customLogger from "./customLogger";
 
 // eslint-disable-next-line no-undef

@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+
 import store from "@src/store";
 
 import customLogger from "@utils/customLogger";
@@ -19,7 +20,7 @@ export default function useGAPageTracking() {
   useEffect(() => {
     if (IS_DEV) {
       customLogger.warn(
-        "Skipping GA page tracking due to development environment."
+        "Skipping GA page tracking due to development environment.",
       );
 
       return;
@@ -27,7 +28,7 @@ export default function useGAPageTracking() {
 
     if (!GOOGLE_ANALYTICS_ID) {
       customLogger.warn(
-        "`GOOGLE_ANALYTICS_ID` was not obtained. Skipping GA page tracking."
+        "`GOOGLE_ANALYTICS_ID` was not obtained. Skipping GA page tracking.",
       );
 
       return;

@@ -1,15 +1,15 @@
-import { defineConfig } from "vite";
-import { viteStaticCopy } from "vite-plugin-static-copy";
-import path from "path";
 import react from "@vitejs/plugin-react";
+import dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
+import { defineConfig } from "vite";
 import checker from "vite-plugin-checker";
-import tsconfigPaths from "vite-tsconfig-paths";
-import svgr from "vite-plugin-svgr";
 import eslint from "vite-plugin-eslint";
 import { createHtmlPlugin } from "vite-plugin-html";
 import sitemap from "vite-plugin-sitemap";
-import fs from "fs";
-import dotenv from "dotenv";
+import { viteStaticCopy } from "vite-plugin-static-copy";
+import svgr from "vite-plugin-svgr";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 // This is needed to get the .env variables to populate here
 dotenv.config();
@@ -22,7 +22,7 @@ export function writeBuildTime() {
   const buildTime = now.toISOString(); // Returns the build time in ISO format
   fs.writeFileSync(
     path.resolve(__dirname, "public/buildTime.json"),
-    JSON.stringify({ buildTime })
+    JSON.stringify({ buildTime }),
   );
   return buildTime;
 }

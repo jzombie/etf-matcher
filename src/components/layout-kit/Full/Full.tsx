@@ -1,5 +1,7 @@
-import React, { forwardRef, HTMLAttributes } from "react";
+import React, { HTMLAttributes, forwardRef } from "react";
+
 import clsx from "clsx";
+
 import styles from "./Full.module.scss";
 
 export type FullProps = HTMLAttributes<HTMLDivElement> & {
@@ -14,7 +16,7 @@ const Full = forwardRef<HTMLDivElement, FullProps>(
         {children}
       </div>
     );
-  }
+  },
 );
 
 Full.displayName = "Full";

@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from "react";
+
 import {
+  Paper,
   Table,
   TableBody,
   TableCell,
@@ -7,13 +9,16 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
-  Paper,
 } from "@mui/material";
 import { styled } from "@mui/system";
 
 import { RustServiceCacheDetail } from "@src/types";
+
 import useStoreStateReader from "@hooks/useStoreStateReader";
-import formatByteSize from "@utils/formatByteSize"; // Import the utility function
+
+import formatByteSize from "@utils/formatByteSize";
+
+// Import the utility function
 
 // Styled components
 const StyledTableCell = styled(TableCell)(() => ({
@@ -55,7 +60,7 @@ const SortableTable: React.FC = () => {
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof RustServiceCacheDetail
+    property: keyof RustServiceCacheDetail,
   ) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -64,10 +69,13 @@ const SortableTable: React.FC = () => {
 
   const stableSort = (
     array: RustServiceCacheDetail[],
-    comparator: (a: RustServiceCacheDetail, b: RustServiceCacheDetail) => number
+    comparator: (
+      a: RustServiceCacheDetail,
+      b: RustServiceCacheDetail,
+    ) => number,
   ) => {
     const stabilizedThis = array.map(
-      (el, index) => [el, index] as [RustServiceCacheDetail, number]
+      (el, index) => [el, index] as [RustServiceCacheDetail, number],
     );
     stabilizedThis.sort((a, b) => {
       const order = comparator(a[0], b[0]);
@@ -79,7 +87,7 @@ const SortableTable: React.FC = () => {
 
   const getComparator = (
     order: "asc" | "desc",
-    orderBy: keyof RustServiceCacheDetail
+    orderBy: keyof RustServiceCacheDetail,
   ) => {
     return order === "desc"
       ? (a: RustServiceCacheDetail, b: RustServiceCacheDetail) =>
@@ -91,7 +99,7 @@ const SortableTable: React.FC = () => {
   const descendingComparator = (
     a: RustServiceCacheDetail,
     b: RustServiceCacheDetail,
-    orderBy: keyof RustServiceCacheDetail
+    orderBy: keyof RustServiceCacheDetail,
   ) => {
     if (b[orderBy] < a[orderBy]) {
       return -1;
@@ -114,7 +122,7 @@ const SortableTable: React.FC = () => {
                 .replace(/\b\w/g, (char) => char.toUpperCase()),
             }))
           : [],
-      [rows]
+      [rows],
     );
 
   return (

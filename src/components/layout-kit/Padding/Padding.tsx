@@ -1,5 +1,7 @@
-import React, { forwardRef, HTMLAttributes } from "react";
+import React, { HTMLAttributes, forwardRef } from "react";
+
 import clsx from "clsx";
+
 import styles from "./Padding.module.scss";
 
 export type PaddingProps = HTMLAttributes<HTMLElement> & {
@@ -14,7 +16,7 @@ const Padding = forwardRef<HTMLElement, PaddingProps>(
         {children}
       </section>
     );
-  }
+  },
 );
 
 Padding.displayName = "Padding";

@@ -47,7 +47,7 @@ Object.keys(console).forEach((prop) => {
   // eslint-disable-next-line no-console
   if (typeof console[prop as keyof Console] === "function") {
     customLogger[prop as keyof Console] = createLoggerMethod(
-      prop as keyof Console
+      prop as keyof Console,
     );
   }
 });

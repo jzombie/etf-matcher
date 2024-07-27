@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+
 import { useLocation, useOutlet } from "react-router-dom";
 
 export default function SingleUseOutlet() {

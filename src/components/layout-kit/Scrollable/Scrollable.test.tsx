@@ -1,8 +1,11 @@
 import React from "react";
+
 import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
-import Scrollable from "./Scrollable";
+
 import { describe, it } from "vitest";
+
+import Scrollable from "./Scrollable";
 import styles from "./Scrollable.module.scss";
 
 describe("Scrollable Component", () => {
@@ -10,7 +13,7 @@ describe("Scrollable Component", () => {
     const { container, rerender } = render(
       <Scrollable resetTrigger="initial">
         <span>Test Content</span>
-      </Scrollable>
+      </Scrollable>,
     );
 
     const scrollableDiv = container.firstChild as HTMLDivElement;
@@ -26,7 +29,7 @@ describe("Scrollable Component", () => {
     rerender(
       <Scrollable resetTrigger="updated">
         <span>Test Content</span>
-      </Scrollable>
+      </Scrollable>,
     );
 
     // Check that the scroll position has been reset
@@ -38,7 +41,7 @@ describe("Scrollable Component", () => {
     const { getByText, asFragment } = render(
       <Scrollable>
         <span>Test Content</span>
-      </Scrollable>
+      </Scrollable>,
     );
     expect(getByText("Test Content")).toBeInTheDocument();
     expect(asFragment()).toMatchInlineSnapshot(`
@@ -58,7 +61,7 @@ describe("Scrollable Component", () => {
     const { container, asFragment } = render(
       <Scrollable className="custom-class">
         <span>Test Content</span>
-      </Scrollable>
+      </Scrollable>,
     );
     expect(container.firstChild).toHaveClass("custom-class");
     expect(asFragment()).toMatchInlineSnapshot(`
@@ -78,7 +81,7 @@ describe("Scrollable Component", () => {
     const { container, asFragment } = render(
       <Scrollable scrollX>
         <span>Test Content</span>
-      </Scrollable>
+      </Scrollable>,
     );
     expect(container.firstChild).toHaveClass(styles.scroll_x);
     expect(asFragment()).toMatchInlineSnapshot(`
@@ -98,7 +101,7 @@ describe("Scrollable Component", () => {
     const { container, asFragment } = render(
       <Scrollable scrollY>
         <span>Test Content</span>
-      </Scrollable>
+      </Scrollable>,
     );
     expect(container.firstChild).toHaveClass(styles.scroll_y);
     expect(asFragment()).toMatchInlineSnapshot(`
@@ -119,7 +122,7 @@ describe("Scrollable Component", () => {
     render(
       <Scrollable ref={ref}>
         <span>Test Content</span>
-      </Scrollable>
+      </Scrollable>,
     );
     expect(ref.current).toBeInstanceOf(HTMLElement);
   });

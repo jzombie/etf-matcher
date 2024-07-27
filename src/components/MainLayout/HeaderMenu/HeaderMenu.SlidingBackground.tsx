@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+
 import { Box } from "@mui/material";
 import { styled } from "@mui/system";
 
@@ -49,7 +50,7 @@ const StyledSlidingBackground = styled(Box, {
       : "none",
     zIndex: 0,
     borderRadius,
-  })
+  }),
 );
 
 export type SlidingBackgroundProps = {
@@ -96,7 +97,7 @@ export default function SlidingBackground({
     const updateBackgroundPosition = () => {
       if (menuRef.current && selectedKey) {
         const selectedItem = menuRef.current.querySelector(
-          `.active`
+          `.active`,
         ) as HTMLElement;
         if (selectedItem) {
           const {

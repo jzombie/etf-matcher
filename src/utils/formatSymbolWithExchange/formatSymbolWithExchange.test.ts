@@ -1,6 +1,7 @@
-import { describe, it, expect } from "vitest";
-import formatSymbolWithExchange from "./formatSymbolWithExchange";
 import type { RustServiceTickerDetail } from "@src/types";
+import { describe, expect, it } from "vitest";
+
+import formatSymbolWithExchange from "./formatSymbolWithExchange";
 
 describe("formatSymbolWithExchange", () => {
   it("should format symbol with exchange prefix", () => {
