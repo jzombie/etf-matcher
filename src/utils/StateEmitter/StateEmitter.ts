@@ -18,6 +18,7 @@ export default class StateEmitter<T extends object> extends EventEmitter {
 
   private _state!: T;
   private _shouldDeepfreeze: boolean = true;
+  private disposeFunctions: (() => void)[] = [];
 
   get shouldDeepfreeze(): boolean {
     return this._shouldDeepfreeze;
@@ -126,5 +127,15 @@ export default class StateEmitter<T extends object> extends EventEmitter {
 
   set state(value: T) {
     throw new Error("State is read-only. Use setState to modify the state.");
+  }
+
+  registerDispose(disposeFunction: () => void) {
+    this.disposeFunctions.push(disposeFunction);
+  }
+
+  dispose() {
+    this.disposeFunctions.forEach((fn) => fn());
+    this.disposeFunctions = [];
+    this.removeAllListeners();
   }
 }
