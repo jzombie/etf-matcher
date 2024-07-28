@@ -1,40 +1,44 @@
 import { DBSchema, IDBPDatabase, openDB } from "idb";
 
-interface MyDB<T> extends DBSchema {
+interface MyDB extends DBSchema {
   keyval: {
     key: string;
-    value: T;
+    value: unknown;
   };
 }
 
-export default class IndexedDBInterface<T> {
-  private dbPromise: Promise<IDBPDatabase<MyDB<T>>>;
+export default class IndexedDBInterface<T extends Record<string, unknown>> {
+  private dbPromise: Promise<IDBPDatabase<MyDB>>;
 
   constructor() {
-    this.dbPromise = openDB<MyDB<T>>("my-database", 1, {
+    this.dbPromise = openDB<MyDB>("my-database", 1, {
       upgrade(db) {
         db.createObjectStore("keyval");
       },
     });
   }
 
-  private async getDB(): Promise<IDBPDatabase<MyDB<T>>> {
+  public async ready(): Promise<IDBPDatabase<MyDB>> {
     return this.dbPromise;
   }
 
-  async setItem(key: string, value: T): Promise<void> {
-    const db = await this.getDB();
-    await db.put("keyval", value, key);
+  private async getDB(): Promise<IDBPDatabase<MyDB>> {
+    return this.dbPromise;
   }
 
-  async getItem(key: string): Promise<T | undefined> {
+  async setItem<K extends keyof T>(key: K, value: T[K]): Promise<void> {
     const db = await this.getDB();
-    return await db.get("keyval", key);
+    await db.put("keyval", value, key as string);
   }
 
-  async removeItem(key: string): Promise<void> {
+  async getItem<K extends keyof T>(key: K): Promise<T[K] | undefined> {
     const db = await this.getDB();
-    await db.delete("keyval", key);
+    return (await db.get("keyval", key as string)) as T[K];
+  }
+
+  async removeItem<K extends keyof T>(key: K): Promise<void> {
+    const db = await this.getDB();
+    await db.delete("keyval", key as string);
   }
 
   async clear(): Promise<void> {
@@ -42,13 +46,15 @@ export default class IndexedDBInterface<T> {
     await db.clear("keyval");
   }
 
-  async getAllKeys(): Promise<string[]> {
+  async getAllKeys<K extends keyof T>(): Promise<K[]> {
     const db = await this.getDB();
-    return await db.getAllKeys("keyval");
+    const keys = await db.getAllKeys("keyval");
+    return keys as K[];
   }
 
-  async getAllValues(): Promise<T[]> {
+  async getAllValues<K extends keyof T>(): Promise<Array<T[K]>> {
     const db = await this.getDB();
-    return await db.getAll("keyval");
+    const values = await db.getAll("keyval");
+    return values as Array<T[K]>;
   }
 }

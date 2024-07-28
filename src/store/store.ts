@@ -154,10 +154,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // Only deepfreeze in development
     this.shouldDeepfreeze = !IS_PROD;
 
-    // Note: This returns an unsubscribe callback which could be handed if the store
-    // were to be torn down
-    this._initLocalSubscriptions();
-
     // TODO: Poll for data build info once every "x" to ensure the data is always running the latest version
     this._fetchDataBuildInfo();
 
@@ -165,6 +161,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     this._preloadTickerSearchCache();
 
     this._indexedDBInterface = new IndexedDBInterface();
+
+    // Note: This returns an unsubscribe callback which could be handed if the store
+    // were to be torn down
+    this._initLocalSubscriptions();
   }
 
   private _initLocalSubscriptions() {
@@ -318,22 +318,47 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       this.registerDispose(libRustServiceUnsubscribe);
     })();
 
-    // TODO: Implement
-    // (() => {
-    //   const _handleTickerBucketsUpdate = (keys: (keyof StoreStateProps)[]) => {
-    //     if (keys.includes("tickerBuckets")) {
-    //       const { tickerBuckets } = this.getState(["tickerBuckets"]);
-    //       // this._indexedDBInterface.setItem("tickerBuckets", tickerBuckets);
+    (async () => {
+      await this._indexedDBInterface.ready();
 
-    //       console.log({ tickerBuckets });
-    //     }
-    //   };
-    //   this.on(StateEmitterDefaultEvents.UPDATE, _handleTickerBucketsUpdate);
+      // Handle session restore
+      (async () => {
+        const keys = await this._indexedDBInterface.getAllKeys();
+        const stateKeys = Object.keys(this.state) as Array<
+          keyof StoreStateProps
+        >;
 
-    //   this.registerDispose(() => {
-    //     this.off(StateEmitterDefaultEvents.UPDATE, _handleTickerBucketsUpdate);
-    //   });
-    // })();
+        for (const key of keys) {
+          if (stateKeys.includes(key as keyof StoreStateProps)) {
+            const item = await this._indexedDBInterface.getItem(key);
+            if (item !== undefined) {
+              this.setState({ [key]: item } as Pick<
+                StoreStateProps,
+                keyof StoreStateProps
+              >);
+            }
+          }
+        }
+      })();
+
+      const _handleTickerBucketsUpdate = async (
+        keys: (keyof StoreStateProps)[],
+      ) => {
+        if (keys.includes("tickerBuckets")) {
+          const { tickerBuckets } = this.getState(["tickerBuckets"]);
+
+          await this._indexedDBInterface.setItem(
+            "tickerBuckets",
+            tickerBuckets,
+          );
+        }
+      };
+      this.on(StateEmitterDefaultEvents.UPDATE, _handleTickerBucketsUpdate);
+
+      this.registerDispose(() => {
+        this.off(StateEmitterDefaultEvents.UPDATE, _handleTickerBucketsUpdate);
+      });
+    })();
   }
 
   setVisibleTickers(visibleTickerIds: number[]) {
