@@ -127,7 +127,6 @@ describe("StateEmitter", () => {
     }).not.toThrow();
   });
 
-  // New tests for registerDispose and dispose
   it("should register dispose functions and call them on dispose", () => {
     const initialState: TestState = { count: 0, text: "hello" };
     const emitter = new StateEmitter<TestState>(initialState);
