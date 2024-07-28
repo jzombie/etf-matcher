@@ -61,6 +61,7 @@ export const tickerBucketDefaultNames: Readonly<
 
 export type StoreStateProps = {
   isHTMLJSVersionSynced: boolean;
+  isIndexedDBReady: boolean;
   isAppUnlocked: boolean;
   isGAPageTrackingEnabled: boolean;
   isProductionBuild: boolean;
@@ -94,6 +95,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
     super({
       isHTMLJSVersionSynced: detectHTMLJSVersionSync(),
+      isIndexedDBReady: false,
       isAppUnlocked: false,
       isGAPageTrackingEnabled: false,
       isProductionBuild: IS_PROD,
@@ -320,6 +322,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     (async () => {
       await this._indexedDBInterface.ready();
+
+      this.setState({ isIndexedDBReady: true });
 
       // Handle session restore
       (async () => {
