@@ -171,6 +171,7 @@ export default class MQTTRoomWorker extends EventEmitter {
   protected _announcePresence() {
     this._mqttClient.publish(
       this._topicPresence,
+      // TODO: `status` could be `join` or `here` (if presence is reannounced)
       this._encodeBuffer({ peerId: this.peerId, status: "join" }),
       { qos: 1, retain: false },
     );
