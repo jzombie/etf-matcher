@@ -13,7 +13,7 @@ createRoot(container!).render(
   </React.StrictMode>,
 );
 
-// TODO: Remove
+// TODO: Move this to extend `IndexedDBInterface` with a way to sync updates across browser tabs
 (() => {
   const worker = new SharedWorker(
     new URL("./utils/PROTO_sharedWorker.ts", import.meta.url),

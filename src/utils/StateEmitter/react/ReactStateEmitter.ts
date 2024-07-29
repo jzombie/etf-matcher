@@ -22,7 +22,13 @@ export default class ReactStateEmitter<
   createReactHookStateReader() {
     return <K extends keyof T>(
       stateKeyOrKeys: K | K[],
-      eventOrEventNames: string | string[] = StateEmitterDefaultEvents.UPDATE,
+      eventOrEventNames:
+        | keyof T
+        | StateEmitterDefaultEvents
+        | (
+            | keyof T
+            | StateEmitterDefaultEvents
+          )[] = StateEmitterDefaultEvents.UPDATE,
     ) => useStateEmitterReader<T, K>(this, stateKeyOrKeys, eventOrEventNames);
   }
 }

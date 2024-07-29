@@ -126,6 +126,53 @@ describe("StateEmitter", () => {
       new StateEmitter<TestState>(initialState);
     }).not.toThrow();
   });
+
+  it("should register dispose functions and call them on dispose", () => {
+    const initialState: TestState = { count: 0, text: "hello" };
+    const emitter = new StateEmitter<TestState>(initialState);
+
+    const disposeFn1 = vi.fn();
+    const disposeFn2 = vi.fn();
+
+    emitter.registerDispose(disposeFn1);
+    emitter.registerDispose(disposeFn2);
+
+    emitter.dispose();
+
+    expect(disposeFn1).toHaveBeenCalledTimes(1);
+    expect(disposeFn2).toHaveBeenCalledTimes(1);
+  });
+
+  it("should call registered dispose functions in order", () => {
+    const initialState: TestState = { count: 0, text: "hello" };
+    const emitter = new StateEmitter<TestState>(initialState);
+
+    const callOrder: string[] = [];
+    const disposeFn1 = vi.fn(() => callOrder.push("disposeFn1"));
+    const disposeFn2 = vi.fn(() => callOrder.push("disposeFn2"));
+
+    emitter.registerDispose(disposeFn1);
+    emitter.registerDispose(disposeFn2);
+
+    emitter.dispose();
+
+    expect(callOrder).toEqual(["disposeFn1", "disposeFn2"]);
+  });
+
+  it("should remove all event listeners on dispose", () => {
+    const initialState: TestState = { count: 0, text: "hello" };
+    const emitter = new StateEmitter<TestState>(initialState);
+
+    const listener = vi.fn();
+    emitter.on(StateEmitterDefaultEvents.UPDATE, listener);
+
+    emitter.setState({ count: 1 });
+    expect(listener).toHaveBeenCalledTimes(1);
+
+    emitter.dispose();
+    emitter.setState({ count: 2 });
+    expect(listener).toHaveBeenCalledTimes(1); // No additional calls after dispose
+  });
 });
 
 interface NestedState {

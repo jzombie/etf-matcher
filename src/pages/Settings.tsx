@@ -27,6 +27,7 @@ export default function Settings() {
   const {
     isHTMLJSVersionSynced,
     isAppUnlocked,
+    isIndexedDBReady,
     isProductionBuild,
     isRustInit,
     dataBuildTime,
@@ -42,6 +43,7 @@ export default function Settings() {
   } = useStoreStateReader([
     "isHTMLJSVersionSynced",
     "isAppUnlocked",
+    "isIndexedDBReady",
     "isProductionBuild",
     "isRustInit",
     "dataBuildTime",
@@ -187,6 +189,9 @@ export default function Settings() {
           {" | "}
           {isRustInit ? "Rust Service Init" : "Rust Service Not Init"}
           {" | "}
+          {isIndexedDBReady ? "IndexedDB Ready" : "IndexedDB Not Ready"}
+          {" | "}
+
           {visibleTickerIds?.toString()}
         </Typography>
       </Padding>

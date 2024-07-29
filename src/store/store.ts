@@ -9,6 +9,7 @@ import type {
   RustServiceTickerSearchResult,
 } from "@src/types";
 
+import IndexedDBInterface from "@utils/IndexedDBInterface";
 import detectHTMLJSVersionSync from "@utils/PROTO_detectHTMLJSVersionSync";
 import {
   ReactStateEmitter,
@@ -60,6 +61,7 @@ export const tickerBucketDefaultNames: Readonly<
 
 export type StoreStateProps = {
   isHTMLJSVersionSynced: boolean;
+  isIndexedDBReady: boolean;
   isAppUnlocked: boolean;
   isGAPageTrackingEnabled: boolean;
   isProductionBuild: boolean;
@@ -85,10 +87,15 @@ export type StoreStateProps = {
 };
 
 class _Store extends ReactStateEmitter<StoreStateProps> {
+  private _indexedDBInterface: IndexedDBInterface<{
+    tickerBuckets: TickerBucketProps[];
+  }>;
+
   constructor() {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
     super({
       isHTMLJSVersionSynced: detectHTMLJSVersionSync(),
+      isIndexedDBReady: false,
       isAppUnlocked: false,
       isGAPageTrackingEnabled: false,
       isProductionBuild: IS_PROD,
@@ -149,159 +156,213 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // Only deepfreeze in development
     this.shouldDeepfreeze = !IS_PROD;
 
-    // Note: This returns an unsubscribe callback which could be handed if the store
-    // were to be torn down
-    this._initLocalSubscription();
-
     // TODO: Poll for data build info once every "x" to ensure the data is always running the latest version
     this._fetchDataBuildInfo();
 
     // Make initial searches faster
     this._preloadTickerSearchCache();
+
+    this._indexedDBInterface = new IndexedDBInterface();
+
+    // Note: This returns an unsubscribe callback which could be handed if the store
+    // were to be torn down
+    this._initLocalSubscriptions();
   }
 
-  private _initLocalSubscription(): () => void {
-    const _handleOnlineStatus = () => {
-      this.setState({ isOnline: Boolean(navigator.onLine) });
-    };
+  private _initLocalSubscriptions() {
+    (() => {
+      const _handleOnlineStatus = () => {
+        this.setState({ isOnline: Boolean(navigator.onLine) });
+      };
+      _handleOnlineStatus();
 
-    _handleOnlineStatus();
+      window.addEventListener("online", _handleOnlineStatus);
+      window.addEventListener("offline", _handleOnlineStatus);
 
-    window.addEventListener("online", _handleOnlineStatus);
-    window.addEventListener("offline", _handleOnlineStatus);
-
-    const _handleVisibleTickersUpdate = (keys: (keyof StoreStateProps)[]) => {
-      if (keys.includes("visibleTickerIds")) {
-        const { visibleTickerIds } = this.getState(["visibleTickerIds"]);
-
-        // TODO: Handle this tracking
-        customLogger.debug({ visibleTickerIds });
-      }
-    };
-    this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
-
-    // Instantiate and set up event bindings for `OpenNetworkRequests`
-    const { xhrOpenedRequests, cacheAccessedRequests } = (() => {
-      const xhrOpenedRequests = new XHROpenedRequests();
-      const cacheAccessedRequests = new CacheAccessedRequests();
-
-      xhrOpenedRequests.emitter.on(
-        XHROpenedRequests.PATH_OPENED,
-        (pathName: string) => {
-          this.setState({
-            latestXHROpenedRequestPathName: pathName,
-          });
-        },
-      );
-
-      xhrOpenedRequests.emitter.on(
-        XHROpenedRequests.PATH_CLOSED,
-        (pathName: string) => {
-          if (this.state.latestXHROpenedRequestPathName === pathName) {
-            this.setState({
-              latestXHROpenedRequestPathName: null,
-            });
-          }
-        },
-      );
-
-      cacheAccessedRequests.emitter.on(
-        CacheAccessedRequests.PATH_OPENED,
-        (pathName: string) => {
-          this.setState({
-            latestCacheOpenedRequestPathName: pathName,
-          });
-        },
-      );
-
-      cacheAccessedRequests.emitter.on(
-        CacheAccessedRequests.PATH_CLOSED,
-        (pathName: string) => {
-          if (this.state.latestCacheOpenedRequestPathName === pathName) {
-            this.setState({
-              latestCacheOpenedRequestPathName: null,
-            });
-          }
-        },
-      );
-
-      return { xhrOpenedRequests, cacheAccessedRequests };
+      this.registerDispose(() => {
+        window.removeEventListener("online", _handleOnlineStatus);
+        window.removeEventListener("offline", _handleOnlineStatus);
+      });
     })();
 
-    const libRustServiceUnsubscribe = libRustServiceSubscribe(
-      (eventType: NotifierEvent, args: unknown[]) => {
-        const pathName: string = args[0] as string;
+    (() => {
+      const _handleVisibleTickersUpdate = (keys: (keyof StoreStateProps)[]) => {
+        if (keys.includes("visibleTickerIds")) {
+          const { visibleTickerIds } = this.getState(["visibleTickerIds"]);
 
-        if (eventType === NotifierEvent.XHR_REQUEST_CREATED) {
-          // Signal open XHR request
-          xhrOpenedRequests.add(pathName);
+          // TODO: Handle this tracking
+          customLogger.debug({ visibleTickerIds });
         }
+      };
+      this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
 
-        if (eventType === NotifierEvent.XHR_REQUEST_ERROR) {
-          // Signal closed XHR request
-          xhrOpenedRequests.delete(pathName);
+      this.registerDispose(() => {
+        this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
+      });
+    })();
 
-          const xhrRequestErrors = {
-            ...this.state.rustServiceXHRRequestErrors,
-            [pathName]: {
-              errCount: this.state.rustServiceXHRRequestErrors[pathName]
-                ?.errCount
-                ? this.state.rustServiceXHRRequestErrors[pathName]?.errCount + 1
-                : 1,
-              lastTimestamp: new Date().toISOString(),
-            },
-          };
-          this.setState({
-            rustServiceXHRRequestErrors: xhrRequestErrors,
-          });
-        }
+    (() => {
+      // Instantiate and set up event bindings for `OpenNetworkRequests`
+      const { xhrOpenedRequests, cacheAccessedRequests } = (() => {
+        const xhrOpenedRequests = new XHROpenedRequests();
+        const cacheAccessedRequests = new CacheAccessedRequests();
 
-        if (eventType === NotifierEvent.XHR_REQUEST_SENT) {
-          // Signal closed XHR request
-          xhrOpenedRequests.delete(pathName);
-
-          // If a subsequent XHR request path is the same as a previous error, delete the error
-          if (pathName in this.state.rustServiceXHRRequestErrors) {
-            const next = { ...this.state.rustServiceXHRRequestErrors };
-            delete next[pathName];
-
+        xhrOpenedRequests.emitter.on(
+          XHROpenedRequests.PATH_OPENED,
+          (pathName: string) => {
             this.setState({
-              rustServiceXHRRequestErrors: next,
+              latestXHROpenedRequestPathName: pathName,
+            });
+          },
+        );
+
+        xhrOpenedRequests.emitter.on(
+          XHROpenedRequests.PATH_CLOSED,
+          (pathName: string) => {
+            if (this.state.latestXHROpenedRequestPathName === pathName) {
+              this.setState({
+                latestXHROpenedRequestPathName: null,
+              });
+            }
+          },
+        );
+
+        cacheAccessedRequests.emitter.on(
+          CacheAccessedRequests.PATH_OPENED,
+          (pathName: string) => {
+            this.setState({
+              latestCacheOpenedRequestPathName: pathName,
+            });
+          },
+        );
+
+        cacheAccessedRequests.emitter.on(
+          CacheAccessedRequests.PATH_CLOSED,
+          (pathName: string) => {
+            if (this.state.latestCacheOpenedRequestPathName === pathName) {
+              this.setState({
+                latestCacheOpenedRequestPathName: null,
+              });
+            }
+          },
+        );
+
+        return { xhrOpenedRequests, cacheAccessedRequests };
+      })();
+
+      const libRustServiceUnsubscribe = libRustServiceSubscribe(
+        (eventType: NotifierEvent, args: unknown[]) => {
+          const pathName: string = args[0] as string;
+
+          if (eventType === NotifierEvent.XHR_REQUEST_CREATED) {
+            // Signal open XHR request
+            xhrOpenedRequests.add(pathName);
+          }
+
+          if (eventType === NotifierEvent.XHR_REQUEST_ERROR) {
+            // Signal closed XHR request
+            xhrOpenedRequests.delete(pathName);
+
+            const xhrRequestErrors = {
+              ...this.state.rustServiceXHRRequestErrors,
+              [pathName]: {
+                errCount: this.state.rustServiceXHRRequestErrors[pathName]
+                  ?.errCount
+                  ? this.state.rustServiceXHRRequestErrors[pathName]?.errCount +
+                    1
+                  : 1,
+                lastTimestamp: new Date().toISOString(),
+              },
+            };
+            this.setState({
+              rustServiceXHRRequestErrors: xhrRequestErrors,
             });
           }
-        }
 
-        if (eventType === NotifierEvent.NETWORK_CACHE_ACCESSED) {
-          // Signal open cache request (auto-closes)
-          cacheAccessedRequests.add(pathName);
-        }
+          if (eventType === NotifierEvent.XHR_REQUEST_SENT) {
+            // Signal closed XHR request
+            xhrOpenedRequests.delete(pathName);
 
-        if (
-          [
-            NotifierEvent.NETWORK_CACHE_ENTRY_INSERTED,
-            NotifierEvent.NETWORK_CACHE_ENTRY_REMOVED,
-            NotifierEvent.NETWORK_CACHE_CLEARED,
-          ].includes(eventType)
-        ) {
-          debounceWithKey(
-            "store:cache_profiler",
-            () => {
-              this._syncCacheDetails();
-            },
-            this.state.cacheProfilerWaitTime,
+            // If a subsequent XHR request path is the same as a previous error, delete the error
+            if (pathName in this.state.rustServiceXHRRequestErrors) {
+              const next = { ...this.state.rustServiceXHRRequestErrors };
+              delete next[pathName];
+
+              this.setState({
+                rustServiceXHRRequestErrors: next,
+              });
+            }
+          }
+
+          if (eventType === NotifierEvent.NETWORK_CACHE_ACCESSED) {
+            // Signal open cache request (auto-closes)
+            cacheAccessedRequests.add(pathName);
+          }
+
+          if (
+            [
+              NotifierEvent.NETWORK_CACHE_ENTRY_INSERTED,
+              NotifierEvent.NETWORK_CACHE_ENTRY_REMOVED,
+              NotifierEvent.NETWORK_CACHE_CLEARED,
+            ].includes(eventType)
+          ) {
+            debounceWithKey(
+              "store:cache_profiler",
+              () => {
+                this._syncCacheDetails();
+              },
+              this.state.cacheProfilerWaitTime,
+            );
+          }
+        },
+      );
+
+      this.registerDispose(libRustServiceUnsubscribe);
+    })();
+
+    (async () => {
+      await this._indexedDBInterface.ready();
+
+      this.setState({ isIndexedDBReady: true });
+
+      // Handle session restore
+      (async () => {
+        const keys = await this._indexedDBInterface.getAllKeys();
+        const stateKeys = Object.keys(this.state) as Array<
+          keyof StoreStateProps
+        >;
+
+        for (const key of keys) {
+          if (stateKeys.includes(key as keyof StoreStateProps)) {
+            const item = await this._indexedDBInterface.getItem(key);
+            if (item !== undefined) {
+              this.setState({ [key]: item } as Pick<
+                StoreStateProps,
+                keyof StoreStateProps
+              >);
+            }
+          }
+        }
+      })();
+
+      const _handleTickerBucketsUpdate = async (
+        keys: (keyof StoreStateProps)[],
+      ) => {
+        if (keys.includes("tickerBuckets")) {
+          const { tickerBuckets } = this.getState(["tickerBuckets"]);
+
+          await this._indexedDBInterface.setItem(
+            "tickerBuckets",
+            tickerBuckets,
           );
         }
-      },
-    );
+      };
+      this.on(StateEmitterDefaultEvents.UPDATE, _handleTickerBucketsUpdate);
 
-    return () => {
-      window.removeEventListener("online", _handleOnlineStatus);
-      window.removeEventListener("offline", _handleOnlineStatus);
-
-      libRustServiceUnsubscribe();
-
-      this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
-    };
+      this.registerDispose(() => {
+        this.off(StateEmitterDefaultEvents.UPDATE, _handleTickerBucketsUpdate);
+      });
+    })();
   }
 
   setVisibleTickers(visibleTickerIds: number[]) {
