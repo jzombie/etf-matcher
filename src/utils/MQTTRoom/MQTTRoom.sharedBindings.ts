@@ -1,6 +1,6 @@
 export enum EnvelopeType {
   Function = 1,
-  ReceivedMessage = 2,
+  Event = 2,
 }
 
 export enum PostMessageStructKey {
@@ -10,4 +10,6 @@ export enum PostMessageStructKey {
   MessageId = 4,
   Error = 5,
   PeerId = 6,
+  EventName = 7,
+  EventData = 8,
 }

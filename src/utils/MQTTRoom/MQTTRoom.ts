@@ -60,10 +60,6 @@ export default class MQTTRoom extends EventEmitter {
     await callMQTTRoomWorker("send", [this.peerId, data]);
   }
 
-  onMessageReceived(data: string | Buffer | object) {
-    this.emit("message", data);
-  }
-
   get peerId() {
     return this._peerId;
   }
@@ -94,6 +90,8 @@ worker.onmessage = (event) => {
     [PostMessageStructKey.Result]: result,
     [PostMessageStructKey.Error]: error,
     [PostMessageStructKey.EnvelopeType]: envelopeType,
+    [PostMessageStructKey.EventName]: eventName,
+    [PostMessageStructKey.EventData]: eventData,
     [PostMessageStructKey.PeerId]: peerId,
   } = event.data;
 
@@ -107,10 +105,10 @@ worker.onmessage = (event) => {
       }
       delete messagePromises[messageId];
     }
-  } else if (envelopeType === EnvelopeType.ReceivedMessage) {
+  } else if (envelopeType === EnvelopeType.Event) {
     const room = roomMap.get(peerId);
     if (room) {
-      room.onMessageReceived(result);
+      room.emit(eventName, eventData);
     }
   }
 };

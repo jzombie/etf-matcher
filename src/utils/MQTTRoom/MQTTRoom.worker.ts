@@ -34,6 +34,15 @@ export default class MQTTRoomWorker extends EventEmitter {
     return buffer;
   }
 
+  protected _emitLocalHostEvent(eventName: string, eventData?: unknown) {
+    self.postMessage({
+      [PostMessageStructKey.PeerId]: this.peerId,
+      [PostMessageStructKey.EnvelopeType]: EnvelopeType.Event,
+      [PostMessageStructKey.EventName]: eventName,
+      [PostMessageStructKey.EventData]: eventData,
+    });
+  }
+
   protected _decodeBuffer(buffer: Buffer): string | Buffer | object {
     let data: Buffer | string;
 
@@ -89,41 +98,30 @@ export default class MQTTRoomWorker extends EventEmitter {
     this._mqttClient.subscribe(this._topicPresence);
     this._mqttClient.subscribe(this._topicMessages);
 
-    console.log({ mqttClient: this._mqttClient });
-
     this._mqttClient.on("connect", () => {
       this._announcePresence();
 
       this.emit("connect");
     });
 
-    this._mqttClient.on("disconnect", () => {});
+    this._mqttClient.on("disconnect", (data: mqtt.IDisconnectPacket) => {
+      this._emitLocalHostEvent("disconnect", data);
+    });
 
     this._mqttClient.on("message", (topic, buffer) => {
-      // TODO: Decode original data type if possible
-
-      console.log("received message", { topic, buffer });
-
       if (topic === this._topicMessages) {
         const data = this._decodeBuffer(buffer);
 
-        self.postMessage({
-          [PostMessageStructKey.EnvelopeType]: EnvelopeType.ReceivedMessage,
-          [PostMessageStructKey.PeerId]: this.peerId,
-          [PostMessageStructKey.Success]: true,
-          [PostMessageStructKey.Result]: data,
-          // [PostMessageStructKey.MessageId]: messageId,
-        });
+        this._emitLocalHostEvent("message", data);
       } else if (topic === this._topicPresence) {
-        // console.log("presence", buffer.toString());
+        // TODO: Handle
+
         console.log("presence", this._decodeBuffer(buffer));
       }
     });
 
     this._mqttClient.on("close", () => {
       // Emitted after a disconnection.
-
-      console.log("Connection closed");
 
       this.close();
     });
@@ -185,6 +183,7 @@ export default class MQTTRoomWorker extends EventEmitter {
     this._mqttClient.end();
 
     this.emit("close");
+    this._emitLocalHostEvent("close");
 
     this.removeAllListeners();
   }
