@@ -18,6 +18,46 @@ export default class MQTTRoomWorker extends EventEmitter {
   protected _topicMessages: string;
   protected _topicPresence: string;
 
+  protected _encodeBuffer(data: string | Buffer | object): Buffer {
+    let buffer: Buffer;
+    if (Buffer.isBuffer(data)) {
+      buffer = Buffer.concat([Buffer.from([0]), data]);
+    } else if (typeof data === "string") {
+      buffer = Buffer.concat([Buffer.from([1]), Buffer.from(data)]);
+    } else {
+      buffer = Buffer.concat([
+        Buffer.from([2]),
+        Buffer.from(JSON.stringify(data)),
+      ]);
+    }
+
+    return buffer;
+  }
+
+  protected _decodeBuffer(buffer: Buffer): string | Buffer | object {
+    let data: Buffer | string;
+
+    // First byte indicates the data type
+    if (buffer[0] === 0) {
+      // 0 indicates buffer type
+      data = buffer.subarray(1);
+    } else if (buffer[0] === 1) {
+      // 1 indicates string type
+      data = buffer.subarray(1).toString("utf-8");
+    } else if (buffer[0] === 2) {
+      // 2 indicates object, or other, type
+      data = JSON.parse(buffer.subarray(1).toString());
+    } else {
+      console.warn(
+        `Could not determine _decodeBuffer type from code: ${buffer[0]}`,
+      );
+
+      return JSON.stringify(buffer);
+    }
+
+    return data;
+  }
+
   constructor(brokerURL: string, roomName: string) {
     super();
 
@@ -40,9 +80,7 @@ export default class MQTTRoomWorker extends EventEmitter {
       // The LWT message includes the topic, payload, QoS level, and retain flag.
       will: {
         topic: this._topicPresence,
-        payload: Buffer.from(
-          JSON.stringify({ peerId: this.peerId, status: "leave" }),
-        ),
+        payload: this._encodeBuffer({ peerId: this.peerId, status: "leave" }),
         qos: 1,
         retain: false,
       },
@@ -66,24 +104,8 @@ export default class MQTTRoomWorker extends EventEmitter {
 
       console.log("received message", { topic, buffer });
 
-      // TODO: Handle `presence` differently
       if (topic === this._topicMessages) {
-        let data: Buffer | string;
-
-        // First byte indicates the data type
-        if (buffer[0] === 0) {
-          // 0 indicates buffer type
-          data = buffer.subarray(1);
-        } else if (buffer[0] === 1) {
-          // 1 indicates string type
-          data = buffer.subarray(1).toString("utf-8");
-        } else if (buffer[0] === 2) {
-          // 2 indicates object, or other, type
-          data = JSON.parse(buffer.subarray(1).toString());
-        } else {
-          console.warn("Unknown data type", buffer[0]);
-          return;
-        }
+        const data = this._decodeBuffer(buffer);
 
         self.postMessage({
           [PostMessageStructKey.EnvelopeType]: EnvelopeType.ReceivedMessage,
@@ -92,6 +114,9 @@ export default class MQTTRoomWorker extends EventEmitter {
           [PostMessageStructKey.Result]: data,
           // [PostMessageStructKey.MessageId]: messageId,
         });
+      } else if (topic === this._topicPresence) {
+        // console.log("presence", buffer.toString());
+        console.log("presence", this._decodeBuffer(buffer));
       }
     });
 
@@ -138,17 +163,7 @@ export default class MQTTRoomWorker extends EventEmitter {
 
   // TODO: Add optional `qos`?
   send(data: string | Buffer | object) {
-    let buffer: Buffer;
-    if (Buffer.isBuffer(data)) {
-      buffer = Buffer.concat([Buffer.from([0]), data]);
-    } else if (typeof data === "string") {
-      buffer = Buffer.concat([Buffer.from([1]), Buffer.from(data)]);
-    } else {
-      buffer = Buffer.concat([
-        Buffer.from([2]),
-        Buffer.from(JSON.stringify(data)),
-      ]);
-    }
+    const buffer = this._encodeBuffer(data);
 
     this._mqttClient.publish(this._topicMessages, buffer);
   }
@@ -156,7 +171,7 @@ export default class MQTTRoomWorker extends EventEmitter {
   protected _announcePresence() {
     this._mqttClient.publish(
       this._topicPresence,
-      JSON.stringify({ peerId: this.peerId, status: "join" }),
+      this._encodeBuffer({ peerId: this.peerId, status: "join" }),
       { qos: 1, retain: false },
     );
   }
