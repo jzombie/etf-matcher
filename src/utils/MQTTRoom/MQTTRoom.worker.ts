@@ -1,0 +1,292 @@
+import { Buffer } from "buffer";
+import EventEmitter from "events";
+import mqtt from "mqtt";
+import { v4 as uuidv4 } from "uuid";
+
+import { EnvelopeType, PostMessageStructKey } from "./MQTTRoom.sharedBindings";
+
+// TODO: Use as a static property in the worker
+const roomWorkerMap = new Map<MQTTRoomWorker["peerId"], MQTTRoomWorker>();
+
+export default class MQTTRoomWorker extends EventEmitter {
+  protected _mqttClient: mqtt.MqttClient;
+
+  public readonly brokerURL: string;
+  public readonly roomName: string;
+  public readonly peerId: string;
+
+  protected _topicMessages: string;
+  protected _topicPresence: string;
+
+  constructor(brokerURL: string, roomName: string) {
+    super();
+
+    this.peerId = uuidv4();
+    this.brokerURL = brokerURL;
+    this.roomName = roomName;
+
+    this._topicMessages = `${this.roomName}/messages`;
+    this._topicPresence = `${this.roomName}/presence`;
+
+    roomWorkerMap.set(this.peerId, this);
+    this.once("close", () => roomWorkerMap.delete(this.peerId));
+
+    this._mqttClient = mqtt.connect(brokerURL, {
+      // Known as "LWT" or (Last Will & Testament)
+      // In MQTT, the Last Will and Testament (LWT) is a message that is specified at the time of connection.
+      // It allows clients to notify other clients about an ungraceful disconnection.
+      // If a client disconnects unexpectedly, the broker will publish the LWT message to a specified topic.
+      // This feature is particularly useful for ensuring reliable communication and detecting failures in an IoT environment.
+      // The LWT message includes the topic, payload, QoS level, and retain flag.
+      will: {
+        topic: this._topicPresence,
+        payload: Buffer.from(
+          JSON.stringify({ peerId: this.peerId, status: "leave" }),
+        ),
+        qos: 1,
+        retain: false,
+      },
+    });
+
+    this._mqttClient.subscribe(this._topicPresence);
+    this._mqttClient.subscribe(this._topicMessages);
+
+    console.log({ mqttClient: this._mqttClient });
+
+    this._mqttClient.on("connect", () => {
+      this._announcePresence();
+
+      this.emit("connect");
+    });
+
+    this._mqttClient.on("disconnect", () => {});
+
+    this._mqttClient.on("message", (topic, buffer) => {
+      // TODO: Decode original data type if possible
+
+      console.log("received message", { topic, buffer });
+
+      // TODO: Handle `presence` differently
+      if (topic === this._topicMessages) {
+        let data: Buffer | string;
+
+        // First byte indicates the data type
+        if (buffer[0] === 0) {
+          // 0 indicates buffer type
+          data = buffer.subarray(1);
+        } else if (buffer[0] === 1) {
+          // 1 indicates string type
+          data = buffer.subarray(1).toString("utf-8");
+        } else if (buffer[0] === 2) {
+          // 2 indicates object, or other, type
+          data = JSON.parse(buffer.subarray(1).toString());
+        } else {
+          console.warn("Unknown data type", buffer[0]);
+          return;
+        }
+
+        self.postMessage({
+          [PostMessageStructKey.EnvelopeType]: EnvelopeType.ReceivedMessage,
+          [PostMessageStructKey.PeerId]: this.peerId,
+          [PostMessageStructKey.Success]: true,
+          [PostMessageStructKey.Result]: data,
+          // [PostMessageStructKey.MessageId]: messageId,
+        });
+      }
+    });
+
+    this._mqttClient.on("close", () => {
+      // Emitted after a disconnection.
+
+      console.log("Connection closed");
+
+      this.close();
+    });
+
+    this._mqttClient.on("reconnect", () => {
+      // Emitted when a reconnect starts.
+
+      console.log("Attempting to reconnect");
+    });
+
+    this._mqttClient.on("offline", () => {
+      // Emitted when the client goes offline.
+
+      console.log("Client is offline");
+    });
+
+    this._mqttClient.on("end", () => {
+      // Emitted when mqtt.Client#end() is called. If a callback was passed to mqtt.Client#end(),
+      // this event is emitted once the callback returns.
+
+      console.log("Client has disconnected");
+    });
+
+    this._mqttClient.on("error", (err) => {
+      // Emitted when the client cannot connect (i.e. connack rc != 0) or when a parsing error occurs.
+      //
+      // The following TLS errors will be emitted as an error event:
+      //
+      // ECONNREFUSED
+      // ECONNRESET
+      // EADDRINUSE
+      // ENOTFOUND
+
+      this.emit("error", err);
+    });
+  }
+
+  // TODO: Add optional `qos`?
+  send(data: string | Buffer | object) {
+    let buffer: Buffer;
+    if (Buffer.isBuffer(data)) {
+      buffer = Buffer.concat([Buffer.from([0]), data]);
+    } else if (typeof data === "string") {
+      buffer = Buffer.concat([Buffer.from([1]), Buffer.from(data)]);
+    } else {
+      buffer = Buffer.concat([
+        Buffer.from([2]),
+        Buffer.from(JSON.stringify(data)),
+      ]);
+    }
+
+    this._mqttClient.publish(this._topicMessages, buffer);
+  }
+
+  protected _announcePresence() {
+    this._mqttClient.publish(
+      this._topicPresence,
+      JSON.stringify({ peerId: this.peerId, status: "join" }),
+      { qos: 1, retain: false },
+    );
+  }
+
+  // TODO: Possibly make `async` and wait on connection to end (`this._mqttClient.endAsync`)
+  close() {
+    // TODO: Determine if already closing or has closed before proceeding
+
+    // https://github.com/mqttjs/MQTT.js?tab=readme-ov-file#mqttclientendforce-options-callback
+    this._mqttClient.end();
+
+    this.emit("close");
+
+    this.removeAllListeners();
+  }
+}
+
+const callQueue: CallQueueItem[] = [];
+
+interface CallQueueItem {
+  functionName: string;
+  args: unknown[];
+  resolve: (value?: unknown) => void;
+  reject: (reason?: unknown) => void;
+}
+
+async function handleWorkerConnection(
+  brokerURL: string,
+  roomName: string,
+  resolve: (value: unknown) => void,
+  reject: (reason?: unknown) => void,
+) {
+  const workerRoom = new MQTTRoomWorker(brokerURL, roomName);
+
+  const onError = (error: Error) => {
+    workerRoom.off("connect", onConnect);
+    reject(error);
+  };
+
+  const onConnect = () => {
+    workerRoom.off("error", onError);
+    resolve(workerRoom.peerId);
+  };
+
+  workerRoom.once("error", onError);
+  workerRoom.once("connect", onConnect);
+}
+
+async function processQueue() {
+  while (callQueue.length > 0) {
+    const queueItem = callQueue.shift();
+
+    if (queueItem) {
+      const { functionName, args, resolve, reject } = queueItem;
+
+      if (functionName === "connect-room") {
+        const brokerURL = args[0] as string;
+        const roomName = args[1] as string;
+
+        // TODO: Write helper function to handle the following scenario
+        // workerRoom.once("error", reject);
+        // workerRoom.once("connect", () => {
+        //   workerRoom.off("error", reject);
+        //   resolve(workerRoom.peerId);
+        // });
+
+        await handleWorkerConnection(brokerURL, roomName, resolve, reject);
+      } else if (functionName === "send") {
+        const peerId = args[0] as string;
+        const data = args[1] as string | Buffer;
+
+        const workerRoom = roomWorkerMap.get(peerId);
+
+        if (!workerRoom) {
+          reject(`Unhandled worker room`);
+        } else {
+          resolve(workerRoom.send(data));
+        }
+      }
+
+      // try {
+      //   await initializeWasm();
+      //   if (
+      //     typeof (wasmModule as { [key: string]: unknown })[functionName] !==
+      //     "function"
+      //   ) {
+      //     throw new Error(`Unknown function: ${functionName}`);
+      //   }
+      //   const result = await (
+      //     wasmModule as { [key: string]: CallableFunction }
+      //   )[functionName](...args);
+      //   resolve(result);
+      // } catch (error) {
+      //   customLogger.error(
+      //     `Worker encountered an error @ function "${functionName}" [${args.join(
+      //       ",",
+      //     )}]:`,
+      //     error,
+      //   );
+      //   reject(error);
+      // }
+    }
+  }
+}
+
+self.onmessage = async (event) => {
+  const { functionName, args, messageId } = event.data;
+
+  const promise = new Promise((resolve, reject) => {
+    callQueue.push({ functionName, args, resolve, reject });
+    if (callQueue.length === 1) {
+      processQueue();
+    }
+  });
+
+  promise
+    .then((result) => {
+      self.postMessage({
+        [PostMessageStructKey.EnvelopeType]: EnvelopeType.Function,
+        [PostMessageStructKey.Success]: true,
+        [PostMessageStructKey.Result]: result,
+        [PostMessageStructKey.MessageId]: messageId,
+      });
+    })
+    .catch((error) => {
+      self.postMessage({
+        [PostMessageStructKey.EnvelopeType]: EnvelopeType.Function,
+        [PostMessageStructKey.Success]: false,
+        [PostMessageStructKey.Error]: error.message,
+        [PostMessageStructKey.MessageId]: messageId,
+      });
+    });
+};
