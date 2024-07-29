@@ -8,6 +8,11 @@ import { EnvelopeType, PostMessageStructKey } from "./MQTTRoom.sharedBindings";
 // TODO: Use as a static property in the worker
 const roomWorkerMap = new Map<MQTTRoomWorker["peerId"], MQTTRoomWorker>();
 
+type Presence = {
+  peerId: string;
+  status: "join" | "here" | "rolecall" | "leave";
+};
+
 export default class MQTTRoomWorker extends EventEmitter {
   protected _mqttClient: mqtt.MqttClient;
 
@@ -20,7 +25,7 @@ export default class MQTTRoomWorker extends EventEmitter {
   protected _topicMessages: string;
   protected _topicPresence: string;
 
-  protected _encodeBuffer(data: string | Buffer | object): Buffer {
+  protected _encodeBuffer<T extends string | Buffer | object>(data: T): Buffer {
     let buffer: Buffer;
     if (Buffer.isBuffer(data)) {
       buffer = Buffer.concat([Buffer.from([0]), data]);
@@ -93,7 +98,10 @@ export default class MQTTRoomWorker extends EventEmitter {
       // The LWT message includes the topic, payload, QoS level, and retain flag.
       will: {
         topic: this._topicPresence,
-        payload: this._encodeBuffer({ peerId: this.peerId, status: "leave" }),
+        payload: this._encodeBuffer<Presence>({
+          peerId: this.peerId,
+          status: "leave",
+        }),
         qos: 1,
         retain: false,
       },
@@ -118,10 +126,7 @@ export default class MQTTRoomWorker extends EventEmitter {
 
         this._emitLocalHostEvent("message", data);
       } else if (topic === this._topicPresence) {
-        const data = this._decodeBuffer<{
-          peerId: string;
-          status: "join" | "here" | "rolecall" | "leave";
-        }>(buffer);
+        const data = this._decodeBuffer<Presence>(buffer);
 
         const { peerId, status } = data;
         if (peerId === this.peerId) {
@@ -196,11 +201,11 @@ export default class MQTTRoomWorker extends EventEmitter {
     this._mqttClient.publish(this._topicMessages, buffer);
   }
 
-  protected _announcePresence(status: "here" | "join" | "here") {
+  protected _announcePresence(status: Presence["status"]) {
     this._mqttClient.publish(
       this._topicPresence,
       // TODO: `status` could be `join` or `here` (if presence is reannounced)
-      this._encodeBuffer({ peerId: this.peerId, status }),
+      this._encodeBuffer<Presence>({ peerId: this.peerId, status }),
       { qos: 1, retain: false },
     );
   }
