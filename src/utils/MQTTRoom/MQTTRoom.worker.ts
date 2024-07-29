@@ -15,6 +15,8 @@ export default class MQTTRoomWorker extends EventEmitter {
   public readonly roomName: string;
   public readonly peerId: string;
 
+  public readonly peers: Set<string> = new Set();
+
   protected _topicMessages: string;
   protected _topicPresence: string;
 
@@ -43,7 +45,9 @@ export default class MQTTRoomWorker extends EventEmitter {
     });
   }
 
-  protected _decodeBuffer(buffer: Buffer): string | Buffer | object {
+  protected _decodeBuffer<T extends string | Buffer | object>(
+    buffer: Buffer,
+  ): T {
     let data: Buffer | string;
 
     // First byte indicates the data type
@@ -64,7 +68,7 @@ export default class MQTTRoomWorker extends EventEmitter {
       );
     }
 
-    return data;
+    return data as T;
   }
 
   constructor(brokerURL: string, roomName: string) {
@@ -114,13 +118,35 @@ export default class MQTTRoomWorker extends EventEmitter {
 
         this._emitLocalHostEvent("message", data);
       } else if (topic === this._topicPresence) {
-        // TODO: Handle
+        const data = this._decodeBuffer<{
+          peerId: string;
+          status: "join" | "here" | "rolecall" | "leave";
+        }>(buffer);
 
-        console.log("presence", this._decodeBuffer(buffer));
+        const { peerId, status } = data;
+        if (peerId === this.peerId) {
+          console.log("Ignoring local presence");
+        } else {
+          console.log("remote_presence", data);
 
-        // TODO: Implement logic to track the presence of peers in the room.
-        // As peer IDs are received, they should be recorded and added to the list of active peers, unless a peer has left.
-        // After a debounce period with no new IDs, the list should be verified with other peers to ensure accuracy and reach a consensus.
+          // TODO: Implement logic to track the presence of peers in the room.
+          // As peer IDs are received, they should be recorded and added to the list of active peers, unless a peer has left.
+          // After a debounce period with no new IDs, the list should be verified with other peers to ensure accuracy and reach a consensus.
+
+          if (["join", "here", "rolecall"].includes(status)) {
+            this.peers.add(peerId);
+
+            if (status !== "here") {
+              this._announcePresence("here");
+            }
+
+            console.log("remote peers", [...this.peers]);
+          } else if (status === "leave") {
+            this.peers.delete(peerId);
+
+            console.log("remote peers", [...this.peers]);
+          }
+        }
       }
     });
 
@@ -170,11 +196,11 @@ export default class MQTTRoomWorker extends EventEmitter {
     this._mqttClient.publish(this._topicMessages, buffer);
   }
 
-  protected _announcePresence(status: "here" | "join") {
+  protected _announcePresence(status: "here" | "join" | "here") {
     this._mqttClient.publish(
       this._topicPresence,
       // TODO: `status` could be `join` or `here` (if presence is reannounced)
-      this._encodeBuffer({ peerId: this.peerId, status: "join" }),
+      this._encodeBuffer({ peerId: this.peerId, status }),
       { qos: 1, retain: false },
     );
   }
