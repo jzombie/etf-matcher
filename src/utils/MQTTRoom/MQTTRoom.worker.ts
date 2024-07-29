@@ -48,11 +48,11 @@ export default class MQTTRoomWorker extends EventEmitter {
       // 2 indicates object, or other, type
       data = JSON.parse(buffer.subarray(1).toString());
     } else {
-      console.warn(
+      // This could be the case that another client has left a message (possibly
+      // a retained message) that doesn't match this schema.
+      throw new Error(
         `Could not determine _decodeBuffer type from code: ${buffer[0]}`,
       );
-
-      return JSON.stringify(buffer);
     }
 
     return data;
@@ -232,13 +232,6 @@ async function processQueue() {
         const brokerURL = args[0] as string;
         const roomName = args[1] as string;
 
-        // TODO: Write helper function to handle the following scenario
-        // workerRoom.once("error", reject);
-        // workerRoom.once("connect", () => {
-        //   workerRoom.off("error", reject);
-        //   resolve(workerRoom.peerId);
-        // });
-
         await handleWorkerConnection(brokerURL, roomName, resolve, reject);
       } else if (functionName === "send") {
         const peerId = args[0] as string;
@@ -252,28 +245,6 @@ async function processQueue() {
           resolve(workerRoom.send(data));
         }
       }
-
-      // try {
-      //   await initializeWasm();
-      //   if (
-      //     typeof (wasmModule as { [key: string]: unknown })[functionName] !==
-      //     "function"
-      //   ) {
-      //     throw new Error(`Unknown function: ${functionName}`);
-      //   }
-      //   const result = await (
-      //     wasmModule as { [key: string]: CallableFunction }
-      //   )[functionName](...args);
-      //   resolve(result);
-      // } catch (error) {
-      //   customLogger.error(
-      //     `Worker encountered an error @ function "${functionName}" [${args.join(
-      //       ",",
-      //     )}]:`,
-      //     error,
-      //   );
-      //   reject(error);
-      // }
     }
   }
 }

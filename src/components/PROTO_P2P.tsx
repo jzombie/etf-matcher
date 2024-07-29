@@ -14,7 +14,7 @@ export default function ProtoP2P() {
       <Button
         onClick={() => {
           // TODO: Refactor as necessary
-          const room = new MQTTRoom(BROKER_URL, "test-room");
+          const room = new MQTTRoom(BROKER_URL, "test-room2");
           room.on("message", (data) => {
             console.log("message", data);
           });
