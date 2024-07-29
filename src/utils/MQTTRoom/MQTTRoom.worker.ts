@@ -99,7 +99,7 @@ export default class MQTTRoomWorker extends EventEmitter {
     this._mqttClient.subscribe(this._topicMessages);
 
     this._mqttClient.on("connect", () => {
-      this._announcePresence();
+      this._announcePresence("join");
 
       this.emit("connect");
     });
@@ -117,6 +117,10 @@ export default class MQTTRoomWorker extends EventEmitter {
         // TODO: Handle
 
         console.log("presence", this._decodeBuffer(buffer));
+
+        // TODO: Implement logic to track the presence of peers in the room.
+        // As peer IDs are received, they should be recorded and added to the list of active peers, unless a peer has left.
+        // After a debounce period with no new IDs, the list should be verified with other peers to ensure accuracy and reach a consensus.
       }
     });
 
@@ -166,7 +170,7 @@ export default class MQTTRoomWorker extends EventEmitter {
     this._mqttClient.publish(this._topicMessages, buffer);
   }
 
-  protected _announcePresence() {
+  protected _announcePresence(status: "here" | "join") {
     this._mqttClient.publish(
       this._topicPresence,
       // TODO: `status` could be `join` or `here` (if presence is reannounced)
