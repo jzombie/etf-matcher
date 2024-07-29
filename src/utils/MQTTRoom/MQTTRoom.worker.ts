@@ -8,9 +8,16 @@ import { EnvelopeType, PostMessageStructKey } from "./MQTTRoom.sharedBindings";
 // TODO: Use as a static property in the worker
 const roomWorkerMap = new Map<MQTTRoomWorker["peerId"], MQTTRoomWorker>();
 
+enum PresenceStatus {
+  JOIN = "join",
+  HERE = "here",
+  CHECKIN = "checkin",
+  LEAVE = "leave",
+}
+
 type Presence = {
   peerId: string;
-  status: "join" | "here" | "rolecall" | "leave";
+  status: PresenceStatus;
 };
 
 export default class MQTTRoomWorker extends EventEmitter {
@@ -100,9 +107,9 @@ export default class MQTTRoomWorker extends EventEmitter {
         topic: this._topicPresence,
         payload: this._encodeBuffer<Presence>({
           peerId: this.peerId,
-          status: "leave",
+          status: PresenceStatus.LEAVE,
         }),
-        qos: 1,
+        qos: 2,
         retain: false,
       },
     });
@@ -111,7 +118,7 @@ export default class MQTTRoomWorker extends EventEmitter {
     this._mqttClient.subscribe(this._topicMessages);
 
     this._mqttClient.on("connect", () => {
-      this._announcePresence("join");
+      this._announcePresence(PresenceStatus.JOIN);
 
       this.emit("connect");
     });
@@ -138,18 +145,28 @@ export default class MQTTRoomWorker extends EventEmitter {
           // As peer IDs are received, they should be recorded and added to the list of active peers, unless a peer has left.
           // After a debounce period with no new IDs, the list should be verified with other peers to ensure accuracy and reach a consensus.
 
-          if (["join", "here", "rolecall"].includes(status)) {
+          if (
+            [
+              PresenceStatus.JOIN,
+              PresenceStatus.HERE,
+              PresenceStatus.CHECKIN,
+            ].includes(status)
+          ) {
             this.peers.add(peerId);
 
-            if (status !== "here") {
-              this._announcePresence("here");
+            if (status !== PresenceStatus.HERE) {
+              this._announcePresence(PresenceStatus.HERE);
             }
 
             console.log("remote peers", [...this.peers]);
-          } else if (status === "leave") {
+
+            // TODO: Emit event if remote has joined
+          } else if (status === PresenceStatus.LEAVE) {
             this.peers.delete(peerId);
 
             console.log("remote peers", [...this.peers]);
+
+            // TODO: Emit event if remote has left
           }
         }
       }
@@ -206,7 +223,7 @@ export default class MQTTRoomWorker extends EventEmitter {
       this._topicPresence,
       // TODO: `status` could be `join` or `here` (if presence is reannounced)
       this._encodeBuffer<Presence>({ peerId: this.peerId, status }),
-      { qos: 1, retain: false },
+      { qos: 2, retain: false },
     );
   }
 
