@@ -52,6 +52,7 @@ export default class MQTTRoom extends EventEmitter {
     console.log("connected...", this.peerId);
   }
 
+  // TODO: Add optional `retain` flag
   // TODO: Add optional `qos`?
   async send(data: string | Buffer | object) {
     if (Buffer.isBuffer(data)) {
