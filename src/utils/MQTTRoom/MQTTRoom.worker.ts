@@ -27,6 +27,7 @@ type Presence = {
   status: PresenceStatus;
 };
 
+// TODO: Determine when underlying socket has gone on or offline
 // TODO: Prevent "#", "+", and other non-desirable characters in subscriptions
 export default class MQTTRoomWorker extends EventEmitter {
   public static roomWorkerMap: Map<MQTTRoomWorker["peerId"], MQTTRoomWorker> =
@@ -232,12 +233,16 @@ export default class MQTTRoomWorker extends EventEmitter {
         // Emitted when a reconnect starts.
 
         console.log("Attempting to reconnect");
+
+        // TODO: Pipe to main
       });
 
       this._mqttClient.on("offline", () => {
         // Emitted when the client goes offline.
 
         console.log("Client is offline");
+
+        // TODO: Pipe to main
       });
 
       this._mqttClient.on("end", () => {
@@ -245,6 +250,8 @@ export default class MQTTRoomWorker extends EventEmitter {
         // this event is emitted once the callback returns.
 
         console.log("Client has disconnected");
+
+        // TODO: Pipe to main
       });
 
       this._mqttClient.on("error", (err) => {
