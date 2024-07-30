@@ -151,6 +151,7 @@ export default class MQTTRoomWorker extends EventEmitter {
           qos: 2,
           retain: false,
         },
+        keepalive: 10, // TODO: Make this configurable (default is 60)
       });
 
       this._mqttClient.subscribe(this._topicPresence);
