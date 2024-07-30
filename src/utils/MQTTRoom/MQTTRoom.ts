@@ -78,8 +78,8 @@ export default class MQTTRoom extends EventEmitter {
   }
 
   close() {
+    callMQTTRoomWorker("close", [this.peerId]);
     this.emit("close");
-
     this.removeAllListeners();
   }
 }

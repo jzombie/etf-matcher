@@ -28,6 +28,12 @@ export default function ProtoP2P() {
               console.log("peers", room.peers);
             });
           });
+
+          // setTimeout(() => {
+          //   console.warn("Automatically closing");
+
+          //   room.close();
+          // }, 10000);
         }}
       >
         Proto::new MQTTRoom()

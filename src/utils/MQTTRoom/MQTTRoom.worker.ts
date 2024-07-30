@@ -306,6 +306,14 @@ async function processQueue() {
         } else {
           resolve(workerRoom.send(data));
         }
+      } else if (functionName === "close") {
+        const peerId = args[0] as string;
+        const workerRoom = roomWorkerMap.get(peerId);
+        if (!workerRoom) {
+          reject(`Unhandled worker room`);
+        } else {
+          resolve(workerRoom.close());
+        }
       }
     }
   }
