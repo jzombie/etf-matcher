@@ -8,6 +8,11 @@ import { EnvelopeType, PostMessageStructKey } from "./MQTTRoom.sharedBindings";
 // TODO: Use as a static property in the worker
 const roomWorkerMap = new Map<MQTTRoomWorker["peerId"], MQTTRoomWorker>();
 
+type MessagePayload = {
+  peerId: string;
+  data: string | Buffer | object;
+};
+
 enum PresenceStatus {
   JOIN = "join",
   HERE = "here",
@@ -225,8 +230,12 @@ export default class MQTTRoomWorker extends EventEmitter {
 
   // TODO: Add optional `qos`?
   send(data: string | Buffer | object) {
-    // TODO: This should also include the sender!
-    const buffer = this._encodeBuffer(data);
+    const payload: MessagePayload = {
+      peerId: this.peerId,
+      data,
+    };
+
+    const buffer = this._encodeBuffer(payload);
 
     this._mqttClient.publish(this._topicMessages, buffer);
   }

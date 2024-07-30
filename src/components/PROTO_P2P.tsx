@@ -3,6 +3,7 @@ import React from "react";
 import { Button } from "@mui/material";
 
 import store from "@src/store";
+import { Buffer } from "buffer";
 
 import MQTTRoom from "@utils/MQTTRoom";
 
@@ -23,6 +24,7 @@ export default function ProtoP2P() {
             room.send("hello!");
             room.send({ foo: "bar" });
             room.send(store.getState(["tickerBuckets"]));
+            room.send(Buffer.from("Hello"));
 
             room.on("peersupdate", () => {
               console.log("peers", room.peers);
