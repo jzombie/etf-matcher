@@ -2,6 +2,7 @@ import { Buffer } from "buffer";
 import EventEmitter from "events";
 
 import { EnvelopeType, PostMessageStructKey } from "./MQTTRoom.sharedBindings";
+import validateTopic from "./validateTopic";
 
 const worker = new Worker(new URL("./MQTTRoom.worker", import.meta.url), {
   type: "module",
@@ -19,6 +20,10 @@ export default class MQTTRoom extends EventEmitter {
 
   constructor(brokerURL: string, roomName: string) {
     super();
+
+    if (!validateTopic(roomName)) {
+      throw new Error("Invalid room name");
+    }
 
     this._brokerURL = brokerURL;
     this._roomName = roomName;

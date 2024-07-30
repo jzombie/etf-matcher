@@ -4,6 +4,7 @@ import mqtt from "mqtt";
 import { v4 as uuidv4 } from "uuid";
 
 import { EnvelopeType, PostMessageStructKey } from "./MQTTRoom.sharedBindings";
+import validateTopic from "./validateTopic";
 
 // TODO: Use as a static property in the worker
 const roomWorkerMap = new Map<MQTTRoomWorker["peerId"], MQTTRoomWorker>();
@@ -25,17 +26,18 @@ type Presence = {
   status: PresenceStatus;
 };
 
+// TODO: Prevent "#", "+", and other non-desirable characters in subscriptions
 export default class MQTTRoomWorker extends EventEmitter {
-  protected _mqttClient: mqtt.MqttClient;
+  protected _mqttClient!: mqtt.MqttClient;
 
-  public readonly brokerURL: string;
-  public readonly roomName: string;
-  public readonly peerId: string;
+  public readonly brokerURL!: string;
+  public readonly roomName!: string;
+  public readonly peerId!: string;
 
   public readonly peers: Set<string> = new Set();
 
-  protected _topicMessages: string;
-  protected _topicPresence: string;
+  protected _topicMessages!: string;
+  protected _topicPresence!: string;
 
   protected _encodeBuffer<T extends string | Buffer | object>(data: T): Buffer {
     let buffer: Buffer;
@@ -112,137 +114,146 @@ export default class MQTTRoomWorker extends EventEmitter {
     this.brokerURL = brokerURL;
     this.roomName = roomName;
 
-    this._topicMessages = `${this.roomName}/messages`;
-    this._topicPresence = `${this.roomName}/presence`;
+    if (!validateTopic(roomName)) {
+      const error = new Error("Invalid room name");
+      this.emit("error", error);
 
-    roomWorkerMap.set(this.peerId, this);
-    this.once("close", () => roomWorkerMap.delete(this.peerId));
+      setTimeout(() => {
+        this.close();
+      });
+    } else {
+      this._topicMessages = `${this.roomName}/messages`;
+      this._topicPresence = `${this.roomName}/presence`;
 
-    this._mqttClient = mqtt.connect(brokerURL, {
-      // Known as "LWT" or (Last Will & Testament)
-      // In MQTT, the Last Will and Testament (LWT) is a message that is specified at the time of connection.
-      // It allows clients to notify other clients about an ungraceful disconnection.
-      // If a client disconnects unexpectedly, the broker will publish the LWT message to a specified topic.
-      // This feature is particularly useful for ensuring reliable communication and detecting failures in an IoT environment.
-      // The LWT message includes the topic, payload, QoS level, and retain flag.
-      will: {
-        topic: this._topicPresence,
-        payload: this._encodeBuffer<Presence>({
-          peerId: this.peerId,
-          status: PresenceStatus.LEAVE,
-        }),
-        qos: 2,
-        retain: false,
-      },
-    });
+      roomWorkerMap.set(this.peerId, this);
+      this.once("close", () => roomWorkerMap.delete(this.peerId));
 
-    this._mqttClient.subscribe(this._topicPresence);
-    this._mqttClient.subscribe(this._topicMessages);
+      this._mqttClient = mqtt.connect(brokerURL, {
+        // Known as "LWT" or (Last Will & Testament)
+        // In MQTT, the Last Will and Testament (LWT) is a message that is specified at the time of connection.
+        // It allows clients to notify other clients about an ungraceful disconnection.
+        // If a client disconnects unexpectedly, the broker will publish the LWT message to a specified topic.
+        // This feature is particularly useful for ensuring reliable communication and detecting failures in an IoT environment.
+        // The LWT message includes the topic, payload, QoS level, and retain flag.
+        will: {
+          topic: this._topicPresence,
+          payload: this._encodeBuffer<Presence>({
+            peerId: this.peerId,
+            status: PresenceStatus.LEAVE,
+          }),
+          qos: 2,
+          retain: false,
+        },
+      });
 
-    this._mqttClient.on("connect", () => {
-      this._announcePresence(PresenceStatus.JOIN);
+      this._mqttClient.subscribe(this._topicPresence);
+      this._mqttClient.subscribe(this._topicMessages);
 
-      this.emit("connect");
-    });
+      this._mqttClient.on("connect", () => {
+        this._announcePresence(PresenceStatus.JOIN);
 
-    this._mqttClient.on("disconnect", (data: mqtt.IDisconnectPacket) => {
-      this._emitLocalHostEvent("disconnect", data);
-    });
+        this.emit("connect");
+      });
 
-    this._mqttClient.on("message", (topic, buffer) => {
-      if (topic === this._topicMessages) {
-        const payload = this._decodeMessagePayload(buffer);
+      this._mqttClient.on("disconnect", (data: mqtt.IDisconnectPacket) => {
+        this._emitLocalHostEvent("disconnect", data);
+      });
 
-        // The message event now includes the peerId of the sender and the actual data
-        this._emitLocalHostEvent("message", payload);
-      } else if (topic === this._topicPresence) {
-        const data = this._decodeBuffer<Presence>(buffer);
+      this._mqttClient.on("message", (topic, buffer) => {
+        if (topic === this._topicMessages) {
+          const payload = this._decodeMessagePayload(buffer);
 
-        const { peerId, status } = data;
-        if (peerId === this.peerId) {
-          // Note: Regardless if the `presence` subscription is ignores local
-          // messages or not, this explicitly prevents processing them.
+          // The message event now includes the peerId of the sender and the actual data
+          this._emitLocalHostEvent("message", payload);
+        } else if (topic === this._topicPresence) {
+          const data = this._decodeBuffer<Presence>(buffer);
 
-          console.log("Ignoring local presence");
-        } else {
-          console.log("remote_presence", data);
+          const { peerId, status } = data;
+          if (peerId === this.peerId) {
+            // Note: Regardless if the `presence` subscription is ignores local
+            // messages or not, this explicitly prevents processing them.
 
-          let hasPeerUpdate = false;
+            console.log("Ignoring local presence");
+          } else {
+            console.log("remote_presence", data);
 
-          if (
-            [
-              PresenceStatus.JOIN,
-              PresenceStatus.HERE,
-              PresenceStatus.CHECKIN,
-            ].includes(status)
-          ) {
-            if (status !== PresenceStatus.HERE) {
-              this._announcePresence(PresenceStatus.HERE);
-            }
+            let hasPeerUpdate = false;
 
-            if (!this.peers.has(peerId)) {
-              this.peers.add(peerId);
-
-              if (status === PresenceStatus.JOIN) {
-                console.log("peer join", peerId);
-                this._emitLocalHostEvent("peerjoin", peerId);
+            if (
+              [
+                PresenceStatus.JOIN,
+                PresenceStatus.HERE,
+                PresenceStatus.CHECKIN,
+              ].includes(status)
+            ) {
+              if (status !== PresenceStatus.HERE) {
+                this._announcePresence(PresenceStatus.HERE);
               }
 
+              if (!this.peers.has(peerId)) {
+                this.peers.add(peerId);
+
+                if (status === PresenceStatus.JOIN) {
+                  console.log("peer join", peerId);
+                  this._emitLocalHostEvent("peerjoin", peerId);
+                }
+
+                hasPeerUpdate = true;
+              }
+            } else if (status === PresenceStatus.LEAVE) {
+              console.log("peer leave", peerId);
+
+              this.peers.delete(peerId);
+              this._emitLocalHostEvent("peerleave", peerId);
               hasPeerUpdate = true;
             }
-          } else if (status === PresenceStatus.LEAVE) {
-            console.log("peer leave", peerId);
 
-            this.peers.delete(peerId);
-            this._emitLocalHostEvent("peerleave", peerId);
-            hasPeerUpdate = true;
-          }
-
-          if (hasPeerUpdate) {
-            console.log("remote peers", [...this.peers]);
-            this._emitLocalHostEvent("peersupdate", [...this.peers]);
+            if (hasPeerUpdate) {
+              console.log("remote peers", [...this.peers]);
+              this._emitLocalHostEvent("peersupdate", [...this.peers]);
+            }
           }
         }
-      }
-    });
+      });
 
-    this._mqttClient.on("close", () => {
-      // Emitted after a disconnection.
+      this._mqttClient.on("close", () => {
+        // Emitted after a disconnection.
 
-      this.close();
-    });
+        this.close();
+      });
 
-    this._mqttClient.on("reconnect", () => {
-      // Emitted when a reconnect starts.
+      this._mqttClient.on("reconnect", () => {
+        // Emitted when a reconnect starts.
 
-      console.log("Attempting to reconnect");
-    });
+        console.log("Attempting to reconnect");
+      });
 
-    this._mqttClient.on("offline", () => {
-      // Emitted when the client goes offline.
+      this._mqttClient.on("offline", () => {
+        // Emitted when the client goes offline.
 
-      console.log("Client is offline");
-    });
+        console.log("Client is offline");
+      });
 
-    this._mqttClient.on("end", () => {
-      // Emitted when mqtt.Client#end() is called. If a callback was passed to mqtt.Client#end(),
-      // this event is emitted once the callback returns.
+      this._mqttClient.on("end", () => {
+        // Emitted when mqtt.Client#end() is called. If a callback was passed to mqtt.Client#end(),
+        // this event is emitted once the callback returns.
 
-      console.log("Client has disconnected");
-    });
+        console.log("Client has disconnected");
+      });
 
-    this._mqttClient.on("error", (err) => {
-      // Emitted when the client cannot connect (i.e. connack rc != 0) or when a parsing error occurs.
-      //
-      // The following TLS errors will be emitted as an error event:
-      //
-      // ECONNREFUSED
-      // ECONNRESET
-      // EADDRINUSE
-      // ENOTFOUND
+      this._mqttClient.on("error", (err) => {
+        // Emitted when the client cannot connect (i.e. connack rc != 0) or when a parsing error occurs.
+        //
+        // The following TLS errors will be emitted as an error event:
+        //
+        // ECONNREFUSED
+        // ECONNRESET
+        // EADDRINUSE
+        // ENOTFOUND
 
-      this.emit("error", err);
-    });
+        this.emit("error", err);
+      });
+    }
   }
 
   // TODO: Add optional `qos`?
@@ -271,7 +282,9 @@ export default class MQTTRoomWorker extends EventEmitter {
     // TODO: Determine if already closing or has closed before proceeding
 
     // https://github.com/mqttjs/MQTT.js?tab=readme-ov-file#mqttclientendforce-options-callback
-    this._mqttClient.end();
+    if (this._mqttClient) {
+      this._mqttClient.end();
+    }
 
     this.emit("close");
     this._emitLocalHostEvent("close");
