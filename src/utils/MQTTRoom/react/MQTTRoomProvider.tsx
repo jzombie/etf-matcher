@@ -1,5 +1,4 @@
-// MQTTRoomContext.tsx
-import React, { ReactNode, createContext, useContext, useState } from "react";
+import React, { ReactNode, createContext, useState } from "react";
 
 import { Buffer } from "buffer";
 
@@ -15,13 +14,15 @@ interface MQTTRoomContextProps {
   isValidRoomName: (roomName: string) => boolean;
 }
 
-const MQTTRoomContext = createContext<MQTTRoomContextProps | undefined>(
+export const MQTTRoomContext = createContext<MQTTRoomContextProps | undefined>(
   undefined,
 );
 
-export const MQTTRoomProvider: React.FC<{ children: ReactNode }> = ({
+export default function MQTTRoomProvider({
   children,
-}) => {
+}: {
+  children: ReactNode;
+}) {
   const [rooms, setRooms] = useState<Record<string, MQTTRoom>>({});
   const [connectedRooms, setConnectedRooms] = useState<string[]>([]);
 
@@ -86,15 +87,4 @@ export const MQTTRoomProvider: React.FC<{ children: ReactNode }> = ({
       {children}
     </MQTTRoomContext.Provider>
   );
-};
-
-// TODO: Extract
-export const useMQTTRoomContext = () => {
-  const context = useContext(MQTTRoomContext);
-  if (!context) {
-    throw new Error(
-      "useMQTTRoomContext must be used within a MQTTRoomProvider",
-    );
-  }
-  return context;
-};
+}

@@ -14,7 +14,7 @@ import { TickerContainerProvider } from "@components/TickerContainer";
 
 import useGAPageTracking from "@hooks/useGAPageTracking";
 
-import { MQTTRoomProvider } from "@utils/MQTTRoom/react/MQTTRoomProvider";
+import MQTTRoomProvider from "@utils/MQTTRoom/react/MQTTRoomProvider";
 
 import router from "./router";
 

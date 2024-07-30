@@ -5,7 +5,7 @@ import { Button, TextField } from "@mui/material";
 import AutoScaler from "@layoutKit/AutoScaler";
 import store from "@src/store";
 
-import { useMQTTRoomContext } from "@utils/MQTTRoom/react/MQTTRoomProvider";
+import { useMQTTRoomContext } from "@utils/MQTTRoom/react";
 
 // Import MQTTRoomContext and MQTTRoomProvider
 
