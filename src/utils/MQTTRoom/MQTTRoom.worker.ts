@@ -49,8 +49,15 @@ export default class MQTTRoomWorker extends EventEmitter {
         Buffer.from(JSON.stringify(data)),
       ]);
     }
-
     return buffer;
+  }
+
+  protected _encodeMessagePayload(payload: MessagePayload): Buffer {
+    const dataBuffer = this._encodeBuffer(payload.data);
+    const peerIdBuffer = Buffer.from(payload.peerId, "utf-8");
+    const peerIdLengthBuffer = Buffer.from([peerIdBuffer.length]);
+
+    return Buffer.concat([peerIdLengthBuffer, peerIdBuffer, dataBuffer]);
   }
 
   protected _emitLocalHostEvent(eventName: string, eventData?: unknown) {
@@ -86,6 +93,16 @@ export default class MQTTRoomWorker extends EventEmitter {
     }
 
     return data as T;
+  }
+
+  protected _decodeMessagePayload(buffer: Buffer): MessagePayload {
+    const peerIdLength = buffer[0];
+    const peerId = buffer.subarray(1, 1 + peerIdLength).toString("utf-8");
+    const dataBuffer = buffer.subarray(1 + peerIdLength);
+
+    const data = this._decodeBuffer(dataBuffer);
+
+    return { peerId, data };
   }
 
   constructor(brokerURL: string, roomName: string) {
@@ -134,17 +151,17 @@ export default class MQTTRoomWorker extends EventEmitter {
 
     this._mqttClient.on("message", (topic, buffer) => {
       if (topic === this._topicMessages) {
-        const data = this._decodeBuffer(buffer);
+        const payload = this._decodeMessagePayload(buffer);
 
-        // TODO: The message event needs to know the sender!
-        this._emitLocalHostEvent("message", data);
+        // The message event now includes the peerId of the sender and the actual data
+        this._emitLocalHostEvent("message", payload);
       } else if (topic === this._topicPresence) {
         const data = this._decodeBuffer<Presence>(buffer);
 
         const { peerId, status } = data;
         if (peerId === this.peerId) {
           // Note: Regardless if the `presence` subscription is ignores local
-          // messages or not, this explicity prevents processing them.
+          // messages or not, this explicitly prevents processing them.
 
           console.log("Ignoring local presence");
         } else {
@@ -235,7 +252,7 @@ export default class MQTTRoomWorker extends EventEmitter {
       data,
     };
 
-    const buffer = this._encodeBuffer(payload);
+    const buffer = this._encodeMessagePayload(payload);
 
     this._mqttClient.publish(this._topicMessages, buffer);
   }

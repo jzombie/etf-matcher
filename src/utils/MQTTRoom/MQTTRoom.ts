@@ -58,6 +58,12 @@ export default class MQTTRoom extends EventEmitter {
 
   // TODO: Add optional `qos`?
   async send(data: string | Buffer | object) {
+    if (Buffer.isBuffer(data)) {
+      data = {
+        type: "Buffer",
+        data: Array.from(data),
+      };
+    }
     await callMQTTRoomWorker("send", [this.peerId, data]);
   }
 
@@ -100,7 +106,6 @@ worker.onmessage = (event) => {
     [PostMessageStructKey.Error]: error,
     [PostMessageStructKey.EnvelopeType]: envelopeType,
     [PostMessageStructKey.EventName]: eventName,
-    [PostMessageStructKey.EventData]: eventData,
     [PostMessageStructKey.PeerId]: peerId,
   } = event.data;
 
@@ -117,8 +122,19 @@ worker.onmessage = (event) => {
   } else if (envelopeType === EnvelopeType.Event) {
     const room = roomMap.get(peerId);
     if (room) {
+      let { [PostMessageStructKey.EventData]: eventData } = event.data;
+
       if (eventName === "peersupdate") {
         room.onPeersUpdated(eventData);
+      }
+
+      // Deserialize Buffer if necessary
+      if (
+        eventData &&
+        eventData.type === "Buffer" &&
+        Array.isArray(eventData.data)
+      ) {
+        eventData = Buffer.from(eventData.data);
       }
 
       console.log({ eventName, eventData });
