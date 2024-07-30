@@ -32,6 +32,11 @@ export default function ProtoP2P() {
 
     newRoom.once("connect", () => {
       setConnected(true);
+
+      newRoom.on("message", (data) => {
+        console.log(data);
+      });
+
       newRoom.send("hello!");
       newRoom.send({ foo: "bar" });
       newRoom.send(store.getState(["tickerBuckets"]));

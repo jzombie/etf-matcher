@@ -27,6 +27,8 @@ type Presence = {
   status: PresenceStatus;
 };
 
+const USERNAME = import.meta.env.VITE_MQTT_BROKER_USERNAME;
+
 // TODO: Determine when underlying socket has gone on or offline
 // TODO: Prevent "#", "+", and other non-desirable characters in subscriptions
 export default class MQTTRoomWorker extends EventEmitter {
@@ -43,6 +45,7 @@ export default class MQTTRoomWorker extends EventEmitter {
 
   protected _topicMessages!: string;
   protected _topicPresence!: string;
+  protected _hasClosedBeenInvoked: boolean = false;
 
   protected _encodeBuffer<T extends string | Buffer | object>(data: T): Buffer {
     let buffer: Buffer;
@@ -112,6 +115,14 @@ export default class MQTTRoomWorker extends EventEmitter {
     return { peerId, data };
   }
 
+  // Note: Independent statuses could be used depending on the reason
+  protected _makeLWTPayload() {
+    return this._encodeBuffer<Presence>({
+      peerId: this.peerId,
+      status: PresenceStatus.LEAVE,
+    });
+  }
+
   constructor(brokerURL: string, roomName: string) {
     super();
 
@@ -144,16 +155,15 @@ export default class MQTTRoomWorker extends EventEmitter {
         // The LWT message includes the topic, payload, QoS level, and retain flag.
         will: {
           topic: this._topicPresence,
-          payload: this._encodeBuffer<Presence>({
-            peerId: this.peerId,
-            status: PresenceStatus.LEAVE,
-          }),
+          payload: this._makeLWTPayload(),
           qos: 2,
           retain: false,
         },
         keepalive: 10, // TODO: Make this configurable (default is 60)
+        username: USERNAME,
       });
 
+      // Handle subscriptions
       this._mqttClient.subscribe(this._topicPresence);
       this._mqttClient.subscribe(this._topicMessages);
 
@@ -294,10 +304,22 @@ export default class MQTTRoomWorker extends EventEmitter {
 
   // TODO: Possibly make `async` and wait on connection to end (`this._mqttClient.endAsync`)
   close() {
+    if (this._hasClosedBeenInvoked) {
+      return;
+    } else {
+      this._hasClosedBeenInvoked = true;
+    }
+
     // TODO: Determine if already closing or has closed before proceeding
 
     // https://github.com/mqttjs/MQTT.js?tab=readme-ov-file#mqttclientendforce-options-callback
     if (this._mqttClient) {
+      // Let the other clients know that we're disconnecting
+      this._mqttClient.publish(this._topicPresence, this._makeLWTPayload(), {
+        qos: 2,
+        retain: false,
+      });
+
       this._mqttClient.end();
     }
 
