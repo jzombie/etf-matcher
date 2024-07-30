@@ -8,10 +8,9 @@ const worker = new Worker(new URL("./MQTTRoom.worker", import.meta.url), {
   type: "module",
 });
 
-// TODO: Use as a static property
-const roomMap = new Map<MQTTRoom["peerId"], MQTTRoom>();
-
 export default class MQTTRoom extends EventEmitter {
+  public static roomMap: Map<MQTTRoom["peerId"], MQTTRoom> = new Map();
+
   protected _peerId!: string;
   protected _peers: string[] = [];
   protected _brokerURL: string;
@@ -28,9 +27,6 @@ export default class MQTTRoom extends EventEmitter {
     this._brokerURL = brokerURL;
     this._roomName = roomName;
 
-    // TODO: Enable this
-    // worker.postMessage();
-
     this._connect();
   }
 
@@ -45,8 +41,8 @@ export default class MQTTRoom extends EventEmitter {
     this._peerId = peerId;
 
     // Register with room map
-    roomMap.set(this.peerId, this);
-    this.once("close", () => roomMap.delete(this.peerId));
+    MQTTRoom.roomMap.set(this.peerId, this);
+    this.once("close", () => MQTTRoom.roomMap.delete(this.peerId));
 
     console.log("after connect");
 
@@ -125,7 +121,7 @@ worker.onmessage = (event) => {
       delete messagePromises[messageId];
     }
   } else if (envelopeType === EnvelopeType.Event) {
-    const room = roomMap.get(peerId);
+    const room = MQTTRoom.roomMap.get(peerId);
     if (room) {
       let { [PostMessageStructKey.EventData]: eventData } = event.data;
 

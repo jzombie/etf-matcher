@@ -6,9 +6,6 @@ import { v4 as uuidv4 } from "uuid";
 import { EnvelopeType, PostMessageStructKey } from "./MQTTRoom.sharedBindings";
 import validateTopic from "./validateTopic";
 
-// TODO: Use as a static property in the worker
-const roomWorkerMap = new Map<MQTTRoomWorker["peerId"], MQTTRoomWorker>();
-
 type MessagePayload = {
   peerId: string;
   data: string | Buffer | object;
@@ -28,6 +25,9 @@ type Presence = {
 
 // TODO: Prevent "#", "+", and other non-desirable characters in subscriptions
 export default class MQTTRoomWorker extends EventEmitter {
+  public static roomWorkerMap: Map<MQTTRoomWorker["peerId"], MQTTRoomWorker> =
+    new Map();
+
   protected _mqttClient!: mqtt.MqttClient;
 
   public readonly brokerURL!: string;
@@ -125,8 +125,10 @@ export default class MQTTRoomWorker extends EventEmitter {
       this._topicMessages = `${this.roomName}/messages`;
       this._topicPresence = `${this.roomName}/presence`;
 
-      roomWorkerMap.set(this.peerId, this);
-      this.once("close", () => roomWorkerMap.delete(this.peerId));
+      MQTTRoomWorker.roomWorkerMap.set(this.peerId, this);
+      this.once("close", () =>
+        MQTTRoomWorker.roomWorkerMap.delete(this.peerId),
+      );
 
       this._mqttClient = mqtt.connect(brokerURL, {
         // Known as "LWT" or (Last Will & Testament)
@@ -340,7 +342,7 @@ async function processQueue() {
         const peerId = args[0] as string;
         const data = args[1] as string | Buffer;
 
-        const workerRoom = roomWorkerMap.get(peerId);
+        const workerRoom = MQTTRoomWorker.roomWorkerMap.get(peerId);
 
         if (!workerRoom) {
           reject(`Unhandled worker room`);
@@ -349,7 +351,7 @@ async function processQueue() {
         }
       } else if (functionName === "close") {
         const peerId = args[0] as string;
-        const workerRoom = roomWorkerMap.get(peerId);
+        const workerRoom = MQTTRoomWorker.roomWorkerMap.get(peerId);
         if (!workerRoom) {
           reject(`Unhandled worker room`);
         } else {
