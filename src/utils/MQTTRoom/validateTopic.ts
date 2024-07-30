@@ -18,6 +18,11 @@ export default function validateTopic(topic: string): boolean {
     return false;
   }
 
+  // Don't allow meta channels
+  if (topic.endsWith("/presence") || topic.endsWith("/messages")) {
+    return false;
+  }
+
   // Split the topic into levels
   const levels = topic.split("/");
 

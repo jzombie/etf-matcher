@@ -3,6 +3,17 @@ import { describe, expect, it } from "vitest";
 import validateTopic from "./validateTopic";
 
 describe("validateTopic", () => {
+  it("should return false for meta channels", () => {
+    expect(validateTopic("funky-room/presence")).toBe(false);
+    expect(validateTopic("funky-room/messages")).toBe(false);
+
+    expect(validateTopic("funky/room/presence")).toBe(false);
+    expect(validateTopic("funky/room/messages")).toBe(false);
+
+    expect(validateTopic("funky-room")).toBe(true);
+    expect(validateTopic("funky/room")).toBe(true);
+  });
+
   it("should return true for a valid topic", () => {
     expect(validateTopic("home/kitchen/temperature")).toBe(true);
   });
