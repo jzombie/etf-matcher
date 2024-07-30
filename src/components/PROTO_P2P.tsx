@@ -4,73 +4,36 @@ import { Button, TextField } from "@mui/material";
 
 import AutoScaler from "@layoutKit/AutoScaler";
 import store from "@src/store";
-import { Buffer } from "buffer";
 
-import MQTTRoom, { validateTopic } from "@utils/MQTTRoom";
+import { useMQTTRoomContext } from "@utils/MQTTRoom/react/MQTTRoomProvider";
 
-const BROKER_URL = import.meta.env.VITE_MQTT_BROKER_URL;
+// Import MQTTRoomContext and MQTTRoomProvider
 
 export default function ProtoP2P() {
   const [qrCode, setQRCode] = useState<string | null>(null);
   const [roomName, setRoomName] = useState<string>("");
-  const [room, setRoom] = useState<MQTTRoom | null>(null);
-  const [connected, setConnected] = useState<boolean>(false);
+  const { connectToRoom, disconnectFromRoom, connectedRooms, isValidRoomName } =
+    useMQTTRoomContext();
   const [isValid, setIsValid] = useState<boolean>(true);
 
-  const handleConnect = () => {
-    if (!roomName || !validateTopic(roomName)) {
+  const handleConnect = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!roomName || !isValidRoomName(roomName)) {
       console.error("Invalid room name");
       return;
     }
-
-    const newRoom = new MQTTRoom(BROKER_URL, roomName);
-    setRoom(newRoom);
-
-    newRoom.on("message", (data) => {
-      console.log("message", data);
-    });
-
-    newRoom.once("connect", () => {
-      setConnected(true);
-
-      newRoom.on("message", (data) => {
-        console.log(data);
-      });
-
-      newRoom.send("hello!");
-      newRoom.send({ foo: "bar" });
-      newRoom.send(store.getState(["tickerBuckets"]));
-      newRoom.send(Buffer.from("Hello"));
-
-      newRoom.on("peersupdate", () => {
-        console.log("peers", newRoom.peers);
-      });
-
-      newRoom.on("close", () => {
-        setConnected(false);
-        console.log("closed");
-      });
-    });
-
-    // setTimeout(() => {
-    //   console.warn("Automatically closing");
-
-    //   room.close();
-    // }, 10000);
+    connectToRoom(roomName);
+    setRoomName(""); // Clear the input after connecting
   };
 
-  const handleDisconnect = () => {
-    if (room) {
-      room.close();
-      setRoom(null);
-      setConnected(false);
-    }
+  const handleDisconnect = (roomName: string) => {
+    disconnectFromRoom(roomName);
   };
 
   const handleRoomNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setRoomName(value);
-    setIsValid(validateTopic(value));
+    setIsValid(isValidRoomName(value));
   };
 
   return (
@@ -87,31 +50,39 @@ export default function ProtoP2P() {
         PROTO::generateQRCode(&quot;Hello World&quot;)
       </Button>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleConnect();
-        }}
-      >
+      <form onSubmit={handleConnect}>
         <TextField
           label="Room Name"
           value={roomName}
           onChange={handleRoomNameChange}
           variant="outlined"
           style={{ margin: "10px 0" }}
-          disabled={connected}
+          disabled={false}
         />
 
-        <Button type="submit" disabled={!roomName || !isValid || connected}>
+        <Button type="submit" disabled={!roomName || !isValid}>
           Connect
         </Button>
-
-        {connected && (
-          <Button onClick={handleDisconnect} color="secondary">
-            Disconnect
-          </Button>
-        )}
       </form>
+
+      {connectedRooms.length > 0 && (
+        <div>
+          <h3>Connected Rooms:</h3>
+          <ul>
+            {connectedRooms.map((room) => (
+              <li key={room}>
+                {room}{" "}
+                <Button
+                  onClick={() => handleDisconnect(room)}
+                  color="secondary"
+                >
+                  Disconnect
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {qrCode && (
         <AutoScaler style={{ width: 100, height: 100 }}>

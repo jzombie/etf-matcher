@@ -14,6 +14,8 @@ import { TickerContainerProvider } from "@components/TickerContainer";
 
 import useGAPageTracking from "@hooks/useGAPageTracking";
 
+import { MQTTRoomProvider } from "@utils/MQTTRoom/react/MQTTRoomProvider";
+
 import router from "./router";
 
 const darkTheme = createTheme({
@@ -77,11 +79,13 @@ export default function App() {
   useGAPageTracking();
 
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
-      <TickerContainerProvider>
-        <RouterProvider router={router} />
-      </TickerContainerProvider>
-    </ThemeProvider>
+    <MQTTRoomProvider>
+      <ThemeProvider theme={darkTheme}>
+        <CssBaseline />
+        <TickerContainerProvider>
+          <RouterProvider router={router} />
+        </TickerContainerProvider>
+      </ThemeProvider>
+    </MQTTRoomProvider>
   );
 }
