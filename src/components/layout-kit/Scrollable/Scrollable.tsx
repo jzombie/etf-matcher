@@ -12,6 +12,9 @@ export type ScrollableProps = HTMLAttributes<HTMLDivElement> & {
   resetTrigger?: unknown;
 };
 
+/**
+ * The Scrollable component enables scrolling on its X and / or Y axis.
+ */
 const Scrollable = React.forwardRef<HTMLDivElement, ScrollableProps>(
   (
     {

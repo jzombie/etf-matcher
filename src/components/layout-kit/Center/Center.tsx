@@ -9,6 +9,10 @@ export type CenterProps = HTMLAttributes<HTMLDivElement> & {
   className?: string;
 };
 
+/**
+ * The Center component vertically and horizontally centers the child
+ * components.
+ */
 const Center = forwardRef<HTMLDivElement, CenterProps>(
   ({ children, className, ...rest }, ref) => {
     return (
