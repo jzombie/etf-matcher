@@ -1,17 +1,72 @@
 import React, { useState } from "react";
 
-import { Button } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 
 import AutoScaler from "@layoutKit/AutoScaler";
 import store from "@src/store";
 import { Buffer } from "buffer";
 
-import MQTTRoom from "@utils/MQTTRoom";
+import MQTTRoom, { validateTopic } from "@utils/MQTTRoom";
 
 const BROKER_URL = import.meta.env.VITE_MQTT_BROKER_URL;
 
 export default function ProtoP2P() {
   const [qrCode, setQRCode] = useState<string | null>(null);
+  const [roomName, setRoomName] = useState<string>("");
+  const [room, setRoom] = useState<MQTTRoom | null>(null);
+  const [connected, setConnected] = useState<boolean>(false);
+  const [isValid, setIsValid] = useState<boolean>(true);
+
+  const handleConnect = () => {
+    if (!roomName || !validateTopic(roomName)) {
+      console.error("Invalid room name");
+      return;
+    }
+
+    const newRoom = new MQTTRoom(BROKER_URL, roomName);
+    setRoom(newRoom);
+
+    newRoom.on("message", (data) => {
+      console.log("message", data);
+    });
+
+    newRoom.once("connect", () => {
+      setConnected(true);
+      newRoom.send("hello!");
+      newRoom.send({ foo: "bar" });
+      newRoom.send(store.getState(["tickerBuckets"]));
+      newRoom.send(Buffer.from("Hello"));
+
+      newRoom.on("peersupdate", () => {
+        console.log("peers", newRoom.peers);
+      });
+
+      newRoom.on("close", () => {
+        setConnected(false);
+        console.log("closed");
+      });
+    });
+
+    // setTimeout(() => {
+    //   console.warn("Automatically closing");
+
+    //   room.close();
+    // }, 10000);
+  };
+
+  const handleDisconnect = () => {
+    if (room) {
+      room.close();
+      setRoom(null);
+      setConnected(false);
+    }
+  };
+
+  const handleRoomNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setRoomName(value);
+    setIsValid(validateTopic(value));
+  };
 
   return (
     <div>
@@ -27,34 +82,31 @@ export default function ProtoP2P() {
         PROTO::generateQRCode(&quot;Hello World&quot;)
       </Button>
 
-      <Button
-        onClick={() => {
-          // TODO: Refactor as necessary
-          const room = new MQTTRoom(BROKER_URL, "test-room2");
-          room.on("message", (data) => {
-            console.log("message", data);
-          });
-
-          room.once("connect", () => {
-            room.send("hello!");
-            room.send({ foo: "bar" });
-            room.send(store.getState(["tickerBuckets"]));
-            room.send(Buffer.from("Hello"));
-
-            room.on("peersupdate", () => {
-              console.log("peers", room.peers);
-            });
-          });
-
-          // setTimeout(() => {
-          //   console.warn("Automatically closing");
-
-          //   room.close();
-          // }, 10000);
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleConnect();
         }}
       >
-        Proto::new MQTTRoom()
-      </Button>
+        <TextField
+          label="Room Name"
+          value={roomName}
+          onChange={handleRoomNameChange}
+          variant="outlined"
+          style={{ margin: "10px 0" }}
+          disabled={connected}
+        />
+
+        <Button type="submit" disabled={!roomName || !isValid || connected}>
+          Connect
+        </Button>
+
+        {connected && (
+          <Button onClick={handleDisconnect} color="secondary">
+            Disconnect
+          </Button>
+        )}
+      </form>
 
       {qrCode && (
         <AutoScaler style={{ width: 100, height: 100 }}>
@@ -63,43 +115,4 @@ export default function ProtoP2P() {
       )}
     </div>
   );
-
-  // const { clientRef, selfId, messages, totalPeers } = useMQTTRoom();
-
-  // const [messageContent, setMessageContent] = useState<string>("");
-
-  // const handleSendMessage = () => {
-  //   const client = clientRef.current;
-
-  //   if (client) {
-  //     client.publish(
-  //       "test_room_etf_matcher/messages",
-  //       JSON.stringify({ message: messageContent, peerId: selfId }),
-  //       { qos: 1 },
-  //     );
-  //     console.log("Message sent: ", messageContent);
-  //     setMessageContent(""); // Clear the input field after sending
-  //   }
-  // };
-
-  // return (
-  //   <div>
-  //     <TextField
-  //       label="Message Content"
-  //       variant="outlined"
-  //       value={messageContent}
-  //       onChange={(e) => setMessageContent(e.target.value)}
-  //     />
-  //     <Button onClick={handleSendMessage}>Send Message</Button>
-  //     <div>Total Peers: {totalPeers}</div>
-  //     <div>
-  //       <Typography variant="h6">Messages:</Typography>
-  //       {messages.map((message, index) => (
-  //         <Typography key={index} variant="body1">
-  //           <strong>{message.peerId}:</strong> {message.content}
-  //         </Typography>
-  //       ))}
-  //     </div>
-  //   </div>
-  // );
 }
