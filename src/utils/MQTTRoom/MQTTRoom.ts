@@ -1,7 +1,11 @@
 import { Buffer } from "buffer";
 import EventEmitter from "events";
 
-import { EnvelopeType, PostMessageStructKey } from "./MQTTRoom.sharedBindings";
+import {
+  EnvelopeType,
+  PostMessageStructKey,
+  SendOptions,
+} from "./MQTTRoom.sharedBindings";
 import validateTopic from "./validateTopic";
 
 const worker = new Worker(new URL("./MQTTRoom.worker", import.meta.url), {
@@ -54,14 +58,14 @@ export default class MQTTRoom extends EventEmitter {
 
   // TODO: Add optional `retain` flag
   // TODO: Add optional `qos`?
-  async send(data: string | Buffer | object) {
+  async send(data: string | Buffer | object, options?: SendOptions) {
     if (Buffer.isBuffer(data)) {
       data = {
         type: "Buffer",
         data: Array.from(data),
       };
     }
-    await callMQTTRoomWorker("send", [this.peerId, data]);
+    await callMQTTRoomWorker("send", [this.peerId, data, options]);
   }
 
   get peerId() {

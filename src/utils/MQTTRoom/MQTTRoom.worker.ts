@@ -3,7 +3,11 @@ import EventEmitter from "events";
 import mqtt from "mqtt";
 import { v4 as uuidv4 } from "uuid";
 
-import { EnvelopeType, PostMessageStructKey } from "./MQTTRoom.sharedBindings";
+import {
+  EnvelopeType,
+  PostMessageStructKey,
+  SendOptions,
+} from "./MQTTRoom.sharedBindings";
 import validateTopic from "./validateTopic";
 
 type MessagePayload = {
@@ -258,14 +262,15 @@ export default class MQTTRoomWorker extends EventEmitter {
     }
   }
 
-  // TODO: Add optional `qos`?
-  send(data: string | Buffer | object) {
+  send(data: string | Buffer | object, options?: SendOptions) {
     const payload: MessagePayload = {
       peerId: this.peerId,
       data,
     };
 
     const buffer = this._encodeMessagePayload(payload);
+
+    // TODO: Handle routing `options` to `publish`
 
     this._mqttClient.publish(this._topicMessages, buffer);
   }
@@ -341,13 +346,14 @@ async function processQueue() {
       } else if (functionName === "send") {
         const peerId = args[0] as string;
         const data = args[1] as string | Buffer;
+        const sendOptions = (args[2] || {}) as SendOptions;
 
         const workerRoom = MQTTRoomWorker.roomWorkerMap.get(peerId);
 
         if (!workerRoom) {
           reject(`Unhandled worker room`);
         } else {
-          resolve(workerRoom.send(data));
+          resolve(workerRoom.send(data, sendOptions));
         }
       } else if (functionName === "close") {
         const peerId = args[0] as string;

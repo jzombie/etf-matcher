@@ -13,3 +13,8 @@ export enum PostMessageStructKey {
   EventName = 7,
   EventData = 8,
 }
+
+export type SendOptions = {
+  retain?: boolean;
+  qos?: number;
+};
