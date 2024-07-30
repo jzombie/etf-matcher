@@ -27,8 +27,6 @@ type Presence = {
   status: PresenceStatus;
 };
 
-const USERNAME = import.meta.env.VITE_MQTT_BROKER_USERNAME;
-
 // TODO: Determine when underlying socket has gone on or offline
 // TODO: Prevent "#", "+", and other non-desirable characters in subscriptions
 export default class MQTTRoomWorker extends EventEmitter {
