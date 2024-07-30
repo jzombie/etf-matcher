@@ -160,7 +160,9 @@ export default class MQTTRoomWorker extends EventEmitter {
           retain: false,
         },
         keepalive: 10, // TODO: Make this configurable (default is 60)
-        username: USERNAME,
+        // Note: May only work with ACL list configured like: `pattern readwrite %u/#`. By making each room name
+        // a separate user, this should prevent others from doing wildcard subscriptions and reading from all rooms.
+        username: roomName,
       });
 
       // Handle subscriptions
