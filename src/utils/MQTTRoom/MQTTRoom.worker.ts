@@ -131,6 +131,7 @@ export default class MQTTRoomWorker extends EventEmitter {
       if (topic === this._topicMessages) {
         const data = this._decodeBuffer(buffer);
 
+        // TODO: The message event needs to know the sender!
         this._emitLocalHostEvent("message", data);
       } else if (topic === this._topicPresence) {
         const data = this._decodeBuffer<Presence>(buffer);
@@ -224,6 +225,7 @@ export default class MQTTRoomWorker extends EventEmitter {
 
   // TODO: Add optional `qos`?
   send(data: string | Buffer | object) {
+    // TODO: This should also include the sender!
     const buffer = this._encodeBuffer(data);
 
     this._mqttClient.publish(this._topicMessages, buffer);
