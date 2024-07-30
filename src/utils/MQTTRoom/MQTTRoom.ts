@@ -50,11 +50,6 @@ export default class MQTTRoom extends EventEmitter {
     this.emit("connect");
 
     console.log("connected...", this.peerId);
-
-    // worker.postMessage({
-    //   action: "connect",
-    //   roomName: this._roomName,
-    // });
   }
 
   // TODO: Add optional `qos`?
