@@ -137,13 +137,14 @@ export default class MQTTRoomWorker extends EventEmitter {
 
         const { peerId, status } = data;
         if (peerId === this.peerId) {
+          // Note: Regardless if the `presence` subscription is ignores local
+          // messages or not, this explicity prevents processing them.
+
           console.log("Ignoring local presence");
         } else {
           console.log("remote_presence", data);
 
-          // TODO: Implement logic to track the presence of peers in the room.
-          // As peer IDs are received, they should be recorded and added to the list of active peers, unless a peer has left.
-          // After a debounce period with no new IDs, the list should be verified with other peers to ensure accuracy and reach a consensus.
+          let hasPeerUpdate = false;
 
           if (
             [
@@ -152,21 +153,31 @@ export default class MQTTRoomWorker extends EventEmitter {
               PresenceStatus.CHECKIN,
             ].includes(status)
           ) {
-            this.peers.add(peerId);
-
             if (status !== PresenceStatus.HERE) {
               this._announcePresence(PresenceStatus.HERE);
             }
 
-            console.log("remote peers", [...this.peers]);
+            if (!this.peers.has(peerId)) {
+              this.peers.add(peerId);
 
-            // TODO: Emit event if remote has joined
+              if (status === PresenceStatus.JOIN) {
+                console.log("peer join", peerId);
+                this._emitLocalHostEvent("peerjoin", peerId);
+              }
+
+              hasPeerUpdate = true;
+            }
           } else if (status === PresenceStatus.LEAVE) {
+            console.log("peer leave", peerId);
+
             this.peers.delete(peerId);
+            this._emitLocalHostEvent("peerleave", peerId);
+            hasPeerUpdate = true;
+          }
 
+          if (hasPeerUpdate) {
             console.log("remote peers", [...this.peers]);
-
-            // TODO: Emit event if remote has left
+            this._emitLocalHostEvent("peersupdate", [...this.peers]);
           }
         }
       }

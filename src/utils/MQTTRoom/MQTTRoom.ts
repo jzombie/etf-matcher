@@ -12,6 +12,7 @@ const roomMap = new Map<MQTTRoom["peerId"], MQTTRoom>();
 
 export default class MQTTRoom extends EventEmitter {
   protected _peerId!: string;
+  protected _peers: string[] = [];
   protected _brokerURL: string;
   protected _roomName: string;
   protected _isConnected: boolean = false;
@@ -68,6 +69,14 @@ export default class MQTTRoom extends EventEmitter {
     return this._isConnected;
   }
 
+  onPeersUpdated(peers: string[]) {
+    this._peers = peers;
+  }
+
+  get peers() {
+    return this._peers;
+  }
+
   close() {
     this.emit("close");
 
@@ -108,6 +117,12 @@ worker.onmessage = (event) => {
   } else if (envelopeType === EnvelopeType.Event) {
     const room = roomMap.get(peerId);
     if (room) {
+      if (eventName === "peersupdate") {
+        room.onPeersUpdated(eventData);
+      }
+
+      console.log({ eventName, eventData });
+
       room.emit(eventName, eventData);
     }
   }

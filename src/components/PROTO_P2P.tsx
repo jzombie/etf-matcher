@@ -23,6 +23,10 @@ export default function ProtoP2P() {
             room.send("hello!");
             room.send({ foo: "bar" });
             room.send(store.getState(["tickerBuckets"]));
+
+            room.on("peersupdate", () => {
+              console.log("peers", room.peers);
+            });
           });
         }}
       >
