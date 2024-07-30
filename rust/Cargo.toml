@@ -36,6 +36,8 @@ async-trait = "0.1.81"
 regex = "1.10.5"
 base64 = "0.21.0"
 image = "0.25.2"
+qrcode-generator = "4.1.9"
+
 
 [build-dependencies]
 dotenv = "0.15"

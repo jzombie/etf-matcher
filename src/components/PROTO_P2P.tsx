@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { Button } from "@mui/material";
 
+import AutoScaler from "@layoutKit/AutoScaler";
 import store from "@src/store";
 import { Buffer } from "buffer";
 
@@ -10,8 +11,22 @@ import MQTTRoom from "@utils/MQTTRoom";
 const BROKER_URL = import.meta.env.VITE_MQTT_BROKER_URL;
 
 export default function ProtoP2P() {
+  const [qrCode, setQRCode] = useState<string | null>(null);
+
   return (
     <div>
+      <Button
+        onClick={() =>
+          store
+            .PROTO_generateQRCode("https://etfmatcher.com")
+            .then((result) => {
+              setQRCode(result);
+            })
+        }
+      >
+        PROTO::generateQRCode(&quot;Hello World&quot;)
+      </Button>
+
       <Button
         onClick={() => {
           // TODO: Refactor as necessary
@@ -40,6 +55,12 @@ export default function ProtoP2P() {
       >
         Proto::new MQTTRoom()
       </Button>
+
+      {qrCode && (
+        <AutoScaler style={{ width: 100, height: 100 }}>
+          <div dangerouslySetInnerHTML={{ __html: qrCode }} />
+        </AutoScaler>
+      )}
     </div>
   );
 
