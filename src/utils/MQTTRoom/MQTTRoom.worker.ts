@@ -118,7 +118,7 @@ export default class MQTTRoomWorker extends EventEmitter {
       const error = new Error("Invalid room name");
       this.emit("error", error);
 
-      setTimeout(() => {
+      queueMicrotask(() => {
         this.close();
       });
     } else {
