@@ -27,6 +27,8 @@ type Presence = {
   status: PresenceStatus;
 };
 
+const ENFORCE_ROOM_BASED_USERNAME = true;
+
 // TODO: Determine when underlying socket has gone on or offline
 // TODO: Prevent "#", "+", and other non-desirable characters in subscriptions
 export default class MQTTRoomWorker extends EventEmitter {
@@ -160,7 +162,7 @@ export default class MQTTRoomWorker extends EventEmitter {
         keepalive: 10, // TODO: Make this configurable (default is 60)
         // Note: May only work with ACL list configured like: `pattern readwrite %u/#`. By making each room name
         // a separate user, this should prevent others from doing wildcard subscriptions and reading from all rooms.
-        username: roomName,
+        username: ENFORCE_ROOM_BASED_USERNAME ? roomName : undefined,
       });
 
       // Handle subscriptions
