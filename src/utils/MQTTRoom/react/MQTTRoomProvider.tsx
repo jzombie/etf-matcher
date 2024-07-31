@@ -48,6 +48,9 @@ export default function MQTTRoomProvider({
       // Assuming store.getState() is valid
       // newRoom.send(store.getState(["tickerBuckets"]));
       newRoom.send(Buffer.from("Hello"));
+      setTimeout(() => {
+        newRoom.send(new Date().toISOString(), { retain: true });
+      }, 5000);
 
       newRoom.on("peersupdate", () => {
         console.log(`peers in ${roomName}`, newRoom.peers);

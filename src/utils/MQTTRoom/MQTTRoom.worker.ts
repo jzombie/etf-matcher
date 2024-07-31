@@ -290,9 +290,11 @@ export default class MQTTRoomWorker extends EventEmitter {
 
     const buffer = this._encodeMessagePayload(payload);
 
-    // TODO: Handle routing `options` to `publish`
-
-    this._mqttClient.publish(this._topicMessages, buffer);
+    this._mqttClient.publish(
+      this._topicMessages,
+      buffer,
+      options as mqtt.IClientPublishOptions,
+    );
   }
 
   protected _announcePresence(status: Presence["status"]) {
