@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Button, TextField } from "@mui/material";
 
 import { MQTTRoomProvider, useMQTTRoomContext } from "@utils/MQTTRoom/react";
+import customLogger from "@utils/customLogger";
 
 function ProtoP2P() {
   const [roomName, setRoomName] = useState("");
@@ -13,7 +14,7 @@ function ProtoP2P() {
   const handleConnect = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isValidRoomName(roomName)) {
-      console.error("Invalid room name");
+      customLogger.error("Invalid room name");
       return;
     }
     connectToRoom(roomName);

@@ -35,8 +35,6 @@ export default class MQTTRoom extends EventEmitter {
   }
 
   protected async _connect() {
-    console.log("before connect");
-
     const peerId = await callMQTTRoomWorker<string>("connect-room", [
       this._brokerURL,
       this._roomName,
@@ -48,12 +46,8 @@ export default class MQTTRoom extends EventEmitter {
     MQTTRoom.roomMap.set(this.peerId, this);
     this.once("close", () => MQTTRoom.roomMap.delete(this.peerId));
 
-    console.log("after connect");
-
     this._isConnected = true;
     this.emit("connect");
-
-    console.log("connected...", this.peerId);
   }
 
   async send(data: string | Buffer | object, options?: SendOptions) {
@@ -139,8 +133,6 @@ worker.onmessage = (event) => {
       ) {
         eventData = Buffer.from(eventData.data);
       }
-
-      console.log({ eventName, eventData });
 
       room.emit(eventName, eventData);
     }

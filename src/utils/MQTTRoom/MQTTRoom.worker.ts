@@ -3,6 +3,7 @@ import EventEmitter from "events";
 import mqtt from "mqtt";
 import { v4 as uuidv4 } from "uuid";
 
+import customLogger from "../../utils/customLogger";
 import {
   EnvelopeType,
   PostMessageStructKey,
@@ -191,9 +192,9 @@ export default class MQTTRoomWorker extends EventEmitter {
             // Note: Regardless if the `presence` subscription is ignores local
             // messages or not, this explicitly prevents processing them.
 
-            console.log("Ignoring local presence");
+            customLogger.debug("Ignoring local presence");
           } else {
-            console.log("remote_presence", data);
+            customLogger.debug("remote_presence", data);
 
             let hasPeerUpdate = false;
 
@@ -212,14 +213,14 @@ export default class MQTTRoomWorker extends EventEmitter {
                 this.peers.add(peerId);
 
                 if (status === PresenceStatus.JOIN) {
-                  console.log("peer join", peerId);
+                  customLogger.debug("peer join", peerId);
                   this._emitLocalHostEvent("peerjoin", peerId);
                 }
 
                 hasPeerUpdate = true;
               }
             } else if (status === PresenceStatus.LEAVE) {
-              console.log("peer leave", peerId);
+              customLogger.debug("peer leave", peerId);
 
               this.peers.delete(peerId);
               this._emitLocalHostEvent("peerleave", peerId);
@@ -227,7 +228,7 @@ export default class MQTTRoomWorker extends EventEmitter {
             }
 
             if (hasPeerUpdate) {
-              console.log("remote peers", [...this.peers]);
+              customLogger.debug("remote peers", [...this.peers]);
               this._emitLocalHostEvent("peersupdate", [...this.peers]);
             }
           }
@@ -245,7 +246,7 @@ export default class MQTTRoomWorker extends EventEmitter {
       this._mqttClient.on("reconnect", () => {
         // Emitted when a reconnect starts.
 
-        console.log("Attempting to reconnect");
+        customLogger.debug("Attempting to reconnect");
 
         this._emitLocalHostEvent("reconnect");
       });
@@ -253,7 +254,7 @@ export default class MQTTRoomWorker extends EventEmitter {
       this._mqttClient.on("offline", () => {
         // Emitted when the client goes offline.
 
-        console.log("Client is offline");
+        customLogger.debug("Client is offline");
 
         this._emitLocalHostEvent("offline");
       });
@@ -262,7 +263,7 @@ export default class MQTTRoomWorker extends EventEmitter {
         // Emitted when mqtt.Client#end() is called. If a callback was passed to mqtt.Client#end(),
         // this event is emitted once the callback returns.
 
-        console.log("Client has disconnected");
+        customLogger.debug("Client has disconnected");
 
         this._emitLocalHostEvent("end");
       });

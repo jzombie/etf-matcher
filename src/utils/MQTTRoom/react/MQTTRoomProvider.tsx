@@ -1,6 +1,7 @@
 import React, { ReactNode, createContext, useState } from "react";
 
 import MQTTRoom, { validateTopic } from "@utils/MQTTRoom";
+import customLogger from "@utils/customLogger";
 
 const BROKER_URL = import.meta.env.VITE_MQTT_BROKER_URL;
 
@@ -28,7 +29,7 @@ export default function MQTTRoomProvider({
 
   const connectToRoom = (roomName: string) => {
     if (!validateTopic(roomName) || rooms[roomName]) {
-      console.error("Invalid or already connected room name");
+      customLogger.error("Invalid or already connected room name");
       return;
     }
 
@@ -36,13 +37,13 @@ export default function MQTTRoomProvider({
     setRooms((prevRooms) => ({ ...prevRooms, [roomName]: newRoom }));
 
     newRoom.on("message", (data) => {
-      console.log(`message from ${roomName}`, data);
+      customLogger.debug(`message from ${roomName}`, data);
     });
 
     newRoom.on("connect", () => {
       setConnectedRooms((prevRooms) => ({ ...prevRooms, [roomName]: newRoom }));
 
-      console.log(`Connected to room: ${roomName}`);
+      customLogger.debug(`Connected to room: ${roomName}`);
     });
 
     newRoom.on("disconnect", () => {
@@ -63,7 +64,7 @@ export default function MQTTRoomProvider({
         return remainingRooms;
       });
 
-      console.log(`Disconnected from room: ${roomName}`);
+      customLogger.log(`Disconnected from room: ${roomName}`);
     });
   };
 
