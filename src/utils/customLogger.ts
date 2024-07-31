@@ -30,10 +30,10 @@ function _createLoggerMethod(method: keyof Console) {
   }
 
   if (Function.prototype.bind) {
-    return Function.prototype.bind.call(window.console[method], console);
+    return Function.prototype.bind.call(globalThis.console[method], console);
   } else {
     return function (...args: unknown[]) {
-      Function.prototype.apply.call(window.console[method], console, args);
+      Function.prototype.apply.call(globalThis.console[method], console, args);
     };
   }
 }
@@ -46,7 +46,7 @@ export function createCustomLogger(): CustomLogger {
   const ret = {} as CustomLogger;
 
   Object.keys(console).forEach((prop) => {
-    if (typeof window.console[prop as keyof Console] === "function") {
+    if (typeof globalThis.console[prop as keyof Console] === "function") {
       ret[prop as keyof Console] = _createLoggerMethod(prop as keyof Console);
     }
   });
