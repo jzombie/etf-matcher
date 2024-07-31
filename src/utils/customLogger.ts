@@ -30,22 +30,18 @@ const createLoggerMethod = (method: keyof Console) => {
   }
 
   if (Function.prototype.bind) {
-    // eslint-disable-next-line no-console
-    return Function.prototype.bind.call(console[method], console);
+    return Function.prototype.bind.call(window.console[method], console);
   } else {
     return function (...args: unknown[]) {
-      // eslint-disable-next-line no-console
-      Function.prototype.apply.call(console[method], console, args);
+      Function.prototype.apply.call(window.console[method], console, args);
     };
   }
 };
 
-// eslint-disable-next-line no-console, @typescript-eslint/no-explicit-any
-const customLogger: { [K in keyof Console]?: any } = {};
+const customLogger: { [K in keyof Console]?: () => void } = {};
 
 Object.keys(console).forEach((prop) => {
-  // eslint-disable-next-line no-console
-  if (typeof console[prop as keyof Console] === "function") {
+  if (typeof window.console[prop as keyof Console] === "function") {
     customLogger[prop as keyof Console] = createLoggerMethod(
       prop as keyof Console,
     );
