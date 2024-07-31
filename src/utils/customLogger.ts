@@ -23,7 +23,7 @@ const PROD_WHITELIST: (keyof Console)[] = ["warn", "error"] as const;
  * @param method - The console method to wrap (e.g., 'log', 'warn', 'error').
  * @returns A function that calls the original console method with the correct context.
  */
-const createLoggerMethod = (method: keyof Console) => {
+function _createLoggerMethod(method: keyof Console) {
   // Don't log in production
   if (import.meta.env.PROD && !PROD_WHITELIST.includes(method)) {
     return () => null;
@@ -36,19 +36,26 @@ const createLoggerMethod = (method: keyof Console) => {
       Function.prototype.apply.call(window.console[method], console, args);
     };
   }
+}
+
+export type CustomLogger = {
+  [K in keyof Console]: (...args: unknown[]) => void;
 };
 
-const customLogger: { [K in keyof Console]: (...args: unknown[]) => void } =
-  {} as {
-    [K in keyof Console]: (...args: unknown[]) => void;
-  };
+export function createCustomLogger(): CustomLogger {
+  const ret = {} as CustomLogger;
 
-Object.keys(console).forEach((prop) => {
-  if (typeof window.console[prop as keyof Console] === "function") {
-    customLogger[prop as keyof Console] = createLoggerMethod(
-      prop as keyof Console,
-    );
-  }
-});
+  Object.keys(console).forEach((prop) => {
+    if (typeof window.console[prop as keyof Console] === "function") {
+      ret[prop as keyof Console] = _createLoggerMethod(prop as keyof Console);
+    }
+  });
+
+  return ret;
+}
+
+// Note: This should be adaptable so that the loglevel can be configured during
+// runtime without breaking the stack traces.
+const customLogger = createCustomLogger();
 
 export default customLogger;
