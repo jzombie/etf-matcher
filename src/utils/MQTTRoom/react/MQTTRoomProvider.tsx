@@ -1,7 +1,5 @@
 import React, { ReactNode, createContext, useState } from "react";
 
-import { Buffer } from "buffer";
-
 import MQTTRoom, { validateTopic } from "@utils/MQTTRoom";
 
 const BROKER_URL = import.meta.env.VITE_MQTT_BROKER_URL;
@@ -9,8 +7,8 @@ const BROKER_URL = import.meta.env.VITE_MQTT_BROKER_URL;
 interface MQTTRoomContextProps {
   rooms: Record<string, MQTTRoom>;
   connectToRoom: (roomName: string) => void;
-  disconnectFromRoom: (roomName: string) => void;
-  connectedRooms: string[];
+  disconnectFromRoom: (room: MQTTRoom) => void;
+  connectedRooms: Record<string, MQTTRoom>;
   isValidRoomName: (roomName: string) => boolean;
 }
 
@@ -24,7 +22,9 @@ export default function MQTTRoomProvider({
   children: ReactNode;
 }) {
   const [rooms, setRooms] = useState<Record<string, MQTTRoom>>({});
-  const [connectedRooms, setConnectedRooms] = useState<string[]>([]);
+  const [connectedRooms, setConnectedRooms] = useState<
+    Record<string, MQTTRoom>
+  >({});
 
   const connectToRoom = (roomName: string) => {
     if (!validateTopic(roomName) || rooms[roomName]) {
@@ -39,40 +39,36 @@ export default function MQTTRoomProvider({
       console.log(`message from ${roomName}`, data);
     });
 
-    newRoom.once("connect", () => {
-      setConnectedRooms((prev) => [...prev, roomName]);
+    newRoom.on("connect", () => {
+      setConnectedRooms((prevRooms) => ({ ...prevRooms, [roomName]: newRoom }));
 
-      // TODO: Remove
-      newRoom.send("hello!");
-      newRoom.send({ foo: "bar" });
-      // Assuming store.getState() is valid
-      // newRoom.send(store.getState(["tickerBuckets"]));
-      newRoom.send(Buffer.from("Hello"));
-      setTimeout(() => {
-        newRoom.send(new Date().toISOString(), { retain: true });
-      }, 5000);
+      console.log(`Connected to room: ${roomName}`);
+    });
 
-      newRoom.on("peersupdate", () => {
-        console.log(`peers in ${roomName}`, newRoom.peers);
-      });
-
-      newRoom.on("close", () => {
-        setConnectedRooms((prev) => prev.filter((name) => name !== roomName));
-        console.log(`${roomName} closed`);
+    newRoom.on("disconnect", () => {
+      setConnectedRooms((prevRooms) => {
+        const { [roomName]: _, ...remainingRooms } = prevRooms;
+        return remainingRooms;
       });
     });
-  };
 
-  const disconnectFromRoom = (roomName: string) => {
-    const room = rooms[roomName];
-    if (room) {
-      room.close();
+    newRoom.on("close", () => {
       setRooms((prevRooms) => {
         const { [roomName]: _, ...remainingRooms } = prevRooms;
         return remainingRooms;
       });
-      setConnectedRooms((prev) => prev.filter((name) => name !== roomName));
-    }
+
+      setConnectedRooms((prevRooms) => {
+        const { [roomName]: _, ...remainingRooms } = prevRooms;
+        return remainingRooms;
+      });
+
+      console.log(`Disconnected from room: ${roomName}`);
+    });
+  };
+
+  const disconnectFromRoom = (room: MQTTRoom) => {
+    room.close();
   };
 
   const isValidRoomName = (roomName: string) => validateTopic(roomName);

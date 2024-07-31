@@ -29,8 +29,6 @@ type Presence = {
 
 const ENFORCE_ROOM_BASED_USERNAME = true;
 
-// TODO: Determine when underlying socket has gone on or offline
-// TODO: Prevent "#", "+", and other non-desirable characters in subscriptions
 export default class MQTTRoomWorker extends EventEmitter {
   public static roomWorkerMap: Map<MQTTRoomWorker["peerId"], MQTTRoomWorker> =
     new Map();
@@ -240,6 +238,8 @@ export default class MQTTRoomWorker extends EventEmitter {
         // Emitted after a disconnection.
 
         this.close();
+
+        // Note: The _emitLocalHostEvent for `close` is emit in `this.close()`
       });
 
       this._mqttClient.on("reconnect", () => {
@@ -247,7 +247,7 @@ export default class MQTTRoomWorker extends EventEmitter {
 
         console.log("Attempting to reconnect");
 
-        // TODO: Pipe to main
+        this._emitLocalHostEvent("reconnect");
       });
 
       this._mqttClient.on("offline", () => {
@@ -255,7 +255,7 @@ export default class MQTTRoomWorker extends EventEmitter {
 
         console.log("Client is offline");
 
-        // TODO: Pipe to main
+        this._emitLocalHostEvent("offline");
       });
 
       this._mqttClient.on("end", () => {
@@ -264,7 +264,7 @@ export default class MQTTRoomWorker extends EventEmitter {
 
         console.log("Client has disconnected");
 
-        // TODO: Pipe to main
+        this._emitLocalHostEvent("end");
       });
 
       this._mqttClient.on("error", (err) => {

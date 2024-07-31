@@ -70,6 +70,10 @@ export default class MQTTRoom extends EventEmitter {
     return this._peerId;
   }
 
+  get roomName() {
+    return this._roomName;
+  }
+
   get isConnected() {
     return this._isConnected;
   }

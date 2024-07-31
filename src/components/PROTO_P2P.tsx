@@ -2,32 +2,22 @@ import React, { useState } from "react";
 
 import { Button, TextField } from "@mui/material";
 
-import AutoScaler from "@layoutKit/AutoScaler";
-import store from "@src/store";
+import { MQTTRoomProvider, useMQTTRoomContext } from "@utils/MQTTRoom/react";
 
-import { useMQTTRoomContext } from "@utils/MQTTRoom/react";
-
-// Import MQTTRoomContext and MQTTRoomProvider
-
-export default function ProtoP2P() {
-  const [qrCode, setQRCode] = useState<string | null>(null);
-  const [roomName, setRoomName] = useState<string>("");
+function ProtoP2P() {
+  const [roomName, setRoomName] = useState("");
   const { connectToRoom, disconnectFromRoom, connectedRooms, isValidRoomName } =
     useMQTTRoomContext();
-  const [isValid, setIsValid] = useState<boolean>(true);
+  const [isValid, setIsValid] = useState(true);
 
   const handleConnect = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!roomName || !isValidRoomName(roomName)) {
+    if (!isValidRoomName(roomName)) {
       console.error("Invalid room name");
       return;
     }
     connectToRoom(roomName);
     setRoomName(""); // Clear the input after connecting
-  };
-
-  const handleDisconnect = (roomName: string) => {
-    disconnectFromRoom(roomName);
   };
 
   const handleRoomNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,18 +28,6 @@ export default function ProtoP2P() {
 
   return (
     <div>
-      <Button
-        onClick={() =>
-          store
-            .PROTO_generateQRCode("https://etfmatcher.com")
-            .then((result) => {
-              setQRCode(result);
-            })
-        }
-      >
-        PROTO::generateQRCode(&quot;Hello World&quot;)
-      </Button>
-
       <form onSubmit={handleConnect}>
         <TextField
           label="Room Name"
@@ -59,21 +37,20 @@ export default function ProtoP2P() {
           style={{ margin: "10px 0" }}
           disabled={false}
         />
-
         <Button type="submit" disabled={!roomName || !isValid}>
           Connect
         </Button>
       </form>
 
-      {connectedRooms.length > 0 && (
+      {Object.keys(connectedRooms).length > 0 && (
         <div>
           <h3>Connected Rooms:</h3>
           <ul>
-            {connectedRooms.map((room) => (
-              <li key={room}>
-                {room}{" "}
+            {Object.values(connectedRooms).map((room) => (
+              <li key={room.roomName}>
+                {room.roomName}{" "}
                 <Button
-                  onClick={() => handleDisconnect(room)}
+                  onClick={() => disconnectFromRoom(room)}
                   color="secondary"
                 >
                   Disconnect
@@ -83,12 +60,17 @@ export default function ProtoP2P() {
           </ul>
         </div>
       )}
-
-      {qrCode && (
-        <AutoScaler style={{ width: 100, height: 100 }}>
-          <div dangerouslySetInnerHTML={{ __html: qrCode }} />
-        </AutoScaler>
-      )}
     </div>
   );
 }
+
+// Wrap ProtoP2P component with MQTTRoomProvider
+function App() {
+  return (
+    <MQTTRoomProvider>
+      <ProtoP2P />
+    </MQTTRoomProvider>
+  );
+}
+
+export default App;
