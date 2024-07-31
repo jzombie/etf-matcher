@@ -38,7 +38,10 @@ const createLoggerMethod = (method: keyof Console) => {
   }
 };
 
-const customLogger: { [K in keyof Console]?: () => void } = {};
+const customLogger: { [K in keyof Console]: (...args: unknown[]) => void } =
+  {} as {
+    [K in keyof Console]: (...args: unknown[]) => void;
+  };
 
 Object.keys(console).forEach((prop) => {
   if (typeof window.console[prop as keyof Console] === "function") {
