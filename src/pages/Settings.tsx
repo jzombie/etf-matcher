@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 
 import {
   Box,
@@ -11,6 +11,7 @@ import {
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
+import ProtoP2P from "@components/PROTO_P2P";
 import ProtoPieChart from "@components/PROTO_PieChart";
 import ProtoTable from "@components/PROTO_Table";
 import Section from "@components/Section";
@@ -62,14 +63,20 @@ export default function Settings() {
     <Scrollable>
       <Padding>
         <Section>
-          <h2>User Data</h2>
+          <h2>Proto P2P</h2>
+          <Suspense fallback={<div>Loading ProtoP2P...</div>}>
+            <ProtoP2P />
+          </Suspense>
+        </Section>
+      </Padding>
 
+      <Padding>
+        <Section>
+          <h2>User Data</h2>
           <Button variant="outlined">
             TODO: Implement::Clear all user data
           </Button>
-
           <h3>Buckets</h3>
-
           {tickerBuckets?.map((tickerBucket, idx) => (
             <Typography key={idx} variant="body1">
               {tickerBucket.name}
@@ -81,7 +88,6 @@ export default function Settings() {
       <Padding>
         <Section>
           <h2>Rust Service Cache</h2>
-
           <Box
             display="flex"
             justifyContent="center"
@@ -95,7 +101,6 @@ export default function Settings() {
               Cache entries: {Object.keys(cacheDetails).length}
             </Typography>
           </Box>
-
           <ProtoPieChart />
         </Section>
       </Padding>
@@ -117,7 +122,6 @@ export default function Settings() {
             }
             label="Enable Cache Profiling Overlay"
           />
-
           <Button
             variant="contained"
             color="error"
@@ -131,7 +135,6 @@ export default function Settings() {
       <Padding>
         <Section>
           <h2>Rust Service Errors</h2>
-
           {!Object.keys(rustServiceXHRRequestErrors).length ? (
             <div>No reported errors.</div>
           ) : (
@@ -152,13 +155,10 @@ export default function Settings() {
       <Padding>
         <Section>
           <h2>Notifications</h2>
-
           <div>GA Events: {isGAPageTrackingEnabled ? "On" : "Off"}</div>
-
           {
             // Add prototype notifications code here
           }
-
           {
             // TODO: Add configuration options to adjust tickers which show in the ticker tape in the footer
           }

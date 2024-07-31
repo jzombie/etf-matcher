@@ -11,6 +11,9 @@ export type CoverProps = HTMLAttributes<HTMLDivElement> & {
   clickThrough?: boolean;
 };
 
+/**
+ * The Cover component overlays a Full element on top of the parent view.
+ */
 const Cover = forwardRef<HTMLDivElement, CoverProps>(
   ({ children, className, clickThrough = false, ...rest }, ref) => {
     return (

@@ -1,17 +1,19 @@
-use wasm_bindgen::prelude::*;
+use qrcode_generator::QrCodeEcc;
 use serde_wasm_bindgen::to_value;
 use std::panic;
+use wasm_bindgen::prelude::*;
 
 mod constants;
 mod data_models;
-mod utils;
 mod types;
+mod utils;
 
 use crate::types::TickerId;
 
 use crate::data_models::{
-    DataBuildInfo, DataURL, ETFAggregateDetail, ETFAggregateDetailResponse, PaginatedResults,
-    TickerDetail, TickerDetailResponse, TickerETFHolder, TickerSearch, TickerSearchResult, IndustryById, SectorById
+    DataBuildInfo, DataURL, ETFAggregateDetail, ETFAggregateDetailResponse, IndustryById,
+    PaginatedResults, SectorById, TickerDetail, TickerDetailResponse, TickerETFHolder,
+    TickerSearch, TickerSearchResult,
 };
 
 use crate::data_models::image::get_image_info as lib_get_image_info;
@@ -22,23 +24,29 @@ use crate::utils::network_cache::{
     get_cache_size as lib_get_cache_size, remove_cache_entry as lib_remove_cache_entry,
 };
 
-#[wasm_bindgen]
-pub async fn get_symbol_and_exchange_by_ticker_id(ticker_id: TickerId) -> Result<JsValue, JsValue> {
-    let result: (String, Option<String>) =
-        utils::ticker_utils::get_symbol_and_exchange_by_ticker_id(ticker_id).await?;
-    to_value(&result).map_err(|err: serde_wasm_bindgen::Error| {
-        JsValue::from_str(&format!(
-            "Failed to convert result to JsValue: {}",
-            err
-        ))
-    })
-}
-
 #[wasm_bindgen(start)]
 pub fn main() -> Result<(), JsValue> {
     web_sys::console::debug_1(&"Hello from Rust!".into());
     panic::set_hook(Box::new(console_error_panic_hook::hook));
     Ok(())
+}
+
+#[wasm_bindgen]
+pub fn generate_qr_code(data: &str) -> Result<JsValue, JsValue> {
+    let result =
+        qrcode_generator::to_svg_to_string(data, QrCodeEcc::Low, 1024, None::<&str>).unwrap();
+    to_value(&result).map_err(|err: serde_wasm_bindgen::Error| {
+        JsValue::from_str(&format!("Failed to generate QR code: {}", err))
+    })
+}
+
+#[wasm_bindgen]
+pub async fn get_symbol_and_exchange_by_ticker_id(ticker_id: TickerId) -> Result<JsValue, JsValue> {
+    let result: (String, Option<String>) =
+        utils::ticker_utils::get_symbol_and_exchange_by_ticker_id(ticker_id).await?;
+    to_value(&result).map_err(|err: serde_wasm_bindgen::Error| {
+        JsValue::from_str(&format!("Failed to convert result to JsValue: {}", err))
+    })
 }
 
 #[wasm_bindgen]
@@ -90,7 +98,8 @@ pub async fn get_etf_holders_aggregate_detail_by_ticker_id(
     page_size: usize,
 ) -> Result<JsValue, JsValue> {
     let paginated_etf_aggregate_details: PaginatedResults<ETFAggregateDetailResponse> =
-    TickerETFHolder::get_etf_holders_aggregate_detail_by_ticker_id(ticker_id, page, page_size).await?;
+        TickerETFHolder::get_etf_holders_aggregate_detail_by_ticker_id(ticker_id, page, page_size)
+            .await?;
     to_value(&paginated_etf_aggregate_details).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
             "Failed to convert PaginatedResults<ETFAggregateDetail> to JsValue: {}",
@@ -100,7 +109,9 @@ pub async fn get_etf_holders_aggregate_detail_by_ticker_id(
 }
 
 #[wasm_bindgen]
-pub async fn get_etf_aggregate_detail_by_ticker_id(ticker_id: TickerId) -> Result<JsValue, JsValue> {
+pub async fn get_etf_aggregate_detail_by_ticker_id(
+    ticker_id: TickerId,
+) -> Result<JsValue, JsValue> {
     let etf_detail: ETFAggregateDetailResponse =
         ETFAggregateDetail::get_etf_aggregate_detail_by_ticker_id(ticker_id).await?;
     to_value(&etf_detail).map_err(|err: serde_wasm_bindgen::Error| {

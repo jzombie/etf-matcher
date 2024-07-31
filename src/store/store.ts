@@ -559,6 +559,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return tickerBucket.tickers.some((ticker) => ticker.tickerId === tickerId);
   }
 
+  PROTO_generateQRCode(data: string): Promise<string> {
+    return callRustService<string>("generate_qr_code", [data]);
+  }
+
   removeCacheEntry(key: string) {
     callRustService("remove_cache_entry", [key]);
 

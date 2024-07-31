@@ -11,6 +11,10 @@ export type FullViewportProps = HTMLAttributes<HTMLDivElement> & {
 
 const supportsDvhUnit = testSupportsDvhUnit();
 
+/*
+ * The FullViewport component consumes the entire viewport of the browser window.
+ * It is intended to be utilized as a base view for other components to stack on.
+ */
 const FullViewport = forwardRef<HTMLDivElement, FullViewportProps>(
   ({ children, className, ...rest }, ref) => {
     return (
