@@ -23,33 +23,39 @@ const PROD_WHITELIST: (keyof Console)[] = ["warn", "error"] as const;
  * @param method - The console method to wrap (e.g., 'log', 'warn', 'error').
  * @returns A function that calls the original console method with the correct context.
  */
-const createLoggerMethod = (method: keyof Console) => {
+function _createLoggerMethod(method: keyof Console) {
   // Don't log in production
   if (import.meta.env.PROD && !PROD_WHITELIST.includes(method)) {
     return () => null;
   }
 
   if (Function.prototype.bind) {
-    // eslint-disable-next-line no-console
-    return Function.prototype.bind.call(console[method], console);
+    return Function.prototype.bind.call(globalThis.console[method], console);
   } else {
     return function (...args: unknown[]) {
-      // eslint-disable-next-line no-console
-      Function.prototype.apply.call(console[method], console, args);
+      Function.prototype.apply.call(globalThis.console[method], console, args);
     };
   }
+}
+
+export type CustomLogger = {
+  [K in keyof Console]: (...args: unknown[]) => void;
 };
 
-// eslint-disable-next-line no-console, @typescript-eslint/no-explicit-any
-const customLogger: { [K in keyof Console]?: any } = {};
+export function createCustomLogger(): CustomLogger {
+  const ret = {} as CustomLogger;
 
-Object.keys(console).forEach((prop) => {
-  // eslint-disable-next-line no-console
-  if (typeof console[prop as keyof Console] === "function") {
-    customLogger[prop as keyof Console] = createLoggerMethod(
-      prop as keyof Console,
-    );
-  }
-});
+  Object.keys(console).forEach((prop) => {
+    if (typeof globalThis.console[prop as keyof Console] === "function") {
+      ret[prop as keyof Console] = _createLoggerMethod(prop as keyof Console);
+    }
+  });
+
+  return ret;
+}
+
+// Note: This should be adaptable so that the loglevel can be configured during
+// runtime without breaking the stack traces.
+const customLogger = createCustomLogger();
 
 export default customLogger;
