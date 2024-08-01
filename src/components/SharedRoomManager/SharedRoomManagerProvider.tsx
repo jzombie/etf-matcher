@@ -28,6 +28,7 @@ export default function SharedRoomManagerProvider({
     return `https://example.com/room/${room.roomName}`;
   };
 
+  // TODO: Remove
   console.log({ location });
 
   // TODO: Build out

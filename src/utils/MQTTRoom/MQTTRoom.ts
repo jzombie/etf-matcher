@@ -122,6 +122,8 @@ worker.onmessage = (event) => {
       let { [PostMessageStructKey.EventData]: eventData } = event.data;
 
       if (eventName === "peersupdate") {
+        console.log("peersupdate", eventData);
+
         room.onPeersUpdated(eventData);
       }
 

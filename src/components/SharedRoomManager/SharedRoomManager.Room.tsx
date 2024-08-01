@@ -5,12 +5,12 @@ import { Button } from "@mui/material";
 import AutoScaler from "@layoutKit/AutoScaler";
 import store from "@src/store";
 
+import useEventRefresh from "@hooks/useEventRefresh";
+
 import MQTTRoom from "@utils/MQTTRoom";
 import { useMQTTRoomContext } from "@utils/MQTTRoom/react";
 
 import { useSharedRoomManagerContext } from "./SharedRoomManagerProvider";
-
-// TODO: Add linkable QR code URL
 
 export type RoomProps = {
   room: MQTTRoom;
@@ -18,6 +18,8 @@ export type RoomProps = {
 
 export default function Room({ room }: RoomProps) {
   const { disconnectFromRoom } = useMQTTRoomContext();
+
+  useEventRefresh(room, ["peersupdate"]);
 
   const [qrCode, setQRCode] = useState<string | null>("");
 
@@ -46,6 +48,7 @@ export default function Room({ room }: RoomProps) {
           <div dangerouslySetInnerHTML={{ __html: qrCode }} />
         </AutoScaler>
       )}
+      <div>Currently connected devices: {room.peers.length + 1}</div>
     </li>
   );
 }
