@@ -1,47 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 
-import { Button, TextField } from "@mui/material";
+import { Button } from "@mui/material";
 
 import { useMQTTRoomContext } from "@utils/MQTTRoom/react";
-import customLogger from "@utils/customLogger";
+
+import ConnectForm from "./SharedRoom.ConnectForm";
 
 export default function SharedRoom() {
-  const [roomName, setRoomName] = useState("");
-  const { connectToRoom, disconnectFromRoom, connectedRooms, isValidRoomName } =
-    useMQTTRoomContext();
-  const [isValid, setIsValid] = useState(true);
-
-  const handleConnect = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isValidRoomName(roomName)) {
-      customLogger.error("Invalid room name");
-      return;
-    }
-    connectToRoom(roomName);
-    setRoomName(""); // Clear the input after connecting
-  };
-
-  const handleRoomNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setRoomName(value);
-    setIsValid(isValidRoomName(value));
-  };
+  const { disconnectFromRoom, connectedRooms } = useMQTTRoomContext();
 
   return (
     <div>
-      <form onSubmit={handleConnect}>
-        <TextField
-          label="Room Name"
-          value={roomName}
-          onChange={handleRoomNameChange}
-          variant="outlined"
-          style={{ margin: "10px 0" }}
-          disabled={false}
-        />
-        <Button type="submit" disabled={!roomName || !isValid}>
-          Connect
-        </Button>
-      </form>
+      <ConnectForm />
 
       {Object.keys(connectedRooms).length > 0 && (
         <div>

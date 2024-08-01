@@ -10,7 +10,7 @@ interface MQTTRoomContextProps {
   connectToRoom: (roomName: string) => void;
   disconnectFromRoom: (room: MQTTRoom) => void;
   connectedRooms: Record<string, MQTTRoom>;
-  isValidRoomName: (roomName: string) => boolean;
+  validateRoomName: (roomName: string) => boolean;
 }
 
 export const MQTTRoomContext = createContext<MQTTRoomContextProps | undefined>(
@@ -72,7 +72,7 @@ export default function MQTTRoomProvider({
     room.close();
   };
 
-  const isValidRoomName = (roomName: string) => validateTopic(roomName);
+  const validateRoomName = (roomName: string) => validateTopic(roomName);
 
   return (
     <MQTTRoomContext.Provider
@@ -81,7 +81,7 @@ export default function MQTTRoomProvider({
         connectToRoom,
         disconnectFromRoom,
         connectedRooms,
-        isValidRoomName,
+        validateRoomName,
       }}
     >
       {children}
