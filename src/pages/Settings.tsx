@@ -11,10 +11,10 @@ import {
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
-import ProtoP2P from "@components/PROTO_P2P";
 import ProtoPieChart from "@components/PROTO_PieChart";
 import ProtoTable from "@components/PROTO_Table";
 import Section from "@components/Section";
+import SharedRoom from "@components/SharedRoom";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
@@ -65,7 +65,7 @@ export default function Settings() {
         <Section>
           <h2>Proto P2P</h2>
           <Suspense fallback={<div>Loading ProtoP2P...</div>}>
-            <ProtoP2P />
+            <SharedRoom />
           </Suspense>
         </Section>
       </Padding>

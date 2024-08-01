@@ -5,7 +5,7 @@ import { Button, TextField } from "@mui/material";
 import { useMQTTRoomContext } from "@utils/MQTTRoom/react";
 import customLogger from "@utils/customLogger";
 
-export default function ProtoP2P() {
+export default function SharedRoom() {
   const [roomName, setRoomName] = useState("");
   const { connectToRoom, disconnectFromRoom, connectedRooms, isValidRoomName } =
     useMQTTRoomContext();
