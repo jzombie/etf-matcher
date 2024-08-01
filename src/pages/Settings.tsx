@@ -1,8 +1,9 @@
-import React, { Suspense } from "react";
+import React from "react";
 
 import {
   Box,
   Button,
+  Divider,
   FormControlLabel,
   Switch,
   Typography,
@@ -14,7 +15,7 @@ import Scrollable from "@layoutKit/Scrollable";
 import ProtoPieChart from "@components/PROTO_PieChart";
 import ProtoTable from "@components/PROTO_Table";
 import Section from "@components/Section";
-import SharedRoom from "@components/SharedRoom";
+import SharedRoomManager from "@components/SharedRoomManager";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
@@ -63,10 +64,17 @@ export default function Settings() {
     <Scrollable>
       <Padding>
         <Section>
-          <h2>Proto P2P</h2>
-          <Suspense fallback={<div>Loading ProtoP2P...</div>}>
-            <SharedRoom />
-          </Suspense>
+          <h2>Session Sharing</h2>
+          <Typography variant="body2" component="p">
+            ETF Matcher doesn&apos;t use user accounts, but session data can be
+            retained and shared with other devices in real-time.
+          </Typography>
+          <Typography variant="body2" component="p">
+            Your devices can be linked with a common unique identifier.
+          </Typography>
+
+          <Divider />
+          <SharedRoomManager />
         </Section>
       </Padding>
 

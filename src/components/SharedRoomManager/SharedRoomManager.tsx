@@ -4,7 +4,7 @@ import { Button } from "@mui/material";
 
 import { useMQTTRoomContext } from "@utils/MQTTRoom/react";
 
-import ConnectForm from "./SharedRoom.ConnectForm";
+import ConnectForm from "./SharedRoomManager.ConnectForm";
 
 export default function SharedRoom() {
   const { disconnectFromRoom, connectedRooms } = useMQTTRoomContext();
