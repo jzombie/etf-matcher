@@ -5,7 +5,7 @@ import { useMQTTRoomContext } from "@utils/MQTTRoom/react";
 import ConnectForm from "./SharedRoomManager.ConnectForm";
 import Room from "./SharedRoomManager.Room";
 
-export default function SharedRoom() {
+export default function SharedRoomManager() {
   const { connectedRooms } = useMQTTRoomContext();
 
   return (
