@@ -74,6 +74,7 @@ export default function Settings() {
           </Typography>
 
           <Divider />
+
           <SharedRoomManager />
         </Section>
       </Padding>

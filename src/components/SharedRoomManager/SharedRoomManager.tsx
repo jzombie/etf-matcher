@@ -1,13 +1,12 @@
 import React from "react";
 
-import { Button } from "@mui/material";
-
 import { useMQTTRoomContext } from "@utils/MQTTRoom/react";
 
 import ConnectForm from "./SharedRoomManager.ConnectForm";
+import Room from "./SharedRoomManager.Room";
 
 export default function SharedRoom() {
-  const { disconnectFromRoom, connectedRooms } = useMQTTRoomContext();
+  const { connectedRooms } = useMQTTRoomContext();
 
   return (
     <div>
@@ -18,22 +17,7 @@ export default function SharedRoom() {
           <h3>Connected Rooms:</h3>
           <ul>
             {Object.values(connectedRooms).map((room) => (
-              <li key={room.roomName}>
-                {room.roomName}{" "}
-                <Button
-                  onClick={() => disconnectFromRoom(room)}
-                  color="secondary"
-                >
-                  Disconnect
-                </Button>
-                <Button
-                  onClick={() =>
-                    room.send(new Date().toISOString(), { retain: true })
-                  }
-                >
-                  PROTO: send & retain
-                </Button>
-              </li>
+              <Room key={room.roomName} room={room} />
             ))}
           </ul>
         </div>
