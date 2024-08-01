@@ -2,10 +2,10 @@ import React, { useState } from "react";
 
 import { Button, TextField } from "@mui/material";
 
-import { MQTTRoomProvider, useMQTTRoomContext } from "@utils/MQTTRoom/react";
+import { useMQTTRoomContext } from "@utils/MQTTRoom/react";
 import customLogger from "@utils/customLogger";
 
-function ProtoP2P() {
+export default function ProtoP2P() {
   const [roomName, setRoomName] = useState("");
   const { connectToRoom, disconnectFromRoom, connectedRooms, isValidRoomName } =
     useMQTTRoomContext();
@@ -56,6 +56,13 @@ function ProtoP2P() {
                 >
                   Disconnect
                 </Button>
+                <Button
+                  onClick={() =>
+                    room.send(new Date().toISOString(), { retain: true })
+                  }
+                >
+                  PROTO: send & retain
+                </Button>
               </li>
             ))}
           </ul>
@@ -64,14 +71,3 @@ function ProtoP2P() {
     </div>
   );
 }
-
-// Wrap ProtoP2P component with MQTTRoomProvider
-function App() {
-  return (
-    <MQTTRoomProvider>
-      <ProtoP2P />
-    </MQTTRoomProvider>
-  );
-}
-
-export default App;
