@@ -11,6 +11,7 @@ import { useLocation } from "react-router-dom";
 
 import MQTTRoom, { MQTTRoomEvents } from "@utils/MQTTRoom";
 import { useMultiMQTTRoomContext } from "@utils/MQTTRoom/react";
+import customLogger from "@utils/customLogger";
 
 interface SharedRoomManagerContextProps {
   getRoomShareURL: (room: MQTTRoom) => string;
@@ -80,9 +81,14 @@ export default function SharedRoomManagerProvider({
         const { tickerBuckets } = store.getState(["tickerBuckets"]);
 
         for (const room of Object.values(connectedRooms)) {
-          // TODO: Integrate ability to know when this has finished sending, and use to
-          // help make a determination that the local state has fully synced up remotely
-          room.send({ tickerBuckets } as object, { retain: true });
+          room
+            .send({ tickerBuckets } as object, { retain: true })
+            .then((ack) => {
+              customLogger.debug({ ack });
+
+              // TODO: Integrate ability to know when this has finished sending, and use to
+              // help make a determination that the local state has fully synced up remotely
+            });
         }
       }
     };
