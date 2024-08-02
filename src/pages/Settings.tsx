@@ -42,6 +42,7 @@ export default function Settings() {
     cacheDetails,
     cacheSize,
     rustServiceXHRRequestErrors,
+    subscribedMQTTRoomNames,
   } = useStoreStateReader([
     "isHTMLJSVersionSynced",
     "isAppUnlocked",
@@ -58,6 +59,7 @@ export default function Settings() {
     "cacheDetails",
     "cacheSize",
     "rustServiceXHRRequestErrors",
+    "subscribedMQTTRoomNames",
   ]);
 
   return (
@@ -203,7 +205,8 @@ export default function Settings() {
           {" | "}
           {isIndexedDBReady ? "IndexedDB Ready" : "IndexedDB Not Ready"}
           {" | "}
-
+          Subscribed MQTT rooms: {subscribedMQTTRoomNames.length}
+          {" | "}
           {visibleTickerIds?.toString()}
         </Typography>
       </Padding>

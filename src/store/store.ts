@@ -10,6 +10,7 @@ import type {
 } from "@src/types";
 
 import IndexedDBInterface from "@utils/IndexedDBInterface";
+import MQTTRoom from "@utils/MQTTRoom";
 import detectHTMLJSVersionSync from "@utils/PROTO_detectHTMLJSVersionSync";
 import {
   ReactStateEmitter,
@@ -84,12 +85,16 @@ export type StoreStateProps = {
   };
   latestXHROpenedRequestPathName: string | null;
   latestCacheOpenedRequestPathName: string | null;
+  subscribedMQTTRoomNames: string[];
+};
+
+export type IndexedDBPersistenceProps = {
+  tickerBuckets: TickerBucketProps[];
+  subscribedMQTTRoomNames: string[];
 };
 
 class _Store extends ReactStateEmitter<StoreStateProps> {
-  private _indexedDBInterface: IndexedDBInterface<{
-    tickerBuckets: TickerBucketProps[];
-  }>;
+  private _indexedDBInterface: IndexedDBInterface<IndexedDBPersistenceProps>;
 
   constructor() {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
@@ -151,6 +156,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       rustServiceXHRRequestErrors: {},
       latestXHROpenedRequestPathName: null,
       latestCacheOpenedRequestPathName: null,
+      subscribedMQTTRoomNames: [],
     });
 
     // Only deepfreeze in development
@@ -338,21 +344,17 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           if (storeStateKeys.includes(idbKey as keyof StoreStateProps)) {
             const item = await this._indexedDBInterface.getItem(idbKey);
             if (item !== undefined) {
-              this.setState({ [idbKey]: item } as Pick<
-                StoreStateProps,
-                keyof StoreStateProps
-              >);
+              this.setState({ [idbKey]: item });
             }
           }
         }
       })();
 
-      // Handle `TickerBucket` persistence
       (() => {
-        const _handleTickerBucketsUpdate = async (
-          keys: (keyof StoreStateProps)[],
+        const _handleStoreStateUpdate = async (
+          storeStateUpdateKeys: (keyof StoreStateProps)[],
         ) => {
-          if (keys.includes("tickerBuckets")) {
+          if (storeStateUpdateKeys.includes("tickerBuckets")) {
             const { tickerBuckets } = this.getState(["tickerBuckets"]);
 
             await this._indexedDBInterface.setItem(
@@ -360,17 +362,41 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
               tickerBuckets,
             );
           }
+
+          if (storeStateUpdateKeys.includes("subscribedMQTTRoomNames")) {
+            const { subscribedMQTTRoomNames } = this.getState([
+              "subscribedMQTTRoomNames",
+            ]);
+
+            await this._indexedDBInterface.setItem(
+              "subscribedMQTTRoomNames",
+              subscribedMQTTRoomNames,
+            );
+          }
         };
-        this.on(StateEmitterDefaultEvents.UPDATE, _handleTickerBucketsUpdate);
+        this.on(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
 
         this.registerDispose(() => {
-          this.off(
-            StateEmitterDefaultEvents.UPDATE,
-            _handleTickerBucketsUpdate,
-          );
+          this.off(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
         });
       })();
     })();
+  }
+
+  addMQTTRoomSubscription(room: MQTTRoom) {
+    this.setState((prev) => ({
+      subscribedMQTTRoomNames: [
+        ...new Set([...prev.subscribedMQTTRoomNames, room.roomName]),
+      ],
+    }));
+  }
+
+  removeMQTTRoomSubscription(room: MQTTRoom) {
+    this.setState((prev) => ({
+      subscribedMQTTRoomNames: prev.subscribedMQTTRoomNames.filter(
+        (roomName) => roomName !== room.roomName,
+      ),
+    }));
   }
 
   setVisibleTickers(visibleTickerIds: number[]) {
