@@ -64,6 +64,9 @@ export default function SharedRoomManagerProvider({
   }, [parsedJoinRoomNameFromURLString, connectToRoom]);
 
   // Handle over-the-wire state sync
+  //
+  // TODO: For initial received state updates, there should be a UI dialog confirmation
+  // to export the current state before overwriting the local state with the update
   useEffect(() => {
     // Flag to determine if local state set should be immediately synced to peers
     let isOutboundSyncPaused = false;
