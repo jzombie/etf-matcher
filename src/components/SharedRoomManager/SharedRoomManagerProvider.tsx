@@ -9,6 +9,7 @@ import React, {
 import { useLocation } from "react-router-dom";
 
 import MQTTRoom from "@utils/MQTTRoom";
+import { useMultiMQTTRoomContext } from "@utils/MQTTRoom/react";
 
 interface SharedRoomManagerContextProps {
   getRoomShareURL: (room: MQTTRoom) => string;
@@ -26,6 +27,8 @@ export type SharedRoomManagerProviderProps = {
 export default function SharedRoomManagerProvider({
   children,
 }: SharedRoomManagerProviderProps) {
+  const { connectToRoom } = useMultiMQTTRoomContext();
+
   const location = useLocation();
 
   const getRoomShareURL = useCallback((room: MQTTRoom): string => {
@@ -52,6 +55,12 @@ export default function SharedRoomManagerProvider({
       setParsedJoinRoomFromURLString(parsedJoinRoom);
     }
   }, [location, parseJoinRoomFromURL]);
+
+  useEffect(() => {
+    if (parsedJoinRoomNameFromURLString) {
+      connectToRoom(parsedJoinRoomNameFromURLString);
+    }
+  }, [parsedJoinRoomNameFromURLString, connectToRoom]);
 
   return (
     <SharedRoomManagerContext.Provider

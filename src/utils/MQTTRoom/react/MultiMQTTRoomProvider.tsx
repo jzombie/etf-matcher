@@ -3,6 +3,7 @@ import React, { ReactNode, createContext, useCallback, useState } from "react";
 import store from "@src/store";
 
 import useOnlyOnce from "@hooks/useOnlyOnce";
+import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 import MQTTRoom, { validateTopic } from "@utils/MQTTRoom";
 import customLogger from "@utils/customLogger";
@@ -31,8 +32,14 @@ export default function MultiMQTTRoomProvider({
     Record<string, MQTTRoom>
   >({});
 
+  // This is to prevent `connectToRoom` reference from changing on every render,
+  // which can be problematic for `useEffect` instances which use this as context.
+  const stableRoomsRef = useStableCurrentRef(rooms);
+
   const connectToRoom = useCallback(
     (roomName: string) => {
+      const rooms = stableRoomsRef.current;
+
       if (!validateTopic(roomName) || rooms[roomName]) {
         customLogger.error("Invalid or already connected room name");
         return;
@@ -83,7 +90,7 @@ export default function MultiMQTTRoomProvider({
         customLogger.log(`Disconnected from room: ${roomName}`);
       });
     },
-    [rooms],
+    [stableRoomsRef],
   );
 
   useOnlyOnce(() => {
