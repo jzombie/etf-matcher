@@ -5,7 +5,7 @@ import customLogger from "@utils/customLogger";
 
 const BROKER_URL = import.meta.env.VITE_MQTT_BROKER_URL;
 
-interface MQTTRoomContextProps {
+interface MultiMQTTRoomContextProps {
   rooms: Record<string, MQTTRoom>;
   connectToRoom: (roomName: string) => void;
   disconnectFromRoom: (room: MQTTRoom) => void;
@@ -13,11 +13,11 @@ interface MQTTRoomContextProps {
   validateRoomName: (roomName: string) => boolean;
 }
 
-export const MQTTRoomContext = createContext<MQTTRoomContextProps | undefined>(
-  undefined,
-);
+export const MQTTRoomContext = createContext<
+  MultiMQTTRoomContextProps | undefined
+>(undefined);
 
-export default function MQTTRoomProvider({
+export default function MultiMQTTRoomProvider({
   children,
 }: {
   children: ReactNode;

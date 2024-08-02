@@ -2,13 +2,13 @@ import React, { useCallback, useState } from "react";
 
 import { Button, TextField } from "@mui/material";
 
-import { useMQTTRoomContext } from "@utils/MQTTRoom/react";
+import { useMultiMQTTRoomContext } from "@utils/MQTTRoom/react";
 import customLogger from "@utils/customLogger";
 
 export default function ConnectForm() {
   const [roomName, setRoomName] = useState("");
   const [isValid, setIsValid] = useState(true);
-  const { connectToRoom, validateRoomName } = useMQTTRoomContext();
+  const { connectToRoom, validateRoomName } = useMultiMQTTRoomContext();
 
   const handleConnect = useCallback(
     (e: React.FormEvent) => {
