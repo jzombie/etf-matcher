@@ -87,9 +87,7 @@ export default function MultiMQTTRoomProvider({
   );
 
   useOnlyOnce(() => {
-    // Note: This `setTimeout` seems to be necessary to allow the underlying
-    // IndexedDB storage to update the store state so this can be usable.
-    setTimeout(() => {
+    store.once("persistent-session-restore", () => {
       const { subscribedMQTTRoomNames } = store.getState([
         "subscribedMQTTRoomNames",
         "isIndexedDBReady",
@@ -98,7 +96,7 @@ export default function MultiMQTTRoomProvider({
       for (const roomName of subscribedMQTTRoomNames) {
         connectToRoom(roomName);
       }
-    }, 100);
+    });
   });
 
   const disconnectFromRoom = useCallback((room: MQTTRoom) => {

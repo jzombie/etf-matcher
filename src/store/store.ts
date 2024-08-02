@@ -348,6 +348,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
             }
           }
         }
+
+        // Emit that session is now ready
+        this.emit("persistent-session-restore");
       })();
 
       (() => {
