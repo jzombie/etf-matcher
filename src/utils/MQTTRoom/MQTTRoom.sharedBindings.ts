@@ -1,4 +1,4 @@
-export interface RoomEvents {
+export interface MQTTRoomEvents {
   connect: [];
   reconnect: [];
   disconnect: [];

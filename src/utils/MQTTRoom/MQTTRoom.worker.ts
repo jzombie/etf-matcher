@@ -6,8 +6,8 @@ import { v4 as uuidv4 } from "uuid";
 import customLogger from "../../utils/customLogger";
 import {
   EnvelopeType,
+  MQTTRoomEvents,
   PostMessageStructKey,
-  RoomEvents,
   SendOptions,
 } from "./MQTTRoom.sharedBindings";
 import validateTopic from "./validateTopic";
@@ -31,7 +31,7 @@ type Presence = {
 
 const ENFORCE_ROOM_BASED_USERNAME = true;
 
-export default class MQTTRoomWorker extends EventEmitter<RoomEvents> {
+export default class MQTTRoomWorker extends EventEmitter<MQTTRoomEvents> {
   public static roomWorkerMap: Map<MQTTRoomWorker["peerId"], MQTTRoomWorker> =
     new Map();
 
