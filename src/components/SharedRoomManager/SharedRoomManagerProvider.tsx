@@ -109,6 +109,8 @@ export default function SharedRoomManagerProvider({
         // Prevent state set received from peer from going back out to peers
         isOutboundSyncPaused = true;
 
+        // FIXME: If `setState` is ever made into an asynchronous method, this
+        // should be awaited
         store.setState(batchUpdate);
 
         // Reenable outbound sync
