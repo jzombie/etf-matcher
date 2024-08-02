@@ -12,12 +12,18 @@ import Watchlists from "@pages/Watchlists";
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 
 import MainLayout from "@components/MainLayout";
+import { SharedRoomManagerProvider } from "@components/SharedRoomManager";
 
 export const routes: RouteObject[] = [
   {
     path: "/",
-    // TODO: Enable for GA; Add `usePageTracking()`
-    element: <MainLayout />, // Use MainLayout as the main wrapper
+    element: (
+      // Note: `SharedRoomManagerProvider` is placed here instead of in `App`
+      // due to being dependent on `React Router`.
+      <SharedRoomManagerProvider>
+        <MainLayout />
+      </SharedRoomManagerProvider>
+    ),
     children: [
       {
         path: "",

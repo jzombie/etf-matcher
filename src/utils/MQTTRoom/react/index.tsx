@@ -1,4 +1,6 @@
-import MQTTRoomProvider, { MQTTRoomContext } from "./MQTTRoomProvider";
-import useMQTTRoomContext from "./useMQTTRoomContext";
+import MultiMQTTRoomProvider, {
+  MQTTRoomContext,
+} from "./MultiMQTTRoomProvider";
+import useMultiMQTTRoomContext from "./useMultiMQTTRoomContext";
 
-export { MQTTRoomProvider, MQTTRoomContext, useMQTTRoomContext };
+export { MultiMQTTRoomProvider, MQTTRoomContext, useMultiMQTTRoomContext };

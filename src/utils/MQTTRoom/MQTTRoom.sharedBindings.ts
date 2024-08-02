@@ -1,3 +1,19 @@
+export interface MQTTRoomEvents {
+  connect: [];
+  reconnect: [];
+  disconnect: [];
+  offline: [];
+  peersupdate: [string[]];
+  message: [
+    {
+      peerId: string;
+      data: [string | Buffer | object];
+    },
+  ];
+  close: [];
+  error: [Error];
+}
+
 export enum EnvelopeType {
   Function = 1,
   Event = 2,

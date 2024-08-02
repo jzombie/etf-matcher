@@ -10,6 +10,7 @@ import type {
 } from "@src/types";
 
 import IndexedDBInterface from "@utils/IndexedDBInterface";
+import MQTTRoom from "@utils/MQTTRoom";
 import detectHTMLJSVersionSync from "@utils/PROTO_detectHTMLJSVersionSync";
 import {
   ReactStateEmitter,
@@ -84,12 +85,16 @@ export type StoreStateProps = {
   };
   latestXHROpenedRequestPathName: string | null;
   latestCacheOpenedRequestPathName: string | null;
+  subscribedMQTTRoomNames: string[];
+};
+
+export type IndexedDBPersistenceProps = {
+  tickerBuckets: TickerBucketProps[];
+  subscribedMQTTRoomNames: string[];
 };
 
 class _Store extends ReactStateEmitter<StoreStateProps> {
-  private _indexedDBInterface: IndexedDBInterface<{
-    tickerBuckets: TickerBucketProps[];
-  }>;
+  private _indexedDBInterface: IndexedDBInterface<IndexedDBPersistenceProps>;
 
   constructor() {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
@@ -151,6 +156,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       rustServiceXHRRequestErrors: {},
       latestXHROpenedRequestPathName: null,
       latestCacheOpenedRequestPathName: null,
+      subscribedMQTTRoomNames: [],
     });
 
     // Only deepfreeze in development
@@ -320,6 +326,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       this.registerDispose(libRustServiceUnsubscribe);
     })();
 
+    // IndexedDB persistence
     (async () => {
       await this._indexedDBInterface.ready();
 
@@ -327,42 +334,78 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
       // Handle session restore
       (async () => {
-        const keys = await this._indexedDBInterface.getAllKeys();
-        const stateKeys = Object.keys(this.state) as Array<
+        const indexedDBKeys = await this._indexedDBInterface.getAllKeys();
+
+        const storeStateKeys = Object.keys(this.state) as Array<
           keyof StoreStateProps
         >;
 
-        for (const key of keys) {
-          if (stateKeys.includes(key as keyof StoreStateProps)) {
-            const item = await this._indexedDBInterface.getItem(key);
+        for (const idbKey of indexedDBKeys) {
+          if (storeStateKeys.includes(idbKey as keyof StoreStateProps)) {
+            const item = await this._indexedDBInterface.getItem(idbKey);
             if (item !== undefined) {
-              this.setState({ [key]: item } as Pick<
-                StoreStateProps,
-                keyof StoreStateProps
-              >);
+              this.setState({ [idbKey]: item });
             }
           }
         }
+
+        // Emit that session is now ready
+        this.emit("persistent-session-restore");
       })();
 
-      const _handleTickerBucketsUpdate = async (
-        keys: (keyof StoreStateProps)[],
-      ) => {
-        if (keys.includes("tickerBuckets")) {
-          const { tickerBuckets } = this.getState(["tickerBuckets"]);
+      (() => {
+        const _handleStoreStateUpdate = async (
+          storeStateUpdateKeys: (keyof StoreStateProps)[],
+        ) => {
+          if (storeStateUpdateKeys.includes("tickerBuckets")) {
+            const { tickerBuckets } = this.getState(["tickerBuckets"]);
 
-          await this._indexedDBInterface.setItem(
-            "tickerBuckets",
-            tickerBuckets,
-          );
-        }
-      };
-      this.on(StateEmitterDefaultEvents.UPDATE, _handleTickerBucketsUpdate);
+            await this._indexedDBInterface.setItem(
+              "tickerBuckets",
+              tickerBuckets,
+            );
+          }
 
-      this.registerDispose(() => {
-        this.off(StateEmitterDefaultEvents.UPDATE, _handleTickerBucketsUpdate);
-      });
+          if (storeStateUpdateKeys.includes("subscribedMQTTRoomNames")) {
+            const { subscribedMQTTRoomNames } = this.getState([
+              "subscribedMQTTRoomNames",
+            ]);
+
+            await this._indexedDBInterface.setItem(
+              "subscribedMQTTRoomNames",
+              subscribedMQTTRoomNames,
+            );
+          }
+        };
+        this.on(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
+
+        this.registerDispose(() => {
+          this.off(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
+        });
+      })();
     })();
+  }
+
+  /**
+   * Invoked by the `MultiMQTTRoomProvider` to update state of currently subscribed rooms.
+   */
+  addMQTTRoomSubscription(room: MQTTRoom) {
+    this.setState((prev) => ({
+      subscribedMQTTRoomNames: [
+        ...new Set([...prev.subscribedMQTTRoomNames, room.roomName]),
+      ],
+    }));
+  }
+
+  /**
+   * Invoked by the `MultiMQTTRoomProvider` to update state of currently subscribed rooms.
+   */
+  removeMQTTRoomSubscription(room: MQTTRoom) {
+    this.setState((prev) => ({
+      subscribedMQTTRoomNames: prev.subscribedMQTTRoomNames.filter(
+        (roomName) => roomName !== room.roomName,
+      ),
+    }));
   }
 
   setVisibleTickers(visibleTickerIds: number[]) {
@@ -583,3 +626,4 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 const store = new _Store();
 
 export default store;
+export { StateEmitterDefaultEvents };

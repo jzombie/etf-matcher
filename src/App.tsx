@@ -14,7 +14,7 @@ import { TickerContainerProvider } from "@components/TickerContainer";
 
 import useGAPageTracking from "@hooks/useGAPageTracking";
 
-import MQTTRoomProvider from "@utils/MQTTRoom/react/MQTTRoomProvider";
+import MultiMQTTRoomProvider from "@utils/MQTTRoom/react/MultiMQTTRoomProvider";
 
 import router from "./router";
 
@@ -79,13 +79,13 @@ export default function App() {
   useGAPageTracking();
 
   return (
-    <MQTTRoomProvider>
+    <MultiMQTTRoomProvider>
       <ThemeProvider theme={darkTheme}>
         <CssBaseline />
         <TickerContainerProvider>
           <RouterProvider router={router} />
         </TickerContainerProvider>
       </ThemeProvider>
-    </MQTTRoomProvider>
+    </MultiMQTTRoomProvider>
   );
 }

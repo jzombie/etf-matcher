@@ -1,8 +1,9 @@
-import React, { Suspense } from "react";
+import React from "react";
 
 import {
   Box,
   Button,
+  Divider,
   FormControlLabel,
   Switch,
   Typography,
@@ -11,10 +12,10 @@ import {
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
-import ProtoP2P from "@components/PROTO_P2P";
 import ProtoPieChart from "@components/PROTO_PieChart";
 import ProtoTable from "@components/PROTO_Table";
 import Section from "@components/Section";
+import SharedRoomManager from "@components/SharedRoomManager";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
@@ -41,6 +42,7 @@ export default function Settings() {
     cacheDetails,
     cacheSize,
     rustServiceXHRRequestErrors,
+    subscribedMQTTRoomNames,
   } = useStoreStateReader([
     "isHTMLJSVersionSynced",
     "isAppUnlocked",
@@ -57,16 +59,25 @@ export default function Settings() {
     "cacheDetails",
     "cacheSize",
     "rustServiceXHRRequestErrors",
+    "subscribedMQTTRoomNames",
   ]);
 
   return (
     <Scrollable>
       <Padding>
         <Section>
-          <h2>Proto P2P</h2>
-          <Suspense fallback={<div>Loading ProtoP2P...</div>}>
-            <ProtoP2P />
-          </Suspense>
+          <h2>Session Sharing</h2>
+          <Typography variant="body2" component="p">
+            ETF Matcher doesn&apos;t use user accounts, but session data can be
+            retained and shared with other devices in real-time.
+          </Typography>
+          <Typography variant="body2" component="p">
+            Your devices can be linked with a common unique identifier.
+          </Typography>
+
+          <Divider />
+
+          <SharedRoomManager />
         </Section>
       </Padding>
 
@@ -101,36 +112,39 @@ export default function Settings() {
               Cache entries: {Object.keys(cacheDetails).length}
             </Typography>
           </Box>
+
           <ProtoPieChart />
+
+          <div style={{ textAlign: "center" }}>
+            <Section>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={isProfilingCacheOverlayOpen}
+                    onChange={() =>
+                      store.setState(() => ({
+                        isProfilingCacheOverlayOpen:
+                          !isProfilingCacheOverlayOpen,
+                      }))
+                    }
+                  />
+                }
+                label="Enable Cache Profiling Overlay"
+              />
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => store.clearCache()}
+                disabled={!Object.keys(cacheDetails).length}
+              >
+                Clear Cache
+              </Button>
+            </Section>
+          </div>
         </Section>
       </Padding>
 
       <ProtoTable />
-
-      <Padding style={{ textAlign: "center" }}>
-        <Section>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={isProfilingCacheOverlayOpen}
-                onChange={() =>
-                  store.setState(() => ({
-                    isProfilingCacheOverlayOpen: !isProfilingCacheOverlayOpen,
-                  }))
-                }
-              />
-            }
-            label="Enable Cache Profiling Overlay"
-          />
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => store.clearCache()}
-          >
-            Clear Cache
-          </Button>
-        </Section>
-      </Padding>
 
       <Padding>
         <Section>
@@ -191,7 +205,8 @@ export default function Settings() {
           {" | "}
           {isIndexedDBReady ? "IndexedDB Ready" : "IndexedDB Not Ready"}
           {" | "}
-
+          Subscribed MQTT rooms: {subscribedMQTTRoomNames.length}
+          {" | "}
           {visibleTickerIds?.toString()}
         </Typography>
       </Padding>
