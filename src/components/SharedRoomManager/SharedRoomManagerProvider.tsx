@@ -44,6 +44,7 @@ export default function SharedRoomManagerProvider({
   const [parsedJoinRoomNameFromURLString, setParsedJoinRoomFromURLString] =
     useState<string | null>(null);
 
+  // Listen for `location` changes and parse URL for joined room name
   useEffect(() => {
     // Consume the dependency either way
     if (location || !location) {
