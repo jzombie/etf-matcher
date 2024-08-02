@@ -41,6 +41,7 @@ export default function MultiMQTTRoomProvider({
       const newRoom = new MQTTRoom(BROKER_URL, roomName);
       setRooms((prevRooms) => ({ ...prevRooms, [roomName]: newRoom }));
 
+      // Capture this so that it can auto-connect in future sessions
       store.addMQTTRoomSubscription(newRoom);
 
       newRoom.on("message", (data) => {
@@ -101,6 +102,7 @@ export default function MultiMQTTRoomProvider({
   });
 
   const disconnectFromRoom = useCallback((room: MQTTRoom) => {
+    // Capture this so that it can auto-connect in future sessions
     store.removeMQTTRoomSubscription(room);
 
     room.close();

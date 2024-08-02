@@ -383,6 +383,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     })();
   }
 
+  /**
+   * Invoked by the `MultiMQTTRoomProvider` to update state of currently subscribed rooms.
+   */
   addMQTTRoomSubscription(room: MQTTRoom) {
     this.setState((prev) => ({
       subscribedMQTTRoomNames: [
@@ -391,6 +394,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     }));
   }
 
+  /**
+   * Invoked by the `MultiMQTTRoomProvider` to update state of currently subscribed rooms.
+   */
   removeMQTTRoomSubscription(room: MQTTRoom) {
     this.setState((prev) => ({
       subscribedMQTTRoomNames: prev.subscribedMQTTRoomNames.filter(
