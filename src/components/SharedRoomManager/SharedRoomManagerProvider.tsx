@@ -9,7 +9,7 @@ import React, {
 import store, { StateEmitterDefaultEvents, StoreStateProps } from "@src/store";
 import { useLocation } from "react-router-dom";
 
-import MQTTRoom from "@utils/MQTTRoom";
+import MQTTRoom, { MQTTRoomEvents } from "@utils/MQTTRoom";
 import { useMultiMQTTRoomContext } from "@utils/MQTTRoom/react";
 
 interface SharedRoomManagerContextProps {
@@ -63,12 +63,12 @@ export default function SharedRoomManagerProvider({
     }
   }, [parsedJoinRoomNameFromURLString, connectToRoom]);
 
-  // TODO: Refactor to handle all shared state
+  // Handle over-the-wire state sync
   useEffect(() => {
     // Flag to determine if local state set should be immediately synced to peers
     let isOutboundSyncPaused = false;
 
-    const _handleStoreUpdate = (keys: (keyof StoreStateProps)[]) => {
+    const _handleSendUpdate = (keys: (keyof StoreStateProps)[]) => {
       if (isOutboundSyncPaused) {
         return;
       }
@@ -82,39 +82,45 @@ export default function SharedRoomManagerProvider({
       }
     };
 
-    store.on(StateEmitterDefaultEvents.UPDATE, _handleStoreUpdate);
+    store.on(StateEmitterDefaultEvents.UPDATE, _handleSendUpdate);
+
+    const _handleReceiveUpdate = (
+      receivedData: MQTTRoomEvents["message"][0],
+    ) => {
+      const batchUpdate: Partial<StoreStateProps> = {};
+
+      for (const key of Object.keys(
+        receivedData.data,
+      ) as (keyof StoreStateProps)[]) {
+        if (key in store.state) {
+          // @ts-expect-error  Note: This type isn't correct according to TypeScript
+          batchUpdate[key] = (receivedData.data as Partial<StoreStateProps>)[
+            key as keyof StoreStateProps
+          ];
+        }
+      }
+
+      if (Object.keys(batchUpdate).length) {
+        // Prevent state set received from peer from going back out to peers
+        isOutboundSyncPaused = true;
+
+        store.setState(batchUpdate);
+
+        // Reenable outbound sync
+        isOutboundSyncPaused = false;
+      }
+    };
 
     for (const room of Object.values(connectedRooms)) {
-      room.on("message", (receivedData) => {
-        if (typeof receivedData === "object") {
-          const batchUpdate: Partial<StoreStateProps> = {};
-
-          for (const key of Object.keys(
-            receivedData.data,
-          ) as (keyof StoreStateProps)[]) {
-            if (key in store.state) {
-              // @ts-expect-error  Note: This type isn't correct according to TypeScript
-              batchUpdate[key] = (
-                receivedData.data as Partial<StoreStateProps>
-              )[key as keyof StoreStateProps];
-            }
-          }
-
-          if (Object.keys(batchUpdate).length) {
-            // Prevent state set received from peer from going back out to peers
-            isOutboundSyncPaused = true;
-
-            store.setState(batchUpdate);
-
-            // Reenable outbound sync
-            isOutboundSyncPaused = false;
-          }
-        }
-      });
+      room.on("message", _handleReceiveUpdate);
     }
 
     return () => {
-      store.off(StateEmitterDefaultEvents.UPDATE, _handleStoreUpdate);
+      store.off(StateEmitterDefaultEvents.UPDATE, _handleReceiveUpdate);
+
+      for (const room of Object.values(connectedRooms)) {
+        room.off("message", _handleReceiveUpdate);
+      }
     };
   }, [connectedRooms]);
 
