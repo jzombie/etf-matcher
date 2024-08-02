@@ -109,13 +109,16 @@ export default function MultiMQTTRoomProvider({
     );
   }, [connectToRoom]);
 
-  const disconnectFromRoom = (room: MQTTRoom) => {
+  const disconnectFromRoom = useCallback((room: MQTTRoom) => {
     store.removeMQTTRoomSubscription(room);
 
     room.close();
-  };
+  }, []);
 
-  const validateRoomName = (roomName: string) => validateTopic(roomName);
+  const validateRoomName = useCallback(
+    (roomName: string) => validateTopic(roomName),
+    [],
+  );
 
   return (
     <MQTTRoomContext.Provider
