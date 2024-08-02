@@ -6,7 +6,9 @@ export default function useOnlyOnce(effect: CallableFunction) {
   useEffect(() => {
     if (!hasRun.current) {
       hasRun.current = true;
-      effect();
+      (async () => {
+        await effect();
+      })();
     }
   }, [effect]);
 }
