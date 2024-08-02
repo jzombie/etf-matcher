@@ -1,12 +1,18 @@
-import React, { ReactNode, createContext, useContext } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 import { useLocation } from "react-router-dom";
 
 import MQTTRoom from "@utils/MQTTRoom";
 
 interface SharedRoomManagerContextProps {
-  getShareURL: (room: MQTTRoom) => string;
-  getIsSharedURL: () => boolean;
+  getRoomShareURL: (room: MQTTRoom) => string;
+  parsedJoinRoomNameFromURLString: string | null;
 }
 
 const SharedRoomManagerContext = createContext<
@@ -14,7 +20,7 @@ const SharedRoomManagerContext = createContext<
 >(undefined);
 
 export type SharedRoomManagerProviderProps = {
-  children: ReactNode;
+  children: React.ReactNode;
 };
 
 export default function SharedRoomManagerProvider({
@@ -22,23 +28,34 @@ export default function SharedRoomManagerProvider({
 }: SharedRoomManagerProviderProps) {
   const location = useLocation();
 
-  // TODO: Build out
-  const getShareURL = (room: MQTTRoom): string => {
-    // Stub implementation, replace with your logic
-    return `https://example.com/room/${room.roomName}`;
-  };
+  const getRoomShareURL = useCallback((room: MQTTRoom): string => {
+    const origin = window.location.origin;
+    const localPath = `/settings#join:${encodeURIComponent(room.roomName)}`;
 
-  // TODO: Remove
-  console.log({ location });
+    return `${origin}${localPath}`;
+  }, []);
 
-  // TODO: Build out
-  const getIsSharedURL = (): boolean => {
-    // Stub implementation, replace with your logic
-    return window.location.href.includes("shared");
-  };
+  const parseJoinRoomFromURL = useCallback((): string | null => {
+    const hash = window.location.hash;
+    const match = hash.match(/#join:([^&]*)/);
+    return match ? decodeURIComponent(match[1]) : null;
+  }, []);
+
+  const [parsedJoinRoomNameFromURLString, setParsedJoinRoomFromURLString] =
+    useState<string | null>(null);
+
+  useEffect(() => {
+    // Consume the dependency either way
+    if (location || !location) {
+      const parsedJoinRoom = parseJoinRoomFromURL();
+      setParsedJoinRoomFromURLString(parsedJoinRoom);
+    }
+  }, [location, parseJoinRoomFromURL]);
 
   return (
-    <SharedRoomManagerContext.Provider value={{ getShareURL, getIsSharedURL }}>
+    <SharedRoomManagerContext.Provider
+      value={{ getRoomShareURL, parsedJoinRoomNameFromURLString }}
+    >
       {children}
     </SharedRoomManagerContext.Provider>
   );

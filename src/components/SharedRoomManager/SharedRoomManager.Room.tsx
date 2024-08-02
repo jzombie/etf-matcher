@@ -23,13 +23,13 @@ export default function Room({ room }: RoomProps) {
 
   const [qrCode, setQRCode] = useState<string | null>("");
 
-  const { getShareURL } = useSharedRoomManagerContext();
+  const { getRoomShareURL } = useSharedRoomManagerContext();
 
   const generateQRCode = useCallback(() => {
-    alert(getShareURL(room));
+    alert(getRoomShareURL(room));
 
     store.PROTO_generateQRCode("TODO: Handle this").then(setQRCode);
-  }, [getShareURL, room]);
+  }, [getRoomShareURL, room]);
 
   return (
     <li key={room.roomName}>
