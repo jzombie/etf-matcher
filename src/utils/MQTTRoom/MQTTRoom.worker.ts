@@ -289,7 +289,7 @@ export default class MQTTRoomWorker extends EventEmitter<MQTTRoomWorkerEvents> {
     }
   }
 
-  send(data: string | Buffer | object, options?: SendOptions) {
+  async send(data: string | Buffer | object, options?: SendOptions) {
     const payload: MessagePayload = {
       peerId: this.peerId,
       data,
@@ -297,10 +297,15 @@ export default class MQTTRoomWorker extends EventEmitter<MQTTRoomWorkerEvents> {
 
     const buffer = this._encodeMessagePayload(payload);
 
-    this._mqttClient.publish(
+    // TODO: Move this elsewhere
+    const DEFAULT_OPTIONS: SendOptions = { qos: 2, retain: true };
+
+    const mergedOptions = { ...DEFAULT_OPTIONS, ...(options || {}) };
+
+    return this._mqttClient.publishAsync(
       this._topicMessages,
       buffer,
-      options as mqtt.IClientPublishOptions,
+      mergedOptions as mqtt.IClientPublishOptions,
     );
   }
 
@@ -394,7 +399,10 @@ async function processQueue() {
         if (!workerRoom) {
           reject(`Unhandled worker room`);
         } else {
-          resolve(workerRoom.send(data, sendOptions));
+          workerRoom
+            .send(data, sendOptions)
+            .then((ack) => resolve(ack))
+            .catch((err) => reject(err));
         }
       } else if (functionName === "close") {
         const peerId = args[0] as string;
@@ -402,6 +410,7 @@ async function processQueue() {
         if (!workerRoom) {
           reject(`Unhandled worker room`);
         } else {
+          // FIXME: If this winds up being async it should resolve once finished
           resolve(workerRoom.close());
         }
       }
