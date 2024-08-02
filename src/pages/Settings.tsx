@@ -110,36 +110,39 @@ export default function Settings() {
               Cache entries: {Object.keys(cacheDetails).length}
             </Typography>
           </Box>
+
           <ProtoPieChart />
+
+          <div style={{ textAlign: "center" }}>
+            <Section>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={isProfilingCacheOverlayOpen}
+                    onChange={() =>
+                      store.setState(() => ({
+                        isProfilingCacheOverlayOpen:
+                          !isProfilingCacheOverlayOpen,
+                      }))
+                    }
+                  />
+                }
+                label="Enable Cache Profiling Overlay"
+              />
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => store.clearCache()}
+                disabled={!Object.keys(cacheDetails).length}
+              >
+                Clear Cache
+              </Button>
+            </Section>
+          </div>
         </Section>
       </Padding>
 
       <ProtoTable />
-
-      <Padding style={{ textAlign: "center" }}>
-        <Section>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={isProfilingCacheOverlayOpen}
-                onChange={() =>
-                  store.setState(() => ({
-                    isProfilingCacheOverlayOpen: !isProfilingCacheOverlayOpen,
-                  }))
-                }
-              />
-            }
-            label="Enable Cache Profiling Overlay"
-          />
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => store.clearCache()}
-          >
-            Clear Cache
-          </Button>
-        </Section>
-      </Padding>
 
       <Padding>
         <Section>
