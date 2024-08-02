@@ -7,7 +7,7 @@ import store from "@src/store";
 
 import useEventRefresh from "@hooks/useEventRefresh";
 
-import MQTTRoom from "@utils/MQTTRoom";
+import MQTTRoom, { RoomEvents } from "@utils/MQTTRoom";
 import { useMQTTRoomContext } from "@utils/MQTTRoom/react";
 
 import { useSharedRoomManagerContext } from "./SharedRoomManagerProvider";
@@ -19,7 +19,7 @@ export type RoomProps = {
 export default function Room({ room }: RoomProps) {
   const { disconnectFromRoom } = useMQTTRoomContext();
 
-  useEventRefresh(room, ["peersupdate"]);
+  useEventRefresh<RoomEvents>(room, ["peersupdate"]);
 
   const [qrCode, setQRCode] = useState<string | null>("");
 
