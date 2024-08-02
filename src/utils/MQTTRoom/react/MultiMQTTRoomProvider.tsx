@@ -1,16 +1,11 @@
-import React, {
-  ReactNode,
-  createContext,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import React, { ReactNode, createContext, useCallback, useState } from "react";
 
 import store from "@src/store";
 
+import useOnlyOnce from "@hooks/useOnlyOnce";
+
 import MQTTRoom, { validateTopic } from "@utils/MQTTRoom";
 import customLogger from "@utils/customLogger";
-import debounceWithKey from "@utils/debounceWithKey";
 
 const BROKER_URL = import.meta.env.VITE_MQTT_BROKER_URL;
 
@@ -90,24 +85,20 @@ export default function MultiMQTTRoomProvider({
     [rooms],
   );
 
-  useEffect(() => {
-    // Note: `debounceWithKey` is used here specifically to only handle once,
-    // regardless if `StrictMode` is used during development. There is likely
-    // a better way to do this.
-    debounceWithKey(
-      "mqtt_room_auto_connect",
-      () => {
-        const { subscribedMQTTRoomNames } = store.getState([
-          "subscribedMQTTRoomNames",
-        ]);
+  useOnlyOnce(() => {
+    // Note: This `setTimeout` seems to be necessary to allow the underlying
+    // IndexedDB storage to update the store state so this can be usable.
+    setTimeout(() => {
+      const { subscribedMQTTRoomNames } = store.getState([
+        "subscribedMQTTRoomNames",
+        "isIndexedDBReady",
+      ]);
 
-        for (const roomName of subscribedMQTTRoomNames) {
-          connectToRoom(roomName);
-        }
-      },
-      50,
-    );
-  }, [connectToRoom]);
+      for (const roomName of subscribedMQTTRoomNames) {
+        connectToRoom(roomName);
+      }
+    }, 100);
+  });
 
   const disconnectFromRoom = useCallback((room: MQTTRoom) => {
     store.removeMQTTRoomSubscription(room);
