@@ -40,6 +40,11 @@ export default function MQTTRoomProvider({
       customLogger.debug(`message from ${roomName}`, data);
     });
 
+    // TODO: Pipe up as UI notification
+    newRoom.on("error", (err) => {
+      customLogger.error(err);
+    });
+
     newRoom.on("connect", () => {
       setConnectedRooms((prevRooms) => ({ ...prevRooms, [roomName]: newRoom }));
 
