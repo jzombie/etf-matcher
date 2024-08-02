@@ -85,13 +85,16 @@ export default function SharedRoomManagerProvider({
     store.on(StateEmitterDefaultEvents.UPDATE, _handleStoreUpdate);
 
     for (const room of Object.values(connectedRooms)) {
-      room.on("message", (receivedData: { data: { [key: string]: any } }) => {
+      room.on("message", (receivedData) => {
         if (typeof receivedData === "object") {
           const batchUpdate: Partial<StoreStateProps> = {};
 
-          for (const key of Object.keys(receivedData.data)) {
+          for (const key of Object.keys(
+            receivedData.data,
+          ) as (keyof StoreStateProps)[]) {
             if (key in store.state) {
-              batchUpdate[key as keyof StoreStateProps] = (
+              // @ts-expect-error  Note: This type isn't correct according to TypeScript
+              batchUpdate[key] = (
                 receivedData.data as Partial<StoreStateProps>
               )[key as keyof StoreStateProps];
             }
