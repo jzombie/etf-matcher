@@ -4,6 +4,7 @@ import EventEmitter from "events";
 import {
   EnvelopeType,
   PostMessageStructKey,
+  RoomEvents,
   SendOptions,
 } from "./MQTTRoom.sharedBindings";
 import validateTopic from "./validateTopic";
@@ -12,7 +13,7 @@ const worker = new Worker(new URL("./MQTTRoom.worker", import.meta.url), {
   type: "module",
 });
 
-export default class MQTTRoom extends EventEmitter {
+export default class MQTTRoom extends EventEmitter<RoomEvents> {
   public static roomMap: Map<MQTTRoom["peerId"], MQTTRoom> = new Map();
 
   protected _peerId!: string;

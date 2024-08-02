@@ -1,3 +1,14 @@
+export interface RoomEvents {
+  connect: [];
+  reconnect: [];
+  disconnect: [];
+  offline: [];
+  peersupdate: [string[]];
+  message: [string | Buffer | object];
+  close: [];
+  error: [Error];
+}
+
 export enum EnvelopeType {
   Function = 1,
   Event = 2,
