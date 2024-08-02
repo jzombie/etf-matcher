@@ -123,7 +123,7 @@ export default function SharedRoomManagerProvider({
     }
 
     return () => {
-      store.off(StateEmitterDefaultEvents.UPDATE, _handleReceiveUpdate);
+      store.off(StateEmitterDefaultEvents.UPDATE, _handleSendUpdate);
 
       for (const room of Object.values(connectedRooms)) {
         room.off("message", _handleReceiveUpdate);
