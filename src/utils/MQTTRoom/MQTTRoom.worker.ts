@@ -31,7 +31,12 @@ type Presence = {
 
 const ENFORCE_ROOM_BASED_USERNAME = true;
 
-export default class MQTTRoomWorker extends EventEmitter<MQTTRoomEvents> {
+type MQTTRoomWorkerEvents = MQTTRoomEvents & {
+  // Override
+  message: [string | Buffer | object];
+};
+
+export default class MQTTRoomWorker extends EventEmitter<MQTTRoomWorkerEvents> {
   public static roomWorkerMap: Map<MQTTRoomWorker["peerId"], MQTTRoomWorker> =
     new Map();
 

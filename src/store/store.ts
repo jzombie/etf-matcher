@@ -626,3 +626,4 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 const store = new _Store();
 
 export default store;
+export { StateEmitterDefaultEvents };

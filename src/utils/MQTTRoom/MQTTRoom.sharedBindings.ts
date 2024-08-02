@@ -4,7 +4,12 @@ export interface MQTTRoomEvents {
   disconnect: [];
   offline: [];
   peersupdate: [string[]];
-  message: [string | Buffer | object];
+  message: [
+    {
+      peerId: string;
+      data: [string | Buffer | object];
+    },
+  ];
   close: [];
   error: [Error];
 }

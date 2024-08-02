@@ -6,6 +6,7 @@ import React, {
   useState,
 } from "react";
 
+import store, { StateEmitterDefaultEvents, StoreStateProps } from "@src/store";
 import { useLocation } from "react-router-dom";
 
 import MQTTRoom from "@utils/MQTTRoom";
@@ -27,7 +28,7 @@ export type SharedRoomManagerProviderProps = {
 export default function SharedRoomManagerProvider({
   children,
 }: SharedRoomManagerProviderProps) {
-  const { connectToRoom } = useMultiMQTTRoomContext();
+  const { connectToRoom, connectedRooms } = useMultiMQTTRoomContext();
 
   const location = useLocation();
 
@@ -61,6 +62,58 @@ export default function SharedRoomManagerProvider({
       connectToRoom(parsedJoinRoomNameFromURLString);
     }
   }, [parsedJoinRoomNameFromURLString, connectToRoom]);
+
+  // TODO: Refactor to handle all shared state
+  useEffect(() => {
+    // Flag to determine if local state set should be immediately synced to peers
+    let isOutboundSyncPaused = false;
+
+    const _handleStoreUpdate = (keys: (keyof StoreStateProps)[]) => {
+      if (isOutboundSyncPaused) {
+        return;
+      }
+
+      if (keys.includes("tickerBuckets")) {
+        const { tickerBuckets } = store.getState(["tickerBuckets"]);
+
+        for (const room of Object.values(connectedRooms)) {
+          room.send({ tickerBuckets } as object, { retain: true });
+        }
+      }
+    };
+
+    store.on(StateEmitterDefaultEvents.UPDATE, _handleStoreUpdate);
+
+    for (const room of Object.values(connectedRooms)) {
+      room.on("message", (receivedData: { data: { [key: string]: any } }) => {
+        if (typeof receivedData === "object") {
+          const batchUpdate: Partial<StoreStateProps> = {};
+
+          for (const key of Object.keys(receivedData.data)) {
+            if (key in store.state) {
+              batchUpdate[key as keyof StoreStateProps] = (
+                receivedData.data as Partial<StoreStateProps>
+              )[key as keyof StoreStateProps];
+            }
+          }
+
+          if (Object.keys(batchUpdate).length) {
+            // Prevent state set received from peer from going back out to peers
+            isOutboundSyncPaused = true;
+
+            store.setState(batchUpdate);
+
+            // Reenable outbound sync
+            isOutboundSyncPaused = false;
+          }
+        }
+      });
+    }
+
+    return () => {
+      store.off(StateEmitterDefaultEvents.UPDATE, _handleStoreUpdate);
+    };
+  }, [connectedRooms]);
 
   return (
     <SharedRoomManagerContext.Provider
