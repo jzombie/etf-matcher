@@ -19,7 +19,7 @@ export type RoomProps = {
 export default function Room({ room }: RoomProps) {
   const { disconnectFromRoom } = useMultiMQTTRoomContext();
 
-  useEventRefresh<MQTTRoomEvents>(room, ["peersupdate"]);
+  useEventRefresh<MQTTRoomEvents>(room, ["peersupdate", "syncupdate"]);
 
   const [qrCode, setQRCode] = useState<string | null>("");
 
@@ -49,6 +49,7 @@ export default function Room({ room }: RoomProps) {
         </AutoScaler>
       )}
       <div>Currently connected devices: {room.peers.length + 1}</div>
+      <div>In sync: {room.isInSync ? "yes" : "no"}</div>
     </li>
   );
 }
