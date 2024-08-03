@@ -71,9 +71,17 @@ export default function Room({ room }: RoomProps) {
           </Button>
         </Box>
         {qrCode && (
-          <AutoScaler style={{ width: 150, height: 150, marginBottom: "1rem" }}>
-            <div dangerouslySetInnerHTML={{ __html: qrCode }} />
-          </AutoScaler>
+          <div>
+            <Typography variant="body2" sx={{ marginBottom: 2 }}>
+              Scan this QR code from another device and its state will link up
+              to this device.
+            </Typography>
+            <AutoScaler
+              style={{ width: 150, height: 150, marginBottom: "1rem" }}
+            >
+              <div dangerouslySetInnerHTML={{ __html: qrCode }} />
+            </AutoScaler>
+          </div>
         )}
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
