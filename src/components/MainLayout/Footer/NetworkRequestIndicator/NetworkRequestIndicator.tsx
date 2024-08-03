@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 import SyncIcon from "@mui/icons-material/Sync";
+import IconButton from "@mui/material/IconButton";
 
 import clsx from "clsx";
+import { useNavigate } from "react-router-dom";
 
 import useStoreStateReader from "@hooks/useStoreStateReader";
 
@@ -45,16 +47,30 @@ export default function NetworkRequestNotifier({
     [styles.offline]: !isOnline,
   });
 
+  const navigate = useNavigate();
+
+  const handleSyncClick = () => {
+    navigate("/settings");
+  };
+
   // TODO: Wire up color state for sync icon
 
   return (
     <div className={clsx(styles.notifier, className)} {...rest}>
-      <SyncIcon
-        className={clsx({
-          [styles.sync_indicator]: true,
-          [styles.na]: true,
-        })}
-      />
+      <IconButton
+        onClick={handleSyncClick}
+        style={{
+          background: "transparent",
+          padding: 0,
+        }}
+      >
+        <SyncIcon
+          className={clsx({
+            [styles.sync_indicator]: true,
+            [styles.na]: true,
+          })}
+        />
+      </IconButton>
       <span className={onlineIndicatorClass} />
       {showNetworkURL && (
         <span className={styles.networkURL}>{networkURL}</span>
