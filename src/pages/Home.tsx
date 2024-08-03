@@ -7,7 +7,12 @@ import Scrollable from "@layoutKit/Scrollable";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
+import usePageTitleSetter from "@utils/usePageTitleSetter";
+
 export default function Home() {
+  // Home page; no title override
+  usePageTitleSetter(null);
+
   const { isSearchModalOpen } = useStoreStateReader(["isSearchModalOpen"]);
 
   const handleGetStarted = () => {

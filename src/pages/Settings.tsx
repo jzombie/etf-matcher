@@ -3,7 +3,6 @@ import React from "react";
 import {
   Box,
   Button,
-  Divider,
   FormControlLabel,
   Switch,
   Typography,
@@ -71,13 +70,17 @@ export default function Settings() {
             ETF Matcher doesn&apos;t use user accounts, but session data can be
             retained and shared with other devices in real-time.
           </Typography>
-          <Typography variant="body2" component="p">
-            Your devices can be linked with a common unique identifier.
+          <Typography variant="body2" component="p" mt={1}>
+            Your devices can be linked using a common room name.
+          </Typography>
+          <Typography variant="body2" component="p" mt={1}>
+            Multiple rooms can also be used simultaneously for different
+            sessions.
           </Typography>
 
-          <Divider />
-
-          <SharedRoomManager />
+          <Box mt={2}>
+            <SharedRoomManager />
+          </Box>
         </Section>
       </Padding>
 

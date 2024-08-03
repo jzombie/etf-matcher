@@ -5,6 +5,12 @@ $cache-color: purple; /* Change this to your desired color for Cache */
 $online-color: #89e051; /* Change this to your desired color for Online */
 $offline-color: red; /* Change this to your desired color for Offline */
 
+$sync-na-color: gray;
+$sync-success-color: $online-color;
+$sync-in-progress-color: yellow;
+$sync-error-color: $offline-color;
+$sync-offline-color: $offline-color;
+
 .notifier {
   display: inline-block;
   white-space: nowrap;
@@ -13,6 +19,10 @@ $offline-color: red; /* Change this to your desired color for Offline */
   .indicator {
     width: $indicator-size;
     height: $indicator-size;
+  }
+
+  .online_indicator {
+    @extend .indicator;
     border-radius: 50%;
     display: inline-block;
     margin-right: 5px;
@@ -43,6 +53,33 @@ $offline-color: red; /* Change this to your desired color for Offline */
   @keyframes blink {
     50% {
       opacity: 0;
+    }
+  }
+
+  .sync_indicator {
+    @extend .indicator;
+    width: 17px;
+    height: 17px;
+    vertical-align: middle;
+
+    &.na {
+      color: $sync-na-color;
+    }
+
+    &.in_sync {
+      color: $sync-success-color;
+    }
+
+    &.in_progress {
+      color: $sync-in-progress-color;
+    }
+
+    &.offline {
+      color: $sync-offline-color;
+    }
+
+    &.error {
+      color: $sync-error-color;
     }
   }
 }

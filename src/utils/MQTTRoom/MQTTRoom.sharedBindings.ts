@@ -1,9 +1,12 @@
 export interface MQTTRoomEvents {
   connect: [];
+  connectingstateupdate: [boolean];
+  connectionstateupdate: [boolean];
   reconnect: [];
   disconnect: [];
   offline: [];
   peersupdate: [string[]];
+  syncupdate: [boolean];
   message: [
     {
       peerId: string;

@@ -64,6 +64,9 @@ export default function SharedRoomManagerProvider({
   }, [parsedJoinRoomNameFromURLString, connectToRoom]);
 
   // Handle over-the-wire state sync
+  //
+  // TODO: For initial received state updates, there should be a UI dialog confirmation
+  // to export the current state before overwriting the local state with the update
   useEffect(() => {
     // Flag to determine if local state set should be immediately synced to peers
     let isOutboundSyncPaused = false;
@@ -104,6 +107,8 @@ export default function SharedRoomManagerProvider({
         // Prevent state set received from peer from going back out to peers
         isOutboundSyncPaused = true;
 
+        // FIXME: If `setState` is ever made into an asynchronous method, this
+        // should be awaited
         store.setState(batchUpdate);
 
         // Reenable outbound sync
@@ -116,7 +121,7 @@ export default function SharedRoomManagerProvider({
     }
 
     return () => {
-      store.off(StateEmitterDefaultEvents.UPDATE, _handleReceiveUpdate);
+      store.off(StateEmitterDefaultEvents.UPDATE, _handleSendUpdate);
 
       for (const room of Object.values(connectedRooms)) {
         room.off("message", _handleReceiveUpdate);

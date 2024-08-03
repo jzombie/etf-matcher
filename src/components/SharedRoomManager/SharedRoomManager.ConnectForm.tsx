@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from "react";
 
-import { Button, TextField } from "@mui/material";
+import { CircularProgress } from "@mui/material";
+import { Box, Button, InputAdornment, TextField } from "@mui/material";
 
 import { useMultiMQTTRoomContext } from "@utils/MQTTRoom/react";
 import customLogger from "@utils/customLogger";
@@ -8,7 +9,8 @@ import customLogger from "@utils/customLogger";
 export default function ConnectForm() {
   const [roomName, setRoomName] = useState("");
   const [isValid, setIsValid] = useState(true);
-  const { connectToRoom, validateRoomName } = useMultiMQTTRoomContext();
+  const { connectToRoom, validateRoomName, isConnecting } =
+    useMultiMQTTRoomContext();
 
   const handleConnect = useCallback(
     (e: React.FormEvent) => {
@@ -32,19 +34,51 @@ export default function ConnectForm() {
     [validateRoomName],
   );
 
+  const isError = !isValid && roomName.length > 0;
+
   return (
-    <form onSubmit={handleConnect}>
-      <TextField
-        label="Room Name"
-        value={roomName}
-        onChange={handleRoomNameChange}
-        variant="outlined"
-        style={{ margin: "10px 0" }}
-        disabled={false}
-      />
-      <Button type="submit" disabled={!roomName || !isValid}>
-        Connect
-      </Button>
-    </form>
+    <>
+      <Box
+        component="form"
+        onSubmit={handleConnect}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+          mt: 2,
+          maxWidth: "500px",
+          margin: "0 auto",
+        }}
+      >
+        <TextField
+          label="Room Name"
+          value={roomName}
+          onChange={handleRoomNameChange}
+          variant="outlined"
+          error={isError}
+          helperText={isError ? "Invalid room name" : ""}
+          fullWidth
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  disabled={!roomName || !isValid}
+                >
+                  Connect
+                </Button>
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Box>
+      {isConnecting && (
+        <Box sx={{ textAlign: "center" }} mt={2}>
+          <CircularProgress />
+        </Box>
+      )}
+    </>
   );
 }

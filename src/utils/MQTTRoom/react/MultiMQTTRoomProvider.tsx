@@ -1,4 +1,10 @@
-import React, { ReactNode, createContext, useCallback, useState } from "react";
+import React, {
+  ReactNode,
+  createContext,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 import store from "@src/store";
 
@@ -15,7 +21,10 @@ interface MultiMQTTRoomContextProps {
   connectToRoom: (roomName: string) => void;
   disconnectFromRoom: (room: MQTTRoom) => void;
   connectedRooms: Record<string, MQTTRoom>;
+  isConnecting: boolean;
   validateRoomName: (roomName: string) => boolean;
+  allRoomsInSync: boolean;
+  totalParticipantsForAllRooms: number;
 }
 
 export const MQTTRoomContext = createContext<
@@ -32,9 +41,67 @@ export default function MultiMQTTRoomProvider({
     Record<string, MQTTRoom>
   >({});
 
+  const [allRoomsInSync, setAllRoomsInSync] = useState<boolean>(false);
+
+  useEffect(() => {
+    // This condition can also represent not yet being connected, in which case
+    // we have no way of knowing we're in sync
+    if (!Object.values(rooms).length) {
+      setAllRoomsInSync(false);
+      return;
+    }
+
+    const handleSyncUpdate = () => {
+      // Check if all rooms are in sync
+      const allInSync = Object.values(rooms).every((room) => room.isInSync);
+      setAllRoomsInSync(allInSync);
+    };
+
+    for (const room of Object.values(rooms)) {
+      room.on("syncupdate", handleSyncUpdate);
+    }
+
+    // Perform initial check
+    handleSyncUpdate();
+
+    // Cleanup listeners on unmount or rooms change
+    return () => {
+      for (const room of Object.values(rooms)) {
+        room.off("syncupdate", handleSyncUpdate);
+      }
+    };
+  }, [rooms]);
+
   // This is to prevent `connectToRoom` reference from changing on every render,
   // which can be problematic for `useEffect` instances which use this as context.
   const stableRoomsRef = useStableCurrentRef(rooms);
+
+  const [totalParticipantsForAllRooms, setTotalParticipantsForAllRooms] =
+    useState<number>(0);
+
+  const calcTotalParticipantsForAllRooms = useCallback(() => {
+    const rooms = stableRoomsRef.current;
+
+    let totalParticipantsForAllRooms = 0;
+
+    for (const room of Object.values(rooms)) {
+      if (!room.isConnected) {
+        continue;
+      }
+
+      totalParticipantsForAllRooms += 1 + room.peers.length;
+    }
+
+    setTotalParticipantsForAllRooms(totalParticipantsForAllRooms);
+  }, [stableRoomsRef]);
+
+  const [isConnecting, setIsConnecting] = useState<boolean>(false);
+
+  const handleConnectingStateChange = useCallback(() => {
+    const rooms = stableRoomsRef.current;
+
+    setIsConnecting(Object.values(rooms).some((room) => room.isConnecting));
+  }, [stableRoomsRef]);
 
   const connectToRoom = useCallback(
     (roomName: string) => {
@@ -55,6 +122,8 @@ export default function MultiMQTTRoomProvider({
         customLogger.debug(`message from ${roomName}`, data);
       });
 
+      newRoom.on("connectingstateupdate", handleConnectingStateChange);
+
       // TODO: Pipe up as UI notification
       newRoom.on("error", (err) => {
         customLogger.error(err);
@@ -67,13 +136,21 @@ export default function MultiMQTTRoomProvider({
         }));
 
         customLogger.debug(`Connected to room: ${roomName}`);
+
+        // Recalcuate total participants on connect
+        calcTotalParticipantsForAllRooms();
       });
+
+      // Recalcuate total participants on peer update
+      newRoom.on("peersupdate", calcTotalParticipantsForAllRooms);
 
       newRoom.on("disconnect", () => {
         setConnectedRooms((prevRooms) => {
           const { [roomName]: _, ...remainingRooms } = prevRooms;
           return remainingRooms;
         });
+
+        calcTotalParticipantsForAllRooms();
       });
 
       newRoom.on("close", () => {
@@ -87,10 +164,17 @@ export default function MultiMQTTRoomProvider({
           return remainingRooms;
         });
 
+        // Recalcuate total participants on close
+        calcTotalParticipantsForAllRooms();
+
         customLogger.log(`Disconnected from room: ${roomName}`);
       });
     },
-    [stableRoomsRef],
+    [
+      stableRoomsRef,
+      handleConnectingStateChange,
+      calcTotalParticipantsForAllRooms,
+    ],
   );
 
   useOnlyOnce(() => {
@@ -125,7 +209,10 @@ export default function MultiMQTTRoomProvider({
         connectToRoom,
         disconnectFromRoom,
         connectedRooms,
+        isConnecting,
         validateRoomName,
+        allRoomsInSync,
+        totalParticipantsForAllRooms,
       }}
     >
       {children}
