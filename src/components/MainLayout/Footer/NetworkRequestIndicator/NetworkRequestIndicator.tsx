@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+import SyncIcon from "@mui/icons-material/Sync";
 
 import clsx from "clsx";
 
@@ -31,8 +33,8 @@ export default function NetworkRequestNotifier({
     latestCacheOpenedRequestPathName ||
     (isOnline ? "Online" : "Offline");
 
-  const indicatorClass = clsx({
-    [styles.indicator]: true,
+  const onlineIndicatorClass = clsx({
+    [styles.online_indicator]: true,
     [styles.xhr]: latestXHROpenedRequestPathName,
     [styles.cache]:
       latestCacheOpenedRequestPathName && !latestXHROpenedRequestPathName,
@@ -43,9 +45,17 @@ export default function NetworkRequestNotifier({
     [styles.offline]: !isOnline,
   });
 
+  // TODO: Wire up color state for sync icon
+
   return (
     <div className={clsx(styles.notifier, className)} {...rest}>
-      <span className={indicatorClass} />
+      <SyncIcon
+        className={clsx({
+          [styles.sync_indicator]: true,
+          [styles.na]: true,
+        })}
+      />
+      <span className={onlineIndicatorClass} />
       {showNetworkURL && (
         <span className={styles.networkURL}>{networkURL}</span>
       )}
