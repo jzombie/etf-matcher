@@ -1,5 +1,7 @@
 export interface MQTTRoomEvents {
   connect: [];
+  connectingstateupdate: [boolean];
+  connectionstateupdate: [boolean];
   reconnect: [];
   disconnect: [];
   offline: [];

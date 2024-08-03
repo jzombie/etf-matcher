@@ -20,6 +20,7 @@ export default class MQTTRoom extends EventEmitter<MQTTRoomEvents> {
   protected _peers: string[] = [];
   protected _brokerURL: string;
   protected _roomName: string;
+  protected _isConnecting: boolean = false;
   protected _isConnected: boolean = false;
   protected _isInSync: boolean = false;
   protected _operationStack: string[] = [];
@@ -34,20 +35,33 @@ export default class MQTTRoom extends EventEmitter<MQTTRoomEvents> {
     this._brokerURL = brokerURL;
     this._roomName = roomName;
 
-    this._connect();
-
     this.on("message", () => {
       if (!this._operationStack.length && !this._isInSync) {
         this._setSyncState(true);
       }
     });
+
+    this.on("disconnect", () => {
+      this._setConnectionState(false);
+    });
+
+    // Note: `queueMicrotask` is not sufficient here for letting React be aware
+    // of the `connecting state` prior to connect
+    setTimeout(() => {
+      this._connect();
+    });
   }
 
   protected async _connect() {
+    this._setConnectingState(true);
+
     const peerId = await callMQTTRoomWorker<string>("connect-room", [
       this._brokerURL,
       this._roomName,
     ]);
+
+    this._setConnectingState(false); // `ing`
+    this._setConnectionState(true); // `ion`
 
     this._peerId = peerId;
 
@@ -57,6 +71,16 @@ export default class MQTTRoom extends EventEmitter<MQTTRoomEvents> {
 
     this._isConnected = true;
     this.emit("connect");
+  }
+
+  protected _setConnectingState(isConnecting: boolean) {
+    this._isConnecting = isConnecting;
+    this.emit("connectingstateupdate", isConnecting);
+  }
+
+  protected _setConnectionState(isConnected: boolean) {
+    this._isConnected = isConnected;
+    this.emit("connectionstateupdate", isConnected);
   }
 
   protected _setSyncState(isInSync: boolean) {
@@ -108,6 +132,10 @@ export default class MQTTRoom extends EventEmitter<MQTTRoomEvents> {
     return this._roomName;
   }
 
+  get isConnecting() {
+    return this._isConnecting;
+  }
+
   get isConnected() {
     return this._isConnected;
   }
@@ -122,7 +150,7 @@ export default class MQTTRoom extends EventEmitter<MQTTRoomEvents> {
 
   close() {
     this._peers = [];
-    this._isConnected = false;
+    this._setConnectionState(false);
 
     callMQTTRoomWorker("close", [this.peerId]);
     this.emit("close");

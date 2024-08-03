@@ -21,6 +21,7 @@ interface MultiMQTTRoomContextProps {
   connectToRoom: (roomName: string) => void;
   disconnectFromRoom: (room: MQTTRoom) => void;
   connectedRooms: Record<string, MQTTRoom>;
+  isConnecting: boolean;
   validateRoomName: (roomName: string) => boolean;
   allRoomsInSync: boolean;
   totalParticipantsForAllRooms: number;
@@ -94,6 +95,14 @@ export default function MultiMQTTRoomProvider({
     setTotalParticipantsForAllRooms(totalParticipantsForAllRooms);
   }, [stableRoomsRef]);
 
+  const [isConnecting, setIsConnecting] = useState<boolean>(false);
+
+  const handleConnectingStateChange = useCallback(() => {
+    const rooms = stableRoomsRef.current;
+
+    setIsConnecting(Object.values(rooms).some((room) => room.isConnecting));
+  }, [stableRoomsRef]);
+
   const connectToRoom = useCallback(
     (roomName: string) => {
       const rooms = stableRoomsRef.current;
@@ -112,6 +121,8 @@ export default function MultiMQTTRoomProvider({
       newRoom.on("message", (data) => {
         customLogger.debug(`message from ${roomName}`, data);
       });
+
+      newRoom.on("connectingstateupdate", handleConnectingStateChange);
 
       // TODO: Pipe up as UI notification
       newRoom.on("error", (err) => {
@@ -159,7 +170,11 @@ export default function MultiMQTTRoomProvider({
         customLogger.log(`Disconnected from room: ${roomName}`);
       });
     },
-    [stableRoomsRef, calcTotalParticipantsForAllRooms],
+    [
+      stableRoomsRef,
+      handleConnectingStateChange,
+      calcTotalParticipantsForAllRooms,
+    ],
   );
 
   useOnlyOnce(() => {
@@ -194,6 +209,7 @@ export default function MultiMQTTRoomProvider({
         connectToRoom,
         disconnectFromRoom,
         connectedRooms,
+        isConnecting,
         validateRoomName,
         allRoomsInSync,
         totalParticipantsForAllRooms,
