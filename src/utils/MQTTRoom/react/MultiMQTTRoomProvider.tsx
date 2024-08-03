@@ -1,4 +1,10 @@
-import React, { ReactNode, createContext, useCallback, useState } from "react";
+import React, {
+  ReactNode,
+  createContext,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 import store from "@src/store";
 
@@ -16,6 +22,7 @@ interface MultiMQTTRoomContextProps {
   disconnectFromRoom: (room: MQTTRoom) => void;
   connectedRooms: Record<string, MQTTRoom>;
   validateRoomName: (roomName: string) => boolean;
+  allRoomsInSync: boolean;
 }
 
 export const MQTTRoomContext = createContext<
@@ -31,6 +38,37 @@ export default function MultiMQTTRoomProvider({
   const [connectedRooms, setConnectedRooms] = useState<
     Record<string, MQTTRoom>
   >({});
+
+  const [allRoomsInSync, setAllRoomsInSync] = useState<boolean>(false);
+
+  useEffect(() => {
+    // This condition can also represent not yet being connected, in which case
+    // we have no way of knowing we're in sync
+    if (!Object.values(rooms).length) {
+      setAllRoomsInSync(false);
+      return;
+    }
+
+    const handleSyncUpdate = () => {
+      // Check if all rooms are in sync
+      const allInSync = Object.values(rooms).every((room) => room.isInSync);
+      setAllRoomsInSync(allInSync);
+    };
+
+    for (const room of Object.values(rooms)) {
+      room.on("syncupdate", handleSyncUpdate);
+    }
+
+    // Perform initial check
+    handleSyncUpdate();
+
+    // Cleanup listeners on unmount or rooms change
+    return () => {
+      for (const room of Object.values(rooms)) {
+        room.off("syncupdate", handleSyncUpdate);
+      }
+    };
+  }, [rooms]);
 
   // This is to prevent `connectToRoom` reference from changing on every render,
   // which can be problematic for `useEffect` instances which use this as context.
@@ -126,6 +164,7 @@ export default function MultiMQTTRoomProvider({
         disconnectFromRoom,
         connectedRooms,
         validateRoomName,
+        allRoomsInSync,
       }}
     >
       {children}

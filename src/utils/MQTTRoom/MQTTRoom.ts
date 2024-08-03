@@ -21,6 +21,8 @@ export default class MQTTRoom extends EventEmitter<MQTTRoomEvents> {
   protected _brokerURL: string;
   protected _roomName: string;
   protected _isConnected: boolean = false;
+  protected _isInSync: boolean = false;
+  protected _operationStack: string[] = []; // Stack to track operations
 
   constructor(brokerURL: string, roomName: string) {
     super();
@@ -33,6 +35,12 @@ export default class MQTTRoom extends EventEmitter<MQTTRoomEvents> {
     this._roomName = roomName;
 
     this._connect();
+
+    this.on("message", () => {
+      if (!this._operationStack.length && !this._isInSync) {
+        this._setSyncState(true);
+      }
+    });
   }
 
   protected async _connect() {
@@ -51,14 +59,45 @@ export default class MQTTRoom extends EventEmitter<MQTTRoomEvents> {
     this.emit("connect");
   }
 
+  protected _setSyncState(isInSync: boolean) {
+    this._isInSync = isInSync;
+    this.emit("syncupdate", isInSync);
+  }
+
+  protected _pushStateOperation(operation: string) {
+    this._operationStack.push(operation);
+    this._setSyncState(false);
+  }
+
+  protected _popStateOperation(operation: string) {
+    const index = this._operationStack.indexOf(operation);
+    if (index > -1) {
+      this._operationStack.splice(index, 1);
+    }
+    if (this._operationStack.length === 0) {
+      this._setSyncState(true);
+    }
+  }
+
   async send(data: string | Buffer | object, options?: SendOptions) {
+    this._pushStateOperation("send");
+
     if (Buffer.isBuffer(data)) {
       data = {
         type: "Buffer",
         data: Array.from(data),
       };
     }
-    await callMQTTRoomWorker("send", [this.peerId, data, options]);
+
+    try {
+      await callMQTTRoomWorker("send", [this.peerId, data, options]);
+    } finally {
+      this._popStateOperation("send");
+    }
+  }
+
+  get isInSync() {
+    return this._isInSync;
   }
 
   get peerId() {

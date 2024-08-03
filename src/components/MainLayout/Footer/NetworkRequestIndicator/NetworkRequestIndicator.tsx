@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import SyncIcon from "@mui/icons-material/Sync";
 import IconButton from "@mui/material/IconButton";
@@ -7,6 +7,8 @@ import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
 
 import useStoreStateReader from "@hooks/useStoreStateReader";
+
+import { useMultiMQTTRoomContext } from "@utils/MQTTRoom/react";
 
 import styles from "./NetworkRequestIndicator.module.scss";
 
@@ -20,6 +22,8 @@ export default function NetworkRequestNotifier({
   showNetworkURL = true,
   ...rest
 }: NetworkRequestIndicatorProps) {
+  const { allRoomsInSync, connectedRooms } = useMultiMQTTRoomContext();
+
   const {
     latestXHROpenedRequestPathName,
     latestCacheOpenedRequestPathName,
@@ -53,7 +57,10 @@ export default function NetworkRequestNotifier({
     navigate("/settings");
   };
 
-  // TODO: Wire up color state for sync icon
+  const totalRooms = useMemo(
+    () => Object.values(connectedRooms).length,
+    [connectedRooms],
+  );
 
   return (
     <div className={clsx(styles.notifier, className)} {...rest}>
@@ -67,7 +74,10 @@ export default function NetworkRequestNotifier({
         <SyncIcon
           className={clsx({
             [styles.sync_indicator]: true,
-            [styles.na]: true,
+            [styles.na]: !totalRooms,
+            [styles.in_sync]: allRoomsInSync,
+            // FIXME: This is rather naive, but good enough for now
+            [styles.in_progress]: !allRoomsInSync && totalRooms > 0,
           })}
         />
       </IconButton>
