@@ -52,8 +52,8 @@ export default function ConnectForm() {
         value={roomName}
         onChange={handleRoomNameChange}
         variant="outlined"
-        error={!isError}
-        helperText={!isError ? "Invalid room name" : ""}
+        error={isError}
+        helperText={isError ? "Invalid room name" : ""}
         fullWidth
         InputProps={{
           endAdornment: (
