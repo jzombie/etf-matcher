@@ -44,7 +44,7 @@ export type RustServiceETFAggregateDetail = {
 
 export type RustServiceCacheDetail = {
   key: string;
-  size: string;
+  size: number;
   age: number;
   last_accessed: number;
   access_count: number;
