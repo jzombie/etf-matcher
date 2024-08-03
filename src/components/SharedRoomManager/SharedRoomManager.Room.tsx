@@ -79,7 +79,7 @@ export default function Room({ room }: RoomProps) {
           <Grid item xs={12} sm={6}>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Devices sx={{ mr: 1 }} />
-              <Typography>
+              <Typography variant="body2">
                 Currently connected devices: {room.peers.length + 1}
               </Typography>
             </Box>
@@ -87,7 +87,9 @@ export default function Room({ room }: RoomProps) {
           <Grid item xs={12} sm={6}>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Sync sx={{ mr: 1 }} />
-              <Typography>In sync: {room.isInSync ? "yes" : "no"}</Typography>
+              <Typography variant="body2">
+                In sync: {room.isInSync ? "yes" : "no"}
+              </Typography>
             </Box>
           </Grid>
         </Grid>
