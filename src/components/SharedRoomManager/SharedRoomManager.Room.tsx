@@ -37,12 +37,7 @@ export default function Room({ room }: RoomProps) {
       <Button onClick={() => disconnectFromRoom(room)} color="secondary">
         Disconnect
       </Button>
-      <Button
-        onClick={() => room.send(new Date().toISOString(), { retain: true })}
-      >
-        PROTO: send & retain
-      </Button>
-      <Button onClick={generateQRCode}>PROTO: share</Button>
+      <Button onClick={generateQRCode}>QR Code</Button>
       {qrCode && (
         <AutoScaler style={{ width: 150, height: 150 }}>
           <div dangerouslySetInnerHTML={{ __html: qrCode }} />
