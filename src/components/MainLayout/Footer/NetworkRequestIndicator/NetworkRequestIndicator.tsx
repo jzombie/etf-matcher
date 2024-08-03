@@ -66,7 +66,7 @@ export default function NetworkRequestNotifier({
   return (
     <div className={clsx(styles.notifier, className)} {...rest}>
       <IconButton
-        title={`${totalParticipantsForAllRooms} connected browser${totalParticipantsForAllRooms !== 1 ? "s" : ""}`}
+        title={`${totalParticipantsForAllRooms} connected device${totalParticipantsForAllRooms !== 1 ? "s" : ""}`}
         onClick={handleSyncClick}
         style={{
           background: "transparent",
