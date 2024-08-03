@@ -75,7 +75,7 @@ export default function Settings() {
             Your devices can be linked with a common unique identifier.
           </Typography>
 
-          <Divider />
+          <Divider sx={{ margin: 2 }} />
 
           <SharedRoomManager />
         </Section>

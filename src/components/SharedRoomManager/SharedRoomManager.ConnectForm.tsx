@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 
-import { Button, TextField } from "@mui/material";
+import { Box, Button, InputAdornment, TextField } from "@mui/material";
 
 import { useMultiMQTTRoomContext } from "@utils/MQTTRoom/react";
 import customLogger from "@utils/customLogger";
@@ -32,19 +32,44 @@ export default function ConnectForm() {
     [validateRoomName],
   );
 
+  const isError = !isValid && roomName.length > 0;
+
   return (
-    <form onSubmit={handleConnect}>
+    <Box
+      component="form"
+      onSubmit={handleConnect}
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: 2,
+        mt: 2,
+        maxWidth: "500px",
+        margin: "0 auto",
+      }}
+    >
       <TextField
         label="Room Name"
         value={roomName}
         onChange={handleRoomNameChange}
         variant="outlined"
-        style={{ margin: "10px 0" }}
-        disabled={false}
+        error={!isError}
+        helperText={!isError ? "Invalid room name" : ""}
+        fullWidth
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                disabled={!roomName || !isValid}
+              >
+                Connect
+              </Button>
+            </InputAdornment>
+          ),
+        }}
       />
-      <Button type="submit" disabled={!roomName || !isValid}>
-        Connect
-      </Button>
-    </form>
+    </Box>
   );
 }
