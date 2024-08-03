@@ -11,7 +11,6 @@ import { useLocation } from "react-router-dom";
 
 import MQTTRoom, { MQTTRoomEvents } from "@utils/MQTTRoom";
 import { useMultiMQTTRoomContext } from "@utils/MQTTRoom/react";
-import customLogger from "@utils/customLogger";
 
 interface SharedRoomManagerContextProps {
   getRoomShareURL: (room: MQTTRoom) => string;
