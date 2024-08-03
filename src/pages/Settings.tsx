@@ -3,7 +3,6 @@ import React from "react";
 import {
   Box,
   Button,
-  Divider,
   FormControlLabel,
   Switch,
   Typography,
