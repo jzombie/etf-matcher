@@ -81,14 +81,7 @@ export default function SharedRoomManagerProvider({
         const { tickerBuckets } = store.getState(["tickerBuckets"]);
 
         for (const room of Object.values(connectedRooms)) {
-          room
-            .send({ tickerBuckets } as object, { retain: true })
-            .then((ack) => {
-              customLogger.debug({ ack });
-
-              // TODO: Integrate ability to know when this has finished sending, and use to
-              // help make a determination that the local state has fully synced up remotely
-            });
+          room.send({ tickerBuckets } as object, { retain: true });
         }
       }
     };
