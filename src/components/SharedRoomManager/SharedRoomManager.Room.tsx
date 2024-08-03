@@ -73,8 +73,8 @@ export default function Room({ room }: RoomProps) {
         {qrCode && (
           <div>
             <Typography variant="body2" sx={{ marginBottom: 2 }}>
-              Scan this QR code from another device and its state will link up
-              to this device.
+              Scan this QR code from another device to synchronize its state
+              with this device.
             </Typography>
             <AutoScaler
               style={{ width: 150, height: 150, marginBottom: "1rem" }}
