@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 
+import LockIcon from "@mui/icons-material/Lock";
 import {
   Button,
   FormControl,
   FormHelperText,
+  InputAdornment,
   TextField,
   Typography,
 } from "@mui/material";
@@ -102,6 +104,13 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
                     onChange={handlePasswordChange}
                     onKeyDown={handleKeyDown}
                     sx={{ backgroundColor: "rgba(0,0,0,.5)" }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LockIcon sx={{ color: "#999" }} />
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                   {errorMessage && (
                     <FormHelperText error>{errorMessage}</FormHelperText>
