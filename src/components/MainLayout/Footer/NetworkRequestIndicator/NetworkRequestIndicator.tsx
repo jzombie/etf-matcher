@@ -22,7 +22,8 @@ export default function NetworkRequestNotifier({
   showNetworkURL = true,
   ...rest
 }: NetworkRequestIndicatorProps) {
-  const { allRoomsInSync, connectedRooms } = useMultiMQTTRoomContext();
+  const { allRoomsInSync, connectedRooms, totalParticipants } =
+    useMultiMQTTRoomContext();
 
   const {
     latestXHROpenedRequestPathName,
@@ -69,6 +70,8 @@ export default function NetworkRequestNotifier({
         style={{
           background: "transparent",
           padding: 0,
+          fontSize: "1rem",
+          marginRight: 4,
         }}
       >
         <SyncIcon
@@ -80,6 +83,7 @@ export default function NetworkRequestNotifier({
             [styles.in_progress]: !allRoomsInSync && totalRooms > 0,
           })}
         />
+        <span style={{ color: "#999" }}>{totalParticipants}</span>
       </IconButton>
       <span className={onlineIndicatorClass} />
       {showNetworkURL && (

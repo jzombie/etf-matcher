@@ -23,6 +23,7 @@ interface MultiMQTTRoomContextProps {
   connectedRooms: Record<string, MQTTRoom>;
   validateRoomName: (roomName: string) => boolean;
   allRoomsInSync: boolean;
+  totalParticipants: number;
 }
 
 export const MQTTRoomContext = createContext<
@@ -74,6 +75,24 @@ export default function MultiMQTTRoomProvider({
   // which can be problematic for `useEffect` instances which use this as context.
   const stableRoomsRef = useStableCurrentRef(rooms);
 
+  const [totalParticipants, setTotalParticipants] = useState<number>(0);
+
+  const calcTotalParticipants = useCallback(() => {
+    const rooms = stableRoomsRef.current;
+
+    let totalParticipants = 0;
+
+    for (const room of Object.values(rooms)) {
+      if (!room.isConnected) {
+        continue;
+      }
+
+      totalParticipants += 1 + room.peers.length;
+    }
+
+    setTotalParticipants(totalParticipants);
+  }, [stableRoomsRef]);
+
   const connectToRoom = useCallback(
     (roomName: string) => {
       const rooms = stableRoomsRef.current;
@@ -107,11 +126,15 @@ export default function MultiMQTTRoomProvider({
         customLogger.debug(`Connected to room: ${roomName}`);
       });
 
+      newRoom.on("peersupdate", calcTotalParticipants);
+
       newRoom.on("disconnect", () => {
         setConnectedRooms((prevRooms) => {
           const { [roomName]: _, ...remainingRooms } = prevRooms;
           return remainingRooms;
         });
+
+        calcTotalParticipants();
       });
 
       newRoom.on("close", () => {
@@ -125,10 +148,12 @@ export default function MultiMQTTRoomProvider({
           return remainingRooms;
         });
 
+        calcTotalParticipants();
+
         customLogger.log(`Disconnected from room: ${roomName}`);
       });
     },
-    [stableRoomsRef],
+    [stableRoomsRef, calcTotalParticipants],
   );
 
   useOnlyOnce(() => {
@@ -165,6 +190,7 @@ export default function MultiMQTTRoomProvider({
         connectedRooms,
         validateRoomName,
         allRoomsInSync,
+        totalParticipants,
       }}
     >
       {children}

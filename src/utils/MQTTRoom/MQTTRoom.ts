@@ -22,7 +22,7 @@ export default class MQTTRoom extends EventEmitter<MQTTRoomEvents> {
   protected _roomName: string;
   protected _isConnected: boolean = false;
   protected _isInSync: boolean = false;
-  protected _operationStack: string[] = []; // Stack to track operations
+  protected _operationStack: string[] = [];
 
   constructor(brokerURL: string, roomName: string) {
     super();
@@ -121,6 +121,9 @@ export default class MQTTRoom extends EventEmitter<MQTTRoomEvents> {
   }
 
   close() {
+    this._peers = [];
+    this._isConnected = false;
+
     callMQTTRoomWorker("close", [this.peerId]);
     this.emit("close");
     this.removeAllListeners();
