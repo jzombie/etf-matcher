@@ -124,8 +124,12 @@ export default function MultiMQTTRoomProvider({
         }));
 
         customLogger.debug(`Connected to room: ${roomName}`);
+
+        // Recalcuate total participants on connect
+        calcTotalParticipants();
       });
 
+      // Recalcuate total participants on peer update
       newRoom.on("peersupdate", calcTotalParticipants);
 
       newRoom.on("disconnect", () => {
@@ -148,6 +152,7 @@ export default function MultiMQTTRoomProvider({
           return remainingRooms;
         });
 
+        // Recalcuate total participants on close
         calcTotalParticipants();
 
         customLogger.log(`Disconnected from room: ${roomName}`);
