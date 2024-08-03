@@ -22,7 +22,7 @@ export default function NetworkRequestNotifier({
   showNetworkURL = true,
   ...rest
 }: NetworkRequestIndicatorProps) {
-  const { allRoomsInSync, connectedRooms, totalParticipants } =
+  const { allRoomsInSync, connectedRooms, totalParticipantsForAllRooms } =
     useMultiMQTTRoomContext();
 
   const {
@@ -83,7 +83,7 @@ export default function NetworkRequestNotifier({
             [styles.in_progress]: !allRoomsInSync && totalRooms > 0,
           })}
         />
-        <span style={{ color: "#999" }}>{totalParticipants}</span>
+        <span style={{ color: "#999" }}>{totalParticipantsForAllRooms}</span>
       </IconButton>
       <span className={onlineIndicatorClass} />
       {showNetworkURL && (

@@ -23,7 +23,7 @@ interface MultiMQTTRoomContextProps {
   connectedRooms: Record<string, MQTTRoom>;
   validateRoomName: (roomName: string) => boolean;
   allRoomsInSync: boolean;
-  totalParticipants: number;
+  totalParticipantsForAllRooms: number;
 }
 
 export const MQTTRoomContext = createContext<
@@ -75,22 +75,23 @@ export default function MultiMQTTRoomProvider({
   // which can be problematic for `useEffect` instances which use this as context.
   const stableRoomsRef = useStableCurrentRef(rooms);
 
-  const [totalParticipants, setTotalParticipants] = useState<number>(0);
+  const [totalParticipantsForAllRooms, setTotalParticipantsForAllRooms] =
+    useState<number>(0);
 
-  const calcTotalParticipants = useCallback(() => {
+  const calcTotalParticipantsForAllRooms = useCallback(() => {
     const rooms = stableRoomsRef.current;
 
-    let totalParticipants = 0;
+    let totalParticipantsForAllRooms = 0;
 
     for (const room of Object.values(rooms)) {
       if (!room.isConnected) {
         continue;
       }
 
-      totalParticipants += 1 + room.peers.length;
+      totalParticipantsForAllRooms += 1 + room.peers.length;
     }
 
-    setTotalParticipants(totalParticipants);
+    setTotalParticipantsForAllRooms(totalParticipantsForAllRooms);
   }, [stableRoomsRef]);
 
   const connectToRoom = useCallback(
@@ -126,11 +127,11 @@ export default function MultiMQTTRoomProvider({
         customLogger.debug(`Connected to room: ${roomName}`);
 
         // Recalcuate total participants on connect
-        calcTotalParticipants();
+        calcTotalParticipantsForAllRooms();
       });
 
       // Recalcuate total participants on peer update
-      newRoom.on("peersupdate", calcTotalParticipants);
+      newRoom.on("peersupdate", calcTotalParticipantsForAllRooms);
 
       newRoom.on("disconnect", () => {
         setConnectedRooms((prevRooms) => {
@@ -138,7 +139,7 @@ export default function MultiMQTTRoomProvider({
           return remainingRooms;
         });
 
-        calcTotalParticipants();
+        calcTotalParticipantsForAllRooms();
       });
 
       newRoom.on("close", () => {
@@ -153,12 +154,12 @@ export default function MultiMQTTRoomProvider({
         });
 
         // Recalcuate total participants on close
-        calcTotalParticipants();
+        calcTotalParticipantsForAllRooms();
 
         customLogger.log(`Disconnected from room: ${roomName}`);
       });
     },
-    [stableRoomsRef, calcTotalParticipants],
+    [stableRoomsRef, calcTotalParticipantsForAllRooms],
   );
 
   useOnlyOnce(() => {
@@ -195,7 +196,7 @@ export default function MultiMQTTRoomProvider({
         connectedRooms,
         validateRoomName,
         allRoomsInSync,
-        totalParticipants,
+        totalParticipantsForAllRooms,
       }}
     >
       {children}
