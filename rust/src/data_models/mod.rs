@@ -15,7 +15,9 @@ pub mod exchange_by_id;
 pub use data_build_info::DataBuildInfo;
 pub use data_url::DataURL;
 pub use etf_aggregate_detail::{ETFAggregateDetail, ETFAggregateDetailResponse};
-pub use etf_holding_ticker::{ETFHoldingTicker, ETFHoldingTickerResponse};
+pub use etf_holding_ticker::{
+    ETFHoldingTicker, ETFHoldingTickerResponse, ETFHoldingWeightResponse,
+};
 pub use industry_by_id::IndustryById;
 pub use paginated_results::PaginatedResults;
 pub use sector_by_id::SectorById;

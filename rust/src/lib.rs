@@ -12,8 +12,8 @@ use crate::types::TickerId;
 
 use crate::data_models::{
     DataBuildInfo, DataURL, ETFAggregateDetail, ETFAggregateDetailResponse, ETFHoldingTicker,
-    ETFHoldingTickerResponse, IndustryById, PaginatedResults, SectorById, TickerDetail,
-    TickerDetailResponse, TickerETFHolder, TickerSearch, TickerSearchResult,
+    ETFHoldingTickerResponse, ETFHoldingWeightResponse, IndustryById, PaginatedResults, SectorById,
+    TickerDetail, TickerDetailResponse, TickerETFHolder, TickerSearch, TickerSearchResult,
 };
 
 use crate::data_models::image::get_image_info as lib_get_image_info;
@@ -132,7 +132,22 @@ pub async fn get_etf_holdings_by_etf_ticker_id(
         ETFHoldingTicker::get_etf_holdings_by_etf_ticker_id(etf_ticker_id, page, page_size).await?;
     to_value(&etf_holding_tickers).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
-            "Failed to convert V<PaginatedResults<ETFHoldingTickerResponse> to JsValue: {}",
+            "Failed to convert <PaginatedResults<ETFHoldingTickerResponse> to JsValue: {}",
+            err
+        ))
+    })
+}
+
+#[wasm_bindgen]
+pub async fn get_etf_holding_weight(
+    etf_ticker_id: TickerId,
+    holding_ticker_id: TickerId,
+) -> Result<JsValue, JsValue> {
+    let etf_holding_weight: ETFHoldingWeightResponse =
+        ETFHoldingTicker::get_etf_holding_weight(etf_ticker_id, holding_ticker_id).await?;
+    to_value(&etf_holding_weight).map_err(|err: serde_wasm_bindgen::Error| {
+        JsValue::from_str(&format!(
+            "Failed to convert ETFHoldingWeightResponse to JsValue: {}",
             err
         ))
     })

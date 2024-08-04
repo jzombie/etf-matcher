@@ -617,6 +617,16 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     >("get_etf_holdings_by_etf_ticker_id", [tickerId, page, pageSize]);
   }
 
+  async PROTO_fetchETFHoldingWeight(
+    etfTickerId: number,
+    holdingTickerId: number,
+  ) {
+    return callRustService("get_etf_holding_weight", [
+      etfTickerId,
+      holdingTickerId,
+    ]);
+  }
+
   removeCacheEntry(key: string) {
     callRustService("remove_cache_entry", [key]);
 

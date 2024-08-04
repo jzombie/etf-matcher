@@ -22,6 +22,14 @@ pub struct ETFHoldingTickerResponse {
     pub is_etf: Option<bool>,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ETFHoldingWeightResponse {
+    pub etf_ticker_id: TickerId,
+    pub holding_ticker_id: TickerId,
+    pub holding_market_value: f32,
+    pub holding_percentage: f32,
+}
+
 impl ETFHoldingTicker {
     pub async fn get_etf_holdings_by_etf_ticker_id(
         etf_ticker_id: TickerId,
@@ -63,5 +71,38 @@ impl ETFHoldingTicker {
         let paginated_results = PaginatedResults::paginate(detailed_holdings, page, page_size)?;
 
         Ok(paginated_results)
+    }
+
+    // A non-paginated direct variant of `get_etf_holdings_by_etf_ticker_id`
+    pub async fn get_etf_holding_weight(
+        etf_ticker_id: TickerId,
+        holding_ticker_id: TickerId,
+    ) -> Result<ETFHoldingWeightResponse, JsValue> {
+        let url: &str = DataURL::ETFHoldingTickersShardIndex.value();
+
+        // Query shard for the ETF ticker ID
+        let holdings = query_shard_for_id(url, &etf_ticker_id, |detail: &ETFHoldingTicker| {
+            Some(&detail.etf_ticker_id)
+        })
+        .await?
+        .ok_or_else(|| JsValue::from_str("ETF ticker not found"))?;
+
+        // Parse the ETF holdings JSON
+        let etf_holdings: Vec<ETFHoldingTickerResponse> =
+            serde_json::from_str(&holdings.holdings_json)
+                .map_err(|e| JsValue::from_str(&format!("Failed to parse holdings JSON: {}", e)))?;
+
+        // Find the specific holding
+        let holding = etf_holdings
+            .into_iter()
+            .find(|h| h.holding_ticker_id == holding_ticker_id)
+            .ok_or_else(|| JsValue::from_str("Holding ticker not found in ETF"))?;
+
+        Ok(ETFHoldingWeightResponse {
+            etf_ticker_id,
+            holding_ticker_id: holding.holding_ticker_id,
+            holding_market_value: holding.holding_market_value,
+            holding_percentage: holding.holding_percentage,
+        })
     }
 }

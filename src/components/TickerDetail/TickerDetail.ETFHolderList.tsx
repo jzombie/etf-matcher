@@ -48,6 +48,19 @@ export default function ETFHolderList({ tickerDetail }: ETFHolderListProps) {
     }
   }, [tickerId, page]);
 
+  useEffect(() => {
+    if (paginatedETFHolders?.results) {
+      for (const etfAggregateDetail of paginatedETFHolders.results) {
+        const etfTickerId = etfAggregateDetail.ticker_id;
+        const holdingTickerId = tickerDetail.ticker_id;
+
+        store
+          .PROTO_fetchETFHoldingWeight(etfTickerId, holdingTickerId)
+          .then(console.log);
+      }
+    }
+  }, [paginatedETFHolders, tickerDetail]);
+
   if (!paginatedETFHolders) {
     return null;
   }
