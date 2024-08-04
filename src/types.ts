@@ -44,6 +44,7 @@ export type RustServiceETFAggregateDetail = {
 
 export type RustServiceETFHoldingTickerResponse = {
   holding_ticker_id: number;
+  holding_market_value: number;
   holding_percentage: number;
   company_name?: string;
   industry_name?: string;

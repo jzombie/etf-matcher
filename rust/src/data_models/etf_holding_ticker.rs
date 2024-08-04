@@ -13,6 +13,7 @@ pub struct ETFHoldingTicker {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ETFHoldingTickerResponse {
     pub holding_ticker_id: TickerId,
+    pub holding_market_value: f32,
     pub holding_percentage: f32,
     pub company_name: Option<String>,
     pub industry_name: Option<String>,
@@ -48,6 +49,7 @@ impl ETFHoldingTicker {
 
             detailed_holdings.push(ETFHoldingTickerResponse {
                 holding_ticker_id: holding.holding_ticker_id,
+                holding_market_value: holding.holding_market_value,
                 holding_percentage: holding.holding_percentage,
                 company_name: Some(ticker_detail.company_name),
                 industry_name: ticker_detail.industry_name,
