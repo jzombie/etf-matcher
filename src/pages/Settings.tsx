@@ -74,7 +74,7 @@ export default function Settings() {
               store.fetchETFHoldingsByETFTickerId(118101).then(customLogger.log)
             }
           >
-            Proto::PROTO_get_etf_holdings_by_etf_ticker_id()
+            Proto::fetchETFHoldingsByETFTickerId()
           </Button>
         </Section>
       </Padding>

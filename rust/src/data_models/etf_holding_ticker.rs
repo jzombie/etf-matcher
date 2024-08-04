@@ -10,16 +10,25 @@ pub struct ETFHoldingTicker {
     pub holdings_json: String,
 }
 
+// Intermediate JSON parse
+#[derive(Serialize, Deserialize, Debug)]
+struct ETFHoldingTickerJSON {
+    pub holding_ticker_id: TickerId,
+    pub holding_market_value: f32,
+    pub holding_percentage: f32,
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ETFHoldingTickerResponse {
     pub holding_ticker_id: TickerId,
+    pub holding_symbol: String,
     pub holding_market_value: f32,
     pub holding_percentage: f32,
     pub company_name: Option<String>,
     pub industry_name: Option<String>,
     pub sector_name: Option<String>,
     pub logo_filename: Option<String>,
-    pub is_etf: Option<bool>,
+    pub is_etf: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -46,9 +55,8 @@ impl ETFHoldingTicker {
         .ok_or_else(|| JsValue::from_str("ETF ticker not found"))?;
 
         // Parse the ETF holdings JSON
-        let etf_holdings: Vec<ETFHoldingTickerResponse> =
-            serde_json::from_str(&holdings.holdings_json)
-                .map_err(|e| JsValue::from_str(&format!("Failed to parse holdings JSON: {}", e)))?;
+        let etf_holdings: Vec<ETFHoldingTickerJSON> = serde_json::from_str(&holdings.holdings_json)
+            .map_err(|e| JsValue::from_str(&format!("Failed to parse holdings JSON: {}", e)))?;
 
         // Retrieve additional information for each holding
         let mut detailed_holdings = Vec::with_capacity(etf_holdings.len());
@@ -57,13 +65,14 @@ impl ETFHoldingTicker {
 
             detailed_holdings.push(ETFHoldingTickerResponse {
                 holding_ticker_id: holding.holding_ticker_id,
+                holding_symbol: ticker_detail.symbol,
                 holding_market_value: holding.holding_market_value,
                 holding_percentage: holding.holding_percentage,
                 company_name: Some(ticker_detail.company_name),
                 industry_name: ticker_detail.industry_name,
                 sector_name: ticker_detail.sector_name,
                 logo_filename: ticker_detail.logo_filename,
-                is_etf: Some(ticker_detail.is_etf),
+                is_etf: ticker_detail.is_etf,
             });
         }
 

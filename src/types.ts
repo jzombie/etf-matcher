@@ -107,13 +107,14 @@ export type RustServiceETFHoldingWeightResponse = {
 
 export type RustServiceETFHoldingTickerResponse = {
   holding_ticker_id: number;
+  holding_symbol: string;
   holding_market_value: number;
   holding_percentage: number;
   company_name?: string;
   industry_name?: string;
   sector_name?: string;
   logo_filename?: string;
-  is_etf?: string;
+  is_etf: boolean;
 };
 
 export type RustServiceCacheDetail = {
