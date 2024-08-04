@@ -12,6 +12,7 @@ import TickerContainer from "@components/TickerContainer";
 
 import useURLState from "@hooks/useURLState";
 
+import customLogger from "@utils/customLogger";
 import formatCurrency from "@utils/formatCurrency";
 
 export type ETFHolderProps = {
@@ -39,6 +40,8 @@ export default function ETFHolderProps({
   useEffect(() => {
     const etfTickerId = etfAggregateDetail.ticker_id;
     const holdingTickerId = holdingTickerDetail.ticker_id;
+
+    customLogger.warn("TODO: Add typings for `fetchETFHoldingWeight`");
 
     store
       .PROTO_fetchETFHoldingWeight(etfTickerId, holdingTickerId)
