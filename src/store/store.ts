@@ -4,6 +4,7 @@ import type {
   RustServiceCacheDetail,
   RustServiceETFAggregateDetail,
   RustServiceETFHoldingTickerResponse,
+  RustServiceETFHoldingWeightResponse,
   RustServiceImageInfo,
   RustServicePaginatedResults,
   RustServiceTickerDetail,
@@ -617,14 +618,14 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     >("get_etf_holdings_by_etf_ticker_id", [tickerId, page, pageSize]);
   }
 
-  async PROTO_fetchETFHoldingWeight(
+  async fetchETFHoldingWeight(
     etfTickerId: number,
     holdingTickerId: number,
-  ) {
-    return callRustService("get_etf_holding_weight", [
-      etfTickerId,
-      holdingTickerId,
-    ]);
+  ): Promise<RustServiceETFHoldingWeightResponse> {
+    return callRustService<RustServiceETFHoldingWeightResponse>(
+      "get_etf_holding_weight",
+      [etfTickerId, holdingTickerId],
+    );
   }
 
   removeCacheEntry(key: string) {

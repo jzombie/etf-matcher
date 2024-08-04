@@ -67,6 +67,13 @@ export type RustServiceETFAggregateDetail = {
   avg_previous_net_cash_used_provided_by_financing_activities?: number;
 };
 
+export type RustServiceETFHoldingWeightResponse = {
+  etf_ticker_id: number;
+  holding_ticker_id: number;
+  holding_market_value: number;
+  holding_percentage: number;
+};
+
 export type RustServiceETFHoldingTickerResponse = {
   holding_ticker_id: number;
   holding_market_value: number;

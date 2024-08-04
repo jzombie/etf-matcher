@@ -44,16 +44,10 @@ export default function ETFHolder({
     const etfTickerId = etfAggregateDetail.ticker_id;
     const holdingTickerId = holdingTickerDetail.ticker_id;
 
-    customLogger.warn("TODO: Add typings for `fetchETFHoldingWeight`");
-
-    store
-      .PROTO_fetchETFHoldingWeight(etfTickerId, holdingTickerId)
-      .then((resp) => {
-        // @ts-expect-error TODO: Add typings
-        setHoldingPercentage(resp.holding_percentage);
-        // @ts-expect-error TODO: Add typings
-        setHoldingMarketValue(resp.holding_market_value);
-      });
+    store.fetchETFHoldingWeight(etfTickerId, holdingTickerId).then((resp) => {
+      setHoldingPercentage(resp.holding_percentage);
+      setHoldingMarketValue(resp.holding_market_value);
+    });
   }, [etfAggregateDetail, holdingTickerDetail]);
 
   const renderDetail = (label: string, value: string | number | null) => (
