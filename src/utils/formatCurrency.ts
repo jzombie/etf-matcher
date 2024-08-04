@@ -16,11 +16,19 @@ export default function formatCurrency(
   }
 
   const abbreviateNumber = (value: number) => {
-    if (value >= 1e12) return (value / 1e12).toFixed(2) + "T";
-    if (value >= 1e9) return (value / 1e9).toFixed(2) + "B";
-    if (value >= 1e6) return (value / 1e6).toFixed(2) + "M";
-    if (value >= 1e3) return (value / 1e3).toFixed(2) + "K";
-    return value.toFixed(2);
+    const absValue = Math.abs(value);
+    let abbreviatedValue;
+
+    if (absValue >= 1e12) abbreviatedValue = (absValue / 1e12).toFixed(2) + "T";
+    else if (absValue >= 1e9)
+      abbreviatedValue = (absValue / 1e9).toFixed(2) + "B";
+    else if (absValue >= 1e6)
+      abbreviatedValue = (absValue / 1e6).toFixed(2) + "M";
+    else if (absValue >= 1e3)
+      abbreviatedValue = (absValue / 1e3).toFixed(2) + "K";
+    else abbreviatedValue = absValue.toFixed(2);
+
+    return value < 0 ? `-${abbreviatedValue}` : abbreviatedValue;
   };
 
   const abbreviatedValue = abbreviateNumber(monetaryValue);
