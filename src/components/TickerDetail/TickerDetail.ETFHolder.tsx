@@ -19,7 +19,6 @@ import TickerContainer from "@components/TickerContainer";
 
 import useURLState from "@hooks/useURLState";
 
-import customLogger from "@utils/customLogger";
 import formatCurrency from "@utils/formatCurrency";
 
 export type ETFHolderProps = {
