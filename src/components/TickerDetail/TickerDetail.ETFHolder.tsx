@@ -41,7 +41,9 @@ export default function ETFHolderProps({
     store
       .PROTO_fetchETFHoldingWeight(etfTickerId, holdingTickerId)
       .then((resp) => {
+        // @ts-expect-error TODO: Add typings
         setHoldingPercentage(resp.holding_percentage);
+        // @ts-expect-error TODO: Add typings
         setHoldingMarketValue(resp.holding_market_value);
       });
   }, [etfAggregateDetail, tickerDetail]);
