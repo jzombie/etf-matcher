@@ -18,6 +18,7 @@ pub struct ETFHoldingTickerResponse {
     pub industry_name: Option<String>,
     pub sector_name: Option<String>,
     pub logo_filename: Option<String>,
+    pub is_etf: Option<bool>,
 }
 
 impl ETFHoldingTicker {
@@ -52,6 +53,7 @@ impl ETFHoldingTicker {
                 industry_name: ticker_detail.industry_name,
                 sector_name: ticker_detail.sector_name,
                 logo_filename: ticker_detail.logo_filename,
+                is_etf: Some(ticker_detail.is_etf),
             });
         }
 
