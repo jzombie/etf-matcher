@@ -1,4 +1,4 @@
-use crate::data_models::{DataURL, PaginatedResults};
+use crate::data_models::{DataURL, PaginatedResults, TickerDetail};
 use crate::types::TickerId;
 use crate::utils::shard::query_shard_for_id;
 use crate::JsValue;
@@ -12,10 +12,11 @@ pub struct ETFHoldingTicker {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ETFHoldingTickerResponse {
-    // pub etf_ticker_id: TickerId,
     pub holding_ticker_id: TickerId,
-    pub holding_market_value: f32,
     pub holding_percentage: f32,
+    pub company_name: Option<String>,
+    pub industry_name: Option<String>,
+    pub sector_name: Option<String>,
 }
 
 impl ETFHoldingTicker {
@@ -38,8 +39,22 @@ impl ETFHoldingTicker {
             serde_json::from_str(&holdings.holdings_json)
                 .map_err(|e| JsValue::from_str(&format!("Failed to parse holdings JSON: {}", e)))?;
 
+        // Retrieve additional information for each holding
+        let mut detailed_holdings = Vec::with_capacity(etf_holdings.len());
+        for holding in etf_holdings {
+            let ticker_detail = TickerDetail::get_ticker_detail(holding.holding_ticker_id).await?;
+
+            detailed_holdings.push(ETFHoldingTickerResponse {
+                holding_ticker_id: holding.holding_ticker_id,
+                holding_percentage: holding.holding_percentage,
+                company_name: Some(ticker_detail.company_name),
+                industry_name: ticker_detail.industry_name,
+                sector_name: ticker_detail.sector_name,
+            });
+        }
+
         // Paginate the results
-        let paginated_results = PaginatedResults::paginate(etf_holdings, page, page_size)?;
+        let paginated_results = PaginatedResults::paginate(detailed_holdings, page, page_size)?;
 
         Ok(paginated_results)
     }

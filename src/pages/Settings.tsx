@@ -65,6 +65,9 @@ export default function Settings() {
     <Scrollable>
       <Padding>
         <Section>
+          {
+            // TODO: Remove
+          }
           <Button
             onClick={() =>
               store
