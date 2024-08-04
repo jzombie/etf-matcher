@@ -51,7 +51,7 @@ export default function ETFHolder({
 
   const renderDetail = (label: string, value: string | number | null) => (
     <Typography variant="body2" gutterBottom>
-      {label}: {value ? value : "N/A"}
+      {label}: {value !== null ? value : "N/A"}
     </Typography>
   );
 
@@ -118,7 +118,9 @@ export default function ETFHolder({
                 </Typography>
                 {renderDetail(
                   `${holdingTickerDetail.symbol} Holding Percentage`,
-                  holdingPercentage ? `${holdingPercentage.toFixed(2)}%` : null,
+                  holdingPercentage !== null
+                    ? `${holdingPercentage.toFixed(2)}%`
+                    : null,
                 )}
                 {renderDetail(
                   `${holdingTickerDetail.symbol} Holding Market Value`,
@@ -145,37 +147,37 @@ export default function ETFHolder({
               <Grid item xs={12} sm={6}>
                 {renderDetail(
                   "Avg. Latest Revenue",
-                  etfAggregateDetail.avg_latest_revenue
+                  etfAggregateDetail.avg_revenue_current
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_latest_revenue,
+                        etfAggregateDetail.avg_revenue_current,
                       )
                     : null,
                 )}
                 {renderDetail(
                   "Avg. Latest Gross Profit",
-                  etfAggregateDetail.avg_latest_gross_profit
+                  etfAggregateDetail.avg_gross_profit_current
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_latest_gross_profit,
+                        etfAggregateDetail.avg_gross_profit_current,
                       )
                     : null,
                 )}
                 {renderDetail(
                   "Avg. Latest Operating Income",
-                  etfAggregateDetail.avg_latest_operating_income
+                  etfAggregateDetail.avg_operating_income_current
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_latest_operating_income,
+                        etfAggregateDetail.avg_operating_income_current,
                       )
                     : null,
                 )}
                 {renderDetail(
                   "Avg. Latest Net Income",
-                  etfAggregateDetail.avg_latest_net_income
+                  etfAggregateDetail.avg_net_income_current
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_latest_net_income,
+                        etfAggregateDetail.avg_net_income_current,
                       )
                     : null,
                 )}
@@ -183,28 +185,28 @@ export default function ETFHolder({
               <Grid item xs={12} sm={6}>
                 {renderDetail(
                   "Avg. Latest Total Assets",
-                  etfAggregateDetail.avg_latest_total_assets
+                  etfAggregateDetail.avg_total_assets_current
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_latest_total_assets,
+                        etfAggregateDetail.avg_total_assets_current,
                       )
                     : null,
                 )}
                 {renderDetail(
                   "Avg. Latest Total Liabilities",
-                  etfAggregateDetail.avg_latest_total_liabilities
+                  etfAggregateDetail.avg_total_liabilities_current
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_latest_total_liabilities,
+                        etfAggregateDetail.avg_total_liabilities_current,
                       )
                     : null,
                 )}
                 {renderDetail(
                   "Avg. Latest Total Stockholders' Equity",
-                  etfAggregateDetail.avg_latest_total_stockholders_equity
+                  etfAggregateDetail.avg_total_stockholders_equity_current
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_latest_total_stockholders_equity,
+                        etfAggregateDetail.avg_total_stockholders_equity_current,
                       )
                     : null,
                 )}
@@ -224,37 +226,37 @@ export default function ETFHolder({
               <Grid item xs={12} sm={6}>
                 {renderDetail(
                   "Avg. Previous Revenue",
-                  etfAggregateDetail.avg_previous_revenue
+                  etfAggregateDetail.avg_revenue_1_year_ago
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_previous_revenue,
+                        etfAggregateDetail.avg_revenue_1_year_ago,
                       )
                     : null,
                 )}
                 {renderDetail(
                   "Avg. Previous Gross Profit",
-                  etfAggregateDetail.avg_previous_gross_profit
+                  etfAggregateDetail.avg_gross_profit_1_year_ago
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_previous_gross_profit,
+                        etfAggregateDetail.avg_gross_profit_1_year_ago,
                       )
                     : null,
                 )}
                 {renderDetail(
                   "Avg. Previous Operating Income",
-                  etfAggregateDetail.avg_previous_operating_income
+                  etfAggregateDetail.avg_operating_income_1_year_ago
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_previous_operating_income,
+                        etfAggregateDetail.avg_operating_income_1_year_ago,
                       )
                     : null,
                 )}
                 {renderDetail(
                   "Avg. Previous Net Income",
-                  etfAggregateDetail.avg_previous_net_income
+                  etfAggregateDetail.avg_net_income_1_year_ago
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_previous_net_income,
+                        etfAggregateDetail.avg_net_income_1_year_ago,
                       )
                     : null,
                 )}
@@ -262,28 +264,28 @@ export default function ETFHolder({
               <Grid item xs={12} sm={6}>
                 {renderDetail(
                   "Avg. Previous Total Assets",
-                  etfAggregateDetail.avg_previous_total_assets
+                  etfAggregateDetail.avg_total_assets_1_year_ago
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_previous_total_assets,
+                        etfAggregateDetail.avg_total_assets_1_year_ago,
                       )
                     : null,
                 )}
                 {renderDetail(
                   "Avg. Previous Total Liabilities",
-                  etfAggregateDetail.avg_previous_total_liabilities
+                  etfAggregateDetail.avg_total_liabilities_1_year_ago
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_previous_total_liabilities,
+                        etfAggregateDetail.avg_total_liabilities_1_year_ago,
                       )
                     : null,
                 )}
                 {renderDetail(
                   "Avg. Previous Total Stockholders' Equity",
-                  etfAggregateDetail.avg_previous_total_stockholders_equity
+                  etfAggregateDetail.avg_total_stockholders_equity_1_year_ago
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_previous_total_stockholders_equity,
+                        etfAggregateDetail.avg_total_stockholders_equity_1_year_ago,
                       )
                     : null,
                 )}
@@ -303,37 +305,37 @@ export default function ETFHolder({
               <Grid item xs={12} sm={6}>
                 {renderDetail(
                   "Avg. Latest Operating Cash Flow",
-                  etfAggregateDetail.avg_latest_operating_cash_flow
+                  etfAggregateDetail.avg_operating_cash_flow_current
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_latest_operating_cash_flow,
+                        etfAggregateDetail.avg_operating_cash_flow_current,
                       )
                     : null,
                 )}
                 {renderDetail(
                   "Avg. Latest Net Cash Provided by Operating Activities",
-                  etfAggregateDetail.avg_latest_net_cash_provided_by_operating_activities
+                  etfAggregateDetail.avg_net_cash_provided_by_operating_activities_current
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_latest_net_cash_provided_by_operating_activities,
+                        etfAggregateDetail.avg_net_cash_provided_by_operating_activities_current,
                       )
                     : null,
                 )}
                 {renderDetail(
                   "Avg. Latest Net Cash Used for Investing Activities",
-                  etfAggregateDetail.avg_latest_net_cash_used_for_investing_activities
+                  etfAggregateDetail.avg_net_cash_used_for_investing_activities_current
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_latest_net_cash_used_for_investing_activities,
+                        etfAggregateDetail.avg_net_cash_used_for_investing_activities_current,
                       )
                     : null,
                 )}
                 {renderDetail(
                   "Avg. Latest Net Cash Used Provided by Financing Activities",
-                  etfAggregateDetail.avg_latest_net_cash_used_provided_by_financing_activities
+                  etfAggregateDetail.avg_net_cash_used_provided_by_financing_activities_current
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_latest_net_cash_used_provided_by_financing_activities,
+                        etfAggregateDetail.avg_net_cash_used_provided_by_financing_activities_current,
                       )
                     : null,
                 )}
@@ -341,37 +343,37 @@ export default function ETFHolder({
               <Grid item xs={12} sm={6}>
                 {renderDetail(
                   "Avg. Previous Operating Cash Flow",
-                  etfAggregateDetail.avg_previous_operating_cash_flow
+                  etfAggregateDetail.avg_operating_cash_flow_1_year_ago
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_previous_operating_cash_flow,
+                        etfAggregateDetail.avg_operating_cash_flow_1_year_ago,
                       )
                     : null,
                 )}
                 {renderDetail(
                   "Avg. Previous Net Cash Provided by Operating Activities",
-                  etfAggregateDetail.avg_previous_net_cash_provided_by_operating_activities
+                  etfAggregateDetail.avg_net_cash_provided_by_operating_activities_1_year_ago
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_previous_net_cash_provided_by_operating_activities,
+                        etfAggregateDetail.avg_net_cash_provided_by_operating_activities_1_year_ago,
                       )
                     : null,
                 )}
                 {renderDetail(
                   "Avg. Previous Net Cash Used for Investing Activities",
-                  etfAggregateDetail.avg_previous_net_cash_used_for_investing_activities
+                  etfAggregateDetail.avg_net_cash_used_for_investing_activities_1_year_ago
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_previous_net_cash_used_for_investing_activities,
+                        etfAggregateDetail.avg_net_cash_used_for_investing_activities_1_year_ago,
                       )
                     : null,
                 )}
                 {renderDetail(
                   "Avg. Previous Net Cash Used Provided by Financing Activities",
-                  etfAggregateDetail.avg_previous_net_cash_used_provided_by_financing_activities
+                  etfAggregateDetail.avg_net_cash_used_provided_by_financing_activities_1_year_ago
                     ? formatCurrency(
                         etfAggregateDetail.currency_code,
-                        etfAggregateDetail.avg_previous_net_cash_used_provided_by_financing_activities,
+                        etfAggregateDetail.avg_net_cash_used_provided_by_financing_activities_1_year_ago,
                       )
                     : null,
                 )}
