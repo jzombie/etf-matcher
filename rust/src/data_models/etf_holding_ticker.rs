@@ -97,9 +97,8 @@ impl ETFHoldingTicker {
         .ok_or_else(|| JsValue::from_str("ETF ticker not found"))?;
 
         // Parse the ETF holdings JSON
-        let etf_holdings: Vec<ETFHoldingTickerResponse> =
-            serde_json::from_str(&holdings.holdings_json)
-                .map_err(|e| JsValue::from_str(&format!("Failed to parse holdings JSON: {}", e)))?;
+        let etf_holdings: Vec<ETFHoldingTickerJSON> = serde_json::from_str(&holdings.holdings_json)
+            .map_err(|e| JsValue::from_str(&format!("Failed to parse holdings JSON: {}", e)))?;
 
         // Find the specific holding
         let holding = etf_holdings
