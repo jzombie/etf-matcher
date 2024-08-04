@@ -36,7 +36,7 @@ export default function Room({ room }: RoomProps) {
   const generateQRCode = useCallback(() => {
     const roomShareURL = getRoomShareURL(room);
 
-    store.PROTO_generateQRCode(roomShareURL).then(setQRCode);
+    store.generateQRCode(roomShareURL).then(setQRCode);
   }, [getRoomShareURL, room]);
 
   const toggleQRCode = useCallback(() => {

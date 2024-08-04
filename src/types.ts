@@ -42,6 +42,16 @@ export type RustServiceETFAggregateDetail = {
   top_pct_sector_weight: number;
 };
 
+export type RustServiceETFHoldingTickerResponse = {
+  holding_ticker_id: number;
+  holding_percentage: number;
+  company_name?: string;
+  industry_name?: string;
+  sector_name?: string;
+  logo_filename?: string;
+  is_etf?: string;
+};
+
 export type RustServiceCacheDetail = {
   key: string;
   size: number;

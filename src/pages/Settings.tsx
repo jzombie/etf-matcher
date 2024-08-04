@@ -18,6 +18,7 @@ import SharedRoomManager from "@components/SharedRoomManager";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
+import customLogger from "@utils/customLogger";
 import formatByteSize from "@utils/formatByteSize";
 import formatLocalTime from "@utils/formatLocalTime";
 import usePageTitleSetter from "@utils/usePageTitleSetter";
@@ -70,9 +71,7 @@ export default function Settings() {
           }
           <Button
             onClick={() =>
-              store
-                .PROTO_get_etf_holdings_by_etf_ticker_id(118101)
-                .then(console.log)
+              store.fetchETFHoldingsByETFTickerId(118101).then(customLogger.log)
             }
           >
             Proto::PROTO_get_etf_holdings_by_etf_ticker_id()
