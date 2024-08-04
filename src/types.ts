@@ -28,7 +28,6 @@ export type RustServiceTickerDetail = {
   logo_filename?: string;
 };
 
-// TODO: Add extended typing once finalized
 export type RustServiceETFAggregateDetail = {
   ticker_id: number;
   etf_symbol: string;
@@ -41,6 +40,31 @@ export type RustServiceETFAggregateDetail = {
   top_pct_sector_name?: string;
   top_pct_industry_name?: string;
   top_pct_sector_weight?: number;
+  //
+  avg_latest_year?: number;
+  avg_previous_year?: number;
+  avg_latest_revenue?: number;
+  avg_latest_gross_profit?: number;
+  avg_latest_operating_income?: number;
+  avg_latest_net_income?: number;
+  avg_previous_revenue?: number;
+  avg_previous_gross_profit?: number;
+  avg_previous_operating_income?: number;
+  avg_previous_net_income?: number;
+  avg_latest_total_assets?: number;
+  avg_latest_total_liabilities?: number;
+  avg_latest_total_stockholders_equity?: number;
+  avg_previous_total_assets?: number;
+  avg_previous_total_liabilities?: number;
+  avg_previous_total_stockholders_equity?: number;
+  avg_latest_operating_cash_flow?: number;
+  avg_latest_net_cash_provided_by_operating_activities?: number;
+  avg_latest_net_cash_used_for_investing_activities?: number;
+  avg_latest_net_cash_used_provided_by_financing_activities?: number;
+  avg_previous_operating_cash_flow?: number;
+  avg_previous_net_cash_provided_by_operating_activities?: number;
+  avg_previous_net_cash_used_for_investing_activities?: number;
+  avg_previous_net_cash_used_provided_by_financing_activities?: number;
 };
 
 export type RustServiceETFHoldingTickerResponse = {

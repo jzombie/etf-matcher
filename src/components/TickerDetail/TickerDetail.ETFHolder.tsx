@@ -104,6 +104,204 @@ export default function ETFHolderProps({
                   )
                 : "N/A"}
             </div>
+            <div>
+              Avg. Latest Revenue:{" "}
+              {etfAggregateDetail.avg_latest_revenue
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_latest_revenue,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Latest Gross Profit:{" "}
+              {etfAggregateDetail.avg_latest_gross_profit
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_latest_gross_profit,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Latest Operating Income:{" "}
+              {etfAggregateDetail.avg_latest_operating_income
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_latest_operating_income,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Latest Net Income:{" "}
+              {etfAggregateDetail.avg_latest_net_income
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_latest_net_income,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Previous Revenue:{" "}
+              {etfAggregateDetail.avg_previous_revenue
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_previous_revenue,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Previous Gross Profit:{" "}
+              {etfAggregateDetail.avg_previous_gross_profit
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_previous_gross_profit,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Previous Operating Income:{" "}
+              {etfAggregateDetail.avg_previous_operating_income
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_previous_operating_income,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Previous Net Income:{" "}
+              {etfAggregateDetail.avg_previous_net_income
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_previous_net_income,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Latest Total Assets:{" "}
+              {etfAggregateDetail.avg_latest_total_assets
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_latest_total_assets,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Latest Total Liabilities:{" "}
+              {etfAggregateDetail.avg_latest_total_liabilities
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_latest_total_liabilities,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Latest Total Stockholders&apos; Equity:{" "}
+              {etfAggregateDetail.avg_latest_total_stockholders_equity
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_latest_total_stockholders_equity,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Latest Total Assets:{" "}
+              {etfAggregateDetail.avg_previous_total_assets
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_previous_total_assets,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Latest Total Liabilities:{" "}
+              {etfAggregateDetail.avg_previous_total_liabilities
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_previous_total_liabilities,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Latest Total Stockholder&apos; Equity:{" "}
+              {etfAggregateDetail.avg_previous_total_stockholders_equity
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_previous_total_stockholders_equity,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Latest Operating Cash Flow:{" "}
+              {etfAggregateDetail.avg_latest_operating_cash_flow
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_latest_operating_cash_flow,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Latest Net Cash Provided by Operating Activities:{" "}
+              {etfAggregateDetail.avg_latest_net_cash_provided_by_operating_activities
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_latest_net_cash_provided_by_operating_activities,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Latest Net Cash Used for Investing Activites:{" "}
+              {etfAggregateDetail.avg_latest_net_cash_used_for_investing_activities
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_latest_net_cash_used_for_investing_activities,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Latest Net Cash Used Provided by Financing Activities:{" "}
+              {etfAggregateDetail.avg_latest_net_cash_used_provided_by_financing_activities
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_latest_net_cash_used_provided_by_financing_activities,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Previous Operating Cash Flow:{" "}
+              {etfAggregateDetail.avg_previous_operating_cash_flow
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_previous_operating_cash_flow,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Previous Net Cash Provided by Operating Activities:{" "}
+              {etfAggregateDetail.avg_previous_net_cash_provided_by_operating_activities
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_previous_net_cash_provided_by_operating_activities,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Previous Net Cash Used for Investing Activities:{" "}
+              {etfAggregateDetail.avg_previous_net_cash_used_for_investing_activities
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_previous_net_cash_used_for_investing_activities,
+                  )
+                : "N/A"}
+            </div>
+            <div>
+              Avg. Previous Net Cash Used Provided by Financing Activites:{" "}
+              {etfAggregateDetail.avg_previous_net_cash_used_provided_by_financing_activities
+                ? formatCurrency(
+                    etfAggregateDetail.currency_code,
+                    etfAggregateDetail.avg_previous_net_cash_used_provided_by_financing_activities,
+                  )
+                : "N/A"}
+            </div>
           </div>
         </ButtonBase>
       </Box>
