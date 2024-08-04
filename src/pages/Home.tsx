@@ -1,5 +1,6 @@
 import React from "react";
 
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { Button } from "@mui/material";
 
 import heroImg from "@assets/hero.webp";
@@ -34,6 +35,7 @@ export default function Home() {
               style={heroButtonStyle}
               onClick={handleGetStarted}
               disabled={isSearchModalOpen}
+              startIcon={<TrendingUpIcon />}
             >
               {
                 // TODO: Don't say "Get Started" if already started... ("Continue" maybe?)
