@@ -11,9 +11,9 @@ mod utils;
 use crate::types::TickerId;
 
 use crate::data_models::{
-    DataBuildInfo, DataURL, ETFAggregateDetail, ETFAggregateDetailResponse, IndustryById,
-    PaginatedResults, SectorById, TickerDetail, TickerDetailResponse, TickerETFHolder,
-    TickerSearch, TickerSearchResult,
+    DataBuildInfo, DataURL, ETFAggregateDetail, ETFAggregateDetailResponse, ETFHoldingTicker,
+    ETFHoldingTickerResponse, IndustryById, PaginatedResults, SectorById, TickerDetail,
+    TickerDetailResponse, TickerETFHolder, TickerSearch, TickerSearchResult,
 };
 
 use crate::data_models::image::get_image_info as lib_get_image_info;
@@ -117,6 +117,22 @@ pub async fn get_etf_aggregate_detail_by_ticker_id(
     to_value(&etf_detail).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
             "Failed to convert ETFAggregateDetail to JsValue: {}",
+            err
+        ))
+    })
+}
+
+#[wasm_bindgen]
+pub async fn get_etf_holdings_by_etf_ticker_id(
+    etf_ticker_id: TickerId,
+    page: usize,
+    page_size: usize,
+) -> Result<JsValue, JsValue> {
+    let etf_holding_tickers: PaginatedResults<ETFHoldingTickerResponse> =
+        ETFHoldingTicker::get_etf_holdings_by_etf_ticker_id(etf_ticker_id, page, page_size).await?;
+    to_value(&etf_holding_tickers).map_err(|err: serde_wasm_bindgen::Error| {
+        JsValue::from_str(&format!(
+            "Failed to convert V<PaginatedResults<ETFHoldingTickerResponse> to JsValue: {}",
             err
         ))
     })

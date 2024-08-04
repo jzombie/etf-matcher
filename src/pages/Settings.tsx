@@ -65,6 +65,20 @@ export default function Settings() {
     <Scrollable>
       <Padding>
         <Section>
+          <Button
+            onClick={() =>
+              store
+                .PROTO_get_etf_holdings_by_etf_ticker_id(118101)
+                .then(console.log)
+            }
+          >
+            Proto::PROTO_get_etf_holdings_by_etf_ticker_id()
+          </Button>
+        </Section>
+      </Padding>
+
+      <Padding>
+        <Section>
           <h2>Session Sharing</h2>
           <Typography variant="body2" component="p">
             ETF Matcher doesn&apos;t use user accounts, but session data can be

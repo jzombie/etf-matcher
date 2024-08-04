@@ -602,8 +602,21 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return tickerBucket.tickers.some((ticker) => ticker.tickerId === tickerId);
   }
 
+  // TODO: "un-proto"
   PROTO_generateQRCode(data: string): Promise<string> {
     return callRustService<string>("generate_qr_code", [data]);
+  }
+
+  PROTO_get_etf_holdings_by_etf_ticker_id(
+    tickerId: number,
+    page: number = 1,
+    pageSize: number = 20,
+  ) {
+    return callRustService("get_etf_holdings_by_etf_ticker_id", [
+      tickerId,
+      page,
+      pageSize,
+    ]);
   }
 
   removeCacheEntry(key: string) {
