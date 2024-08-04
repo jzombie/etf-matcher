@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { Box, ButtonBase } from "@mui/material";
 
-import type { RustServiceETFAggregateDetail } from "@src/types";
+import store from "@src/store";
+import type {
+  RustServiceETFAggregateDetail,
+  RustServiceTickerDetail,
+} from "@src/types";
 
 import useURLState from "@hooks/useURLState";
 
@@ -10,14 +14,37 @@ import formatCurrency from "@utils/formatCurrency";
 
 export type ETFHolderProps = {
   etfAggregateDetail: RustServiceETFAggregateDetail;
+  tickerDetail: RustServiceTickerDetail;
 };
 
-export default function ETFHolderProps({ etfAggregateDetail }: ETFHolderProps) {
+export default function ETFHolderProps({
+  etfAggregateDetail,
+  tickerDetail,
+}: ETFHolderProps) {
   const { setURLState } = useURLState();
 
   // const navigate = useNavigate();
 
   // TODO: Look up more information about this symbol (i.e. holdings, etc.)
+
+  const [holdingPercentage, setHoldingPercentage] = useState<number | null>(
+    null,
+  );
+  const [holdingMarketValue, setHoldingMarketValue] = useState<number | null>(
+    null,
+  );
+
+  useEffect(() => {
+    const etfTickerId = etfAggregateDetail.ticker_id;
+    const holdingTickerId = tickerDetail.ticker_id;
+
+    store
+      .PROTO_fetchETFHoldingWeight(etfTickerId, holdingTickerId)
+      .then((resp) => {
+        setHoldingPercentage(resp.holding_percentage);
+        setHoldingMarketValue(resp.holding_market_value);
+      });
+  }, [etfAggregateDetail, tickerDetail]);
 
   return (
     <Box sx={{ paddingBottom: 2 }}>
@@ -52,6 +79,20 @@ export default function ETFHolderProps({ etfAggregateDetail }: ETFHolderProps) {
           <div>
             Top Market Value Sector:{" "}
             {etfAggregateDetail.top_market_value_sector_name}
+          </div>
+          <div>
+            {tickerDetail.symbol} Holding Percentage:{" "}
+            {`${holdingPercentage?.toFixed(2)}%` || "N/A"}
+          </div>
+          <div>
+            {tickerDetail.symbol} Holding Market Value:{" "}
+            {holdingMarketValue
+              ? formatCurrency(
+                  // TODO: This should be set to the currency code of the holding itself
+                  etfAggregateDetail.currency_code,
+                  holdingMarketValue,
+                )
+              : "N/A"}
           </div>
         </div>
       </ButtonBase>
