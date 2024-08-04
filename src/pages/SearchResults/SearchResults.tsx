@@ -128,8 +128,9 @@ export default function SearchResults() {
             }
           />
         </Box>
-        {totalSearchResults} search result{totalSearchResults !== 1 ? "s" : ""}{" "}
-        for &quot;{searchQuery}&quot;
+        {totalSearchResults}
+        {onlyExactMatches ? " exact" : ""} search result
+        {totalSearchResults !== 1 ? "s" : ""} for &quot;{searchQuery}&quot;
       </Padding>
       {totalSearchResults > pageSize && (
         <Box style={{ textAlign: "center" }}>
