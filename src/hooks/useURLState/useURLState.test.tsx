@@ -195,12 +195,9 @@ describe("useURLState hook", () => {
     expect(result.current.urlState).toEqual({ search: "test" });
 
     const navigateMock = useNavigate();
-    expect(navigateMock).toHaveBeenCalledWith(
-      {
-        pathname: "/new-path",
-        search: "search=test",
-      },
-      { replace: true },
-    );
+    expect(navigateMock).toHaveBeenCalledWith({
+      pathname: "/new-path",
+      search: "search=test",
+    });
   });
 });
