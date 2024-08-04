@@ -98,7 +98,7 @@ export default function ETFHolderList({ tickerDetail }: ETFHolderListProps) {
                   {paginatedResults.map((etfHolder) => (
                     <ETFHolder
                       key={etfHolder.ticker_id}
-                      tickerDetail={tickerDetail}
+                      holdingTickerDetail={tickerDetail}
                       etfAggregateDetail={etfHolder}
                     />
                   ))}

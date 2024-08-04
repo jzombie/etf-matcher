@@ -292,7 +292,7 @@ export default function TickerDetail({
                             </Typography>
                             <Typography variant="body2">
                               Weight:{" "}
-                              {etfAggregateDetail?.top_pct_sector_weight.toFixed(
+                              {etfAggregateDetail?.top_pct_sector_weight?.toFixed(
                                 2,
                               )}
                             </Typography>
