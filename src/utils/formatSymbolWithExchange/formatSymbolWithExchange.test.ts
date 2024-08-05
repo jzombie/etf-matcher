@@ -83,4 +83,14 @@ describe("formatSymbolWithExchange", () => {
     const result = formatSymbolWithExchange(tickerDetail);
     expect(result).toBe("");
   });
+
+  it("should override exchange short name to AMEX for ETFs", () => {
+    const tickerDetail = {
+      symbol: "SPY",
+      exchange_short_name: "ETF",
+    } as RustServiceTickerDetail;
+
+    const result = formatSymbolWithExchange(tickerDetail);
+    expect(result).toBe("AMEX:SPY");
+  });
 });
