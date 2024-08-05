@@ -13,7 +13,8 @@ use crate::types::TickerId;
 use crate::data_models::{
     DataBuildInfo, DataURL, ETFAggregateDetail, ETFAggregateDetailResponse, ETFHoldingTicker,
     ETFHoldingTickerResponse, ETFHoldingWeightResponse, IndustryById, PaginatedResults, SectorById,
-    TickerDetail, TickerDetailResponse, TickerETFHolder, TickerSearch, TickerSearchResult,
+    Ticker10KDetail, TickerDetail, TickerDetailResponse, TickerETFHolder, TickerSearch,
+    TickerSearchResult,
 };
 
 use crate::data_models::image::get_image_info as lib_get_image_info;
@@ -86,6 +87,18 @@ pub async fn get_ticker_detail(ticker_id: TickerId) -> Result<JsValue, JsValue> 
     to_value(&detail).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
             "Failed to convert TickerDetail to JsValue: {}",
+            err
+        ))
+    })
+}
+
+#[wasm_bindgen]
+pub async fn get_ticker_10k_detail(ticker_id: TickerId) -> Result<JsValue, JsValue> {
+    let detail: Ticker10KDetail =
+        Ticker10KDetail::get_ticker_10k_detail_by_ticker_id(ticker_id).await?;
+    to_value(&detail).map_err(|err: serde_wasm_bindgen::Error| {
+        JsValue::from_str(&format!(
+            "Failed to convert Ticker10KDetail to JsValue: {}",
             err
         ))
     })

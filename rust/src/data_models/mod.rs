@@ -6,6 +6,7 @@ pub mod image;
 pub mod industry_by_id;
 pub mod paginated_results;
 pub mod sector_by_id;
+pub mod ticker_10k_detail;
 pub mod ticker_detail;
 pub mod ticker_etf_holder;
 pub mod ticker_search;
@@ -21,6 +22,7 @@ pub use etf_holding_ticker::{
 pub use industry_by_id::IndustryById;
 pub use paginated_results::PaginatedResults;
 pub use sector_by_id::SectorById;
+pub use ticker_10k_detail::Ticker10KDetail;
 pub use ticker_detail::{TickerDetail, TickerDetailResponse};
 pub use ticker_etf_holder::TickerETFHolder;
 pub use ticker_search::{TickerSearch, TickerSearchResult};

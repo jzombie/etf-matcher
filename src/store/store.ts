@@ -7,6 +7,7 @@ import type {
   RustServiceETFHoldingWeightResponse,
   RustServiceImageInfo,
   RustServicePaginatedResults,
+  RustServiceTicker10KDetail,
   RustServiceTickerDetail,
   RustServiceTickerSearchResult,
 } from "@src/types";
@@ -471,6 +472,15 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return callRustService<RustServiceTickerDetail>("get_ticker_detail", [
       tickerId,
     ]);
+  }
+
+  async fetchTicker10KDetail(
+    tickerId: number,
+  ): Promise<RustServiceTicker10KDetail> {
+    return callRustService<RustServiceTicker10KDetail>(
+      "get_ticker_10k_detail",
+      [tickerId],
+    );
   }
 
   async fetchETFAggregateDetailByTickerId(
