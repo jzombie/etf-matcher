@@ -3,8 +3,11 @@
 import type {
   RustServiceCacheDetail,
   RustServiceETFAggregateDetail,
+  RustServiceETFHoldingTickerResponse,
+  RustServiceETFHoldingWeightResponse,
   RustServiceImageInfo,
   RustServicePaginatedResults,
+  RustServiceTicker10KDetail,
   RustServiceTickerDetail,
   RustServiceTickerSearchResult,
 } from "@src/types";
@@ -471,6 +474,15 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     ]);
   }
 
+  async fetchTicker10KDetail(
+    tickerId: number,
+  ): Promise<RustServiceTicker10KDetail> {
+    return callRustService<RustServiceTicker10KDetail>(
+      "get_ticker_10k_detail",
+      [tickerId],
+    );
+  }
+
   async fetchETFAggregateDetailByTickerId(
     etfTickerId: number,
   ): Promise<RustServiceETFAggregateDetail> {
@@ -602,8 +614,28 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return tickerBucket.tickers.some((ticker) => ticker.tickerId === tickerId);
   }
 
-  PROTO_generateQRCode(data: string): Promise<string> {
+  async generateQRCode(data: string): Promise<string> {
     return callRustService<string>("generate_qr_code", [data]);
+  }
+
+  async fetchETFHoldingsByETFTickerId(
+    tickerId: number,
+    page: number = 1,
+    pageSize: number = 20,
+  ): Promise<RustServicePaginatedResults<RustServiceETFHoldingTickerResponse>> {
+    return callRustService<
+      RustServicePaginatedResults<RustServiceETFHoldingTickerResponse>
+    >("get_etf_holdings_by_etf_ticker_id", [tickerId, page, pageSize]);
+  }
+
+  async fetchETFHoldingWeight(
+    etfTickerId: number,
+    holdingTickerId: number,
+  ): Promise<RustServiceETFHoldingWeightResponse> {
+    return callRustService<RustServiceETFHoldingWeightResponse>(
+      "get_etf_holding_weight",
+      [etfTickerId, holdingTickerId],
+    );
   }
 
   removeCacheEntry(key: string) {

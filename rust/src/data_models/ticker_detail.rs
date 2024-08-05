@@ -1,12 +1,13 @@
-use serde::{Deserialize, Deserializer, Serialize};
 use crate::data_models::DataURL;
-use crate::JsValue;
+use crate::types::{IndustryId, SectorId, TickerId};
 use crate::utils::logo_utils::extract_logo_filename;
 use crate::utils::shard::query_shard_for_id;
 use crate::IndustryById;
+use crate::JsValue;
 use crate::SectorById;
-use crate::types::{TickerId, IndustryId, SectorId};
+use serde::{Deserialize, Deserializer, Serialize};
 
+// TODO: Move to a utility (also search for `deserialize_is_current`)
 // Custom deserialization function to convert Option<i32> to Option<bool>
 fn from_numeric_to_bool<'de, D>(deserializer: D) -> Result<bool, D::Error>
 where
@@ -53,13 +54,12 @@ pub struct TickerDetailResponse {
 impl TickerDetail {
     pub async fn get_ticker_detail(ticker_id: TickerId) -> Result<TickerDetailResponse, JsValue> {
         let url: &str = DataURL::TickerDetailShardIndex.value();
-        let mut detail: TickerDetail = query_shard_for_id(
-            url,
-            &ticker_id,
-            |detail: &TickerDetail| Some(&detail.ticker_id),
-        )
-        .await?
-        .ok_or_else(|| JsValue::from_str("Symbol not found"))?;
+        let mut detail: TickerDetail =
+            query_shard_for_id(url, &ticker_id, |detail: &TickerDetail| {
+                Some(&detail.ticker_id)
+            })
+            .await?
+            .ok_or_else(|| JsValue::from_str("Symbol not found"))?;
 
         // Extract the logo filename
         detail.logo_filename =
@@ -67,7 +67,9 @@ impl TickerDetail {
 
         // Retrieve industry name if industry_id is present
         let industry_name = match detail.industry_id {
-            Some(industry_id) => IndustryById::get_industry_name_with_id(industry_id).await.ok(),
+            Some(industry_id) => IndustryById::get_industry_name_with_id(industry_id)
+                .await
+                .ok(),
             None => None,
         };
 

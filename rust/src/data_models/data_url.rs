@@ -6,8 +6,10 @@ pub enum DataURL {
     IndustryByIdIndex,
     TickerSearch,
     TickerDetailShardIndex,
+    Ticker10KDetailShardIndex,
     TickerETFHoldersShardIndex,
     ETFAggregateDetailShardIndex,
+    ETFHoldingTickersShardIndex,
     Image(String),
 }
 
@@ -21,8 +23,10 @@ impl DataURL {
             DataURL::IndustryByIdIndex => "/data/industry_by_id_index.enc",
             DataURL::TickerSearch => "/data/ticker_search_dict.enc",
             DataURL::TickerDetailShardIndex => "/data/ticker_detail_shard_index.enc",
+            DataURL::Ticker10KDetailShardIndex => "/data/ticker_10k_detail_shard_index.enc",
             DataURL::TickerETFHoldersShardIndex => "/data/ticker_etf_holders_shard_index.enc",
             DataURL::ETFAggregateDetailShardIndex => "/data/etf_aggregate_detail_shard_index.enc",
+            DataURL::ETFHoldingTickersShardIndex => "/data/etf_holding_tickers_shard_index.enc",
             DataURL::Image(_) => panic!("Use image_url() for image paths"), // Prevent calling value() for images
         }
     }

@@ -18,6 +18,7 @@ import SharedRoomManager from "@components/SharedRoomManager";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
+import customLogger from "@utils/customLogger";
 import formatByteSize from "@utils/formatByteSize";
 import formatLocalTime from "@utils/formatLocalTime";
 import usePageTitleSetter from "@utils/usePageTitleSetter";
@@ -63,6 +64,30 @@ export default function Settings() {
 
   return (
     <Scrollable>
+      <Padding>
+        <Section>
+          {
+            // TODO: Remove
+          }
+          <Button
+            onClick={() =>
+              store
+                .fetchETFHoldingsByETFTickerId(118101)
+                .then(customLogger.debug)
+            }
+          >
+            Proto::fetchETFHoldingsByETFTickerId()
+          </Button>
+          <Button
+            onClick={() =>
+              store.fetchTicker10KDetail(6195).then(customLogger.debug)
+            }
+          >
+            Proto::fetchTicker10KDetail()
+          </Button>
+        </Section>
+      </Padding>
+
       <Padding>
         <Section>
           <h2>Session Sharing</h2>

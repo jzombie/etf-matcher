@@ -1,10 +1,12 @@
 pub mod data_build_info;
 pub mod data_url;
 pub mod etf_aggregate_detail;
+pub mod etf_holding_ticker;
 pub mod image;
 pub mod industry_by_id;
 pub mod paginated_results;
- pub mod sector_by_id;
+pub mod sector_by_id;
+pub mod ticker_10k_detail;
 pub mod ticker_detail;
 pub mod ticker_etf_holder;
 pub mod ticker_search;
@@ -14,9 +16,13 @@ pub mod exchange_by_id;
 pub use data_build_info::DataBuildInfo;
 pub use data_url::DataURL;
 pub use etf_aggregate_detail::{ETFAggregateDetail, ETFAggregateDetailResponse};
+pub use etf_holding_ticker::{
+    ETFHoldingTicker, ETFHoldingTickerResponse, ETFHoldingWeightResponse,
+};
 pub use industry_by_id::IndustryById;
 pub use paginated_results::PaginatedResults;
 pub use sector_by_id::SectorById;
+pub use ticker_10k_detail::Ticker10KDetail;
 pub use ticker_detail::{TickerDetail, TickerDetailResponse};
 pub use ticker_etf_holder::TickerETFHolder;
 pub use ticker_search::{TickerSearch, TickerSearchResult};

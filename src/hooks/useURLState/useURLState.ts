@@ -55,13 +55,10 @@ export default function useURLState<T extends URLState>(
 
       const finalPathname = newPathname || location.pathname;
 
-      navigate(
-        {
-          pathname: finalPathname,
-          search: searchParams.toString(),
-        },
-        { replace: true },
-      );
+      navigate({
+        pathname: finalPathname,
+        search: searchParams.toString(),
+      });
     },
     [location, navigate, urlState],
   );
