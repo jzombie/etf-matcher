@@ -32,6 +32,7 @@ import EncodedImage from "../EncodedImage";
 import TickerContainer from "../TickerContainer";
 import TickerDetailBucketManager from "./TickerDetail.BucketManager";
 import ETFHolderList from "./TickerDetail.ETFHolderList";
+import FinancialReport from "./TickerDetail.FinancialReport";
 
 export type TickerDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerId: number;
@@ -320,6 +321,8 @@ export default function TickerDetail({
           dateRange="ALL"
         />
       </Box>
+
+      <FinancialReport tickerDetail={tickerDetail} />
 
       <Box sx={{ textAlign: "center" }}>
         <Button onClick={() => setShowNews(!showNews)} startIcon={<NewsIcon />}>

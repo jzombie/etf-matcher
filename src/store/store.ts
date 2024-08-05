@@ -200,7 +200,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           const { visibleTickerIds } = this.getState(["visibleTickerIds"]);
 
           // TODO: Handle this tracking
-          customLogger.debug({ visibleTickerIds });
+          // customLogger.debug({ visibleTickerIds });
         }
       };
       this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
