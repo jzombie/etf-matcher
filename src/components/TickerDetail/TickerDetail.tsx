@@ -88,7 +88,7 @@ export default function TickerDetail({
   const [etfAggregateDetail, setETFAggregateDetail] =
     useState<RustServiceETFAggregateDetail | null>(null);
 
-  const [showNews, setShowNews] = useState(false);
+  // const [showNews, setShowNews] = useState(false);
 
   const onLoadStableCurrentRef = useStableCurrentRef(onLoad);
 
@@ -325,9 +325,9 @@ export default function TickerDetail({
       </Box>
 
       <Box sx={{ textAlign: "center" }}>
-        <Button onClick={() => setShowNews(!showNews)} startIcon={<NewsIcon />}>
+        {/* <Button onClick={() => setShowNews(!showNews)} startIcon={<NewsIcon />}>
           {showNews ? "Hide News" : "View News"}
-        </Button>
+        </Button> */}
         <TickerDetailBucketManager tickerDetail={tickerDetail} />
       </Box>
 
@@ -335,7 +335,7 @@ export default function TickerDetail({
         <FinancialReport tickerDetail={tickerDetail} />
       </Section>
 
-      {showNews && (
+      {/* {showNews && (
         // TODO: This seems out of date for `CRWD`, regardless if using `formattedSymbolWithExchange`
         // or just the `tickerSymbol` itself. Other symbols seem to be okay.
         <Timeline
@@ -345,16 +345,7 @@ export default function TickerDetail({
           width="100%"
           copyrightStyles={tradingViewCopyrightStyles}
         />
-      )}
-
-      {showNews && (
-        <Box mt={2}>
-          <Typography variant="h6">News</Typography>
-          <Typography variant="body2">
-            Placeholder for news articles related to {tickerDetail.symbol}.
-          </Typography>
-        </Box>
-      )}
+      )} */}
 
       {
         // TODO: Show `ETFHoldingList` (~inverse of `ETFHolderList`) if this is an ETF
