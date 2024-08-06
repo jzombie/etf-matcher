@@ -138,6 +138,26 @@ export default function FinancialReport({
     }
   }, [financialData]);
 
+  const hasChartableData = useMemo(() => {
+    if (!financialData) {
+      return false;
+    }
+
+    const currentData = chartData.find((item) => item.year === "Current");
+
+    if (!currentData) {
+      return false;
+    }
+
+    return Object.values(currentData).some(
+      (value) => typeof value === "number" && value !== 0,
+    );
+  }, [chartData, financialData]);
+
+  if (!hasChartableData) {
+    return <div>No chartable 10-K data available.</div>;
+  }
+
   if (!financialData) {
     return null;
   }
