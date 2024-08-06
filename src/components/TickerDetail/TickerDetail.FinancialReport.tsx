@@ -40,39 +40,37 @@ export default function FinancialReport({
     return null;
   }
 
-  console.log({ financialData });
-
   // TODO: Don't hardcode "USD"; `ticker_detail` needs to relay the currency code
   const currencyCode = "USD";
 
   const data = [
     {
       year: "4 Years Ago",
-      revenue: financialData.revenue_4_years_ago || 0,
-      netIncome: financialData.net_income_4_years_ago || 0,
-      operatingIncome: financialData.operating_income_4_years_ago || 0,
-      operatingCashFlow: financialData.operating_cash_flow_4_years_ago || 0,
+      revenue: financialData.revenue_4_yr || 0,
+      netIncome: financialData.net_income_4_yr || 0,
+      operatingIncome: financialData.operating_income_4_yr || 0,
+      operatingCashFlow: financialData.operating_cash_flow_4_yr || 0,
     },
     {
       year: "3 Years Ago",
-      revenue: financialData.revenue_3_years_ago || 0,
-      netIncome: financialData.net_income_3_years_ago || 0,
-      operatingIncome: financialData.operating_income_3_years_ago || 0,
-      operatingCashFlow: financialData.operating_cash_flow_3_years_ago || 0,
+      revenue: financialData.revenue_3_yr || 0,
+      netIncome: financialData.net_income_3_yr || 0,
+      operatingIncome: financialData.operating_income_3_yr || 0,
+      operatingCashFlow: financialData.operating_cash_flow_3_yr || 0,
     },
     {
       year: "2 Years Ago",
-      revenue: financialData.revenue_2_years_ago || 0,
-      netIncome: financialData.net_income_2_years_ago || 0,
-      operatingIncome: financialData.operating_income_2_years_ago || 0,
-      operatingCashFlow: financialData.operating_cash_flow_2_years_ago || 0,
+      revenue: financialData.revenue_2_yr || 0,
+      netIncome: financialData.net_income_2_yr || 0,
+      operatingIncome: financialData.operating_income_2_yr || 0,
+      operatingCashFlow: financialData.operating_cash_flow_2_yr || 0,
     },
     {
       year: "1 Year Ago",
-      revenue: financialData.revenue_1_year_ago || 0,
-      netIncome: financialData.net_income_1_year_ago || 0,
-      operatingIncome: financialData.operating_income_1_year_ago || 0,
-      operatingCashFlow: financialData.operating_cash_flow_1_year_ago || 0,
+      revenue: financialData.revenue_1_yr || 0,
+      netIncome: financialData.net_income_1_yr || 0,
+      operatingIncome: financialData.operating_income_1_yr || 0,
+      operatingCashFlow: financialData.operating_cash_flow_1_yr || 0,
     },
     {
       year: "Current",
