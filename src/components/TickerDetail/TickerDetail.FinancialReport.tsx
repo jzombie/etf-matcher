@@ -159,12 +159,12 @@ export default function FinancialReport({
     );
   }, [chartData, financialData]);
 
-  if (!hasChartableData) {
-    return <div>No chartable 10-K data available.</div>;
-  }
-
   if (!financialData) {
     return null;
+  }
+
+  if (!hasChartableData) {
+    return <div>No chartable 10-K data available.</div>;
   }
 
   return (
