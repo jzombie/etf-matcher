@@ -61,35 +61,42 @@ export default function HeaderMenu() {
     setDrawerOpen((prev) => !prev);
   };
 
-  const menuItems = [
-    { key: "/", label: "Home", icon: <Home fontSize="small" />, link: "/" },
-    {
-      key: "/portfolios",
-      label: "Portfolios",
-      icon: <AssessmentIcon fontSize="small" />,
-      link: "/portfolios",
-      badgeContent: totalPortfolioBuckets,
-    },
-    {
-      key: "/watchlists",
-      label: "Watchlists",
-      icon: <ListAltIcon fontSize="small" />,
-      link: "/watchlists",
-      badgeContent: totalWatchlistBuckets,
-    },
-    {
-      key: "/settings",
-      label: "Settings",
-      icon: <SettingsIcon fontSize="small" />,
-      link: "/settings",
-    },
-  ];
+  const menuItems = useMemo(
+    () => [
+      { key: "/", label: "Home", icon: <Home fontSize="small" />, link: "/" },
+      {
+        key: "/portfolios",
+        label: "Portfolios",
+        icon: <AssessmentIcon fontSize="small" />,
+        link: "/portfolios",
+        badgeContent: totalPortfolioBuckets,
+      },
+      {
+        key: "/watchlists",
+        label: "Watchlists",
+        icon: <ListAltIcon fontSize="small" />,
+        link: "/watchlists",
+        badgeContent: totalWatchlistBuckets,
+      },
+      {
+        key: "/settings",
+        label: "Settings",
+        icon: <SettingsIcon fontSize="small" />,
+        link: "/settings",
+      },
+    ],
+    [totalPortfolioBuckets, totalWatchlistBuckets],
+  );
 
-  const selectedKey = menuItems.find(
-    (item) =>
-      matchPath({ path: item.key, end: true }, location.pathname) ||
-      matchPath({ path: `${item.key}/*`, end: false }, location.pathname),
-  )?.key;
+  const selectedKey = useMemo(
+    () =>
+      menuItems.find(
+        (item) =>
+          matchPath({ path: item.key, end: true }, location.pathname) ||
+          matchPath({ path: `${item.key}/*`, end: false }, location.pathname),
+      )?.key,
+    [location.pathname, menuItems],
+  );
 
   const shouldHighlightSearchButton = !selectedKey;
 
