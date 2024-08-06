@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import store from "@src/store";
 import {
+  RustServiceETFAggregateDetail,
   RustServiceTicker10KDetail,
   RustServiceTickerDetail,
 } from "@src/types";
@@ -27,69 +28,114 @@ export type FinancialReportProps = {
 export default function FinancialReport({
   tickerDetail,
 }: FinancialReportProps) {
-  const [financialData, setFinancialData] =
-    useState<RustServiceTicker10KDetail | null>(null);
+  const [financialData, setFinancialData] = useState<
+    RustServiceTicker10KDetail | RustServiceETFAggregateDetail | null
+  >(null);
 
   useEffect(() => {
     if (!tickerDetail.is_etf) {
       store.fetchTicker10KDetail(tickerDetail.ticker_id).then(setFinancialData);
+    } else {
+      store
+        .fetchETFAggregateDetailByTickerId(tickerDetail.ticker_id)
+        .then(setFinancialData);
     }
   }, [tickerDetail]);
+
+  // const currencyCode = financialData.currency_code || "USD";
+  const currencyCode = "USD";
+
+  const isTicker10KDetail = useMemo(
+    () =>
+      (
+        data: RustServiceTicker10KDetail | RustServiceETFAggregateDetail,
+      ): data is RustServiceTicker10KDetail => {
+        return (
+          (data as RustServiceTicker10KDetail).calendar_year_4_yr !== undefined
+        );
+      },
+    [],
+  );
 
   if (!financialData) {
     return null;
   }
 
-  // TODO: Don't hardcode "USD"; `ticker_detail` needs to relay the currency code
-  const currencyCode = "USD";
-
-  const data = [
-    {
-      // year: "4 Years Ago",
-      year: financialData.calendar_year_4_yr,
-      //
-      revenue: financialData.revenue_4_yr || 0,
-      netIncome: financialData.net_income_4_yr || 0,
-      operatingIncome: financialData.operating_income_4_yr || 0,
-      operatingCashFlow: financialData.operating_cash_flow_4_yr || 0,
-    },
-    {
-      // year: "3 Years Ago",
-      year: financialData.calendar_year_3_yr,
-      //
-      revenue: financialData.revenue_3_yr || 0,
-      netIncome: financialData.net_income_3_yr || 0,
-      operatingIncome: financialData.operating_income_3_yr || 0,
-      operatingCashFlow: financialData.operating_cash_flow_3_yr || 0,
-    },
-    {
-      // year: "2 Years Ago",
-      year: financialData.calendar_year_2_yr,
-      //
-      revenue: financialData.revenue_2_yr || 0,
-      netIncome: financialData.net_income_2_yr || 0,
-      operatingIncome: financialData.operating_income_2_yr || 0,
-      operatingCashFlow: financialData.operating_cash_flow_2_yr || 0,
-    },
-    {
-      // year: "1 Year Ago",
-      year: financialData.calendar_year_1_yr,
-      //
-      revenue: financialData.revenue_1_yr || 0,
-      netIncome: financialData.net_income_1_yr || 0,
-      operatingIncome: financialData.operating_income_1_yr || 0,
-      operatingCashFlow: financialData.operating_cash_flow_1_yr || 0,
-    },
-    {
-      // year: "Current",
-      year: financialData.calendar_year_current,
-      //
-      revenue: financialData.revenue_current || 0,
-      netIncome: financialData.net_income_current || 0,
-      operatingIncome: financialData.operating_income_current || 0,
-      operatingCashFlow: financialData.operating_cash_flow_current || 0,
-    },
-  ];
+  const data = isTicker10KDetail(financialData)
+    ? [
+        {
+          year: financialData.calendar_year_4_yr,
+          revenue: financialData.revenue_4_yr || 0,
+          netIncome: financialData.net_income_4_yr || 0,
+          operatingIncome: financialData.operating_income_4_yr || 0,
+          operatingCashFlow: financialData.operating_cash_flow_4_yr || 0,
+        },
+        {
+          year: financialData.calendar_year_3_yr,
+          revenue: financialData.revenue_3_yr || 0,
+          netIncome: financialData.net_income_3_yr || 0,
+          operatingIncome: financialData.operating_income_3_yr || 0,
+          operatingCashFlow: financialData.operating_cash_flow_3_yr || 0,
+        },
+        {
+          year: financialData.calendar_year_2_yr,
+          revenue: financialData.revenue_2_yr || 0,
+          netIncome: financialData.net_income_2_yr || 0,
+          operatingIncome: financialData.operating_income_2_yr || 0,
+          operatingCashFlow: financialData.operating_cash_flow_2_yr || 0,
+        },
+        {
+          year: financialData.calendar_year_1_yr,
+          revenue: financialData.revenue_1_yr || 0,
+          netIncome: financialData.net_income_1_yr || 0,
+          operatingIncome: financialData.operating_income_1_yr || 0,
+          operatingCashFlow: financialData.operating_cash_flow_1_yr || 0,
+        },
+        {
+          year: financialData.calendar_year_current,
+          revenue: financialData.revenue_current || 0,
+          netIncome: financialData.net_income_current || 0,
+          operatingIncome: financialData.operating_income_current || 0,
+          operatingCashFlow: financialData.operating_cash_flow_current || 0,
+        },
+      ]
+    : [
+        {
+          year: "4 years ago",
+          revenue: financialData.avg_revenue_4_yr || 0,
+          netIncome: financialData.avg_net_income_4_yr || 0,
+          operatingIncome: financialData.avg_operating_income_4_yr || 0,
+          operatingCashFlow: financialData.avg_operating_cash_flow_4_yr || 0,
+        },
+        {
+          year: "3 years ago",
+          revenue: financialData.avg_revenue_3_yr || 0,
+          netIncome: financialData.avg_net_income_3_yr || 0,
+          operatingIncome: financialData.avg_operating_income_3_yr || 0,
+          operatingCashFlow: financialData.avg_operating_cash_flow_3_yr || 0,
+        },
+        {
+          year: "2 years ago",
+          revenue: financialData.avg_revenue_2_yr || 0,
+          netIncome: financialData.avg_net_income_2_yr || 0,
+          operatingIncome: financialData.avg_operating_income_2_yr || 0,
+          operatingCashFlow: financialData.avg_operating_cash_flow_2_yr || 0,
+        },
+        {
+          year: "1 years ago",
+          revenue: financialData.avg_revenue_1_yr || 0,
+          netIncome: financialData.avg_net_income_1_yr || 0,
+          operatingIncome: financialData.avg_operating_income_1_yr || 0,
+          operatingCashFlow: financialData.avg_operating_cash_flow_1_yr || 0,
+        },
+        {
+          year: "Current",
+          revenue: financialData.avg_revenue_current || 0,
+          netIncome: financialData.avg_net_income_current || 0,
+          operatingIncome: financialData.avg_operating_income_current || 0,
+          operatingCashFlow: financialData.avg_operating_cash_flow_current || 0,
+        },
+      ];
 
   return (
     <div>
