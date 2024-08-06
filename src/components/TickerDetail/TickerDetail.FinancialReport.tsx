@@ -45,16 +45,17 @@ export default function FinancialReport({
   // const currencyCode = financialData.currency_code || "USD";
   const currencyCode = "USD";
 
-  const data = useMemo(() => {
+  const chartData = useMemo(() => {
     if (!financialData) {
       return [];
     }
 
     const isTicker10KDetail = (
-      data: RustServiceTicker10KDetail | RustServiceETFAggregateDetail,
-    ): data is RustServiceTicker10KDetail => {
+      financialData: RustServiceTicker10KDetail | RustServiceETFAggregateDetail,
+    ): financialData is RustServiceTicker10KDetail => {
       return (
-        (data as RustServiceTicker10KDetail).calendar_year_4_yr !== undefined
+        (financialData as RustServiceTicker10KDetail).calendar_year_4_yr !==
+        undefined
       );
     };
 
@@ -147,7 +148,7 @@ export default function FinancialReport({
       <h3>Revenue and Net Income Over Years</h3>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
-          data={data}
+          data={chartData}
           margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
@@ -169,7 +170,7 @@ export default function FinancialReport({
       <h3>Operating Income and Operating Cash Flow</h3>
       <ResponsiveContainer width="100%" height={400}>
         <BarChart
-          data={data}
+          data={chartData}
           margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
