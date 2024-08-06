@@ -5,6 +5,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { Button } from "@mui/material";
 
+import Padding from "@layoutKit/Padding";
 import { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucketProps } from "@src/store";
 
@@ -27,23 +28,29 @@ export default function BucketManager({ bucketType }: BucketManagerProps) {
 
   return (
     <>
-      <Section>
-        <Button
-          variant={!isAddingNewTickerBucket ? "contained" : "text"}
-          color={!isAddingNewTickerBucket ? "primary" : "error"}
-          startIcon={
-            !isAddingNewTickerBucket ? <AddCircleOutlineIcon /> : <CancelIcon />
-          }
-          onClick={() => setIsAddingNewTickerBucket((prev) => !prev)}
-        >
-          {!isAddingNewTickerBucket ? "Create" : "Cancel"} New{" "}
-          {tickerBucketDefaultNames[bucketType]}
-        </Button>
+      <Padding>
+        <Section>
+          <Button
+            variant={!isAddingNewTickerBucket ? "contained" : "text"}
+            color={!isAddingNewTickerBucket ? "primary" : "error"}
+            startIcon={
+              !isAddingNewTickerBucket ? (
+                <AddCircleOutlineIcon />
+              ) : (
+                <CancelIcon />
+              )
+            }
+            onClick={() => setIsAddingNewTickerBucket((prev) => !prev)}
+          >
+            {!isAddingNewTickerBucket ? "Create" : "Cancel"} New{" "}
+            {tickerBucketDefaultNames[bucketType]}
+          </Button>
 
-        {isAddingNewTickerBucket && (
-          <BucketForm bucketType={bucketType} onClose={handleCancel} />
-        )}
-      </Section>
+          {isAddingNewTickerBucket && (
+            <BucketForm bucketType={bucketType} onClose={handleCancel} />
+          )}
+        </Section>
+      </Padding>
 
       <BucketList bucketType={bucketType} />
     </>

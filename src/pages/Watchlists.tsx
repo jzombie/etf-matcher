@@ -12,9 +12,7 @@ export default function Watchlists() {
 
   return (
     <Scrollable>
-      <Padding>
-        <BucketManager bucketType="watchlist" />
-      </Padding>
+      <BucketManager bucketType="watchlist" />
     </Scrollable>
   );
 }

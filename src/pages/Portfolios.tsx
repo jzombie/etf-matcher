@@ -12,9 +12,7 @@ export default function Portfolios() {
 
   return (
     <Scrollable>
-      <Padding>
-        <BucketManager bucketType="portfolio" />
-      </Padding>
+      <BucketManager bucketType="portfolio" />
     </Scrollable>
   );
 }

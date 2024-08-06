@@ -12,6 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 
+import Padding from "@layoutKit/Padding";
 import store from "@src/store";
 import type { TickerBucketProps } from "@src/store";
 
@@ -68,53 +69,55 @@ export default function BucketList({ bucketType }: BucketListProps) {
     <>
       {localTickerBucket?.map((tickerBucket, idx) => (
         <React.Fragment key={idx}>
-          <Section>
-            <h2>{tickerBucket.name}</h2>
+          <Padding>
+            <Section>
+              <h2>{tickerBucket.name}</h2>
 
-            <div>{tickerBucket.description}</div>
+              <div>{tickerBucket.description}</div>
 
-            <Button
-              color="error"
-              variant="outlined"
-              startIcon={<DeleteIcon />}
-              onClick={() => handleDeleteClick(tickerBucket)}
-            >
-              Delete
-            </Button>
-            <Button
-              color="primary"
-              variant="outlined"
-              startIcon={<EditIcon />}
-              onClick={() => handleEditClick(tickerBucket)}
-            >
-              Edit
-            </Button>
+              <Button
+                color="error"
+                variant="outlined"
+                startIcon={<DeleteIcon />}
+                onClick={() => handleDeleteClick(tickerBucket)}
+              >
+                Delete
+              </Button>
+              <Button
+                color="primary"
+                variant="outlined"
+                startIcon={<EditIcon />}
+                onClick={() => handleEditClick(tickerBucket)}
+              >
+                Edit
+              </Button>
 
-            {isEditDialogOpen && selectedBucket === tickerBucket && (
-              <BucketForm
-                bucketType={bucketType}
-                existingBucket={selectedBucket}
-                onClose={handleClose}
-              />
-            )}
+              {isEditDialogOpen && selectedBucket === tickerBucket && (
+                <BucketForm
+                  bucketType={bucketType}
+                  existingBucket={selectedBucket}
+                  onClose={handleClose}
+                />
+              )}
 
-            {!tickerBucket.tickers.length && (
-              <>
-                <Typography variant="body2" color="textSecondary">
-                  No items in &quot;{tickerBucket.name}&quot;.
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  sx={{ display: "inline-block", marginRight: 1 }}
-                >
-                  Perhaps you might wish to perform a{" "}
-                  {/* [`Search` button follows] */}
-                </Typography>
-                <SearchModalButton />
-              </>
-            )}
-          </Section>
+              {!tickerBucket.tickers.length && (
+                <>
+                  <Typography variant="body2" color="textSecondary">
+                    No items in &quot;{tickerBucket.name}&quot;.
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    sx={{ display: "inline-block", marginRight: 1 }}
+                  >
+                    Perhaps you might wish to perform a{" "}
+                    {/* [`Search` button follows] */}
+                  </Typography>
+                  <SearchModalButton />
+                </>
+              )}
+            </Section>
+          </Padding>
 
           <TickerDetailList
             tickerIds={tickerBucket.tickers.map(({ tickerId }) => tickerId)}
