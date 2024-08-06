@@ -1,5 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 
+import { Alert } from "@mui/material";
+
+import Padding from "@layoutKit/Padding";
 import store from "@src/store";
 import {
   RustServiceETFAggregateDetail,
@@ -164,13 +167,19 @@ export default function FinancialReport({
   }
 
   if (!hasChartableData) {
-    return <div>No chartable 10-K data available.</div>;
+    return (
+      <Alert variant="filled" severity="warning">
+        No renderable 10-K data available for {tickerDetail.symbol}
+      </Alert>
+    );
   }
 
   return (
     <div>
-      <h2>Financial Report</h2>
-      <h3>Revenue and Net Income Over Years</h3>
+      <Padding>
+        <h2>{tickerDetail.symbol} Financial Report</h2>
+        <h3>Revenue and Net Income Over Years</h3>
+      </Padding>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
           data={chartData}
@@ -192,7 +201,9 @@ export default function FinancialReport({
         </LineChart>
       </ResponsiveContainer>
 
-      <h3>Operating Income and Operating Cash Flow</h3>
+      <Padding>
+        <h3>Operating Income and Operating Cash Flow</h3>
+      </Padding>
       <ResponsiveContainer width="100%" height={400}>
         <BarChart
           data={chartData}

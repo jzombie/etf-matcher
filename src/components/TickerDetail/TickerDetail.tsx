@@ -21,6 +21,8 @@ import type {
 } from "@src/types";
 import { MiniChart, Timeline } from "react-ts-tradingview-widgets";
 
+import Section from "@components/Section";
+
 import useImageBackgroundColor from "@hooks/useImageBackgroundColor";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useURLState from "@hooks/useURLState";
@@ -322,14 +324,16 @@ export default function TickerDetail({
         />
       </Box>
 
-      <FinancialReport tickerDetail={tickerDetail} />
-
       <Box sx={{ textAlign: "center" }}>
         <Button onClick={() => setShowNews(!showNews)} startIcon={<NewsIcon />}>
           {showNews ? "Hide News" : "View News"}
         </Button>
         <TickerDetailBucketManager tickerDetail={tickerDetail} />
       </Box>
+
+      <Section>
+        <FinancialReport tickerDetail={tickerDetail} />
+      </Section>
 
       {showNews && (
         // TODO: This seems out of date for `CRWD`, regardless if using `formattedSymbolWithExchange`
