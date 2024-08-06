@@ -62,35 +62,35 @@ export default function FinancialReport({
     if (isTicker10KDetail(financialData)) {
       return [
         {
-          year: financialData.calendar_year_4_yr,
+          year: "4 years ago",
           revenue: financialData.revenue_4_yr || 0,
           netIncome: financialData.net_income_4_yr || 0,
           operatingIncome: financialData.operating_income_4_yr || 0,
           operatingCashFlow: financialData.operating_cash_flow_4_yr || 0,
         },
         {
-          year: financialData.calendar_year_3_yr,
+          year: "3 years ago",
           revenue: financialData.revenue_3_yr || 0,
           netIncome: financialData.net_income_3_yr || 0,
           operatingIncome: financialData.operating_income_3_yr || 0,
           operatingCashFlow: financialData.operating_cash_flow_3_yr || 0,
         },
         {
-          year: financialData.calendar_year_2_yr,
+          year: "2 years ago",
           revenue: financialData.revenue_2_yr || 0,
           netIncome: financialData.net_income_2_yr || 0,
           operatingIncome: financialData.operating_income_2_yr || 0,
           operatingCashFlow: financialData.operating_cash_flow_2_yr || 0,
         },
         {
-          year: financialData.calendar_year_1_yr,
+          year: "1 year ago",
           revenue: financialData.revenue_1_yr || 0,
           netIncome: financialData.net_income_1_yr || 0,
           operatingIncome: financialData.operating_income_1_yr || 0,
           operatingCashFlow: financialData.operating_cash_flow_1_yr || 0,
         },
         {
-          year: financialData.calendar_year_current,
+          year: "Current",
           revenue: financialData.revenue_current || 0,
           netIncome: financialData.net_income_current || 0,
           operatingIncome: financialData.operating_income_current || 0,
@@ -138,6 +138,11 @@ export default function FinancialReport({
     }
   }, [financialData]);
 
+  // Assume if there is no `current` data, there is no data worth rendering.
+  //
+  // Where `current` is this current calendar year or the previous calendar year,
+  // determined by the fiscal year start of the ticker or aggregated tickers in
+  // an ETF.
   const hasChartableData = useMemo(() => {
     if (!financialData) {
       return false;
