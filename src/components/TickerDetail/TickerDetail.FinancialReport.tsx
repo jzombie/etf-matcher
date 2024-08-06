@@ -45,24 +45,21 @@ export default function FinancialReport({
   // const currencyCode = financialData.currency_code || "USD";
   const currencyCode = "USD";
 
-  const isTicker10KDetail = useMemo(
-    () =>
-      (
-        data: RustServiceTicker10KDetail | RustServiceETFAggregateDetail,
-      ): data is RustServiceTicker10KDetail => {
-        return (
-          (data as RustServiceTicker10KDetail).calendar_year_4_yr !== undefined
-        );
-      },
-    [],
-  );
+  const data = useMemo(() => {
+    if (!financialData) {
+      return [];
+    }
 
-  if (!financialData) {
-    return null;
-  }
+    const isTicker10KDetail = (
+      data: RustServiceTicker10KDetail | RustServiceETFAggregateDetail,
+    ): data is RustServiceTicker10KDetail => {
+      return (
+        (data as RustServiceTicker10KDetail).calendar_year_4_yr !== undefined
+      );
+    };
 
-  const data = isTicker10KDetail(financialData)
-    ? [
+    if (isTicker10KDetail(financialData)) {
+      return [
         {
           year: financialData.calendar_year_4_yr,
           revenue: financialData.revenue_4_yr || 0,
@@ -98,8 +95,9 @@ export default function FinancialReport({
           operatingIncome: financialData.operating_income_current || 0,
           operatingCashFlow: financialData.operating_cash_flow_current || 0,
         },
-      ]
-    : [
+      ];
+    } else {
+      return [
         {
           year: "4 years ago",
           revenue: financialData.avg_revenue_4_yr || 0,
@@ -122,7 +120,7 @@ export default function FinancialReport({
           operatingCashFlow: financialData.avg_operating_cash_flow_2_yr || 0,
         },
         {
-          year: "1 years ago",
+          year: "1 year ago",
           revenue: financialData.avg_revenue_1_yr || 0,
           netIncome: financialData.avg_net_income_1_yr || 0,
           operatingIncome: financialData.avg_operating_income_1_yr || 0,
@@ -136,6 +134,12 @@ export default function FinancialReport({
           operatingCashFlow: financialData.avg_operating_cash_flow_current || 0,
         },
       ];
+    }
+  }, [financialData]);
+
+  if (!financialData) {
+    return null;
+  }
 
   return (
     <div>
