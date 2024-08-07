@@ -27,7 +27,7 @@ export default function PriceChart({
     <Box>
       <Box sx={{ overflow: "auto" }}>
         <Typography variant="h6" sx={{ float: "left", paddingLeft: 1.5 }}>
-          {tickerSymbol} Price Chart
+          {tickerSymbol} Historical Prices
         </Typography>
         <ButtonGroup
           sx={{ float: "right" }}
