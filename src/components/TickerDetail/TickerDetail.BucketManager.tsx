@@ -16,6 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 
+import { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucketProps } from "@src/store";
 import type { RustServiceTickerDetail } from "@src/types";
 
@@ -33,9 +34,9 @@ export default function TickerDetailBucketManager({
   const [isSelectDialogOpen, setIsSelectDialogOpen] = useState(false);
   const [selectedBucket, setSelectedBucket] =
     useState<TickerBucketProps | null>(null);
-  const [selectedBucketType, setSelectedBucketType] = useState<string | null>(
-    null,
-  );
+  const [selectedBucketType, setSelectedBucketType] = useState<
+    TickerBucketProps["type"] | null
+  >(null);
 
   const handleRemoveClick = (tickerBucket: TickerBucketProps) => {
     setSelectedBucket(tickerBucket);
@@ -55,7 +56,7 @@ export default function TickerDetailBucketManager({
     setSelectedBucket(null);
   };
 
-  const handleAddClick = (type: string) => {
+  const handleAddClick = (type: TickerBucketProps["type"]) => {
     setSelectedBucketType(type);
     setIsSelectDialogOpen(true);
   };
@@ -135,7 +136,8 @@ export default function TickerDetailBucketManager({
                     color="primary"
                     fullWidth
                   >
-                    Add to {type}
+                    Add {tickerDetail.symbol} to{" "}
+                    {tickerBucketDefaultNames[type]}
                   </Button>
                   {bucketsOfType.filter(isTickerInBucket).map((bucket) => (
                     <Button
@@ -157,7 +159,11 @@ export default function TickerDetailBucketManager({
       </Grid>
 
       <Dialog open={isSelectDialogOpen} onClose={handleCloseSelectDialog}>
-        <DialogTitle>Select {selectedBucketType} Bucket</DialogTitle>
+        <DialogTitle>
+          Select{" "}
+          {selectedBucketType && tickerBucketDefaultNames[selectedBucketType]}{" "}
+          Bucket
+        </DialogTitle>
         <DialogContent>
           <Select value="" onChange={handleSelectChange} displayEmpty fullWidth>
             <MenuItem value="" disabled>
