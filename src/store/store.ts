@@ -424,7 +424,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
-  private _syncDataBuildInfo() {
+  private _syncDataBuildInfo(): void {
     callRustService("get_data_build_info").then((dataBuildInfo) => {
       this.setState({
         isRustInit: true,
