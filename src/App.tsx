@@ -75,9 +75,11 @@ const darkTheme = createTheme({
     MuiDialog: {
       styleOverrides: {
         paper: {
-          backgroundColor: "#1d1d1d",
+          backgroundColor: "rgba(0,0,0,.8)",
+          backdropFilter: "blur(10px)",
           color: "#ffffff",
           borderRadius: 10,
+          border: "2px rgba(38,100,100,.8) solid",
           padding: "16px",
         },
       },

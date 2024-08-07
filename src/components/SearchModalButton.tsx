@@ -224,9 +224,6 @@ export default function SearchModalButton({
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
-            backgroundColor: "rgba(31,31,31,.8)",
-            border: "2px rgba(38,100,100,.8) solid",
-            backdropFilter: "blur(10px)",
             "@media (max-width: 728px)": {
               width: "100vw",
               height: "100dvh", // Assuming the browser supports `dvh`
