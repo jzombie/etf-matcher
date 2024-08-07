@@ -13,7 +13,6 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
-  Typography,
 } from "@mui/material";
 
 import { tickerBucketDefaultNames } from "@src/store";
@@ -87,9 +86,6 @@ export default function TickerDetailBucketManager({
 
   return (
     <Box sx={{ padding: 2 }}>
-      <Typography variant="h6" gutterBottom>
-        Manage Buckets for {tickerDetail.symbol}
-      </Typography>
       <Grid container spacing={2}>
         {bucketTypes.map((type) => {
           const bucketsOfType = tickerBuckets.filter(
