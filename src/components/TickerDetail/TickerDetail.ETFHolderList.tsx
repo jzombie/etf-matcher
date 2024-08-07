@@ -48,12 +48,6 @@ export default function ETFHolderList({ tickerDetail }: ETFHolderListProps) {
     }
   }, [tickerId, page]);
 
-  if (!paginatedETFHolders) {
-    return null;
-  }
-
-  const paginatedResults = paginatedETFHolders.results;
-
   if (!paginatedETFHolders && isLoadingETFHolders) {
     return (
       <Center>
@@ -61,6 +55,12 @@ export default function ETFHolderList({ tickerDetail }: ETFHolderListProps) {
       </Center>
     );
   }
+
+  if (!paginatedETFHolders) {
+    return null;
+  }
+
+  const paginatedResults = paginatedETFHolders.results;
 
   return (
     <Box>
