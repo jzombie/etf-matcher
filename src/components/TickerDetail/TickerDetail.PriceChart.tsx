@@ -23,15 +23,15 @@ export default function PriceChart({
 
   return (
     <Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Typography variant="h6">Price Chart</Typography>
-        <ButtonGroup variant="outlined" aria-label="outlined button group">
+      <Box>
+        <Typography variant="h6" sx={{ float: "left", paddingLeft: 1.5 }}>
+          Price Chart
+        </Typography>
+        <ButtonGroup
+          sx={{ float: "right" }}
+          variant="outlined"
+          aria-label="outlined button group"
+        >
           {dateRanges.map((range) => (
             <Button
               key={range}
