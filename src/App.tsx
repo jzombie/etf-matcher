@@ -72,6 +72,59 @@ const darkTheme = createTheme({
         },
       },
     },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: "#1d1d1d",
+          color: "#ffffff",
+          borderRadius: 10,
+          padding: "16px",
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+              borderColor: "#1976d2",
+            },
+            "&:hover fieldset": {
+              borderColor: "#64b5f6",
+            },
+            "&.Mui-focused fieldset": {
+              borderColor: "#1565c0",
+            },
+          },
+          "& .MuiSelect-icon": {
+            color: "#1976d2",
+          },
+        },
+      },
+    },
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: {
+          fontSize: "1.25rem",
+          fontWeight: 500,
+        },
+      },
+    },
+    MuiDialogContent: {
+      styleOverrides: {
+        root: {
+          fontSize: "1rem",
+          fontWeight: 400,
+        },
+      },
+    },
+    MuiDialogActions: {
+      styleOverrides: {
+        root: {
+          padding: "8px 16px",
+        },
+      },
+    },
   },
 });
 
