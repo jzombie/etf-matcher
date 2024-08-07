@@ -310,7 +310,10 @@ export default function TickerDetail({
         </InfoContainer>
       </SymbolDetailWrapper>
 
-      <PriceChart formattedSymbolWithExchange={formattedSymbolWithExchange} />
+      <PriceChart
+        tickerSymbol={tickerDetail.symbol}
+        formattedSymbolWithExchange={formattedSymbolWithExchange}
+      />
 
       <Box sx={{ textAlign: "center" }}>
         {/* <Button onClick={() => setShowNews(!showNews)} startIcon={<NewsIcon />}>

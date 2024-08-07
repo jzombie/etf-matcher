@@ -7,12 +7,14 @@ import { MiniChart } from "react-ts-tradingview-widgets";
 import type { DateRange } from "react-ts-tradingview-widgets";
 
 export type PriceChartProps = {
+  tickerSymbol: string;
   formattedSymbolWithExchange: string;
 };
 
 const dateRanges: DateRange[] = ["1D", "1M", "3M", "12M", "60M", "ALL"];
 
 export default function PriceChart({
+  tickerSymbol,
   formattedSymbolWithExchange,
 }: PriceChartProps) {
   const [dateRange, setDateRange] = useState<DateRange>("1M");
@@ -25,7 +27,7 @@ export default function PriceChart({
     <Box>
       <Box sx={{ overflow: "auto" }}>
         <Typography variant="h6" sx={{ float: "left", paddingLeft: 1.5 }}>
-          Price Chart
+          {tickerSymbol} Price Chart
         </Typography>
         <ButtonGroup
           sx={{ float: "right" }}
