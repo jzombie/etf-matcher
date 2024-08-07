@@ -2,12 +2,18 @@ import React, { useState } from "react";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Grid,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Typography,
 } from "@mui/material";
 
 import type { TickerBucketProps } from "@src/store";
@@ -24,8 +30,12 @@ export default function TickerDetailBucketManager({
 }: TickerDetailBucketManagerProps) {
   const { tickerBuckets } = useStoreStateReader(["tickerBuckets"]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isSelectDialogOpen, setIsSelectDialogOpen] = useState(false);
   const [selectedBucket, setSelectedBucket] =
     useState<TickerBucketProps | null>(null);
+  const [selectedBucketType, setSelectedBucketType] = useState<string | null>(
+    null,
+  );
 
   const handleRemoveClick = (tickerBucket: TickerBucketProps) => {
     setSelectedBucket(tickerBucket);
@@ -40,48 +50,144 @@ export default function TickerDetailBucketManager({
     setSelectedBucket(null);
   };
 
-  const handleClose = () => {
+  const handleCloseDeleteDialog = () => {
     setIsDeleteDialogOpen(false);
     setSelectedBucket(null);
   };
 
-  return (
-    <>
-      {tickerBuckets
-        ?.filter(
-          (tickerBucket: TickerBucketProps) => tickerBucket.isUserConfigurable,
-        )
-        .map((tickerBucket: TickerBucketProps, idx: number) => {
-          if (!store.bucketHasTicker(tickerDetail.ticker_id, tickerBucket)) {
-            return (
-              <Button
-                key={idx}
-                onClick={() =>
-                  store.addTickerToBucket(
-                    tickerDetail.ticker_id,
-                    1,
-                    tickerBucket,
-                  )
-                }
-              >
-                Add {tickerDetail.symbol} to {tickerBucket.name}
-              </Button>
-            );
-          } else {
-            return (
-              <Button
-                key={idx}
-                onClick={() => handleRemoveClick(tickerBucket)}
-                startIcon={<DeleteIcon />}
-                color="error"
-              >
-                Remove {tickerDetail.symbol} from {tickerBucket.name}
-              </Button>
-            );
-          }
-        })}
+  const handleAddClick = (type: string) => {
+    setSelectedBucketType(type);
+    setIsSelectDialogOpen(true);
+  };
 
-      <Dialog open={isDeleteDialogOpen} onClose={handleClose}>
+  const handleCloseSelectDialog = () => {
+    setIsSelectDialogOpen(false);
+    setSelectedBucketType(null);
+  };
+
+  const handleSelectChange = (event: SelectChangeEvent<string>) => {
+    const bucket = tickerBuckets.find(
+      (b: TickerBucketProps) => b.name === event.target.value,
+    );
+    if (bucket) {
+      store.addTickerToBucket(tickerDetail.ticker_id, 1, bucket);
+    }
+    setIsSelectDialogOpen(false);
+    setSelectedBucketType(null);
+  };
+
+  const bucketTypes = [
+    ...new Set(
+      tickerBuckets
+        .filter((bucket) => bucket.isUserConfigurable)
+        .map((bucket) => bucket.type),
+    ),
+  ];
+
+  return (
+    <Box sx={{ padding: 2 }}>
+      <Typography variant="h6" gutterBottom>
+        Manage Buckets for {tickerDetail.symbol}
+      </Typography>
+      <Grid container spacing={2}>
+        {bucketTypes.map((type) => {
+          const bucketsOfType = tickerBuckets.filter(
+            (bucket) => bucket.isUserConfigurable && bucket.type === type,
+          );
+          const isTickerInBucket = (bucket: TickerBucketProps) =>
+            store.bucketHasTicker(tickerDetail.ticker_id, bucket);
+
+          return (
+            <Grid item xs={12} sm={6} md={4} key={type}>
+              {bucketsOfType.length === 1 ? (
+                <Box>
+                  {isTickerInBucket(bucketsOfType[0]) ? (
+                    <Button
+                      onClick={() => handleRemoveClick(bucketsOfType[0])}
+                      startIcon={<DeleteIcon />}
+                      color="error"
+                      fullWidth
+                    >
+                      Remove {tickerDetail.symbol} from {bucketsOfType[0].name}
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() =>
+                        store.addTickerToBucket(
+                          tickerDetail.ticker_id,
+                          1,
+                          bucketsOfType[0],
+                        )
+                      }
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                    >
+                      Add {tickerDetail.symbol} to {bucketsOfType[0].name}
+                    </Button>
+                  )}
+                </Box>
+              ) : (
+                <Box>
+                  <Button
+                    onClick={() => handleAddClick(type)}
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                  >
+                    Add to {type}
+                  </Button>
+                  {bucketsOfType.filter(isTickerInBucket).map((bucket) => (
+                    <Button
+                      key={bucket.name}
+                      onClick={() => handleRemoveClick(bucket)}
+                      startIcon={<DeleteIcon />}
+                      color="error"
+                      sx={{ marginTop: 1 }}
+                      fullWidth
+                    >
+                      Remove {tickerDetail.symbol} from {bucket.name}
+                    </Button>
+                  ))}
+                </Box>
+              )}
+            </Grid>
+          );
+        })}
+      </Grid>
+
+      <Dialog open={isSelectDialogOpen} onClose={handleCloseSelectDialog}>
+        <DialogTitle>Select {selectedBucketType} Bucket</DialogTitle>
+        <DialogContent>
+          <Select value="" onChange={handleSelectChange} displayEmpty fullWidth>
+            <MenuItem value="" disabled>
+              Select Bucket
+            </MenuItem>
+            {tickerBuckets
+              ?.filter(
+                (bucket) =>
+                  bucket.isUserConfigurable &&
+                  bucket.type === selectedBucketType,
+              )
+              .filter(
+                (bucket) =>
+                  !store.bucketHasTicker(tickerDetail.ticker_id, bucket),
+              )
+              .map((bucket) => (
+                <MenuItem key={bucket.name} value={bucket.name}>
+                  {bucket.name}
+                </MenuItem>
+              ))}
+          </Select>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseSelectDialog} color="primary">
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={isDeleteDialogOpen} onClose={handleCloseDeleteDialog}>
         <DialogTitle>Confirm Remove</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -90,7 +196,7 @@ export default function TickerDetailBucketManager({
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleCloseDeleteDialog} color="primary">
             Cancel
           </Button>
           <Button onClick={handleConfirmRemove} color="error">
@@ -98,6 +204,6 @@ export default function TickerDetailBucketManager({
           </Button>
         </DialogActions>
       </Dialog>
-    </>
+    </Box>
   );
 }
