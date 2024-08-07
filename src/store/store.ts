@@ -166,7 +166,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     this.shouldDeepfreeze = !IS_PROD;
 
     // TODO: Poll for data build info once every "x" to ensure the data is always running the latest version
-    this._fetchDataBuildInfo();
+    this._syncDataBuildInfo();
 
     // Make initial searches faster
     this._preloadTickerSearchCache();
@@ -424,7 +424,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
-  private _fetchDataBuildInfo() {
+  private _syncDataBuildInfo() {
     callRustService("get_data_build_info").then((dataBuildInfo) => {
       this.setState({
         isRustInit: true,
