@@ -1,9 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import NewsIcon from "@mui/icons-material/Article";
 import {
   Box,
-  Button,
   ButtonBase,
   CircularProgress,
   Grid,
@@ -11,7 +9,6 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 
-import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
 import store from "@src/store";
@@ -19,7 +16,6 @@ import type {
   RustServiceETFAggregateDetail,
   RustServiceTickerDetail,
 } from "@src/types";
-import { MiniChart, Timeline } from "react-ts-tradingview-widgets";
 
 import Section from "@components/Section";
 
@@ -35,6 +31,7 @@ import TickerContainer from "../TickerContainer";
 import TickerDetailBucketManager from "./TickerDetail.BucketManager";
 import ETFHolderList from "./TickerDetail.ETFHolderList";
 import FinancialReport from "./TickerDetail.FinancialReport";
+import PriceChart from "./TickerDetail.PriceChart";
 
 export type TickerDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerId: number;
@@ -313,16 +310,7 @@ export default function TickerDetail({
         </InfoContainer>
       </SymbolDetailWrapper>
 
-      <Box sx={{ height: 200 }}>
-        <MiniChart
-          symbol={formattedSymbolWithExchange}
-          colorTheme="dark"
-          width="100%"
-          height="100%"
-          copyrightStyles={tradingViewCopyrightStyles}
-          dateRange="ALL"
-        />
-      </Box>
+      <PriceChart formattedSymbolWithExchange={formattedSymbolWithExchange} />
 
       <Box sx={{ textAlign: "center" }}>
         {/* <Button onClick={() => setShowNews(!showNews)} startIcon={<NewsIcon />}>
