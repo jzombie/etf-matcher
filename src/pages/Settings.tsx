@@ -118,7 +118,7 @@ export default function Settings() {
           <h3>Buckets</h3>
           {tickerBuckets?.map((tickerBucket, idx) => (
             <Typography key={idx} variant="body1">
-              {tickerBucket.name}
+              {tickerBucket.name}: {tickerBucket.tickers.length} items
             </Typography>
           ))}
         </Section>
