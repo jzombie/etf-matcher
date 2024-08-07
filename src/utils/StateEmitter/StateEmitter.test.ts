@@ -223,3 +223,18 @@ describe("StateEmitter - Deepfreeze Tests", () => {
     expect(Object.isFrozen(emitter.initialState)).toBe(true);
   });
 });
+
+describe("StateEmitter - Reset Method", () => {
+  it("should reset state to initial state", () => {
+    const initialState: TestState = { count: 0, text: "hello" };
+    const emitter = new StateEmitter<TestState>(initialState);
+
+    // Modify the state
+    emitter.setState({ count: 1, text: "world" });
+    expect(emitter.state).toEqual(deepFreeze({ count: 1, text: "world" }));
+
+    // Reset the state
+    emitter.reset();
+    expect(emitter.state).toEqual(deepFreeze(initialState));
+  });
+});
