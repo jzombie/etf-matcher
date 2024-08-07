@@ -62,6 +62,7 @@ export default function ETFHoldingList({
         <TickerContainer
           key={result.holding_ticker_id}
           tickerId={result.holding_ticker_id}
+          style={{ display: "inline-block" }}
         >
           <ButtonBase
             sx={{ overflow: "auto", margin: 1 }}
