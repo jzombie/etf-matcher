@@ -335,7 +335,7 @@ export default function TickerDetail({
           colorTheme="dark"
           symbol={formattedSymbolWithExchange}
           width="100%"
-          copyrightStyles={tradingViewCopyrightStyles}
+          copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
         />
       )} */}
 

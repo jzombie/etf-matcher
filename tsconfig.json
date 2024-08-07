@@ -16,7 +16,6 @@
     "baseUrl": ".",
     "paths": {
       "@assets/*": ["src/assets/*"],
-      "@constants/*": ["src/constants/*"],
       "@layoutKit/*": ["src/components/layout-kit/*"],
       "@components/*": ["src/components/*"],
       "@hooks/*": ["src/hooks/*"],

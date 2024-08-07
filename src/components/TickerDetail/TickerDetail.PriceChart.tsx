@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { Box, Button, ButtonGroup, Typography } from "@mui/material";
 
-import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
+import { TRADING_VIEW_COPYRIGHT_STYLES } from "@src/constants";
 import { MiniChart } from "react-ts-tradingview-widgets";
 import type { DateRange } from "react-ts-tradingview-widgets";
 
@@ -51,7 +51,7 @@ export default function PriceChart({
           colorTheme="dark"
           width="100%"
           height="100%"
-          copyrightStyles={tradingViewCopyrightStyles}
+          copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
           dateRange={dateRange}
         />
       </Box>

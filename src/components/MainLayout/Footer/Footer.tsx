@@ -2,8 +2,8 @@ import React from "react";
 
 import { Typography, useMediaQuery, useTheme } from "@mui/material";
 
-import tradingViewCopyrightStyles from "@constants/tradingViewCopyrightStyles";
 import { Footer } from "@layoutKit/Layout";
+import { TRADING_VIEW_COPYRIGHT_STYLES } from "@src/constants";
 import { TickerTape } from "react-ts-tradingview-widgets";
 
 import NetworkRequestIndicator from "./NetworkRequestIndicator";
@@ -42,7 +42,7 @@ export default function MainLayoutFooter() {
       </Typography>
       <TickerTape
         colorTheme="dark"
-        copyrightStyles={tradingViewCopyrightStyles}
+        copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
         symbols={SECTOR_SYMBOLS}
       />
     </Footer>
