@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 
 import { ButtonBase } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 
+import Center from "@layoutKit/Center";
 import store from "@src/store";
 import type {
   RustServiceETFHoldingTickerResponse,
@@ -20,6 +22,9 @@ export type ETFHoldingListProps = {
 export default function ETFHoldingList({
   etfTickerDetail,
 }: ETFHoldingListProps) {
+  const [isLoadingETFHoldings, setIsLoadingETFHoldings] =
+    useState<boolean>(false);
+
   const [paginatedHoldings, setPaginatedHoldings] =
     useState<RustServicePaginatedResults<RustServiceETFHoldingTickerResponse> | null>(
       null,
@@ -27,13 +32,24 @@ export default function ETFHoldingList({
 
   useEffect(() => {
     if (etfTickerDetail.is_etf) {
+      setIsLoadingETFHoldings(true);
+
       store
         .fetchETFHoldingsByETFTickerId(etfTickerDetail.ticker_id)
-        .then(setPaginatedHoldings);
+        .then(setPaginatedHoldings)
+        .finally(() => setIsLoadingETFHoldings(false));
     }
   }, [etfTickerDetail]);
 
   const { setURLState, toBooleanParam } = useURLState();
+
+  if (!paginatedHoldings && isLoadingETFHoldings) {
+    return (
+      <Center>
+        <CircularProgress />
+      </Center>
+    );
+  }
 
   if (!paginatedHoldings) {
     return null;
