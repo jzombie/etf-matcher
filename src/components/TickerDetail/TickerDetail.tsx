@@ -30,6 +30,7 @@ import EncodedImage from "../EncodedImage";
 import TickerContainer from "../TickerContainer";
 import TickerDetailBucketManager from "./TickerDetail.BucketManager";
 import ETFHolderList from "./TickerDetail.ETFHolderList";
+import ETFHoldingList from "./TickerDetail.ETFHoldingList";
 import FinancialReport from "./TickerDetail.FinancialReport";
 import PriceChart from "./TickerDetail.PriceChart";
 
@@ -337,6 +338,10 @@ export default function TickerDetail({
           copyrightStyles={tradingViewCopyrightStyles}
         />
       )} */}
+
+      {tickerDetail?.is_etf && (
+        <ETFHoldingList etfTickerDetail={tickerDetail} />
+      )}
 
       {
         // TODO: Show `ETFHoldingList` (~inverse of `ETFHolderList`) if this is an ETF
