@@ -655,10 +655,13 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   reset() {
+    // TODO: Wipe IndexedDB store
+
     this.clearCache();
     super.reset();
 
     // This prevents an issue where the UI might be in a non-recoverable state after resetting the store
+    // TODO: Reload asynchronously, only after caches have successfully cleared
     window.location.reload();
   }
 }
