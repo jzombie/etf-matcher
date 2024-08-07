@@ -12,3 +12,20 @@ export const TRADING_VIEW_COPYRIGHT_STYLES = {
     display: "none",
   },
 };
+
+// TODO: Move; don't hardcode here
+//
+// https://tradingview-widgets.jorrinkievit.xyz/docs/components/TickerTape#ticker-symbol
+export const DEFAULT_SECTOR_SYMBOLS = [
+  { proName: "XLY", title: "Consumer Discretionary (XLY)" },
+  { proName: "XLP", title: "Consumer Staples (XLP)" },
+  { proName: "XLE", title: "Energy (XLE)" },
+  { proName: "XLF", title: "Financials (XLF)" },
+  { proName: "XLV", title: "Healthcare (XLV)" },
+  { proName: "XLI", title: "Industrials (XLI)" },
+  { proName: "XLB", title: "Materials (XLB)" },
+  { proName: "XLRE", title: "Real Estate (XLRE)" },
+  { proName: "XLK", title: "Technology (XLK)" },
+  { proName: "XLC", title: "Telecommunications (XLC)" },
+  { proName: "XLU", title: "Utilities (XLU)" },
+];

@@ -3,7 +3,10 @@ import React from "react";
 import { Typography, useMediaQuery, useTheme } from "@mui/material";
 
 import { Footer } from "@layoutKit/Layout";
-import { TRADING_VIEW_COPYRIGHT_STYLES } from "@src/constants";
+import {
+  DEFAULT_SECTOR_SYMBOLS,
+  TRADING_VIEW_COPYRIGHT_STYLES,
+} from "@src/constants";
 import { TickerTape } from "react-ts-tradingview-widgets";
 
 import NetworkRequestIndicator from "./NetworkRequestIndicator";
@@ -43,25 +46,8 @@ export default function MainLayoutFooter() {
       <TickerTape
         colorTheme="dark"
         copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
-        symbols={SECTOR_SYMBOLS}
+        symbols={DEFAULT_SECTOR_SYMBOLS}
       />
     </Footer>
   );
 }
-
-// TODO: Move; don't hardcode here
-//
-// https://tradingview-widgets.jorrinkievit.xyz/docs/components/TickerTape#ticker-symbol
-const SECTOR_SYMBOLS = [
-  { proName: "XLY", title: "Consumer Discretionary (XLY)" },
-  { proName: "XLP", title: "Consumer Staples (XLP)" },
-  { proName: "XLE", title: "Energy (XLE)" },
-  { proName: "XLF", title: "Financials (XLF)" },
-  { proName: "XLV", title: "Healthcare (XLV)" },
-  { proName: "XLI", title: "Industrials (XLI)" },
-  { proName: "XLB", title: "Materials (XLB)" },
-  { proName: "XLRE", title: "Real Estate (XLRE)" },
-  { proName: "XLK", title: "Technology (XLK)" },
-  { proName: "XLC", title: "Telecommunications (XLC)" },
-  { proName: "XLU", title: "Utilities (XLU)" },
-];
