@@ -23,7 +23,7 @@ export default function PriceChart({
 
   return (
     <Box>
-      <Box>
+      <Box sx={{ overflow: "auto" }}>
         <Typography variant="h6" sx={{ float: "left", paddingLeft: 1.5 }}>
           Price Chart
         </Typography>
