@@ -653,6 +653,14 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // This forces an immediate sync so that the UI does not appear laggy when clearing cache entries
     this._syncCacheDetails();
   }
+
+  reset() {
+    this.clearCache();
+    super.reset();
+
+    // This prevents an issue where the UI might be in a non-recoverable state after resetting the store
+    window.location.reload();
+  }
 }
 
 const store = new _Store();

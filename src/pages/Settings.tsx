@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
   Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   FormControlLabel,
   Switch,
   Typography,
@@ -62,13 +67,25 @@ export default function Settings() {
     "subscribedMQTTRoomNames",
   ]);
 
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleOpenDialog = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
+
+  const handleConfirmReset = () => {
+    store.reset();
+    setIsDialogOpen(false);
+  };
+
   return (
     <Scrollable>
       <Padding>
         <Section>
-          {
-            // TODO: Remove
-          }
           <Button
             onClick={() =>
               store
@@ -112,8 +129,8 @@ export default function Settings() {
       <Padding>
         <Section>
           <h2>User Data</h2>
-          <Button variant="outlined">
-            TODO: Implement::Clear all user data
+          <Button variant="contained" color="error" onClick={handleOpenDialog}>
+            Clear User Data
           </Button>
           <h3>Buckets</h3>
           {tickerBuckets?.map((tickerBucket, idx) => (
@@ -238,6 +255,29 @@ export default function Settings() {
           {visibleTickerIds?.toString()}
         </Typography>
       </Padding>
+
+      <Dialog
+        open={isDialogOpen}
+        onClose={handleCloseDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Confirm Reset</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to clear all user data? This action cannot be
+            undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmReset} color="error" autoFocus>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Scrollable>
   );
 }
