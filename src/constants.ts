@@ -33,3 +33,14 @@ export const DEFAULT_TICKER_TAPE_TICKERS: ReadonlyArray<{
   { symbol: "XLC", exchangeShortName: "AMEX" }, // Telecommunications
   { symbol: "XLU", exchangeShortName: "AMEX" }, // Utilities
 ];
+
+export const COLOR_WHEEL_COLORS = [
+  "#97DBBE",
+  "#E0B711",
+  "#A84D06",
+  "#F44D42",
+  "#268F17",
+  "#2AA6E0",
+  "#6326FA",
+  "#610B61",
+];

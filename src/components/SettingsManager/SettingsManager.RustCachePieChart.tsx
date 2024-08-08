@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 
+import { COLOR_WHEEL_COLORS } from "@src/constants";
 import type { RustServiceCacheDetail } from "@src/types";
 import {
   Cell,
@@ -14,9 +15,6 @@ import {
 import useStoreStateReader from "@hooks/useStoreStateReader";
 
 import formatByteSize from "@utils/formatByteSize";
-
-// TODO: Centralize somewhere else
-const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#00C49F"];
 
 // Define a type for the data entries
 interface CacheDetail {
@@ -124,7 +122,10 @@ export default function CachePieChart() {
             content={renderCustomizedLabel}
           />
           {groupedData.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            <Cell
+              key={`cell-${index}`}
+              fill={COLOR_WHEEL_COLORS[index % COLOR_WHEEL_COLORS.length]}
+            />
           ))}
         </Pie>
         <Tooltip
