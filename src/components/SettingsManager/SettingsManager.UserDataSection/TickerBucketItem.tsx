@@ -4,6 +4,12 @@ import { ButtonBase } from "@mui/material";
 
 import type { TickerBucketTicker } from "@src/store";
 
+import EncodedImage from "@components/EncodedImage";
+
+import useImageBackgroundColor from "@hooks/useImageBackgroundColor";
+import useTickerDetail from "@hooks/useTickerDetail";
+import useURLState from "@hooks/useURLState";
+
 export type TickerBucketItemProps = {
   tickerBucketTicker: TickerBucketTicker;
 };
@@ -11,7 +17,39 @@ export type TickerBucketItemProps = {
 export default function TickerBucketItem({
   tickerBucketTicker,
 }: TickerBucketItemProps) {
-  // TODO: Make this clickable
-  // TODO: Show logo, etc.
-  return <ButtonBase>{tickerBucketTicker.symbol}</ButtonBase>;
+  const { isLoadingTickerDetail, tickerDetail } = useTickerDetail(
+    tickerBucketTicker.tickerId,
+  );
+
+  const logoBgColor = useImageBackgroundColor(tickerDetail?.logo_filename);
+
+  const { setURLState, toBooleanParam } = useURLState();
+
+  if (isLoadingTickerDetail) {
+    return null;
+  }
+
+  return (
+    <ButtonBase
+      title={tickerDetail?.company_name}
+      onClick={() =>
+        setURLState(
+          { query: tickerBucketTicker.symbol, exact: toBooleanParam(true) },
+          false,
+          "/search",
+        )
+      }
+    >
+      <EncodedImage
+        encSrc={tickerDetail?.logo_filename}
+        style={{
+          width: 50,
+          height: 50,
+          border: `4px ${logoBgColor} solid`,
+          borderRadius: 50,
+          overflow: "hidden",
+        }}
+      />
+    </ButtonBase>
+  );
 }

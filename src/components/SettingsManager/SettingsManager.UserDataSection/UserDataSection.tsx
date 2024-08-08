@@ -68,21 +68,27 @@ export default function UserDataSection() {
         {
           // TODO: For each bucket, show the contents, using logos
         }
-        {tickerBuckets?.map((tickerBucket, idx) => (
-          <div key={idx}>
-            <Typography variant="body1">
-              {tickerBucket.name}: {tickerBucket.tickers.length} items
-            </Typography>
-            <div>
-              {tickerBucket.tickers.map((ticker) => (
-                <TickerBucketItem
-                  key={ticker.tickerId}
-                  tickerBucketTicker={ticker}
-                />
-              ))}
-            </div>
-          </div>
-        ))}
+        <ul>
+          {tickerBuckets?.map((tickerBucket, idx) => (
+            <li key={idx} style={{ padding: 9 }}>
+              <Typography variant="body1">
+                <span style={{ fontWeight: "bold" }}>{tickerBucket.name}</span>:{" "}
+                <span style={{ fontStyle: "italic", fontSize: ".8rem" }}>
+                  ({tickerBucket.tickers.length} item
+                  {tickerBucket.tickers.length !== 1 ? "s" : ""})
+                </span>
+              </Typography>
+              <div>
+                {tickerBucket.tickers.map((ticker) => (
+                  <TickerBucketItem
+                    key={ticker.tickerId}
+                    tickerBucketTicker={ticker}
+                  />
+                ))}
+              </div>
+            </li>
+          ))}
+        </ul>
       </Section>
 
       <Dialog
