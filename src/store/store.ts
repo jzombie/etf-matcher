@@ -192,12 +192,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     }
 
     const results = await Promise.allSettled(
-      DEFAULT_TICKER_TAPE_SYMBOLS.map((symbol) =>
-        // TODO: Use local method, and add types
-        callRustService("get_ticker_id", [
-          symbol.symbol,
-          symbol.exchangeShortName,
-        ]),
+      DEFAULT_TICKER_TAPE_SYMBOLS.map((ticker) =>
+        this.fetchTickerId(ticker.symbol, ticker.exchangeShortName),
       ),
     );
 
@@ -433,6 +429,16 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         this._initInitialTickerTapeTickers();
       }
     })();
+  }
+
+  async fetchTickerId(
+    tickerSymbol: string,
+    exchangeShortName: string,
+  ): Promise<number> {
+    return callRustService<number>("get_ticker_id", [
+      tickerSymbol,
+      exchangeShortName,
+    ]);
   }
 
   /**
