@@ -12,15 +12,12 @@ import { styled } from "@mui/system";
 import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
 import store from "@src/store";
-import type {
-  RustServiceETFAggregateDetail,
-  RustServiceTickerDetail,
-} from "@src/types";
+import type { RustServiceETFAggregateDetail } from "@src/types";
 
 import Section from "@components/Section";
 
 import useImageBackgroundColor from "@hooks/useImageBackgroundColor";
-import useStableCurrentRef from "@hooks/useStableCurrentRef";
+import useTickerDetail from "@hooks/useTickerDetail";
 import useURLState from "@hooks/useURLState";
 
 import formatCurrency from "@utils/formatCurrency";
@@ -73,11 +70,10 @@ export default function TickerDetail({
   preventLoadingSpinner = false,
   ...rest
 }: TickerDetailProps) {
-  const [isLoadingTickerDetail, setIsLoadingTickerDetail] =
-    useState<boolean>(false);
-
-  const [tickerDetail, setSymbolDetail] =
-    useState<RustServiceTickerDetail | null>(null);
+  const { isLoadingTickerDetail, tickerDetail } = useTickerDetail(
+    tickerId,
+    onLoad,
+  );
 
   const logoBackgroundColorOverride = useImageBackgroundColor(
     tickerDetail?.logo_filename,
@@ -87,26 +83,6 @@ export default function TickerDetail({
     useState<RustServiceETFAggregateDetail | null>(null);
 
   // const [showNews, setShowNews] = useState(false);
-
-  // TODO: Move into a `useTickerDetail` hook and also use in `TickerBucketItem`
-  const onLoadStableCurrentRef = useStableCurrentRef(onLoad);
-
-  useEffect(() => {
-    if (tickerId) {
-      setIsLoadingTickerDetail(true);
-
-      store
-        .fetchTickerDetail(tickerId)
-        .then(setSymbolDetail)
-        .finally(() => {
-          setIsLoadingTickerDetail(false);
-
-          if (typeof onLoadStableCurrentRef.current === "function") {
-            onLoadStableCurrentRef.current();
-          }
-        });
-    }
-  }, [onLoadStableCurrentRef, tickerId]);
 
   useEffect(() => {
     if (tickerDetail?.is_etf) {
