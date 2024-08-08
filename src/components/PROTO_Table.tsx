@@ -56,7 +56,7 @@ const SortableTable: React.FC = () => {
   const { cacheDetails: rows } = useStoreStateReader("cacheDetails");
 
   const [order, setOrder] = useState<"asc" | "desc">("asc");
-  const [orderBy, setOrderBy] = useState<keyof RustServiceCacheDetail>("key");
+  const [orderBy, setOrderBy] = useState<keyof RustServiceCacheDetail>("name");
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -115,9 +115,9 @@ const SortableTable: React.FC = () => {
     useMemo(
       () =>
         rows.length > 0
-          ? Object.keys(rows[0]).map((key) => ({
-              id: key as keyof RustServiceCacheDetail,
-              label: key
+          ? Object.keys(rows[0]).map((name) => ({
+              id: name as keyof RustServiceCacheDetail,
+              label: name
                 .replace(/_/g, " ")
                 .replace(/\b\w/g, (char) => char.toUpperCase()),
             }))
