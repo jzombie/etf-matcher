@@ -34,7 +34,7 @@ export const DEFAULT_TICKER_TAPE_TICKERS: ReadonlyArray<{
   { symbol: "XLU", exchangeShortName: "AMEX" }, // Utilities
 ];
 
-export const COLOR_WHEEL_COLORS = [
+export const COLOR_WHEEL_COLORS: Readonly<string[]> = [
   "#97DBBE",
   "#E0B711",
   "#A84D06",
