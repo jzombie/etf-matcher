@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import type { RustServiceCacheDetail } from "@src/types";
 import {
@@ -33,7 +33,7 @@ interface CustomizedLabelProps extends PieLabelRenderProps {
   outerRadius: number;
   percent: number;
   index: number;
-  payload: CacheDetail;
+  payload: GroupedCacheDetail;
 }
 
 const renderCustomizedLabel = (props: CustomizedLabelProps) => {
@@ -56,26 +56,83 @@ const renderCustomizedLabel = (props: CustomizedLabelProps) => {
         textAnchor={x > cx ? "start" : "end"}
         dominantBaseline="central"
       >
-        {`${payload.name}: ${formatByteSize(payload.size)}`}
+        {`${payload.group}: ${formatByteSize(payload.size)}`}
       </text>
     );
   }
   return null;
 };
 
+// Define a type for grouped data
+interface GroupedCacheDetail {
+  group: string;
+  size: number;
+}
+
+// Function to group and aggregate the data
+const groupCacheDetails = (
+  cacheDetails: CacheDetail[],
+): GroupedCacheDetail[] => {
+  const groupMap: { [key: string]: number } = {};
+
+  // cacheDetails.forEach((detail) => {
+  //   // Extract the group from the name (e.g., everything before the first dot)
+  //   let group = detail.name.split(".")[0];
+
+  //   if (group.startsWith("/data/images")) {
+  //     group = "/data/images";
+  //   }
+
+  //   if (groupMap[group]) {
+  //     groupMap[group] += detail.size;
+  //   } else {
+  //     groupMap[group] = detail.size;
+  //   }
+  // });
+
+  cacheDetails.forEach((detail) => {
+    // const group = detail.name.split(".")[0];
+
+    // if (group.startsWith("/data/images")) {
+    //   group = "/data/images";
+    // }
+
+    // Extract the group from the name
+    const pathParts = detail.name.split("/");
+    const group =
+      pathParts.length > 3
+        ? pathParts[0] + "/" + pathParts[1] + "/" + pathParts[2] // Use subfolder if it exists
+        : detail.name.split(".")[0]; // Otherwise use part before the first dot
+
+    if (groupMap[group]) {
+      groupMap[group] += detail.size;
+    } else {
+      groupMap[group] = detail.size;
+    }
+  });
+
+  return Object.keys(groupMap).map((group) => ({
+    group,
+    size: groupMap[group],
+  }));
+};
+
 export default function CachePieChart() {
   const { cacheDetails } = useStoreStateReader("cacheDetails");
 
-  // Provide a default value if cacheDetails is undefined
-  const data: CacheDetail[] = cacheDetails || [];
+  // Group and aggregate the data
+  const groupedData = useMemo(
+    () => groupCacheDetails((cacheDetails as CacheDetail[]) || []),
+    [cacheDetails],
+  );
 
   return (
     <ResponsiveContainer height={300}>
       <PieChart>
         <Pie
-          data={data}
+          data={groupedData}
           dataKey="size"
-          nameKey="name"
+          nameKey="group"
           cx="50%"
           cy="50%"
           outerRadius={100}
@@ -87,7 +144,7 @@ export default function CachePieChart() {
             // @ts-expect-error FIXME: Having a hard time debugging this type
             content={renderCustomizedLabel}
           />
-          {data.map((entry, index) => (
+          {groupedData.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
