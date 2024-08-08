@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 
-import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
+import AssessmentIcon from "@mui/icons-material/Assessment";
 import {
   Button,
   Dialog,
@@ -86,7 +86,7 @@ export default function UserDataSection() {
                   alignItems: "center",
                 }}
               >
-                <ShoppingBasketIcon style={{ fontSize: "24px" }} />
+                <AssessmentIcon style={{ fontSize: "24px" }} />
               </div>
               <div style={{ flexGrow: 1 }}>
                 <Typography variant="body1">
