@@ -320,9 +320,6 @@ export default function TickerDetail({
         <ETFHoldingList etfTickerDetail={tickerDetail} />
       )}
 
-      {
-        // TODO: Show `ETFHoldingList` (~inverse of `ETFHolderList`) if this is an ETF
-      }
       {tickerDetail?.is_held_in_etf && (
         <ETFHolderList tickerDetail={tickerDetail} />
       )}
