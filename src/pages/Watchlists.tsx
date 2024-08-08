@@ -1,6 +1,5 @@
 import React from "react";
 
-import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
 import BucketManager from "@components/BucketManager";
