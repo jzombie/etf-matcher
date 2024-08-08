@@ -16,6 +16,7 @@ import {
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
+import LazyRender from "@components/LazyRender";
 import Section from "@components/Section";
 import SharedRoomManager from "@components/SharedRoomManager";
 
@@ -160,7 +161,9 @@ export default function SettingsManager() {
             </Typography>
           </Box>
 
-          <RustCachePieChart />
+          <LazyRender threshold={0.5}>
+            <RustCachePieChart />
+          </LazyRender>
 
           <div style={{ textAlign: "center" }}>
             <Section>
