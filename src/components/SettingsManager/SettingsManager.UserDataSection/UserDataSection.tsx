@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 
+import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import {
   Button,
   Dialog,
@@ -67,23 +68,57 @@ export default function UserDataSection() {
         {
           // TODO: For each bucket, show the contents, using logos
         }
-        <ul>
+        <ul style={{ listStyle: "none", padding: 0 }}>
           {tickerBuckets?.map((tickerBucket, idx) => (
-            <li key={idx} style={{ padding: 9 }}>
-              <Typography variant="body1">
-                <span style={{ fontWeight: "bold" }}>{tickerBucket.name}</span>:{" "}
-                <span style={{ fontStyle: "italic", fontSize: ".8rem" }}>
-                  ({tickerBucket.tickers.length} item
-                  {tickerBucket.tickers.length !== 1 ? "s" : ""})
-                </span>
-              </Typography>
-              <div>
-                {tickerBucket.tickers.map((ticker) => (
-                  <TickerBucketItem
-                    key={ticker.tickerId}
-                    tickerBucketTicker={ticker}
-                  />
-                ))}
+            <li
+              key={idx}
+              style={{
+                padding: "12px 0",
+                display: "flex",
+                alignItems: "flex-start",
+              }}
+            >
+              <div
+                style={{
+                  marginRight: "12px",
+                  flexShrink: 0,
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <ShoppingBasketIcon style={{ fontSize: "24px" }} />
+              </div>
+              <div style={{ flexGrow: 1 }}>
+                <Typography variant="body1">
+                  <span style={{ fontWeight: "bold" }}>
+                    {tickerBucket.name}
+                  </span>
+                  :{" "}
+                  <span
+                    style={{
+                      fontStyle: "italic",
+                      fontSize: ".8rem",
+                    }}
+                  >
+                    ({tickerBucket.tickers.length} item
+                    {tickerBucket.tickers.length !== 1 ? "s" : ""})
+                  </span>
+                </Typography>
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "8px",
+                    marginTop: "8px",
+                  }}
+                >
+                  {tickerBucket.tickers.map((ticker) => (
+                    <TickerBucketItem
+                      key={ticker.tickerId}
+                      tickerBucketTicker={ticker}
+                    />
+                  ))}
+                </div>
               </div>
             </li>
           ))}
