@@ -65,9 +65,6 @@ export default function UserDataSection() {
           Clear User Data
         </Button>
         <h3>Buckets</h3>
-        {
-          // TODO: For each bucket, show the contents, using logos
-        }
         <ul style={{ listStyle: "none", padding: 0 }}>
           {tickerBuckets?.map((tickerBucket, idx) => (
             <li key={idx}>
