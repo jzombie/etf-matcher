@@ -1,5 +1,3 @@
-// TODO: Add in session persistence so that portfolios and watchlists (`tickerBuckets`) can be saved.
-// Ideally this should happen via the `SharedWorker` so that multiple tabs can retain the same store.
 import { DEFAULT_TICKER_TAPE_SYMBOLS } from "@src/constants";
 import type {
   RustServiceCacheDetail,
