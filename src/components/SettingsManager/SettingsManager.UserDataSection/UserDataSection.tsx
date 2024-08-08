@@ -70,26 +70,17 @@ export default function UserDataSection() {
         }
         <ul style={{ listStyle: "none", padding: 0 }}>
           {tickerBuckets?.map((tickerBucket, idx) => (
-            <li
-              key={idx}
-              style={{
-                padding: "12px 0",
-                display: "flex",
-                alignItems: "flex-start",
-              }}
-            >
-              <div
-                style={{
-                  marginRight: "12px",
-                  flexShrink: 0,
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <AssessmentIcon style={{ fontSize: "24px" }} />
-              </div>
-              <div style={{ flexGrow: 1 }}>
-                <Typography variant="body1">
+            <li key={idx}>
+              <Section>
+                <AssessmentIcon
+                  sx={{
+                    fontSize: 24,
+                    display: "inline-block",
+                    verticalAlign: "middle",
+                    marginRight: 1,
+                  }}
+                />
+                <Typography variant="body1" sx={{ display: "inline-block" }}>
                   <span style={{ fontWeight: "bold" }}>
                     {tickerBucket.name}
                   </span>
@@ -119,7 +110,7 @@ export default function UserDataSection() {
                     />
                   ))}
                 </div>
-              </div>
+              </Section>
             </li>
           ))}
         </ul>
