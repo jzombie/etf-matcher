@@ -32,7 +32,7 @@ import {
 
 const IS_PROD = import.meta.env.PROD;
 
-type TickerBucketTicker = {
+export type TickerBucketTicker = {
   tickerId: number;
   symbol: string;
   exchange_short_name: string;

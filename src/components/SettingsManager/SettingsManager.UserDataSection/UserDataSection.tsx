@@ -2,7 +2,6 @@ import React, { useCallback, useState } from "react";
 
 import {
   Button,
-  ButtonBase,
   Dialog,
   DialogActions,
   DialogContent,
@@ -15,6 +14,8 @@ import {
 import Section from "@components/Section";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
+
+import TickerBucketItem from "./TickerBucketItem";
 
 // TODO: Also include any other user history (i.e. recently joined rooms, etc.)
 export default function UserDataSection() {
@@ -74,7 +75,10 @@ export default function UserDataSection() {
             </Typography>
             <div>
               {tickerBucket.tickers.map((ticker) => (
-                <ButtonBase key={ticker.tickerId}>{ticker.symbol}</ButtonBase>
+                <TickerBucketItem
+                  key={ticker.tickerId}
+                  tickerBucketTicker={ticker}
+                />
               ))}
             </div>
           </div>

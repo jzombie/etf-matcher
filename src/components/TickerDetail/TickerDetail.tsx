@@ -88,6 +88,7 @@ export default function TickerDetail({
 
   // const [showNews, setShowNews] = useState(false);
 
+  // TODO: Move into a `useTickerDetail` hook and also use in `TickerBucketItem`
   const onLoadStableCurrentRef = useStableCurrentRef(onLoad);
 
   useEffect(() => {
