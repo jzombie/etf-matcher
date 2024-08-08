@@ -16,8 +16,6 @@ import {
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
-import ProtoPieChart from "@components/PROTO_PieChart";
-import ProtoTable from "@components/PROTO_Table";
 import Section from "@components/Section";
 import SharedRoomManager from "@components/SharedRoomManager";
 
@@ -26,6 +24,9 @@ import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import customLogger from "@utils/customLogger";
 import formatByteSize from "@utils/formatByteSize";
 import formatLocalTime from "@utils/formatLocalTime";
+
+import RustCachePieChart from "./SettingsManager.RustCachePieChart";
+import RustCacheTable from "./SettingsManager.RustCacheTable";
 
 export default function SettingsManager() {
   const {
@@ -155,7 +156,7 @@ export default function SettingsManager() {
             </Typography>
           </Box>
 
-          <ProtoPieChart />
+          <RustCachePieChart />
 
           <div style={{ textAlign: "center" }}>
             <Section>
@@ -186,7 +187,7 @@ export default function SettingsManager() {
         </Section>
       </Padding>
 
-      <ProtoTable />
+      <RustCacheTable />
 
       <Padding>
         <Section>
