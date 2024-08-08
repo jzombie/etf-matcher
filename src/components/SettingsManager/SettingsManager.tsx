@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import {
   Box,
@@ -67,18 +67,18 @@ export default function SettingsManager() {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleOpenDialog = () => {
+  const handleOpenClearDataDialog = useCallback(() => {
     setIsDialogOpen(true);
-  };
+  }, []);
 
-  const handleCloseDialog = () => {
+  const handleCloseClearDataDialog = useCallback(() => {
     setIsDialogOpen(false);
-  };
+  }, []);
 
-  const handleConfirmReset = () => {
+  const handleConfirmDataReset = useCallback(() => {
     store.reset();
     setIsDialogOpen(false);
-  };
+  }, []);
 
   return (
     <Scrollable>
@@ -127,7 +127,11 @@ export default function SettingsManager() {
       <Padding>
         <Section>
           <h2>User Data</h2>
-          <Button variant="contained" color="error" onClick={handleOpenDialog}>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleOpenClearDataDialog}
+          >
             Clear User Data
           </Button>
           <h3>Buckets</h3>
@@ -256,7 +260,7 @@ export default function SettingsManager() {
 
       <Dialog
         open={isDialogOpen}
-        onClose={handleCloseDialog}
+        onClose={handleCloseClearDataDialog}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -268,10 +272,10 @@ export default function SettingsManager() {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary">
+          <Button onClick={handleCloseClearDataDialog} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleConfirmReset} color="error" autoFocus>
+          <Button onClick={handleConfirmDataReset} color="error" autoFocus>
             Confirm
           </Button>
         </DialogActions>
