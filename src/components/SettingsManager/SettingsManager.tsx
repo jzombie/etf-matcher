@@ -64,27 +64,6 @@ export default function SettingsManager() {
     <Scrollable>
       <Padding>
         <Section>
-          <Button
-            onClick={() =>
-              store
-                .fetchETFHoldingsByETFTickerId(118101)
-                .then(customLogger.debug)
-            }
-          >
-            Proto::fetchETFHoldingsByETFTickerId()
-          </Button>
-          <Button
-            onClick={() =>
-              store.fetchTicker10KDetail(6195).then(customLogger.debug)
-            }
-          >
-            Proto::fetchTicker10KDetail()
-          </Button>
-        </Section>
-      </Padding>
-
-      <Padding>
-        <Section>
           <h2>Session Sharing</h2>
           <Typography variant="body2" component="p">
             ETF Matcher doesn&apos;t use user accounts, but session data can be
