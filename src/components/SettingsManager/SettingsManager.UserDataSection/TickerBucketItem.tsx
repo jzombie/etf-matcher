@@ -39,17 +39,23 @@ export default function TickerBucketItem({
           "/search",
         )
       }
+      style={{ display: "inline-block", margin: 4 }}
     >
-      <EncodedImage
-        encSrc={tickerDetail?.logo_filename}
-        style={{
-          width: 50,
-          height: 50,
-          border: `4px ${logoBgColor} solid`,
-          borderRadius: 50,
-          overflow: "hidden",
-        }}
-      />
+      <div>
+        <div>
+          <EncodedImage
+            encSrc={tickerDetail?.logo_filename}
+            style={{
+              width: 50,
+              height: 50,
+              border: `4px ${logoBgColor} solid`,
+              borderRadius: 50,
+              overflow: "hidden",
+            }}
+          />
+        </div>
+        <div style={{ fontWeight: "bold" }}>{tickerDetail?.symbol}</div>
+      </div>
     </ButtonBase>
   );
 }
