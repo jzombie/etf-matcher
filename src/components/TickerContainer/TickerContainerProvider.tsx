@@ -3,6 +3,8 @@ import React, { createContext, useCallback, useRef } from "react";
 import useIntersectionObserver from "@hooks/useIntersectionObserver";
 import { store } from "@hooks/useStoreStateReader";
 
+import arraysEqual from "@utils/arraysEqual";
+
 export type TickerContainerContextType = {
   observe: (
     el: HTMLElement,
@@ -23,7 +25,7 @@ export type TickerContainerContextProps = {
 
 export default function TickerContainerProvider({
   children,
-  perSymbolThreshold = 0.1,
+  perSymbolThreshold = 0,
 }: TickerContainerContextProps) {
   const metadataMapRef = useRef(
     new Map<
@@ -37,11 +39,13 @@ export default function TickerContainerProvider({
   const visibleSymbolMapRef = useRef(new Map<Element, number>());
 
   const syncVisibleTickers = useCallback(() => {
-    const uniqueVisibleTickerIds = [
-      ...new Set(visibleSymbolMapRef.current.values()),
-    ];
+    const prev = store.state.visibleTickerIds;
 
-    store.setVisibleTickers(uniqueVisibleTickerIds);
+    const next = [...new Set(visibleSymbolMapRef.current.values())];
+
+    if (!arraysEqual(prev, next)) {
+      store.setVisibleTickers(next);
+    }
   }, []);
 
   const observerCallback = useCallback(
