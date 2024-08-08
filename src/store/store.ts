@@ -1,4 +1,4 @@
-import { DEFAULT_TICKER_TAPE_SYMBOLS } from "@src/constants";
+import { DEFAULT_TICKER_TAPE_TICKERS } from "@src/constants";
 import type {
   RustServiceCacheDetail,
   RustServiceETFAggregateDetail,
@@ -192,7 +192,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     }
 
     const results = await Promise.allSettled(
-      DEFAULT_TICKER_TAPE_SYMBOLS.map((ticker) =>
+      DEFAULT_TICKER_TAPE_TICKERS.map((ticker) =>
         this.fetchTickerId(ticker.symbol, ticker.exchangeShortName),
       ),
     );
@@ -203,9 +203,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         const fulfilledResult = result as PromiseFulfilledResult<number>;
         return {
           tickerId: fulfilledResult.value,
-          symbol: DEFAULT_TICKER_TAPE_SYMBOLS[index].symbol,
+          symbol: DEFAULT_TICKER_TAPE_TICKERS[index].symbol,
           exchange_short_name:
-            DEFAULT_TICKER_TAPE_SYMBOLS[index].exchangeShortName,
+            DEFAULT_TICKER_TAPE_TICKERS[index].exchangeShortName,
           quantity: 1,
         };
       });

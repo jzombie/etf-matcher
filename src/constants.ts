@@ -13,7 +13,7 @@ export const TRADING_VIEW_COPYRIGHT_STYLES = {
   },
 };
 
-export const DEFAULT_TICKER_TAPE_SYMBOLS: {
+export const DEFAULT_TICKER_TAPE_TICKERS: {
   symbol: string;
   exchangeShortName: string;
 }[] = [
