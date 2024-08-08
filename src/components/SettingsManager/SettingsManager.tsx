@@ -17,7 +17,6 @@ import SharedRoomManager from "@components/SharedRoomManager";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
-import customLogger from "@utils/customLogger";
 import formatByteSize from "@utils/formatByteSize";
 import formatLocalTime from "@utils/formatLocalTime";
 
