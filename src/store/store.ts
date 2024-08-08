@@ -662,7 +662,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // TODO: Emit custom event for this
   }
 
-  // TODO: Rename to `getBucketHasTicker`?
   bucketHasTicker(tickerId: number, tickerBucket: TickerBucketProps): boolean {
     return tickerBucket.tickers.some((ticker) => ticker.tickerId === tickerId);
   }
