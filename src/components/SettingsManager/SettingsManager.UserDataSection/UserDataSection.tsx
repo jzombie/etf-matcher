@@ -10,7 +10,6 @@ import {
   Typography,
 } from "@mui/material";
 
-// import EncodedImage from "@components/EncodedImage";
 import Section from "@components/Section";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
