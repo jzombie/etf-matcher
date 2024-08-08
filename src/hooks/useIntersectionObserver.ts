@@ -11,12 +11,17 @@ type IntersectionObserverCallback = (
 export default function useIntersectionObserver(
   callback: IntersectionObserverCallback,
   threshold = 0.5,
+  shouldObserve = true,
 ) {
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   const callbackStableRef = useStableCurrentRef(callback);
 
   useEffect(() => {
+    if (!shouldObserve) {
+      return;
+    }
+
     if (!observerRef.current) {
       const callback = callbackStableRef.current;
 
@@ -29,7 +34,7 @@ export default function useIntersectionObserver(
         observerRef.current = null;
       }
     };
-  }, [callbackStableRef, threshold]);
+  }, [shouldObserve, callbackStableRef, threshold]);
 
   const observe = useCallback((el: HTMLElement) => {
     if (observerRef.current) {

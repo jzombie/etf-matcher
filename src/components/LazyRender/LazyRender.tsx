@@ -27,6 +27,7 @@ export default function LazyRender({
   const { observe, unobserve } = useIntersectionObserver(
     intersectionCallback,
     threshold,
+    !isVisible,
   );
 
   useEffect(() => {
