@@ -9,7 +9,7 @@ export interface LazyRenderProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export default function LazyRender({
   children,
-  threshold = 0.5,
+  threshold = 0.1,
   ...rest
 }: LazyRenderProps) {
   const [isVisible, setIsVisible] = useState(false);
