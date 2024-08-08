@@ -76,9 +76,7 @@ export default function MainLayoutFooter() {
           TradingView
         </a>
       </Typography>
-      {
-        // TODO: Source from state
-      }
+
       {tickerTapeBucket && (
         <TickerTape
           colorTheme="dark"
