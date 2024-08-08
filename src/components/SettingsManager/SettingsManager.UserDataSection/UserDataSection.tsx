@@ -2,6 +2,7 @@ import React, { useCallback, useState } from "react";
 
 import {
   Button,
+  ButtonBase,
   Dialog,
   DialogActions,
   DialogContent,
@@ -10,6 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 
+// import EncodedImage from "@components/EncodedImage";
 import Section from "@components/Section";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
@@ -66,9 +68,16 @@ export default function UserDataSection() {
           // TODO: For each bucket, show the contents, using logos
         }
         {tickerBuckets?.map((tickerBucket, idx) => (
-          <Typography key={idx} variant="body1">
-            {tickerBucket.name}: {tickerBucket.tickers.length} items
-          </Typography>
+          <div key={idx}>
+            <Typography variant="body1">
+              {tickerBucket.name}: {tickerBucket.tickers.length} items
+            </Typography>
+            <div>
+              {tickerBucket.tickers.map((ticker) => (
+                <ButtonBase key={ticker.tickerId}>{ticker.symbol}</ButtonBase>
+              ))}
+            </div>
+          </div>
         ))}
       </Section>
 
