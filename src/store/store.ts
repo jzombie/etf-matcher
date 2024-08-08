@@ -624,13 +624,14 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
             ...bucket,
             tickers: Array.from(
               new Set([
-                ...bucket.tickers,
+                // Intentionally prepend
                 {
                   tickerId,
                   symbol,
                   exchange_short_name,
                   quantity,
                 },
+                ...bucket.tickers,
               ]),
             ),
           };
