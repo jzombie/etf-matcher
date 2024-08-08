@@ -701,7 +701,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     this._syncCacheDetails();
   }
 
-  clearCache() {
+  async clearCache() {
     callRustService("clear_cache");
 
     // For rapid UI update
@@ -710,17 +710,22 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   reset() {
-    // TODO: Wipe IndexedDB store
+    const clearPromises = [];
+
+    // Wipe IndexedDB store
     if (this._indexedDBInterface) {
-      this._indexedDBInterface.clear();
+      clearPromises.push(this._indexedDBInterface.clear());
     }
 
-    this.clearCache();
+    // Clear the cache
+    clearPromises.push(this.clearCache());
+
     super.reset();
 
-    // This prevents an issue where the UI might be in a non-recoverable state after resetting the store
-    // TODO: Reload asynchronously, only after caches have successfully cleared
-    window.location.reload();
+    Promise.all(clearPromises).finally(() => {
+      // This prevents an issue where the UI might be in a non-recoverable state after resetting the store
+      window.location.reload();
+    });
   }
 }
 
