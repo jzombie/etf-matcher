@@ -75,28 +75,7 @@ const groupCacheDetails = (
 ): GroupedCacheDetail[] => {
   const groupMap: { [key: string]: number } = {};
 
-  // cacheDetails.forEach((detail) => {
-  //   // Extract the group from the name (e.g., everything before the first dot)
-  //   let group = detail.name.split(".")[0];
-
-  //   if (group.startsWith("/data/images")) {
-  //     group = "/data/images";
-  //   }
-
-  //   if (groupMap[group]) {
-  //     groupMap[group] += detail.size;
-  //   } else {
-  //     groupMap[group] = detail.size;
-  //   }
-  // });
-
   cacheDetails.forEach((detail) => {
-    // const group = detail.name.split(".")[0];
-
-    // if (group.startsWith("/data/images")) {
-    //   group = "/data/images";
-    // }
-
     // Extract the group from the name
     const pathParts = detail.name.split("/");
     const group =
