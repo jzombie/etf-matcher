@@ -25,6 +25,7 @@ export type SharedRoomManagerProviderProps = {
   children: React.ReactNode;
 };
 
+// TODO: Consider renaming to `SharedRoomStateManagerProvider` (or equiv.)
 export default function SharedRoomManagerProvider({
   children,
 }: SharedRoomManagerProviderProps) {
@@ -80,7 +81,7 @@ export default function SharedRoomManagerProvider({
         const { tickerBuckets } = store.getState(["tickerBuckets"]);
 
         for (const room of Object.values(connectedRooms)) {
-          room.send({ tickerBuckets } as object, { retain: true });
+          room.send({ tickerBuckets } as object, { qos: 2, retain: true });
         }
       }
     };

@@ -5,6 +5,7 @@ import { Button } from "@mui/material";
 
 import heroImg from "@assets/hero.webp";
 import Scrollable from "@layoutKit/Scrollable";
+import { INVESTMENT_DISCLAIMER } from "@src/constants";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
@@ -51,17 +52,7 @@ export default function Home() {
           After you find the ETFs that most closely match your investment goals,
           trade them on your platform of choice!
         </p>
-        <p>
-          Disclaimer: The information provided on this platform is for
-          informational purposes only and does not constitute financial,
-          investment, or other professional advice. You should not rely on this
-          information to make any investment decisions. Always consult with a
-          qualified financial advisor before making any investment decisions. We
-          do not guarantee the accuracy, completeness, or timeliness of any
-          information provided and shall not be held liable for any errors or
-          omissions, or for any loss or damage incurred as a result of using
-          this information.
-        </p>
+        <p>{INVESTMENT_DISCLAIMER}</p>
       </section>
     </Scrollable>
   );

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 
 import {
   Assessment as AssessmentIcon,
@@ -25,12 +25,13 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 
-import store from "@src/store";
 import clsx from "clsx";
 import { Link, matchPath, useLocation } from "react-router-dom";
 
 import LogoNavButton from "@components/LogoNavButton";
 import SearchModalButton from "@components/SearchModalButton";
+
+import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
 import SlidingBackground from "./HeaderMenu.SlidingBackground";
 
@@ -40,39 +41,62 @@ export default function HeaderMenu() {
   const theme = useTheme();
   const isDesktop = useMediaQuery("@media (min-width:800px)");
 
+  const { tickerBuckets } = useStoreStateReader("tickerBuckets");
+
+  const { totalPortfolioBuckets, totalWatchlistBuckets } = useMemo(() => {
+    const totalPortfolioBuckets = tickerBuckets.reduce((prev, curr) => {
+      return curr.type === "portfolio" ? prev + 1 : prev;
+    }, 0);
+
+    const totalWatchlistBuckets = tickerBuckets.reduce((prev, curr) => {
+      return curr.type === "watchlist" ? prev + 1 : prev;
+    }, 0);
+
+    return { totalPortfolioBuckets, totalWatchlistBuckets };
+  }, [tickerBuckets]);
+
   const menuRef = useRef<HTMLDivElement>(null);
 
   const toggleDrawer = () => {
     setDrawerOpen((prev) => !prev);
   };
 
-  const menuItems = [
-    { key: "/", label: "Home", icon: <Home fontSize="small" />, link: "/" },
-    {
-      key: "/portfolios",
-      label: "Portfolios",
-      icon: <AssessmentIcon fontSize="small" />,
-      link: "/portfolios",
-    },
-    {
-      key: "/watchlists",
-      label: "Watchlists",
-      icon: <ListAltIcon fontSize="small" />,
-      link: "/watchlists",
-    },
-    {
-      key: "/settings",
-      label: "Settings",
-      icon: <SettingsIcon fontSize="small" />,
-      link: "/settings",
-    },
-  ];
+  const menuItems = useMemo(
+    () => [
+      { key: "/", label: "Home", icon: <Home fontSize="small" />, link: "/" },
+      {
+        key: "/portfolios",
+        label: "Portfolios",
+        icon: <AssessmentIcon fontSize="small" />,
+        link: "/portfolios",
+        badgeContent: totalPortfolioBuckets,
+      },
+      {
+        key: "/watchlists",
+        label: "Watchlists",
+        icon: <ListAltIcon fontSize="small" />,
+        link: "/watchlists",
+        badgeContent: totalWatchlistBuckets,
+      },
+      {
+        key: "/settings",
+        label: "Settings",
+        icon: <SettingsIcon fontSize="small" />,
+        link: "/settings",
+      },
+    ],
+    [totalPortfolioBuckets, totalWatchlistBuckets],
+  );
 
-  const selectedKey = menuItems.find(
-    (item) =>
-      matchPath({ path: item.key, end: true }, location.pathname) ||
-      matchPath({ path: `${item.key}/*`, end: false }, location.pathname),
-  )?.key;
+  const selectedKey = useMemo(
+    () =>
+      menuItems.find(
+        (item) =>
+          matchPath({ path: item.key, end: true }, location.pathname) ||
+          matchPath({ path: `${item.key}/*`, end: false }, location.pathname),
+      )?.key,
+    [location.pathname, menuItems],
+  );
 
   const shouldHighlightSearchButton = !selectedKey;
 
@@ -135,8 +159,7 @@ export default function HeaderMenu() {
               >
                 {item.icon}
                 {["/portfolios", "/watchlists"].includes(item.key) ? (
-                  // TODO: Don't hardcode badge content
-                  <Badge badgeContent={"+1"} color="secondary">
+                  <Badge badgeContent={item.badgeContent} color="secondary">
                     <Box
                       sx={{
                         display: "flex",
@@ -208,8 +231,10 @@ export default function HeaderMenu() {
                       }}
                     >
                       {["/portfolios", "/watchlists"].includes(item.key) ? (
-                        // TODO: Don't hardcode badge content
-                        <Badge badgeContent={"+1"} color="secondary">
+                        <Badge
+                          badgeContent={item.badgeContent}
+                          color="secondary"
+                        >
                           {item.icon}
                         </Badge>
                       ) : (

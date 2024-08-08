@@ -297,15 +297,10 @@ export default class MQTTRoomWorker extends EventEmitter<MQTTRoomWorkerEvents> {
 
     const buffer = this._encodeMessagePayload(payload);
 
-    // TODO: Move this elsewhere
-    const DEFAULT_OPTIONS: SendOptions = { qos: 2, retain: true };
-
-    const mergedOptions = { ...DEFAULT_OPTIONS, ...(options || {}) };
-
     return this._mqttClient.publishAsync(
       this._topicMessages,
       buffer,
-      mergedOptions as mqtt.IClientPublishOptions,
+      options as mqtt.IClientPublishOptions,
     );
   }
 

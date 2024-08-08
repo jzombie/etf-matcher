@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { Button, Grid, Row, Col } from "antd";
-import sectorColors from "@constants/sectorColors";
+import {SECTOR_COLORS} from "@src/constants";
 
 const { useBreakpoint } = Grid;
 

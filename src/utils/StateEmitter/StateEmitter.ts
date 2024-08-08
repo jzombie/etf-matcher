@@ -133,6 +133,10 @@ export default class StateEmitter<T extends object> extends EventEmitter {
     this.disposeFunctions.push(disposeFunction);
   }
 
+  reset() {
+    this.setState(this.initialState);
+  }
+
   dispose() {
     this.disposeFunctions.forEach((fn) => fn());
     this.disposeFunctions = [];

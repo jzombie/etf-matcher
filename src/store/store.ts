@@ -1,5 +1,4 @@
-// TODO: Add in session persistence so that portfolios and watchlists (`tickerBuckets`) can be saved.
-// Ideally this should happen via the `SharedWorker` so that multiple tabs can retain the same store.
+import { DEFAULT_TICKER_TAPE_TICKERS } from "@src/constants";
 import type {
   RustServiceCacheDetail,
   RustServiceETFAggregateDetail,
@@ -166,7 +165,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     this.shouldDeepfreeze = !IS_PROD;
 
     // TODO: Poll for data build info once every "x" to ensure the data is always running the latest version
-    this._fetchDataBuildInfo();
+    this._syncDataBuildInfo();
 
     // Make initial searches faster
     this._preloadTickerSearchCache();
@@ -176,6 +175,45 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // Note: This returns an unsubscribe callback which could be handed if the store
     // were to be torn down
     this._initLocalSubscriptions();
+  }
+
+  // Note: This should be called immediately after the `IndexedDBInterface` has been
+  // initialized (or fails), not directly from the constructor.
+  private async _initInitialTickerTapeTickers() {
+    const tickerTapeBuckets = this.getTickerBucketsOfType("ticker_tape");
+    const tickerTapeBucket = tickerTapeBuckets[0];
+
+    if (tickerTapeBucket.tickers.length) {
+      customLogger.debug(
+        "Skipping default ticker tape bucket assignment. Using user-defined configuration:",
+        tickerTapeBucket.tickers,
+      );
+      return;
+    }
+
+    const results = await Promise.allSettled(
+      DEFAULT_TICKER_TAPE_TICKERS.map((ticker) =>
+        this.fetchTickerId(ticker.symbol, ticker.exchangeShortName),
+      ),
+    );
+
+    const tickerTapeBucketTickers: TickerBucketTicker[] = results
+      .filter((result) => result.status === "fulfilled")
+      .map((result, index) => {
+        const fulfilledResult = result as PromiseFulfilledResult<number>;
+        return {
+          tickerId: fulfilledResult.value,
+          symbol: DEFAULT_TICKER_TAPE_TICKERS[index].symbol,
+          exchange_short_name:
+            DEFAULT_TICKER_TAPE_TICKERS[index].exchangeShortName,
+          quantity: 1,
+        };
+      });
+
+    this.updateTickerBucket(tickerTapeBucket, {
+      ...tickerTapeBucket,
+      tickers: tickerTapeBucketTickers,
+    });
   }
 
   private _initLocalSubscriptions() {
@@ -331,62 +369,76 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     // IndexedDB persistence
     (async () => {
-      await this._indexedDBInterface.ready();
+      try {
+        await this._indexedDBInterface.ready();
 
-      this.setState({ isIndexedDBReady: true });
+        this.setState({ isIndexedDBReady: true });
 
-      // Handle session restore
-      (async () => {
-        const indexedDBKeys = await this._indexedDBInterface.getAllKeys();
+        // Handle session restore
+        await (async () => {
+          const indexedDBKeys = await this._indexedDBInterface.getAllKeys();
 
-        const storeStateKeys = Object.keys(this.state) as Array<
-          keyof StoreStateProps
-        >;
+          const storeStateKeys = Object.keys(this.state) as Array<
+            keyof StoreStateProps
+          >;
 
-        for (const idbKey of indexedDBKeys) {
-          if (storeStateKeys.includes(idbKey as keyof StoreStateProps)) {
-            const item = await this._indexedDBInterface.getItem(idbKey);
-            if (item !== undefined) {
-              this.setState({ [idbKey]: item });
+          for (const idbKey of indexedDBKeys) {
+            if (storeStateKeys.includes(idbKey as keyof StoreStateProps)) {
+              const item = await this._indexedDBInterface.getItem(idbKey);
+              if (item !== undefined) {
+                this.setState({ [idbKey]: item });
+              }
             }
           }
-        }
 
-        // Emit that session is now ready
-        this.emit("persistent-session-restore");
-      })();
+          // Emit that session is now ready
+          this.emit("persistent-session-restore");
+        })();
 
-      (() => {
-        const _handleStoreStateUpdate = async (
-          storeStateUpdateKeys: (keyof StoreStateProps)[],
-        ) => {
-          if (storeStateUpdateKeys.includes("tickerBuckets")) {
-            const { tickerBuckets } = this.getState(["tickerBuckets"]);
+        (() => {
+          const _handleStoreStateUpdate = async (
+            storeStateUpdateKeys: (keyof StoreStateProps)[],
+          ) => {
+            if (storeStateUpdateKeys.includes("tickerBuckets")) {
+              const { tickerBuckets } = this.getState(["tickerBuckets"]);
 
-            await this._indexedDBInterface.setItem(
-              "tickerBuckets",
-              tickerBuckets,
-            );
-          }
+              await this._indexedDBInterface.setItem(
+                "tickerBuckets",
+                tickerBuckets,
+              );
+            }
 
-          if (storeStateUpdateKeys.includes("subscribedMQTTRoomNames")) {
-            const { subscribedMQTTRoomNames } = this.getState([
-              "subscribedMQTTRoomNames",
-            ]);
+            if (storeStateUpdateKeys.includes("subscribedMQTTRoomNames")) {
+              const { subscribedMQTTRoomNames } = this.getState([
+                "subscribedMQTTRoomNames",
+              ]);
 
-            await this._indexedDBInterface.setItem(
-              "subscribedMQTTRoomNames",
-              subscribedMQTTRoomNames,
-            );
-          }
-        };
-        this.on(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
+              await this._indexedDBInterface.setItem(
+                "subscribedMQTTRoomNames",
+                subscribedMQTTRoomNames,
+              );
+            }
+          };
+          this.on(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
 
-        this.registerDispose(() => {
-          this.off(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
-        });
-      })();
+          this.registerDispose(() => {
+            this.off(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
+          });
+        })();
+      } finally {
+        this._initInitialTickerTapeTickers();
+      }
     })();
+  }
+
+  async fetchTickerId(
+    tickerSymbol: string,
+    exchangeShortName: string,
+  ): Promise<number> {
+    return callRustService<number>("get_ticker_id", [
+      tickerSymbol,
+      exchangeShortName,
+    ]);
   }
 
   /**
@@ -424,7 +476,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
-  private _fetchDataBuildInfo() {
+  private _syncDataBuildInfo(): void {
     callRustService("get_data_build_info").then((dataBuildInfo) => {
       this.setState({
         isRustInit: true,
@@ -614,6 +666,12 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return tickerBucket.tickers.some((ticker) => ticker.tickerId === tickerId);
   }
 
+  getTickerBucketsOfType(tickerBucketType: TickerBucketProps["type"]) {
+    return this.state.tickerBuckets.filter(
+      ({ type }) => tickerBucketType === type,
+    );
+  }
+
   async generateQRCode(data: string): Promise<string> {
     return callRustService<string>("generate_qr_code", [data]);
   }
@@ -646,12 +704,31 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     this._syncCacheDetails();
   }
 
-  clearCache() {
+  async clearCache() {
     callRustService("clear_cache");
 
     // For rapid UI update
     // This forces an immediate sync so that the UI does not appear laggy when clearing cache entries
     this._syncCacheDetails();
+  }
+
+  reset() {
+    const clearPromises = [];
+
+    // Wipe IndexedDB store
+    if (this._indexedDBInterface) {
+      clearPromises.push(this._indexedDBInterface.clear());
+    }
+
+    // Clear the cache
+    clearPromises.push(this.clearCache());
+
+    super.reset();
+
+    Promise.all(clearPromises).finally(() => {
+      // This prevents an issue where the UI might be in a non-recoverable state after resetting the store
+      window.location.reload();
+    });
   }
 }
 

@@ -48,7 +48,7 @@ pub struct CachedFuture {
 
 #[derive(Serialize)]
 pub struct CacheEntry {
-    pub key: String,
+    pub name: String,
     pub size: usize,
     pub age: f64,           // Age in milliseconds
     pub last_accessed: f64, // Last accessed time in milliseconds since UNIX_EPOCH
@@ -61,7 +61,7 @@ pub fn get_cache_details() -> JsValue {
         let now = Date::now();
         let details: Vec<CacheEntry> = cache
             .iter()
-            .map(|(key, cached_future)| {
+            .map(|(name, cached_future)| {
                 let size = cached_future
                     .future
                     .clone()
@@ -71,7 +71,7 @@ pub fn get_cache_details() -> JsValue {
                 let last_accessed = now - *cached_future.last_accessed.borrow();
                 let access_count = *cached_future.access_count.borrow();
                 CacheEntry {
-                    key: key.clone(),
+                    name: name.clone(),
                     size,
                     age,
                     last_accessed,

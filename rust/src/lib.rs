@@ -174,6 +174,13 @@ pub async fn get_image_info(filename: &str) -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
+pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<JsValue, JsValue> {
+    let ticker_id: TickerId =
+        utils::ticker_utils::get_ticker_id(symbol, exchange_short_name).await?;
+    Ok(to_value(&ticker_id).map_err(|e| JsValue::from_str(&e.to_string()))?)
+}
+
+#[wasm_bindgen]
 pub fn get_cache_size() -> usize {
     lib_get_cache_size()
 }
