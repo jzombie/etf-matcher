@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 
+import useStableCurrentRef from "./useStableCurrentRef";
+
 // Patch for ESLint not seeing browser's IntersectionObserverCallback
 type IntersectionObserverCallback = (
   entries: IntersectionObserverEntry[],
@@ -9,25 +11,41 @@ type IntersectionObserverCallback = (
 export default function useIntersectionObserver(
   callback: IntersectionObserverCallback,
   threshold = 0.5,
+  shouldObserve = true,
 ) {
   const observerRef = useRef<IntersectionObserver | null>(null);
 
+  const callbackStableRef = useStableCurrentRef(callback);
+
   useEffect(() => {
-    observerRef.current = new IntersectionObserver(callback, {
-      threshold,
-    });
+    if (!shouldObserve) {
+      return;
+    }
+
+    if (!observerRef.current) {
+      const callback = callbackStableRef.current;
+
+      observerRef.current = new IntersectionObserver(callback, { threshold });
+    }
 
     return () => {
-      observerRef.current?.disconnect();
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
     };
-  }, [callback, threshold]);
+  }, [shouldObserve, callbackStableRef, threshold]);
 
   const observe = useCallback((el: HTMLElement) => {
-    observerRef.current?.observe(el);
+    if (observerRef.current) {
+      observerRef.current.observe(el);
+    }
   }, []);
 
   const unobserve = useCallback((el: HTMLElement) => {
-    observerRef.current?.unobserve(el);
+    if (observerRef.current) {
+      observerRef.current.unobserve(el);
+    }
   }, []);
 
   return {
