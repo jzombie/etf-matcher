@@ -7,8 +7,29 @@ export const INVESTMENT_DISCLAIMER =
  * https://www.tradingview.com
  * https://www.tradingview.com/policies
  */
-export const TRADING_VIEW_COPYRIGHT_STYLES = {
+export const TRADING_VIEW_COPYRIGHT_STYLES: Readonly<{
+  parent: {
+    display: string;
+  };
+}> = {
   parent: {
     display: "none",
   },
 };
+
+export const DEFAULT_TICKER_TAPE_TICKERS: ReadonlyArray<{
+  symbol: string;
+  exchangeShortName: string;
+}> = [
+  { symbol: "XLY", exchangeShortName: "AMEX" }, // Consumer Discretionary
+  { symbol: "XLP", exchangeShortName: "AMEX" }, // Consumer Staples
+  { symbol: "XLE", exchangeShortName: "AMEX" }, // Energy
+  { symbol: "XLF", exchangeShortName: "AMEX" }, // Financials
+  { symbol: "XLV", exchangeShortName: "AMEX" }, // Healthcare
+  { symbol: "XLI", exchangeShortName: "AMEX" }, // Industrials
+  { symbol: "XLB", exchangeShortName: "AMEX" }, // Materials
+  { symbol: "XLRE", exchangeShortName: "AMEX" }, // Real Estate
+  { symbol: "XLK", exchangeShortName: "AMEX" }, // Technology
+  { symbol: "XLC", exchangeShortName: "AMEX" }, // Telecommunications
+  { symbol: "XLU", exchangeShortName: "AMEX" }, // Utilities
+];

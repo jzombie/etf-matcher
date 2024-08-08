@@ -1,5 +1,6 @@
 import React from "react";
 
+import type { RustServiceCacheDetail } from "@src/types";
 import {
   Cell,
   LabelList,
@@ -19,8 +20,8 @@ const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#00C49F"];
 
 // Define a type for the data entries
 interface CacheDetail {
-  key: string;
-  size: number;
+  name: RustServiceCacheDetail["name"];
+  size: RustServiceCacheDetail["size"];
 }
 
 // Define a type for the props used in the customized label
@@ -55,7 +56,7 @@ const renderCustomizedLabel = (props: CustomizedLabelProps) => {
         textAnchor={x > cx ? "start" : "end"}
         dominantBaseline="central"
       >
-        {`${payload.key}: ${formatByteSize(payload.size)}`}
+        {`${payload.name}: ${formatByteSize(payload.size)}`}
       </text>
     );
   }
@@ -74,7 +75,7 @@ export default function CachePieChart() {
         <Pie
           data={data}
           dataKey="size"
-          nameKey="key"
+          nameKey="name"
           cx="50%"
           cy="50%"
           outerRadius={100}

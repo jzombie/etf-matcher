@@ -206,7 +206,7 @@ export type RustServiceETFHoldingTickerResponse = {
 };
 
 export type RustServiceCacheDetail = {
-  key: string;
+  name: string;
   size: number;
   age: number;
   last_accessed: number;
