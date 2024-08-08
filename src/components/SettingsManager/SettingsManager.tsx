@@ -1,13 +1,8 @@
-import React, { useCallback, useState } from "react";
+import React from "react";
 
 import {
   Box,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   FormControlLabel,
   Switch,
   Typography,
@@ -28,6 +23,7 @@ import formatLocalTime from "@utils/formatLocalTime";
 
 import RustCachePieChart from "./SettingsManager.RustCachePieChart";
 import RustCacheTable from "./SettingsManager.RustCacheTable";
+import UserDataSection from "./SettingsManager.UserDataSection";
 
 export default function SettingsManager() {
   const {
@@ -42,7 +38,6 @@ export default function SettingsManager() {
     isOnline,
     isProfilingCacheOverlayOpen,
     isGAPageTrackingEnabled,
-    tickerBuckets,
     cacheDetails,
     cacheSize,
     rustServiceXHRRequestErrors,
@@ -59,27 +54,11 @@ export default function SettingsManager() {
     "isOnline",
     "isProfilingCacheOverlayOpen",
     "isGAPageTrackingEnabled",
-    "tickerBuckets",
     "cacheDetails",
     "cacheSize",
     "rustServiceXHRRequestErrors",
     "subscribedMQTTRoomNames",
   ]);
-
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const handleOpenClearDataDialog = useCallback(() => {
-    setIsDialogOpen(true);
-  }, []);
-
-  const handleCloseClearDataDialog = useCallback(() => {
-    setIsDialogOpen(false);
-  }, []);
-
-  const handleConfirmDataReset = useCallback(() => {
-    store.reset();
-    setIsDialogOpen(false);
-  }, []);
 
   return (
     <Scrollable>
@@ -126,22 +105,7 @@ export default function SettingsManager() {
       </Padding>
 
       <Padding>
-        <Section>
-          <h2>User Data</h2>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleOpenClearDataDialog}
-          >
-            Clear User Data
-          </Button>
-          <h3>Buckets</h3>
-          {tickerBuckets?.map((tickerBucket, idx) => (
-            <Typography key={idx} variant="body1">
-              {tickerBucket.name}: {tickerBucket.tickers.length} items
-            </Typography>
-          ))}
-        </Section>
+        <UserDataSection />
       </Padding>
 
       <Padding>
@@ -254,29 +218,6 @@ export default function SettingsManager() {
           {visibleTickerIds?.toString()}
         </Typography>
       </Padding>
-
-      <Dialog
-        open={isDialogOpen}
-        onClose={handleCloseClearDataDialog}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">Confirm Reset</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Are you sure you want to clear all user data? This action cannot be
-            undone.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseClearDataDialog} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleConfirmDataReset} color="error" autoFocus>
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Scrollable>
   );
 }
