@@ -220,12 +220,6 @@ export default function SettingsManager() {
         <Section>
           <h2>Notifications</h2>
           <div>GA Events: {isGAPageTrackingEnabled ? "On" : "Off"}</div>
-          {
-            // Add prototype notifications code here
-          }
-          {
-            // TODO: Add configuration options to adjust tickers which show in the ticker tape in the footer
-          }
         </Section>
       </Padding>
 
