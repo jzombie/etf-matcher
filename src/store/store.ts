@@ -237,7 +237,16 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         if (keys.includes("visibleTickerIds")) {
           const { visibleTickerIds } = this.getState(["visibleTickerIds"]);
 
-          callRustService("register_visible_ticker_ids", [visibleTickerIds]);
+          callRustService("register_visible_ticker_ids", [
+            visibleTickerIds,
+          ]).then(() => {
+            callRustService("export_ticker_tracker_state").then(
+              (exportedState) => {
+                // TODO: Persist as necessary
+                customLogger.debug(exportedState);
+              },
+            );
+          });
         }
       };
       this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);

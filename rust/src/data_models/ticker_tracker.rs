@@ -1,5 +1,7 @@
 use js_sys::Date;
 use once_cell::sync::Lazy;
+use serde::{Deserialize, Serialize};
+use serde_json;
 use std::collections::{HashMap, VecDeque};
 use std::sync::Mutex;
 use wasm_bindgen::prelude::*;
@@ -12,11 +14,13 @@ pub static TICKER_TRACKER: Lazy<Mutex<TickerTracker>> = Lazy::new(|| {
     Mutex::new(TickerTracker::new())
 });
 
+#[derive(Serialize, Deserialize)]
 pub struct TickerTracker {
     tickers: HashMap<TickerId, TickerData>,
     recent_views: VecDeque<TickerId>, // Tracks the order of recently viewed tickers
 }
 
+#[derive(Serialize, Deserialize)]
 struct TickerData {
     ticker_id: TickerId,
     total_time_visible: f64, // Use f64 to store the total time in milliseconds
@@ -134,5 +138,33 @@ impl TickerTracker {
             "Updated Ticker IDs after insertion: {:?}",
             updated_keys
         )));
+    }
+
+    /// Exports the current state of TickerTracker as a JSON string
+    pub fn export_state(&self) -> Result<String, JsValue> {
+        match serde_json::to_string(&self) {
+            Ok(serialized) => Ok(serialized),
+            Err(err) => {
+                web_sys::console::log_1(&JsValue::from(format!(
+                    "Failed to serialize TickerTracker: {:?}",
+                    err
+                )));
+                Err(JsValue::from_str("Failed to serialize TickerTracker"))
+            }
+        }
+    }
+
+    /// Imports the state into TickerTracker from a JSON string
+    pub fn import_state(serialized: &str) -> Result<Self, JsValue> {
+        match serde_json::from_str(serialized) {
+            Ok(tracker) => Ok(tracker),
+            Err(err) => {
+                web_sys::console::log_1(&JsValue::from(format!(
+                    "Failed to deserialize TickerTracker: {:?}",
+                    err
+                )));
+                Err(JsValue::from_str("Failed to deserialize TickerTracker"))
+            }
+        }
     }
 }
