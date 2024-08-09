@@ -23,6 +23,7 @@ pub struct TickerTracker {
 struct TickerData {
     ticker_id: TickerId,
     total_time_visible: u64,
+    #[serde(skip_serializing)] // Skip this field when serializing
     visibility_start: Option<u64>,
     visibility_count: u32,
 }
