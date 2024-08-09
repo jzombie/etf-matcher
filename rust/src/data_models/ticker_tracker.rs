@@ -7,8 +7,10 @@ use wasm_bindgen::JsValue;
 
 use crate::types::TickerId;
 
-pub static TICKER_TRACKER: Lazy<Mutex<TickerTracker>> =
-    Lazy::new(|| Mutex::new(TickerTracker::new()));
+pub static TICKER_TRACKER: Lazy<Mutex<TickerTracker>> = Lazy::new(|| {
+    web_sys::console::log_1(&JsValue::from("Initializing TickerTracker in Lazy."));
+    Mutex::new(TickerTracker::new())
+});
 
 pub struct TickerTracker {
     tickers: HashMap<TickerId, TickerData>,
@@ -25,7 +27,7 @@ struct TickerData {
 impl TickerData {
     fn new(ticker_id: TickerId) -> Self {
         web_sys::console::log_1(&JsValue::from(format!(
-            "Initialize new hash entry for ticker {}.",
+            "Initialize new hash entry for ticker {:?}.",
             ticker_id
         )));
 
@@ -45,13 +47,13 @@ impl TickerData {
 
             // Log for debugging
             web_sys::console::log_1(&JsValue::from(format!(
-                "Starting visibility for ticker {}. Visibility Count: {}",
+                "Starting visibility for ticker {:?}. Visibility Count: {}",
                 self.ticker_id, self.visibility_count
             )));
         } else {
             // Log when already visible
             web_sys::console::log_1(&JsValue::from(format!(
-                "Ticker {} is already visible.",
+                "Ticker {:?} is already visible.",
                 self.ticker_id
             )));
         }
@@ -64,13 +66,13 @@ impl TickerData {
 
             // Log for debugging
             web_sys::console::log_1(&JsValue::from(format!(
-                "Ending visibility for ticker {}.",
+                "Ending visibility for ticker {:?}.",
                 self.ticker_id
             )));
         } else {
             // Log if trying to end visibility when not visible
             web_sys::console::log_1(&JsValue::from(format!(
-                "Ticker {} was not visible.",
+                "Ticker {:?} was not visible.",
                 self.ticker_id
             )));
         }
@@ -79,8 +81,7 @@ impl TickerData {
 
 impl TickerTracker {
     pub fn new() -> Self {
-        web_sys::console::log_1(&JsValue::from("Initializing TickerTracker"));
-
+        web_sys::console::log_1(&JsValue::from("Creating a new TickerTracker instance."));
         TickerTracker {
             tickers: HashMap::new(),
             recent_views: VecDeque::new(),
@@ -88,10 +89,17 @@ impl TickerTracker {
     }
 
     fn get_or_insert_ticker_with_id(&mut self, ticker_id: TickerId) -> &mut TickerData {
-        // Return a mutable reference to the TickerData
-        self.tickers
-            .entry(ticker_id)
-            .or_insert_with(|| TickerData::new(ticker_id))
+        // Perform the mutable borrow to insert or access the TickerData
+        let ticker_data = self.tickers.entry(ticker_id).or_insert_with(|| {
+            web_sys::console::log_1(&JsValue::from(format!(
+                "Inserting new ticker entry for {:?}.",
+                ticker_id
+            )));
+            TickerData::new(ticker_id)
+        });
+
+        // Return the mutable reference immediately
+        ticker_data
     }
 
     pub fn register_visible_ticker_ids(&mut self, visible_ticker_ids: Vec<TickerId>) {
@@ -104,7 +112,7 @@ impl TickerTracker {
 
         // Track visibility for currently visible tickers
         for &ticker_id in &visible_ticker_ids {
-            let mut ticker_data = self.get_or_insert_ticker_with_id(ticker_id);
+            let ticker_data = self.get_or_insert_ticker_with_id(ticker_id);
             ticker_data.start_visibility();
 
             // Remove the ticker from its current position in recent views if it exists
@@ -116,20 +124,15 @@ impl TickerTracker {
             self.recent_views.push_front(ticker_id);
         }
 
-        // Remove old tickers that are no longer tracked (optional, based on your needs)
-        self.tickers
-            .retain(|_, data| data.visibility_start.is_some());
-
-        // Logging for debugging
-        for (&ticker_id, data) in self.tickers.iter() {
-            web_sys::console::log_1(&JsValue::from(format!(
-                "Ticker ID: {}, Total Time Visible: {}ms, Visibility Count: {}",
-                ticker_id, data.total_time_visible, data.visibility_count
-            )));
-        }
-    }
-
-    pub fn get_recently_viewed_tickers(&self) -> Vec<u32> {
-        self.recent_views.iter().cloned().collect()
+        // Log the updated keys after all mutable operations are done
+        let updated_keys: Vec<String> = self
+            .tickers
+            .keys()
+            .map(|key| format!("{:?}", key))
+            .collect();
+        web_sys::console::log_1(&JsValue::from(format!(
+            "Updated Ticker IDs after insertion: {:?}",
+            updated_keys
+        )));
     }
 }
