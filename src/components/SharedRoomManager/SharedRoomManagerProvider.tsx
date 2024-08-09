@@ -70,6 +70,10 @@ export default function SharedRoomManagerProvider({
   // if the store is in a `clean` initial state (either at `initial` state or at post-async
   // init) and if not in the clean state, prompt the user for how they wish to handle the
   // first incoming merge
+  //
+  // TODO: When joining a room, after making a determination if it's a new room or a
+  // pre-existing (where there may be retained state updates pending), if no pending retained
+  // updates, send the local state.
   useEffect(() => {
     // Flag to determine if local state set should be immediately synced to peers
     let isOutboundSyncPaused = false;
