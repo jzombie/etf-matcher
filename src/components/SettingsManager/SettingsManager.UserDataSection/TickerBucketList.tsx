@@ -28,7 +28,7 @@ export default function TickerBucketList({
           <li key={idx}>
             <Section>
               {
-                // TODO: Use dedicated icon, per bucket type, and use the same logic in the header
+                // TODO: Use dedicated icon, per bucket type, and use the same icon determination logic in the header
               }
               <AssessmentIcon
                 sx={{
