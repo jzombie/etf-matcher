@@ -4,7 +4,6 @@ use serde::{Deserialize, Serialize};
 use serde_json;
 use std::collections::{HashMap, VecDeque};
 use std::sync::Mutex;
-use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
 use crate::types::TickerId;
