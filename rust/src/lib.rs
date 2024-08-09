@@ -14,7 +14,7 @@ use crate::data_models::{
     DataBuildInfo, DataURL, ETFAggregateDetail, ETFAggregateDetailResponse, ETFHoldingTicker,
     ETFHoldingTickerResponse, ETFHoldingWeightResponse, IndustryById, PaginatedResults, SectorById,
     Ticker10KDetail, TickerDetail, TickerDetailResponse, TickerETFHolder, TickerSearch,
-    TickerSearchResult,
+    TickerSearchResult, TickerTracker, TICKER_TRACKER,
 };
 
 use crate::data_models::image::get_image_info as lib_get_image_info;
@@ -182,15 +182,16 @@ pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<Js
 
 #[wasm_bindgen]
 pub fn register_visible_ticker_ids(visible_ticker_ids: js_sys::Array) {
-    for ticker_id in visible_ticker_ids.iter() {
-        // Attempt to convert each JsValue to u32
-        if let Some(ticker_id_u32) = ticker_id.as_f64().and_then(|v| Some(v as u32)) {
-            let log_message = format!("Visible ticker ID: {}", ticker_id_u32);
-            web_sys::console::log_1(&JsValue::from(log_message));
-        } else {
-            web_sys::console::error_1(&JsValue::from("Failed to convert ticker_id to u32"));
-        }
-    }
+    let visible_ticker_ids: Vec<u32> = visible_ticker_ids
+        .iter()
+        .filter_map(|id| id.as_f64().map(|v| v as u32))
+        .collect();
+
+    // Lock the global tracker and register visible ticker IDs
+    TICKER_TRACKER
+        .lock()
+        .unwrap()
+        .register_visible_ticker_ids(visible_ticker_ids);
 }
 
 #[wasm_bindgen]

@@ -10,6 +10,7 @@ pub mod ticker_10k_detail;
 pub mod ticker_detail;
 pub mod ticker_etf_holder;
 pub mod ticker_search;
+pub mod ticker_tracker;
 // pub mod ticker_by_id;
 pub mod exchange_by_id;
 
@@ -26,5 +27,6 @@ pub use ticker_10k_detail::Ticker10KDetail;
 pub use ticker_detail::{TickerDetail, TickerDetailResponse};
 pub use ticker_etf_holder::TickerETFHolder;
 pub use ticker_search::{TickerSearch, TickerSearchResult};
+pub use ticker_tracker::{TickerTracker, TICKER_TRACKER};
 // pub use ticker_by_id::TickerById;
 pub use exchange_by_id::ExchangeById;
