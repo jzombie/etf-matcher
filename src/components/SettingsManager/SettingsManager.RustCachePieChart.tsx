@@ -67,7 +67,7 @@ interface GroupedCacheDetail {
   size: number;
 }
 
-// Function to group and aggregate the data
+// FIXME: This implementation could be improved
 const groupCacheDetails = (
   cacheDetails: CacheDetail[],
 ): GroupedCacheDetail[] => {
