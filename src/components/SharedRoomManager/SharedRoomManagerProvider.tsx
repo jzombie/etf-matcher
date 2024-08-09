@@ -88,6 +88,10 @@ export default function SharedRoomManagerProvider({
 
     store.on(StateEmitterDefaultEvents.UPDATE, _handleSendUpdate);
 
+    // TODO: On the initial message (assuming there is a retained message, etc.), determine
+    // if the store is in a `clean` initial state (either at `initial` state or at post-async
+    // init) and if not in the clean state, prompt the user for how they wish to handle the
+    // first incoming merge
     const _handleReceiveUpdate = (
       receivedData: MQTTRoomEvents["message"][0],
     ) => {
