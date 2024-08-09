@@ -87,6 +87,13 @@ impl TickerTracker {
         }
     }
 
+    fn get_or_insert_ticker_with_id(&mut self, ticker_id: TickerId) -> &mut TickerData {
+        // Return a mutable reference to the TickerData
+        self.tickers
+            .entry(ticker_id)
+            .or_insert_with(|| TickerData::new(ticker_id))
+    }
+
     pub fn register_visible_ticker_ids(&mut self, visible_ticker_ids: Vec<TickerId>) {
         // Track which tickers are no longer visible and end their visibility
         for (&ticker_id, data) in self.tickers.iter_mut() {
@@ -97,10 +104,7 @@ impl TickerTracker {
 
         // Track visibility for currently visible tickers
         for &ticker_id in &visible_ticker_ids {
-            let ticker_data = self
-                .tickers
-                .entry(ticker_id)
-                .or_insert_with(|| TickerData::new(ticker_id));
+            let mut ticker_data = self.get_or_insert_ticker_with_id(ticker_id);
             ticker_data.start_visibility();
 
             // Remove the ticker from its current position in recent views if it exists
