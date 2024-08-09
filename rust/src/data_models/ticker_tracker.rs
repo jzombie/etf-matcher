@@ -5,23 +5,25 @@ use std::sync::Mutex;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
 
+use crate::types::TickerId;
+
 pub static TICKER_TRACKER: Lazy<Mutex<TickerTracker>> =
     Lazy::new(|| Mutex::new(TickerTracker::new()));
 
 pub struct TickerTracker {
-    tickers: HashMap<u32, TickerData>,
-    recent_views: VecDeque<u32>, // Tracks the order of recently viewed tickers
+    tickers: HashMap<TickerId, TickerData>,
+    recent_views: VecDeque<TickerId>, // Tracks the order of recently viewed tickers
 }
 
 struct TickerData {
-    ticker_id: u32,                // Keep track of the ticker ID
-    total_time_visible: f64,       // Use f64 to store the total time in milliseconds
+    ticker_id: TickerId,
+    total_time_visible: f64, // Use f64 to store the total time in milliseconds
     visibility_start: Option<f64>, // Store the start time as a timestamp in milliseconds
     visibility_count: u32,
 }
 
 impl TickerData {
-    fn new(ticker_id: u32) -> Self {
+    fn new(ticker_id: TickerId) -> Self {
         TickerData {
             ticker_id,
             total_time_visible: 0.0,
