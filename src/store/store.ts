@@ -697,12 +697,16 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
-  removeCacheEntry(key: string) {
-    callRustService("remove_cache_entry", [key]);
+  async removeCacheEntry(key: string): Promise<void> {
+    await callRustService("remove_cache_entry", [key]);
 
     // For rapid UI update
     // This forces an immediate sync so that the UI does not appear laggy when clearing cache entries
     this._syncCacheDetails();
+  }
+
+  async PROTO_echoTickerIds(tickerIds: number[]) {
+    await callRustService("proto_echo_ticker_ids", [tickerIds]);
   }
 
   async clearCache() {
