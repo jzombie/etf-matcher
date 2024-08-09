@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Typography,
 } from "@mui/material";
 
 import Section from "@components/Section";
@@ -72,13 +73,20 @@ export default function UserDataSection() {
           tickerBuckets={tickerBuckets}
           includeNonUserConfigurable={includeNonUserConfigurableBuckets}
         />
+
         <Button
           onClick={() => setIncludeNonUserConfigurableBuckets((prev) => !prev)}
         >
           {includeNonUserConfigurableBuckets
-            ? "Hide Non-User-Configurable"
-            : "Show User-Configurable"}
+            ? "Hide System Buckets"
+            : "Show System Buckets"}
         </Button>
+        <Typography variant="body2" sx={{ fontStyle: "italic", opacity: 0.5 }}>
+          &quot;System Buckets&quot; are non-user-configurable and are
+          auto-populated by the app during the course of interaction. These are
+          private to the session (unless &quot;Session Sharing&quot; is enabled)
+          and are used to help the app make recommendations.
+        </Typography>
       </Section>
 
       <Dialog
