@@ -23,8 +23,8 @@ pub struct TickerTracker {
 #[derive(Serialize, Deserialize)]
 struct TickerData {
     ticker_id: TickerId,
-    total_time_visible: f64, // Use f64 to store the total time in milliseconds
-    visibility_start: Option<f64>, // Store the start time as a timestamp in milliseconds
+    total_time_visible: u64,
+    visibility_start: Option<u64>,
     visibility_count: u32,
 }
 
@@ -37,7 +37,7 @@ impl TickerData {
 
         TickerData {
             ticker_id,
-            total_time_visible: 0.0,
+            total_time_visible: 0,
             visibility_start: None,
             visibility_count: 0,
         }
@@ -46,7 +46,7 @@ impl TickerData {
     fn start_visibility(&mut self) {
         if self.visibility_start.is_none() {
             // This ticker was not visible and is now starting visibility, so increment the count
-            self.visibility_start = Some(Date::now());
+            self.visibility_start = Some(Date::now() as u64);
             self.visibility_count += 1;
 
             // Log for debugging
@@ -65,7 +65,7 @@ impl TickerData {
 
     fn end_visibility(&mut self) {
         if let Some(start_time) = self.visibility_start {
-            self.total_time_visible += Date::now() - start_time;
+            self.total_time_visible += (Date::now() as u64) - start_time;
             self.visibility_start = None;
 
             // Log for debugging
