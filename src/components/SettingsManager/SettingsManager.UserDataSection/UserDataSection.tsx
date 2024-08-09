@@ -19,6 +19,11 @@ import TickerBucketList from "./TickerBucketList";
 export default function UserDataSection() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  const [
+    includeNonUserConfigurableBuckets,
+    setIncludeNonUserConfigurableBuckets,
+  ] = useState<boolean>(false);
+
   const { tickerBuckets } = useStoreStateReader([
     "isHTMLJSVersionSynced",
     "isAppUnlocked",
@@ -63,7 +68,17 @@ export default function UserDataSection() {
           Clear User Data
         </Button>
         <h3>Buckets</h3>
-        <TickerBucketList tickerBuckets={tickerBuckets} />
+        <TickerBucketList
+          tickerBuckets={tickerBuckets}
+          includeNonUserConfigurable={includeNonUserConfigurableBuckets}
+        />
+        <Button
+          onClick={() => setIncludeNonUserConfigurableBuckets((prev) => !prev)}
+        >
+          {includeNonUserConfigurableBuckets
+            ? "Hide Non-User-Configurable"
+            : "Show User-Configurable"}
+        </Button>
       </Section>
 
       <Dialog
