@@ -237,8 +237,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         if (keys.includes("visibleTickerIds")) {
           const { visibleTickerIds } = this.getState(["visibleTickerIds"]);
 
-          // TODO: Handle this tracking
-          customLogger.debug({ visibleTickerIds });
+          callRustService("register_visible_ticker_ids", [visibleTickerIds]);
         }
       };
       this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
@@ -703,10 +702,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // For rapid UI update
     // This forces an immediate sync so that the UI does not appear laggy when clearing cache entries
     this._syncCacheDetails();
-  }
-
-  async PROTO_echoTickerIds(tickerIds: number[]) {
-    await callRustService("proto_echo_ticker_ids", [tickerIds]);
   }
 
   async clearCache() {

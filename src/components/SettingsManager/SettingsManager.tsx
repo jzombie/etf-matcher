@@ -63,14 +63,6 @@ export default function SettingsManager() {
     <Scrollable>
       <Padding>
         <Section>
-          <Button onClick={() => store.PROTO_echoTickerIds([1, 2, 3])}>
-            PROTO::echoTickerIds()
-          </Button>
-        </Section>
-      </Padding>
-
-      <Padding>
-        <Section>
           <h2>Session Sharing</h2>
           <Typography variant="body2" component="p">
             ETF Matcher doesn&apos;t use user accounts, but session data can be

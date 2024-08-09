@@ -180,13 +180,13 @@ pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<Js
     Ok(to_value(&ticker_id).map_err(|e| JsValue::from_str(&e.to_string()))?)
 }
 
-// TODO: Discard, but use prototype
 #[wasm_bindgen]
-pub fn proto_echo_ticker_ids(ticker_ids: js_sys::Array) {
-    for ticker_id in ticker_ids.iter() {
+pub fn register_visible_ticker_ids(visible_ticker_ids: js_sys::Array) {
+    for ticker_id in visible_ticker_ids.iter() {
         // Attempt to convert each JsValue to u32
         if let Some(ticker_id_u32) = ticker_id.as_f64().and_then(|v| Some(v as u32)) {
-            web_sys::console::log_1(&JsValue::from(ticker_id_u32));
+            let log_message = format!("Visible ticker ID: {}", ticker_id_u32);
+            web_sys::console::log_1(&JsValue::from(log_message));
         } else {
             web_sys::console::error_1(&JsValue::from("Failed to convert ticker_id to u32"));
         }
