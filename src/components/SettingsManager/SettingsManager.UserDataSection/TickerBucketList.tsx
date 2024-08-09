@@ -27,6 +27,9 @@ export default function TickerBucketList({
         .map((tickerBucket, idx) => (
           <li key={idx}>
             <Section>
+              {
+                // TODO: Use dedicated icon, per bucket type, and use the same logic in the header
+              }
               <AssessmentIcon
                 sx={{
                   fontSize: 24,
