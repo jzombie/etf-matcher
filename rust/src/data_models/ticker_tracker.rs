@@ -24,6 +24,11 @@ struct TickerData {
 
 impl TickerData {
     fn new(ticker_id: TickerId) -> Self {
+        web_sys::console::log_1(&JsValue::from(format!(
+            "Initialize new hash entry for ticker {}.",
+            ticker_id
+        )));
+
         TickerData {
             ticker_id,
             total_time_visible: 0.0,
@@ -74,13 +79,15 @@ impl TickerData {
 
 impl TickerTracker {
     pub fn new() -> Self {
+        web_sys::console::log_1(&JsValue::from("Initializing TickerTracker"));
+
         TickerTracker {
             tickers: HashMap::new(),
             recent_views: VecDeque::new(),
         }
     }
 
-    pub fn register_visible_ticker_ids(&mut self, visible_ticker_ids: Vec<u32>) {
+    pub fn register_visible_ticker_ids(&mut self, visible_ticker_ids: Vec<TickerId>) {
         // Track which tickers are no longer visible and end their visibility
         for (&ticker_id, data) in self.tickers.iter_mut() {
             if !visible_ticker_ids.contains(&ticker_id) {

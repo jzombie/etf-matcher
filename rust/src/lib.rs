@@ -14,7 +14,7 @@ use crate::data_models::{
     DataBuildInfo, DataURL, ETFAggregateDetail, ETFAggregateDetailResponse, ETFHoldingTicker,
     ETFHoldingTickerResponse, ETFHoldingWeightResponse, IndustryById, PaginatedResults, SectorById,
     Ticker10KDetail, TickerDetail, TickerDetailResponse, TickerETFHolder, TickerSearch,
-    TickerSearchResult, TickerTracker, TICKER_TRACKER,
+    TickerSearchResult, TICKER_TRACKER,
 };
 
 use crate::data_models::image::get_image_info as lib_get_image_info;
@@ -187,6 +187,7 @@ pub fn register_visible_ticker_ids(visible_ticker_ids: js_sys::Array) {
         .filter_map(|id| id.as_f64().map(|v| v as u32))
         .collect();
 
+    // TODO: Make this a method to use like a singleton
     // Lock the global tracker and register visible ticker IDs
     TICKER_TRACKER
         .lock()
