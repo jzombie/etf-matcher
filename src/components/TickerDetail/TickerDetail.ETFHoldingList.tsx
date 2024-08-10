@@ -12,7 +12,6 @@ import type {
 import { RustServiceTickerDetail } from "@src/types";
 
 import EncodedImage from "@components/EncodedImage";
-import TickerContainer from "@components/TickerContainer";
 
 import useURLState from "@hooks/useURLState";
 
@@ -59,33 +58,28 @@ export default function ETFHoldingList({
   return (
     <div style={{ textAlign: "center" }}>
       {paginatedHoldings.results.map((result) => (
-        <TickerContainer
+        <ButtonBase
           key={result.holding_ticker_id}
-          tickerId={result.holding_ticker_id}
-          style={{ display: "inline-block" }}
+          sx={{ overflow: "auto", margin: 1 }}
+          onClick={() =>
+            setURLState(
+              { query: result.holding_symbol, exact: toBooleanParam(true) },
+              false,
+              "/search",
+            )
+          }
         >
-          <ButtonBase
-            sx={{ overflow: "auto", margin: 1 }}
-            onClick={() =>
-              setURLState(
-                { query: result.holding_symbol, exact: toBooleanParam(true) },
-                false,
-                "/search",
-              )
-            }
-          >
-            <div>
-              <EncodedImage
-                encSrc={result.logo_filename}
-                style={{ width: 50, height: 50 }}
-              />
-              <div>Company Name: {result.company_name}</div>
-              <div>Symbol: {result.holding_symbol}</div>
-              <div>Industry: {result.industry_name}</div>
-              <div>Sector: {result.sector_name}</div>
-            </div>
-          </ButtonBase>
-        </TickerContainer>
+          <div>
+            <EncodedImage
+              encSrc={result.logo_filename}
+              style={{ width: 50, height: 50 }}
+            />
+            <div>Company Name: {result.company_name}</div>
+            <div>Symbol: {result.holding_symbol}</div>
+            <div>Industry: {result.industry_name}</div>
+            <div>Sector: {result.sector_name}</div>
+          </div>
+        </ButtonBase>
       ))}
     </div>
   );
