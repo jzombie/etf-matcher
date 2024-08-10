@@ -1,4 +1,7 @@
-import { DEFAULT_TICKER_TAPE_TICKERS } from "@src/constants";
+import {
+  DEFAULT_TICKER_TAPE_TICKERS,
+  TICKER_TRACKING_ATTENTION_POLLING_INTERVAL,
+} from "@src/constants";
 import type {
   RustServiceCacheDetail,
   RustServiceETFAggregateDetail,
@@ -247,10 +250,14 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           async (tickerTrackerStateJSON) => {
             this.setState({ tickerTrackerStateJSON });
 
-            const exportedState: RustServiceTickerTracker = JSON.parse(
+            const tickerTrackerState: RustServiceTickerTracker = JSON.parse(
               tickerTrackerStateJSON,
             );
-            const { recent_views: recentlyViewedTickerIds } = exportedState;
+
+            const {
+              recent_views: recentlyViewedTickerIds = [],
+              ordered_by_time_visible: attentionTrackerTickerIds = [],
+            } = tickerTrackerState;
 
             const recentBucketTickers: TickerBucketTicker[] = await Promise.all(
               recentlyViewedTickerIds.map((tickerId) =>
@@ -263,11 +270,32 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
               ),
             );
 
-            const prev = this.getTickerBucketsOfType("recently_viewed")[0];
+            const prevRecentlyViewed =
+              this.getTickerBucketsOfType("recently_viewed")[0];
 
-            this.updateTickerBucket(prev, {
-              ...prev,
+            this.updateTickerBucket(prevRecentlyViewed, {
+              ...prevRecentlyViewed,
               tickers: recentBucketTickers,
+            });
+
+            const mostAttentiveBucketTickers: TickerBucketTicker[] =
+              await Promise.all(
+                attentionTrackerTickerIds.map((tickerId) =>
+                  this.fetchTickerDetail(tickerId).then((tickerDetail) => ({
+                    tickerId,
+                    symbol: tickerDetail.symbol,
+                    exchange_short_name: tickerDetail.exchange_short_name,
+                    quantity: 1,
+                  })),
+                ),
+              );
+
+            const prevAttentionTracker =
+              this.getTickerBucketsOfType("attention_tracker")[0];
+
+            this.updateTickerBucket(prevAttentionTracker, {
+              ...prevAttentionTracker,
+              tickers: mostAttentiveBucketTickers,
             });
           },
         );
@@ -283,9 +311,19 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         }
       };
 
+      // Poll for attention every `x` milliseconds
+      const attentionPoller = setInterval(() => {
+        // Only poll if the window has focus
+        if (window.document.hasFocus()) {
+          _handleVisibleTickersUpdate(["visibleTickerIds"]);
+        }
+      }, TICKER_TRACKING_ATTENTION_POLLING_INTERVAL);
+
       this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
 
       this.registerDispose(() => {
+        clearInterval(attentionPoller);
+
         this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
       });
     })();
@@ -475,10 +513,16 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
                 tickerTrackerStateJSON,
               );
 
-              // Update Rust service ticker tracker state
-              callRustService("import_ticker_tracker_state", [
-                tickerTrackerStateJSON,
-              ]);
+              debounceWithKey(
+                "import_ticker_tracker_state:from_state_update",
+                () => {
+                  // Update Rust service ticker tracker state
+                  callRustService("import_ticker_tracker_state", [
+                    tickerTrackerStateJSON,
+                  ]);
+                },
+                1000,
+              );
             }
           };
           this.on(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
