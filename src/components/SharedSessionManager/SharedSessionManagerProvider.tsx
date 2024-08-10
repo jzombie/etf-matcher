@@ -12,23 +12,22 @@ import { useLocation } from "react-router-dom";
 import MQTTRoom, { MQTTRoomEvents } from "@utils/MQTTRoom";
 import { useMultiMQTTRoomContext } from "@utils/MQTTRoom/react";
 
-interface SharedRoomManagerContextProps {
+interface SharedSessionManagerContextProps {
   getRoomShareURL: (room: MQTTRoom) => string;
   parsedJoinRoomNameFromURLString: string | null;
 }
 
-const SharedRoomManagerContext = createContext<
-  SharedRoomManagerContextProps | undefined
+const SharedSessionManagerContext = createContext<
+  SharedSessionManagerContextProps | undefined
 >(undefined);
 
-export type SharedRoomManagerProviderProps = {
+export type SharedSessionManagerProviderProps = {
   children: React.ReactNode;
 };
 
-// TODO: Consider renaming to `SharedRoomStateManagerProvider` (or equiv.)
-export default function SharedRoomManagerProvider({
+export default function SharedSessionManagerProvider({
   children,
-}: SharedRoomManagerProviderProps) {
+}: SharedSessionManagerProviderProps) {
   const { connectToRoom, connectedRooms } = useMultiMQTTRoomContext();
 
   const location = useLocation();
@@ -146,19 +145,19 @@ export default function SharedRoomManagerProvider({
   }, [connectedRooms]);
 
   return (
-    <SharedRoomManagerContext.Provider
+    <SharedSessionManagerContext.Provider
       value={{ getRoomShareURL, parsedJoinRoomNameFromURLString }}
     >
       {children}
-    </SharedRoomManagerContext.Provider>
+    </SharedSessionManagerContext.Provider>
   );
 }
 
-export function useSharedRoomManagerContext() {
-  const context = useContext(SharedRoomManagerContext);
+export function useSharedSessionManagerContext() {
+  const context = useContext(SharedSessionManagerContext);
   if (context === undefined) {
     throw new Error(
-      "useSharedRoomManager must be used within a SharedRoomManagerProvider",
+      "useSharedSessionManager must be used within a SharedSessionManagerProvider",
     );
   }
   return context;

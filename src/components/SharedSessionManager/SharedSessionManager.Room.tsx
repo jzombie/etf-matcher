@@ -18,7 +18,7 @@ import useEventRefresh from "@hooks/useEventRefresh";
 import MQTTRoom, { MQTTRoomEvents } from "@utils/MQTTRoom";
 import { useMultiMQTTRoomContext } from "@utils/MQTTRoom/react";
 
-import { useSharedRoomManagerContext } from "./SharedRoomManagerProvider";
+import { useSharedSessionManagerContext } from "./SharedSessionManagerProvider";
 
 export type RoomProps = {
   room: MQTTRoom;
@@ -31,7 +31,7 @@ export default function Room({ room }: RoomProps) {
 
   const [qrCode, setQRCode] = useState<string | null>("");
 
-  const { getRoomShareURL } = useSharedRoomManagerContext();
+  const { getRoomShareURL } = useSharedSessionManagerContext();
 
   const generateQRCode = useCallback(() => {
     const roomShareURL = getRoomShareURL(room);
