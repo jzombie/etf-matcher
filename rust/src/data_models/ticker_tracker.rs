@@ -18,10 +18,11 @@ pub struct TickerTracker {
     tickers: HashMap<TickerId, TickerTrackerVisibility>,
     recent_views: VecDeque<TickerId>, // Tracks the order of recently viewed tickers
     #[serde(skip_serializing_if = "Option::is_none", default)] // Skip if None
+    // #[serde(skip_serializing)] // Skip this field when serializing
     ordered_by_time_visible: Option<VecDeque<TickerId>>, // Tracks tickers ordered by total time visible
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 struct TickerTrackerVisibility {
     ticker_id: TickerId,
     total_time_visible: u64,
@@ -29,6 +30,7 @@ struct TickerTrackerVisibility {
     visibility_start: Option<u64>,
     visibility_count: u32,
 }
+
 
 impl TickerTrackerVisibility {
     fn new(ticker_id: TickerId) -> Self {
@@ -47,36 +49,36 @@ impl TickerTrackerVisibility {
 
     fn start_visibility(&mut self) {
         if self.visibility_start.is_none() {
-            // This ticker was not visible and is now starting visibility, so increment the count
             self.visibility_start = Some(Date::now() as u64);
             self.visibility_count += 1;
-
+    
             web_sys::console::debug_1(&JsValue::from(format!(
-                "Starting visibility for ticker {:?}. Visibility Count: {}",
-                self.ticker_id, self.visibility_count
+                "Starting visibility for ticker {:?}. Visibility Count: {}. Visibility Start: {:?}",
+                self.ticker_id, self.visibility_count, self.visibility_start
             )));
         } else {
             web_sys::console::debug_1(&JsValue::from(format!(
-                "Ticker {:?} is already visible.",
-                self.ticker_id
+                "Ticker {:?} is already visible. Visibility Start: {:?}",
+                self.ticker_id, self.visibility_start
             )));
         }
-    }
+    }    
 
     fn end_visibility(&mut self) {
         if let Some(start_time) = self.visibility_start {
-            let elapsed_time = (Date::now() as u64) - start_time;
+            let end_time = Date::now() as u64;
+            let elapsed_time = end_time - start_time;
             self.total_time_visible += elapsed_time;
             self.visibility_start = None;
-
+    
             web_sys::console::debug_1(&JsValue::from(format!(
-                "Ending visibility for ticker {:?}. Total Time Visible: {}",
-                self.ticker_id, self.total_time_visible
+                "Ending visibility for ticker {:?}. Start Time: {:?}, End Time: {:?}, Elapsed Time: {:?}, Total Time Visible: {}",
+                self.ticker_id, start_time, end_time, elapsed_time, self.total_time_visible
             )));
         } else {
             web_sys::console::debug_1(&JsValue::from(format!(
-                "Ticker {:?} was not visible.",
-                self.ticker_id
+                "Ticker {:?} was not visible. Visibility Start: {:?}",
+                self.ticker_id, self.visibility_start
             )));
         }
     }
@@ -105,24 +107,37 @@ impl TickerTracker {
     }
 
     pub fn register_visible_ticker_ids(&mut self, visible_ticker_ids: Vec<TickerId>) {
+        web_sys::console::debug_1(&JsValue::from(format!(
+            "Registering visible ticker IDs: {:?}",
+            visible_ticker_ids
+        )));
+    
+        // First, end visibility for tickers that are no longer visible
         for (&ticker_id, data) in self.tickers.iter_mut() {
             if !visible_ticker_ids.contains(&ticker_id) {
                 data.end_visibility();
             }
         }
-
+    
+        // Start visibility for currently visible tickers
         for &ticker_id in &visible_ticker_ids {
             let ticker_data = self.get_or_insert_ticker_with_id(ticker_id);
             ticker_data.start_visibility();
-
+    
+            // Move the ticker to the front of the recent views list
             if let Some(pos) = self.recent_views.iter().position(|&id| id == ticker_id) {
                 self.recent_views.remove(pos);
             }
-
             self.recent_views.push_front(ticker_id);
         }
 
         self.update_ordered_by_time_visible();
+    
+        // Log the updated state after processing
+        web_sys::console::debug_1(&JsValue::from(format!(
+            "TickerTracker state after registration: {:?}",
+            self.tickers
+        )));
     }
 
     fn update_ordered_by_time_visible(&mut self) {
@@ -134,18 +149,13 @@ impl TickerTracker {
     
         let mut new_ordered_by_time_visible = VecDeque::new();
     
-        for &ticker_id in &all_ticker_ids {
-            let total_time_visible = self.tickers[&ticker_id].total_time_visible;
+        // Sort all tickers by total_time_visible in descending order
+        let mut sorted_ticker_ids: Vec<&TickerId> = all_ticker_ids.iter().collect();
+        sorted_ticker_ids.sort_by_key(|&&id| std::cmp::Reverse(self.tickers[&id].total_time_visible));
     
-            let pos = new_ordered_by_time_visible
-                .iter()
-                .position(|&id| {
-                    let ticker_data = &self.tickers[&id];
-                    ticker_data.total_time_visible < total_time_visible
-                })
-                .unwrap_or_else(|| new_ordered_by_time_visible.len());
-    
-            new_ordered_by_time_visible.insert(pos, ticker_id);
+        // Insert the tickers in the sorted order
+        for &&ticker_id in &sorted_ticker_ids {
+            new_ordered_by_time_visible.push_back(ticker_id);
         }
     
         self.ordered_by_time_visible = Some(new_ordered_by_time_visible);
@@ -160,12 +170,13 @@ impl TickerTracker {
                 format!("{:?} (Total Time Visible: {})", id, total_time_visible)
             })
             .collect();
-
+    
         web_sys::console::debug_1(&JsValue::from(format!(
             "Tickers ordered by time visible: {:?}",
             ordered_tickers
         )));
     }
+    
 
     pub fn export_state(&self) -> Result<String, JsValue> {
         match serde_json::to_string(&self) {
@@ -180,21 +191,35 @@ impl TickerTracker {
         }
     }
 
-    pub fn import_state(serialized: &str) -> Result<Self, JsValue> {
-        match serde_json::from_str::<TickerTracker>(serialized) {
-            Ok(mut tracker) => {
-                if tracker.ordered_by_time_visible.is_none() {
-                    tracker.update_ordered_by_time_visible();
-                }
-                Ok(tracker)
-            }
-            Err(err) => {
-                web_sys::console::debug_1(&JsValue::from(format!(
-                    "Failed to deserialize TickerTracker: {:?}",
-                    err
-                )));
-                Err(JsValue::from_str("Failed to deserialize TickerTracker"))
+    pub fn import_state(&mut self, serialized: &str) -> Result<(), JsValue> {
+        let imported_tracker: TickerTracker = serde_json::from_str(serialized).map_err(|err| {
+            web_sys::console::debug_1(&JsValue::from(format!(
+                "Failed to deserialize TickerTracker: {:?}",
+                err
+            )));
+            JsValue::from_str("Failed to deserialize TickerTracker")
+        })?;
+
+        // Merge the imported state with the existing state
+        for (ticker_id, imported_visibility) in imported_tracker.tickers {
+            let existing_visibility = self.tickers.entry(ticker_id).or_insert(imported_visibility.clone());
+
+            existing_visibility.total_time_visible = imported_visibility.total_time_visible;
+            existing_visibility.visibility_count = imported_visibility.visibility_count;
+        }
+
+        // Merge recent_views (if needed)
+        for ticker_id in imported_tracker.recent_views {
+            if !self.recent_views.contains(&ticker_id) {
+                self.recent_views.push_back(ticker_id);
             }
         }
+
+        web_sys::console::debug_1(&JsValue::from(format!(
+            "Merged TickerTracker state after import: {:?}",
+            self.tickers
+        )));
+
+        Ok(())
     }
 }

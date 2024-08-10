@@ -202,13 +202,8 @@ pub fn export_ticker_tracker_state() -> Result<JsValue, JsValue> {
 
 #[wasm_bindgen]
 pub fn import_ticker_tracker_state(serialized: &str) -> Result<(), JsValue> {
-    let new_tracker = TickerTracker::import_state(serialized)?;
-
-    // Replace the current tracker with the imported one
     let mut tracker = TICKER_TRACKER.lock().unwrap();
-    *tracker = new_tracker;
-
-    Ok(())
+    tracker.import_state(serialized)
 }
 
 #[wasm_bindgen]
