@@ -14,7 +14,7 @@ import {
 
 import Padding from "@layoutKit/Padding";
 import store from "@src/store";
-import type { TickerBucketProps } from "@src/store";
+import type { TickerBucket } from "@src/store";
 
 import SearchModalButton from "@components/SearchModalButton";
 import Section from "@components/Section";
@@ -25,7 +25,7 @@ import useStoreStateReader from "@hooks/useStoreStateReader";
 import BucketForm from "./BucketManager.BucketForm";
 
 export type BucketListProps = {
-  bucketType: TickerBucketProps["type"];
+  bucketType: TickerBucket["type"];
 };
 
 export default function BucketList({ bucketType }: BucketListProps) {
@@ -39,15 +39,16 @@ export default function BucketList({ bucketType }: BucketListProps) {
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [selectedBucket, setSelectedBucket] =
-    useState<TickerBucketProps | null>(null);
+  const [selectedBucket, setSelectedBucket] = useState<TickerBucket | null>(
+    null,
+  );
 
-  const handleDeleteClick = (bucket: TickerBucketProps) => {
+  const handleDeleteClick = (bucket: TickerBucket) => {
     setSelectedBucket(bucket);
     setIsDeleteDialogOpen(true);
   };
 
-  const handleEditClick = (bucket: TickerBucketProps) => {
+  const handleEditClick = (bucket: TickerBucket) => {
     setSelectedBucket(bucket);
     setIsEditDialogOpen(true);
   };

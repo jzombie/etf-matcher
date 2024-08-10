@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { TRADING_VIEW_COPYRIGHT_STYLES } from "@src/constants";
-import type { TickerBucketProps } from "@src/store";
+import type { TickerBucket } from "@src/store";
 import {
   TickerTape as LibTickerTape,
   TickerTapeSymbol,
@@ -13,7 +13,7 @@ import deepEqual from "@utils/deepEqual";
 
 export default function TickerTape() {
   const { tickerBuckets } = useStoreStateReader("tickerBuckets");
-  const previousTickerTapeBucketRef = useRef<TickerBucketProps | null>(null);
+  const previousTickerTapeBucketRef = useRef<TickerBucket | null>(null);
 
   const tickerTapeBucket = useMemo(() => {
     if (tickerBuckets) {

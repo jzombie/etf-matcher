@@ -3,14 +3,14 @@ import React from "react";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import { Typography } from "@mui/material";
 
-import { TickerBucketProps } from "@src/store";
+import { TickerBucket } from "@src/store";
 
 import Section from "@components/Section";
 
 import TickerBucketItem from "./TickerBucketItem";
 
 export type TickerBucketListProps = {
-  tickerBuckets: TickerBucketProps[];
+  tickerBuckets: TickerBucket[];
   includeNonUserConfigurable?: boolean;
 };
 

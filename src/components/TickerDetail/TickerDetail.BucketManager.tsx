@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 
 import { tickerBucketDefaultNames } from "@src/store";
-import type { TickerBucketProps } from "@src/store";
+import type { TickerBucket } from "@src/store";
 import type { RustServiceTickerDetail } from "@src/types";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
@@ -31,13 +31,14 @@ export default function TickerDetailBucketManager({
   const { tickerBuckets } = useStoreStateReader(["tickerBuckets"]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isSelectDialogOpen, setIsSelectDialogOpen] = useState(false);
-  const [selectedBucket, setSelectedBucket] =
-    useState<TickerBucketProps | null>(null);
+  const [selectedBucket, setSelectedBucket] = useState<TickerBucket | null>(
+    null,
+  );
   const [selectedBucketType, setSelectedBucketType] = useState<
-    TickerBucketProps["type"] | null
+    TickerBucket["type"] | null
   >(null);
 
-  const handleRemoveClick = (tickerBucket: TickerBucketProps) => {
+  const handleRemoveClick = (tickerBucket: TickerBucket) => {
     setSelectedBucket(tickerBucket);
     setIsDeleteDialogOpen(true);
   };
@@ -55,7 +56,7 @@ export default function TickerDetailBucketManager({
     setSelectedBucket(null);
   };
 
-  const handleAddClick = (type: TickerBucketProps["type"]) => {
+  const handleAddClick = (type: TickerBucket["type"]) => {
     setSelectedBucketType(type);
     setIsSelectDialogOpen(true);
   };
@@ -67,7 +68,7 @@ export default function TickerDetailBucketManager({
 
   const handleSelectChange = (event: SelectChangeEvent<string>) => {
     const bucket = tickerBuckets.find(
-      (b: TickerBucketProps) => b.name === event.target.value,
+      (b: TickerBucket) => b.name === event.target.value,
     );
     if (bucket) {
       store.addTickerToBucket(tickerDetail.ticker_id, 1, bucket);
@@ -91,7 +92,7 @@ export default function TickerDetailBucketManager({
           const bucketsOfType = tickerBuckets.filter(
             (bucket) => bucket.isUserConfigurable && bucket.type === type,
           );
-          const isTickerInBucket = (bucket: TickerBucketProps) =>
+          const isTickerInBucket = (bucket: TickerBucket) =>
             store.bucketHasTicker(tickerDetail.ticker_id, bucket);
 
           return (

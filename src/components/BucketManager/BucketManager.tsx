@@ -7,7 +7,7 @@ import { Button } from "@mui/material";
 
 import Padding from "@layoutKit/Padding";
 import { tickerBucketDefaultNames } from "@src/store";
-import type { TickerBucketProps } from "@src/store";
+import type { TickerBucket } from "@src/store";
 
 import Section from "@components/Section";
 
@@ -15,7 +15,7 @@ import BucketForm from "./BucketManager.BucketForm";
 import BucketList from "./BucketManager.BucketList";
 
 export type BucketManagerProps = {
-  bucketType: TickerBucketProps["type"];
+  bucketType: TickerBucket["type"];
 };
 
 export default function BucketManager({ bucketType }: BucketManagerProps) {

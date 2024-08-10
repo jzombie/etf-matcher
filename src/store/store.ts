@@ -39,7 +39,7 @@ export type TickerBucketTicker = {
   quantity: number;
 };
 
-export type TickerBucketProps = {
+export type TickerBucket = {
   name: string;
   tickers: TickerBucketTicker[];
   type:
@@ -53,7 +53,7 @@ export type TickerBucketProps = {
 };
 
 export const tickerBucketDefaultNames: Readonly<
-  Record<TickerBucketProps["type"], string>
+  Record<TickerBucket["type"], string>
 > = {
   watchlist: "Watchlist",
   portfolio: "Portfolio",
@@ -74,7 +74,7 @@ export type StoreStateProps = {
   isDirtyState: boolean;
   visibleTickerIds: number[];
   isSearchModalOpen: boolean;
-  tickerBuckets: TickerBucketProps[];
+  tickerBuckets: TickerBucket[];
   isProfilingCacheOverlayOpen: boolean;
   cacheProfilerWaitTime: number;
   cacheDetails: RustServiceCacheDetail[];
@@ -92,7 +92,7 @@ export type StoreStateProps = {
 };
 
 export type IndexedDBPersistenceProps = {
-  tickerBuckets: TickerBucketProps[];
+  tickerBuckets: TickerBucket[];
   subscribedMQTTRoomNames: string[];
   tickerTrackerStateJSON: string;
 };
@@ -620,8 +620,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     type,
     description,
     isUserConfigurable,
-  }: Omit<TickerBucketProps, "tickers">) {
-    const nextBucket: TickerBucketProps = {
+  }: Omit<TickerBucket, "tickers">) {
+    const nextBucket: TickerBucket = {
       name,
       tickers: [],
       type,
@@ -636,10 +636,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     }));
   }
 
-  updateTickerBucket(
-    prevBucket: TickerBucketProps,
-    updatedBucket: TickerBucketProps,
-  ) {
+  updateTickerBucket(prevBucket: TickerBucket, updatedBucket: TickerBucket) {
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.map((bucket) =>
         bucket.name === prevBucket.name && bucket.type === prevBucket.type
@@ -653,7 +650,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // TODO: Emit custom event for this
   }
 
-  deleteTickerBucket(tickerBucket: TickerBucketProps) {
+  deleteTickerBucket(tickerBucket: TickerBucket) {
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.filter(
         (cachedBucket) =>
@@ -670,7 +667,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   async addTickerToBucket(
     tickerId: number,
     quantity: number,
-    tickerBucket: TickerBucketProps,
+    tickerBucket: TickerBucket,
   ) {
     const tickerAndExchange =
       await this.fetchSymbolAndExchangeByTickerId(tickerId);
@@ -705,7 +702,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // TODO: Emit custom event for this
   }
 
-  removeTickerFromBucket(tickerId: number, tickerBucket: TickerBucketProps) {
+  removeTickerFromBucket(tickerId: number, tickerBucket: TickerBucket) {
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.map((bucket) => {
         if (bucket.name === tickerBucket.name) {
@@ -724,11 +721,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // TODO: Emit custom event for this
   }
 
-  bucketHasTicker(tickerId: number, tickerBucket: TickerBucketProps): boolean {
+  bucketHasTicker(tickerId: number, tickerBucket: TickerBucket): boolean {
     return tickerBucket.tickers.some((ticker) => ticker.tickerId === tickerId);
   }
 
-  getTickerBucketsOfType(tickerBucketType: TickerBucketProps["type"]) {
+  getTickerBucketsOfType(tickerBucketType: TickerBucket["type"]) {
     return this.state.tickerBuckets.filter(
       ({ type }) => tickerBucketType === type,
     );
