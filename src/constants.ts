@@ -62,3 +62,6 @@ export const COLOR_WHEEL_COLORS: Readonly<string[]> = [
   "#4169E1", // Neon Royal Blue
   "#FFD700", // Neon Gold
 ];
+
+// In milliseconds
+export const TICKER_TRACKING_ATTENTION_POLLING_INTERVAL = 20000;

@@ -1,4 +1,7 @@
-import { DEFAULT_TICKER_TAPE_TICKERS } from "@src/constants";
+import {
+  DEFAULT_TICKER_TAPE_TICKERS,
+  TICKER_TRACKING_ATTENTION_POLLING_INTERVAL,
+} from "@src/constants";
 import type {
   RustServiceCacheDetail,
   RustServiceETFAggregateDetail,
@@ -308,9 +311,19 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         }
       };
 
+      // Poll for attention every `x` milliseconds
+      const attentionPoller = setInterval(() => {
+        // Only poll if the window has focus
+        if (window.document.hasFocus()) {
+          _handleVisibleTickersUpdate(["visibleTickerIds"]);
+        }
+      }, TICKER_TRACKING_ATTENTION_POLLING_INTERVAL);
+
       this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
 
       this.registerDispose(() => {
+        clearInterval(attentionPoller);
+
         this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
       });
     })();
