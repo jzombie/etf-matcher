@@ -238,6 +238,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       });
     })();
 
+    // Handle ticker view tracking (Note: this works in conjunction with `callRustService`
+    // calls with the functions `import_ticker_tracker_state` and `export_ticker_tracker_state`).
     (() => {
       const _syncRecentlyViewed = () => {
         callRustService<string>("export_ticker_tracker_state").then(
