@@ -32,10 +32,10 @@ struct TickerTrackerVisibility {
 
 impl TickerTrackerVisibility {
     fn new(ticker_id: TickerId) -> Self {
-        web_sys::console::debug_1(&JsValue::from(format!(
-            "Initialize new hash entry for ticker {:?}.",
-            ticker_id
-        )));
+        // web_sys::console::debug_1(&JsValue::from(format!(
+        //     "Initialize new hash entry for ticker {:?}.",
+        //     ticker_id
+        // )));
 
         TickerTrackerVisibility {
             ticker_id,
@@ -51,17 +51,16 @@ impl TickerTrackerVisibility {
             self.visibility_start = Some(Date::now() as u64);
             self.visibility_count += 1;
 
-            // Log for debugging
-            web_sys::console::debug_1(&JsValue::from(format!(
-                "Starting visibility for ticker {:?}. Visibility Count: {}",
-                self.ticker_id, self.visibility_count
-            )));
+            // web_sys::console::debug_1(&JsValue::from(format!(
+            //     "Starting visibility for ticker {:?}. Visibility Count: {}",
+            //     self.ticker_id, self.visibility_count
+            // )));
         } else {
             // Log when already visible
-            web_sys::console::debug_1(&JsValue::from(format!(
-                "Ticker {:?} is already visible.",
-                self.ticker_id
-            )));
+            // web_sys::console::debug_1(&JsValue::from(format!(
+            //     "Ticker {:?} is already visible.",
+            //     self.ticker_id
+            // )));
         }
     }
 
@@ -70,17 +69,15 @@ impl TickerTrackerVisibility {
             self.total_time_visible += (Date::now() as u64) - start_time;
             self.visibility_start = None;
 
-            // Log for debugging
-            web_sys::console::debug_1(&JsValue::from(format!(
-                "Ending visibility for ticker {:?}. Total Time Visible: {}",
-                self.ticker_id, self.total_time_visible
-            )));
+            // web_sys::console::debug_1(&JsValue::from(format!(
+            //     "Ending visibility for ticker {:?}. Total Time Visible: {}",
+            //     self.ticker_id, self.total_time_visible
+            // )));
         } else {
-            // Log if trying to end visibility when not visible
-            web_sys::console::debug_1(&JsValue::from(format!(
-                "Ticker {:?} was not visible.",
-                self.ticker_id
-            )));
+            // web_sys::console::debug_1(&JsValue::from(format!(
+            //     "Ticker {:?} was not visible.",
+            //     self.ticker_id
+            // )));
         }
 
         self.total_time_visible
@@ -89,7 +86,8 @@ impl TickerTrackerVisibility {
 
 impl TickerTracker {
     pub fn new() -> Self {
-        web_sys::console::debug_1(&JsValue::from("Creating a new TickerTracker instance."));
+        // web_sys::console::debug_1(&JsValue::from("Creating a new TickerTracker instance."));
+
         TickerTracker {
             tickers: HashMap::new(),
             recent_views: VecDeque::new(),
@@ -100,10 +98,11 @@ impl TickerTracker {
     fn get_or_insert_ticker_with_id(&mut self, ticker_id: TickerId) -> &mut TickerTrackerVisibility {
         // Perform the mutable borrow to insert or access the TickerTrackerVisibility
         let ticker_data = self.tickers.entry(ticker_id).or_insert_with(|| {
-            web_sys::console::debug_1(&JsValue::from(format!(
-                "Inserting new ticker entry for {:?}.",
-                ticker_id
-            )));
+            // web_sys::console::debug_1(&JsValue::from(format!(
+            //     "Inserting new ticker entry for {:?}.",
+            //     ticker_id
+            // )));
+
             TickerTrackerVisibility::new(ticker_id)
         });
 
@@ -142,17 +141,52 @@ impl TickerTracker {
         }
     
         // Log the updated keys after all mutable operations are done
-        let updated_keys: Vec<String> = self
-            .tickers
-            .keys()
-            .map(|key| format!("{:?}", key))
-            .collect();
-        web_sys::console::debug_1(&JsValue::from(format!(
-            "Updated Ticker IDs after insertion: {:?}",
-            updated_keys
-        )));
+        // let updated_keys: Vec<String> = self
+        //     .tickers
+        //     .keys()
+        //     .map(|key| format!("{:?}", key))
+        //     .collect();
+        // web_sys::console::debug_1(&JsValue::from(format!(
+        //     "Updated Ticker IDs after insertion: {:?}",
+        //     updated_keys
+        // )));
     }
 
+    /// Exports the current state of TickerTracker as a JSON string
+    pub fn export_state(&self) -> Result<String, JsValue> {
+        match serde_json::to_string(&self) {
+            Ok(serialized) => Ok(serialized),
+            Err(err) => {
+                web_sys::console::error_1(&JsValue::from(format!(
+                    "Failed to serialize TickerTracker: {:?}",
+                    err
+                )));
+                Err(JsValue::from_str("Failed to serialize TickerTracker"))
+            }
+        }
+    }
+
+    /// Imports the state into TickerTracker from a JSON string
+    pub fn import_state(serialized: &str) -> Result<Self, JsValue> {
+        match serde_json::from_str::<TickerTracker>(serialized) {
+            Ok(mut tracker) => {
+                // Recalculate the order if not already defined
+                if tracker.ordered_by_time_visible.is_none() {
+                    tracker.recalculate_ordered_by_time_visible();
+                }
+                Ok(tracker)
+            }
+            Err(err) => {
+                web_sys::console::error_1(&JsValue::from(format!(
+                    "Failed to deserialize TickerTracker: {:?}",
+                    err
+                )));
+                Err(JsValue::from_str("Failed to deserialize TickerTracker"))
+            }
+        }
+    }
+
+    /// Called when registering visible ticker IDs
     fn update_ordered_by_time_visible(&mut self, ticker_id: TickerId, total_time_visible: u64) {
         if self.ordered_by_time_visible.is_none() {
             self.ordered_by_time_visible = Some(VecDeque::new());
@@ -180,54 +214,21 @@ impl TickerTracker {
         // Reassign the updated deque to self.ordered_by_time_visible
         self.ordered_by_time_visible = Some(ordered_by_time_visible);
 
-        // Log the ordered tickers
-        let ordered_tickers: Vec<String> = self
-            .ordered_by_time_visible
-            .as_ref()
-            .unwrap()
-            .iter()
-            .map(|id| format!("{:?}", id))
-            .collect();
-        web_sys::console::debug_1(&JsValue::from(format!(
-            "Tickers ordered by time visible: {:?}",
-            ordered_tickers
-        )));
+
+        // let ordered_tickers: Vec<String> = self
+        //     .ordered_by_time_visible
+        //     .as_ref()
+        //     .unwrap()
+        //     .iter()
+        //     .map(|id| format!("{:?}", id))
+        //     .collect();
+        // web_sys::console::debug_1(&JsValue::from(format!(
+        //     "Tickers ordered by time visible: {:?}",
+        //     ordered_tickers
+        // )));
     }
 
-    /// Exports the current state of TickerTracker as a JSON string
-    pub fn export_state(&self) -> Result<String, JsValue> {
-        match serde_json::to_string(&self) {
-            Ok(serialized) => Ok(serialized),
-            Err(err) => {
-                web_sys::console::debug_1(&JsValue::from(format!(
-                    "Failed to serialize TickerTracker: {:?}",
-                    err
-                )));
-                Err(JsValue::from_str("Failed to serialize TickerTracker"))
-            }
-        }
-    }
-
-    /// Imports the state into TickerTracker from a JSON string
-    pub fn import_state(serialized: &str) -> Result<Self, JsValue> {
-        match serde_json::from_str::<TickerTracker>(serialized) {
-            Ok(mut tracker) => {
-                // Recalculate the order if not already defined
-                if tracker.ordered_by_time_visible.is_none() {
-                    tracker.recalculate_ordered_by_time_visible();
-                }
-                Ok(tracker)
-            }
-            Err(err) => {
-                web_sys::console::debug_1(&JsValue::from(format!(
-                    "Failed to deserialize TickerTracker: {:?}",
-                    err
-                )));
-                Err(JsValue::from_str("Failed to deserialize TickerTracker"))
-            }
-        }
-    }
-
+    /// Called when importing state
     fn recalculate_ordered_by_time_visible(&mut self) {
         // Initialize the ordered_by_time_visible list
         let mut ordered_by_time_visible = VecDeque::new();
@@ -247,17 +248,16 @@ impl TickerTracker {
 
         self.ordered_by_time_visible = Some(ordered_by_time_visible);
 
-        // Log the ordered tickers
-        let ordered_tickers: Vec<String> = self
-            .ordered_by_time_visible
-            .as_ref()
-            .unwrap()
-            .iter()
-            .map(|id| format!("{:?}", id))
-            .collect();
-        web_sys::console::debug_1(&JsValue::from(format!(
-            "Recalculated tickers ordered by time visible: {:?}",
-            ordered_tickers
-        )));
+        // let ordered_tickers: Vec<String> = self
+        //     .ordered_by_time_visible
+        //     .as_ref()
+        //     .unwrap()
+        //     .iter()
+        //     .map(|id| format!("{:?}", id))
+        //     .collect();
+        // web_sys::console::debug_1(&JsValue::from(format!(
+        //     "Recalculated tickers ordered by time visible: {:?}",
+        //     ordered_tickers
+        // )));
     }
 }
