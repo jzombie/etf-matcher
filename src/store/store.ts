@@ -438,7 +438,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         })();
 
         (() => {
-          // TODO: Make this dynamic so these conditionals don't have to be coded in one by one
           const _handleStoreStateUpdate = async (
             storeStateUpdateKeys: (keyof StoreStateProps)[],
           ) => {
@@ -471,6 +470,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
                 "tickerTrackerStateJSON",
                 tickerTrackerStateJSON,
               );
+
+              callRustService("import_ticker_tracker_state", [
+                tickerTrackerStateJSON,
+              ]);
             }
           };
           this.on(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);

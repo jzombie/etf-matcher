@@ -83,11 +83,20 @@ export default function SharedRoomManagerProvider({
         return;
       }
 
-      if (keys.includes("tickerBuckets")) {
-        const { tickerBuckets } = store.getState(["tickerBuckets"]);
+      if (
+        keys.includes("tickerBuckets") ||
+        keys.includes("tickerTrackerStateJSON")
+      ) {
+        const { tickerBuckets, tickerTrackerStateJSON } = store.getState([
+          "tickerBuckets",
+          "tickerTrackerStateJSON",
+        ]);
 
         for (const room of Object.values(connectedRooms)) {
-          room.send({ tickerBuckets } as object, { qos: 2, retain: true });
+          room.send({ tickerBuckets, tickerTrackerStateJSON } as object, {
+            qos: 2,
+            retain: true,
+          });
         }
       }
     };
