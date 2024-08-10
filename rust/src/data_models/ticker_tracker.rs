@@ -31,7 +31,6 @@ struct TickerTrackerVisibility {
     visibility_count: u32,
 }
 
-
 impl TickerTrackerVisibility {
     fn new(ticker_id: TickerId) -> Self {
         web_sys::console::debug_1(&JsValue::from(format!(
