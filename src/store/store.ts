@@ -335,6 +335,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         return { xhrOpenedRequests, cacheAccessedRequests };
       })();
 
+      // Subscribe to Rust-service notification events
       const libRustServiceUnsubscribe = libRustServiceSubscribe(
         (eventType: NotifierEvent, args: unknown[]) => {
           const pathName: string = args[0] as string;
@@ -427,6 +428,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
                 this.setState({ [idbKey]: item });
               }
 
+              // Import IndexedDB ticker tracker state into Rust service
               if (idbKey === "tickerTrackerStateJSON") {
                 callRustService("import_ticker_tracker_state", [item]);
               }
@@ -438,16 +440,13 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         })();
 
         (() => {
-          const _handleStoreStateUpdate = async (
+          const _handleStoreStateUpdate = (
             storeStateUpdateKeys: (keyof StoreStateProps)[],
           ) => {
             if (storeStateUpdateKeys.includes("tickerBuckets")) {
               const { tickerBuckets } = this.getState(["tickerBuckets"]);
 
-              await this._indexedDBInterface.setItem(
-                "tickerBuckets",
-                tickerBuckets,
-              );
+              this._indexedDBInterface.setItem("tickerBuckets", tickerBuckets);
             }
 
             if (storeStateUpdateKeys.includes("subscribedMQTTRoomNames")) {
@@ -455,7 +454,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
                 "subscribedMQTTRoomNames",
               ]);
 
-              await this._indexedDBInterface.setItem(
+              this._indexedDBInterface.setItem(
                 "subscribedMQTTRoomNames",
                 subscribedMQTTRoomNames,
               );
@@ -466,11 +465,13 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
                 "tickerTrackerStateJSON",
               ]);
 
-              await this._indexedDBInterface.setItem(
+              // Update IndexedDB ticker tracker state
+              this._indexedDBInterface.setItem(
                 "tickerTrackerStateJSON",
                 tickerTrackerStateJSON,
               );
 
+              // Update Rust service ticker tracker state
               callRustService("import_ticker_tracker_state", [
                 tickerTrackerStateJSON,
               ]);
