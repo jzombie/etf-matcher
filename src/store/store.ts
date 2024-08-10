@@ -649,7 +649,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       return { tickerBuckets };
     });
 
-    // TODO: Emit custom event for this
+    // TODO: Emit custom event for this to route to UI notification
   }
 
   deleteTickerBucket(tickerBucket: TickerBucket) {
@@ -664,7 +664,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       return { tickerBuckets };
     });
 
-    // TODO: Emit custom event for this
+    // TODO: Emit custom event for this to route to UI notification
   }
   async addTickerToBucket(
     tickerId: number,
@@ -701,7 +701,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       return { tickerBuckets };
     });
 
-    // TODO: Emit custom event for this
+    // TODO: Emit custom event for this to route to UI notification
   }
 
   removeTickerFromBucket(tickerId: number, tickerBucket: TickerBucket) {
@@ -720,7 +720,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       return { tickerBuckets };
     });
 
-    // TODO: Emit custom event for this
+    // TODO: Emit custom event for this to route to UI notification
   }
 
   bucketHasTicker(tickerId: number, tickerBucket: TickerBucket): boolean {
