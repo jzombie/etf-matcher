@@ -9,7 +9,7 @@ use wasm_bindgen::JsValue;
 use crate::types::TickerId;
 
 pub static TICKER_TRACKER: Lazy<Mutex<TickerTracker>> = Lazy::new(|| {
-    web_sys::console::log_1(&JsValue::from("Initializing TickerTracker in Lazy."));
+    web_sys::console::debug_1(&JsValue::from("Initializing TickerTracker in Lazy."));
     Mutex::new(TickerTracker::new())
 });
 
@@ -30,7 +30,7 @@ struct TickerData {
 
 impl TickerData {
     fn new(ticker_id: TickerId) -> Self {
-        web_sys::console::log_1(&JsValue::from(format!(
+        web_sys::console::debug_1(&JsValue::from(format!(
             "Initialize new hash entry for ticker {:?}.",
             ticker_id
         )));
@@ -50,13 +50,13 @@ impl TickerData {
             self.visibility_count += 1;
 
             // Log for debugging
-            web_sys::console::log_1(&JsValue::from(format!(
+            web_sys::console::debug_1(&JsValue::from(format!(
                 "Starting visibility for ticker {:?}. Visibility Count: {}",
                 self.ticker_id, self.visibility_count
             )));
         } else {
             // Log when already visible
-            web_sys::console::log_1(&JsValue::from(format!(
+            web_sys::console::debug_1(&JsValue::from(format!(
                 "Ticker {:?} is already visible.",
                 self.ticker_id
             )));
@@ -69,13 +69,13 @@ impl TickerData {
             self.visibility_start = None;
 
             // Log for debugging
-            web_sys::console::log_1(&JsValue::from(format!(
+            web_sys::console::debug_1(&JsValue::from(format!(
                 "Ending visibility for ticker {:?}.",
                 self.ticker_id
             )));
         } else {
             // Log if trying to end visibility when not visible
-            web_sys::console::log_1(&JsValue::from(format!(
+            web_sys::console::debug_1(&JsValue::from(format!(
                 "Ticker {:?} was not visible.",
                 self.ticker_id
             )));
@@ -85,7 +85,7 @@ impl TickerData {
 
 impl TickerTracker {
     pub fn new() -> Self {
-        web_sys::console::log_1(&JsValue::from("Creating a new TickerTracker instance."));
+        web_sys::console::debug_1(&JsValue::from("Creating a new TickerTracker instance."));
         TickerTracker {
             tickers: HashMap::new(),
             recent_views: VecDeque::new(),
@@ -95,7 +95,7 @@ impl TickerTracker {
     fn get_or_insert_ticker_with_id(&mut self, ticker_id: TickerId) -> &mut TickerData {
         // Perform the mutable borrow to insert or access the TickerData
         let ticker_data = self.tickers.entry(ticker_id).or_insert_with(|| {
-            web_sys::console::log_1(&JsValue::from(format!(
+            web_sys::console::debug_1(&JsValue::from(format!(
                 "Inserting new ticker entry for {:?}.",
                 ticker_id
             )));
@@ -134,7 +134,7 @@ impl TickerTracker {
             .keys()
             .map(|key| format!("{:?}", key))
             .collect();
-        web_sys::console::log_1(&JsValue::from(format!(
+        web_sys::console::debug_1(&JsValue::from(format!(
             "Updated Ticker IDs after insertion: {:?}",
             updated_keys
         )));
@@ -145,7 +145,7 @@ impl TickerTracker {
         match serde_json::to_string(&self) {
             Ok(serialized) => Ok(serialized),
             Err(err) => {
-                web_sys::console::log_1(&JsValue::from(format!(
+                web_sys::console::debug_1(&JsValue::from(format!(
                     "Failed to serialize TickerTracker: {:?}",
                     err
                 )));
@@ -159,7 +159,7 @@ impl TickerTracker {
         match serde_json::from_str(serialized) {
             Ok(tracker) => Ok(tracker),
             Err(err) => {
-                web_sys::console::log_1(&JsValue::from(format!(
+                web_sys::console::debug_1(&JsValue::from(format!(
                     "Failed to deserialize TickerTracker: {:?}",
                     err
                 )));
