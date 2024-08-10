@@ -250,7 +250,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
             const exportedState: RustServiceTickerTracker = JSON.parse(
               tickerTrackerStateJSON,
             );
-            const { recent_views: recentlyViewedTickerIds } = exportedState;
+
+            const {
+              recent_views: recentlyViewedTickerIds,
+              ordered_by_time_visible: attentionTrackerTickerIds,
+            } = exportedState;
 
             const recentBucketTickers: TickerBucketTicker[] = await Promise.all(
               recentlyViewedTickerIds.map((tickerId) =>
@@ -263,11 +267,32 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
               ),
             );
 
-            const prev = this.getTickerBucketsOfType("recently_viewed")[0];
+            const prevRecentlyViewed =
+              this.getTickerBucketsOfType("recently_viewed")[0];
 
-            this.updateTickerBucket(prev, {
-              ...prev,
+            this.updateTickerBucket(prevRecentlyViewed, {
+              ...prevRecentlyViewed,
               tickers: recentBucketTickers,
+            });
+
+            const mostAttentiveBucketTickers: TickerBucketTicker[] =
+              await Promise.all(
+                attentionTrackerTickerIds.map((tickerId) =>
+                  this.fetchTickerDetail(tickerId).then((tickerDetail) => ({
+                    tickerId,
+                    symbol: tickerDetail.symbol,
+                    exchange_short_name: tickerDetail.exchange_short_name,
+                    quantity: 1,
+                  })),
+                ),
+              );
+
+            const prevAttentionTracker =
+              this.getTickerBucketsOfType("attention_tracker")[0];
+
+            this.updateTickerBucket(prevAttentionTracker, {
+              ...prevAttentionTracker,
+              tickers: mostAttentiveBucketTickers,
             });
           },
         );
