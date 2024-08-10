@@ -247,14 +247,14 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           async (tickerTrackerStateJSON) => {
             this.setState({ tickerTrackerStateJSON });
 
-            const exportedState: RustServiceTickerTracker = JSON.parse(
+            const tickerTrackerState: RustServiceTickerTracker = JSON.parse(
               tickerTrackerStateJSON,
             );
 
             const {
-              recent_views: recentlyViewedTickerIds,
-              ordered_by_time_visible: attentionTrackerTickerIds,
-            } = exportedState;
+              recent_views: recentlyViewedTickerIds = [],
+              ordered_by_time_visible: attentionTrackerTickerIds = [],
+            } = tickerTrackerState;
 
             const recentBucketTickers: TickerBucketTicker[] = await Promise.all(
               recentlyViewedTickerIds.map((tickerId) =>
