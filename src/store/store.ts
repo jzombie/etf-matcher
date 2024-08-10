@@ -240,10 +240,32 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           callRustService("register_visible_ticker_ids", [
             visibleTickerIds,
           ]).then(() => {
-            callRustService("export_ticker_tracker_state").then(
-              (exportedState) => {
-                // TODO: Persist as necessary
-                customLogger.debug(exportedState);
+            callRustService<string>("export_ticker_tracker_state").then(
+              async (rawExportedState) => {
+                const exportedState = JSON.parse(rawExportedState);
+
+                const { recent_views: recentlyViewedTickerIds } = exportedState;
+
+                const recentTickerDetailPromises = recentlyViewedTickerIds.map(
+                  (tickerId: number) =>
+                    this.fetchTickerDetail(tickerId).then((tickerDetail) => ({
+                      tickerId,
+                      symbol: tickerDetail.symbol,
+                      exchange_short_name: tickerDetail.exchange_short_name,
+                      quantity: 1,
+                    })),
+                );
+
+                const recentTickerDetails = await Promise.all(
+                  recentTickerDetailPromises,
+                );
+
+                const prev = this.getTickerBucketsOfType("recently_viewed")[0];
+
+                this.updateTickerBucket(prev, {
+                  ...prev,
+                  tickers: recentTickerDetails,
+                });
               },
             );
           });
