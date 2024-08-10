@@ -19,7 +19,7 @@ pub struct TickerTracker {
     recent_views: VecDeque<TickerId>, // Tracks the order of recently viewed tickers
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 struct TickerTrackerVisibility {
     ticker_id: TickerId,
     total_time_visible: u64,
@@ -27,6 +27,7 @@ struct TickerTrackerVisibility {
     visibility_start: Option<u64>,
     visibility_count: u32,
 }
+
 
 impl TickerTrackerVisibility {
     fn new(ticker_id: TickerId) -> Self {
@@ -45,36 +46,36 @@ impl TickerTrackerVisibility {
 
     fn start_visibility(&mut self) {
         if self.visibility_start.is_none() {
-            // This ticker was not visible and is now starting visibility, so increment the count
             self.visibility_start = Some(Date::now() as u64);
             self.visibility_count += 1;
-
+    
             web_sys::console::debug_1(&JsValue::from(format!(
                 "Starting visibility for ticker {:?}. Visibility Count: {}. Visibility Start: {:?}",
                 self.ticker_id, self.visibility_count, self.visibility_start
             )));
         } else {
-            // Log when already visible
             web_sys::console::debug_1(&JsValue::from(format!(
-                "Ticker {:?} is already visible.",
-                self.ticker_id
+                "Ticker {:?} is already visible. Visibility Start: {:?}",
+                self.ticker_id, self.visibility_start
             )));
         }
-    }
+    }    
 
     fn end_visibility(&mut self) {
         if let Some(start_time) = self.visibility_start {
-            self.total_time_visible += (Date::now() as u64) - start_time;
+            let end_time = Date::now() as u64;
+            let elapsed_time = end_time - start_time;
+            self.total_time_visible += elapsed_time;
             self.visibility_start = None;
-
+    
             web_sys::console::debug_1(&JsValue::from(format!(
-                "Ending visibility for ticker {:?}. Total Time Visible: {}",
-                self.ticker_id, self.total_time_visible
+                "Ending visibility for ticker {:?}. Start Time: {:?}, End Time: {:?}, Elapsed Time: {:?}, Total Time Visible: {}",
+                self.ticker_id, start_time, end_time, elapsed_time, self.total_time_visible
             )));
         } else {
             web_sys::console::debug_1(&JsValue::from(format!(
-                "Ticker {:?} was not visible.",
-                self.ticker_id
+                "Ticker {:?} was not visible. Visibility Start: {:?}",
+                self.ticker_id, self.visibility_start
             )));
         }
     }
@@ -106,27 +107,27 @@ impl TickerTracker {
             "Registering visible ticker IDs: {:?}",
             visible_ticker_ids
         )));
-
-        // Track which tickers are no longer visible and end their visibility
+    
+        // First, end visibility for tickers that are no longer visible
         for (&ticker_id, data) in self.tickers.iter_mut() {
             if !visible_ticker_ids.contains(&ticker_id) {
                 data.end_visibility();
             }
         }
-
-        // Track visibility for currently visible tickers
+    
+        // Start visibility for currently visible tickers
         for &ticker_id in &visible_ticker_ids {
             let ticker_data = self.get_or_insert_ticker_with_id(ticker_id);
             ticker_data.start_visibility();
-
+    
+            // Move the ticker to the front of the recent views list
             if let Some(pos) = self.recent_views.iter().position(|&id| id == ticker_id) {
                 self.recent_views.remove(pos);
             }
-
             self.recent_views.push_front(ticker_id);
         }
-
-        // Log the state after all operations
+    
+        // Log the updated state after processing
         web_sys::console::debug_1(&JsValue::from(format!(
             "TickerTracker state after registration: {:?}",
             self.tickers
@@ -146,16 +147,43 @@ impl TickerTracker {
         }
     }
 
-    pub fn import_state(serialized: &str) -> Result<Self, JsValue> {
-        match serde_json::from_str(serialized) {
-            Ok(tracker) => Ok(tracker),
-            Err(err) => {
-                web_sys::console::debug_1(&JsValue::from(format!(
-                    "Failed to deserialize TickerTracker: {:?}",
-                    err
-                )));
-                Err(JsValue::from_str("Failed to deserialize TickerTracker"))
+    pub fn import_state(&mut self, serialized: &str) -> Result<(), JsValue> {
+        let imported_tracker: TickerTracker = serde_json::from_str(serialized).map_err(|err| {
+            web_sys::console::debug_1(&JsValue::from(format!(
+                "Failed to deserialize TickerTracker: {:?}",
+                err
+            )));
+            JsValue::from_str("Failed to deserialize TickerTracker")
+        })?;
+
+        // Merge the imported state with the existing state
+        for (ticker_id, imported_visibility) in imported_tracker.tickers {
+            let existing_visibility = self.tickers.entry(ticker_id).or_insert(imported_visibility.clone());
+
+            // Merge visibility data
+            existing_visibility.total_time_visible += imported_visibility.total_time_visible;
+            existing_visibility.visibility_count += imported_visibility.visibility_count;
+
+            // If the imported ticker is currently visible, update its visibility_start
+            if let Some(start_time) = imported_visibility.visibility_start {
+                if existing_visibility.visibility_start.is_none() {
+                    existing_visibility.visibility_start = Some(start_time);
+                }
             }
         }
+
+        // Merge recent_views (if needed)
+        for ticker_id in imported_tracker.recent_views {
+            if !self.recent_views.contains(&ticker_id) {
+                self.recent_views.push_back(ticker_id);
+            }
+        }
+
+        web_sys::console::debug_1(&JsValue::from(format!(
+            "Merged TickerTracker state after import: {:?}",
+            self.tickers
+        )));
+
+        Ok(())
     }
 }
