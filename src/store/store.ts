@@ -219,6 +219,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     });
   }
 
+  // Note: Shared session management is handled via `SharedSessionManagerProvider`
+  // and works in conjunction with the IndexedDB and Rust service ticker state,
+  // as handled within this method.
   private _initLocalSubscriptions() {
     (() => {
       const _handleOnlineStatus = () => {
