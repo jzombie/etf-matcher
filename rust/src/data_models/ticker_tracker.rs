@@ -15,12 +15,12 @@ pub static TICKER_TRACKER: Lazy<Mutex<TickerTracker>> = Lazy::new(|| {
 
 #[derive(Serialize, Deserialize)]
 pub struct TickerTracker {
-    tickers: HashMap<TickerId, TickerData>,
+    tickers: HashMap<TickerId, TickerTrackerVisibility>,
     recent_views: VecDeque<TickerId>, // Tracks the order of recently viewed tickers
 }
 
 #[derive(Serialize, Deserialize)]
-struct TickerData {
+struct TickerTrackerVisibility {
     ticker_id: TickerId,
     total_time_visible: u64,
     #[serde(skip_serializing)] // Skip this field when serializing
@@ -28,14 +28,14 @@ struct TickerData {
     visibility_count: u32,
 }
 
-impl TickerData {
+impl TickerTrackerVisibility {
     fn new(ticker_id: TickerId) -> Self {
         web_sys::console::debug_1(&JsValue::from(format!(
             "Initialize new hash entry for ticker {:?}.",
             ticker_id
         )));
 
-        TickerData {
+        TickerTrackerVisibility {
             ticker_id,
             total_time_visible: 0,
             visibility_start: None,
@@ -92,14 +92,14 @@ impl TickerTracker {
         }
     }
 
-    fn get_or_insert_ticker_with_id(&mut self, ticker_id: TickerId) -> &mut TickerData {
-        // Perform the mutable borrow to insert or access the TickerData
+    fn get_or_insert_ticker_with_id(&mut self, ticker_id: TickerId) -> &mut TickerTrackerVisibility {
+        // Perform the mutable borrow to insert or access the TickerTrackerVisibility
         let ticker_data = self.tickers.entry(ticker_id).or_insert_with(|| {
             web_sys::console::debug_1(&JsValue::from(format!(
                 "Inserting new ticker entry for {:?}.",
                 ticker_id
             )));
-            TickerData::new(ticker_id)
+            TickerTrackerVisibility::new(ticker_id)
         });
 
         // Return the mutable reference immediately

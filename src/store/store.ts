@@ -9,6 +9,7 @@ import type {
   RustServiceTicker10KDetail,
   RustServiceTickerDetail,
   RustServiceTickerSearchResult,
+  RustServiceTickerTracker,
 } from "@src/types";
 
 import IndexedDBInterface from "@utils/IndexedDBInterface";
@@ -35,7 +36,7 @@ const IS_PROD = import.meta.env.PROD;
 export type TickerBucketTicker = {
   tickerId: number;
   symbol: string;
-  exchange_short_name: string;
+  exchange_short_name?: string;
   quantity: number;
 };
 
@@ -246,29 +247,27 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           async (tickerTrackerStateJSON) => {
             this.setState({ tickerTrackerStateJSON });
 
-            // TODO: Explicitly define types
-            const exportedState = JSON.parse(tickerTrackerStateJSON);
+            const exportedState: RustServiceTickerTracker = JSON.parse(
+              tickerTrackerStateJSON,
+            );
             const { recent_views: recentlyViewedTickerIds } = exportedState;
 
-            const recentTickerDetailPromises = recentlyViewedTickerIds.map(
-              (tickerId: number) =>
+            const recentBucketTickers: TickerBucketTicker[] = await Promise.all(
+              recentlyViewedTickerIds.map((tickerId) =>
                 this.fetchTickerDetail(tickerId).then((tickerDetail) => ({
                   tickerId,
                   symbol: tickerDetail.symbol,
                   exchange_short_name: tickerDetail.exchange_short_name,
                   quantity: 1,
                 })),
-            );
-
-            const recentTickerDetails = await Promise.all(
-              recentTickerDetailPromises,
+              ),
             );
 
             const prev = this.getTickerBucketsOfType("recently_viewed")[0];
 
             this.updateTickerBucket(prev, {
               ...prev,
-              tickers: recentTickerDetails,
+              tickers: recentBucketTickers,
             });
           },
         );
