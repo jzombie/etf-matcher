@@ -51,8 +51,8 @@ impl TickerTrackerVisibility {
 
             // Log for debugging
             web_sys::console::debug_1(&JsValue::from(format!(
-                "Starting visibility for ticker {:?}. Visibility Count: {}",
-                self.ticker_id, self.visibility_count
+                "Starting visibility for ticker {:?}. Visibility Count: {}. Visibility Start: {:?}",
+                self.ticker_id, self.visibility_count, self.visibility_start
             )));
         } else {
             // Log when already visible
