@@ -233,44 +233,47 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     })();
 
     (() => {
+      const _syncRecentlyViewed = () => {
+        callRustService<string>("export_ticker_tracker_state").then(
+          async (rawExportedState) => {
+            // TODO: Explicitly define types
+            const exportedState = JSON.parse(rawExportedState);
+            const { recent_views: recentlyViewedTickerIds } = exportedState;
+
+            const recentTickerDetailPromises = recentlyViewedTickerIds.map(
+              (tickerId: number) =>
+                this.fetchTickerDetail(tickerId).then((tickerDetail) => ({
+                  tickerId,
+                  symbol: tickerDetail.symbol,
+                  exchange_short_name: tickerDetail.exchange_short_name,
+                  quantity: 1,
+                })),
+            );
+
+            const recentTickerDetails = await Promise.all(
+              recentTickerDetailPromises,
+            );
+
+            const prev = this.getTickerBucketsOfType("recently_viewed")[0];
+
+            this.updateTickerBucket(prev, {
+              ...prev,
+              tickers: recentTickerDetails,
+            });
+          },
+        );
+      };
+
       const _handleVisibleTickersUpdate = (keys: (keyof StoreStateProps)[]) => {
         if (keys.includes("visibleTickerIds")) {
           const { visibleTickerIds } = this.getState(["visibleTickerIds"]);
 
           callRustService("register_visible_ticker_ids", [
             visibleTickerIds,
-          ]).then(() => {
-            callRustService<string>("export_ticker_tracker_state").then(
-              async (rawExportedState) => {
-                const exportedState = JSON.parse(rawExportedState);
-
-                const { recent_views: recentlyViewedTickerIds } = exportedState;
-
-                const recentTickerDetailPromises = recentlyViewedTickerIds.map(
-                  (tickerId: number) =>
-                    this.fetchTickerDetail(tickerId).then((tickerDetail) => ({
-                      tickerId,
-                      symbol: tickerDetail.symbol,
-                      exchange_short_name: tickerDetail.exchange_short_name,
-                      quantity: 1,
-                    })),
-                );
-
-                const recentTickerDetails = await Promise.all(
-                  recentTickerDetailPromises,
-                );
-
-                const prev = this.getTickerBucketsOfType("recently_viewed")[0];
-
-                this.updateTickerBucket(prev, {
-                  ...prev,
-                  tickers: recentTickerDetails,
-                });
-              },
-            );
-          });
+          ]).then(_syncRecentlyViewed);
         }
       };
+
       this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
 
       this.registerDispose(() => {
