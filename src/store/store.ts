@@ -500,10 +500,16 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
                 tickerTrackerStateJSON,
               );
 
-              // Update Rust service ticker tracker state
-              callRustService("import_ticker_tracker_state", [
-                tickerTrackerStateJSON,
-              ]);
+              debounceWithKey(
+                "import_ticker_tracker_state:from_state_update",
+                () => {
+                  // Update Rust service ticker tracker state
+                  callRustService("import_ticker_tracker_state", [
+                    tickerTrackerStateJSON,
+                  ]);
+                },
+                1000,
+              );
             }
           };
           this.on(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
