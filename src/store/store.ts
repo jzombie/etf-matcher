@@ -88,11 +88,13 @@ export type StoreStateProps = {
   latestXHROpenedRequestPathName: string | null;
   latestCacheOpenedRequestPathName: string | null;
   subscribedMQTTRoomNames: string[];
+  tickerTrackerStateJSON: string;
 };
 
 export type IndexedDBPersistenceProps = {
   tickerBuckets: TickerBucketProps[];
   subscribedMQTTRoomNames: string[];
+  tickerTrackerStateJSON: string;
 };
 
 class _Store extends ReactStateEmitter<StoreStateProps> {
@@ -159,6 +161,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       latestXHROpenedRequestPathName: null,
       latestCacheOpenedRequestPathName: null,
       subscribedMQTTRoomNames: [],
+      tickerTrackerStateJSON: "",
     });
 
     // Only deepfreeze in development
@@ -235,9 +238,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     (() => {
       const _syncRecentlyViewed = () => {
         callRustService<string>("export_ticker_tracker_state").then(
-          async (rawExportedState) => {
+          async (tickerTrackerStateJSON) => {
+            this.setState({ tickerTrackerStateJSON });
+
             // TODO: Explicitly define types
-            const exportedState = JSON.parse(rawExportedState);
+            const exportedState = JSON.parse(tickerTrackerStateJSON);
             const { recent_views: recentlyViewedTickerIds } = exportedState;
 
             const recentTickerDetailPromises = recentlyViewedTickerIds.map(
@@ -421,6 +426,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
               if (item !== undefined) {
                 this.setState({ [idbKey]: item });
               }
+
+              if (idbKey === "tickerTrackerStateJSON") {
+                callRustService("import_ticker_tracker_state", [item]);
+              }
             }
           }
 
@@ -429,6 +438,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         })();
 
         (() => {
+          // TODO: Make this dynamic so these conditionals don't have to be coded in one by one
           const _handleStoreStateUpdate = async (
             storeStateUpdateKeys: (keyof StoreStateProps)[],
           ) => {
@@ -449,6 +459,17 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
               await this._indexedDBInterface.setItem(
                 "subscribedMQTTRoomNames",
                 subscribedMQTTRoomNames,
+              );
+            }
+
+            if (storeStateUpdateKeys.includes("tickerTrackerStateJSON")) {
+              const { tickerTrackerStateJSON } = this.getState([
+                "tickerTrackerStateJSON",
+              ]);
+
+              await this._indexedDBInterface.setItem(
+                "tickerTrackerStateJSON",
+                tickerTrackerStateJSON,
               );
             }
           };
