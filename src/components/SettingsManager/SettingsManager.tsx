@@ -13,7 +13,7 @@ import Scrollable from "@layoutKit/Scrollable";
 
 import LazyRender from "@components/LazyRender";
 import Section from "@components/Section";
-import SharedRoomManager from "@components/SharedRoomManager";
+import SharedSessionManager from "@components/SharedSessionManager";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
@@ -77,7 +77,7 @@ export default function SettingsManager() {
           </Typography>
 
           <Box mt={2}>
-            <SharedRoomManager />
+            <SharedSessionManager />
           </Box>
         </Section>
       </Padding>

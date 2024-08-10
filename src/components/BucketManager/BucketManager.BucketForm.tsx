@@ -3,11 +3,11 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 
 import store, { tickerBucketDefaultNames } from "@src/store";
-import type { TickerBucketProps } from "@src/store";
+import type { TickerBucket } from "@src/store";
 
 export type BucketFormProps = {
-  bucketType: TickerBucketProps["type"];
-  existingBucket?: TickerBucketProps;
+  bucketType: TickerBucket["type"];
+  existingBucket?: TickerBucket;
   onClose: () => void;
 };
 

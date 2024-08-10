@@ -14,7 +14,7 @@ use crate::data_models::{
     DataBuildInfo, DataURL, ETFAggregateDetail, ETFAggregateDetailResponse, ETFHoldingTicker,
     ETFHoldingTickerResponse, ETFHoldingWeightResponse, IndustryById, PaginatedResults, SectorById,
     Ticker10KDetail, TickerDetail, TickerDetailResponse, TickerETFHolder, TickerSearch,
-    TickerSearchResult,
+    TickerSearchResult, TickerTracker, TICKER_TRACKER,
 };
 
 use crate::data_models::image::get_image_info as lib_get_image_info;
@@ -178,6 +178,37 @@ pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<Js
     let ticker_id: TickerId =
         utils::ticker_utils::get_ticker_id(symbol, exchange_short_name).await?;
     Ok(to_value(&ticker_id).map_err(|e| JsValue::from_str(&e.to_string()))?)
+}
+
+#[wasm_bindgen]
+pub fn register_visible_ticker_ids(visible_ticker_ids: js_sys::Array) {
+    let visible_ticker_ids: Vec<u32> = visible_ticker_ids
+        .iter()
+        .filter_map(|id| id.as_f64().map(|v| v as u32))
+        .collect();
+
+    // Lock the global tracker and register visible ticker IDs
+    TICKER_TRACKER
+        .lock()
+        .unwrap()
+        .register_visible_ticker_ids(visible_ticker_ids);
+}
+
+#[wasm_bindgen]
+pub fn export_ticker_tracker_state() -> Result<JsValue, JsValue> {
+    let tracker = TICKER_TRACKER.lock().unwrap();
+    tracker.export_state().map(JsValue::from)
+}
+
+#[wasm_bindgen]
+pub fn import_ticker_tracker_state(serialized: &str) -> Result<(), JsValue> {
+    let new_tracker = TickerTracker::import_state(serialized)?;
+
+    // Replace the current tracker with the imported one
+    let mut tracker = TICKER_TRACKER.lock().unwrap();
+    *tracker = new_tracker;
+
+    Ok(())
 }
 
 #[wasm_bindgen]

@@ -9,6 +9,7 @@ import type {
   RustServiceTicker10KDetail,
   RustServiceTickerDetail,
   RustServiceTickerSearchResult,
+  RustServiceTickerTracker,
 } from "@src/types";
 
 import IndexedDBInterface from "@utils/IndexedDBInterface";
@@ -35,11 +36,11 @@ const IS_PROD = import.meta.env.PROD;
 export type TickerBucketTicker = {
   tickerId: number;
   symbol: string;
-  exchange_short_name: string;
+  exchange_short_name?: string;
   quantity: number;
 };
 
-export type TickerBucketProps = {
+export type TickerBucket = {
   name: string;
   tickers: TickerBucketTicker[];
   type:
@@ -53,7 +54,7 @@ export type TickerBucketProps = {
 };
 
 export const tickerBucketDefaultNames: Readonly<
-  Record<TickerBucketProps["type"], string>
+  Record<TickerBucket["type"], string>
 > = {
   watchlist: "Watchlist",
   portfolio: "Portfolio",
@@ -74,7 +75,7 @@ export type StoreStateProps = {
   isDirtyState: boolean;
   visibleTickerIds: number[];
   isSearchModalOpen: boolean;
-  tickerBuckets: TickerBucketProps[];
+  tickerBuckets: TickerBucket[];
   isProfilingCacheOverlayOpen: boolean;
   cacheProfilerWaitTime: number;
   cacheDetails: RustServiceCacheDetail[];
@@ -88,11 +89,13 @@ export type StoreStateProps = {
   latestXHROpenedRequestPathName: string | null;
   latestCacheOpenedRequestPathName: string | null;
   subscribedMQTTRoomNames: string[];
+  tickerTrackerStateJSON: string;
 };
 
 export type IndexedDBPersistenceProps = {
-  tickerBuckets: TickerBucketProps[];
+  tickerBuckets: TickerBucket[];
   subscribedMQTTRoomNames: string[];
+  tickerTrackerStateJSON: string;
 };
 
 class _Store extends ReactStateEmitter<StoreStateProps> {
@@ -159,6 +162,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       latestXHROpenedRequestPathName: null,
       latestCacheOpenedRequestPathName: null,
       subscribedMQTTRoomNames: [],
+      tickerTrackerStateJSON: "",
     });
 
     // Only deepfreeze in development
@@ -216,6 +220,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     });
   }
 
+  // Note: Shared session management is handled via `SharedSessionManagerProvider`
+  // and works in conjunction with the IndexedDB and Rust service ticker state,
+  // as handled within this method.
   private _initLocalSubscriptions() {
     (() => {
       const _handleOnlineStatus = () => {
@@ -232,15 +239,50 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       });
     })();
 
+    // Handle ticker view tracking (Note: this works in conjunction with `callRustService`
+    // calls with the functions `import_ticker_tracker_state` and `export_ticker_tracker_state`).
     (() => {
+      const _syncRecentlyViewed = () => {
+        callRustService<string>("export_ticker_tracker_state").then(
+          async (tickerTrackerStateJSON) => {
+            this.setState({ tickerTrackerStateJSON });
+
+            const exportedState: RustServiceTickerTracker = JSON.parse(
+              tickerTrackerStateJSON,
+            );
+            const { recent_views: recentlyViewedTickerIds } = exportedState;
+
+            const recentBucketTickers: TickerBucketTicker[] = await Promise.all(
+              recentlyViewedTickerIds.map((tickerId) =>
+                this.fetchTickerDetail(tickerId).then((tickerDetail) => ({
+                  tickerId,
+                  symbol: tickerDetail.symbol,
+                  exchange_short_name: tickerDetail.exchange_short_name,
+                  quantity: 1,
+                })),
+              ),
+            );
+
+            const prev = this.getTickerBucketsOfType("recently_viewed")[0];
+
+            this.updateTickerBucket(prev, {
+              ...prev,
+              tickers: recentBucketTickers,
+            });
+          },
+        );
+      };
+
       const _handleVisibleTickersUpdate = (keys: (keyof StoreStateProps)[]) => {
         if (keys.includes("visibleTickerIds")) {
           const { visibleTickerIds } = this.getState(["visibleTickerIds"]);
 
-          // TODO: Handle this tracking
-          customLogger.debug({ visibleTickerIds });
+          callRustService("register_visible_ticker_ids", [
+            visibleTickerIds,
+          ]).then(_syncRecentlyViewed);
         }
       };
+
       this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
 
       this.registerDispose(() => {
@@ -297,6 +339,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         return { xhrOpenedRequests, cacheAccessedRequests };
       })();
 
+      // Subscribe to Rust-service notification events
       const libRustServiceUnsubscribe = libRustServiceSubscribe(
         (eventType: NotifierEvent, args: unknown[]) => {
           const pathName: string = args[0] as string;
@@ -388,6 +431,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
               if (item !== undefined) {
                 this.setState({ [idbKey]: item });
               }
+
+              // Import IndexedDB ticker tracker state into Rust service
+              if (idbKey === "tickerTrackerStateJSON") {
+                callRustService("import_ticker_tracker_state", [item]);
+              }
             }
           }
 
@@ -396,16 +444,13 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         })();
 
         (() => {
-          const _handleStoreStateUpdate = async (
+          const _handleStoreStateUpdate = (
             storeStateUpdateKeys: (keyof StoreStateProps)[],
           ) => {
             if (storeStateUpdateKeys.includes("tickerBuckets")) {
               const { tickerBuckets } = this.getState(["tickerBuckets"]);
 
-              await this._indexedDBInterface.setItem(
-                "tickerBuckets",
-                tickerBuckets,
-              );
+              this._indexedDBInterface.setItem("tickerBuckets", tickerBuckets);
             }
 
             if (storeStateUpdateKeys.includes("subscribedMQTTRoomNames")) {
@@ -413,10 +458,27 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
                 "subscribedMQTTRoomNames",
               ]);
 
-              await this._indexedDBInterface.setItem(
+              this._indexedDBInterface.setItem(
                 "subscribedMQTTRoomNames",
                 subscribedMQTTRoomNames,
               );
+            }
+
+            if (storeStateUpdateKeys.includes("tickerTrackerStateJSON")) {
+              const { tickerTrackerStateJSON } = this.getState([
+                "tickerTrackerStateJSON",
+              ]);
+
+              // Update IndexedDB ticker tracker state
+              this._indexedDBInterface.setItem(
+                "tickerTrackerStateJSON",
+                tickerTrackerStateJSON,
+              );
+
+              // Update Rust service ticker tracker state
+              callRustService("import_ticker_tracker_state", [
+                tickerTrackerStateJSON,
+              ]);
             }
           };
           this.on(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
@@ -559,8 +621,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     type,
     description,
     isUserConfigurable,
-  }: Omit<TickerBucketProps, "tickers">) {
-    const nextBucket: TickerBucketProps = {
+  }: Omit<TickerBucket, "tickers">) {
+    const nextBucket: TickerBucket = {
       name,
       tickers: [],
       type,
@@ -575,10 +637,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     }));
   }
 
-  updateTickerBucket(
-    prevBucket: TickerBucketProps,
-    updatedBucket: TickerBucketProps,
-  ) {
+  updateTickerBucket(prevBucket: TickerBucket, updatedBucket: TickerBucket) {
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.map((bucket) =>
         bucket.name === prevBucket.name && bucket.type === prevBucket.type
@@ -589,10 +648,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       return { tickerBuckets };
     });
 
-    // TODO: Emit custom event for this
+    // TODO: Emit custom event for this to route to UI notification
   }
 
-  deleteTickerBucket(tickerBucket: TickerBucketProps) {
+  deleteTickerBucket(tickerBucket: TickerBucket) {
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.filter(
         (cachedBucket) =>
@@ -604,12 +663,12 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       return { tickerBuckets };
     });
 
-    // TODO: Emit custom event for this
+    // TODO: Emit custom event for this to route to UI notification
   }
   async addTickerToBucket(
     tickerId: number,
     quantity: number,
-    tickerBucket: TickerBucketProps,
+    tickerBucket: TickerBucket,
   ) {
     const tickerAndExchange =
       await this.fetchSymbolAndExchangeByTickerId(tickerId);
@@ -641,10 +700,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       return { tickerBuckets };
     });
 
-    // TODO: Emit custom event for this
+    // TODO: Emit custom event for this to route to UI notification
   }
 
-  removeTickerFromBucket(tickerId: number, tickerBucket: TickerBucketProps) {
+  removeTickerFromBucket(tickerId: number, tickerBucket: TickerBucket) {
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.map((bucket) => {
         if (bucket.name === tickerBucket.name) {
@@ -660,14 +719,14 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       return { tickerBuckets };
     });
 
-    // TODO: Emit custom event for this
+    // TODO: Emit custom event for this to route to UI notification
   }
 
-  bucketHasTicker(tickerId: number, tickerBucket: TickerBucketProps): boolean {
+  bucketHasTicker(tickerId: number, tickerBucket: TickerBucket): boolean {
     return tickerBucket.tickers.some((ticker) => ticker.tickerId === tickerId);
   }
 
-  getTickerBucketsOfType(tickerBucketType: TickerBucketProps["type"]) {
+  getTickerBucketsOfType(tickerBucketType: TickerBucket["type"]) {
     return this.state.tickerBuckets.filter(
       ({ type }) => tickerBucketType === type,
     );
@@ -697,8 +756,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
-  removeCacheEntry(key: string) {
-    callRustService("remove_cache_entry", [key]);
+  async removeCacheEntry(key: string): Promise<void> {
+    await callRustService("remove_cache_entry", [key]);
 
     // For rapid UI update
     // This forces an immediate sync so that the UI does not appear laggy when clearing cache entries

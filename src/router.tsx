@@ -12,17 +12,17 @@ import Watchlists from "@pages/Watchlists";
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 
 import MainLayout from "@components/MainLayout";
-import { SharedRoomManagerProvider } from "@components/SharedRoomManager";
+import { SharedSessionManagerProvider } from "@components/SharedSessionManager";
 
 export const routes: RouteObject[] = [
   {
     path: "/",
     element: (
-      // Note: `SharedRoomManagerProvider` is placed here instead of in `App`
+      // Note: `SharedSessionManagerProvider` is placed here instead of in `App`
       // due to being dependent on `React Router`.
-      <SharedRoomManagerProvider>
+      <SharedSessionManagerProvider>
         <MainLayout />
-      </SharedRoomManagerProvider>
+      </SharedSessionManagerProvider>
     ),
     children: [
       {

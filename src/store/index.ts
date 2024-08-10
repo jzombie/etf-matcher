@@ -1,11 +1,11 @@
 import store, {
   StateEmitterDefaultEvents,
   StoreStateProps,
-  TickerBucketProps,
+  TickerBucket,
   TickerBucketTicker,
   tickerBucketDefaultNames,
 } from "./store";
 
 export default store;
 export { tickerBucketDefaultNames, StateEmitterDefaultEvents };
-export type { TickerBucketProps, TickerBucketTicker, StoreStateProps };
+export type { TickerBucket, TickerBucketTicker, StoreStateProps };

@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { TRADING_VIEW_COPYRIGHT_STYLES } from "@src/constants";
+import type { TickerBucket } from "@src/store";
 import {
   TickerTape as LibTickerTape,
   TickerTapeSymbol,
@@ -8,16 +9,28 @@ import {
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
+import deepEqual from "@utils/deepEqual";
+
 export default function TickerTape() {
   const { tickerBuckets } = useStoreStateReader("tickerBuckets");
+  const previousTickerTapeBucketRef = useRef<TickerBucket | null>(null);
+
   const tickerTapeBucket = useMemo(() => {
-    // Note: `tickerBuckets` is used solely to update this `useMemo` on change
     if (tickerBuckets) {
       const tickerTapeBuckets = store.getTickerBucketsOfType("ticker_tape");
-      const tickerTapeBucket = tickerTapeBuckets[0];
+      const newTickerTapeBucket = tickerTapeBuckets[0];
 
-      return tickerTapeBucket;
+      if (
+        // Note: The `deepEqual` fixes an issue where the `tickerTapeBucket` would
+        // not maintain a stable reference after history or other bucket updates,
+        // causing the ticker tape to reload.
+        !deepEqual(previousTickerTapeBucketRef.current, newTickerTapeBucket)
+      ) {
+        previousTickerTapeBucketRef.current = newTickerTapeBucket;
+        return newTickerTapeBucket;
+      }
     }
+    return previousTickerTapeBucketRef.current;
   }, [tickerBuckets]);
 
   const [tickerTapeSymbols, setTickerTapeSymbols] = useState<
