@@ -4,6 +4,7 @@ import {
 } from "@src/constants";
 import type {
   RustServiceCacheDetail,
+  RustServiceDataBuildInfo,
   RustServiceETFAggregateDetail,
   RustServiceETFHoldingTickerResponse,
   RustServiceETFHoldingWeightResponse,
@@ -227,314 +228,293 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   // and works in conjunction with the IndexedDB and Rust service ticker state,
   // as handled within this method.
   private _initLocalSubscriptions() {
-    (() => {
-      const _handleOnlineStatus = () => {
-        this.setState({ isOnline: Boolean(navigator.onLine) });
-      };
-      _handleOnlineStatus();
+    this._initOnlineStatusListener();
+    this._initTickerViewTracking();
+    this._initNetworkRequestTracking();
+    this._initIndexedDBPersistence();
+  }
 
-      window.addEventListener("online", _handleOnlineStatus);
-      window.addEventListener("offline", _handleOnlineStatus);
+  // Handles online/offline status updates
+  private _initOnlineStatusListener() {
+    const _handleOnlineStatus = () => {
+      this.setState({ isOnline: Boolean(navigator.onLine) });
+    };
+    _handleOnlineStatus();
 
-      this.registerDispose(() => {
-        window.removeEventListener("online", _handleOnlineStatus);
-        window.removeEventListener("offline", _handleOnlineStatus);
-      });
-    })();
+    window.addEventListener("online", _handleOnlineStatus);
+    window.addEventListener("offline", _handleOnlineStatus);
 
-    // Handle ticker view tracking (Note: this works in conjunction with `callRustService`
-    // calls with the functions `import_ticker_tracker_state` and `export_ticker_tracker_state`).
-    (() => {
-      const _syncRecentlyViewed = () => {
-        callRustService<string>("export_ticker_tracker_state").then(
-          async (tickerTrackerStateJSON) => {
-            this.setState({ tickerTrackerStateJSON });
+    this.registerDispose(() => {
+      window.removeEventListener("online", _handleOnlineStatus);
+      window.removeEventListener("offline", _handleOnlineStatus);
+    });
+  }
 
-            const tickerTrackerState: RustServiceTickerTracker = JSON.parse(
-              tickerTrackerStateJSON,
-            );
+  // Handles the tracking of ticker views and syncing with Rust service
+  private _initTickerViewTracking() {
+    const _syncRecentlyViewed = async () => {
+      const tickerTrackerStateJSON = await callRustService<string>(
+        "export_ticker_tracker_state",
+      );
+      this.setState({ tickerTrackerStateJSON });
+      this._syncTickerBuckets(tickerTrackerStateJSON);
+    };
 
-            const {
-              recent_views: recentlyViewedTickerIds = [],
-              ordered_by_time_visible: attentionTrackerTickerIds = [],
-            } = tickerTrackerState;
-
-            const recentBucketTickers: TickerBucketTicker[] = await Promise.all(
-              recentlyViewedTickerIds.map((tickerId) =>
-                this.fetchTickerDetail(tickerId).then((tickerDetail) => ({
-                  tickerId,
-                  symbol: tickerDetail.symbol,
-                  exchange_short_name: tickerDetail.exchange_short_name,
-                  quantity: 1,
-                })),
-              ),
-            );
-
-            const prevRecentlyViewed =
-              this.getTickerBucketsOfType("recently_viewed")[0];
-
-            this.updateTickerBucket(prevRecentlyViewed, {
-              ...prevRecentlyViewed,
-              tickers: recentBucketTickers,
-            });
-
-            const mostAttentiveBucketTickers: TickerBucketTicker[] =
-              await Promise.all(
-                attentionTrackerTickerIds.map((tickerId) =>
-                  this.fetchTickerDetail(tickerId).then((tickerDetail) => ({
-                    tickerId,
-                    symbol: tickerDetail.symbol,
-                    exchange_short_name: tickerDetail.exchange_short_name,
-                    quantity: 1,
-                  })),
-                ),
-              );
-
-            const prevAttentionTracker =
-              this.getTickerBucketsOfType("attention_tracker")[0];
-
-            this.updateTickerBucket(prevAttentionTracker, {
-              ...prevAttentionTracker,
-              tickers: mostAttentiveBucketTickers,
-            });
-          },
+    const _handleVisibleTickersUpdate = (keys: (keyof StoreStateProps)[]) => {
+      if (keys.includes("visibleTickerIds")) {
+        const { visibleTickerIds } = this.getState(["visibleTickerIds"]);
+        callRustService("register_visible_ticker_ids", [visibleTickerIds]).then(
+          _syncRecentlyViewed,
         );
-      };
+      }
+    };
 
-      const _handleVisibleTickersUpdate = (keys: (keyof StoreStateProps)[]) => {
-        if (keys.includes("visibleTickerIds")) {
-          const { visibleTickerIds } = this.getState(["visibleTickerIds"]);
+    // Poll for attention every `x` milliseconds
+    const attentionPoller = setInterval(() => {
+      if (window.document.hasFocus()) {
+        _handleVisibleTickersUpdate(["visibleTickerIds"]);
+      }
+    }, TICKER_TRACKING_ATTENTION_POLLING_INTERVAL);
 
-          callRustService("register_visible_ticker_ids", [
-            visibleTickerIds,
-          ]).then(_syncRecentlyViewed);
-        }
-      };
+    this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
 
-      // Poll for attention every `x` milliseconds
-      const attentionPoller = setInterval(() => {
-        // Only poll if the window has focus
-        if (window.document.hasFocus()) {
-          _handleVisibleTickersUpdate(["visibleTickerIds"]);
-        }
-      }, TICKER_TRACKING_ATTENTION_POLLING_INTERVAL);
+    this.registerDispose(() => {
+      clearInterval(attentionPoller);
+      this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
+    });
+  }
 
-      this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
+  // Syncs ticker buckets based on the current state
+  private async _syncTickerBuckets(tickerTrackerStateJSON: string) {
+    const tickerTrackerState: RustServiceTickerTracker = JSON.parse(
+      tickerTrackerStateJSON,
+    );
 
-      this.registerDispose(() => {
-        clearInterval(attentionPoller);
+    const recentlyViewedTickerIds = tickerTrackerState.recent_views || [];
+    const attentionTrackerTickerIds =
+      tickerTrackerState.ordered_by_time_visible || [];
 
-        this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
-      });
-    })();
+    const recentBucketTickers = await Promise.all(
+      recentlyViewedTickerIds.map((tickerId) =>
+        this.fetchTickerDetail(tickerId).then((tickerDetail) => ({
+          tickerId,
+          symbol: tickerDetail.symbol,
+          exchange_short_name: tickerDetail.exchange_short_name,
+          quantity: 1,
+        })),
+      ),
+    );
 
-    (() => {
-      // Instantiate and set up event bindings for `OpenNetworkRequests`
-      const { xhrOpenedRequests, cacheAccessedRequests } = (() => {
-        const xhrOpenedRequests = new XHROpenedRequests();
-        const cacheAccessedRequests = new CacheAccessedRequests();
+    const prevRecentlyViewed =
+      this.getTickerBucketsOfType("recently_viewed")[0];
+    this.updateTickerBucket(prevRecentlyViewed, {
+      ...prevRecentlyViewed,
+      tickers: recentBucketTickers,
+    });
 
-        xhrOpenedRequests.emitter.on(
-          XHROpenedRequests.PATH_OPENED,
-          (pathName: string) => {
-            this.setState({
-              latestXHROpenedRequestPathName: pathName,
-            });
-          },
-        );
+    const mostAttentiveBucketTickers = await Promise.all(
+      attentionTrackerTickerIds.map((tickerId) =>
+        this.fetchTickerDetail(tickerId).then((tickerDetail) => ({
+          tickerId,
+          symbol: tickerDetail.symbol,
+          exchange_short_name: tickerDetail.exchange_short_name,
+          quantity: 1,
+        })),
+      ),
+    );
 
-        xhrOpenedRequests.emitter.on(
-          XHROpenedRequests.PATH_CLOSED,
-          (pathName: string) => {
-            if (this.state.latestXHROpenedRequestPathName === pathName) {
-              this.setState({
-                latestXHROpenedRequestPathName: null,
-              });
-            }
-          },
-        );
+    const prevAttentionTracker =
+      this.getTickerBucketsOfType("attention_tracker")[0];
+    this.updateTickerBucket(prevAttentionTracker, {
+      ...prevAttentionTracker,
+      tickers: mostAttentiveBucketTickers,
+    });
+  }
 
-        cacheAccessedRequests.emitter.on(
-          CacheAccessedRequests.PATH_OPENED,
-          (pathName: string) => {
-            this.setState({
-              latestCacheOpenedRequestPathName: pathName,
-            });
-          },
-        );
+  // Handles network request tracking and synchronization
+  private _initNetworkRequestTracking() {
+    const { xhrOpenedRequests, cacheAccessedRequests } =
+      this._setupNetworkRequestTrackers();
 
-        cacheAccessedRequests.emitter.on(
-          CacheAccessedRequests.PATH_CLOSED,
-          (pathName: string) => {
-            if (this.state.latestCacheOpenedRequestPathName === pathName) {
-              this.setState({
-                latestCacheOpenedRequestPathName: null,
-              });
-            }
-          },
-        );
+    // Subscribe to Rust-service notification events
+    const libRustServiceUnsubscribe = libRustServiceSubscribe(
+      (eventType: NotifierEvent, args: unknown[]) => {
+        const pathName: string = args[0] as string;
 
-        return { xhrOpenedRequests, cacheAccessedRequests };
-      })();
-
-      // Subscribe to Rust-service notification events
-      const libRustServiceUnsubscribe = libRustServiceSubscribe(
-        (eventType: NotifierEvent, args: unknown[]) => {
-          const pathName: string = args[0] as string;
-
-          if (eventType === NotifierEvent.XHR_REQUEST_CREATED) {
-            // Signal open XHR request
+        switch (eventType) {
+          case NotifierEvent.XHR_REQUEST_CREATED:
             xhrOpenedRequests.add(pathName);
-          }
-
-          if (eventType === NotifierEvent.XHR_REQUEST_ERROR) {
-            // Signal closed XHR request
+            break;
+          case NotifierEvent.XHR_REQUEST_ERROR:
             xhrOpenedRequests.delete(pathName);
-
-            const xhrRequestErrors = {
-              ...this.state.rustServiceXHRRequestErrors,
-              [pathName]: {
-                errCount: this.state.rustServiceXHRRequestErrors[pathName]
-                  ?.errCount
-                  ? this.state.rustServiceXHRRequestErrors[pathName]?.errCount +
-                    1
-                  : 1,
-                lastTimestamp: new Date().toISOString(),
-              },
-            };
-            this.setState({
-              rustServiceXHRRequestErrors: xhrRequestErrors,
-            });
-          }
-
-          if (eventType === NotifierEvent.XHR_REQUEST_SENT) {
-            // Signal closed XHR request
+            this._handleXHRError(pathName);
+            break;
+          case NotifierEvent.XHR_REQUEST_SENT:
             xhrOpenedRequests.delete(pathName);
-
-            // If a subsequent XHR request path is the same as a previous error, delete the error
-            if (pathName in this.state.rustServiceXHRRequestErrors) {
-              const next = { ...this.state.rustServiceXHRRequestErrors };
-              delete next[pathName];
-
-              this.setState({
-                rustServiceXHRRequestErrors: next,
-              });
-            }
-          }
-
-          if (eventType === NotifierEvent.NETWORK_CACHE_ACCESSED) {
-            // Signal open cache request (auto-closes)
+            this._clearXHRError(pathName);
+            break;
+          case NotifierEvent.NETWORK_CACHE_ACCESSED:
             cacheAccessedRequests.add(pathName);
-          }
-
-          if (
-            [
-              NotifierEvent.NETWORK_CACHE_ENTRY_INSERTED,
-              NotifierEvent.NETWORK_CACHE_ENTRY_REMOVED,
-              NotifierEvent.NETWORK_CACHE_CLEARED,
-            ].includes(eventType)
-          ) {
+            break;
+          case NotifierEvent.NETWORK_CACHE_ENTRY_INSERTED:
+          case NotifierEvent.NETWORK_CACHE_ENTRY_REMOVED:
+          case NotifierEvent.NETWORK_CACHE_CLEARED:
             debounceWithKey(
               "store:cache_profiler",
-              () => {
-                this._syncCacheDetails();
-              },
+              () => this._syncCacheDetails(),
               this.state.cacheProfilerWaitTime,
             );
-          }
-        },
-      );
+            break;
+        }
+      },
+    );
 
-      this.registerDispose(libRustServiceUnsubscribe);
-    })();
+    this.registerDispose(libRustServiceUnsubscribe);
+  }
 
-    // IndexedDB persistence
-    (async () => {
-      try {
-        await this._indexedDBInterface.ready();
+  // Setups up network request tracking for XHR and Cache
+  private _setupNetworkRequestTrackers() {
+    const xhrOpenedRequests = new XHROpenedRequests();
+    const cacheAccessedRequests = new CacheAccessedRequests();
 
-        this.setState({ isIndexedDBReady: true });
+    xhrOpenedRequests.emitter.on(
+      XHROpenedRequests.PATH_OPENED,
+      (pathName: string) => {
+        this.setState({ latestXHROpenedRequestPathName: pathName });
+      },
+    );
 
-        // Handle session restore
-        await (async () => {
-          const indexedDBKeys = await this._indexedDBInterface.getAllKeys();
+    xhrOpenedRequests.emitter.on(
+      XHROpenedRequests.PATH_CLOSED,
+      (pathName: string) => {
+        if (this.state.latestXHROpenedRequestPathName === pathName) {
+          this.setState({ latestXHROpenedRequestPathName: null });
+        }
+      },
+    );
 
-          const storeStateKeys = Object.keys(this.state) as Array<
-            keyof StoreStateProps
-          >;
+    cacheAccessedRequests.emitter.on(
+      CacheAccessedRequests.PATH_OPENED,
+      (pathName: string) => {
+        this.setState({ latestCacheOpenedRequestPathName: pathName });
+      },
+    );
 
-          for (const idbKey of indexedDBKeys) {
-            if (storeStateKeys.includes(idbKey as keyof StoreStateProps)) {
-              const item = await this._indexedDBInterface.getItem(idbKey);
-              if (item !== undefined) {
-                this.setState({ [idbKey]: item });
-              }
+    cacheAccessedRequests.emitter.on(
+      CacheAccessedRequests.PATH_CLOSED,
+      (pathName: string) => {
+        if (this.state.latestCacheOpenedRequestPathName === pathName) {
+          this.setState({ latestCacheOpenedRequestPathName: null });
+        }
+      },
+    );
 
-              // Import IndexedDB ticker tracker state into Rust service
-              if (idbKey === "tickerTrackerStateJSON") {
-                callRustService("import_ticker_tracker_state", [item]);
-              }
-            }
-          }
+    return { xhrOpenedRequests, cacheAccessedRequests };
+  }
 
-          // Emit that session is now ready
-          this.emit("persistent-session-restore");
-        })();
+  private _handleXHRError(pathName: string) {
+    const xhrRequestErrors = {
+      ...this.state.rustServiceXHRRequestErrors,
+      [pathName]: {
+        errCount: this.state.rustServiceXHRRequestErrors[pathName]?.errCount
+          ? this.state.rustServiceXHRRequestErrors[pathName]?.errCount + 1
+          : 1,
+        lastTimestamp: new Date().toISOString(),
+      },
+    };
+    this.setState({ rustServiceXHRRequestErrors: xhrRequestErrors });
+  }
 
-        (() => {
-          const _handleStoreStateUpdate = (
-            storeStateUpdateKeys: (keyof StoreStateProps)[],
-          ) => {
-            if (storeStateUpdateKeys.includes("tickerBuckets")) {
-              const { tickerBuckets } = this.getState(["tickerBuckets"]);
+  private _clearXHRError(pathName: string) {
+    if (pathName in this.state.rustServiceXHRRequestErrors) {
+      const next = { ...this.state.rustServiceXHRRequestErrors };
+      delete next[pathName];
+      this.setState({ rustServiceXHRRequestErrors: next });
+    }
+  }
 
-              this._indexedDBInterface.setItem("tickerBuckets", tickerBuckets);
-            }
+  // Handles IndexedDB persistence and session restore
+  private async _initIndexedDBPersistence() {
+    try {
+      await this._indexedDBInterface.ready();
+      this.setState({ isIndexedDBReady: true });
 
-            if (storeStateUpdateKeys.includes("subscribedMQTTRoomNames")) {
-              const { subscribedMQTTRoomNames } = this.getState([
-                "subscribedMQTTRoomNames",
-              ]);
+      await this._restorePersistentSession();
+    } finally {
+      this._initInitialTickerTapeTickers();
+    }
+  }
 
-              this._indexedDBInterface.setItem(
-                "subscribedMQTTRoomNames",
-                subscribedMQTTRoomNames,
-              );
-            }
+  // Restores the persistent session from IndexedDB
+  private async _restorePersistentSession() {
+    const indexedDBKeys = await this._indexedDBInterface.getAllKeys();
+    const storeStateKeys = Object.keys(this.state) as Array<
+      keyof StoreStateProps
+    >;
 
-            if (storeStateUpdateKeys.includes("tickerTrackerStateJSON")) {
-              const { tickerTrackerStateJSON } = this.getState([
-                "tickerTrackerStateJSON",
-              ]);
+    for (const idbKey of indexedDBKeys) {
+      if (storeStateKeys.includes(idbKey as keyof StoreStateProps)) {
+        const item = await this._indexedDBInterface.getItem(idbKey);
+        if (item !== undefined) {
+          this.setState({ [idbKey]: item });
+        }
 
-              // Update IndexedDB ticker tracker state
-              this._indexedDBInterface.setItem(
-                "tickerTrackerStateJSON",
-                tickerTrackerStateJSON,
-              );
-
-              debounceWithKey(
-                "import_ticker_tracker_state:from_state_update",
-                () => {
-                  // Update Rust service ticker tracker state
-                  callRustService("import_ticker_tracker_state", [
-                    tickerTrackerStateJSON,
-                  ]);
-                },
-                1000,
-              );
-            }
-          };
-          this.on(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
-
-          this.registerDispose(() => {
-            this.off(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
-          });
-        })();
-      } finally {
-        this._initInitialTickerTapeTickers();
+        if (idbKey === "tickerTrackerStateJSON") {
+          callRustService("import_ticker_tracker_state", [item]);
+        }
       }
-    })();
+    }
+
+    this.emit("persistent-session-restore");
+
+    this._subscribeToStateUpdatesForPersistence();
+  }
+
+  // Subscribes to state updates for persistence in IndexedDB
+  private _subscribeToStateUpdatesForPersistence() {
+    const _handleStoreStateUpdate = (
+      storeStateUpdateKeys: (keyof StoreStateProps)[],
+    ) => {
+      if (storeStateUpdateKeys.includes("tickerBuckets")) {
+        const { tickerBuckets } = this.getState(["tickerBuckets"]);
+        this._indexedDBInterface.setItem("tickerBuckets", tickerBuckets);
+      }
+
+      if (storeStateUpdateKeys.includes("subscribedMQTTRoomNames")) {
+        const { subscribedMQTTRoomNames } = this.getState([
+          "subscribedMQTTRoomNames",
+        ]);
+        this._indexedDBInterface.setItem(
+          "subscribedMQTTRoomNames",
+          subscribedMQTTRoomNames,
+        );
+      }
+
+      if (storeStateUpdateKeys.includes("tickerTrackerStateJSON")) {
+        const { tickerTrackerStateJSON } = this.getState([
+          "tickerTrackerStateJSON",
+        ]);
+
+        this._indexedDBInterface.setItem(
+          "tickerTrackerStateJSON",
+          tickerTrackerStateJSON,
+        );
+
+        debounceWithKey(
+          "import_ticker_tracker_state:from_state_update",
+          () =>
+            callRustService("import_ticker_tracker_state", [
+              tickerTrackerStateJSON,
+            ]),
+          1000,
+        );
+      }
+    };
+    this.on(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
+
+    this.registerDispose(() => {
+      this.off(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
+    });
   }
 
   async fetchTickerId(
@@ -583,13 +563,15 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   private _syncDataBuildInfo(): void {
-    callRustService("get_data_build_info").then((dataBuildInfo) => {
-      this.setState({
-        isRustInit: true,
-        // TODO: If data build time is already set as state, but this indicates otherwise, that's a signal the app needs to update
-        dataBuildTime: (dataBuildInfo as { [key: string]: string }).time,
-      });
-    });
+    callRustService<RustServiceDataBuildInfo>("get_data_build_info").then(
+      (dataBuildInfo) => {
+        this.setState({
+          isRustInit: true,
+          // TODO: If data build time is already set as state, but this indicates otherwise, that's a signal the app needs to update
+          dataBuildTime: dataBuildInfo.time,
+        });
+      },
+    );
   }
 
   private async _preloadTickerSearchCache() {
