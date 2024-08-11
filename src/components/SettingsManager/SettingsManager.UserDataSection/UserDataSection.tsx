@@ -20,11 +20,6 @@ import TickerBucketList from "./TickerBucketList";
 export default function UserDataSection() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const [
-    includeNonUserConfigurableBuckets,
-    setIncludeNonUserConfigurableBuckets,
-  ] = useState<boolean>(false);
-
   const { tickerBuckets } = useStoreStateReader([
     "isHTMLJSVersionSynced",
     "isAppUnlocked",
@@ -69,18 +64,8 @@ export default function UserDataSection() {
           Clear User Data
         </Button>
         <h3>Buckets</h3>
-        <TickerBucketList
-          tickerBuckets={tickerBuckets}
-          includeNonUserConfigurable={includeNonUserConfigurableBuckets}
-        />
+        <TickerBucketList tickerBuckets={tickerBuckets} />
 
-        <Button
-          onClick={() => setIncludeNonUserConfigurableBuckets((prev) => !prev)}
-        >
-          {includeNonUserConfigurableBuckets
-            ? "Hide System Buckets"
-            : "Show System Buckets"}
-        </Button>
         <Typography variant="body2" sx={{ fontStyle: "italic", opacity: 0.5 }}>
           &quot;System Buckets&quot; are non-user-configurable and are
           auto-populated by the app during the course of interaction. These are

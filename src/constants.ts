@@ -63,7 +63,4 @@ export const COLOR_WHEEL_COLORS: Readonly<string[]> = [
   "#FFD700", // Neon Gold
 ];
 
-// In milliseconds
-export const TICKER_TRACKING_ATTENTION_POLLING_INTERVAL = 20000;
-
 export const MAX_RECENTLY_VIEWED_ITEMS = 10;

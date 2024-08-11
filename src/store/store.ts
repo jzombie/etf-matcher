@@ -1,7 +1,6 @@
 import {
   DEFAULT_TICKER_TAPE_TICKERS,
   MAX_RECENTLY_VIEWED_ITEMS,
-  TICKER_TRACKING_ATTENTION_POLLING_INTERVAL,
 } from "@src/constants";
 import type {
   RustServiceCacheDetail,
@@ -47,12 +46,7 @@ export type TickerBucketTicker = {
 export type TickerBucket = {
   name: string;
   tickers: TickerBucketTicker[];
-  type:
-    | "watchlist"
-    | "portfolio"
-    | "ticker_tape"
-    | "recently_viewed"
-    | "attention_tracker";
+  type: "watchlist" | "portfolio" | "ticker_tape" | "recently_viewed";
   description: string;
   isUserConfigurable: boolean;
 };
@@ -64,7 +58,6 @@ export const tickerBucketDefaultNames: Readonly<
   portfolio: "Portfolio",
   ticker_tape: "Ticker Tape",
   recently_viewed: "Recently Viewed",
-  attention_tracker: "Attention Tracker",
 };
 
 export type StoreStateProps = {
@@ -144,13 +137,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           tickers: [],
           type: "recently_viewed",
           description: "Recently viewed tickers",
-          isUserConfigurable: false,
-        },
-        {
-          name: "My Attention Tracker",
-          tickers: [],
-          type: "attention_tracker",
-          description: "For suggestions",
           isUserConfigurable: false,
         },
       ],
@@ -257,17 +243,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       }
     };
 
-    // Poll for attention every `x` milliseconds
-    const attentionPoller = setInterval(() => {
-      if (window.document.hasFocus()) {
-        _handleVisibleTickersUpdate(["visibleTickerIds"]);
-      }
-    }, TICKER_TRACKING_ATTENTION_POLLING_INTERVAL);
-
     this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
 
     this.registerDispose(() => {
-      clearInterval(attentionPoller);
       this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
     });
   }
