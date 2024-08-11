@@ -1,3 +1,5 @@
+import EventEmitter from "events";
+
 import customLogger from "./customLogger";
 
 type TickerId = number;
@@ -15,12 +17,15 @@ export interface TickerTrackerState {
   orderedByTimeVisible?: TickerId[];
 }
 
-export default class TickerTracker {
+export default class TickerTracker extends EventEmitter<{
+  update: [TickerTrackerState];
+}> {
   private tickers: Record<TickerId, TickerTrackerVisibility>;
   private recentViews: TickerId[];
   private orderedByTimeVisible?: TickerId[];
 
   constructor() {
+    super();
     this.tickers = {};
     this.recentViews = [];
     this.orderedByTimeVisible = [];
@@ -129,6 +134,8 @@ export default class TickerTracker {
     customLogger.debug(
       `Tickers ordered by time visible: ${orderedTickers.join(", ")}`,
     );
+
+    this.emit("update", this.getState());
   }
 
   public getState(): TickerTrackerState {
@@ -176,5 +183,7 @@ export default class TickerTracker {
       `Merged TickerTracker state after import:`,
       this.tickers,
     );
+
+    this.emit("update", this.getState());
   }
 }

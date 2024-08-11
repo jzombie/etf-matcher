@@ -231,10 +231,23 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   // and works in conjunction with the IndexedDB and Rust service ticker state,
   // as handled within this method.
   private _initLocalSubscriptions() {
+    this._initTickerTrackerEvents();
     this._initOnlineStatusListener();
     this._initTickerViewTracking();
     this._initNetworkRequestTracking();
     this._initIndexedDBPersistence();
+  }
+
+  private _initTickerTrackerEvents() {
+    const _handleTickerTrackerUpdate = (
+      tickerTrackerState: TickerTrackerState,
+    ) => this.setState({ tickerTrackerState });
+
+    this._tickerTracker.on("update", _handleTickerTrackerUpdate);
+
+    this.registerDispose(() => {
+      this._tickerTracker.off("update", _handleTickerTrackerUpdate);
+    });
   }
 
   // Handles online/offline status updates
@@ -264,7 +277,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         }
 
         this._tickerTracker.registerVisibleTickerIds(visibleTickerIds);
-        this.setState({ tickerTrackerState: this._tickerTracker.getState() });
       }
     };
 
