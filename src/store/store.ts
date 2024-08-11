@@ -107,6 +107,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   private _indexedDBInterface: IndexedDBInterface<IndexedDBPersistenceProps>;
   private _tickerTracker: TickerTracker;
 
+  get tickerTracker() {
+    return this._tickerTracker;
+  }
+
   constructor() {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
     super({

@@ -11,6 +11,7 @@ import { useLocation } from "react-router-dom";
 
 import MQTTRoom, { MQTTRoomEvents } from "@utils/MQTTRoom";
 import { useMultiMQTTRoomContext } from "@utils/MQTTRoom/react";
+import type { TickerTrackerState } from "@utils/TickerTracker";
 
 interface SharedSessionManagerContextProps {
   getRoomShareURL: (room: MQTTRoom) => string;
@@ -115,6 +116,14 @@ export default function SharedSessionManagerProvider({
           batchUpdate[key] = (receivedData.data as Partial<StoreStateProps>)[
             key as keyof StoreStateProps
           ];
+        }
+
+        if (key === "tickerTrackerState") {
+          store.tickerTracker.importState(
+            batchUpdate[key] as TickerTrackerState,
+            // Skip emit update
+            false,
+          );
         }
       }
 

@@ -158,7 +158,10 @@ export default class TickerTracker extends EventEmitter<{
     return state;
   }
 
-  public importState(importedState: TickerTrackerState): void {
+  public importState(
+    importedState: TickerTrackerState,
+    emitUpdate = true,
+  ): void {
     // Manually clone the imported state to ensure everything is mutable
     const clonedTickers: Record<TickerId, TickerTrackerVisibility> = {};
 
@@ -184,6 +187,8 @@ export default class TickerTracker extends EventEmitter<{
       this.tickers,
     );
 
-    this.emit("update", this.getState());
+    if (emitUpdate) {
+      this.emit("update", this.getState());
+    }
   }
 }
