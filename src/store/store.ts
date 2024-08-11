@@ -1,5 +1,6 @@
 import {
   DEFAULT_TICKER_TAPE_TICKERS,
+  MAX_RECENTLY_VIEWED_ITEMS,
   TICKER_TRACKING_ATTENTION_POLLING_INTERVAL,
 } from "@src/constants";
 import type {
@@ -774,12 +775,18 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     const recentlyViewedBucket =
       this.getTickerBucketsOfType("recently_viewed")[0];
+
+    // Filter out any existing ticker with the same tickerId, then prepend the new one
+    const updatedTickers = [
+      tickerBucketTicker,
+      ...recentlyViewedBucket.tickers.filter(
+        (ticker) => ticker.tickerId !== tickerId,
+      ),
+    ].slice(0, MAX_RECENTLY_VIEWED_ITEMS);
+
     this.updateTickerBucket(recentlyViewedBucket, {
       ...recentlyViewedBucket,
-      tickers: [
-        tickerBucketTicker,
-        ...recentlyViewedBucket.tickers.slice(0, 9),
-      ],
+      tickers: updatedTickers,
     });
   }
 
