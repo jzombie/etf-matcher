@@ -245,7 +245,14 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   private _initTickerTrackerEvents() {
     const _handleTickerTrackerUpdate = (
       tickerTrackerState: TickerTrackerState,
-    ) => this.setState({ tickerTrackerState });
+    ) =>
+      debounceWithKey(
+        "store_ticker_tracker_state_update",
+        () => {
+          this.setState({ tickerTrackerState });
+        },
+        1000,
+      );
 
     this._tickerTracker.on("update", _handleTickerTrackerUpdate);
 
@@ -476,6 +483,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         }
 
         if (idbKey === "tickerTrackerState") {
+          customLogger.debug(
+            "Importing ticker tracker state from IndexedDB store...",
+          );
           this._tickerTracker.importState(item as TickerTrackerState);
         }
       }
@@ -509,6 +519,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       if (storeStateUpdateKeys.includes("tickerTrackerState")) {
         const { tickerTrackerState } = this.getState(["tickerTrackerState"]);
 
+        customLogger.debug(
+          "Updating IndexedDB store with new ticker tracker state",
+        );
         this._indexedDBInterface.setItem(
           "tickerTrackerState",
           tickerTrackerState as TickerTrackerState,

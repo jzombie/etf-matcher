@@ -87,13 +87,11 @@ export default function SharedSessionManagerProvider({
         keys.includes("tickerBuckets") ||
         keys.includes("tickerTrackerState")
       ) {
-        const { tickerBuckets, tickerTrackerState } = store.getState([
-          "tickerBuckets",
-          "tickerTrackerState",
-        ]);
+        const { tickerBuckets } = store.getState(["tickerBuckets"]);
 
         for (const room of Object.values(connectedRooms)) {
-          room.send({ tickerBuckets, tickerTrackerState } as object, {
+          // TODO: Uncomment `tickerTrackerState`
+          room.send({ tickerBuckets /* tickerTrackerState */ } as object, {
             qos: 2,
             retain: true,
           });
@@ -118,13 +116,14 @@ export default function SharedSessionManagerProvider({
           ];
         }
 
-        if (key === "tickerTrackerState") {
-          store.tickerTracker.importState(
-            batchUpdate[key] as TickerTrackerState,
-            // Skip emit update
-            false,
-          );
-        }
+        // TODO: Uncomment?
+        // if (key === "tickerTrackerState") {
+        //   store.tickerTracker.importState(
+        //     batchUpdate[key] as TickerTrackerState,
+        //     // Skip emit update
+        //     false,
+        //   );
+        // }
       }
 
       if (Object.keys(batchUpdate).length) {
