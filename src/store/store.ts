@@ -23,7 +23,6 @@ import {
   ReactStateEmitter,
   StateEmitterDefaultEvents,
 } from "@utils/StateEmitter";
-import TickerTracker, { TickerTrackerState } from "@utils/TickerTracker";
 import callRustService, {
   NotifierEvent,
   subscribe as libRustServiceSubscribe,
@@ -94,22 +93,15 @@ export type StoreStateProps = {
   latestXHROpenedRequestPathName: string | null;
   latestCacheOpenedRequestPathName: string | null;
   subscribedMQTTRoomNames: string[];
-  tickerTrackerState: TickerTrackerState | null;
 };
 
 export type IndexedDBPersistenceProps = {
   tickerBuckets: TickerBucket[];
   subscribedMQTTRoomNames: string[];
-  tickerTrackerState: TickerTrackerState;
 };
 
 class _Store extends ReactStateEmitter<StoreStateProps> {
   private _indexedDBInterface: IndexedDBInterface<IndexedDBPersistenceProps>;
-  private _tickerTracker: TickerTracker;
-
-  get tickerTracker() {
-    return this._tickerTracker;
-  }
 
   constructor() {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
@@ -170,14 +162,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       latestXHROpenedRequestPathName: null,
       latestCacheOpenedRequestPathName: null,
       subscribedMQTTRoomNames: [],
-      tickerTrackerState: null,
     });
 
     // Only deepfreeze in development
     this.shouldDeepfreeze = !IS_PROD;
-
-    this._tickerTracker = new TickerTracker();
-    this.setState({ tickerTrackerState: this._tickerTracker.getState() });
 
     // TODO: Poll for data build info once every "x" to ensure the data is always running the latest version
     this._syncDataBuildInfo();
@@ -235,30 +223,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   // and works in conjunction with the IndexedDB and Rust service ticker state,
   // as handled within this method.
   private _initLocalSubscriptions() {
-    this._initTickerTrackerEvents();
     this._initOnlineStatusListener();
     this._initTickerViewTracking();
     this._initNetworkRequestTracking();
     this._initIndexedDBPersistence();
-  }
-
-  private _initTickerTrackerEvents() {
-    const _handleTickerTrackerUpdate = (
-      tickerTrackerState: TickerTrackerState,
-    ) =>
-      debounceWithKey(
-        "store_ticker_tracker_state_update",
-        () => {
-          this.setState({ tickerTrackerState });
-        },
-        1000,
-      );
-
-    this._tickerTracker.on("update", _handleTickerTrackerUpdate);
-
-    this.registerDispose(() => {
-      this._tickerTracker.off("update", _handleTickerTrackerUpdate);
-    });
   }
 
   // Handles online/offline status updates
@@ -286,8 +254,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         if (visibleTickerIds.length) {
           this._addRecentlyViewedTicker(visibleTickerIds[0]);
         }
-
-        this._tickerTracker.registerVisibleTickerIds(visibleTickerIds);
       }
     };
 
@@ -305,54 +271,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
     });
   }
-
-  // TODO: Reimplement
-  // Syncs ticker buckets based on the current state
-  // private async _syncTickerBuckets(tickerTrackerStateJSON: string) {
-  //   const tickerTrackerState: RustServiceTickerTracker = JSON.parse(
-  //     tickerTrackerStateJSON,
-  //   );
-
-  //   const recentlyViewedTickerIds = tickerTrackerState.recent_views || [];
-  //   const attentionTrackerTickerIds =
-  //     tickerTrackerState.ordered_by_time_visible || [];
-
-  //   const recentBucketTickers = await Promise.all(
-  //     recentlyViewedTickerIds.map((tickerId) =>
-  //       this.fetchTickerDetail(tickerId).then((tickerDetail) => ({
-  //         tickerId,
-  //         symbol: tickerDetail.symbol,
-  //         exchange_short_name: tickerDetail.exchange_short_name,
-  //         quantity: 1,
-  //       })),
-  //     ),
-  //   );
-
-  //   const prevRecentlyViewed =
-  //     this.getTickerBucketsOfType("recently_viewed")[0];
-  //   this.updateTickerBucket(prevRecentlyViewed, {
-  //     ...prevRecentlyViewed,
-  //     tickers: recentBucketTickers,
-  //   });
-
-  //   const mostAttentiveBucketTickers = await Promise.all(
-  //     attentionTrackerTickerIds.map((tickerId) =>
-  //       this.fetchTickerDetail(tickerId).then((tickerDetail) => ({
-  //         tickerId,
-  //         symbol: tickerDetail.symbol,
-  //         exchange_short_name: tickerDetail.exchange_short_name,
-  //         quantity: 1,
-  //       })),
-  //     ),
-  //   );
-
-  //   const prevAttentionTracker =
-  //     this.getTickerBucketsOfType("attention_tracker")[0];
-  //   this.updateTickerBucket(prevAttentionTracker, {
-  //     ...prevAttentionTracker,
-  //     tickers: mostAttentiveBucketTickers,
-  //   });
-  // }
 
   // Handles network request tracking and synchronization
   private _initNetworkRequestTracking() {
@@ -481,13 +399,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         if (item !== undefined) {
           this.setState({ [idbKey]: item });
         }
-
-        if (idbKey === "tickerTrackerState") {
-          customLogger.debug(
-            "Importing ticker tracker state from IndexedDB store...",
-          );
-          this._tickerTracker.importState(item as TickerTrackerState);
-        }
       }
     }
 
@@ -513,18 +424,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         this._indexedDBInterface.setItem(
           "subscribedMQTTRoomNames",
           subscribedMQTTRoomNames,
-        );
-      }
-
-      if (storeStateUpdateKeys.includes("tickerTrackerState")) {
-        const { tickerTrackerState } = this.getState(["tickerTrackerState"]);
-
-        customLogger.debug(
-          "Updating IndexedDB store with new ticker tracker state",
-        );
-        this._indexedDBInterface.setItem(
-          "tickerTrackerState",
-          tickerTrackerState as TickerTrackerState,
         );
       }
     };
