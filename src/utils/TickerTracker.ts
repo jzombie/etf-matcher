@@ -10,7 +10,7 @@ export interface TickerTrackerVisibility {
 }
 
 export interface TickerTrackerState {
-  tickers: Record<TickerId, TickerTrackerVisibility>;
+  tickers: Record<TickerId, Omit<TickerTrackerVisibility, "visibilityStart">>;
   recentViews: TickerId[];
   orderedByTimeVisible?: TickerId[];
 }
@@ -130,7 +130,17 @@ export default class TickerTracker {
 
   public exportState(): string {
     const state: TickerTrackerState = {
-      tickers: this.tickers,
+      tickers: Object.fromEntries(
+        Object.entries(this.tickers).map(([id, data]) => [
+          id,
+          {
+            tickerId: data.tickerId,
+            totalTimeVisible: data.totalTimeVisible,
+            // Ignore `visibilityStart` on over-the-wire updates
+            visibilityCount: data.visibilityCount,
+          },
+        ]),
+      ),
       recentViews: this.recentViews,
       orderedByTimeVisible: this.orderedByTimeVisible,
     };
@@ -151,8 +161,11 @@ export default class TickerTracker {
       Object.entries(importedState.tickers).forEach(
         ([tickerIdStr, importedVisibility]) => {
           const tickerId = Number(tickerIdStr);
-          const existingVisibility =
-            this.tickers[tickerId] ?? importedVisibility;
+          const existingVisibility = this.tickers[tickerId] ?? {
+            ...importedVisibility,
+            // Ignore `visibilityStart` on over-the-wire updates
+            visibilityStart: null,
+          };
 
           existingVisibility.totalTimeVisible =
             importedVisibility.totalTimeVisible;
