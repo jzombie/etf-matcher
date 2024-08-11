@@ -262,7 +262,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         const { visibleTickerIds } = this.getState(["visibleTickerIds"]);
 
         if (visibleTickerIds.length) {
-          this._addRecentlyViewed(visibleTickerIds[0]);
+          this._addRecentlyViewedTicker(visibleTickerIds[0]);
         }
 
         // TODO: Reimplement
@@ -764,7 +764,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
-  private async _addRecentlyViewed(tickerId: number) {
+  private async _addRecentlyViewedTicker(tickerId: number) {
     const tickerDetail = await this.fetchTickerDetail(tickerId);
     const tickerBucketTicker: TickerBucketTicker = {
       tickerId,
