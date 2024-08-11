@@ -260,6 +260,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       if (keys.includes("visibleTickerIds")) {
         const { visibleTickerIds } = this.getState(["visibleTickerIds"]);
 
+        if (visibleTickerIds.length) {
+          this._addRecentlyViewed(visibleTickerIds[0]);
+        }
+
         // TODO: Reimplement
         // callRustService("register_visible_ticker_ids", [visibleTickerIds]).then(
         //   _syncRecentlyViewed,
@@ -757,6 +761,26 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return this.state.tickerBuckets.filter(
       ({ type }) => tickerBucketType === type,
     );
+  }
+
+  private async _addRecentlyViewed(tickerId: number) {
+    const tickerDetail = await this.fetchTickerDetail(tickerId);
+    const tickerBucketTicker: TickerBucketTicker = {
+      tickerId,
+      symbol: tickerDetail.symbol,
+      exchange_short_name: tickerDetail.exchange_short_name,
+      quantity: 1,
+    };
+
+    const recentlyViewedBucket =
+      this.getTickerBucketsOfType("recently_viewed")[0];
+    this.updateTickerBucket(recentlyViewedBucket, {
+      ...recentlyViewedBucket,
+      tickers: [
+        tickerBucketTicker,
+        ...recentlyViewedBucket.tickers.slice(0, 9),
+      ],
+    });
   }
 
   async generateQRCode(data: string): Promise<string> {
