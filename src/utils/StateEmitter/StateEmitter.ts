@@ -85,7 +85,10 @@ export default class StateEmitter<T extends object> extends EventEmitter {
     };
   }
 
-  setState(newStateOrUpdater: Partial<T> | ((prevState: T) => Partial<T>)) {
+  setState(
+    newStateOrUpdater: Partial<T> | ((prevState: T) => Partial<T>),
+    emitUpdate = true,
+  ) {
     let newState: Partial<T>;
 
     if (typeof newStateOrUpdater === "function") {
@@ -98,7 +101,10 @@ export default class StateEmitter<T extends object> extends EventEmitter {
     this._validateState(newState);
 
     this._state = { ...this._state, ...newState };
-    this.emit(StateEmitterDefaultEvents.UPDATE, Object.keys(newState));
+
+    if (emitUpdate) {
+      this.emit(StateEmitterDefaultEvents.UPDATE, Object.keys(newState));
+    }
   }
 
   // Use a getter to provide read-only access to the state
