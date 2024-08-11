@@ -13,7 +13,6 @@ import type {
   RustServiceTicker10KDetail,
   RustServiceTickerDetail,
   RustServiceTickerSearchResult,
-  RustServiceTickerTracker,
 } from "@src/types";
 
 import IndexedDBInterface from "@utils/IndexedDBInterface";
