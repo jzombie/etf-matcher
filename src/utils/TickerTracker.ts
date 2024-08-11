@@ -45,6 +45,9 @@ export default class TickerTracker {
   public registerVisibleTickerIds(visibleTickerIds: TickerId[]): void {
     customLogger.debug(`Registering visible ticker IDs: ${visibleTickerIds}`);
 
+    // Clone recentViews to ensure it's mutable
+    this.recentViews = [...this.recentViews];
+
     // End visibility for tickers that are no longer visible
     for (const tickerId in this.tickers) {
       if (!visibleTickerIds.includes(Number(tickerId))) {
@@ -128,7 +131,7 @@ export default class TickerTracker {
     );
   }
 
-  public exportState(): string {
+  public getState(): TickerTrackerState {
     const state: TickerTrackerState = {
       tickers: Object.fromEntries(
         Object.entries(this.tickers).map(([id, data]) => [
@@ -145,51 +148,33 @@ export default class TickerTracker {
       orderedByTimeVisible: this.orderedByTimeVisible,
     };
 
-    try {
-      return JSON.stringify(state);
-    } catch (err) {
-      customLogger.error(`Failed to serialize TickerTracker:`, err);
-      throw new Error("Failed to serialize TickerTracker");
-    }
+    return state;
   }
 
-  public importState(serialized: string): void {
-    try {
-      const importedState: TickerTrackerState = JSON.parse(serialized);
+  public importState(importedState: TickerTrackerState): void {
+    // Manually clone the imported state to ensure everything is mutable
+    const clonedTickers: Record<TickerId, TickerTrackerVisibility> = {};
 
-      // Merge the imported state with the existing state
-      Object.entries(importedState.tickers).forEach(
-        ([tickerIdStr, importedVisibility]) => {
-          const tickerId = Number(tickerIdStr);
-          const existingVisibility = this.tickers[tickerId] ?? {
-            ...importedVisibility,
-            // Ignore `visibilityStart` on over-the-wire updates
-            visibilityStart: null,
-          };
+    Object.entries(importedState.tickers).forEach(
+      ([tickerIdStr, importedVisibility]) => {
+        const tickerId = Number(tickerIdStr);
 
-          existingVisibility.totalTimeVisible =
-            importedVisibility.totalTimeVisible;
-          existingVisibility.visibilityCount =
-            importedVisibility.visibilityCount;
+        clonedTickers[tickerId] = {
+          ...importedVisibility,
+          visibilityStart: null, // Ensure visibilityStart is ignored
+        };
+      },
+    );
 
-          this.tickers[tickerId] = existingVisibility;
-        },
-      );
+    this.tickers = { ...this.tickers, ...clonedTickers };
 
-      // Merge recent_views
-      importedState.recentViews.forEach((tickerId) => {
-        if (!this.recentViews.includes(tickerId)) {
-          this.recentViews.push(tickerId);
-        }
-      });
+    // Manually clone recent views
+    const clonedRecentViews = [...importedState.recentViews];
+    this.recentViews = [...this.recentViews, ...clonedRecentViews];
 
-      customLogger.debug(
-        `Merged TickerTracker state after import:`,
-        this.tickers,
-      );
-    } catch (err) {
-      customLogger.error(`Failed to deserialize TickerTracker:`, err);
-      throw new Error("Failed to deserialize TickerTracker");
-    }
+    customLogger.debug(
+      `Merged TickerTracker state after import:`,
+      this.tickers,
+    );
   }
 }

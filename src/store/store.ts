@@ -23,7 +23,7 @@ import {
   ReactStateEmitter,
   StateEmitterDefaultEvents,
 } from "@utils/StateEmitter";
-import TickerTracker from "@utils/TickerTracker";
+import TickerTracker, { TickerTrackerState } from "@utils/TickerTracker";
 import callRustService, {
   NotifierEvent,
   subscribe as libRustServiceSubscribe,
@@ -94,11 +94,13 @@ export type StoreStateProps = {
   latestXHROpenedRequestPathName: string | null;
   latestCacheOpenedRequestPathName: string | null;
   subscribedMQTTRoomNames: string[];
+  tickerTrackerState: TickerTrackerState | null;
 };
 
 export type IndexedDBPersistenceProps = {
   tickerBuckets: TickerBucket[];
   subscribedMQTTRoomNames: string[];
+  tickerTrackerState: TickerTrackerState;
 };
 
 class _Store extends ReactStateEmitter<StoreStateProps> {
@@ -164,12 +166,14 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       latestXHROpenedRequestPathName: null,
       latestCacheOpenedRequestPathName: null,
       subscribedMQTTRoomNames: [],
+      tickerTrackerState: null,
     });
 
     // Only deepfreeze in development
     this.shouldDeepfreeze = !IS_PROD;
 
     this._tickerTracker = new TickerTracker();
+    this.setState({ tickerTrackerState: this._tickerTracker.getState() });
 
     // TODO: Poll for data build info once every "x" to ensure the data is always running the latest version
     this._syncDataBuildInfo();
@@ -260,11 +264,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         }
 
         this._tickerTracker.registerVisibleTickerIds(visibleTickerIds);
-
-        // TODO: Reimplement
-        // callRustService("register_visible_ticker_ids", [visibleTickerIds]).then(
-        //   _syncRecentlyViewed,
-        // );
+        this.setState({ tickerTrackerState: this._tickerTracker.getState() });
       }
     };
 
@@ -459,10 +459,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           this.setState({ [idbKey]: item });
         }
 
-        // TODO: Discard?
-        // if (idbKey === "tickerTrackerStateJSON") {
-        //   callRustService("import_ticker_tracker_state", [item]);
-        // }
+        if (idbKey === "tickerTrackerState") {
+          this._tickerTracker.importState(item as TickerTrackerState);
+        }
       }
     }
 
@@ -491,26 +490,14 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         );
       }
 
-      // TODO: Discard?
-      // if (storeStateUpdateKeys.includes("tickerTrackerStateJSON")) {
-      //   const { tickerTrackerStateJSON } = this.getState([
-      //     "tickerTrackerStateJSON",
-      //   ]);
+      if (storeStateUpdateKeys.includes("tickerTrackerState")) {
+        const { tickerTrackerState } = this.getState(["tickerTrackerState"]);
 
-      //   this._indexedDBInterface.setItem(
-      //     "tickerTrackerStateJSON",
-      //     tickerTrackerStateJSON,
-      //   );
-
-      //   debounceWithKey(
-      //     "import_ticker_tracker_state:from_state_update",
-      //     () =>
-      //       callRustService("import_ticker_tracker_state", [
-      //         tickerTrackerStateJSON,
-      //       ]),
-      //     1000,
-      //   );
-      // }
+        this._indexedDBInterface.setItem(
+          "tickerTrackerState",
+          tickerTrackerState as TickerTrackerState,
+        );
+      }
     };
     this.on(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
 

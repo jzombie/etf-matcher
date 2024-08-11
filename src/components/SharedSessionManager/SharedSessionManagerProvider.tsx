@@ -82,11 +82,17 @@ export default function SharedSessionManagerProvider({
         return;
       }
 
-      if (keys.includes("tickerBuckets")) {
-        const { tickerBuckets } = store.getState(["tickerBuckets"]);
+      if (
+        keys.includes("tickerBuckets") ||
+        keys.includes("tickerTrackerState")
+      ) {
+        const { tickerBuckets, tickerTrackerState } = store.getState([
+          "tickerBuckets",
+          "tickerTrackerState",
+        ]);
 
         for (const room of Object.values(connectedRooms)) {
-          room.send({ tickerBuckets } as object, {
+          room.send({ tickerBuckets, tickerTrackerState } as object, {
             qos: 2,
             retain: true,
           });
