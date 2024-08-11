@@ -23,6 +23,7 @@ import {
   ReactStateEmitter,
   StateEmitterDefaultEvents,
 } from "@utils/StateEmitter";
+import TickerTracker from "@utils/TickerTracker";
 import callRustService, {
   NotifierEvent,
   subscribe as libRustServiceSubscribe,
@@ -102,6 +103,7 @@ export type IndexedDBPersistenceProps = {
 
 class _Store extends ReactStateEmitter<StoreStateProps> {
   private _indexedDBInterface: IndexedDBInterface<IndexedDBPersistenceProps>;
+  private _tickerTracker: TickerTracker;
 
   constructor() {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
@@ -166,6 +168,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     // Only deepfreeze in development
     this.shouldDeepfreeze = !IS_PROD;
+
+    this._tickerTracker = new TickerTracker();
 
     // TODO: Poll for data build info once every "x" to ensure the data is always running the latest version
     this._syncDataBuildInfo();
@@ -247,14 +251,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
   // Handles the tracking of ticker views and syncing with Rust service
   private _initTickerViewTracking() {
-    const _syncRecentlyViewed = async () => {
-      // TODO: Reimplement
-      // const tickerTrackerStateJSON = await callRustService<string>(
-      //   "export_ticker_tracker_state",
-      // );
-      // this._syncTickerBuckets(tickerTrackerStateJSON);
-    };
-
     const _handleVisibleTickersUpdate = (keys: (keyof StoreStateProps)[]) => {
       if (keys.includes("visibleTickerIds")) {
         const { visibleTickerIds } = this.getState(["visibleTickerIds"]);
@@ -262,6 +258,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         if (visibleTickerIds.length) {
           this._addRecentlyViewedTicker(visibleTickerIds[0]);
         }
+
+        this._tickerTracker.registerVisibleTickerIds(visibleTickerIds);
 
         // TODO: Reimplement
         // callRustService("register_visible_ticker_ids", [visibleTickerIds]).then(
