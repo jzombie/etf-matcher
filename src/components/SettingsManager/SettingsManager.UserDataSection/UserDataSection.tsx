@@ -7,7 +7,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Typography,
 } from "@mui/material";
 
 import Section from "@components/Section";
@@ -65,13 +64,6 @@ export default function UserDataSection() {
         </Button>
         <h3>Buckets</h3>
         <TickerBucketList tickerBuckets={tickerBuckets} />
-
-        <Typography variant="body2" sx={{ fontStyle: "italic", opacity: 0.5 }}>
-          &quot;System Buckets&quot; are non-user-configurable and are
-          auto-populated by the app during the course of interaction. These are
-          private to the session (unless &quot;Session Sharing&quot; is enabled)
-          and are used to help the app make recommendations.
-        </Typography>
       </Section>
 
       <Dialog
