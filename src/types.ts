@@ -1,3 +1,8 @@
+export type RustServiceDataBuildInfo = {
+  time: string;
+  hash: string;
+};
+
 export type RustServicePaginatedResults<T> = {
   total_count: number;
   results: T[];
