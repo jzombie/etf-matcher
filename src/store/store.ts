@@ -146,8 +146,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           description: "Recently viewed tickers",
           isUserConfigurable: false,
         },
-        // TODO: Infer potential ETFs that a user may be interested in based on searched
-        // symbols and the frequency of the most common ETFs that hold those symbols
         {
           name: "My Attention Tracker",
           tickers: [],
