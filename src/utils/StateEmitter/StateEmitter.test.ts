@@ -58,6 +58,23 @@ describe("StateEmitter", () => {
     expect(listener).toHaveBeenCalledWith(["text"]);
   });
 
+  it("should not emit update event when emitUpdate is false", () => {
+    const initialState: TestState = { count: 0, text: "hello" };
+    const emitter = new StateEmitter<TestState>(initialState);
+
+    const listener = vi.fn();
+    emitter.on(StateEmitterDefaultEvents.UPDATE, listener);
+
+    // Call setState with emitUpdate set to false
+    emitter.setState({ count: 1 }, false);
+
+    // Listener should not be called because emitUpdate is false
+    expect(listener).not.toHaveBeenCalled();
+
+    // Verify the state was updated correctly
+    expect(emitter.state).toEqual(deepFreeze({ count: 1, text: "hello" }));
+  });
+
   it("should subscribe to state updates and call listeners", () => {
     const initialState: TestState = { count: 0, text: "hello" };
     const emitter = new StateEmitter<TestState>(initialState);

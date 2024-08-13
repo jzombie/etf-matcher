@@ -7,7 +7,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Typography,
 } from "@mui/material";
 
 import Section from "@components/Section";
@@ -19,11 +18,6 @@ import TickerBucketList from "./TickerBucketList";
 // TODO: Also include any other user history (i.e. recently joined rooms, etc.)
 export default function UserDataSection() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const [
-    includeNonUserConfigurableBuckets,
-    setIncludeNonUserConfigurableBuckets,
-  ] = useState<boolean>(false);
 
   const { tickerBuckets } = useStoreStateReader([
     "isHTMLJSVersionSynced",
@@ -69,24 +63,7 @@ export default function UserDataSection() {
           Clear User Data
         </Button>
         <h3>Buckets</h3>
-        <TickerBucketList
-          tickerBuckets={tickerBuckets}
-          includeNonUserConfigurable={includeNonUserConfigurableBuckets}
-        />
-
-        <Button
-          onClick={() => setIncludeNonUserConfigurableBuckets((prev) => !prev)}
-        >
-          {includeNonUserConfigurableBuckets
-            ? "Hide System Buckets"
-            : "Show System Buckets"}
-        </Button>
-        <Typography variant="body2" sx={{ fontStyle: "italic", opacity: 0.5 }}>
-          &quot;System Buckets&quot; are non-user-configurable and are
-          auto-populated by the app during the course of interaction. These are
-          private to the session (unless &quot;Session Sharing&quot; is enabled)
-          and are used to help the app make recommendations.
-        </Typography>
+        <TickerBucketList tickerBuckets={tickerBuckets} />
       </Section>
 
       <Dialog

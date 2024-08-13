@@ -222,16 +222,3 @@ export type RustServiceImageInfo = {
   base64: string;
   rgba: string;
 };
-
-export type RustServiceTickerTrackerVisibility = {
-  ticker_id: number;
-  total_time_visibile: number;
-  // Note: `visibility_start` is intentionally skipped from being serialized in the Rust service
-  visibility_count: number;
-};
-
-export type RustServiceTickerTracker = {
-  tickers: RustServiceTickerTrackerVisibility[];
-  recent_views: number[]; // a list of ticker ids, ordered by most recent
-  ordered_by_time_visible: number[];
-};

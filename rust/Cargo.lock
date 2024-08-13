@@ -428,7 +428,6 @@ dependencies = [
  "image 0.25.2",
  "js-sys",
  "lazy_static",
- "once_cell",
  "pbkdf2",
  "qrcode-generator",
  "rand",
