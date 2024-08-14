@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Box, Divider, Paper, Typography } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 
 import type {
   RustServiceETFAggregateDetail,
