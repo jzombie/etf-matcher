@@ -6,17 +6,17 @@ import { TRADING_VIEW_COPYRIGHT_STYLES } from "@src/constants";
 import { MiniChart } from "react-ts-tradingview-widgets";
 import type { DateRange } from "react-ts-tradingview-widgets";
 
-export type PriceChartProps = {
+export type HistoricalPriceChartProps = {
   tickerSymbol: string;
   formattedSymbolWithExchange: string;
 };
 
 const dateRanges: DateRange[] = ["1D", "1M", "3M", "12M", "60M", "ALL"];
 
-export default function PriceChart({
+export default function HistoricalPriceChart({
   tickerSymbol,
   formattedSymbolWithExchange,
-}: PriceChartProps) {
+}: HistoricalPriceChartProps) {
   const [dateRange, setDateRange] = useState<DateRange>("1M");
 
   const handleDateRangeChange = (range: string) => {

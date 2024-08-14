@@ -29,7 +29,7 @@ import TickerDetailBucketManager from "./TickerDetail.BucketManager";
 import ETFHolderList from "./TickerDetail.ETFHolderList";
 import ETFHoldingList from "./TickerDetail.ETFHoldingList";
 import FinancialReport from "./TickerDetail.FinancialReport";
-import PriceChart from "./TickerDetail.PriceChart";
+import HistoricalPriceChart from "./TickerDetail.HistoricalPriceChart";
 
 export type TickerDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerId: number;
@@ -288,7 +288,7 @@ export default function TickerDetail({
         </InfoContainer>
       </SymbolDetailWrapper>
 
-      <PriceChart
+      <HistoricalPriceChart
         tickerSymbol={tickerDetail.symbol}
         formattedSymbolWithExchange={formattedSymbolWithExchange}
       />
