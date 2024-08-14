@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import {
   Box,
   Button,
+  ButtonProps,
   Dialog,
   DialogActions,
   DialogContent,
@@ -154,35 +155,12 @@ export default function TickerDetailBucketManager({
                   bucket.type === selectedBucketType,
               )
               .map((bucket) => (
-                <Button
+                <TickerBucketMgmtButton
                   key={bucket.name}
-                  onClick={() =>
-                    store.bucketHasTicker(tickerDetail.ticker_id, bucket)
-                      ? handleRemoveClick(bucket)
-                      : store.addTickerToBucket(
-                          tickerDetail.ticker_id,
-                          1,
-                          bucket,
-                        )
-                  }
-                  startIcon={
-                    store.bucketHasTicker(tickerDetail.ticker_id, bucket) ? (
-                      <DeleteIcon />
-                    ) : undefined
-                  }
-                  variant="contained"
-                  color={
-                    store.bucketHasTicker(tickerDetail.ticker_id, bucket)
-                      ? "error"
-                      : "primary"
-                  }
-                  fullWidth
-                  sx={{ marginBottom: 1 }}
-                >
-                  {store.bucketHasTicker(tickerDetail.ticker_id, bucket)
-                    ? `Remove from ${bucket.name}`
-                    : `Add to ${bucket.name}`}
-                </Button>
+                  tickerDetail={tickerDetail}
+                  tickerBucket={bucket}
+                  onRemove={(bucket) => handleRemoveClick(bucket)}
+                />
               ))}
           </Box>
 
@@ -218,5 +196,42 @@ export default function TickerDetailBucketManager({
         </DialogActions>
       </Dialog>
     </Box>
+  );
+}
+
+type TickerBucketMgmtButtonProps = ButtonProps & {
+  tickerDetail: RustServiceTickerDetail;
+  tickerBucket: TickerBucket;
+  onRemove: (tickerBucket: TickerBucket) => void;
+};
+
+function TickerBucketMgmtButton({
+  tickerDetail,
+  tickerBucket,
+  onRemove,
+}: TickerBucketMgmtButtonProps) {
+  const bucketHasTicker = useMemo(
+    () => store.bucketHasTicker(tickerDetail.ticker_id, tickerBucket),
+    [tickerDetail.ticker_id, tickerBucket],
+  );
+
+  return (
+    <Button
+      key={tickerBucket.name}
+      onClick={() =>
+        bucketHasTicker
+          ? onRemove(tickerBucket)
+          : store.addTickerToBucket(tickerDetail.ticker_id, 1, tickerBucket)
+      }
+      startIcon={bucketHasTicker ? <DeleteIcon /> : undefined}
+      variant="contained"
+      color={bucketHasTicker ? "error" : "primary"}
+      fullWidth
+      sx={{ marginBottom: 1 }}
+    >
+      {bucketHasTicker
+        ? `Remove from ${tickerBucket.name}`
+        : `Add to ${tickerBucket.name}`}
+    </Button>
   );
 }
