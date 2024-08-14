@@ -57,10 +57,8 @@ export default function TickerDetailHeader({
 
   useEffect(() => {
     if (!isIntersecting && visibleTickerIds.includes(tickerDetail.ticker_id)) {
-      // console.log("show static header", tickerDetail.symbol, visibleTickerIds);
       setIsShowingStaticHeader(true);
     } else {
-      // console.log("hide static header", tickerDetail.symbol, visibleTickerIds);
       setIsShowingStaticHeader(false);
     }
   }, [
@@ -69,15 +67,6 @@ export default function TickerDetailHeader({
     tickerDetail.ticker_id,
     visibleTickerIds,
   ]);
-
-  // TODO: Remove
-  // useEffect(() => {
-  //   console.log({
-  //     isShowingStaticHeader,
-  //     symbol: tickerDetail.symbol,
-  //     visibleTickerIds,
-  //   });
-  // }, [isShowingStaticHeader, tickerDetail.symbol]);
 
   const elRef = useRef(null);
 
