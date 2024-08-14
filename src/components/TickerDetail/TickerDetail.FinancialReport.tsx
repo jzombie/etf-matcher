@@ -25,7 +25,6 @@ export type FinancialReportProps = {
   isETF: boolean;
 };
 
-// Type guard to determine if the data is RustServiceETFAggregateDetail
 function isETFAggregateDetail(
   data: RustServiceTicker10KDetail | RustServiceETFAggregateDetail,
 ): data is RustServiceETFAggregateDetail {
@@ -134,70 +133,76 @@ export default function FinancialReport({
       <Typography variant="h6" sx={{ marginBottom: 2 }}>
         Financial Overview
       </Typography>
-      {renderChart(
-        "Revenue",
-        isETF ? "avg_revenue_current" : "revenue_current",
-        isETF ? "avg_revenue_1_yr" : "revenue_1_yr",
-        isETF ? "avg_revenue_2_yr" : "revenue_2_yr",
-        isETF ? "avg_revenue_3_yr" : "revenue_3_yr",
-        isETF ? "avg_revenue_4_yr" : "revenue_4_yr",
-      )}
-      <Divider sx={{ my: 2 }} />
-      {renderChart(
-        "Gross Profit",
-        isETF ? "avg_gross_profit_current" : "gross_profit_current",
-        isETF ? "avg_gross_profit_1_yr" : "gross_profit_1_yr",
-        isETF ? "avg_gross_profit_2_yr" : "gross_profit_2_yr",
-        isETF ? "avg_gross_profit_3_yr" : "gross_profit_3_yr",
-        isETF ? "avg_gross_profit_4_yr" : "gross_profit_4_yr",
-      )}
-      <Divider sx={{ my: 2 }} />
-      {renderChart(
-        "Operating Income",
-        isETF ? "avg_operating_income_current" : "operating_income_current",
-        isETF ? "avg_operating_income_1_yr" : "operating_income_1_yr",
-        isETF ? "avg_operating_income_2_yr" : "operating_income_2_yr",
-        isETF ? "avg_operating_income_3_yr" : "operating_income_3_yr",
-        isETF ? "avg_operating_income_4_yr" : "operating_income_4_yr",
-      )}
-      <Divider sx={{ my: 2 }} />
-      {renderChart(
-        "Net Income",
-        isETF ? "avg_net_income_current" : "net_income_current",
-        isETF ? "avg_net_income_1_yr" : "net_income_1_yr",
-        isETF ? "avg_net_income_2_yr" : "net_income_2_yr",
-        isETF ? "avg_net_income_3_yr" : "net_income_3_yr",
-        isETF ? "avg_net_income_4_yr" : "net_income_4_yr",
-      )}
-      <Divider sx={{ my: 2 }} />
-      {renderChart(
-        "Total Assets",
-        isETF ? "avg_total_assets_current" : "total_assets_current",
-        isETF ? "avg_total_assets_1_yr" : "total_assets_1_yr",
-        isETF ? "avg_total_assets_2_yr" : "total_assets_2_yr",
-        isETF ? "avg_total_assets_3_yr" : "total_assets_3_yr",
-        isETF ? "avg_total_assets_4_yr" : "total_assets_4_yr",
-      )}
-      <Divider sx={{ my: 2 }} />
-      {renderChart(
-        "Total Liabilities",
-        isETF ? "avg_total_liabilities_current" : "total_liabilities_current",
-        isETF ? "avg_total_liabilities_1_yr" : "total_liabilities_1_yr",
-        isETF ? "avg_total_liabilities_2_yr" : "total_liabilities_2_yr",
-        isETF ? "avg_total_liabilities_3_yr" : "total_liabilities_3_yr",
-        isETF ? "avg_total_liabilities_4_yr" : "total_liabilities_4_yr",
-      )}
-      <Divider sx={{ my: 2 }} />
-      {renderChart(
-        "Operating Cash Flow",
-        isETF
-          ? "avg_operating_cash_flow_current"
-          : "operating_cash_flow_current",
-        isETF ? "avg_operating_cash_flow_1_yr" : "operating_cash_flow_1_yr",
-        isETF ? "avg_operating_cash_flow_2_yr" : "operating_cash_flow_2_yr",
-        isETF ? "avg_operating_cash_flow_3_yr" : "operating_cash_flow_3_yr",
-        isETF ? "avg_operating_cash_flow_4_yr" : "operating_cash_flow_4_yr",
-      )}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr", // 1 column on extra-small screens
+            sm: "1fr 1fr", // 2 columns on small screens
+            md: "1fr 1fr 1fr", // 3 columns on medium screens
+          },
+          gap: 2,
+        }}
+      >
+        {renderChart(
+          "Revenue",
+          isETF ? "avg_revenue_current" : "revenue_current",
+          isETF ? "avg_revenue_1_yr" : "revenue_1_yr",
+          isETF ? "avg_revenue_2_yr" : "revenue_2_yr",
+          isETF ? "avg_revenue_3_yr" : "revenue_3_yr",
+          isETF ? "avg_revenue_4_yr" : "revenue_4_yr",
+        )}
+        {renderChart(
+          "Gross Profit",
+          isETF ? "avg_gross_profit_current" : "gross_profit_current",
+          isETF ? "avg_gross_profit_1_yr" : "gross_profit_1_yr",
+          isETF ? "avg_gross_profit_2_yr" : "gross_profit_2_yr",
+          isETF ? "avg_gross_profit_3_yr" : "gross_profit_3_yr",
+          isETF ? "avg_gross_profit_4_yr" : "gross_profit_4_yr",
+        )}
+        {renderChart(
+          "Operating Income",
+          isETF ? "avg_operating_income_current" : "operating_income_current",
+          isETF ? "avg_operating_income_1_yr" : "operating_income_1_yr",
+          isETF ? "avg_operating_income_2_yr" : "operating_income_2_yr",
+          isETF ? "avg_operating_income_3_yr" : "operating_income_3_yr",
+          isETF ? "avg_operating_income_4_yr" : "operating_income_4_yr",
+        )}
+        {renderChart(
+          "Net Income",
+          isETF ? "avg_net_income_current" : "net_income_current",
+          isETF ? "avg_net_income_1_yr" : "net_income_1_yr",
+          isETF ? "avg_net_income_2_yr" : "net_income_2_yr",
+          isETF ? "avg_net_income_3_yr" : "net_income_3_yr",
+          isETF ? "avg_net_income_4_yr" : "net_income_4_yr",
+        )}
+        {renderChart(
+          "Total Assets",
+          isETF ? "avg_total_assets_current" : "total_assets_current",
+          isETF ? "avg_total_assets_1_yr" : "total_assets_1_yr",
+          isETF ? "avg_total_assets_2_yr" : "total_assets_2_yr",
+          isETF ? "avg_total_assets_3_yr" : "total_assets_3_yr",
+          isETF ? "avg_total_assets_4_yr" : "total_assets_4_yr",
+        )}
+        {renderChart(
+          "Total Liabilities",
+          isETF ? "avg_total_liabilities_current" : "total_liabilities_current",
+          isETF ? "avg_total_liabilities_1_yr" : "total_liabilities_1_yr",
+          isETF ? "avg_total_liabilities_2_yr" : "total_liabilities_2_yr",
+          isETF ? "avg_total_liabilities_3_yr" : "total_liabilities_3_yr",
+          isETF ? "avg_total_liabilities_4_yr" : "total_liabilities_4_yr",
+        )}
+        {renderChart(
+          "Operating Cash Flow",
+          isETF
+            ? "avg_operating_cash_flow_current"
+            : "operating_cash_flow_current",
+          isETF ? "avg_operating_cash_flow_1_yr" : "operating_cash_flow_1_yr",
+          isETF ? "avg_operating_cash_flow_2_yr" : "operating_cash_flow_2_yr",
+          isETF ? "avg_operating_cash_flow_3_yr" : "operating_cash_flow_3_yr",
+          isETF ? "avg_operating_cash_flow_4_yr" : "operating_cash_flow_4_yr",
+        )}
+      </Box>
     </Paper>
   );
 }
