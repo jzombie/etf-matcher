@@ -13,6 +13,16 @@ import type {
   RustServiceETFAggregateDetail,
   RustServiceTicker10KDetail,
 } from "@src/types";
+import {
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import useTicker10KDetail from "@hooks/useTicker10KDetail";
 
@@ -37,36 +47,28 @@ export default function FinancialReport({
   const { isLoading, detail } = useTicker10KDetail(tickerId, isETF);
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   if (isLoading || !detail) {
     return <div>Loading...</div>;
   }
 
-  const getField = (
+  const createChartData = (
     label: string,
-    value: number | undefined,
-    isCurrency: boolean = true,
-  ) => (
-    <Box>
-      <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-        {label}
-      </Typography>
-      <Typography variant="body2">
-        {value !== undefined
-          ? isCurrency
-            ? formatCurrency(
-                isETFAggregateDetail(detail) ? detail.currency_code : "USD",
-                value,
-              )
-            : value
-          : "N/A"}
-      </Typography>
-    </Box>
-  );
+    currentValue: number | undefined,
+    year1Value: number | undefined,
+    year2Value: number | undefined,
+    year3Value: number | undefined,
+    year4Value: number | undefined,
+  ) => [
+    { year: "4 Years Ago", value: year4Value || 0 },
+    { year: "3 Years Ago", value: year3Value || 0 },
+    { year: "2 Years Ago", value: year2Value || 0 },
+    { year: "1 Year Ago", value: year1Value || 0 },
+    { year: "Current", value: currentValue || 0 },
+  ];
 
-  const renderFieldGroup = (
-    label: string,
+  const renderChart = (
+    title: string,
     currentKey:
       | keyof RustServiceTicker10KDetail
       | keyof RustServiceETFAggregateDetail,
@@ -89,22 +91,51 @@ export default function FinancialReport({
     const year3 = detail[year3Key as keyof typeof detail];
     const year4 = detail[year4Key as keyof typeof detail];
 
+    const chartData = createChartData(
+      title,
+      current as number,
+      year1 as number,
+      year2 as number,
+      year3 as number,
+      year4 as number,
+    );
+
     return (
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "repeat(5, 1fr)",
-          gap: 2,
-        }}
-      >
-        <Typography variant="subtitle2" sx={{ gridColumn: "1 / -1" }}>
-          {label}
+      <Box sx={{ marginBottom: 4 }}>
+        <Typography variant="subtitle2" sx={{ marginBottom: 2 }}>
+          {title}
         </Typography>
-        {typeof current === "number" && getField("Current", current, true)}
-        {typeof year1 === "number" && getField("1 Year Ago", year1, true)}
-        {typeof year2 === "number" && getField("2 Years Ago", year2, true)}
-        {typeof year3 === "number" && getField("3 Years Ago", year3, true)}
-        {typeof year4 === "number" && getField("4 Years Ago", year4, true)}
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart
+            data={chartData}
+            margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="year"
+              tick={(props) => <CustomTick {...props} />} // Spread props into CustomTick
+            />
+            <YAxis
+              tickFormatter={(value: number) =>
+                formatCurrency(
+                  isETFAggregateDetail(detail) ? detail.currency_code : "USD",
+                  value,
+                )
+              }
+              padding={{ top: 20, bottom: 0 }}
+            />
+            <Tooltip
+              formatter={(value: number) =>
+                formatCurrency(
+                  isETFAggregateDetail(detail) ? detail.currency_code : "USD",
+                  value,
+                )
+              }
+            />
+            <Legend />
+            <Line type="monotone" dataKey="value" stroke="#8884d8" />
+          </LineChart>
+        </ResponsiveContainer>
       </Box>
     );
   };
@@ -114,7 +145,7 @@ export default function FinancialReport({
       <Typography variant="h6" sx={{ marginBottom: 2 }}>
         Financial Overview
       </Typography>
-      {renderFieldGroup(
+      {renderChart(
         "Revenue",
         isETF ? "avg_revenue_current" : "revenue_current",
         isETF ? "avg_revenue_1_yr" : "revenue_1_yr",
@@ -123,7 +154,7 @@ export default function FinancialReport({
         isETF ? "avg_revenue_4_yr" : "revenue_4_yr",
       )}
       <Divider sx={{ my: 2 }} />
-      {renderFieldGroup(
+      {renderChart(
         "Gross Profit",
         isETF ? "avg_gross_profit_current" : "gross_profit_current",
         isETF ? "avg_gross_profit_1_yr" : "gross_profit_1_yr",
@@ -132,7 +163,7 @@ export default function FinancialReport({
         isETF ? "avg_gross_profit_4_yr" : "gross_profit_4_yr",
       )}
       <Divider sx={{ my: 2 }} />
-      {renderFieldGroup(
+      {renderChart(
         "Operating Income",
         isETF ? "avg_operating_income_current" : "operating_income_current",
         isETF ? "avg_operating_income_1_yr" : "operating_income_1_yr",
@@ -141,7 +172,7 @@ export default function FinancialReport({
         isETF ? "avg_operating_income_4_yr" : "operating_income_4_yr",
       )}
       <Divider sx={{ my: 2 }} />
-      {renderFieldGroup(
+      {renderChart(
         "Net Income",
         isETF ? "avg_net_income_current" : "net_income_current",
         isETF ? "avg_net_income_1_yr" : "net_income_1_yr",
@@ -150,7 +181,7 @@ export default function FinancialReport({
         isETF ? "avg_net_income_4_yr" : "net_income_4_yr",
       )}
       <Divider sx={{ my: 2 }} />
-      {renderFieldGroup(
+      {renderChart(
         "Total Assets",
         isETF ? "avg_total_assets_current" : "total_assets_current",
         isETF ? "avg_total_assets_1_yr" : "total_assets_1_yr",
@@ -159,7 +190,7 @@ export default function FinancialReport({
         isETF ? "avg_total_assets_4_yr" : "total_assets_4_yr",
       )}
       <Divider sx={{ my: 2 }} />
-      {renderFieldGroup(
+      {renderChart(
         "Total Liabilities",
         isETF ? "avg_total_liabilities_current" : "total_liabilities_current",
         isETF ? "avg_total_liabilities_1_yr" : "total_liabilities_1_yr",
@@ -168,7 +199,7 @@ export default function FinancialReport({
         isETF ? "avg_total_liabilities_4_yr" : "total_liabilities_4_yr",
       )}
       <Divider sx={{ my: 2 }} />
-      {renderFieldGroup(
+      {renderChart(
         "Operating Cash Flow",
         isETF
           ? "avg_operating_cash_flow_current"
@@ -179,5 +210,29 @@ export default function FinancialReport({
         isETF ? "avg_operating_cash_flow_4_yr" : "operating_cash_flow_4_yr",
       )}
     </Paper>
+  );
+}
+
+type CustomTickProps = {
+  x: number;
+  y: number;
+  payload: {
+    value: string;
+  };
+  // Include any additional props if needed
+};
+
+// Custom tick component to handle rotation
+function CustomTick({ x, y, payload }: CustomTickProps) {
+  return (
+    <text
+      x={x}
+      y={y}
+      textAnchor="end"
+      transform={`rotate(-15, ${x}, ${y})`}
+      fill="#666" // Set the text color (adjust color as needed)
+    >
+      {payload.value}
+    </text>
   );
 }
