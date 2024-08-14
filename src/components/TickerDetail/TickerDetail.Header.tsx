@@ -45,47 +45,9 @@ export default function TickerDetailHeader({
     exact: string | null;
   }>();
 
-  const { visibleTickerIds } = useStoreStateReader("visibleTickerIds");
-  const [isIntersecting, setIsIntersecting] = useState(false);
-  const [isShowingStaticHeader, setIsShowingStaticHeader] = useState(false);
+  const elRef = useRef<HTMLDivElement>(null);
 
-  const intersectionCallback: IntersectionObserverCallback = (entries) => {
-    entries.forEach((entry) => {
-      setIsIntersecting(entry.isIntersecting);
-    });
-  };
-
-  useEffect(() => {
-    if (!isIntersecting && visibleTickerIds.includes(tickerDetail.ticker_id)) {
-      setIsShowingStaticHeader(true);
-    } else {
-      setIsShowingStaticHeader(false);
-    }
-  }, [
-    isIntersecting,
-    tickerDetail.symbol,
-    tickerDetail.ticker_id,
-    visibleTickerIds,
-  ]);
-
-  const elRef = useRef(null);
-
-  const { observe, unobserve } = useIntersectionObserver(
-    intersectionCallback,
-    0,
-  );
-
-  useEffect(() => {
-    const el = elRef.current;
-
-    if (el) {
-      observe(el);
-
-      return () => {
-        unobserve(el);
-      };
-    }
-  }, [observe, unobserve]);
+  const isShowingStaticHeader = useStaticHeaderDeterminer(elRef, tickerDetail);
 
   return (
     <>
@@ -324,3 +286,50 @@ const SymbolDetailWrapper = styled(Box)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   marginBottom: theme.spacing(4),
 }));
+
+function useStaticHeaderDeterminer(
+  elRef: React.MutableRefObject<HTMLDivElement | null>,
+  tickerDetail: RustServiceTickerDetail,
+) {
+  const { visibleTickerIds } = useStoreStateReader("visibleTickerIds");
+  const [isIntersecting, setIsIntersecting] = useState(false);
+  const [isShowingStaticHeader, setIsShowingStaticHeader] = useState(false);
+
+  const intersectionCallback: IntersectionObserverCallback = (entries) => {
+    entries.forEach((entry) => {
+      setIsIntersecting(entry.isIntersecting);
+    });
+  };
+
+  useEffect(() => {
+    if (!isIntersecting && visibleTickerIds.includes(tickerDetail.ticker_id)) {
+      setIsShowingStaticHeader(true);
+    } else {
+      setIsShowingStaticHeader(false);
+    }
+  }, [
+    isIntersecting,
+    tickerDetail.symbol,
+    tickerDetail.ticker_id,
+    visibleTickerIds,
+  ]);
+
+  const { observe, unobserve } = useIntersectionObserver(
+    intersectionCallback,
+    0,
+  );
+
+  useEffect(() => {
+    const el = elRef.current;
+
+    if (el) {
+      observe(el);
+
+      return () => {
+        unobserve(el);
+      };
+    }
+  }, [elRef, observe, unobserve]);
+
+  return isShowingStaticHeader;
+}
