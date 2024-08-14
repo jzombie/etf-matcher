@@ -8,7 +8,6 @@ import type {
 } from "@src/types";
 import {
   CartesianGrid,
-  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -123,7 +122,6 @@ export default function FinancialReport({
                 )
               }
             />
-            <Legend />
             <Line type="monotone" dataKey="value" stroke="#8884d8" />
           </LineChart>
         </ResponsiveContainer>
