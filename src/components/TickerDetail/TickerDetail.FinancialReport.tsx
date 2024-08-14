@@ -210,20 +210,21 @@ type CustomTickProps = {
   payload: {
     value: string;
   };
-  // Include any additional props if needed
 };
 
-// Custom tick component to handle rotation
 function CustomTick({ x, y, payload }: CustomTickProps) {
+  const offsetX = 45; // Adjust this value to move right
+  const offsetY = 5; // Adjust this value to move down
+
   return (
     <text
-      x={x}
-      y={y}
+      x={x + offsetX} // Offset the x position
+      y={y + offsetY} // Offset the y position
       textAnchor="end"
-      transform={`rotate(-15, ${x}, ${y})`}
+      transform={`rotate(-15, ${x + offsetX}, ${y + offsetY})`}
       fill="#666" // Set the text color (adjust color as needed)
     >
-      {payload.value}
+      {payload.value !== "Current" ? payload.value : null}
     </text>
   );
 }
