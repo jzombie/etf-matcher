@@ -108,10 +108,37 @@ export default function TickerDetailHeader({
             left: 0,
             width: "100%",
             backgroundColor: "rgba(0,0,0,.4)",
+            padding: 4,
             zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            overflow: "hidden",
           }}
         >
-          [STATIC TEST {tickerDetail.symbol}]
+          <EncodedImage
+            encSrc={tickerDetail?.logo_filename}
+            title={`${tickerDetail?.symbol} logo`}
+            style={{
+              width: 40,
+              height: 40,
+              verticalAlign: "middle",
+              marginRight: 8,
+              flexShrink: 0,
+            }}
+          />
+          <h3
+            style={{
+              display: "inline-block",
+              margin: 0,
+              padding: 0,
+              whiteSpace: "nowrap", // Prevent text from wrapping to the next line
+              overflow: "hidden", // Hide overflowing content
+              textOverflow: "ellipsis", // Show ellipsis for overflowing text
+              flexGrow: 1, // Allow the text to take up available space
+            }}
+          >
+            {tickerDetail.company_name}
+          </h3>
         </div>
       )}
       <SymbolDetailWrapper ref={elRef}>
