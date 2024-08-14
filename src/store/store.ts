@@ -60,6 +60,11 @@ export const tickerBucketDefaultNames: Readonly<
   recently_viewed: "Recently Viewed",
 };
 
+export const multiBucketInstancesAllowed: Readonly<TickerBucket["type"][]> = [
+  "watchlist",
+  "portfolio",
+];
+
 export type StoreStateProps = {
   isHTMLJSVersionSynced: boolean;
   isIndexedDBReady: boolean;

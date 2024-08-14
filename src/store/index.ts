@@ -3,9 +3,14 @@ import store, {
   StoreStateProps,
   TickerBucket,
   TickerBucketTicker,
+  multiBucketInstancesAllowed,
   tickerBucketDefaultNames,
 } from "./store";
 
 export default store;
-export { tickerBucketDefaultNames, StateEmitterDefaultEvents };
+export {
+  tickerBucketDefaultNames,
+  StateEmitterDefaultEvents,
+  multiBucketInstancesAllowed,
+};
 export type { TickerBucket, TickerBucketTicker, StoreStateProps };
