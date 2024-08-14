@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Alert } from "@mui/material";
 
 import Padding from "@layoutKit/Padding";
+import { DEFAULT_CURRENCY_CODE } from "@src/constants";
 import store from "@src/store";
 import {
   RustServiceETFAggregateDetail,
@@ -45,8 +46,8 @@ export default function FinancialReport({
     }
   }, [tickerDetail]);
 
-  // const currencyCode = financialData.currency_code || "USD";
-  const currencyCode = "USD";
+  // TODO: Obtain from data source
+  const currencyCode = DEFAULT_CURRENCY_CODE;
 
   const chartData = useMemo(() => {
     if (!financialData) {
@@ -141,11 +142,6 @@ export default function FinancialReport({
     }
   }, [financialData]);
 
-  // Assume if there is no `current` data, there is no data worth rendering.
-  //
-  // Where `current` is this current calendar year or the previous calendar year,
-  // determined by the fiscal year start of the ticker or aggregated tickers in
-  // an ETF.
   const hasChartableData = useMemo(() => {
     if (!financialData) {
       return false;
@@ -178,52 +174,70 @@ export default function FinancialReport({
     <div>
       <Padding>
         <h2>{tickerDetail.symbol} Financial Report</h2>
-        <h3>Revenue and Net Income Over Years</h3>
       </Padding>
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart
-          data={chartData}
-          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="year" />
-          <YAxis
-            tickFormatter={(value: number) =>
-              formatCurrency(currencyCode, value)
-            }
-          />
-          <Tooltip
-            formatter={(value: number) => formatCurrency(currencyCode, value)}
-          />
-          <Legend />
-          <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
-          <Line type="monotone" dataKey="netIncome" stroke="#82ca9d" />
-        </LineChart>
-      </ResponsiveContainer>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
+          gap: "16px",
+        }}
+      >
+        <div>
+          <Padding>
+            <h3>Revenue and Net Income Over Years</h3>
+          </Padding>
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart
+              data={chartData}
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="year" />
+              <YAxis
+                tickFormatter={(value: number) =>
+                  formatCurrency(currencyCode, value)
+                }
+              />
+              <Tooltip
+                formatter={(value: number) =>
+                  formatCurrency(currencyCode, value)
+                }
+              />
+              <Legend />
+              <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
+              <Line type="monotone" dataKey="netIncome" stroke="#82ca9d" />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
 
-      <Padding>
-        <h3>Operating Income and Operating Cash Flow</h3>
-      </Padding>
-      <ResponsiveContainer width="100%" height={400}>
-        <BarChart
-          data={chartData}
-          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="year" />
-          <YAxis
-            tickFormatter={(value: number) =>
-              formatCurrency(currencyCode, value)
-            }
-          />
-          <Tooltip
-            formatter={(value: number) => formatCurrency(currencyCode, value)}
-          />
-          <Legend />
-          <Bar dataKey="operatingIncome" fill="#8884d8" />
-          <Bar dataKey="operatingCashFlow" fill="#82ca9d" />
-        </BarChart>
-      </ResponsiveContainer>
+        <div>
+          <Padding>
+            <h3>Operating Income and Operating Cash Flow</h3>
+          </Padding>
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart
+              data={chartData}
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="year" />
+              <YAxis
+                tickFormatter={(value: number) =>
+                  formatCurrency(currencyCode, value)
+                }
+              />
+              <Tooltip
+                formatter={(value: number) =>
+                  formatCurrency(currencyCode, value)
+                }
+              />
+              <Legend />
+              <Bar dataKey="operatingIncome" fill="#8884d8" />
+              <Bar dataKey="operatingCashFlow" fill="#82ca9d" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
     </div>
   );
 }

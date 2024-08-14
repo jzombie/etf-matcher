@@ -64,3 +64,5 @@ export const COLOR_WHEEL_COLORS: Readonly<string[]> = [
 ];
 
 export const MAX_RECENTLY_VIEWED_ITEMS = 10;
+
+export const DEFAULT_CURRENCY_CODE = "USD";
