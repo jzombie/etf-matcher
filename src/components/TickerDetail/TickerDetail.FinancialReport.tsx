@@ -1,13 +1,6 @@
 import React from "react";
 
-import {
-  Box,
-  Divider,
-  Paper,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, Divider, Paper, Typography } from "@mui/material";
 
 import type {
   RustServiceETFAggregateDetail,
@@ -45,8 +38,6 @@ export default function FinancialReport({
   isETF,
 }: FinancialReportProps) {
   const { isLoading, detail } = useTicker10KDetail(tickerId, isETF);
-
-  const theme = useTheme();
 
   if (isLoading || !detail) {
     return <div>Loading...</div>;
