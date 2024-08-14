@@ -25,13 +25,13 @@ import {
 
 import formatCurrency from "@utils/formatCurrency";
 
-export type FinancialReportProps = {
+export type FinancialChartsGridProps = {
   tickerDetail: RustServiceTickerDetail;
 };
 
-export default function FinancialReport({
+export default function FinancialChartsGrid({
   tickerDetail,
-}: FinancialReportProps) {
+}: FinancialChartsGridProps) {
   const [financialData, setFinancialData] = useState<
     RustServiceTicker10KDetail | RustServiceETFAggregateDetail | null
   >(null);

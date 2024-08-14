@@ -28,7 +28,7 @@ import TickerContainer from "../TickerContainer";
 import TickerDetailBucketManager from "./TickerDetail.BucketManager";
 import ETFHolderList from "./TickerDetail.ETFHolderList";
 import ETFHoldingList from "./TickerDetail.ETFHoldingList";
-import FinancialReport from "./TickerDetail.FinancialReport";
+import FinancialChartsGrid from "./TickerDetail.FinancialChartsGrid";
 import HistoricalPriceChart from "./TickerDetail.HistoricalPriceChart";
 
 export type TickerDetailProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -301,7 +301,7 @@ export default function TickerDetail({
       </Box>
 
       <Section>
-        <FinancialReport tickerDetail={tickerDetail} />
+        <FinancialChartsGrid tickerDetail={tickerDetail} />
       </Section>
 
       {/* {showNews && (
