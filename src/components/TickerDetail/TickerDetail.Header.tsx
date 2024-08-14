@@ -23,31 +23,6 @@ export type TickerDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   preventLoadingSpinner?: boolean;
 };
 
-const LogoContainer = styled(Box)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  borderRadius: "0 50px 50px 0",
-  backgroundColor: theme.palette.background.paper,
-  padding: theme.spacing(4),
-  marginRight: theme.spacing(2),
-}));
-
-const InfoContainer = styled(Box)(() => ({
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "space-around",
-  width: "100%",
-}));
-
-const SymbolDetailWrapper = styled(Box)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "row",
-  backgroundColor: theme.palette.background.default,
-  borderRadius: theme.shape.borderRadius,
-  marginBottom: theme.spacing(4),
-}));
-
 export type TickerDetailHeaderProps = {
   tickerDetail: RustServiceTickerDetail;
   etfAggregateDetail?: RustServiceETFAggregateDetail;
@@ -232,3 +207,28 @@ export default function TickerDetailHeader({
     </SymbolDetailWrapper>
   );
 }
+
+const LogoContainer = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  borderRadius: "0 50px 50px 0",
+  backgroundColor: theme.palette.background.paper,
+  padding: theme.spacing(4),
+  marginRight: theme.spacing(2),
+}));
+
+const InfoContainer = styled(Box)(() => ({
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-around",
+  width: "100%",
+}));
+
+const SymbolDetailWrapper = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "row",
+  backgroundColor: theme.palette.background.default,
+  borderRadius: theme.shape.borderRadius,
+  marginBottom: theme.spacing(4),
+}));
