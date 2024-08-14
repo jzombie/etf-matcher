@@ -18,7 +18,6 @@ import { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucket } from "@src/store";
 import type { RustServiceTickerDetail } from "@src/types";
 
-// TODO: Extract `BucketForm`?
 import BucketForm from "@components/BucketManager/BucketManager.BucketForm";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
