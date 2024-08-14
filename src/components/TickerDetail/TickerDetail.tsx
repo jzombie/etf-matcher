@@ -29,6 +29,7 @@ import TickerDetailBucketManager from "./TickerDetail.BucketManager";
 import ETFHolderList from "./TickerDetail.ETFHolderList";
 import ETFHoldingList from "./TickerDetail.ETFHoldingList";
 import FinancialChartsGrid from "./TickerDetail.FinancialChartsGrid";
+import FinancialReport from "./TickerDetail.FinancialReport";
 import HistoricalPriceChart from "./TickerDetail.HistoricalPriceChart";
 
 export type TickerDetailProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -315,6 +316,11 @@ export default function TickerDetail({
           copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
         />
       )} */}
+
+      <FinancialReport
+        tickerId={tickerDetail.ticker_id}
+        isETF={tickerDetail.is_etf}
+      />
 
       {tickerDetail?.is_etf && (
         <ETFHoldingList etfTickerDetail={tickerDetail} />
