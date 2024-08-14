@@ -82,7 +82,7 @@ export default function BucketForm({
       >
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
           <TextField
-            label="Bucket Name"
+            label={`${tickerBucketDefaultNames[bucketType]} Name`}
             value={bucketName}
             onChange={(e) => setBucketName(e.target.value)}
             variant="outlined"
@@ -90,7 +90,7 @@ export default function BucketForm({
             required
           />
           <TextField
-            label="Bucket Description"
+            label={`${tickerBucketDefaultNames[bucketType]} Description`}
             value={bucketDescription}
             onChange={(e) => setBucketDescription(e.target.value)}
             variant="outlined"
