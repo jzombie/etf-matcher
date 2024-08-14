@@ -102,9 +102,10 @@ export default function TickerDetailBucketManager({
             ? store.bucketHasTicker(tickerDetail.ticker_id, bucket)
             : false;
 
-          const buttonText = multiBucketInstancesAllowed.includes(type)
-            ? "Manage"
-            : "Add";
+          const buttonText =
+            isTickerInBucket && multiBucketInstancesAllowed.includes(type)
+              ? `Manage ${tickerDetail.symbol} in ${tickerBucketDefaultNames[type]}`
+              : `Add ${tickerDetail.symbol} to ${tickerBucketDefaultNames[type]}`;
 
           return (
             <Grid item xs={12} sm={6} md={4} key={type}>
@@ -117,8 +118,7 @@ export default function TickerDetailBucketManager({
                     color="primary"
                     fullWidth
                   >
-                    {buttonText} {tickerDetail.symbol} in{" "}
-                    {tickerBucketDefaultNames[type]}
+                    {buttonText}
                   </Button>
                 ) : null}
                 {isTickerInBucket && (
