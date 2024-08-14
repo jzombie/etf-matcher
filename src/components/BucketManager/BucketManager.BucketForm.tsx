@@ -8,13 +8,15 @@ import type { TickerBucket } from "@src/store";
 export type BucketFormProps = {
   bucketType: TickerBucket["type"];
   existingBucket?: TickerBucket;
-  onClose: () => void;
+  onClose?: () => void;
+  onCancel?: () => void;
 };
 
 export default function BucketForm({
   bucketType,
   existingBucket,
   onClose,
+  onCancel,
 }: BucketFormProps) {
   const [bucketName, setBucketName] = useState<string>("");
   const [bucketDescription, setBucketDescription] = useState<string>("");
@@ -45,14 +47,24 @@ export default function BucketForm({
     // Reset fields and close the form
     setBucketName("");
     setBucketDescription("");
-    onClose();
+
+    if (typeof onClose === "function") {
+      onClose();
+    }
   }, [bucketType, bucketName, bucketDescription, existingBucket, onClose]);
 
   const handleCancel = useCallback(() => {
     setBucketName("");
     setBucketDescription("");
-    onClose();
-  }, [onClose]);
+
+    if (typeof onClose === "function") {
+      onClose();
+    }
+
+    if (typeof onCancel === "function") {
+      onCancel();
+    }
+  }, [onClose, onCancel]);
 
   const isFormValid = bucketName.trim() !== "";
 

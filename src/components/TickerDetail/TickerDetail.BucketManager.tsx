@@ -199,7 +199,7 @@ export default function TickerDetailBucketManager({
           {selectedBucketType && (
             <BucketForm
               bucketType={selectedBucketType}
-              onClose={handleCloseBucketDialog}
+              onCancel={handleCloseBucketDialog}
             />
           )}
         </DialogContent>
