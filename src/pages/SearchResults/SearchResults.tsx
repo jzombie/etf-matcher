@@ -141,7 +141,6 @@ export default function SearchResults() {
                 isHeaderPaginationInline ? "flex-start" : "space-between"
               }
               width={isHeaderPaginationInline ? "auto" : "100%"}
-              mb={isHeaderPaginationInline ? 0 : 2}
             >
               <FormControlLabel
                 control={
@@ -170,7 +169,7 @@ export default function SearchResults() {
             </Box>
             {totalSearchResults > pageSize && (
               <Box
-                mt={isHeaderPaginationInline ? 0 : 2}
+                mt={isHeaderPaginationInline ? 0 : 0.4}
                 textAlign={isHeaderPaginationInline ? "right" : "center"}
               >
                 <Pagination
