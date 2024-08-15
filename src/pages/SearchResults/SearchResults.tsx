@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 
 import {
   Box,
@@ -57,6 +57,16 @@ export default function SearchResults() {
       headerRef.current.style.marginTop = `${newMarginTop}px`;
     }
   }, []);
+
+  // Reset header offset on page changes (fixes an issue where when using footer
+  // pagination navigation, the header wouldn't re-appear)
+  useEffect(() => {
+    const header = headerRef.current;
+
+    if (page && header) {
+      header.style.marginTop = "0px";
+    }
+  }, [page]);
 
   if (!searchResults.length) {
     if (isLoading) {
@@ -142,7 +152,7 @@ export default function SearchResults() {
             </Box>
             {totalSearchResults > pageSize && (
               <Pagination
-                disabled={false}
+                disabled={isLoading}
                 count={totalPages}
                 page={page}
                 onChange={(event, nextPage) => setPage(nextPage)}
@@ -162,6 +172,19 @@ export default function SearchResults() {
             <TickerDetailList
               tickerIds={searchResults.map(({ ticker_id }) => ticker_id)}
             />
+
+            {totalSearchResults > pageSize && !isLoading && (
+              <Box style={{ textAlign: "center" }}>
+                <Pagination
+                  count={totalPages}
+                  page={page}
+                  onChange={(event, nextPage) => setPage(nextPage)}
+                  showFirstButton
+                  showLastButton
+                  sx={{ display: "inline-block" }}
+                />
+              </Box>
+            )}
           </Scrollable>
         </Transition>
       </Content>
