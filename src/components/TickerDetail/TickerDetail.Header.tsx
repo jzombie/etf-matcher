@@ -40,14 +40,11 @@ export default function TickerDetailHeader({
     tickerDetail.logo_filename,
   );
 
-  const { setURLState, toBooleanParam } = useURLState<{
-    query: string | null;
-    exact: string | null;
-  }>();
-
   const elRef = useRef<HTMLDivElement>(null);
 
   const isShowingStaticHeader = useStaticHeaderDeterminer(elRef, tickerDetail);
+
+  const { setURLState, toBooleanParam } = useURLState();
 
   return (
     <>
@@ -66,30 +63,45 @@ export default function TickerDetailHeader({
             overflow: "hidden",
           }}
         >
-          <EncodedImage
-            encSrc={tickerDetail?.logo_filename}
-            title={`${tickerDetail?.symbol} logo`}
-            style={{
-              width: 40,
-              height: 40,
-              verticalAlign: "middle",
-              marginRight: 8,
-              flexShrink: 0,
-            }}
-          />
-          <h3
-            style={{
-              display: "inline-block",
-              margin: 0,
-              padding: 0,
-              whiteSpace: "nowrap", // Prevent text from wrapping to the next line
-              overflow: "hidden", // Hide overflowing content
-              textOverflow: "ellipsis", // Show ellipsis for overflowing text
-              flexGrow: 1, // Allow the text to take up available space
-            }}
+          <ButtonBase
+            sx={{ width: "100%", overflow: "hidden" }}
+            onClick={() =>
+              setURLState(
+                {
+                  query: tickerDetail.symbol,
+                  exact: toBooleanParam(true),
+                },
+                false,
+                "/search",
+              )
+            }
           >
-            {tickerDetail.company_name}
-          </h3>
+            <EncodedImage
+              encSrc={tickerDetail?.logo_filename}
+              title={`${tickerDetail?.symbol} logo`}
+              style={{
+                width: 40,
+                height: 40,
+                verticalAlign: "middle",
+                marginRight: 8,
+                flexShrink: 0,
+              }}
+            />
+            <h3
+              style={{
+                display: "inline-block",
+                textAlign: "left",
+                margin: 0,
+                padding: 0,
+                whiteSpace: "nowrap", // Prevent text from wrapping to the next line
+                overflow: "hidden", // Hide overflowing content
+                textOverflow: "ellipsis", // Show ellipsis for overflowing text
+                flexGrow: 1, // Allow the text to take up available space
+              }}
+            >
+              {tickerDetail.company_name}
+            </h3>
+          </ButtonBase>
         </div>
       )}
       <SymbolDetailWrapper ref={elRef}>
