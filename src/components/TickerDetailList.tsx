@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import customLogger from "@utils/customLogger";
 
 import TickerDetail from "./TickerDetail";
+import { UnstyledLI, UnstyledUL } from "./Unstyled";
 
 export type TickerDetailListProps = {
   tickerIds: number[];
@@ -41,23 +42,24 @@ export default function TickerDetailList({
   );
 
   return (
-    <>
+    <UnstyledUL>
       {tickerIds.map((tickerId, idx) => {
         if (idx <= maxIntersectionIndex + lookAheadBufferSize) {
           return (
-            <TickerDetail
-              key={tickerId}
-              tickerId={tickerId}
-              onIntersectionStateChange={(isIntersecting) =>
-                handleIntersectionStateChange(tickerId, isIntersecting)
-              }
-              onLoad={onLoad}
-              // Prevent stacked-up loading spinners
-              preventLoadingSpinner={idx > 0}
-            />
+            <UnstyledLI key={tickerId}>
+              <TickerDetail
+                tickerId={tickerId}
+                onIntersectionStateChange={(isIntersecting) =>
+                  handleIntersectionStateChange(tickerId, isIntersecting)
+                }
+                onLoad={onLoad}
+                // Prevent stacked-up loading spinners
+                preventLoadingSpinner={idx > 0}
+              />
+            </UnstyledLI>
           );
         }
       })}
-    </>
+    </UnstyledUL>
   );
 }
