@@ -172,9 +172,6 @@ export default function FinancialChartsGrid({
 
   return (
     <div>
-      <Padding>
-        <h2>{tickerDetail.symbol} Financial Report</h2>
-      </Padding>
       <div
         style={{
           display: "grid",
