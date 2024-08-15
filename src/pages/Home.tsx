@@ -72,6 +72,7 @@ const overlayStyle: React.CSSProperties = {
   left: 0,
   width: "100%",
   height: "100%",
+  padding: 8,
   backgroundColor: "rgba(0, 0, 0, 0.8)", // Translucent overlay
   display: "flex",
   alignItems: "center",
