@@ -136,7 +136,8 @@ export default function SearchResults() {
             <Box>
               <Typography variant="body1">
                 {totalSearchResults} search result
-                {totalSearchResults !== 1 ? "s" : ""} for "{searchQuery}"
+                {totalSearchResults !== 1 ? "s" : ""} for &quot;{searchQuery}
+                &quot;
               </Typography>
             </Box>
             {totalSearchResults > pageSize && (
