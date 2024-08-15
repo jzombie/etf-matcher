@@ -7,6 +7,7 @@ import {
   Pagination,
   Switch,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -68,6 +69,8 @@ export default function SearchResults() {
     }
   }, [page]);
 
+  const isHeaderPaginationInline = useMediaQuery("@media (min-width:800px)");
+
   if (!searchResults.length) {
     if (isLoading) {
       return (
@@ -125,10 +128,21 @@ export default function SearchResults() {
           <Box
             display="flex"
             alignItems="center"
-            justifyContent="space-between"
+            justifyContent={
+              isHeaderPaginationInline ? "space-between" : "space-between"
+            }
+            flexDirection={isHeaderPaginationInline ? "row" : "column"}
             sx={{ height: "100%" }}
           >
-            <Box display="flex" alignItems="center">
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent={
+                isHeaderPaginationInline ? "flex-start" : "space-between"
+              }
+              width={isHeaderPaginationInline ? "auto" : "100%"}
+              mb={isHeaderPaginationInline ? 0 : 2}
+            >
               <FormControlLabel
                 control={
                   <Switch
@@ -142,23 +156,32 @@ export default function SearchResults() {
                   </Typography>
                 }
               />
-            </Box>
-            <Box>
-              <Typography variant="body1">
+              <Typography
+                variant="body1"
+                sx={{
+                  marginLeft: isHeaderPaginationInline ? 2 : 0,
+                  textAlign: isHeaderPaginationInline ? "left" : "center",
+                }}
+              >
                 {totalSearchResults} search result
                 {totalSearchResults !== 1 ? "s" : ""} for &quot;{searchQuery}
                 &quot;
               </Typography>
             </Box>
             {totalSearchResults > pageSize && (
-              <Pagination
-                disabled={isLoading}
-                count={totalPages}
-                page={page}
-                onChange={(event, nextPage) => setPage(nextPage)}
-                showFirstButton
-                showLastButton
-              />
+              <Box
+                mt={isHeaderPaginationInline ? 0 : 2}
+                textAlign={isHeaderPaginationInline ? "right" : "center"}
+              >
+                <Pagination
+                  disabled={isLoading}
+                  count={totalPages}
+                  page={page}
+                  onChange={(event, nextPage) => setPage(nextPage)}
+                  showFirstButton
+                  showLastButton
+                />
+              </Box>
             )}
           </Box>
         </Padding>
