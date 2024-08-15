@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef } from "react";
 
 import {
   Box,
@@ -42,7 +42,9 @@ export default function SearchResults() {
 
   const headerRef = useRef<HTMLDivElement>(null);
 
-  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+  const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
+    // TODO: On large enough viewports, discard this
+
     if (headerRef.current) {
       const scrollTop = event.currentTarget.scrollTop;
       const headerHeight = headerRef.current.clientHeight;
@@ -54,7 +56,7 @@ export default function SearchResults() {
       // Apply the calculated margin top to the header
       headerRef.current.style.marginTop = `${newMarginTop}px`;
     }
-  };
+  }, []);
 
   if (!searchResults.length) {
     if (isLoading) {
