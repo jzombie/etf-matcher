@@ -141,12 +141,18 @@ export default function TickerDetailBucketManager({
       <Dialog open={isBucketDialogOpen} onClose={handleCloseBucketDialog}>
         <DialogTitle>
           <ListAltIcon sx={{ verticalAlign: "middle", marginRight: 1 }} />{" "}
-          Manage {tickerDetail.symbol} in{" "}
-          {selectedBucketType && tickerBucketDefaultNames[selectedBucketType]}{" "}
-          Buckets
+          Manage &quot;{tickerDetail.symbol}&quot; in{" "}
+          {selectedBucketType
+            ? `${tickerBucketDefaultNames[selectedBucketType]}s`
+            : "Buckets"}{" "}
         </DialogTitle>
         <DialogContent>
-          <Typography variant="h6">Existing Buckets</Typography>
+          <Typography variant="h6">
+            Existing{" "}
+            {selectedBucketType
+              ? `${tickerBucketDefaultNames[selectedBucketType]}s`
+              : "Buckets"}
+          </Typography>
           <Box sx={{ maxHeight: 300, overflowY: "auto", marginBottom: 2 }}>
             {tickerBuckets
               ?.filter(
