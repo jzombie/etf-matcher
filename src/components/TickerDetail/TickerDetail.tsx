@@ -6,8 +6,6 @@ import Center from "@layoutKit/Center";
 import store from "@src/store";
 import type { RustServiceETFAggregateDetail } from "@src/types";
 
-import Section from "@components/Section";
-
 import useTickerDetail from "@hooks/useTickerDetail";
 
 import formatSymbolWithExchange from "@utils/formatSymbolWithExchange";
@@ -17,7 +15,6 @@ import TickerDetailBucketManager from "./TickerDetail.BucketManager";
 import ETFHolderList from "./TickerDetail.ETFHolderList";
 import ETFHoldingList from "./TickerDetail.ETFHoldingList";
 import FinancialChartsGrid from "./TickerDetail.FinancialChartsGrid";
-import FinancialReport from "./TickerDetail.FinancialReport";
 import TickerDetailHeader from "./TickerDetail.Header";
 import HistoricalPriceChart from "./TickerDetail.HistoricalPriceChart";
 
@@ -96,10 +93,6 @@ export default function TickerDetail({
         <TickerDetailBucketManager tickerDetail={tickerDetail} />
       </Box>
 
-      <Section>
-        <FinancialChartsGrid tickerDetail={tickerDetail} />
-      </Section>
-
       {/* {showNews && (
         // TODO: This seems out of date for `CRWD`, regardless if using `formattedSymbolWithExchange`
         // or just the `tickerSymbol` itself. Other symbols seem to be okay.
@@ -112,7 +105,7 @@ export default function TickerDetail({
         />
       )} */}
 
-      <FinancialReport
+      <FinancialChartsGrid
         tickerId={tickerDetail.ticker_id}
         isETF={tickerDetail.is_etf}
       />
