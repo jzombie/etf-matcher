@@ -8,13 +8,15 @@ import type { TickerBucket } from "@src/store";
 export type BucketFormProps = {
   bucketType: TickerBucket["type"];
   existingBucket?: TickerBucket;
-  onClose: () => void;
+  onClose?: () => void;
+  onCancel?: () => void;
 };
 
 export default function BucketForm({
   bucketType,
   existingBucket,
   onClose,
+  onCancel,
 }: BucketFormProps) {
   const [bucketName, setBucketName] = useState<string>("");
   const [bucketDescription, setBucketDescription] = useState<string>("");
@@ -45,14 +47,24 @@ export default function BucketForm({
     // Reset fields and close the form
     setBucketName("");
     setBucketDescription("");
-    onClose();
+
+    if (typeof onClose === "function") {
+      onClose();
+    }
   }, [bucketType, bucketName, bucketDescription, existingBucket, onClose]);
 
   const handleCancel = useCallback(() => {
     setBucketName("");
     setBucketDescription("");
-    onClose();
-  }, [onClose]);
+
+    if (typeof onClose === "function") {
+      onClose();
+    }
+
+    if (typeof onCancel === "function") {
+      onCancel();
+    }
+  }, [onClose, onCancel]);
 
   const isFormValid = bucketName.trim() !== "";
 
@@ -70,7 +82,7 @@ export default function BucketForm({
       >
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
           <TextField
-            label="Bucket Name"
+            label={`${tickerBucketDefaultNames[bucketType]} Name`}
             value={bucketName}
             onChange={(e) => setBucketName(e.target.value)}
             variant="outlined"
@@ -78,7 +90,7 @@ export default function BucketForm({
             required
           />
           <TextField
-            label="Bucket Description"
+            label={`${tickerBucketDefaultNames[bucketType]} Description`}
             value={bucketDescription}
             onChange={(e) => setBucketDescription(e.target.value)}
             variant="outlined"

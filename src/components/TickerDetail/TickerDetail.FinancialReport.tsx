@@ -1,19 +1,13 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React from "react";
 
-import { Alert } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 
-import Padding from "@layoutKit/Padding";
-import store from "@src/store";
-import {
+import type {
   RustServiceETFAggregateDetail,
   RustServiceTicker10KDetail,
-  RustServiceTickerDetail,
 } from "@src/types";
 import {
-  Bar,
-  BarChart,
   CartesianGrid,
-  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -22,208 +16,218 @@ import {
   YAxis,
 } from "recharts";
 
+import useTicker10KDetail from "@hooks/useTicker10KDetail";
+
 import formatCurrency from "@utils/formatCurrency";
 
 export type FinancialReportProps = {
-  tickerDetail: RustServiceTickerDetail;
+  tickerId: number;
+  isETF: boolean;
 };
 
+function isETFAggregateDetail(
+  data: RustServiceTicker10KDetail | RustServiceETFAggregateDetail,
+): data is RustServiceETFAggregateDetail {
+  return "avg_revenue_current" in data;
+}
+
 export default function FinancialReport({
-  tickerDetail,
+  tickerId,
+  isETF,
 }: FinancialReportProps) {
-  const [financialData, setFinancialData] = useState<
-    RustServiceTicker10KDetail | RustServiceETFAggregateDetail | null
-  >(null);
+  const { isLoading, detail } = useTicker10KDetail(tickerId, isETF);
 
-  useEffect(() => {
-    if (!tickerDetail.is_etf) {
-      store.fetchTicker10KDetail(tickerDetail.ticker_id).then(setFinancialData);
-    } else {
-      store
-        .fetchETFAggregateDetailByTickerId(tickerDetail.ticker_id)
-        .then(setFinancialData);
-    }
-  }, [tickerDetail]);
-
-  // const currencyCode = financialData.currency_code || "USD";
-  const currencyCode = "USD";
-
-  const chartData = useMemo(() => {
-    if (!financialData) {
-      return [];
-    }
-
-    const isTicker10KDetail = (
-      financialData: RustServiceTicker10KDetail | RustServiceETFAggregateDetail,
-    ): financialData is RustServiceTicker10KDetail => {
-      return (
-        (financialData as RustServiceTicker10KDetail).calendar_year_4_yr !==
-        undefined
-      );
-    };
-
-    if (isTicker10KDetail(financialData)) {
-      return [
-        {
-          year: "4 years ago",
-          revenue: financialData.revenue_4_yr || 0,
-          netIncome: financialData.net_income_4_yr || 0,
-          operatingIncome: financialData.operating_income_4_yr || 0,
-          operatingCashFlow: financialData.operating_cash_flow_4_yr || 0,
-        },
-        {
-          year: "3 years ago",
-          revenue: financialData.revenue_3_yr || 0,
-          netIncome: financialData.net_income_3_yr || 0,
-          operatingIncome: financialData.operating_income_3_yr || 0,
-          operatingCashFlow: financialData.operating_cash_flow_3_yr || 0,
-        },
-        {
-          year: "2 years ago",
-          revenue: financialData.revenue_2_yr || 0,
-          netIncome: financialData.net_income_2_yr || 0,
-          operatingIncome: financialData.operating_income_2_yr || 0,
-          operatingCashFlow: financialData.operating_cash_flow_2_yr || 0,
-        },
-        {
-          year: "1 year ago",
-          revenue: financialData.revenue_1_yr || 0,
-          netIncome: financialData.net_income_1_yr || 0,
-          operatingIncome: financialData.operating_income_1_yr || 0,
-          operatingCashFlow: financialData.operating_cash_flow_1_yr || 0,
-        },
-        {
-          year: "Current",
-          revenue: financialData.revenue_current || 0,
-          netIncome: financialData.net_income_current || 0,
-          operatingIncome: financialData.operating_income_current || 0,
-          operatingCashFlow: financialData.operating_cash_flow_current || 0,
-        },
-      ];
-    } else {
-      return [
-        {
-          year: "4 years ago",
-          revenue: financialData.avg_revenue_4_yr || 0,
-          netIncome: financialData.avg_net_income_4_yr || 0,
-          operatingIncome: financialData.avg_operating_income_4_yr || 0,
-          operatingCashFlow: financialData.avg_operating_cash_flow_4_yr || 0,
-        },
-        {
-          year: "3 years ago",
-          revenue: financialData.avg_revenue_3_yr || 0,
-          netIncome: financialData.avg_net_income_3_yr || 0,
-          operatingIncome: financialData.avg_operating_income_3_yr || 0,
-          operatingCashFlow: financialData.avg_operating_cash_flow_3_yr || 0,
-        },
-        {
-          year: "2 years ago",
-          revenue: financialData.avg_revenue_2_yr || 0,
-          netIncome: financialData.avg_net_income_2_yr || 0,
-          operatingIncome: financialData.avg_operating_income_2_yr || 0,
-          operatingCashFlow: financialData.avg_operating_cash_flow_2_yr || 0,
-        },
-        {
-          year: "1 year ago",
-          revenue: financialData.avg_revenue_1_yr || 0,
-          netIncome: financialData.avg_net_income_1_yr || 0,
-          operatingIncome: financialData.avg_operating_income_1_yr || 0,
-          operatingCashFlow: financialData.avg_operating_cash_flow_1_yr || 0,
-        },
-        {
-          year: "Current",
-          revenue: financialData.avg_revenue_current || 0,
-          netIncome: financialData.avg_net_income_current || 0,
-          operatingIncome: financialData.avg_operating_income_current || 0,
-          operatingCashFlow: financialData.avg_operating_cash_flow_current || 0,
-        },
-      ];
-    }
-  }, [financialData]);
-
-  // Assume if there is no `current` data, there is no data worth rendering.
-  //
-  // Where `current` is this current calendar year or the previous calendar year,
-  // determined by the fiscal year start of the ticker or aggregated tickers in
-  // an ETF.
-  const hasChartableData = useMemo(() => {
-    if (!financialData) {
-      return false;
-    }
-
-    const currentData = chartData.find((item) => item.year === "Current");
-
-    if (!currentData) {
-      return false;
-    }
-
-    return Object.values(currentData).some(
-      (value) => typeof value === "number" && value !== 0,
-    );
-  }, [chartData, financialData]);
-
-  if (!financialData) {
-    return null;
+  if (isLoading || !detail) {
+    return <div>Loading...</div>;
   }
 
-  if (!hasChartableData) {
+  const createChartData = (
+    label: string,
+    currentValue: number | undefined,
+    year1Value: number | undefined,
+    year2Value: number | undefined,
+    year3Value: number | undefined,
+    year4Value: number | undefined,
+  ) => [
+    { year: "4 Years Ago", value: year4Value || 0 },
+    { year: "3 Years Ago", value: year3Value || 0 },
+    { year: "2 Years Ago", value: year2Value || 0 },
+    { year: "1 Year Ago", value: year1Value || 0 },
+    { year: "Current", value: currentValue || 0 },
+  ];
+
+  const renderChart = (
+    title: string,
+    currentKey:
+      | keyof RustServiceTicker10KDetail
+      | keyof RustServiceETFAggregateDetail,
+    year1Key:
+      | keyof RustServiceTicker10KDetail
+      | keyof RustServiceETFAggregateDetail,
+    year2Key:
+      | keyof RustServiceTicker10KDetail
+      | keyof RustServiceETFAggregateDetail,
+    year3Key:
+      | keyof RustServiceTicker10KDetail
+      | keyof RustServiceETFAggregateDetail,
+    year4Key:
+      | keyof RustServiceTicker10KDetail
+      | keyof RustServiceETFAggregateDetail,
+  ) => {
+    const current = detail[currentKey as keyof typeof detail];
+    const year1 = detail[year1Key as keyof typeof detail];
+    const year2 = detail[year2Key as keyof typeof detail];
+    const year3 = detail[year3Key as keyof typeof detail];
+    const year4 = detail[year4Key as keyof typeof detail];
+
+    const chartData = createChartData(
+      title,
+      current as number,
+      year1 as number,
+      year2 as number,
+      year3 as number,
+      year4 as number,
+    );
+
     return (
-      <Alert variant="filled" severity="warning">
-        No renderable 10-K data available for {tickerDetail.symbol}
-      </Alert>
+      <Box sx={{ marginBottom: 4 }}>
+        <Typography variant="subtitle2" sx={{ marginBottom: 2 }}>
+          {title}
+        </Typography>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart
+            data={chartData}
+            margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="year"
+              tick={(props) => <CustomTick {...props} />} // Spread props into CustomTick
+            />
+            <YAxis
+              tickFormatter={(value: number) =>
+                formatCurrency(
+                  isETFAggregateDetail(detail) ? detail.currency_code : "USD",
+                  value,
+                )
+              }
+              padding={{ top: 20, bottom: 0 }}
+            />
+            <Tooltip
+              formatter={(value: number) =>
+                formatCurrency(
+                  isETFAggregateDetail(detail) ? detail.currency_code : "USD",
+                  value,
+                )
+              }
+            />
+            <Line type="monotone" dataKey="value" stroke="#8884d8" />
+          </LineChart>
+        </ResponsiveContainer>
+      </Box>
     );
-  }
+  };
 
   return (
-    <div>
-      <Padding>
-        <h2>{tickerDetail.symbol} Financial Report</h2>
-        <h3>Revenue and Net Income Over Years</h3>
-      </Padding>
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart
-          data={chartData}
-          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="year" />
-          <YAxis
-            tickFormatter={(value: number) =>
-              formatCurrency(currencyCode, value)
-            }
-          />
-          <Tooltip
-            formatter={(value: number) => formatCurrency(currencyCode, value)}
-          />
-          <Legend />
-          <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
-          <Line type="monotone" dataKey="netIncome" stroke="#82ca9d" />
-        </LineChart>
-      </ResponsiveContainer>
+    <Paper sx={{ padding: 2 }}>
+      <Typography variant="h6" sx={{ marginBottom: 2 }}>
+        Financial Overview
+      </Typography>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr", // 1 column on extra-small screens
+            sm: "1fr 1fr", // 2 columns on small screens
+            md: "1fr 1fr 1fr", // 3 columns on medium screens
+          },
+          gap: 2,
+        }}
+      >
+        {renderChart(
+          "Revenue",
+          isETF ? "avg_revenue_current" : "revenue_current",
+          isETF ? "avg_revenue_1_yr" : "revenue_1_yr",
+          isETF ? "avg_revenue_2_yr" : "revenue_2_yr",
+          isETF ? "avg_revenue_3_yr" : "revenue_3_yr",
+          isETF ? "avg_revenue_4_yr" : "revenue_4_yr",
+        )}
+        {renderChart(
+          "Gross Profit",
+          isETF ? "avg_gross_profit_current" : "gross_profit_current",
+          isETF ? "avg_gross_profit_1_yr" : "gross_profit_1_yr",
+          isETF ? "avg_gross_profit_2_yr" : "gross_profit_2_yr",
+          isETF ? "avg_gross_profit_3_yr" : "gross_profit_3_yr",
+          isETF ? "avg_gross_profit_4_yr" : "gross_profit_4_yr",
+        )}
+        {renderChart(
+          "Operating Income",
+          isETF ? "avg_operating_income_current" : "operating_income_current",
+          isETF ? "avg_operating_income_1_yr" : "operating_income_1_yr",
+          isETF ? "avg_operating_income_2_yr" : "operating_income_2_yr",
+          isETF ? "avg_operating_income_3_yr" : "operating_income_3_yr",
+          isETF ? "avg_operating_income_4_yr" : "operating_income_4_yr",
+        )}
+        {renderChart(
+          "Net Income",
+          isETF ? "avg_net_income_current" : "net_income_current",
+          isETF ? "avg_net_income_1_yr" : "net_income_1_yr",
+          isETF ? "avg_net_income_2_yr" : "net_income_2_yr",
+          isETF ? "avg_net_income_3_yr" : "net_income_3_yr",
+          isETF ? "avg_net_income_4_yr" : "net_income_4_yr",
+        )}
+        {renderChart(
+          "Total Assets",
+          isETF ? "avg_total_assets_current" : "total_assets_current",
+          isETF ? "avg_total_assets_1_yr" : "total_assets_1_yr",
+          isETF ? "avg_total_assets_2_yr" : "total_assets_2_yr",
+          isETF ? "avg_total_assets_3_yr" : "total_assets_3_yr",
+          isETF ? "avg_total_assets_4_yr" : "total_assets_4_yr",
+        )}
+        {renderChart(
+          "Total Liabilities",
+          isETF ? "avg_total_liabilities_current" : "total_liabilities_current",
+          isETF ? "avg_total_liabilities_1_yr" : "total_liabilities_1_yr",
+          isETF ? "avg_total_liabilities_2_yr" : "total_liabilities_2_yr",
+          isETF ? "avg_total_liabilities_3_yr" : "total_liabilities_3_yr",
+          isETF ? "avg_total_liabilities_4_yr" : "total_liabilities_4_yr",
+        )}
+        {renderChart(
+          "Operating Cash Flow",
+          isETF
+            ? "avg_operating_cash_flow_current"
+            : "operating_cash_flow_current",
+          isETF ? "avg_operating_cash_flow_1_yr" : "operating_cash_flow_1_yr",
+          isETF ? "avg_operating_cash_flow_2_yr" : "operating_cash_flow_2_yr",
+          isETF ? "avg_operating_cash_flow_3_yr" : "operating_cash_flow_3_yr",
+          isETF ? "avg_operating_cash_flow_4_yr" : "operating_cash_flow_4_yr",
+        )}
+      </Box>
+    </Paper>
+  );
+}
 
-      <Padding>
-        <h3>Operating Income and Operating Cash Flow</h3>
-      </Padding>
-      <ResponsiveContainer width="100%" height={400}>
-        <BarChart
-          data={chartData}
-          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="year" />
-          <YAxis
-            tickFormatter={(value: number) =>
-              formatCurrency(currencyCode, value)
-            }
-          />
-          <Tooltip
-            formatter={(value: number) => formatCurrency(currencyCode, value)}
-          />
-          <Legend />
-          <Bar dataKey="operatingIncome" fill="#8884d8" />
-          <Bar dataKey="operatingCashFlow" fill="#82ca9d" />
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
+type CustomTickProps = {
+  x: number;
+  y: number;
+  payload: {
+    value: string;
+  };
+};
+
+function CustomTick({ x, y, payload }: CustomTickProps) {
+  const offsetX = 45; // Adjust this value to move right
+  const offsetY = 5; // Adjust this value to move down
+
+  return (
+    <text
+      x={x + offsetX} // Offset the x position
+      y={y + offsetY} // Offset the y position
+      textAnchor="end"
+      transform={`rotate(-15, ${x + offsetX}, ${y + offsetY})`}
+      fill="#666" // Set the text color (adjust color as needed)
+    >
+      {payload.value !== "Current" ? payload.value : null}
+    </text>
   );
 }

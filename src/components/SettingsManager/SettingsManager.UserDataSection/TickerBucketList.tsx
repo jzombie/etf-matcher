@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import { Typography } from "@mui/material";
@@ -16,9 +16,15 @@ export type TickerBucketListProps = {
 export default function TickerBucketList({
   tickerBuckets,
 }: TickerBucketListProps) {
+  // Sort the tickerBuckets by their type
+  const sortedTickerBuckets = useMemo(
+    () => [...tickerBuckets].sort((a, b) => a.type.localeCompare(b.type)),
+    [tickerBuckets],
+  );
+
   return (
     <ul style={{ listStyle: "none", padding: 0 }}>
-      {tickerBuckets.map((tickerBucket, idx) => (
+      {sortedTickerBuckets.map((tickerBucket, idx) => (
         <li key={idx}>
           <Section>
             {
@@ -41,7 +47,8 @@ export default function TickerBucketList({
                 }}
               >
                 ({tickerBucket.tickers.length} item
-                {tickerBucket.tickers.length !== 1 ? "s" : ""})
+                {tickerBucket.tickers.length !== 1 ? "s" : ""};{" "}
+                {tickerBucket.type})
               </span>
             </Typography>
             <div
