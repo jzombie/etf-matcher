@@ -50,6 +50,9 @@ export default function FinancialReport({
   return (
     <Paper sx={{ padding: 2 }}>
       <Typography variant="h6" sx={{ marginBottom: 2 }}>
+        {
+          // TODO: Add ticker symbol here
+        }
         Financial Overview
       </Typography>
       <Box
@@ -84,6 +87,7 @@ export default function FinancialReport({
               : detail.revenue_4_yr,
           )}
           detail={detail}
+          colorIndex={0}
         />
         <RenderChart
           title="Gross Profit"
@@ -106,6 +110,7 @@ export default function FinancialReport({
               : detail.gross_profit_4_yr,
           )}
           detail={detail}
+          colorIndex={1}
         />
         <RenderChart
           title="Operating Income"
@@ -128,6 +133,7 @@ export default function FinancialReport({
               : detail.operating_income_4_yr,
           )}
           detail={detail}
+          colorIndex={2}
         />
         <RenderChart
           title="Net Income"
@@ -150,6 +156,7 @@ export default function FinancialReport({
               : detail.net_income_4_yr,
           )}
           detail={detail}
+          colorIndex={3}
         />
         <RenderChart
           title="Total Assets"
@@ -172,6 +179,7 @@ export default function FinancialReport({
               : detail.total_assets_4_yr,
           )}
           detail={detail}
+          colorIndex={4}
         />
         <RenderChart
           title="Total Liabilities"
@@ -194,6 +202,7 @@ export default function FinancialReport({
               : detail.total_liabilities_4_yr,
           )}
           detail={detail}
+          colorIndex={5}
         />
         <RenderChart
           title="Operating Cash Flow"
@@ -216,6 +225,7 @@ export default function FinancialReport({
               : detail.operating_cash_flow_4_yr,
           )}
           detail={detail}
+          colorIndex={6}
         />
       </Box>
     </Paper>

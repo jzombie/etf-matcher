@@ -4,6 +4,7 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 import { Box, ButtonGroup, IconButton, Typography } from "@mui/material";
 
+import { COLOR_WHEEL_COLORS } from "@src/constants";
 import type {
   RustServiceETFAggregateDetail,
   RustServiceTicker10KDetail,
@@ -26,12 +27,14 @@ export type RenderChartProps = {
   title: string;
   chartData: { year: string; value: number }[];
   detail: RustServiceTicker10KDetail | RustServiceETFAggregateDetail;
+  colorIndex: number;
 };
 
 export default function RenderChart({
   title,
   chartData,
   detail,
+  colorIndex,
 }: RenderChartProps) {
   const [chartType, setChartType] = useState<"line" | "bar">("line");
 
@@ -43,6 +46,27 @@ export default function RenderChart({
     data: RustServiceTicker10KDetail | RustServiceETFAggregateDetail,
   ): data is RustServiceETFAggregateDetail => {
     return "avg_revenue_current" in data;
+  };
+
+  // Function to determine color based on the value (positive/negative) and colorIndex
+  const getColorBasedOnValue = (value: number) => {
+    const baseColor =
+      COLOR_WHEEL_COLORS[colorIndex % COLOR_WHEEL_COLORS.length];
+    return value >= 0 ? baseColor : darkenColor(baseColor); // Apply darkening for negative values
+  };
+
+  const darkenColor = (color: string) => {
+    // Simple darkening function (this can be improved)
+    let darkenedColor = color.replace(/^#/, "");
+    if (darkenedColor.length === 6) {
+      darkenedColor = darkenedColor.replace(/../g, (color) =>
+        (
+          "0" +
+          Math.min(255, Math.max(0, parseInt(color, 16) - 50)).toString(16)
+        ).substr(-2),
+      );
+    }
+    return `#${darkenedColor}`;
   };
 
   return (
@@ -94,7 +118,13 @@ export default function RenderChart({
                 )
               }
             />
-            <Line type="monotone" dataKey="value" stroke="#8884d8" />
+            <Line
+              type="monotone"
+              dataKey="value"
+              stroke={getColorBasedOnValue(
+                chartData.some((d) => d.value < 0) ? -1 : 1,
+              )}
+            />
           </LineChart>
         ) : (
           <BarChart
@@ -120,7 +150,12 @@ export default function RenderChart({
                 )
               }
             />
-            <Bar dataKey="value" fill="#8884d8" />
+            <Bar
+              dataKey="value"
+              fill={getColorBasedOnValue(
+                chartData.some((d) => d.value < 0) ? -1 : 1,
+              )}
+            />
           </BarChart>
         )}
       </ResponsiveContainer>
