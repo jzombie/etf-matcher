@@ -179,6 +179,10 @@ export default function SearchResults() {
                   onChange={(event, nextPage) => setPage(nextPage)}
                   showFirstButton
                   showLastButton
+                  sx={{ whiteSpace: "no-wrap" }}
+                  // TODO: Adjust the following as needed; perhaps use in an extended component
+                  // boundaryCount={0}
+                  // siblingCount={0}
                 />
               </Box>
             )}
