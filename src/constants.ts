@@ -66,3 +66,5 @@ export const COLOR_WHEEL_COLORS: Readonly<string[]> = [
 export const MAX_RECENTLY_VIEWED_ITEMS = 10;
 
 export const DEFAULT_CURRENCY_CODE = "USD";
+
+// TODO: Define static properties that will determine which store states should get persisted and which should be synced over MQTT
