@@ -43,7 +43,7 @@ export default function SearchResults() {
   const headerRef = useRef<HTMLDivElement>(null);
 
   const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
-    // TODO: On large enough viewports, discard this
+    // Note: Consider discarding this on large enough viewports
 
     if (headerRef.current) {
       const scrollTop = event.currentTarget.scrollTop;
