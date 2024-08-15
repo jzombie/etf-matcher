@@ -53,12 +53,22 @@ export default function Room({ room }: RoomProps) {
         <Typography variant="h6" gutterBottom>
           {room.roomName}
         </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between", // Distributes space between buttons
+            gap: 2, // Adds space between buttons
+            mb: 2,
+            flexWrap: "wrap", // Makes buttons wrap on smaller screens
+          }}
+        >
           <Button
             onClick={() => disconnectFromRoom(room)}
             color="secondary"
             variant="outlined"
             startIcon={<ExitToApp />}
+            sx={{ flexGrow: 1 }} // Makes buttons grow evenly
           >
             Disconnect
           </Button>
@@ -66,6 +76,7 @@ export default function Room({ room }: RoomProps) {
             onClick={toggleQRCode}
             variant="outlined"
             startIcon={<QrCode />}
+            sx={{ flexGrow: 1 }} // Makes buttons grow evenly
           >
             {!qrCode ? "Generate" : "Hide"} QR Code
           </Button>
