@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 import {
   Box,
@@ -40,8 +40,20 @@ export default function SearchResults() {
 
   usePageTitleSetter(searchQuery ? `Search results for: ${searchQuery}` : null);
 
+  const headerRef = useRef<HTMLDivElement>(null);
+
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    // Scroll handling logic
+    if (headerRef.current) {
+      const scrollTop = event.currentTarget.scrollTop;
+      const headerHeight = headerRef.current.clientHeight;
+
+      // Calculate the new margin top to slide the header out of view
+      // Stop decreasing marginTop once the header is fully out of view
+      const newMarginTop = Math.max(-headerHeight, -scrollTop);
+
+      // Apply the calculated margin top to the header
+      headerRef.current.style.marginTop = `${newMarginTop}px`;
+    }
   };
 
   if (!searchResults.length) {
@@ -96,7 +108,7 @@ export default function SearchResults() {
 
   return (
     <Layout>
-      <Header>
+      <Header ref={headerRef}>
         <Padding>
           <Box
             display="flex"
