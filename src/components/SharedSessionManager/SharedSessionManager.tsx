@@ -1,5 +1,7 @@
 import React from "react";
 
+import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
+
 import { useMultiMQTTRoomContext } from "@utils/MQTTRoom/react";
 
 import ConnectForm from "./SharedSessionManager.ConnectForm";
@@ -15,11 +17,13 @@ export default function SharedSessionManager() {
       {Object.keys(connectedRooms).length > 0 && (
         <div>
           <h3>Connected Rooms:</h3>
-          <ul>
+          <UnstyledUL>
             {Object.values(connectedRooms).map((room) => (
-              <Room key={room.roomName} room={room} />
+              <UnstyledLI className="unstyled" key={room.roomName}>
+                <Room room={room} />
+              </UnstyledLI>
             ))}
-          </ul>
+          </UnstyledUL>
         </div>
       )}
     </div>
