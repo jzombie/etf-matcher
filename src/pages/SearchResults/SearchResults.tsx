@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useState } from "react";
 
 import {
   Box,
@@ -11,6 +11,7 @@ import {
 import CircularProgress from "@mui/material/CircularProgress";
 
 import Center from "@layoutKit/Center";
+import Layout, { Content, Header } from "@layoutKit/Layout";
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
@@ -39,27 +40,11 @@ export default function SearchResults() {
 
   usePageTitleSetter(searchQuery ? `Search results for: ${searchQuery}` : null);
 
-  const searchResultSymbols = useMemo(
-    () => searchResults.map((searchResult) => searchResult.symbol),
-    [searchResults],
-  );
+  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    // Scroll handling logic
+  };
 
-  const tickerIds = useMemo(
-    () => searchResults.map(({ ticker_id }) => ticker_id),
-    [searchResults],
-  );
-
-  // Note: This `useState`/`useEffect` combination is intended to hide the second
-  // `Pagination` component so that it doesn't show doubled-up while it is still loading.
-  const [isTickerDetailListLoading, setIsTickerDetailListLoading] =
-    useState<boolean>(false);
-  useEffect(() => {
-    if (tickerIds) {
-      setIsTickerDetailListLoading(true);
-    }
-  }, [tickerIds]);
-
-  if (!searchResultSymbols.length) {
+  if (!searchResults.length) {
     if (isLoading) {
       return (
         <Center>
@@ -110,66 +95,61 @@ export default function SearchResults() {
   }
 
   return (
-    <Scrollable resetTrigger={searchResultSymbols}>
-      <Padding>
-        <Box
-          display="flex"
-          alignItems="center"
-          sx={{ display: "inline-block" }}
-        >
-          <FormControlLabel
-            control={
-              <Switch checked={onlyExactMatches} onChange={toggleExactMatch} />
-            }
-            label={
-              <Typography variant="body1" color="textSecondary">
-                Toggle Exact Match
+    <Layout>
+      <Header>
+        <Padding>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{ height: "100%" }}
+          >
+            <Box display="flex" alignItems="center">
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={onlyExactMatches}
+                    onChange={toggleExactMatch}
+                  />
+                }
+                label={
+                  <Typography variant="body1" color="textSecondary">
+                    Toggle Exact Match
+                  </Typography>
+                }
+              />
+            </Box>
+            <Box>
+              <Typography variant="body1">
+                {totalSearchResults} search result
+                {totalSearchResults !== 1 ? "s" : ""} for "{searchQuery}"
               </Typography>
-            }
-          />
-        </Box>
-        {totalSearchResults}
-        {onlyExactMatches ? " exact" : ""} search result
-        {totalSearchResults !== 1 ? "s" : ""} for &quot;{searchQuery}&quot;
-      </Padding>
-      {totalSearchResults > pageSize && (
-        <Box style={{ textAlign: "center" }}>
-          <Pagination
-            disabled={isTickerDetailListLoading}
-            count={totalPages}
-            page={page}
-            onChange={(event, nextPage) => setPage(nextPage)}
-            showFirstButton
-            showLastButton
-            sx={{ display: "inline-block" }}
-          />
-        </Box>
-      )}
-      <Transition
-        direction={!previousPage || page > previousPage ? "left" : "right"}
-        trigger={searchResultSymbols}
-      >
-        <TickerDetailList
-          tickerIds={tickerIds}
-          onLoad={() => setIsTickerDetailListLoading(false)}
-        />
-      </Transition>
-
-      {!isTickerDetailListLoading &&
-        totalSearchResults > pageSize &&
-        !isLoading && (
-          <Box style={{ textAlign: "center" }}>
-            <Pagination
-              disabled={isTickerDetailListLoading}
-              count={totalPages}
-              page={page}
-              onChange={(event, nextPage) => setPage(nextPage)}
-              showFirstButton
-              showLastButton
-              sx={{ display: "inline-block" }}
-            />
+            </Box>
+            {totalSearchResults > pageSize && (
+              <Pagination
+                disabled={false}
+                count={totalPages}
+                page={page}
+                onChange={(event, nextPage) => setPage(nextPage)}
+                showFirstButton
+                showLastButton
+              />
+            )}
           </Box>
-        )}
-    </Scrollable>
+        </Padding>
+      </Header>
+      <Content>
+        <Transition
+          direction={!previousPage || page > previousPage ? "left" : "right"}
+          trigger={searchResults}
+        >
+          <Scrollable onScroll={handleScroll}>
+            <TickerDetailList
+              tickerIds={searchResults.map(({ ticker_id }) => ticker_id)}
+            />
+          </Scrollable>
+        </Transition>
+      </Content>
+    </Layout>
   );
 }
