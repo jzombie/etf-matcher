@@ -16,6 +16,8 @@ export type FinancialChartsGridProps = {
   tickerDetail: RustServiceTickerDetail;
 };
 
+// TODO: Move to a common place (or extend `useTicker10KDetail` include this)
+// Search for other instances of this same function and replace
 function isETFAggregateDetail(
   data: RustServiceTicker10KDetail | RustServiceETFAggregateDetail,
 ): data is RustServiceETFAggregateDetail {

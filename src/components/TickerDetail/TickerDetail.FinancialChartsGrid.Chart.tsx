@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import BarChartIcon from "@mui/icons-material/BarChart";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
@@ -26,6 +26,7 @@ import formatCurrency from "@utils/formatCurrency";
 export type RenderChartProps = {
   title: string;
   chartData: { year: string; value: number }[];
+  // TODO: Rename `detail`... what type of "detail"?
   detail: RustServiceTicker10KDetail | RustServiceETFAggregateDetail;
   colorIndex: number;
 };
@@ -42,17 +43,12 @@ export default function RenderChart({
     setChartType(type);
   };
 
+  // TODO: Move to a common place (or extend `useTicker10KDetail` include this)
+  // Search for other instances of this same method and replace
   const isETFAggregateDetail = (
     data: RustServiceTicker10KDetail | RustServiceETFAggregateDetail,
   ): data is RustServiceETFAggregateDetail => {
     return "avg_revenue_current" in data;
-  };
-
-  // Function to determine color based on the value (positive/negative) and colorIndex
-  const getColorBasedOnValue = (value: number) => {
-    const baseColor =
-      COLOR_WHEEL_COLORS[colorIndex % COLOR_WHEEL_COLORS.length];
-    return value >= 0 ? baseColor : darkenColor(baseColor); // Apply darkening for negative values
   };
 
   const darkenColor = (color: string) => {
@@ -67,6 +63,13 @@ export default function RenderChart({
       );
     }
     return `#${darkenedColor}`;
+  };
+
+  // Function to determine color based on the value (positive/negative) and colorIndex
+  const getColorBasedOnValue = (value: number) => {
+    const baseColor =
+      COLOR_WHEEL_COLORS[colorIndex % COLOR_WHEEL_COLORS.length];
+    return value >= 0 ? baseColor : darkenColor(baseColor); // Apply darkening for negative values
   };
 
   return (
