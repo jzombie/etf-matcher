@@ -138,10 +138,10 @@ export default function TickerDetailBucketManager({
               >
                 <Box component="span" sx={{ flexGrow: 1, textAlign: "center" }}>
                   {isTickerInBucket && isMultipleInstancesAllowed
-                    ? `Manage "${tickerDetail.symbol}" in "${bucket.name}"`
+                    ? `Manage "${tickerDetail.symbol}" in ${tickerBucketDefaultNames[type]}s`
                     : isTickerInBucket
-                      ? `Remove "${tickerDetail.symbol}" from "${bucket.name}"`
-                      : `Add "${tickerDetail.symbol}" to "${bucket.name}"`}
+                      ? `Remove "${tickerDetail.symbol}" from ${tickerBucketDefaultNames[type]}`
+                      : `Add "${tickerDetail.symbol}" to ${tickerBucketDefaultNames[type]}`}
                 </Box>
               </Button>
             </Grid>
@@ -216,12 +216,14 @@ export default function TickerDetailBucketManager({
   );
 }
 
+// TODO: Rename
 type TickerBucketMgmtButtonProps = ButtonProps & {
   tickerDetail: RustServiceTickerDetail;
   tickerBucket: TickerBucket;
   onToggle: () => void;
 };
 
+// TODO: Rename
 function TickerBucketMgmtButton({
   tickerDetail,
   tickerBucket,
