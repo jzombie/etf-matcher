@@ -180,7 +180,7 @@ export default function SearchResults() {
                   showFirstButton
                   showLastButton
                   sx={{ whiteSpace: "no-wrap" }}
-                  // TODO: Adjust the following as needed; perhaps use in an extended component
+                  // TODO: Dynamically adjust the following as needed
                   // boundaryCount={0}
                   // siblingCount={0}
                 />
@@ -208,6 +208,9 @@ export default function SearchResults() {
                   showFirstButton
                   showLastButton
                   sx={{ display: "inline-block" }}
+                  // TODO: Dynamically adjust the following as needed
+                  // boundaryCount={0}
+                  // siblingCount={0}
                 />
               </Box>
             )}
