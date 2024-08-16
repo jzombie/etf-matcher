@@ -4,7 +4,7 @@ use serde_wasm_bindgen::to_value;
 use std::panic;
 use wasm_bindgen::prelude::*;
 
-include!("flatbuffers/financial_vectors.tenk_generated.rs");
+include!("data_models/flatbuffers/financial_vectors.tenk_generated.rs");
 
 use crate::financial_vectors::ten_k::root_as_ticker_vectors;
 
