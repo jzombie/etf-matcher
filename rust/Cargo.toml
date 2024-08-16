@@ -38,6 +38,7 @@ base64 = "0.21.0"
 image = "0.25.2"
 qrcode-generator = "4.1.9"
 chrono = { version = "0.4.38", features = ["serde"] }
+flatbuffers = "24.3.25"
 
 [build-dependencies]
 dotenv = "0.15"

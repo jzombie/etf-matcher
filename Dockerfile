@@ -97,8 +97,9 @@ FROM frontend-build AS final
 USER root
 
 # Install necessary dependencies including Node.js
+# TODO: `inotify-tools` and `bc` might can be removed from here
 RUN apt-get update && \
-    apt-get install -y curl gnupg tini inotify-tools bc && \
+    apt-get install -y curl gnupg tini inotify-tools bc flatbuffers-compiler && \
     curl -sL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs && \
     rm -rf /var/lib/apt/lists/*
