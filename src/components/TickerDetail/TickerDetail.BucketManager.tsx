@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
@@ -45,57 +45,60 @@ export default function TickerDetailBucketManager({
     TickerBucket["type"] | null
   >(null);
 
-  const handleToggleBucket = (
-    bucket: TickerBucket,
-    isManagementPane = false,
-  ) => {
-    const canHaveMultipleInstances = multiBucketInstancesAllowed.includes(
-      bucket.type,
-    );
+  const handleToggleBucket = useCallback(
+    (bucket: TickerBucket, isManagementPane = false) => {
+      const canHaveMultipleInstances = multiBucketInstancesAllowed.includes(
+        bucket.type,
+      );
 
-    if (store.bucketHasTicker(tickerDetail.ticker_id, bucket)) {
-      if (isManagementPane || !canHaveMultipleInstances) {
-        setSelectedBucket(bucket);
-        setIsDeleteDialogOpen(true);
+      if (store.bucketHasTicker(tickerDetail.ticker_id, bucket)) {
+        if (isManagementPane || !canHaveMultipleInstances) {
+          setSelectedBucket(bucket);
+          setIsDeleteDialogOpen(true);
+        } else {
+          setSelectedBucketType(bucket.type);
+          setIsBucketDialogOpen(true);
+        }
       } else {
-        setSelectedBucketType(bucket.type);
-        setIsBucketDialogOpen(true);
+        if (isManagementPane || !canHaveMultipleInstances) {
+          store.addTickerToBucket(tickerDetail.ticker_id, 1, bucket);
+        } else {
+          setSelectedBucketType(bucket.type);
+          setIsBucketDialogOpen(true);
+        }
       }
-    } else {
-      if (isManagementPane || !canHaveMultipleInstances) {
-        store.addTickerToBucket(tickerDetail.ticker_id, 1, bucket);
-      } else {
-        setSelectedBucketType(bucket.type);
-        setIsBucketDialogOpen(true);
-      }
-    }
-  };
+    },
+    [tickerDetail.ticker_id],
+  );
 
-  const handleConfirmRemove = () => {
+  const handleConfirmRemove = useCallback(() => {
     if (selectedBucket) {
       store.removeTickerFromBucket(tickerDetail.ticker_id, selectedBucket);
     }
     setIsDeleteDialogOpen(false);
     setSelectedBucket(null);
-  };
+  }, [selectedBucket, tickerDetail.ticker_id]);
 
-  const handleCloseDeleteDialog = () => {
+  const handleCloseDeleteDialog = useCallback(() => {
     setIsDeleteDialogOpen(false);
     setSelectedBucket(null);
-  };
+  }, []);
 
-  const handleCloseBucketDialog = () => {
+  const handleCloseBucketDialog = useCallback(() => {
     setIsBucketDialogOpen(false);
     setSelectedBucketType(null);
-  };
+  }, []);
 
-  const bucketTypes = [
-    ...new Set(
-      tickerBuckets
-        .filter((bucket) => bucket.isUserConfigurable)
-        .map((bucket) => bucket.type),
-    ),
-  ];
+  const bucketTypes = useMemo(
+    () => [
+      ...new Set(
+        tickerBuckets
+          .filter((bucket) => bucket.isUserConfigurable)
+          .map((bucket) => bucket.type),
+      ),
+    ],
+    [tickerBuckets],
+  );
 
   return (
     <Box sx={{ padding: 2 }}>
