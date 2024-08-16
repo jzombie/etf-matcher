@@ -23,6 +23,9 @@ import {
 
 import formatCurrency from "@utils/formatCurrency";
 
+// TODO: Refactor
+const TICK_COLOR = "#999";
+
 export type RenderChartProps = {
   title: string;
   chartData: { year: string; value: number }[];
@@ -112,6 +115,7 @@ export default function RenderChart({
                 )
               }
               padding={{ top: 20, bottom: 0 }}
+              tick={{ fill: TICK_COLOR }}
             />
             <Tooltip
               formatter={(value: number) =>
@@ -144,6 +148,7 @@ export default function RenderChart({
                 )
               }
               padding={{ top: 20, bottom: 0 }}
+              tick={{ fill: TICK_COLOR }}
             />
             <Tooltip
               formatter={(value: number) =>
@@ -184,7 +189,7 @@ function CustomTick({ x, y, payload }: CustomTickProps) {
       y={y + offsetY} // Offset the y position
       textAnchor="end"
       transform={`rotate(-15, ${x + offsetX}, ${y + offsetY})`}
-      fill="#666" // Set the text color (adjust color as needed)
+      fill={TICK_COLOR}
     >
       {payload.value !== "Current" ? payload.value : null}
     </text>
