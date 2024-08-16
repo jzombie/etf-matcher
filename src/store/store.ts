@@ -49,6 +49,7 @@ export type TickerBucket = {
   type: "watchlist" | "portfolio" | "ticker_tape" | "recently_viewed";
   description: string;
   isUserConfigurable: boolean;
+  // TODO: Track bucket last update time
 };
 
 export const tickerBucketDefaultNames: Readonly<
