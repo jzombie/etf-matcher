@@ -44,7 +44,7 @@ export default function RenderChart({
   };
 
   // TODO: Move to a common place (or extend `useTicker10KDetail` include this)
-  // Search for other instances of this same method and replace
+  // Search for other instances of this same function and replace
   const isETFAggregateDetail = (
     data: RustServiceTicker10KDetail | RustServiceETFAggregateDetail,
   ): data is RustServiceETFAggregateDetail => {
