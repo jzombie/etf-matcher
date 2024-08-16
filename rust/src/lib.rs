@@ -1,7 +1,15 @@
+extern crate flatbuffers as fb;
 use qrcode_generator::QrCodeEcc;
 use serde_wasm_bindgen::to_value;
 use std::panic;
 use wasm_bindgen::prelude::*;
+
+include!("flatbuffers/etfmatcher.tenk_generated.rs");
+
+// use crate::flatbuffers::etfmatcher::ten_k::{TickerVectors, root_as_ticker_vectors};
+use crate::etfmatcher::ten_k::{TickerVectors, root_as_ticker_vectors};
+
+
 
 mod constants;
 mod data_models;
