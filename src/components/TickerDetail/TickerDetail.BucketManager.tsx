@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from "react";
 
+import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import {
   Box,
@@ -52,11 +54,9 @@ export default function TickerDetailBucketManager({
         isManagementPane ||
         !multiBucketInstancesAllowed.includes(bucket.type)
       ) {
-        // If in management pane or only a single instance is allowed, open delete confirmation dialog
         setSelectedBucket(bucket);
         setIsDeleteDialogOpen(true);
       } else {
-        // If the bucket allows multiple instances, open the management pane
         setSelectedBucketType(bucket.type);
         setIsBucketDialogOpen(true);
       }
@@ -106,16 +106,33 @@ export default function TickerDetailBucketManager({
             bucket,
           );
 
+          const isMultipleInstancesAllowed =
+            multiBucketInstancesAllowed.includes(type);
+
           return (
             <Grid item xs={12} sm={6} md={4} key={type}>
               <Button
                 onClick={() => handleToggleBucket(bucket)}
-                startIcon={isTickerInBucket ? <DeleteIcon /> : undefined}
+                startIcon={
+                  isTickerInBucket && isMultipleInstancesAllowed ? (
+                    <EditIcon />
+                  ) : isTickerInBucket ? (
+                    <DeleteIcon />
+                  ) : (
+                    <AddIcon />
+                  )
+                }
                 variant="contained"
-                color={isTickerInBucket ? "error" : "primary"}
+                color={
+                  isTickerInBucket && isMultipleInstancesAllowed
+                    ? "secondary"
+                    : isTickerInBucket
+                      ? "error"
+                      : "primary"
+                }
                 fullWidth
               >
-                {isTickerInBucket && multiBucketInstancesAllowed.includes(type)
+                {isTickerInBucket && isMultipleInstancesAllowed
                   ? `Manage "${tickerDetail.symbol}" in "${bucket.name}"`
                   : isTickerInBucket
                     ? `Remove "${tickerDetail.symbol}" from "${bucket.name}"`
@@ -214,7 +231,7 @@ function TickerBucketMgmtButton({
     <Button
       key={tickerBucket.name}
       onClick={onToggle}
-      startIcon={bucketHasTicker ? <DeleteIcon /> : undefined}
+      startIcon={bucketHasTicker ? <DeleteIcon /> : <AddIcon />}
       variant="contained"
       color={bucketHasTicker ? "error" : "primary"}
       fullWidth
