@@ -4,12 +4,9 @@ use serde_wasm_bindgen::to_value;
 use std::panic;
 use wasm_bindgen::prelude::*;
 
-include!("flatbuffers/etfmatcher.tenk_generated.rs");
+include!("flatbuffers/financial_vectors.tenk_generated.rs");
 
-// use crate::flatbuffers::etfmatcher::ten_k::{TickerVectors, root_as_ticker_vectors};
-use crate::etfmatcher::ten_k::{TickerVectors, root_as_ticker_vectors};
-
-
+use crate::financial_vectors::ten_k::root_as_ticker_vectors;
 
 mod constants;
 mod data_models;
@@ -214,7 +211,7 @@ pub fn clear_cache() {
 #[wasm_bindgen]
 pub async fn proto_echo_all_ticker_vectors() -> Result<(), JsValue> {
     // Fetch the ticker vectors binary data using `xhr_fetch`
-    let url = "/data/ticker_vectors.bin";
+    let url = "/data/financial_vectors.tenk.bin";
     let file_content = utils::xhr_fetch(url.to_string()).await
         .map_err(|err| JsValue::from_str(&format!("Failed to fetch file: {:?}", err)))?;
 

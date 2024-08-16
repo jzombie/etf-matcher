@@ -10,7 +10,7 @@ extern crate flatbuffers;
 use self::flatbuffers::{EndianScalar, Follow};
 
 #[allow(unused_imports, dead_code)]
-pub mod etfmatcher {
+pub mod financial_vectors {
 
   use core::mem;
   use core::cmp::Ordering;
@@ -309,5 +309,5 @@ pub fn finish_size_prefixed_ticker_vectors_buffer<'a, 'b, A: flatbuffers::Alloca
   fbb.finish_size_prefixed(root, None);
 }
 }  // pub mod TenK
-}  // pub mod ETFMatcher
+}  // pub mod FinancialVectors
 
