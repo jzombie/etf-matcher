@@ -49,13 +49,16 @@ export default function RenderChart({
 
   // TODO: Move to a common place (or extend `useTicker10KDetail` include this)
   // Search for other instances of this same function and replace
-  const isETFAggregateDetail = (
-    data: RustServiceTicker10KDetail | RustServiceETFAggregateDetail,
-  ): data is RustServiceETFAggregateDetail => {
-    return "avg_revenue_current" in data;
-  };
+  const isETFAggregateDetail = useCallback(
+    (
+      data: RustServiceTicker10KDetail | RustServiceETFAggregateDetail,
+    ): data is RustServiceETFAggregateDetail => {
+      return "avg_revenue_current" in data;
+    },
+    [],
+  );
 
-  const darkenColor = (color: string) => {
+  const darkenColor = useCallback((color: string) => {
     // Simple darkening function (this can be improved)
     let darkenedColor = color.replace(/^#/, "");
     if (darkenedColor.length === 6) {
@@ -67,14 +70,17 @@ export default function RenderChart({
       );
     }
     return `#${darkenedColor}`;
-  };
+  }, []);
 
   // Function to determine color based on the value (positive/negative) and colorIndex
-  const getColorBasedOnValue = (value: number) => {
-    const baseColor =
-      COLOR_WHEEL_COLORS[colorIndex % COLOR_WHEEL_COLORS.length];
-    return value >= 0 ? baseColor : darkenColor(baseColor); // Apply darkening for negative values
-  };
+  const getColorBasedOnValue = useCallback(
+    (value: number) => {
+      const baseColor =
+        COLOR_WHEEL_COLORS[colorIndex % COLOR_WHEEL_COLORS.length];
+      return value >= 0 ? baseColor : darkenColor(baseColor); // Apply darkening for negative values
+    },
+    [colorIndex, darkenColor],
+  );
 
   return (
     <Box sx={{ marginBottom: 4 }}>
