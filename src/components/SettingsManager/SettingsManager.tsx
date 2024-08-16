@@ -17,6 +17,7 @@ import SharedSessionManager from "@components/SharedSessionManager";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
+import callRustService from "@utils/callRustService";
 import formatByteSize from "@utils/formatByteSize";
 import formatLocalTime from "@utils/formatLocalTime";
 
@@ -61,6 +62,15 @@ export default function SettingsManager() {
 
   return (
     <Scrollable>
+      <Padding>
+        <Section>
+          <Button
+            onClick={() => callRustService("proto_echo_all_ticker_vectors")}
+          >
+            PROTO::proto_echo_all_ticker_vectors
+          </Button>
+        </Section>
+      </Padding>
       <Padding>
         <Section>
           <h2>Session Sharing</h2>

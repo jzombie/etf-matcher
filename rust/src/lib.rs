@@ -207,3 +207,32 @@ pub fn remove_cache_entry(key: &str) {
 pub fn clear_cache() {
     lib_clear_cache();
 }
+
+///
+
+// TODO: Refactor as needed
+#[wasm_bindgen]
+pub async fn proto_echo_all_ticker_vectors() -> Result<(), JsValue> {
+    // Fetch the ticker vectors binary data using `xhr_fetch`
+    let url = "/data/ticker_vectors.bin";
+    let file_content = utils::xhr_fetch(url.to_string()).await
+        .map_err(|err| JsValue::from_str(&format!("Failed to fetch file: {:?}", err)))?;
+
+    // Use the FlatBuffers `root_as_ticker_vectors` function to parse the buffer
+    let ticker_vectors = root_as_ticker_vectors(&file_content)
+        .map_err(|err| JsValue::from_str(&format!("Failed to parse TickerVectors: {:?}", err)))?;
+
+    // Get the vectors, which is an Option containing a flatbuffers::Vector
+    if let Some(vectors) = ticker_vectors.vectors() {
+        // Loop through each ticker vector in the Vector and log it to the web console
+        for i in 0..vectors.len() {
+            let ticker_vector = vectors.get(i);
+            web_sys::console::log_1(&format!("Ticker Vector {}: {:?}", i, ticker_vector).into());
+        }
+    } else {
+        web_sys::console::log_1(&"No ticker vectors found.".into());
+    }
+
+    Ok(())
+}
+
