@@ -49,14 +49,14 @@ export default function TickerDetailHeader({
   return (
     <>
       {isShowingStaticHeader && (
-        <div
-          style={{
+        <Box
+          sx={{
             position: "fixed",
             top: 0,
             left: 0,
             width: "100%",
             backgroundColor: "rgba(0,0,0,.4)",
-            padding: 4,
+            padding: 1,
             zIndex: 1000,
             display: "flex",
             alignItems: "center",
@@ -102,7 +102,7 @@ export default function TickerDetailHeader({
               {tickerDetail.company_name}
             </h3>
           </ButtonBase>
-        </div>
+        </Box>
       )}
       <SymbolDetailWrapper ref={elRef}>
         <LogoContainer
