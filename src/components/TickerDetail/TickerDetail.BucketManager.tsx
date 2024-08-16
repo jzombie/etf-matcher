@@ -49,11 +49,12 @@ export default function TickerDetailBucketManager({
     bucket: TickerBucket,
     isManagementPane = false,
   ) => {
+    const canHaveMultipleInstances = multiBucketInstancesAllowed.includes(
+      bucket.type,
+    );
+
     if (store.bucketHasTicker(tickerDetail.ticker_id, bucket)) {
-      if (
-        isManagementPane ||
-        !multiBucketInstancesAllowed.includes(bucket.type)
-      ) {
+      if (isManagementPane || !canHaveMultipleInstances) {
         setSelectedBucket(bucket);
         setIsDeleteDialogOpen(true);
       } else {
@@ -61,7 +62,12 @@ export default function TickerDetailBucketManager({
         setIsBucketDialogOpen(true);
       }
     } else {
-      store.addTickerToBucket(tickerDetail.ticker_id, 1, bucket);
+      if (isManagementPane || !canHaveMultipleInstances) {
+        store.addTickerToBucket(tickerDetail.ticker_id, 1, bucket);
+      } else {
+        setSelectedBucketType(bucket.type);
+        setIsBucketDialogOpen(true);
+      }
     }
   };
 
