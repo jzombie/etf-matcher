@@ -4,6 +4,7 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 import { Box, ButtonGroup, IconButton, Typography } from "@mui/material";
 
+import { DEFAULT_CURRENCY_CODE } from "@src/constants";
 import { COLOR_WHEEL_COLORS } from "@src/constants";
 import type {
   RustServiceETFAggregateDetail,
@@ -110,7 +111,9 @@ export default function RenderChart({
             <YAxis
               tickFormatter={(value: number) =>
                 formatCurrency(
-                  isETFAggregateDetail(detail) ? detail.currency_code : "USD",
+                  isETFAggregateDetail(detail)
+                    ? detail.currency_code
+                    : DEFAULT_CURRENCY_CODE,
                   value,
                 )
               }
@@ -120,7 +123,9 @@ export default function RenderChart({
             <Tooltip
               formatter={(value: number) =>
                 formatCurrency(
-                  isETFAggregateDetail(detail) ? detail.currency_code : "USD",
+                  isETFAggregateDetail(detail)
+                    ? detail.currency_code
+                    : DEFAULT_CURRENCY_CODE,
                   value,
                 )
               }
@@ -143,7 +148,9 @@ export default function RenderChart({
             <YAxis
               tickFormatter={(value: number) =>
                 formatCurrency(
-                  isETFAggregateDetail(detail) ? detail.currency_code : "USD",
+                  isETFAggregateDetail(detail)
+                    ? detail.currency_code
+                    : DEFAULT_CURRENCY_CODE,
                   value,
                 )
               }
@@ -153,7 +160,9 @@ export default function RenderChart({
             <Tooltip
               formatter={(value: number) =>
                 formatCurrency(
-                  isETFAggregateDetail(detail) ? detail.currency_code : "USD",
+                  isETFAggregateDetail(detail)
+                    ? detail.currency_code
+                    : DEFAULT_CURRENCY_CODE,
                   value,
                 )
               }
