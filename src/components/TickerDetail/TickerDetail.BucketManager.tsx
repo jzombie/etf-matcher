@@ -113,15 +113,6 @@ export default function TickerDetailBucketManager({
             <Grid item xs={12} sm={6} md={4} key={type}>
               <Button
                 onClick={() => handleToggleBucket(bucket)}
-                startIcon={
-                  isTickerInBucket && isMultipleInstancesAllowed ? (
-                    <EditIcon />
-                  ) : isTickerInBucket ? (
-                    <DeleteIcon />
-                  ) : (
-                    <AddIcon />
-                  )
-                }
                 variant="contained"
                 color={
                   isTickerInBucket && isMultipleInstancesAllowed
@@ -131,12 +122,27 @@ export default function TickerDetailBucketManager({
                       : "primary"
                 }
                 fullWidth
+                startIcon={
+                  isTickerInBucket && isMultipleInstancesAllowed ? (
+                    <EditIcon />
+                  ) : isTickerInBucket ? (
+                    <DeleteIcon />
+                  ) : (
+                    <AddIcon />
+                  )
+                }
+                sx={{
+                  justifyContent: "flex-start", // Left justify the icon
+                  textAlign: "center", // Center the text
+                }}
               >
-                {isTickerInBucket && isMultipleInstancesAllowed
-                  ? `Manage "${tickerDetail.symbol}" in "${bucket.name}"`
-                  : isTickerInBucket
-                    ? `Remove "${tickerDetail.symbol}" from "${bucket.name}"`
-                    : `Add "${tickerDetail.symbol}" to "${bucket.name}"`}
+                <Box component="span" sx={{ flexGrow: 1, textAlign: "center" }}>
+                  {isTickerInBucket && isMultipleInstancesAllowed
+                    ? `Manage "${tickerDetail.symbol}" in "${bucket.name}"`
+                    : isTickerInBucket
+                      ? `Remove "${tickerDetail.symbol}" from "${bucket.name}"`
+                      : `Add "${tickerDetail.symbol}" to "${bucket.name}"`}
+                </Box>
               </Button>
             </Grid>
           );
@@ -148,8 +154,7 @@ export default function TickerDetailBucketManager({
         <DialogContent>
           <DialogContentText>
             Are you sure you want to remove &quot;{tickerDetail.symbol}&quot;
-            from &quot;
-            {selectedBucket?.name}&quot;?
+            from &quot;{selectedBucket?.name}&quot;?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -231,15 +236,21 @@ function TickerBucketMgmtButton({
     <Button
       key={tickerBucket.name}
       onClick={onToggle}
-      startIcon={bucketHasTicker ? <DeleteIcon /> : <AddIcon />}
       variant="contained"
       color={bucketHasTicker ? "error" : "primary"}
       fullWidth
-      sx={{ marginBottom: 1 }}
+      startIcon={bucketHasTicker ? <DeleteIcon /> : <AddIcon />}
+      sx={{
+        justifyContent: "flex-start", // Left justify the icon
+        textAlign: "center", // Center the text
+        marginBottom: 1,
+      }}
     >
-      {bucketHasTicker
-        ? `Remove "${tickerDetail.symbol}" from "${tickerBucket.name}"`
-        : `Add "${tickerDetail.symbol}" to "${tickerBucket.name}"`}
+      <Box component="span" sx={{ flexGrow: 1, textAlign: "center" }}>
+        {bucketHasTicker
+          ? `Remove "${tickerDetail.symbol}" from "${tickerBucket.name}"`
+          : `Add "${tickerDetail.symbol}" to "${tickerBucket.name}"`}
+      </Box>
     </Button>
   );
 }
