@@ -1,13 +1,13 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 
 import AddIcon from "@mui/icons-material/Add";
+import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import {
   Box,
   Button,
-  ButtonProps,
   Dialog,
   DialogActions,
   DialogContent,
@@ -168,13 +168,33 @@ export default function TickerDetailBucketManager({
       </Dialog>
 
       <Dialog open={isBucketDialogOpen} onClose={handleCloseBucketDialog}>
-        <DialogTitle>
-          <ListAltIcon sx={{ verticalAlign: "middle", marginRight: 1 }} />{" "}
-          Manage &quot;{tickerDetail.symbol}&quot; in{" "}
-          {selectedBucketType
-            ? `${tickerBucketDefaultNames[selectedBucketType]}s`
-            : "Buckets"}{" "}
-        </DialogTitle>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "16px 0px 24px 24px", // Roughly match `DialogTitle` padding, so that `Close` button can run inline
+          }}
+        >
+          <DialogTitle sx={{ padding: 0 }}>
+            <ListAltIcon sx={{ verticalAlign: "middle", marginRight: 1 }} />{" "}
+            Manage &quot;{tickerDetail.symbol}&quot; in{" "}
+            {selectedBucketType
+              ? `${tickerBucketDefaultNames[selectedBucketType]}s`
+              : "Buckets"}{" "}
+          </DialogTitle>
+          <DialogActions>
+            <Button
+              startIcon={<CloseIcon />}
+              onClick={handleCloseBucketDialog}
+              color="primary"
+              variant="contained"
+              sx={{ fontSize: "0.875rem" }}
+            >
+              Close
+            </Button>
+          </DialogActions>
+        </Box>
         <DialogContent>
           <Typography variant="h6">
             Existing{" "}
@@ -229,11 +249,6 @@ export default function TickerDetailBucketManager({
             />
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseBucketDialog} color="primary">
-            Close
-          </Button>
-        </DialogActions>
       </Dialog>
     </Box>
   );
