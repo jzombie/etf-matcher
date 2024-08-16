@@ -9,6 +9,7 @@ import {
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
+import customLogger from "@utils/customLogger";
 import deepEqual from "@utils/deepEqual";
 
 export default function TickerTape() {
@@ -20,6 +21,7 @@ export default function TickerTape() {
       const tickerTapeBucket = store.getFirstTickerBucketOfType("ticker_tape");
 
       if (!tickerTapeBucket) {
+        customLogger.warn("No ticker tape bucket found");
         return;
       }
 
