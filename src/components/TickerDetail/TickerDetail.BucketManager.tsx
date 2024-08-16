@@ -106,7 +106,7 @@ export default function TickerDetailBucketManager({
             bucket,
           );
 
-          const isMultipleInstancesAllowed =
+          const areMultipleInstancesAllowed =
             multiBucketInstancesAllowed.includes(type);
 
           return (
@@ -115,7 +115,7 @@ export default function TickerDetailBucketManager({
                 onClick={() => handleToggleBucket(bucket)}
                 variant="contained"
                 color={
-                  isTickerInBucket && isMultipleInstancesAllowed
+                  isTickerInBucket && areMultipleInstancesAllowed
                     ? "secondary"
                     : isTickerInBucket
                       ? "error"
@@ -123,7 +123,7 @@ export default function TickerDetailBucketManager({
                 }
                 fullWidth
                 startIcon={
-                  isTickerInBucket && isMultipleInstancesAllowed ? (
+                  isTickerInBucket && areMultipleInstancesAllowed ? (
                     <EditIcon />
                   ) : isTickerInBucket ? (
                     <DeleteIcon />
@@ -137,7 +137,7 @@ export default function TickerDetailBucketManager({
                 }}
               >
                 <Box component="span" sx={{ flexGrow: 1, textAlign: "center" }}>
-                  {isTickerInBucket && isMultipleInstancesAllowed
+                  {isTickerInBucket && areMultipleInstancesAllowed
                     ? `Manage "${tickerDetail.symbol}" in ${tickerBucketDefaultNames[type]}s`
                     : isTickerInBucket
                       ? `Remove "${tickerDetail.symbol}" from ${tickerBucketDefaultNames[type]}`
