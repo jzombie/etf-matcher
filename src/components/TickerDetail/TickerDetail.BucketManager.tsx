@@ -189,14 +189,37 @@ export default function TickerDetailBucketManager({
                   bucket.isUserConfigurable &&
                   bucket.type === selectedBucketType,
               )
-              .map((bucket) => (
-                <TickerBucketMgmtButton
-                  key={bucket.name}
-                  tickerDetail={tickerDetail}
-                  tickerBucket={bucket}
-                  onToggle={() => handleToggleBucket(bucket, true)}
-                />
-              ))}
+              .map((tickerBucket) => {
+                const bucketHasTicker = store.bucketHasTicker(
+                  tickerDetail.ticker_id,
+                  tickerBucket,
+                );
+
+                return (
+                  <Button
+                    key={tickerBucket.name}
+                    onClick={() => handleToggleBucket(tickerBucket, true)}
+                    variant="contained"
+                    color={bucketHasTicker ? "error" : "primary"}
+                    fullWidth
+                    startIcon={bucketHasTicker ? <DeleteIcon /> : <AddIcon />}
+                    sx={{
+                      justifyContent: "flex-start", // Left justify the icon
+                      textAlign: "center", // Center the text
+                      marginBottom: 1,
+                    }}
+                  >
+                    <Box
+                      component="span"
+                      sx={{ flexGrow: 1, textAlign: "center" }}
+                    >
+                      {bucketHasTicker
+                        ? `Remove "${tickerDetail.symbol}" from "${tickerBucket.name}"`
+                        : `Add "${tickerDetail.symbol}" to "${tickerBucket.name}"`}
+                    </Box>
+                  </Button>
+                );
+              })}
           </Box>
 
           {selectedBucketType && (
@@ -213,46 +236,5 @@ export default function TickerDetailBucketManager({
         </DialogActions>
       </Dialog>
     </Box>
-  );
-}
-
-// TODO: Rename
-type TickerBucketMgmtButtonProps = ButtonProps & {
-  tickerDetail: RustServiceTickerDetail;
-  tickerBucket: TickerBucket;
-  onToggle: () => void;
-};
-
-// TODO: Rename
-function TickerBucketMgmtButton({
-  tickerDetail,
-  tickerBucket,
-  onToggle,
-}: TickerBucketMgmtButtonProps) {
-  const bucketHasTicker = useMemo(
-    () => store.bucketHasTicker(tickerDetail.ticker_id, tickerBucket),
-    [tickerDetail.ticker_id, tickerBucket],
-  );
-
-  return (
-    <Button
-      key={tickerBucket.name}
-      onClick={onToggle}
-      variant="contained"
-      color={bucketHasTicker ? "error" : "primary"}
-      fullWidth
-      startIcon={bucketHasTicker ? <DeleteIcon /> : <AddIcon />}
-      sx={{
-        justifyContent: "flex-start", // Left justify the icon
-        textAlign: "center", // Center the text
-        marginBottom: 1,
-      }}
-    >
-      <Box component="span" sx={{ flexGrow: 1, textAlign: "center" }}>
-        {bucketHasTicker
-          ? `Remove "${tickerDetail.symbol}" from "${tickerBucket.name}"`
-          : `Add "${tickerDetail.symbol}" to "${tickerBucket.name}"`}
-      </Box>
-    </Button>
   );
 }
