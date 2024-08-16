@@ -5,6 +5,7 @@ import { Box, Paper, Typography } from "@mui/material";
 import type {
   RustServiceETFAggregateDetail,
   RustServiceTicker10KDetail,
+  RustServiceTickerDetail,
 } from "@src/types";
 
 import useTicker10KDetail from "@hooks/useTicker10KDetail";
@@ -12,8 +13,7 @@ import useTicker10KDetail from "@hooks/useTicker10KDetail";
 import RenderChart from "./TickerDetail.FinancialChartsGrid.Chart";
 
 export type FinancialChartsGridProps = {
-  tickerId: number;
-  isETF: boolean;
+  tickerDetail: RustServiceTickerDetail;
 };
 
 function isETFAggregateDetail(
@@ -23,10 +23,12 @@ function isETFAggregateDetail(
 }
 
 export default function FinancialChartsGrid({
-  tickerId,
-  isETF,
+  tickerDetail,
 }: FinancialChartsGridProps) {
-  const { isLoading, detail } = useTicker10KDetail(tickerId, isETF);
+  const { isLoading, detail } = useTicker10KDetail(
+    tickerDetail.ticker_id,
+    tickerDetail.is_etf,
+  );
 
   if (isLoading || !detail) {
     return <div>Loading...</div>;
@@ -50,10 +52,7 @@ export default function FinancialChartsGrid({
   return (
     <Paper sx={{ padding: 2 }}>
       <Typography variant="h6" sx={{ marginBottom: 2 }}>
-        {
-          // TODO: Add ticker symbol here
-        }
-        Financial Overview
+        &quot;{tickerDetail.symbol}&quot; Financial Overview
       </Typography>
       <Box
         sx={{

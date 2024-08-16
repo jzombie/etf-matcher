@@ -105,10 +105,7 @@ export default function TickerDetail({
         />
       )} */}
 
-      <FinancialChartsGrid
-        tickerId={tickerDetail.ticker_id}
-        isETF={tickerDetail.is_etf}
-      />
+      <FinancialChartsGrid tickerDetail={tickerDetail} />
 
       {tickerDetail?.is_etf && (
         <ETFHoldingList etfTickerDetail={tickerDetail} />
