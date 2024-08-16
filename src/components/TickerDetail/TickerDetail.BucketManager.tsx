@@ -105,8 +105,8 @@ export default function TickerDetailBucketManager({
 
           const buttonText =
             isTickerInBucket && multiBucketInstancesAllowed.includes(type)
-              ? `Manage ${tickerDetail.symbol} in ${tickerBucketDefaultNames[type]}`
-              : `Add ${tickerDetail.symbol} to ${tickerBucketDefaultNames[type]}`;
+              ? `Manage "${tickerDetail.symbol}" in ${tickerBucketDefaultNames[type]}`
+              : `Add "${tickerDetail.symbol}" to ${tickerBucketDefaultNames[type]}`;
 
           return (
             <Grid item xs={12} sm={6} md={4} key={type}>
