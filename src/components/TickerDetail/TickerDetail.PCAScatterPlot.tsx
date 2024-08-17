@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 
 import {
-  CartesianGrid,
   Legend,
   ResponsiveContainer,
   Scatter,
@@ -10,6 +9,18 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+
+const renderRadialOverlay = () => {
+  return (
+    <g>
+      <circle cx="50%" cy="50%" r="50%" stroke="#ddd" fill="none" />
+      <circle cx="50%" cy="50%" r="40%" stroke="#ddd" fill="none" />
+      <circle cx="50%" cy="50%" r="30%" stroke="#ddd" fill="none" />
+      <circle cx="50%" cy="50%" r="20%" stroke="#ddd" fill="none" />
+      <circle cx="50%" cy="50%" r="10%" stroke="#ddd" fill="none" />
+    </g>
+  );
+};
 
 export default function PCAScatterPlot() {
   const handleClick = useCallback((data) => {
@@ -22,9 +33,9 @@ export default function PCAScatterPlot() {
   return (
     <ResponsiveContainer width="100%" height={400}>
       <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-        <CartesianGrid />
         <XAxis type="number" dataKey="pc1" name="PC1" />
         <YAxis type="number" dataKey="pc2" name="PC2" />
+        {renderRadialOverlay()}
         <Tooltip cursor={{ strokeDasharray: "3 3" }} />
         <Legend />
         <Scatter
