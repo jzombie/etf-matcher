@@ -187,25 +187,21 @@ pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<Js
 
 #[wasm_bindgen]
 pub fn get_cache_size() -> usize {
-    // TODO: Also include shared_cache
     lib_get_cache_size()
 }
 
 #[wasm_bindgen]
 pub fn get_cache_details() -> JsValue {
-    // TODO: Also include shared_cache
     lib_get_cache_details()
 }
 
 #[wasm_bindgen]
 pub fn remove_cache_entry(key: &str) {
-    // TODO: Also include shared_cache
     lib_remove_cache_entry(key);
 }
 
 #[wasm_bindgen]
 pub fn clear_cache() {
-    // TODO: Also include shared_cache?
     lib_clear_cache();
 }
 
