@@ -1,8 +1,10 @@
+use std::sync::Arc;
+
 use js_sys::{Date, Promise, Uint8Array};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 use web_sys::XmlHttpRequest;
-use super::network_cache::{insert_cache_future, get_cache_future};
+use super::shared_network_cache::{insert_shared_cache_future, get_shared_cache_future};
 use futures::future;
 use futures::FutureExt;
 
@@ -103,9 +105,9 @@ pub async fn xhr_fetch(url: String) -> Result<Vec<u8>, JsValue> {
 // decrypting, etc.)
 pub async fn xhr_fetch_and_cache(url: String) -> Result<Vec<u8>, JsValue> {
     // Step 1: Check if the content is already cached
-    if let Some(cached_future) = get_cache_future(&url) {
+    if let Some(shared_network_cache) = get_shared_cache_future(&url) {
         // If the content is cached, return the cached data
-        return cached_future.await;
+        return shared_network_cache.await.map(|data| (*data).clone());
     }
 
     // Step 2: Fetch the data using xhr_fetch if not cached
@@ -114,12 +116,14 @@ pub async fn xhr_fetch_and_cache(url: String) -> Result<Vec<u8>, JsValue> {
     })?;
 
     // Step 3: Wrap the fetched data in a future without `Send`
-    let future_data = future::ready::<Result<Vec<u8>, JsValue>>(Ok(fetched_data.clone()))
-        .boxed_local()  // Ensure this future is not `Send`
-        .shared();
+    let future_data = future::ready::<Result<Arc<Vec<u8>>, JsValue>>(
+        Ok(Arc::new(fetched_data.clone()))
+    )
+    .boxed_local()  // Ensure this future is not `Send`
+    .shared();
 
-    // Step 4: Add the fetched data to the cache with the correct type
-    insert_cache_future(&url, future_data);
+    // Step 4: Add the fetched data to the shared cache
+    insert_shared_cache_future(&url, future_data);
 
     // Step 5: Return the fetched data
     Ok(fetched_data)
