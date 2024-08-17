@@ -50,6 +50,8 @@ const renderRadialOverlay = () => {
         stroke={RADIAL_STROKE_COLOR}
         fill="none"
       />
+      {/* Add a yellow dot in the center */}
+      <circle cx="50%" cy="50%" r="5" fill="yellow" />
     </g>
   );
 };
