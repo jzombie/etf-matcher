@@ -3,15 +3,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import AutoScaler from "@layoutKit/AutoScaler";
 import store from "@src/store";
 import { RustServiceTickerDetail } from "@src/types";
-import {
-  Legend,
-  ResponsiveContainer,
-  Scatter,
-  ScatterChart,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Legend, Scatter, ScatterChart, Tooltip, XAxis, YAxis } from "recharts";
 
 import customLogger from "@utils/customLogger";
 
@@ -40,7 +32,6 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
   }, [tickerDetail]);
 
   const handleClick = useCallback((chartData) => {
-    // const handleClick = (data) => {
     customLogger.debug(
       `Ticker ID: ${chartData.ticker_id}\nPC1: ${chartData.pc1}\nPC2: ${chartData.pc2}`,
     );
@@ -50,7 +41,34 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
     return null;
   }
 
-  // Note: `AutoScaler` is usded instead of `ResponsiveContainer` to help prevent the chart from clipping.
+  // Custom tooltip content
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      const { ticker_id, pc1, pc2 } = payload[0].payload;
+      return (
+        <div className="custom-tooltip">
+          <p>{`Ticker ID: ${ticker_id}`}</p>
+          <p>{`PC1: ${pc1}`}</p>
+          <p>{`PC2: ${pc2}`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  // Custom scatter point content
+  const renderCustomPoint = (props) => {
+    const { cx, cy, payload } = props;
+    return (
+      <g>
+        <circle cx={cx} cy={cy} r={6} fill="#8884d8" />
+        <text x={cx} y={cy} dy={-10} textAnchor="middle" fill="#333">
+          {payload.ticker_id}
+        </text>
+      </g>
+    );
+  };
+
   return (
     <AutoScaler>
       <ScatterChart
@@ -58,19 +76,19 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
         width={400}
         height={400}
       >
-        {
-          // Note: The X and Y axis must be present for the chart to understand its own coordinate system.
-          // If they are visible, the radial overlay is offcentered.
-        }
         <XAxis type="number" dataKey="pc1" name="PC1" hide />
         <YAxis type="number" dataKey="pc2" name="PC2" hide />
         {renderRadialOverlay()}
-        <Tooltip cursor={{ strokeDasharray: "3 3" }} />
+        <Tooltip
+          content={<CustomTooltip />}
+          cursor={{ strokeDasharray: "3 3" }}
+        />
         <Scatter
           name="10-K Proximity Tickers"
           data={chartData}
           fill="#8884d8"
           onClick={(data) => handleClick(data)}
+          shape={renderCustomPoint} // Custom point rendering
         />
       </ScatterChart>
     </AutoScaler>
