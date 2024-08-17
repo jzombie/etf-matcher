@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import AutoScaler from "@layoutKit/AutoScaler";
 import store from "@src/store";
 import { RustServiceTickerDetail } from "@src/types";
-import { Legend, Scatter, ScatterChart, Tooltip, XAxis, YAxis } from "recharts";
+import { Scatter, ScatterChart, Tooltip, XAxis, YAxis } from "recharts";
 
 import customLogger from "@utils/customLogger";
 
