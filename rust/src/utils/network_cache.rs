@@ -1,5 +1,3 @@
-// TODO: Rename this to `network_cache`?
-
 use futures::future::LocalBoxFuture;
 use futures::future::Shared;
 use futures::FutureExt;
