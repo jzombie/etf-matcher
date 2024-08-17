@@ -13,7 +13,7 @@ use crate::utils::decrypt::password::{
     decrypt_password, get_encrypted_password, get_iv, Aes256Cbc,
 };
 use crate::utils::xhr_fetch;
-use crate::utils::{get_shared_cache_future, insert_shared_cache_future, remove_shared_cache_entry};
+use crate::utils::{get_cache_future, insert_cache_future, remove_cache_entry};
 
 pub async fn fetch_and_decompress_gz<T>(url: T, use_cache: bool) -> Result<Vec<u8>, JsValue>
 where
@@ -22,10 +22,10 @@ where
     let url_str: String = url.as_ref().to_string();
 
     if use_cache {
-        if let Some(shared_future) = get_shared_cache_future(&url_str) {
-            let result = shared_future.await;
+        if let Some(future) = get_cache_future(&url_str) {
+            let result = future.await;
             return result.map(|data| (*data).clone()).map_err(|err| {
-                remove_shared_cache_entry(&url_str);
+                remove_cache_entry(&url_str);
                 JsValue::from_str(&format!("Error: {:?}", err))
             });
         }
@@ -33,11 +33,11 @@ where
         let future = decrypt_and_decompress_data(url_str.clone())
             .boxed_local()
             .shared();
-        insert_shared_cache_future(&url_str, future.clone());
+        insert_cache_future(&url_str, future.clone());
         let result = future.await;
 
         result.map(|data| (*data).clone()).map_err(|err| {
-            remove_shared_cache_entry(&url_str);
+            remove_cache_entry(&url_str);
             JsValue::from_str(&format!("Error: {:?}", err))
         })
     } else {
