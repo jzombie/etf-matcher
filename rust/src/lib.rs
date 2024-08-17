@@ -281,11 +281,14 @@ pub async fn proto_find_closest_ticker_ids(ticker_id: i32) -> Result<JsValue, Js
 
     // Find the target vector corresponding to the given ticker_id
     let mut target_vector: Option<flatbuffers::Vector<'_, f32>> = None;
+    // let mut target_pca_coordinates: Option<flatbuffers::Vector<'_, f32>> = None;
+
     if let Some(vectors) = ticker_vectors.vectors() {
         for i in 0..vectors.len() {
             let ticker_vector = vectors.get(i);
             if ticker_vector.ticker_id() == ticker_id {
                 target_vector = ticker_vector.vector();
+                // target_pca_coordinates = ticker_vector.pca_coordinates();
                 break;
             }
         }
@@ -296,28 +299,46 @@ pub async fn proto_find_closest_ticker_ids(ticker_id: i32) -> Result<JsValue, Js
         None => return Err(JsValue::from_str("Ticker ID not found")),
     };
 
+    // TODO: Update types (TickerId, f32, Vec<f32>)
     // Compute Euclidean distance with every other vector
-    let mut distances: Vec<(i32, f64)> = Vec::new();
+    let mut results: Vec<(i32, f64, Vec<f64>)> = Vec::new();
     if let Some(vectors) = ticker_vectors.vectors() {
         for i in 0..vectors.len() {
             let ticker_vector = vectors.get(i);
             if ticker_vector.ticker_id() != ticker_id {
                 if let Some(other_vector) = ticker_vector.vector() {
                     let distance = euclidean_distance(&target_vector, &other_vector);
-                    distances.push((ticker_vector.ticker_id(), distance));
+
+                    // Extract PCA coordinates for this ticker
+                    let pca_coords = ticker_vector.pca_coordinates()
+                        .map(|coords| coords.iter().map(|c| c as f64).collect::<Vec<f64>>())
+                        .unwrap_or_default();
+
+                    results.push((ticker_vector.ticker_id(), distance, pca_coords));
                 }
             }
         }
     }
 
     // Sort by Euclidean distance in ascending order and take the top 20
-    distances.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
-    let top_20: Vec<i32> = distances.iter().take(20).map(|(id, _)| *id).collect();
+    results.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
+    let top_20 = results.iter().take(20).collect::<Vec<_>>();
 
-    // Convert to JS array and return
+    // Create JS array of objects with Ticker ID, distance, and PCA coordinates
     let js_array = js_sys::Array::new();
-    for id in top_20 {
-        js_array.push(&JsValue::from(id));
+    for &(id, distance, ref pca_coords) in top_20 {
+        let obj = js_sys::Object::new();
+        js_sys::Reflect::set(&obj, &JsValue::from_str("ticker_id"), &JsValue::from(id)).unwrap();
+        js_sys::Reflect::set(&obj, &JsValue::from_str("distance"), &JsValue::from(distance)).unwrap();
+
+        // Convert PCA coordinates to JS array
+        let pca_array = js_sys::Array::new();
+        for &coord in pca_coords {
+            pca_array.push(&JsValue::from_f64(coord));
+        }
+        js_sys::Reflect::set(&obj, &JsValue::from_str("pca_coordinates"), &pca_array.into()).unwrap();
+
+        js_array.push(&obj);
     }
 
     Ok(js_array.into())
