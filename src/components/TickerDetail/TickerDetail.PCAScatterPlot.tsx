@@ -10,14 +10,46 @@ import {
   YAxis,
 } from "recharts";
 
+const RADIAL_STROKE_COLOR = "#999";
+
 const renderRadialOverlay = () => {
   return (
     <g>
-      <circle cx="50%" cy="50%" r="50%" stroke="#ddd" fill="none" />
-      <circle cx="50%" cy="50%" r="40%" stroke="#ddd" fill="none" />
-      <circle cx="50%" cy="50%" r="30%" stroke="#ddd" fill="none" />
-      <circle cx="50%" cy="50%" r="20%" stroke="#ddd" fill="none" />
-      <circle cx="50%" cy="50%" r="10%" stroke="#ddd" fill="none" />
+      <circle
+        cx="50%"
+        cy="50%"
+        r="50%"
+        stroke={RADIAL_STROKE_COLOR}
+        fill="none"
+      />
+      <circle
+        cx="50%"
+        cy="50%"
+        r="40%"
+        stroke={RADIAL_STROKE_COLOR}
+        fill="none"
+      />
+      <circle
+        cx="50%"
+        cy="50%"
+        r="30%"
+        stroke={RADIAL_STROKE_COLOR}
+        fill="none"
+      />
+      <circle
+        cx="50%"
+        cy="50%"
+        r="20%"
+        stroke={RADIAL_STROKE_COLOR}
+        fill="none"
+      />
+      <circle
+        cx="50%"
+        cy="50%"
+        r="10%"
+        stroke={RADIAL_STROKE_COLOR}
+        fill="none"
+      />
     </g>
   );
 };
@@ -33,13 +65,17 @@ export default function PCAScatterPlot() {
   return (
     <ResponsiveContainer width="100%" height={400}>
       <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-        <XAxis type="number" dataKey="pc1" name="PC1" />
-        <YAxis type="number" dataKey="pc2" name="PC2" />
+        {
+          // Note: The X and Y axis must be present for the chart to understand its own coordinate system.
+          // If they are visible, the radial overlay is offcentered.
+        }
+        <XAxis type="number" dataKey="pc1" name="PC1" hide />
+        <YAxis type="number" dataKey="pc2" name="PC2" hide />
         {renderRadialOverlay()}
         <Tooltip cursor={{ strokeDasharray: "3 3" }} />
         <Legend />
         <Scatter
-          name="Tickers"
+          name="10-K Proximity Tickers"
           data={convertedData}
           fill="#8884d8"
           onClick={(data) => handleClick(data)}
