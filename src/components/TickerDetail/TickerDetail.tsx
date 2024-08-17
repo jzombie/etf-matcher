@@ -85,7 +85,7 @@ export default function TickerDetail({
             formattedSymbolWithExchange={formattedSymbolWithExchange}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={6} mb={1}>
           <PCAScatterPlot tickerDetail={tickerDetail} />
         </Grid>
       </Grid>
