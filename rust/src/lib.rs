@@ -296,23 +296,23 @@ pub async fn proto_find_closest_ticker_ids(ticker_id: i32) -> Result<JsValue, Js
         None => return Err(JsValue::from_str("Ticker ID not found")),
     };
 
-    // Compute cosine similarity with every other vector
-    let mut similarities: Vec<(i32, f64)> = Vec::new();
+    // Compute Euclidean distance with every other vector
+    let mut distances: Vec<(i32, f64)> = Vec::new();
     if let Some(vectors) = ticker_vectors.vectors() {
         for i in 0..vectors.len() {
             let ticker_vector = vectors.get(i);
             if ticker_vector.ticker_id() != ticker_id {
                 if let Some(other_vector) = ticker_vector.vector() {
-                    let similarity = cosine_similarity(&target_vector, &other_vector);
-                    similarities.push((ticker_vector.ticker_id(), similarity));
+                    let distance = euclidean_distance(&target_vector, &other_vector);
+                    distances.push((ticker_vector.ticker_id(), distance));
                 }
             }
         }
     }
 
-    // Sort by cosine similarity in descending order and take the top 20
-    similarities.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
-    let top_20: Vec<i32> = similarities.iter().take(20).map(|(id, _)| *id).collect();
+    // Sort by Euclidean distance in ascending order and take the top 20
+    distances.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
+    let top_20: Vec<i32> = distances.iter().take(20).map(|(id, _)| *id).collect();
 
     // Convert to JS array and return
     let js_array = js_sys::Array::new();
@@ -323,18 +323,10 @@ pub async fn proto_find_closest_ticker_ids(ticker_id: i32) -> Result<JsValue, Js
     Ok(js_array.into())
 }
 
-// Helper function to compute cosine similarity between two vectors
-fn cosine_similarity(vector1: &flatbuffers::Vector<'_, f32>, vector2: &flatbuffers::Vector<'_, f32>) -> f64 {
-    let dot_product: f64 = vector1.iter().zip(vector2.iter())
-        .map(|(a, b)| (a as f64) * (b as f64))
-        .sum();
-
-    let magnitude1: f64 = vector1.iter().map(|x| (x as f64).powi(2)).sum::<f64>().sqrt();
-    let magnitude2: f64 = vector2.iter().map(|x| (x as f64).powi(2)).sum::<f64>().sqrt();
-
-    if magnitude1 == 0.0 || magnitude2 == 0.0 {
-        return 0.0; // Avoid division by zero
-    }
-
-    dot_product / (magnitude1 * magnitude2)
+// Helper function to compute Euclidean distance between two vectors
+fn euclidean_distance(vector1: &flatbuffers::Vector<'_, f32>, vector2: &flatbuffers::Vector<'_, f32>) -> f64 {
+    vector1.iter().zip(vector2.iter())
+        .map(|(a, b)| (a as f64 - b as f64).powi(2))
+        .sum::<f64>()
+        .sqrt()
 }

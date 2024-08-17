@@ -751,9 +751,15 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
-  PROTO_fetchClosestTickerIds(tickerId: number) {
+  PROTO_fetchClosestTickers(tickerId: number) {
     callRustService("proto_find_closest_ticker_ids", [tickerId]).then(
-      (tickerIds) => customLogger.debug({ tickerIds }),
+      async (tickerIds: number[]) => {
+        const details = await Promise.allSettled(
+          tickerIds.map((tickerId) => this.fetchTickerDetail(tickerId)),
+        );
+
+        customLogger.debug(details);
+      },
     );
   }
 }

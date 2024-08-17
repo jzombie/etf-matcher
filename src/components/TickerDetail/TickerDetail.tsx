@@ -91,9 +91,7 @@ export default function TickerDetail({
       </Button>
 
       <Button
-        onClick={() =>
-          store.PROTO_fetchClosestTickerIds(tickerDetail.ticker_id)
-        }
+        onClick={() => store.PROTO_fetchClosestTickers(tickerDetail.ticker_id)}
       >
         PROTO::fetchClosestTickerIds
       </Button>
