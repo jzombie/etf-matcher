@@ -745,20 +745,23 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
   /// TODO: Refactor as needed
 
-  PROTO_fetchTickerVector(tickerId: number) {
+  async PROTO_fetchTickerVector(tickerId: number) {
     callRustService("proto_get_ticker_vector", [tickerId]).then(
       (tickerVector) => customLogger.debug({ tickerVector }),
     );
   }
 
-  PROTO_fetchClosestTickers(tickerId: number) {
-    callRustService("proto_find_closest_ticker_ids", [tickerId]).then(
-      async (tickerIds: number[]) => {
-        const details = await Promise.allSettled(
-          tickerIds.map((tickerId) => this.fetchTickerDetail(tickerId)),
-        );
+  async PROTO_fetchClosestTickers(tickerId: number) {
+    return callRustService("proto_find_closest_ticker_ids", [tickerId]).then(
+      (data) => {
+        // TODO: This should be handled entirely by the Rust service
+        // const details = await Promise.allSettled(
+        //   tickerIds.map((tickerId) => this.fetchTickerDetail(tickerId)),
+        // );
 
-        customLogger.debug(details);
+        // customLogger.debug(details);
+
+        return data;
       },
     );
   }

@@ -279,13 +279,16 @@ pub async fn proto_find_closest_ticker_ids(ticker_id: i32) -> Result<JsValue, Js
     let ticker_vectors = root_as_ticker_vectors(&file_content)
         .map_err(|err| JsValue::from_str(&format!("Failed to parse TickerVectors: {:?}", err)))?;
 
-    // Find the target vector corresponding to the given ticker_id
+    // Find the target vector and PCA coordinates corresponding to the given ticker_id
     let mut target_vector: Option<flatbuffers::Vector<'_, f32>> = None;
+    let mut target_pca_coordinates: Option<flatbuffers::Vector<'_, f32>> = None;
+
     if let Some(vectors) = ticker_vectors.vectors() {
         for i in 0..vectors.len() {
             let ticker_vector = vectors.get(i);
             if ticker_vector.ticker_id() == ticker_id {
                 target_vector = ticker_vector.vector();
+                target_pca_coordinates = ticker_vector.pca_coordinates();
                 break;
             }
         }
@@ -296,28 +299,71 @@ pub async fn proto_find_closest_ticker_ids(ticker_id: i32) -> Result<JsValue, Js
         None => return Err(JsValue::from_str("Ticker ID not found")),
     };
 
-    // Compute Euclidean distance with every other vector
-    let mut distances: Vec<(i32, f64)> = Vec::new();
+    let target_pca_coordinates = match target_pca_coordinates {
+        Some(coords) => coords,
+        None => return Err(JsValue::from_str("PCA coordinates not found for the given Ticker ID")),
+    };
+
+    // Convert target PCA coordinates to Vec<f64> for arithmetic operations
+    let target_pca_coords: Vec<f64> = target_pca_coordinates.iter().map(|c| c as f64).collect();
+
+    // TODO: Update types (TickerId, f32, Vec<f32>)
+    // Compute Euclidean distance with every other vector and capture PCA coordinates
+    let mut results: Vec<(i32, f64, Vec<f64>, Vec<f64>)> = Vec::new();
     if let Some(vectors) = ticker_vectors.vectors() {
         for i in 0..vectors.len() {
             let ticker_vector = vectors.get(i);
             if ticker_vector.ticker_id() != ticker_id {
                 if let Some(other_vector) = ticker_vector.vector() {
                     let distance = euclidean_distance(&target_vector, &other_vector);
-                    distances.push((ticker_vector.ticker_id(), distance));
+
+                    // Extract non-translated PCA coordinates
+                    let original_pca_coords = ticker_vector.pca_coordinates()
+                        .map(|coords| coords.iter().map(|c| c as f64).collect::<Vec<f64>>())
+                        .unwrap_or_default();
+
+                    // Compute translated PCA coordinates
+                    let translated_pca_coords = ticker_vector.pca_coordinates()
+                        .map(|coords| {
+                            coords.iter()
+                                .zip(&target_pca_coords)
+                                .map(|(c, &target_c)| c as f64 - target_c)
+                                .collect::<Vec<f64>>()
+                        })
+                        .unwrap_or_default();
+
+                    results.push((ticker_vector.ticker_id(), distance, original_pca_coords, translated_pca_coords));
                 }
             }
         }
     }
 
     // Sort by Euclidean distance in ascending order and take the top 20
-    distances.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
-    let top_20: Vec<i32> = distances.iter().take(20).map(|(id, _)| *id).collect();
+    results.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
+    let top_20 = results.iter().take(20).collect::<Vec<_>>();
 
-    // Convert to JS array and return
+    // Create JS array of objects with Ticker ID, distance, original and translated PCA coordinates
     let js_array = js_sys::Array::new();
-    for id in top_20 {
-        js_array.push(&JsValue::from(id));
+    for &(id, distance, ref original_pca_coords, ref translated_pca_coords) in top_20 {
+        let obj = js_sys::Object::new();
+        js_sys::Reflect::set(&obj, &JsValue::from_str("ticker_id"), &JsValue::from(id)).unwrap();
+        js_sys::Reflect::set(&obj, &JsValue::from_str("distance"), &JsValue::from(distance)).unwrap();
+
+        // Convert original PCA coordinates to JS array
+        let original_pca_array = js_sys::Array::new();
+        for &coord in original_pca_coords {
+            original_pca_array.push(&JsValue::from_f64(coord));
+        }
+        js_sys::Reflect::set(&obj, &JsValue::from_str("original_pca_coordinates"), &original_pca_array.into()).unwrap();
+
+        // Convert translated PCA coordinates to JS array
+        let translated_pca_array = js_sys::Array::new();
+        for &coord in translated_pca_coords {
+            translated_pca_array.push(&JsValue::from_f64(coord));
+        }
+        js_sys::Reflect::set(&obj, &JsValue::from_str("translated_pca_coordinates"), &translated_pca_array.into()).unwrap();
+
+        js_array.push(&obj);
     }
 
     Ok(js_array.into())
