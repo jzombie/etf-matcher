@@ -279,16 +279,16 @@ pub async fn proto_find_closest_ticker_ids(ticker_id: i32) -> Result<JsValue, Js
     let ticker_vectors = root_as_ticker_vectors(&file_content)
         .map_err(|err| JsValue::from_str(&format!("Failed to parse TickerVectors: {:?}", err)))?;
 
-    // Find the target vector corresponding to the given ticker_id
+    // Find the target vector and PCA coordinates corresponding to the given ticker_id
     let mut target_vector: Option<flatbuffers::Vector<'_, f32>> = None;
-    // let mut target_pca_coordinates: Option<flatbuffers::Vector<'_, f32>> = None;
+    let mut target_pca_coordinates: Option<flatbuffers::Vector<'_, f32>> = None;
 
     if let Some(vectors) = ticker_vectors.vectors() {
         for i in 0..vectors.len() {
             let ticker_vector = vectors.get(i);
             if ticker_vector.ticker_id() == ticker_id {
                 target_vector = ticker_vector.vector();
-                // target_pca_coordinates = ticker_vector.pca_coordinates();
+                target_pca_coordinates = ticker_vector.pca_coordinates();
                 break;
             }
         }
@@ -299,8 +299,16 @@ pub async fn proto_find_closest_ticker_ids(ticker_id: i32) -> Result<JsValue, Js
         None => return Err(JsValue::from_str("Ticker ID not found")),
     };
 
+    let target_pca_coordinates = match target_pca_coordinates {
+        Some(coords) => coords,
+        None => return Err(JsValue::from_str("PCA coordinates not found for the given Ticker ID")),
+    };
+
+    // Convert target PCA coordinates to Vec<f64> for arithmetic operations
+    let target_pca_coords: Vec<f64> = target_pca_coordinates.iter().map(|c| c as f64).collect();
+
     // TODO: Update types (TickerId, f32, Vec<f32>)
-    // Compute Euclidean distance with every other vector
+    // Compute Euclidean distance with every other vector and adjust PCA coordinates
     let mut results: Vec<(i32, f64, Vec<f64>)> = Vec::new();
     if let Some(vectors) = ticker_vectors.vectors() {
         for i in 0..vectors.len() {
@@ -309,9 +317,14 @@ pub async fn proto_find_closest_ticker_ids(ticker_id: i32) -> Result<JsValue, Js
                 if let Some(other_vector) = ticker_vector.vector() {
                     let distance = euclidean_distance(&target_vector, &other_vector);
 
-                    // Extract PCA coordinates for this ticker
+                    // Extract and adjust PCA coordinates for this ticker
                     let pca_coords = ticker_vector.pca_coordinates()
-                        .map(|coords| coords.iter().map(|c| c as f64).collect::<Vec<f64>>())
+                        .map(|coords| {
+                            coords.iter()
+                                .zip(&target_pca_coords)
+                                .map(|(c, &target_c)| c as f64 - target_c)
+                                .collect::<Vec<f64>>()
+                        })
                         .unwrap_or_default();
 
                     results.push((ticker_vector.ticker_id(), distance, pca_coords));
@@ -324,7 +337,7 @@ pub async fn proto_find_closest_ticker_ids(ticker_id: i32) -> Result<JsValue, Js
     results.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
     let top_20 = results.iter().take(20).collect::<Vec<_>>();
 
-    // Create JS array of objects with Ticker ID, distance, and PCA coordinates
+    // Create JS array of objects with Ticker ID, distance, and adjusted PCA coordinates
     let js_array = js_sys::Array::new();
     for &(id, distance, ref pca_coords) in top_20 {
         let obj = js_sys::Object::new();
