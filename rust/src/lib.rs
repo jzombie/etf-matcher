@@ -214,7 +214,7 @@ pub async fn proto_echo_all_ticker_vectors() -> Result<(), JsValue> {
     let url = "/data/financial_vectors.tenk.bin";
 
     // TODO: Don't cache this way, as it uses a copy. Use a non-copy-based cache that still notifies
-    // `network_notifier` with accesses, etc.
+    // `network_notifier` with accesses, etc. (i.e. `shared_network_cache`)
     let file_content = utils::xhr_fetch_and_cache(url.to_string()).await
         .map_err(|err| JsValue::from_str(&format!("Failed to fetch file: {:?}", err)))?;
 
