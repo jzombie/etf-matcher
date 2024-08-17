@@ -40,6 +40,7 @@ impl<'a> flatbuffers::Follow<'a> for TickerVector<'a> {
 impl<'a> TickerVector<'a> {
   pub const VT_TICKER_ID: flatbuffers::VOffsetT = 4;
   pub const VT_VECTOR: flatbuffers::VOffsetT = 6;
+  pub const VT_PCA_COORDINATES: flatbuffers::VOffsetT = 8;
 
   #[inline]
   pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
@@ -51,6 +52,7 @@ impl<'a> TickerVector<'a> {
     args: &'args TickerVectorArgs<'args>
   ) -> flatbuffers::WIPOffset<TickerVector<'bldr>> {
     let mut builder = TickerVectorBuilder::new(_fbb);
+    if let Some(x) = args.pca_coordinates { builder.add_pca_coordinates(x); }
     if let Some(x) = args.vector { builder.add_vector(x); }
     builder.add_ticker_id(args.ticker_id);
     builder.finish()
@@ -71,6 +73,13 @@ impl<'a> TickerVector<'a> {
     // which contains a valid value in this slot
     unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'a, f32>>>(TickerVector::VT_VECTOR, None)}
   }
+  #[inline]
+  pub fn pca_coordinates(&self) -> Option<flatbuffers::Vector<'a, f32>> {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'a, f32>>>(TickerVector::VT_PCA_COORDINATES, None)}
+  }
 }
 
 impl flatbuffers::Verifiable for TickerVector<'_> {
@@ -82,6 +91,7 @@ impl flatbuffers::Verifiable for TickerVector<'_> {
     v.visit_table(pos)?
      .visit_field::<i32>("ticker_id", Self::VT_TICKER_ID, false)?
      .visit_field::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'_, f32>>>("vector", Self::VT_VECTOR, false)?
+     .visit_field::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'_, f32>>>("pca_coordinates", Self::VT_PCA_COORDINATES, false)?
      .finish();
     Ok(())
   }
@@ -89,6 +99,7 @@ impl flatbuffers::Verifiable for TickerVector<'_> {
 pub struct TickerVectorArgs<'a> {
     pub ticker_id: i32,
     pub vector: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a, f32>>>,
+    pub pca_coordinates: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a, f32>>>,
 }
 impl<'a> Default for TickerVectorArgs<'a> {
   #[inline]
@@ -96,6 +107,7 @@ impl<'a> Default for TickerVectorArgs<'a> {
     TickerVectorArgs {
       ticker_id: 0,
       vector: None,
+      pca_coordinates: None,
     }
   }
 }
@@ -112,6 +124,10 @@ impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> TickerVectorBuilder<'a, 'b, A> 
   #[inline]
   pub fn add_vector(&mut self, vector: flatbuffers::WIPOffset<flatbuffers::Vector<'b , f32>>) {
     self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(TickerVector::VT_VECTOR, vector);
+  }
+  #[inline]
+  pub fn add_pca_coordinates(&mut self, pca_coordinates: flatbuffers::WIPOffset<flatbuffers::Vector<'b , f32>>) {
+    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(TickerVector::VT_PCA_COORDINATES, pca_coordinates);
   }
   #[inline]
   pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> TickerVectorBuilder<'a, 'b, A> {
@@ -133,6 +149,7 @@ impl core::fmt::Debug for TickerVector<'_> {
     let mut ds = f.debug_struct("TickerVector");
       ds.field("ticker_id", &self.ticker_id());
       ds.field("vector", &self.vector());
+      ds.field("pca_coordinates", &self.pca_coordinates());
       ds.finish()
   }
 }
