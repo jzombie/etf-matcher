@@ -746,7 +746,15 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   /// TODO: Refactor as needed
 
   PROTO_fetchTickerVector(tickerId: number) {
-    callRustService('proto_get_ticker_vector', [tickerId]).then(tickerVector => customLogger.debug({tickerVector}))
+    callRustService("proto_get_ticker_vector", [tickerId]).then(
+      (tickerVector) => customLogger.debug({ tickerVector }),
+    );
+  }
+
+  PROTO_fetchClosestTickerIds(tickerId: number) {
+    callRustService("proto_find_closest_ticker_ids", [tickerId]).then(
+      (tickerIds) => customLogger.debug({ tickerIds }),
+    );
   }
 }
 

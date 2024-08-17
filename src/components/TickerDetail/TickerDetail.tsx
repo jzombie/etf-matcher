@@ -90,6 +90,14 @@ export default function TickerDetail({
         PROTO::fetchTickerVector()
       </Button>
 
+      <Button
+        onClick={() =>
+          store.PROTO_fetchClosestTickerIds(tickerDetail.ticker_id)
+        }
+      >
+        PROTO::fetchClosestTickerIds
+      </Button>
+
       <HistoricalPriceChart
         tickerSymbol={tickerDetail.symbol}
         formattedSymbolWithExchange={formattedSymbolWithExchange}

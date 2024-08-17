@@ -266,3 +266,75 @@ pub async fn proto_get_ticker_vector(ticker_id: i32) -> Result<JsValue, JsValue>
     // If the ticker_id was not found, return an error
     Err(JsValue::from_str("Ticker ID not found"))
 }
+
+#[wasm_bindgen]
+pub async fn proto_find_closest_ticker_ids(ticker_id: i32) -> Result<JsValue, JsValue> {
+    // Fetch the ticker vectors binary data using `xhr_fetch`
+    let url = "/data/financial_vectors.tenk.bin";
+
+    let file_content = utils::xhr_fetch_cached(url.to_string()).await
+        .map_err(|err| JsValue::from_str(&format!("Failed to fetch file: {:?}", err)))?;
+
+    // Use the FlatBuffers `root_as_ticker_vectors` function to parse the buffer
+    let ticker_vectors = root_as_ticker_vectors(&file_content)
+        .map_err(|err| JsValue::from_str(&format!("Failed to parse TickerVectors: {:?}", err)))?;
+
+    // Find the target vector corresponding to the given ticker_id
+    let mut target_vector: Option<flatbuffers::Vector<'_, f32>> = None;
+    if let Some(vectors) = ticker_vectors.vectors() {
+        for i in 0..vectors.len() {
+            let ticker_vector = vectors.get(i);
+            if ticker_vector.ticker_id() == ticker_id {
+                target_vector = ticker_vector.vector();
+                break;
+            }
+        }
+    }
+
+    let target_vector = match target_vector {
+        Some(vector) => vector,
+        None => return Err(JsValue::from_str("Ticker ID not found")),
+    };
+
+    // Compute cosine similarity with every other vector
+    let mut similarities: Vec<(i32, f64)> = Vec::new();
+    if let Some(vectors) = ticker_vectors.vectors() {
+        for i in 0..vectors.len() {
+            let ticker_vector = vectors.get(i);
+            if ticker_vector.ticker_id() != ticker_id {
+                if let Some(other_vector) = ticker_vector.vector() {
+                    let similarity = cosine_similarity(&target_vector, &other_vector);
+                    similarities.push((ticker_vector.ticker_id(), similarity));
+                }
+            }
+        }
+    }
+
+    // Sort by cosine similarity in descending order and take the top 20
+    similarities.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+    let top_20: Vec<i32> = similarities.iter().take(20).map(|(id, _)| *id).collect();
+
+    // Convert to JS array and return
+    let js_array = js_sys::Array::new();
+    for id in top_20 {
+        js_array.push(&JsValue::from(id));
+    }
+
+    Ok(js_array.into())
+}
+
+// Helper function to compute cosine similarity between two vectors
+fn cosine_similarity(vector1: &flatbuffers::Vector<'_, f32>, vector2: &flatbuffers::Vector<'_, f32>) -> f64 {
+    let dot_product: f64 = vector1.iter().zip(vector2.iter())
+        .map(|(a, b)| (a as f64) * (b as f64))
+        .sum();
+
+    let magnitude1: f64 = vector1.iter().map(|x| (x as f64).powi(2)).sum::<f64>().sqrt();
+    let magnitude2: f64 = vector2.iter().map(|x| (x as f64).powi(2)).sum::<f64>().sqrt();
+
+    if magnitude1 == 0.0 || magnitude2 == 0.0 {
+        return 0.0; // Avoid division by zero
+    }
+
+    dot_product / (magnitude1 * magnitude2)
+}
