@@ -29,6 +29,9 @@ for zip_file in /app/data/*.zip; do
     rm -rf /tmp/unzip_temp/*
 done
 
+# Copy any .bin files directly from /app/data to /build_artifacts/public/data
+rsync -a /app/data/*.bin /build_artifacts/public/data/
+
 # Remove any remaining empty directories in the data directory
 find /build_artifacts/public/data -type d -empty -exec rmdir {} +
 

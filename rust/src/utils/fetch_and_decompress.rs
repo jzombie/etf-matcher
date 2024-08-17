@@ -7,6 +7,7 @@ use hex;
 use std::convert::TryInto;
 use std::io::Read;
 use wasm_bindgen::prelude::*;
+use std::sync::Arc;
 
 use crate::utils::decrypt::password::{
     decrypt_password, get_encrypted_password, get_iv, Aes256Cbc,
@@ -21,9 +22,9 @@ where
     let url_str: String = url.as_ref().to_string();
 
     if use_cache {
-        if let Some(shared_future) = get_cache_future(&url_str) {
-            let result = shared_future.await;
-            return result.map_err(|err| {
+        if let Some(future) = get_cache_future(&url_str) {
+            let result = future.await;
+            return result.map(|data| (*data).clone()).map_err(|err| {
                 remove_cache_entry(&url_str);
                 JsValue::from_str(&format!("Error: {:?}", err))
             });
@@ -35,17 +36,19 @@ where
         insert_cache_future(&url_str, future.clone());
         let result = future.await;
 
-        result.map_err(|err| {
+        result.map(|data| (*data).clone()).map_err(|err| {
             remove_cache_entry(&url_str);
             JsValue::from_str(&format!("Error: {:?}", err))
         })
     } else {
         web_sys::console::debug_1(&"Skipping cache".into());
-        decrypt_and_decompress_data(url_str).await
+        // Convert the Arc<Vec<u8>> to Vec<u8> here
+        decrypt_and_decompress_data(url_str).await.map(|data| (*data).clone())
     }
 }
 
-async fn decrypt_and_decompress_data(url: String) -> Result<Vec<u8>, JsValue> {
+
+async fn decrypt_and_decompress_data(url: String) -> Result<Arc<Vec<u8>>, JsValue> {
     let encrypted_data: Vec<u8> = xhr_fetch(url).await?;
 
     let salt: &[u8] = &encrypted_data[0..16];
@@ -75,5 +78,5 @@ async fn decrypt_and_decompress_data(url: String) -> Result<Vec<u8>, JsValue> {
         JsValue::from_str(&format!("Failed to decompress data: {}", err))
     })?;
 
-    Ok(decompressed_data)
+    Ok(Arc::new(decompressed_data))
 }
