@@ -64,15 +64,6 @@ export default function SettingsManager() {
     <Scrollable>
       <Padding>
         <Section>
-          <Button
-            onClick={() => callRustService("proto_echo_all_ticker_vectors")}
-          >
-            PROTO::proto_echo_all_ticker_vectors
-          </Button>
-        </Section>
-      </Padding>
-      <Padding>
-        <Section>
           <h2>Session Sharing</h2>
           <Typography variant="body2" component="p">
             ETF Matcher doesn&apos;t use user accounts, but session data can be
