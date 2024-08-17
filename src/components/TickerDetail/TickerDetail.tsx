@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Grid } from "@mui/material";
 
 import Center from "@layoutKit/Center";
 import store from "@src/store";
@@ -45,8 +45,6 @@ export default function TickerDetail({
     RustServiceETFAggregateDetail | undefined
   >(undefined);
 
-  // const [showNews, setShowNews] = useState(false);
-
   useEffect(() => {
     if (tickerDetail?.is_etf) {
       store
@@ -79,13 +77,18 @@ export default function TickerDetail({
       onIntersectionStateChange={onIntersectionStateChange}
       {...rest}
     >
-      <TickerDetailHeader
-        tickerDetail={tickerDetail}
-        etfAggregateDetail={etfAggregateDetail}
-        formattedSymbolWithExchange={formattedSymbolWithExchange}
-      />
-
-      <PCAScatterPlot tickerDetail={tickerDetail} />
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={6}>
+          <TickerDetailHeader
+            tickerDetail={tickerDetail}
+            etfAggregateDetail={etfAggregateDetail}
+            formattedSymbolWithExchange={formattedSymbolWithExchange}
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <PCAScatterPlot tickerDetail={tickerDetail} />
+        </Grid>
+      </Grid>
 
       <HistoricalPriceChart
         tickerSymbol={tickerDetail.symbol}
@@ -93,27 +96,12 @@ export default function TickerDetail({
       />
 
       <Box sx={{ textAlign: "center" }}>
-        {/* <Button onClick={() => setShowNews(!showNews)} startIcon={<NewsIcon />}>
-          {showNews ? "Hide News" : "View News"}
-        </Button> */}
         <TickerDetailBucketManager tickerDetail={tickerDetail} />
       </Box>
 
       <Section>
         <FinancialChartsGrid tickerDetail={tickerDetail} />
       </Section>
-
-      {/* {showNews && (
-        // TODO: This seems out of date for `CRWD`, regardless if using `formattedSymbolWithExchange`
-        // or just the `tickerSymbol` itself. Other symbols seem to be okay.
-        <Timeline
-          feedMode="symbol"
-          colorTheme="dark"
-          symbol={formattedSymbolWithExchange}
-          width="100%"
-          copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
-        />
-      )} */}
 
       <FinancialReport
         tickerId={tickerDetail.ticker_id}
