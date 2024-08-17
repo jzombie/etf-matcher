@@ -20,6 +20,7 @@ import FinancialChartsGrid from "./TickerDetail.FinancialChartsGrid";
 import FinancialReport from "./TickerDetail.FinancialReport";
 import TickerDetailHeader from "./TickerDetail.Header";
 import HistoricalPriceChart from "./TickerDetail.HistoricalPriceChart";
+import PCAScatterPlot from "./TickerDetail.PCAScatterPlot";
 
 export type TickerDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerId: number;
@@ -84,17 +85,25 @@ export default function TickerDetail({
         formattedSymbolWithExchange={formattedSymbolWithExchange}
       />
 
+      {
+        // TODO: Remove
+      }
       <Button
         onClick={() => store.PROTO_fetchTickerVector(tickerDetail.ticker_id)}
       >
         PROTO::fetchTickerVector()
       </Button>
 
+      {
+        // TODO: Remove
+      }
       <Button
         onClick={() => store.PROTO_fetchClosestTickers(tickerDetail.ticker_id)}
       >
         PROTO::fetchClosestTickerIds
       </Button>
+
+      <PCAScatterPlot />
 
       <HistoricalPriceChart
         tickerSymbol={tickerDetail.symbol}
