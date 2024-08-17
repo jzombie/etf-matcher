@@ -9,6 +9,7 @@ import {
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
+import customLogger from "@utils/customLogger";
 import deepEqual from "@utils/deepEqual";
 
 export default function TickerTape() {
@@ -17,17 +18,21 @@ export default function TickerTape() {
 
   const tickerTapeBucket = useMemo(() => {
     if (tickerBuckets) {
-      const tickerTapeBuckets = store.getTickerBucketsOfType("ticker_tape");
-      const newTickerTapeBucket = tickerTapeBuckets[0];
+      const tickerTapeBucket = store.getFirstTickerBucketOfType("ticker_tape");
+
+      if (!tickerTapeBucket) {
+        customLogger.warn("No ticker tape bucket found");
+        return;
+      }
 
       if (
         // Note: The `deepEqual` fixes an issue where the `tickerTapeBucket` would
         // not maintain a stable reference after history or other bucket updates,
         // causing the ticker tape to reload.
-        !deepEqual(previousTickerTapeBucketRef.current, newTickerTapeBucket)
+        !deepEqual(previousTickerTapeBucketRef.current, tickerTapeBucket)
       ) {
-        previousTickerTapeBucketRef.current = newTickerTapeBucket;
-        return newTickerTapeBucket;
+        previousTickerTapeBucketRef.current = tickerTapeBucket;
+        return tickerTapeBucket;
       }
     }
     return previousTickerTapeBucketRef.current;

@@ -49,6 +49,7 @@ export type TickerBucket = {
   type: "watchlist" | "portfolio" | "ticker_tape" | "recently_viewed";
   description: string;
   isUserConfigurable: boolean;
+  // TODO: Track bucket last update time
 };
 
 export const tickerBucketDefaultNames: Readonly<
@@ -174,8 +175,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   // Note: This should be called immediately after the `IndexedDBInterface` has been
   // initialized (or fails), not directly from the constructor.
   private async _initInitialTickerTapeTickers() {
-    const tickerTapeBuckets = this.getTickerBucketsOfType("ticker_tape");
-    const tickerTapeBucket = tickerTapeBuckets[0];
+    const tickerTapeBucket = this.getFirstTickerBucketOfType("ticker_tape");
+
+    if (!tickerTapeBucket) {
+      return;
+    }
 
     if (tickerTapeBucket.tickers.length) {
       customLogger.debug(
@@ -652,7 +656,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return tickerBucket.tickers.some((ticker) => ticker.tickerId === tickerId);
   }
 
-  getTickerBucketsOfType(tickerBucketType: TickerBucket["type"]) {
+  getTickerBucketsOfType(
+    tickerBucketType: TickerBucket["type"],
+  ): TickerBucket[] {
     return this.state.tickerBuckets.filter(
       ({ type }) => tickerBucketType === type,
     );
@@ -668,7 +674,13 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     };
 
     const recentlyViewedBucket =
-      this.getTickerBucketsOfType("recently_viewed")[0];
+      this.getFirstTickerBucketOfType("recently_viewed");
+
+    if (!recentlyViewedBucket) {
+      customLogger.warn("No recently viewed bucket");
+
+      return;
+    }
 
     // Filter out any existing ticker with the same tickerId, then prepend the new one
     const updatedTickers = [
@@ -682,6 +694,16 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       ...recentlyViewedBucket,
       tickers: updatedTickers,
     });
+  }
+
+  getFirstTickerBucketOfType(
+    tickerBucketType: TickerBucket["type"],
+  ): TickerBucket | void {
+    const tickerBucketsOfType = this.getTickerBucketsOfType(tickerBucketType);
+
+    if (tickerBucketsOfType.length) {
+      return tickerBucketsOfType[0];
+    }
   }
 
   async generateQRCode(data: string): Promise<string> {

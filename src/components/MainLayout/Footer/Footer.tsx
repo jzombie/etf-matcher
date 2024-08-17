@@ -2,6 +2,7 @@ import React from "react";
 
 import { Typography, useMediaQuery, useTheme } from "@mui/material";
 
+import TradingViewLogo from "@assets/vendor/trading-view-logo.svg?react";
 import { Footer } from "@layoutKit/Layout";
 
 import NetworkRequestIndicator from "./NetworkRequestIndicator";
@@ -9,7 +10,6 @@ import TickerTape from "./TickerTape";
 
 export default function MainLayoutFooter() {
   const theme = useTheme();
-
   const shouldShowNetworkURL = useMediaQuery("@media (min-width:480px)");
 
   return (
@@ -22,14 +22,19 @@ export default function MainLayoutFooter() {
         variant="body2"
         color="textSecondary"
         align="right"
-        style={{ whiteSpace: "nowrap" }}
+        style={{ whiteSpace: "nowrap", marginRight: 4 }}
       >
-        {
-          // TODO: Be more specific about which charts are provided by TradingView.
-          // If possible to use their `TV` logo snippet as part of this string,
-          // that would be even better.
-        }
-        Charts provided by{" "}
+        <TradingViewLogo
+          style={{
+            verticalAlign: "top",
+            marginRight: "4px",
+            height: "20px",
+            width: "20px",
+            display: "inline-block",
+          }}
+          title="TradingView"
+        />
+        labeled charts provided by{" "}
         <a
           href="https://www.tradingview.com/"
           target="_blank"
@@ -39,7 +44,6 @@ export default function MainLayoutFooter() {
           TradingView
         </a>
       </Typography>
-
       <TickerTape />
     </Footer>
   );
