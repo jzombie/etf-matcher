@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import { Box, CircularProgress } from "@mui/material";
+import { Box, Button, CircularProgress } from "@mui/material";
 
 import Center from "@layoutKit/Center";
 import store from "@src/store";
@@ -83,6 +83,12 @@ export default function TickerDetail({
         etfAggregateDetail={etfAggregateDetail}
         formattedSymbolWithExchange={formattedSymbolWithExchange}
       />
+
+      <Button
+        onClick={() => store.PROTO_fetchTickerVector(tickerDetail.ticker_id)}
+      >
+        PROTO::fetchTickerVector()
+      </Button>
 
       <HistoricalPriceChart
         tickerSymbol={tickerDetail.symbol}

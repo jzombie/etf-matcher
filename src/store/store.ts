@@ -742,6 +742,12 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       window.location.reload();
     });
   }
+
+  /// TODO: Refactor as needed
+
+  PROTO_fetchTickerVector(tickerId: number) {
+    callRustService('proto_get_ticker_vector', [tickerId]).then(tickerVector => customLogger.debug({tickerVector}))
+  }
 }
 
 const store = new _Store();

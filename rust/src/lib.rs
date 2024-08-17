@@ -205,9 +205,8 @@ pub fn clear_cache() {
     lib_clear_cache();
 }
 
-///
+/// TODO: Refactor the following as needed
 
-// TODO: Refactor as needed
 #[wasm_bindgen]
 pub async fn proto_echo_all_ticker_vectors() -> Result<(), JsValue> {
     // Fetch the ticker vectors binary data using `xhr_fetch`
@@ -234,3 +233,36 @@ pub async fn proto_echo_all_ticker_vectors() -> Result<(), JsValue> {
     Ok(())
 }
 
+#[wasm_bindgen]
+pub async fn proto_get_ticker_vector(ticker_id: i32) -> Result<JsValue, JsValue> {
+    // Fetch the ticker vectors binary data using `xhr_fetch`
+    let url = "/data/financial_vectors.tenk.bin";
+
+    let file_content = utils::xhr_fetch_cached(url.to_string()).await
+        .map_err(|err| JsValue::from_str(&format!("Failed to fetch file: {:?}", err)))?;
+
+    // Use the FlatBuffers `root_as_ticker_vectors` function to parse the buffer
+    let ticker_vectors = root_as_ticker_vectors(&file_content)
+        .map_err(|err| JsValue::from_str(&format!("Failed to parse TickerVectors: {:?}", err)))?;
+
+    // Get the vectors, which is an Option containing a flatbuffers::Vector
+    if let Some(vectors) = ticker_vectors.vectors() {
+        // Loop through each ticker vector in the Vector
+        for i in 0..vectors.len() {
+            let ticker_vector = vectors.get(i);
+            if ticker_vector.ticker_id() == ticker_id {
+                // Convert the vector to a JS array and return it
+                let js_array = js_sys::Array::new();
+                if let Some(vector_data) = ticker_vector.vector() {
+                    for j in 0..vector_data.len() {
+                        js_array.push(&JsValue::from_f64(vector_data.get(j) as f64));
+                    }
+                }
+                return Ok(js_array.into());
+            }
+        }
+    }
+
+    // If the ticker_id was not found, return an error
+    Err(JsValue::from_str("Ticker ID not found"))
+}
