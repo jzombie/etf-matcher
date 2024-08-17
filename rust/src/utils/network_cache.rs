@@ -10,9 +10,12 @@ use wasm_bindgen::prelude::*;
 
 use super::notifier::Notifier;
 
+// Data is immutable because it's wrapped in an Arc.
 type NetworkCacheData = Arc<Vec<u8>>;
-type NetworkNetworkCacheFutureType = LocalBoxFuture<'static, Result<NetworkCacheData, JsValue>>;
-type NetworkCacheFuture = Shared<NetworkNetworkCacheFutureType>;
+
+// The Future is shared and the data inside it is immutable.
+type NetworkCacheFutureType = LocalBoxFuture<'static, Result<NetworkCacheData, JsValue>>;
+type NetworkCacheFuture = Shared<NetworkCacheFutureType>;
 
 // Global cache with futures for pending requests
 thread_local! {
@@ -39,9 +42,8 @@ pub fn get_cache_size() -> usize {
     size
 }
 
-
 pub struct NetworkCachedFuture {
-    pub future: NetworkCacheFuture,
+    pub future: NetworkCacheFuture, // The future's result is immutable.
     #[allow(dead_code)]
     pub added_at: f64,
     pub last_accessed: RefCell<f64>,
@@ -89,6 +91,7 @@ pub fn get_cache_details() -> JsValue {
     details
 }
 
+// Function to retrieve a future from the cache.
 pub fn get_cache_future(url: &str) -> Option<NetworkCacheFuture> {
     let result = NETWORK_CACHE.with(|cache| {
         let cache = cache.borrow_mut();
@@ -111,6 +114,7 @@ pub fn get_cache_future(url: &str) -> Option<NetworkCacheFuture> {
     result
 }
 
+// Function to insert a new future into the cache.
 pub fn insert_cache_future(url: &str, future: NetworkCacheFuture) {
     NETWORK_CACHE.with(|cache| {
         let mut cache = cache.borrow_mut();
@@ -126,6 +130,7 @@ pub fn insert_cache_future(url: &str, future: NetworkCacheFuture) {
     Notifier::network_cache_entry_inserted(url);
 }
 
+// Function to remove an entry from the cache.
 pub fn remove_cache_entry(key: &str) {
     NETWORK_CACHE.with(|cache| {
         cache.borrow_mut().remove(key);
@@ -134,7 +139,7 @@ pub fn remove_cache_entry(key: &str) {
     Notifier::network_cache_entry_removed(key);
 }
 
-
+// Function to clear the entire cache.
 pub fn clear_cache() {
     NETWORK_CACHE.with(|cache| {
         cache.borrow_mut().clear();
