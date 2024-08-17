@@ -212,7 +212,7 @@ pub fn clear_cache() {
 pub async fn proto_echo_all_ticker_vectors() -> Result<(), JsValue> {
     // Fetch the ticker vectors binary data using `xhr_fetch`
     let url = "/data/financial_vectors.tenk.bin";
-    let file_content = utils::xhr_fetch(url.to_string()).await
+    let file_content = utils::xhr_fetch_and_cache(url.to_string()).await
         .map_err(|err| JsValue::from_str(&format!("Failed to fetch file: {:?}", err)))?;
 
     // Use the FlatBuffers `root_as_ticker_vectors` function to parse the buffer
