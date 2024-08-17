@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import { Box, Button, CircularProgress } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 
 import Center from "@layoutKit/Center";
 import store from "@src/store";
@@ -85,25 +85,7 @@ export default function TickerDetail({
         formattedSymbolWithExchange={formattedSymbolWithExchange}
       />
 
-      {
-        // TODO: Remove
-      }
-      <Button
-        onClick={() => store.PROTO_fetchTickerVector(tickerDetail.ticker_id)}
-      >
-        PROTO::fetchTickerVector()
-      </Button>
-
-      {
-        // TODO: Remove
-      }
-      <Button
-        onClick={() => store.PROTO_fetchClosestTickers(tickerDetail.ticker_id)}
-      >
-        PROTO::fetchClosestTickerIds
-      </Button>
-
-      <PCAScatterPlot />
+      <PCAScatterPlot tickerDetail={tickerDetail} />
 
       <HistoricalPriceChart
         tickerSymbol={tickerDetail.symbol}
