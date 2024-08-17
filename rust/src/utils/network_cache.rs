@@ -10,13 +10,13 @@ use wasm_bindgen::prelude::*;
 
 use super::notifier::Notifier;
 
-type CacheData = Arc<Vec<u8>>;
-type CacheFutureType = LocalBoxFuture<'static, Result<CacheData, JsValue>>;
-type CacheFuture = Shared<CacheFutureType>;
+type NetworkCacheData = Arc<Vec<u8>>;
+type NetworkNetworkCacheFutureType = LocalBoxFuture<'static, Result<NetworkCacheData, JsValue>>;
+type NetworkCacheFuture = Shared<NetworkNetworkCacheFutureType>;
 
 // Global cache with futures for pending requests
 thread_local! {
-    pub static NETWORK_CACHE: RefCell<HashMap<String, CachedFuture>> = RefCell::new(HashMap::new());
+    pub static NETWORK_CACHE: RefCell<HashMap<String, NetworkCachedFuture>> = RefCell::new(HashMap::new());
 }
 
 pub fn get_cache_size() -> usize {
@@ -39,18 +39,17 @@ pub fn get_cache_size() -> usize {
     size
 }
 
-// TODO: Rename to `NetworkCachedFuture` (or equivalent)
-pub struct CachedFuture {
-    pub future: CacheFuture,
+
+pub struct NetworkCachedFuture {
+    pub future: NetworkCacheFuture,
     #[allow(dead_code)]
     pub added_at: f64,
     pub last_accessed: RefCell<f64>,
     pub access_count: RefCell<u32>,
 }
 
-// TODO: Rename to `NetworkCacheEntry`
 #[derive(Serialize)]
-pub struct CacheEntry {
+pub struct NetworkCacheEntry {
     pub name: String,
     pub size: usize,
     pub age: f64,           // Age in milliseconds
@@ -62,7 +61,7 @@ pub fn get_cache_details() -> JsValue {
     let details = NETWORK_CACHE.with(|cache| {
         let cache = cache.borrow();
         let now = Date::now();
-        let details: Vec<CacheEntry> = cache
+        let details: Vec<NetworkCacheEntry> = cache
             .iter()
             .map(|(name, cached_future)| {
                 let size = cached_future
@@ -73,7 +72,7 @@ pub fn get_cache_details() -> JsValue {
                 let age = now - cached_future.added_at;
                 let last_accessed = now - *cached_future.last_accessed.borrow();
                 let access_count = *cached_future.access_count.borrow();
-                CacheEntry {
+                NetworkCacheEntry {
                     name: name.clone(),
                     size,
                     age,
@@ -90,14 +89,14 @@ pub fn get_cache_details() -> JsValue {
     details
 }
 
-pub fn get_cache_future(url: &str) -> Option<CacheFuture> {
+pub fn get_cache_future(url: &str) -> Option<NetworkCacheFuture> {
     let result = NETWORK_CACHE.with(|cache| {
         let cache = cache.borrow_mut();
         if let Some(cached_future) = cache.get(url) {
             *cached_future.last_accessed.borrow_mut() = Date::now();
             *cached_future.access_count.borrow_mut() += 1;
 
-            // Cloning the SharedCacheFuture here does not duplicate the underlying data.
+            // Cloning the NetworkCacheFuture here does not duplicate the underlying data.
             // Instead, it increments the reference count of the Arc that manages the shared
             // future. This allows multiple consumers to share the same future without copying
             // the data or recomputing the future's result.
@@ -112,10 +111,10 @@ pub fn get_cache_future(url: &str) -> Option<CacheFuture> {
     result
 }
 
-pub fn insert_cache_future(url: &str, future: CacheFuture) {
+pub fn insert_cache_future(url: &str, future: NetworkCacheFuture) {
     NETWORK_CACHE.with(|cache| {
         let mut cache = cache.borrow_mut();
-        let cached_future = CachedFuture {
+        let cached_future = NetworkCachedFuture {
             future: future.clone(),
             added_at: Date::now(),
             last_accessed: RefCell::new(Date::now()),
