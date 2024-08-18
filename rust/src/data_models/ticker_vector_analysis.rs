@@ -13,7 +13,6 @@ pub struct TickerDistance {
 }
 
 pub async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> {
-    // TODO: Don't hardcode the URL here
     // Fetch the ticker vectors binary data using `xhr_fetch`
     let url: &str = DataURL::FinancialVectors10K.value();
 
