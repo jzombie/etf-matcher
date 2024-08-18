@@ -17,7 +17,6 @@ import SharedSessionManager from "@components/SharedSessionManager";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
-import callRustService from "@utils/callRustService";
 import formatByteSize from "@utils/formatByteSize";
 import formatLocalTime from "@utils/formatLocalTime";
 
