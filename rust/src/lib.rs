@@ -201,12 +201,10 @@ pub fn clear_cache() {
     lib_clear_cache();
 }
 
-/// TODO: Refactor the following as needed
-
 #[wasm_bindgen]
-pub async fn proto_find_closest_ticker_ids(ticker_id: TickerId) -> Result<JsValue, JsValue> {
-    // Call the find_closest_ticker_ids function from the ticker_vector_analysis module
-    let closest_tickers = ticker_vector_analysis::find_closest_ticker_ids(ticker_id)
+pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<JsValue, JsValue> {
+    // Call the find_closest_tickers function from the ticker_vector_analysis module
+    let closest_tickers = ticker_vector_analysis::find_closest_tickers(ticker_id)
         .await
         .map_err(|err| JsValue::from_str(&format!("Failed to find closest ticker IDs: {}", err)))?;
 

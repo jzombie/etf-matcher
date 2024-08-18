@@ -47,10 +47,9 @@ pub async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> 
     Err("Ticker ID not found".to_string())
 }
 
-// TODO: Rename accordingly
 // TODO: Refactor so that custom vectors can be triangulated against known vectors
 // using their PCA coordinates to determine the relative position in the PCA space.
-pub async fn find_closest_ticker_ids(ticker_id: TickerId) -> Result<Vec<TickerDistance>, String> {
+pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<Vec<TickerDistance>, String> {
     // Fetch the ticker vectors binary data using `xhr_fetch`
     let url: &str = DataURL::FinancialVectors10K.value();
 

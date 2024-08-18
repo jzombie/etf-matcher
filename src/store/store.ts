@@ -768,11 +768,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
   /// TODO: Refactor as needed
 
-  async PROTO_fetchClosestTickers(
+  async fetchClosestTickers(
     tickerId: number,
   ): Promise<RustServiceTickerDistance[]> {
     return callRustService<RustServiceTickerDistance[]>(
-      "proto_find_closest_ticker_ids",
+      "find_closest_tickers",
       [tickerId],
     ).then((data) => {
       customLogger.debug({ data });

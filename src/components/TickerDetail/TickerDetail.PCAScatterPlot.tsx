@@ -37,7 +37,7 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
   useEffect(() => {
     if (tickerDetail) {
       store
-        .PROTO_fetchClosestTickers(tickerDetail.ticker_id)
+        .fetchClosestTickers(tickerDetail.ticker_id)
         .then((data) =>
           data.map((item) => ({
             ticker_id: item.ticker_id,
