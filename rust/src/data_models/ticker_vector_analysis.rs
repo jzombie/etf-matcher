@@ -48,7 +48,6 @@ pub async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> 
 }
 
 // TODO: Rename accordingly
-// TODO: Use f32 for vectors
 // TODO: Refactor so that custom vectors can be triangulated against known vectors
 // using their PCA coordinates to determine the relative position in the PCA space.
 pub async fn find_closest_ticker_ids(ticker_id: TickerId) -> Result<Vec<TickerDistance>, String> {
