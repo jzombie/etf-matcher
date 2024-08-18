@@ -6,6 +6,8 @@ import Center from "@layoutKit/Center";
 import store from "@src/store";
 import type { RustServiceETFAggregateDetail } from "@src/types";
 
+import LazyRender from "@components/LazyRender";
+
 import useTickerDetail from "@hooks/useTickerDetail";
 
 import formatSymbolWithExchange from "@utils/formatSymbolWithExchange";
@@ -83,7 +85,9 @@ export default function TickerDetail({
           />
         </Grid>
         <Grid item xs={12} md={6} mb={1}>
-          <PCAScatterPlot tickerDetail={tickerDetail} />
+          <LazyRender>
+            <PCAScatterPlot tickerDetail={tickerDetail} />
+          </LazyRender>
         </Grid>
       </Grid>
 
