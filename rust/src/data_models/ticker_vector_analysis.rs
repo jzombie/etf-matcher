@@ -45,7 +45,7 @@ pub async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> 
 // using their PCA coordinates to determine the relative position in the PCA space.
 pub async fn find_closest_ticker_ids(
     ticker_id: TickerId,
-) -> Result<Vec<(TickerId, f64, Vec<f64>, Vec<f64>)>, String> {
+) -> Result<Vec<(TickerId, f32, Vec<f32>, Vec<f32>)>, String> {
     // Fetch the ticker vectors binary data using `xhr_fetch`
     let url: &str = DataURL::FinancialVectors10K.value();
 
@@ -83,11 +83,11 @@ pub async fn find_closest_ticker_ids(
         None => return Err("PCA coordinates not found for the given Ticker ID".to_string()),
     };
 
-    // Convert target PCA coordinates to Vec<f64> for arithmetic operations
-    let target_pca_coords: Vec<f64> = target_pca_coordinates.iter().map(|c| c as f64).collect();
+    // Convert target PCA coordinates to Vec<f32> for arithmetic operations
+    let target_pca_coords: Vec<f32> = target_pca_coordinates.iter().map(|c| c as f32).collect();
 
     // Compute Euclidean distance with every other vector and capture PCA coordinates
-    let mut results: Vec<(TickerId, f64, Vec<f64>, Vec<f64>)> = Vec::new();
+    let mut results: Vec<(TickerId, f32, Vec<f32>, Vec<f32>)> = Vec::new();
     if let Some(vectors) = ticker_vectors.vectors() {
         for i in 0..vectors.len() {
             let ticker_vector = vectors.get(i);
@@ -99,7 +99,7 @@ pub async fn find_closest_ticker_ids(
                     // Extract non-translated PCA coordinates
                     let original_pca_coords = ticker_vector
                         .pca_coordinates()
-                        .map(|coords| coords.iter().map(|c| c as f64).collect::<Vec<f64>>())
+                        .map(|coords| coords.iter().map(|c| c as f32).collect::<Vec<f32>>())
                         .unwrap_or_default();
 
                     // Compute translated PCA coordinates
@@ -109,8 +109,8 @@ pub async fn find_closest_ticker_ids(
                             coords
                                 .iter()
                                 .zip(&target_pca_coords)
-                                .map(|(c, &target_c)| c as f64 - target_c)
-                                .collect::<Vec<f64>>()
+                                .map(|(c, &target_c)| c as f32 - target_c)
+                                .collect::<Vec<f32>>()
                         })
                         .unwrap_or_default();
 
@@ -137,12 +137,11 @@ pub async fn find_closest_ticker_ids(
 fn euclidean_distance(
     vector1: &flatbuffers::Vector<'_, f32>,
     vector2: &flatbuffers::Vector<'_, f32>,
-) -> f64 {
+) -> f32 {
     vector1
         .iter()
         .zip(vector2.iter())
-        // TODO: Why the cast to f64?
-        .map(|(a, b)| (a as f64 - b as f64).powi(2))
-        .sum::<f64>()
+        .map(|(a, b)| (a - b).powi(2))
+        .sum::<f32>()
         .sqrt()
 }

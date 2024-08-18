@@ -770,14 +770,14 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   async PROTO_fetchClosestTickers(tickerId: number) {
     return callRustService("proto_find_closest_ticker_ids", [tickerId]).then(
       (data) => {
+        customLogger.debug({ data });
+
         // TODO: Remove; also include these with the Rust response in the API call
         // @ts-expect-error TODO: Remove
         const detailPromises = data.map((item) =>
           this.fetchTickerDetail(item.ticker_id),
         );
         Promise.allSettled(detailPromises).then(customLogger.debug);
-
-        // customLogger.debug(details);
 
         return data;
       },
