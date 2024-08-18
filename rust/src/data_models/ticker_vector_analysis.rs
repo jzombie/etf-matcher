@@ -1,10 +1,10 @@
 include!("flatbuffers/financial_vectors.tenk_generated.rs");
+use crate::types::TickerId;
 use crate::utils;
 use crate::DataURL;
 use financial_vectors::ten_k::root_as_ticker_vectors;
 
-// TODO: Use TickerId type (throughout)
-pub async fn get_ticker_vector(ticker_id: i32) -> Result<Vec<f32>, String> {
+pub async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> {
     // TODO: Don't hardcode the URL here
     // Fetch the ticker vectors binary data using `xhr_fetch`
     let url: &str = DataURL::FinancialVectors10K.value();
@@ -22,7 +22,8 @@ pub async fn get_ticker_vector(ticker_id: i32) -> Result<Vec<f32>, String> {
         // Loop through each ticker vector in the Vector
         for i in 0..vectors.len() {
             let ticker_vector = vectors.get(i);
-            if ticker_vector.ticker_id() == ticker_id {
+            // TODO: Fix IDL so it doesn't have to cast
+            if ticker_vector.ticker_id() as TickerId == ticker_id {
                 // Convert the vector to a Rust Vec<f32> and return it
                 if let Some(vector_data) = ticker_vector.vector() {
                     let vector: Vec<f32> = vector_data.iter().collect();
@@ -43,8 +44,8 @@ pub async fn get_ticker_vector(ticker_id: i32) -> Result<Vec<f32>, String> {
 // TODO: Refactor so that custom vectors can be triangulated against known vectors
 // using their PCA coordinates to determine the relative position in the PCA space.
 pub async fn find_closest_ticker_ids(
-    ticker_id: i32,
-) -> Result<Vec<(i32, f64, Vec<f64>, Vec<f64>)>, String> {
+    ticker_id: TickerId,
+) -> Result<Vec<(TickerId, f64, Vec<f64>, Vec<f64>)>, String> {
     // Fetch the ticker vectors binary data using `xhr_fetch`
     let url: &str = DataURL::FinancialVectors10K.value();
 
@@ -63,7 +64,8 @@ pub async fn find_closest_ticker_ids(
     if let Some(vectors) = ticker_vectors.vectors() {
         for i in 0..vectors.len() {
             let ticker_vector = vectors.get(i);
-            if ticker_vector.ticker_id() == ticker_id {
+            // TODO: Fix IDL so it doesn't have to cast
+            if ticker_vector.ticker_id() as TickerId == ticker_id {
                 target_vector = ticker_vector.vector();
                 target_pca_coordinates = ticker_vector.pca_coordinates();
                 break;
@@ -85,11 +87,12 @@ pub async fn find_closest_ticker_ids(
     let target_pca_coords: Vec<f64> = target_pca_coordinates.iter().map(|c| c as f64).collect();
 
     // Compute Euclidean distance with every other vector and capture PCA coordinates
-    let mut results: Vec<(i32, f64, Vec<f64>, Vec<f64>)> = Vec::new();
+    let mut results: Vec<(TickerId, f64, Vec<f64>, Vec<f64>)> = Vec::new();
     if let Some(vectors) = ticker_vectors.vectors() {
         for i in 0..vectors.len() {
             let ticker_vector = vectors.get(i);
-            if ticker_vector.ticker_id() != ticker_id {
+            // TODO: Fix IDL so it doesn't have to cast
+            if ticker_vector.ticker_id() as TickerId != ticker_id {
                 if let Some(other_vector) = ticker_vector.vector() {
                     let distance = euclidean_distance(&target_vector, &other_vector);
 
@@ -112,7 +115,8 @@ pub async fn find_closest_ticker_ids(
                         .unwrap_or_default();
 
                     results.push((
-                        ticker_vector.ticker_id(),
+                        // TODO: Fix IDL so it doesn't have to cast
+                        ticker_vector.ticker_id() as TickerId,
                         distance,
                         original_pca_coords,
                         translated_pca_coords,
@@ -137,6 +141,7 @@ fn euclidean_distance(
     vector1
         .iter()
         .zip(vector2.iter())
+        // TODO: Why the cast to f64?
         .map(|(a, b)| (a as f64 - b as f64).powi(2))
         .sum::<f64>()
         .sqrt()

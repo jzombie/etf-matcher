@@ -204,7 +204,7 @@ pub fn clear_cache() {
 /// TODO: Refactor the following as needed
 
 #[wasm_bindgen]
-pub async fn proto_find_closest_ticker_ids(ticker_id: i32) -> Result<JsValue, JsValue> {
+pub async fn proto_find_closest_ticker_ids(ticker_id: TickerId) -> Result<JsValue, JsValue> {
     // Call the find_closest_ticker_ids function from the ticker_vector_analysis module
     let closest_tickers = ticker_vector_analysis::find_closest_ticker_ids(ticker_id)
         .await
