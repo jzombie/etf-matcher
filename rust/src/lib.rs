@@ -19,7 +19,7 @@ use crate::data_models::{
     DataBuildInfo, DataURL, ETFAggregateDetail, ETFAggregateDetailResponse, ETFHoldingTicker,
     ETFHoldingTickerResponse, ETFHoldingWeightResponse, IndustryById, PaginatedResults, SectorById,
     Ticker10KDetail, TickerDetail, TickerDetailResponse, TickerETFHolder, TickerSearch,
-    TickerSearchResult
+    TickerSearchResult,
 };
 
 use crate::data_models::image::get_image_info as lib_get_image_info;
@@ -212,7 +212,8 @@ pub async fn proto_echo_all_ticker_vectors() -> Result<(), JsValue> {
     // Fetch the ticker vectors binary data using `xhr_fetch`
     let url = "/data/financial_vectors.tenk.bin";
 
-    let file_content = utils::xhr_fetch_cached(url.to_string()).await
+    let file_content = utils::xhr_fetch_cached(url.to_string())
+        .await
         .map_err(|err| JsValue::from_str(&format!("Failed to fetch file: {:?}", err)))?;
 
     // Use the FlatBuffers `root_as_ticker_vectors` function to parse the buffer
@@ -240,7 +241,8 @@ pub async fn proto_get_ticker_vector(ticker_id: i32) -> Result<JsValue, JsValue>
     // Fetch the ticker vectors binary data using `xhr_fetch`
     let url = "/data/financial_vectors.tenk.bin";
 
-    let file_content = utils::xhr_fetch_cached(url.to_string()).await
+    let file_content = utils::xhr_fetch_cached(url.to_string())
+        .await
         .map_err(|err| JsValue::from_str(&format!("Failed to fetch file: {:?}", err)))?;
 
     // Use the FlatBuffers `root_as_ticker_vectors` function to parse the buffer
@@ -274,7 +276,8 @@ pub async fn proto_find_closest_ticker_ids(ticker_id: i32) -> Result<JsValue, Js
     // Fetch the ticker vectors binary data using `xhr_fetch`
     let url = "/data/financial_vectors.tenk.bin";
 
-    let file_content = utils::xhr_fetch_cached(url.to_string()).await
+    let file_content = utils::xhr_fetch_cached(url.to_string())
+        .await
         .map_err(|err| JsValue::from_str(&format!("Failed to fetch file: {:?}", err)))?;
 
     // Use the FlatBuffers `root_as_ticker_vectors` function to parse the buffer
@@ -303,7 +306,11 @@ pub async fn proto_find_closest_ticker_ids(ticker_id: i32) -> Result<JsValue, Js
 
     let target_pca_coordinates = match target_pca_coordinates {
         Some(coords) => coords,
-        None => return Err(JsValue::from_str("PCA coordinates not found for the given Ticker ID")),
+        None => {
+            return Err(JsValue::from_str(
+                "PCA coordinates not found for the given Ticker ID",
+            ))
+        }
     };
 
     // Convert target PCA coordinates to Vec<f64> for arithmetic operations
@@ -320,21 +327,29 @@ pub async fn proto_find_closest_ticker_ids(ticker_id: i32) -> Result<JsValue, Js
                     let distance = euclidean_distance(&target_vector, &other_vector);
 
                     // Extract non-translated PCA coordinates
-                    let original_pca_coords = ticker_vector.pca_coordinates()
+                    let original_pca_coords = ticker_vector
+                        .pca_coordinates()
                         .map(|coords| coords.iter().map(|c| c as f64).collect::<Vec<f64>>())
                         .unwrap_or_default();
 
                     // Compute translated PCA coordinates
-                    let translated_pca_coords = ticker_vector.pca_coordinates()
+                    let translated_pca_coords = ticker_vector
+                        .pca_coordinates()
                         .map(|coords| {
-                            coords.iter()
+                            coords
+                                .iter()
                                 .zip(&target_pca_coords)
                                 .map(|(c, &target_c)| c as f64 - target_c)
                                 .collect::<Vec<f64>>()
                         })
                         .unwrap_or_default();
 
-                    results.push((ticker_vector.ticker_id(), distance, original_pca_coords, translated_pca_coords));
+                    results.push((
+                        ticker_vector.ticker_id(),
+                        distance,
+                        original_pca_coords,
+                        translated_pca_coords,
+                    ));
                 }
             }
         }
@@ -349,21 +364,36 @@ pub async fn proto_find_closest_ticker_ids(ticker_id: i32) -> Result<JsValue, Js
     for &(id, distance, ref original_pca_coords, ref translated_pca_coords) in top_20 {
         let obj = js_sys::Object::new();
         js_sys::Reflect::set(&obj, &JsValue::from_str("ticker_id"), &JsValue::from(id)).unwrap();
-        js_sys::Reflect::set(&obj, &JsValue::from_str("distance"), &JsValue::from(distance)).unwrap();
+        js_sys::Reflect::set(
+            &obj,
+            &JsValue::from_str("distance"),
+            &JsValue::from(distance),
+        )
+        .unwrap();
 
         // Convert original PCA coordinates to JS array
         let original_pca_array = js_sys::Array::new();
         for &coord in original_pca_coords {
             original_pca_array.push(&JsValue::from_f64(coord));
         }
-        js_sys::Reflect::set(&obj, &JsValue::from_str("original_pca_coordinates"), &original_pca_array.into()).unwrap();
+        js_sys::Reflect::set(
+            &obj,
+            &JsValue::from_str("original_pca_coordinates"),
+            &original_pca_array.into(),
+        )
+        .unwrap();
 
         // Convert translated PCA coordinates to JS array
         let translated_pca_array = js_sys::Array::new();
         for &coord in translated_pca_coords {
             translated_pca_array.push(&JsValue::from_f64(coord));
         }
-        js_sys::Reflect::set(&obj, &JsValue::from_str("translated_pca_coordinates"), &translated_pca_array.into()).unwrap();
+        js_sys::Reflect::set(
+            &obj,
+            &JsValue::from_str("translated_pca_coordinates"),
+            &translated_pca_array.into(),
+        )
+        .unwrap();
 
         js_array.push(&obj);
     }
@@ -372,8 +402,13 @@ pub async fn proto_find_closest_ticker_ids(ticker_id: i32) -> Result<JsValue, Js
 }
 
 // Helper function to compute Euclidean distance between two vectors
-fn euclidean_distance(vector1: &flatbuffers::Vector<'_, f32>, vector2: &flatbuffers::Vector<'_, f32>) -> f64 {
-    vector1.iter().zip(vector2.iter())
+fn euclidean_distance(
+    vector1: &flatbuffers::Vector<'_, f32>,
+    vector2: &flatbuffers::Vector<'_, f32>,
+) -> f64 {
+    vector1
+        .iter()
+        .zip(vector2.iter())
         .map(|(a, b)| (a as f64 - b as f64).powi(2))
         .sum::<f64>()
         .sqrt()
