@@ -1,7 +1,7 @@
-use crate::data_models::{DataURL, PaginatedResults};
 use crate::types::TickerId;
 use crate::utils::shard::query_shard_for_id;
 use crate::JsValue;
+use crate::{DataURL, PaginatedResults};
 use crate::{ETFAggregateDetail, ETFAggregateDetailResponse};
 use serde::{Deserialize, Serialize};
 

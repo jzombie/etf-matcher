@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use crate::JsValue;
-use crate::data_models::{DataURL, PaginatedResults, ExchangeById};
+use crate::{DataURL, PaginatedResults, ExchangeById};
 use crate::utils::extract_logo_filename;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;

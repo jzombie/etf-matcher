@@ -1,15 +1,16 @@
-use std::collections::HashMap;
-use std::sync::Mutex;
-use lazy_static::lazy_static;
-use serde::{Deserialize, Serialize};
-use crate::data_models::DataURL;
+use crate::types::ExchangeId;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
-use crate::types::ExchangeId;
+use crate::DataURL;
 use crate::JsValue;
+use lazy_static::lazy_static;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::sync::Mutex;
 
 lazy_static! {
-    static ref EXCHANGE_SHORT_NAME_BY_ID_CACHE: Mutex<HashMap<ExchangeId, String>> = Mutex::new(HashMap::new());
+    static ref EXCHANGE_SHORT_NAME_BY_ID_CACHE: Mutex<HashMap<ExchangeId, String>> =
+        Mutex::new(HashMap::new());
 }
 
 #[derive(Serialize, Deserialize, Debug)]

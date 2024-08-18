@@ -1,6 +1,6 @@
-use crate::data_models::DataURL;
 use crate::types::TickerId;
 use crate::utils::shard::query_shard_for_id;
+use crate::DataURL;
 use crate::JsValue;
 use serde::{Deserialize, Deserializer, Serialize};
 
