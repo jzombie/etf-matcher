@@ -24,35 +24,45 @@ pub async fn generate_vector(
     // Initialize an empty vector to hold the aggregated result
     let mut aggregated_vector: Vec<f32> = Vec::new();
 
-    // Loop through each ticker with its corresponding quantity by reference
+    // Loop through each ticker in the input list, along with its corresponding quantity
     for ticker_with_quantity in &tickers_with_quantity {
-        // Fetch the vector for the given ticker_id
+        // Fetch the vector associated with the current ticker_id asynchronously
         let ticker_vector = get_ticker_vector(ticker_with_quantity.ticker_id).await?;
 
-        // If this is the first vector, initialize the aggregated_vector with the values
+        // Check if the aggregated_vector is empty, which will only be true for the first ticker
         if aggregated_vector.is_empty() {
+            // Initialize the aggregated_vector with the values from the first ticker's vector,
+            // scaling each value by the quantity associated with this ticker.
             aggregated_vector = ticker_vector
                 .iter()
                 .map(|&value| value * ticker_with_quantity.quantity as f32)
                 .collect();
         } else {
-            // Add the weighted vector to the aggregated_vector
+            // If this is not the first ticker, add the current ticker's vector to the
+            // aggregated_vector. Each element of the vector is scaled by the quantity
+            // associated with this ticker and then added to the corresponding element in the
+            // aggregated_vector.
             for (i, &value) in ticker_vector.iter().enumerate() {
                 aggregated_vector[i] += value * ticker_with_quantity.quantity as f32;
             }
         }
     }
 
-    // Normalize the aggregated vector by dividing by the total quantity
+    // Calculate the total quantity by summing up the quantities of all tickers
     let total_quantity: u32 = tickers_with_quantity.iter().map(|t| t.quantity).sum();
+
+    // Check if the total quantity is zero, which would mean that the function can't generate a valid vector
     if total_quantity == 0 {
         return Err("Total quantity is zero, cannot generate a valid vector.".to_string());
     }
 
+    // Normalize the aggregated_vector by dividing each element by the total quantity.
+    // This step essentially computes the weighted average of the vectors.
     for value in &mut aggregated_vector {
         *value /= total_quantity as f32;
     }
 
+    // Return the resulting aggregated and normalized vector
     Ok(aggregated_vector)
 }
 
