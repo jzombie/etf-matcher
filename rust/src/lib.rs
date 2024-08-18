@@ -233,6 +233,8 @@ pub async fn proto_echo_all_ticker_vectors() -> Result<(), JsValue> {
     Ok(())
 }
 
+// TODO: Refactor so that custom vectors can be triangulated against known vectors
+// using their PCA coordinates to determine the relative position in the PCA space.
 #[wasm_bindgen]
 pub async fn proto_get_ticker_vector(ticker_id: i32) -> Result<JsValue, JsValue> {
     // Fetch the ticker vectors binary data using `xhr_fetch`
