@@ -1,12 +1,13 @@
 include!("flatbuffers/financial_vectors.tenk_generated.rs");
 use crate::utils;
+use crate::DataURL;
 use financial_vectors::ten_k::root_as_ticker_vectors;
 
 // TODO: Use TickerId type (throughout)
 pub async fn get_ticker_vector(ticker_id: i32) -> Result<Vec<f32>, String> {
     // TODO: Don't hardcode the URL here
     // Fetch the ticker vectors binary data using `xhr_fetch`
-    let url = "/data/financial_vectors.tenk.bin";
+    let url: &str = DataURL::FinancialVectors10K.value();
 
     let file_content = utils::xhr_fetch_cached(url.to_string())
         .await
@@ -45,7 +46,7 @@ pub async fn find_closest_ticker_ids(
     ticker_id: i32,
 ) -> Result<Vec<(i32, f64, Vec<f64>, Vec<f64>)>, String> {
     // Fetch the ticker vectors binary data using `xhr_fetch`
-    let url = "/data/financial_vectors.tenk.bin";
+    let url: &str = DataURL::FinancialVectors10K.value();
 
     let file_content = utils::xhr_fetch_cached(url.to_string())
         .await
