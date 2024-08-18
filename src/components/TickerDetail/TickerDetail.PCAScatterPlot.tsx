@@ -16,6 +16,8 @@ export type PCAScatterPlotProps = {
   tickerDetail: RustServiceTickerDetail;
 };
 
+// This component mimics a radial scatter plot, which `ReCharts` doesn't directly support.
+// The coordinates are based directly on the PCA coordinates.
 export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
   const [chartData, setChartData] = useState(null);
 
