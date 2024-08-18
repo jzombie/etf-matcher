@@ -1,7 +1,13 @@
+use std::sync::Arc;
+
 use js_sys::{Date, Promise, Uint8Array};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 use web_sys::XmlHttpRequest;
+use super::network_cache::{insert_cache_future, get_cache_future};
+use futures::future;
+use futures::FutureExt;
+
 
 use crate::constants::{
     FETCH_ERROR, XML_HTTP_REQUEST_CACHE_CONTROL_SETTER_ERROR, XML_HTTP_REQUEST_CREATE_ERROR,
@@ -19,6 +25,7 @@ pub async fn xhr_fetch(url: String) -> Result<Vec<u8>, JsValue> {
         JsValue::from_str(XML_HTTP_REQUEST_CREATE_ERROR)
     })?;
 
+    // Note: `no_cache` is used here to explicitly bust the network cache
     let timestamp: String = Date::now().to_string();
     let no_cache_url: String = format!("{}?no_cache={}", url, timestamp);
 
@@ -91,4 +98,33 @@ pub async fn xhr_fetch(url: String) -> Result<Vec<u8>, JsValue> {
     let buffer: Uint8Array = Uint8Array::new(&array_buffer);
 
     Ok(buffer.to_vec())
+}
+
+// Note: This should only be used if wishing to cache the raw content; otherwise
+// it may be preferrable to cache the result of a transformation action (i.e. after
+// decrypting, etc.)
+pub async fn xhr_fetch_cached(url: String) -> Result<Vec<u8>, JsValue> {
+    // Step 1: Check if the content is already cached
+    if let Some(network_cache) = get_cache_future(&url) {
+        // If the content is cached, return the cached data
+        return network_cache.await.map(|data| (*data).clone());
+    }
+
+    // Step 2: Fetch the data using xhr_fetch if not cached
+    let fetched_data = xhr_fetch(url.clone()).await.map_err(|err| {
+        JsValue::from_str(&format!("Failed to fetch data: {:?}", err))
+    })?;
+
+    // Step 3: Wrap the fetched data in a future without `Send`
+    let future_data = future::ready::<Result<Arc<Vec<u8>>, JsValue>>(
+        Ok(Arc::new(fetched_data.clone()))
+    )
+    .boxed_local()  // Ensure this future is not `Send`
+    .shared();
+
+    // Step 4: Add the fetched data to the cache
+    insert_cache_future(&url, future_data);
+
+    // Step 5: Return the fetched data
+    Ok(fetched_data)
 }

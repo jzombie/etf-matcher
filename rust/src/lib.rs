@@ -1,7 +1,12 @@
+extern crate flatbuffers as fb;
 use qrcode_generator::QrCodeEcc;
 use serde_wasm_bindgen::to_value;
 use std::panic;
 use wasm_bindgen::prelude::*;
+
+include!("data_models/flatbuffers/financial_vectors.tenk_generated.rs");
+
+use crate::financial_vectors::ten_k::root_as_ticker_vectors;
 
 mod constants;
 mod data_models;
@@ -182,20 +187,54 @@ pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<Js
 
 #[wasm_bindgen]
 pub fn get_cache_size() -> usize {
+    // TODO: Also include shared_cache
     lib_get_cache_size()
 }
 
 #[wasm_bindgen]
 pub fn get_cache_details() -> JsValue {
+    // TODO: Also include shared_cache
     lib_get_cache_details()
 }
 
 #[wasm_bindgen]
 pub fn remove_cache_entry(key: &str) {
+    // TODO: Also include shared_cache
     lib_remove_cache_entry(key);
 }
 
 #[wasm_bindgen]
 pub fn clear_cache() {
+    // TODO: Also include shared_cache?
     lib_clear_cache();
 }
+
+///
+
+// TODO: Refactor as needed
+#[wasm_bindgen]
+pub async fn proto_echo_all_ticker_vectors() -> Result<(), JsValue> {
+    // Fetch the ticker vectors binary data using `xhr_fetch`
+    let url = "/data/financial_vectors.tenk.bin";
+
+    let file_content = utils::xhr_fetch_cached(url.to_string()).await
+        .map_err(|err| JsValue::from_str(&format!("Failed to fetch file: {:?}", err)))?;
+
+    // Use the FlatBuffers `root_as_ticker_vectors` function to parse the buffer
+    let ticker_vectors = root_as_ticker_vectors(&file_content)
+        .map_err(|err| JsValue::from_str(&format!("Failed to parse TickerVectors: {:?}", err)))?;
+
+    // Get the vectors, which is an Option containing a flatbuffers::Vector
+    if let Some(vectors) = ticker_vectors.vectors() {
+        // Loop through each ticker vector in the Vector and log it to the web console
+        for i in 0..vectors.len() {
+            let ticker_vector = vectors.get(i);
+            web_sys::console::log_1(&format!("Ticker Vector {}: {:?}", i, ticker_vector).into());
+        }
+    } else {
+        web_sys::console::log_1(&"No ticker vectors found.".into());
+    }
+
+    Ok(())
+}
+
