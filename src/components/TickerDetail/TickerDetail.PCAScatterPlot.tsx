@@ -84,6 +84,7 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
     cy?: number;
     payload?: ChartVectorDistance;
   }): JSX.Element => {
+    // FIXME: Fighting with these types
     // eslint-disable-next-line react/prop-types
     const { cx = 0, cy = 0, payload } = props;
     return (
@@ -91,6 +92,7 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
         <circle cx={cx} cy={cy} r={6} fill="#8884d8" />
         <text x={cx} y={cy} dy={-10} textAnchor="middle" fill="#333">
           {
+            // FIXME: Fighting with these types
             // eslint-disable-next-line react/prop-types
             payload?.ticker_id
           }
