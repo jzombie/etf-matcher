@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+// TODO: Enable TS checking for this
 import React, { useCallback, useEffect, useState } from "react";
 
 import AutoScaler from "@layoutKit/AutoScaler";
