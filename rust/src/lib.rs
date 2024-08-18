@@ -13,9 +13,9 @@ use crate::types::TickerId;
 
 use crate::data_models::{
     ticker_vector_analysis, DataBuildInfo, DataURL, ETFAggregateDetail, ETFAggregateDetailResponse,
-    ETFHoldingTicker, ETFHoldingTickerResponse, ETFHoldingWeightResponse, IndustryById,
-    PaginatedResults, SectorById, Ticker10KDetail, TickerDetail, TickerDetailResponse,
-    TickerETFHolder, TickerSearch, TickerSearchResult,
+    ETFHoldingTicker, ETFHoldingTickerResponse, ETFHoldingWeightResponse, ExchangeById,
+    IndustryById, PaginatedResults, SectorById, Ticker10KDetail, TickerDetail,
+    TickerDetailResponse, TickerETFHolder, TickerSearch, TickerSearchResult,
 };
 
 use crate::data_models::image::get_image_info as lib_get_image_info;
