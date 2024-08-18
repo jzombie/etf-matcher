@@ -66,7 +66,7 @@ export default function ETFHolderList({ tickerDetail }: ETFHolderListProps) {
     <Box>
       <Padding>
         <h3>
-          {tickerSymbol} is found in the following{" "}
+          &quot;{tickerSymbol}&quot; is found in the following{" "}
           {paginatedETFHolders.total_count} ETF
           {paginatedETFHolders.total_count !== 1 ? "s" : ""}:
         </h3>
