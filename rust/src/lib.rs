@@ -233,7 +233,7 @@ pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<JsValue, JsValu
         }
         js_sys::Reflect::set(
             &obj,
-            &JsValue::from_str("original_pca_coordinates"),
+            &JsValue::from_str("translated_pca_coords"),
             &original_pca_array.into(),
         )
         .unwrap();
@@ -245,7 +245,7 @@ pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<JsValue, JsValu
         }
         js_sys::Reflect::set(
             &obj,
-            &JsValue::from_str("translated_pca_coordinates"),
+            &JsValue::from_str("translated_pca_coords"),
             &translated_pca_array.into(),
         )
         .unwrap();
