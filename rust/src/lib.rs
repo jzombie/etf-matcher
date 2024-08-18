@@ -212,19 +212,25 @@ pub async fn proto_find_closest_ticker_ids(ticker_id: TickerId) -> Result<JsValu
 
     // Convert the results to JsValue
     let js_array = js_sys::Array::new();
-    for (id, distance, original_pca_coords, translated_pca_coords) in closest_tickers {
+
+    for ticker_distance in closest_tickers {
         let obj = js_sys::Object::new();
-        js_sys::Reflect::set(&obj, &JsValue::from_str("ticker_id"), &JsValue::from(id)).unwrap();
+        js_sys::Reflect::set(
+            &obj,
+            &JsValue::from_str("ticker_id"),
+            &JsValue::from(ticker_distance.ticker_id),
+        )
+        .unwrap();
         js_sys::Reflect::set(
             &obj,
             &JsValue::from_str("distance"),
-            &JsValue::from(distance),
+            &JsValue::from(ticker_distance.distance),
         )
         .unwrap();
 
         // Convert original PCA coordinates to JS array
         let original_pca_array = js_sys::Array::new();
-        for coord in original_pca_coords {
+        for coord in ticker_distance.original_pca_coords {
             original_pca_array.push(&JsValue::from_f64(coord as f64));
         }
         js_sys::Reflect::set(
@@ -236,7 +242,7 @@ pub async fn proto_find_closest_ticker_ids(ticker_id: TickerId) -> Result<JsValu
 
         // Convert translated PCA coordinates to JS array
         let translated_pca_array = js_sys::Array::new();
-        for coord in translated_pca_coords {
+        for coord in ticker_distance.translated_pca_coords {
             translated_pca_array.push(&JsValue::from_f64(coord as f64));
         }
         js_sys::Reflect::set(

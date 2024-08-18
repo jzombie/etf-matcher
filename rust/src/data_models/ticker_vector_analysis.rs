@@ -4,6 +4,14 @@ use crate::utils;
 use crate::DataURL;
 use financial_vectors::ten_k::root_as_ticker_vectors;
 
+#[derive(Debug, Clone)]
+pub struct TickerDistance {
+    pub ticker_id: TickerId,
+    pub distance: f32,
+    pub original_pca_coords: Vec<f32>,
+    pub translated_pca_coords: Vec<f32>,
+}
+
 pub async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> {
     // TODO: Don't hardcode the URL here
     // Fetch the ticker vectors binary data using `xhr_fetch`
@@ -43,9 +51,7 @@ pub async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> 
 // TODO: Use f32 for vectors
 // TODO: Refactor so that custom vectors can be triangulated against known vectors
 // using their PCA coordinates to determine the relative position in the PCA space.
-pub async fn find_closest_ticker_ids(
-    ticker_id: TickerId,
-) -> Result<Vec<(TickerId, f32, Vec<f32>, Vec<f32>)>, String> {
+pub async fn find_closest_ticker_ids(ticker_id: TickerId) -> Result<Vec<TickerDistance>, String> {
     // Fetch the ticker vectors binary data using `xhr_fetch`
     let url: &str = DataURL::FinancialVectors10K.value();
 
@@ -84,10 +90,10 @@ pub async fn find_closest_ticker_ids(
     };
 
     // Convert target PCA coordinates to Vec<f32> for arithmetic operations
-    let target_pca_coords: Vec<f32> = target_pca_coordinates.iter().map(|c| c as f32).collect();
+    let target_pca_coords: Vec<f32> = target_pca_coordinates.iter().map(|c| c).collect();
 
     // Compute Euclidean distance with every other vector and capture PCA coordinates
-    let mut results: Vec<(TickerId, f32, Vec<f32>, Vec<f32>)> = Vec::new();
+    let mut results: Vec<TickerDistance> = Vec::new();
     if let Some(vectors) = ticker_vectors.vectors() {
         for i in 0..vectors.len() {
             let ticker_vector = vectors.get(i);
@@ -99,37 +105,38 @@ pub async fn find_closest_ticker_ids(
                     // Extract non-translated PCA coordinates
                     let original_pca_coords = ticker_vector
                         .pca_coordinates()
-                        .map(|coords| coords.iter().map(|c| c as f32).collect::<Vec<f32>>())
+                        .map(|coords| coords.iter().map(|c| c).collect::<Vec<f32>>())
                         .unwrap_or_default();
 
                     // Compute translated PCA coordinates
-                    let translated_pca_coords = ticker_vector
-                        .pca_coordinates()
-                        .map(|coords| {
-                            coords
-                                .iter()
-                                .zip(&target_pca_coords)
-                                .map(|(c, &target_c)| c as f32 - target_c)
-                                .collect::<Vec<f32>>()
-                        })
-                        .unwrap_or_default();
+                    let translated_pca_coords = original_pca_coords
+                        .iter()
+                        .zip(&target_pca_coords)
+                        .map(|(c, &target_c)| c - target_c)
+                        .collect::<Vec<f32>>();
 
-                    results.push((
-                        // TODO: Fix IDL so it doesn't have to cast
-                        ticker_vector.ticker_id() as TickerId,
+                    results.push(TickerDistance {
+                        ticker_id: ticker_vector.ticker_id() as TickerId,
                         distance,
                         original_pca_coords,
                         translated_pca_coords,
-                    ));
+                    });
                 }
             }
         }
     }
 
     // Sort by Euclidean distance in ascending order and take the top 20
-    results.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
-    let top_20 = results.into_iter().take(20).collect::<Vec<_>>();
+    results.sort_by(|a, b| {
+        a.distance
+            .partial_cmp(&b.distance)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
 
+    // Take the top 20 closest tickers
+    let top_20 = results.into_iter().take(20).collect();
+
+    // Return the top 20 TickerDistance results
     Ok(top_20)
 }
 
