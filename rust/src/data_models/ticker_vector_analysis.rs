@@ -12,6 +12,8 @@ pub struct TickerDistance {
     pub translated_pca_coords: Vec<f32>,
 }
 
+// TODO: Add method to enable a ticker bucket from the frontend to be sent here to generate a custom vector
+
 pub async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> {
     // Fetch the ticker vectors binary data using `xhr_fetch`
     let url: &str = DataURL::FinancialVectors10K.value();
