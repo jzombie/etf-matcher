@@ -8,7 +8,7 @@ import customLogger from "@utils/customLogger";
 
 export type DialogModalProps = {
   open: boolean;
-  onClose: () => void;
+  onClose?: () => void;
   children?: React.ReactNode;
 };
 
@@ -17,22 +17,21 @@ export default function DialogModal({
   onClose,
   children,
 }: DialogModalProps) {
+  // Track the location when the modal is initially opened
   const location = useLocation();
-  const initialLocationRef = useRef<Location>();
+  const modalOpeningLocationRef = useRef<Location>();
 
   useEffect(() => {
-    if (location && !isOpen) {
-      initialLocationRef.current = location;
-    }
-  }, [isOpen, location]);
-
-  useEffect(() => {
-    if (location !== initialLocationRef.current && isOpen) {
-      customLogger.debug("Closing modal due to location change", location);
-      onClose();
-
-      // Reset `initial` location so the modal can be re-opened from the new location
-      initialLocationRef.current = location;
+    if (isOpen) {
+      if (location !== modalOpeningLocationRef.current) {
+        customLogger.debug("Closing modal due to location change", location);
+        if (typeof onClose === "function") {
+          onClose();
+        }
+      }
+    } else {
+      // Store the current location before the modal is opened
+      modalOpeningLocationRef.current = location;
     }
   }, [isOpen, location, onClose]);
 
