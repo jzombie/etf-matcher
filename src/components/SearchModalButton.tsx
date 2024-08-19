@@ -17,12 +17,21 @@ import {
   Typography,
 } from "@mui/material";
 
+import store from "@src/store";
+
 import useSearch from "@hooks/useSearch";
+import useURLState from "@hooks/useURLState";
 
 import DialogModal from "./DialogModal";
 import EncodedImage from "./EncodedImage";
 
-export default function SearchModalButton() {
+export type SearchModalButtonProps = {
+  highlight?: boolean;
+};
+
+export default function SearchModalButton({
+  highlight,
+}: SearchModalButtonProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const {
     searchQuery,
@@ -51,6 +60,8 @@ export default function SearchModalButton() {
 
     setIsModalOpen(false);
   };
+
+  const { setURLState, toBooleanParam } = useURLState();
 
   const handleOk = (_?: SyntheticEvent, exactSearchValue?: string) => {
     store.setState({ isSearchModalOpen: false });
@@ -123,6 +134,7 @@ export default function SearchModalButton() {
         variant="contained"
         startIcon={<SearchIcon />}
         onClick={handleShowModal}
+        color={highlight ? "primary" : "inherit"}
       >
         Search
       </Button>
