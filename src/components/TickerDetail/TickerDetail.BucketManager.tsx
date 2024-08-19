@@ -25,6 +25,7 @@ import type { TickerBucket } from "@src/store";
 import type { RustServiceTickerDetail } from "@src/types";
 
 import BucketForm from "@components/BucketManager/BucketManager.BucketForm";
+import DialogModal from "@components/DialogModal";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
@@ -176,34 +177,14 @@ export default function TickerDetailBucketManager({
         </DialogActions>
       </Dialog>
 
-      <Dialog open={isBucketDialogOpen} onClose={handleCloseBucketDialog}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "16px 0px 24px 24px", // Roughly match `DialogTitle` padding, so that `Close` button can run inline
-          }}
-        >
-          <DialogTitle sx={{ padding: 0 }}>
-            <ListAltIcon sx={{ verticalAlign: "middle", marginRight: 1 }} />{" "}
-            Manage &quot;{tickerDetail.symbol}&quot; in{" "}
-            {selectedBucketType
-              ? `${tickerBucketDefaultNames[selectedBucketType]}s`
-              : "Buckets"}{" "}
-          </DialogTitle>
-          <DialogActions>
-            <Button
-              startIcon={<CloseIcon />}
-              onClick={handleCloseBucketDialog}
-              color="primary"
-              variant="contained"
-              sx={{ fontSize: "0.875rem" }}
-            >
-              Close
-            </Button>
-          </DialogActions>
-        </Box>
+      <DialogModal open={isBucketDialogOpen} onClose={handleCloseBucketDialog}>
+        <DialogTitle sx={{ padding: 0 }}>
+          <ListAltIcon sx={{ verticalAlign: "middle", marginRight: 1 }} />{" "}
+          Manage &quot;{tickerDetail.symbol}&quot; in{" "}
+          {selectedBucketType
+            ? `${tickerBucketDefaultNames[selectedBucketType]}s`
+            : "Buckets"}{" "}
+        </DialogTitle>
         <DialogContent>
           <Typography variant="h6">
             Existing{" "}
@@ -258,7 +239,7 @@ export default function TickerDetailBucketManager({
             />
           )}
         </DialogContent>
-      </Dialog>
+      </DialogModal>
     </Box>
   );
 }
