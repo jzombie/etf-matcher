@@ -55,7 +55,7 @@ export default function DialogModal({
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          "@media (max-width: 728px)": {
+          "@media (max-width: 728px), (max-height: 728px)": {
             width: "100vw",
             height: "100dvh", // Assuming the browser supports `dvh`
             maxWidth: "100vw",
