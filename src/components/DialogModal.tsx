@@ -1,35 +1,21 @@
-import React, { SyntheticEvent } from "react";
+import React from "react";
 
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from "@mui/material";
+import { Dialog } from "@mui/material";
 
 export type DialogModalProps = {
-  isOpen: boolean;
+  open: boolean;
   onClose: () => void;
-  onAction?: (event: SyntheticEvent) => void;
-  actionDisabled?: boolean;
-  actionLabel?: string;
-  cancelLabel?: string;
   children?: React.ReactNode;
 };
 
 export default function DialogModal({
-  isOpen,
+  open,
   onClose,
-  onAction,
-  actionDisabled,
-  actionLabel = "OK",
-  cancelLabel = "Cancel",
   children,
 }: DialogModalProps) {
   return (
     <Dialog
-      open={isOpen}
+      open={open}
       onClose={onClose}
       PaperProps={{
         sx: {
@@ -64,25 +50,6 @@ export default function DialogModal({
       }}
     >
       {children}
-
-      <DialogActions sx={{ justifyContent: "space-between" }}>
-        <Button
-          onClick={onClose}
-          variant={!actionDisabled ? "contained" : "text"}
-          color="error"
-        >
-          {cancelLabel}
-        </Button>
-        {onAction && (
-          <Button
-            onClick={onAction}
-            disabled={actionDisabled}
-            variant="contained"
-          >
-            {actionLabel}
-          </Button>
-        )}
-      </DialogActions>
     </Dialog>
   );
 }

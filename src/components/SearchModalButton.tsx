@@ -4,6 +4,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import {
   Button,
   ButtonBase,
+  DialogActions,
   DialogContent,
   DialogTitle,
   IconButton,
@@ -49,8 +50,20 @@ export default function SearchModalButton() {
   };
 
   const handleOk = (_?: SyntheticEvent, exactSearchValue?: string) => {
-    setIsModalOpen(false);
-    // Handle OK action, e.g., updating URL
+    store.setState({ isSearchModalOpen: false });
+
+    const locSearchQuery = exactSearchValue || searchQuery;
+
+    if (searchQuery.length) {
+      setURLState(
+        {
+          query: locSearchQuery,
+          exact: toBooleanParam(Boolean(exactSearchValue), true),
+        },
+        false,
+        "/search",
+      );
+    }
   };
 
   const handleInputChange = (evt: React.BaseSyntheticEvent) => {
@@ -110,12 +123,7 @@ export default function SearchModalButton() {
       >
         Search
       </Button>
-      <DialogModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onAction={handleOk}
-        actionDisabled={!searchResults.length}
-      >
+      <DialogModal open={isModalOpen} onClose={handleCloseModal}>
         <DialogTitle>
           <TextField
             fullWidth
@@ -203,6 +211,24 @@ export default function SearchModalButton() {
             </div>
           )}
         </DialogContent>
+        <DialogActions
+        // sx={{ justifyContent: "space-between" }}
+        >
+          <Button
+            onClick={handleCloseModal}
+            variant={!searchResults.length ? "contained" : "text"}
+            color="error"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleOk}
+            disabled={!searchResults.length}
+            variant="contained"
+          >
+            OK
+          </Button>
+        </DialogActions>
       </DialogModal>
     </>
   );
