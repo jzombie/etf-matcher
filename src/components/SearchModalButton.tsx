@@ -2,6 +2,7 @@ import React, { SyntheticEvent, useCallback, useEffect, useRef } from "react";
 
 import SearchIcon from "@mui/icons-material/Search";
 import {
+  Box,
   Button,
   ButtonBase,
   DialogActions,
@@ -225,13 +226,13 @@ export default function SearchModalButton({
             ))}
           </List>
         </DialogContent>
-        <>
-          {
-            // TODO: Skip these if the viewport is too small
-          }
-          {
-            // remaining > 0 && <Button>+ {remaining} remaining</Button>
-          }
+        {
+          // FIXME: This box should technically be inside of `DialogActions` but
+          // the overall UI layout is perfect here.
+          //
+          // TODO: On very small viewports, move the pagination into the scroll body.
+        }
+        <Box>
           {totalSearchResults > pageSize && (
             <div style={{ marginTop: 10, textAlign: "center" }}>
               <Pagination
@@ -245,7 +246,7 @@ export default function SearchModalButton({
               />
             </div>
           )}
-        </>
+        </Box>
         <DialogActions>
           {totalSearchResults > 0 && (
             <div
