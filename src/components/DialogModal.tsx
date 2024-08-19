@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 
 import { Dialog } from "@mui/material";
 
-import { useLocation } from "react-router-dom";
+import { Location, useLocation } from "react-router-dom";
 
 import customLogger from "@utils/customLogger";
 
@@ -18,7 +18,13 @@ export default function DialogModal({
   children,
 }: DialogModalProps) {
   const location = useLocation();
-  const initialLocationRef = useRef(location);
+  const initialLocationRef = useRef<Location>();
+
+  useEffect(() => {
+    if (location && !isOpen) {
+      initialLocationRef.current = location;
+    }
+  }, [isOpen, location]);
 
   useEffect(() => {
     if (location !== initialLocationRef.current && isOpen) {
