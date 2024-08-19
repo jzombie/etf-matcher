@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useEffect, useRef } from "react";
+import React, { SyntheticEvent, useCallback, useEffect, useRef } from "react";
 
 import SearchIcon from "@mui/icons-material/Search";
 import {
@@ -52,75 +52,84 @@ export default function SearchModalButton({
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleShowModal = () => {
+  const handleShowModal = useCallback(() => {
     store.setState({ isSearchModalOpen: true });
-  };
+  }, []);
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     // Reset search query on close
     setSearchQuery("");
 
     store.setState({ isSearchModalOpen: false });
-  };
+  }, [setSearchQuery]);
 
   const { setURLState, toBooleanParam } = useURLState();
 
-  const handleOk = (_?: SyntheticEvent, exactSearchValue?: string) => {
-    store.setState({ isSearchModalOpen: false });
+  const handleOk = useCallback(
+    (_?: SyntheticEvent, exactSearchValue?: string) => {
+      store.setState({ isSearchModalOpen: false });
 
-    const locSearchQuery = exactSearchValue || searchQuery;
+      const locSearchQuery = exactSearchValue || searchQuery;
 
-    if (searchQuery.length) {
-      setURLState(
-        {
-          query: locSearchQuery,
-          exact: toBooleanParam(Boolean(exactSearchValue), true),
-        },
-        false,
-        "/search",
-      );
-    }
-  };
-
-  const handleInputChange = (evt: React.BaseSyntheticEvent) => {
-    setSearchQuery(evt.target.value);
-    setSelectedIndex(-1);
-  };
-
-  const handleInputKeyDown = (evt: React.KeyboardEvent) => {
-    if (evt.code === "Enter" || evt.key === "Enter") {
-      if (selectedIndex === -1) {
-        handleOk(evt);
-      } else if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
-        const selectedSearchResult = searchResults[selectedIndex];
-        handleOk(evt, selectedSearchResult.symbol);
+      if (searchQuery.length) {
+        setURLState(
+          {
+            query: locSearchQuery,
+            exact: toBooleanParam(Boolean(exactSearchValue), true),
+          },
+          false,
+          "/search",
+        );
       }
-    } else if (evt.code === "ArrowDown") {
-      setSelectedIndex((prevIndex) => {
-        const newIndex = Math.min(prevIndex + 1, searchResults.length - 1);
-        const selectedListItem = window.document.getElementById(
-          `search-result-${newIndex}`,
-        );
-        selectedListItem?.scrollIntoView({
-          block: "nearest",
-          behavior: "smooth",
+    },
+    [searchQuery, setURLState, toBooleanParam],
+  );
+
+  const handleInputChange = useCallback(
+    (evt: React.BaseSyntheticEvent) => {
+      setSearchQuery(evt.target.value);
+      setSelectedIndex(-1);
+    },
+    [setSearchQuery, setSelectedIndex],
+  );
+
+  const handleInputKeyDown = useCallback(
+    (evt: React.KeyboardEvent) => {
+      if (evt.code === "Enter" || evt.key === "Enter") {
+        if (selectedIndex === -1) {
+          handleOk(evt);
+        } else if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
+          const selectedSearchResult = searchResults[selectedIndex];
+          handleOk(evt, selectedSearchResult.symbol);
+        }
+      } else if (evt.code === "ArrowDown") {
+        setSelectedIndex((prevIndex) => {
+          const newIndex = Math.min(prevIndex + 1, searchResults.length - 1);
+          const selectedListItem = window.document.getElementById(
+            `search-result-${newIndex}`,
+          );
+          selectedListItem?.scrollIntoView({
+            block: "nearest",
+            behavior: "smooth",
+          });
+          return newIndex;
         });
-        return newIndex;
-      });
-    } else if (evt.code === "ArrowUp") {
-      setSelectedIndex((prevIndex) => {
-        const newIndex = Math.max(prevIndex - 1, 0);
-        const selectedListItem = window.document.getElementById(
-          `search-result-${newIndex}`,
-        );
-        selectedListItem?.scrollIntoView({
-          block: "nearest",
-          behavior: "smooth",
+      } else if (evt.code === "ArrowUp") {
+        setSelectedIndex((prevIndex) => {
+          const newIndex = Math.max(prevIndex - 1, 0);
+          const selectedListItem = window.document.getElementById(
+            `search-result-${newIndex}`,
+          );
+          selectedListItem?.scrollIntoView({
+            block: "nearest",
+            behavior: "smooth",
+          });
+          return newIndex;
         });
-        return newIndex;
-      });
-    }
-  };
+      }
+    },
+    [handleOk, searchResults, selectedIndex, setSelectedIndex],
+  );
 
   useEffect(() => {
     if (isModalOpen) {
