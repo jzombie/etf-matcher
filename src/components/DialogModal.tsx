@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 import { Dialog } from "@mui/material";
+
+import { useLocation } from "react-router-dom";
+
+import customLogger from "@utils/customLogger";
 
 export type DialogModalProps = {
   open: boolean;
@@ -9,13 +13,26 @@ export type DialogModalProps = {
 };
 
 export default function DialogModal({
-  open,
+  open: isOpen,
   onClose,
   children,
 }: DialogModalProps) {
+  const location = useLocation();
+  const initialLocationRef = useRef(location);
+
+  useEffect(() => {
+    if (location !== initialLocationRef.current && isOpen) {
+      customLogger.debug("Closing modal due to location change", location);
+      onClose();
+
+      // Reset `initial` location so the modal can be re-opened from the new location
+      initialLocationRef.current = location;
+    }
+  }, [isOpen, location, onClose]);
+
   return (
     <Dialog
-      open={open}
+      open={isOpen}
       onClose={onClose}
       PaperProps={{
         sx: {
