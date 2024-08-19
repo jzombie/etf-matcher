@@ -46,6 +46,9 @@ export default function SearchModalButton() {
   };
 
   const handleCloseModal = () => {
+    // Reset search query on close
+    setSearchQuery("");
+
     setIsModalOpen(false);
   };
 
@@ -198,22 +201,41 @@ export default function SearchModalButton() {
               </ButtonBase>
             ))}
           </List>
+        </DialogContent>
+        <>
+          {
+            // TODO: Skip these if the viewport is too small
+          }
+          {
+            // remaining > 0 && <Button>+ {remaining} remaining</Button>
+          }
           {totalSearchResults > pageSize && (
             <div style={{ marginTop: 10, textAlign: "center" }}>
               <Pagination
                 count={totalPages}
                 page={page}
                 onChange={(event, nextPage) => setPage(nextPage)}
+                // Note: Consider showing `showFirst/LastButton` if horizontal space allows
                 showFirstButton={false}
                 showLastButton={false}
                 sx={{ display: "inline-block" }}
               />
             </div>
           )}
-        </DialogContent>
-        <DialogActions
-        // sx={{ justifyContent: "space-between" }}
-        >
+        </>
+        <DialogActions>
+          {totalSearchResults > 0 && (
+            <div
+              style={{
+                fontStyle: "italic",
+                fontSize: ".8rem",
+                float: "left",
+              }}
+            >
+              Total results for query &quot;{searchQuery}&quot;:{" "}
+              {totalSearchResults}
+            </div>
+          )}
           <Button
             onClick={handleCloseModal}
             variant={!searchResults.length ? "contained" : "text"}
@@ -224,7 +246,7 @@ export default function SearchModalButton() {
           <Button
             onClick={handleOk}
             disabled={!searchResults.length}
-            variant="contained"
+            variant={searchResults.length ? "contained" : "text"}
           >
             OK
           </Button>
