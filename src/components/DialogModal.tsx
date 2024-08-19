@@ -44,7 +44,7 @@ export default function DialogModal({
             xs: "100vw", // Full width for extra small screens
             sm: "500px", // Max width of 500px for small screens and up
           },
-          minWidth: "300px",
+          minWidth: 320,
           height: {
             xs: "100vh", // Full height for extra small screens
             sm: "60vh", // 60% height for small screens and up
