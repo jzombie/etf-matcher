@@ -4,10 +4,6 @@ use serde_wasm_bindgen::to_value;
 use std::panic;
 use wasm_bindgen::prelude::*;
 
-include!("data_models/flatbuffers/financial_vectors.tenk_generated.rs");
-
-use crate::financial_vectors::ten_k::root_as_ticker_vectors;
-
 mod constants;
 mod data_models;
 mod types;
@@ -16,10 +12,10 @@ mod utils;
 use crate::types::TickerId;
 
 use crate::data_models::{
-    DataBuildInfo, DataURL, ETFAggregateDetail, ETFAggregateDetailResponse, ETFHoldingTicker,
-    ETFHoldingTickerResponse, ETFHoldingWeightResponse, IndustryById, PaginatedResults, SectorById,
-    Ticker10KDetail, TickerDetail, TickerDetailResponse, TickerETFHolder, TickerSearch,
-    TickerSearchResult
+    ticker_vector_analysis, DataBuildInfo, DataURL, ETFAggregateDetail, ETFAggregateDetailResponse,
+    ETFHoldingTicker, ETFHoldingTickerResponse, ETFHoldingWeightResponse, ExchangeById,
+    IndustryById, PaginatedResults, SectorById, Ticker10KDetail, TickerDetail,
+    TickerDetailResponse, TickerETFHolder, TickerSearch, TickerSearchResult,
 };
 
 use crate::data_models::image::get_image_info as lib_get_image_info;
@@ -187,54 +183,75 @@ pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<Js
 
 #[wasm_bindgen]
 pub fn get_cache_size() -> usize {
-    // TODO: Also include shared_cache
     lib_get_cache_size()
 }
 
 #[wasm_bindgen]
 pub fn get_cache_details() -> JsValue {
-    // TODO: Also include shared_cache
     lib_get_cache_details()
 }
 
 #[wasm_bindgen]
 pub fn remove_cache_entry(key: &str) {
-    // TODO: Also include shared_cache
     lib_remove_cache_entry(key);
 }
 
 #[wasm_bindgen]
 pub fn clear_cache() {
-    // TODO: Also include shared_cache?
     lib_clear_cache();
 }
 
-///
-
-// TODO: Refactor as needed
 #[wasm_bindgen]
-pub async fn proto_echo_all_ticker_vectors() -> Result<(), JsValue> {
-    // Fetch the ticker vectors binary data using `xhr_fetch`
-    let url = "/data/financial_vectors.tenk.bin";
+pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<JsValue, JsValue> {
+    // Call the find_closest_tickers function from the ticker_vector_analysis module
+    let closest_tickers = ticker_vector_analysis::find_closest_tickers(ticker_id)
+        .await
+        .map_err(|err| JsValue::from_str(&format!("Failed to find closest ticker IDs: {}", err)))?;
 
-    let file_content = utils::xhr_fetch_cached(url.to_string()).await
-        .map_err(|err| JsValue::from_str(&format!("Failed to fetch file: {:?}", err)))?;
+    // Convert the results to JsValue
+    let js_array = js_sys::Array::new();
 
-    // Use the FlatBuffers `root_as_ticker_vectors` function to parse the buffer
-    let ticker_vectors = root_as_ticker_vectors(&file_content)
-        .map_err(|err| JsValue::from_str(&format!("Failed to parse TickerVectors: {:?}", err)))?;
+    for ticker_distance in closest_tickers {
+        let obj = js_sys::Object::new();
+        js_sys::Reflect::set(
+            &obj,
+            &JsValue::from_str("ticker_id"),
+            &JsValue::from(ticker_distance.ticker_id),
+        )
+        .unwrap();
+        js_sys::Reflect::set(
+            &obj,
+            &JsValue::from_str("distance"),
+            &JsValue::from(ticker_distance.distance),
+        )
+        .unwrap();
 
-    // Get the vectors, which is an Option containing a flatbuffers::Vector
-    if let Some(vectors) = ticker_vectors.vectors() {
-        // Loop through each ticker vector in the Vector and log it to the web console
-        for i in 0..vectors.len() {
-            let ticker_vector = vectors.get(i);
-            web_sys::console::log_1(&format!("Ticker Vector {}: {:?}", i, ticker_vector).into());
+        // Convert original PCA coordinates to JS array
+        let original_pca_array = js_sys::Array::new();
+        for coord in ticker_distance.original_pca_coords {
+            original_pca_array.push(&JsValue::from_f64(coord as f64));
         }
-    } else {
-        web_sys::console::log_1(&"No ticker vectors found.".into());
+        js_sys::Reflect::set(
+            &obj,
+            &JsValue::from_str("translated_pca_coords"),
+            &original_pca_array.into(),
+        )
+        .unwrap();
+
+        // Convert translated PCA coordinates to JS array
+        let translated_pca_array = js_sys::Array::new();
+        for coord in ticker_distance.translated_pca_coords {
+            translated_pca_array.push(&JsValue::from_f64(coord as f64));
+        }
+        js_sys::Reflect::set(
+            &obj,
+            &JsValue::from_str("translated_pca_coords"),
+            &translated_pca_array.into(),
+        )
+        .unwrap();
+
+        js_array.push(&obj);
     }
 
-    Ok(())
+    Ok(js_array.into())
 }
-

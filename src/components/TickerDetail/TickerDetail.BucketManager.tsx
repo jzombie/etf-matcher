@@ -103,38 +103,38 @@ export default function TickerDetailBucketManager({
   return (
     <Box sx={{ padding: 2 }}>
       <Grid container spacing={2}>
-        {bucketTypes.map((type) => {
+        {bucketTypes.map((bucketType) => {
           const bucket = tickerBuckets.find(
-            (bucket) => bucket.type === type && bucket.isUserConfigurable,
+            (bucket) => bucket.type === bucketType && bucket.isUserConfigurable,
           );
 
           if (!bucket) return null;
 
-          const isTickerInBucket = store.bucketHasTicker(
+          const isTickerInBucketType = store.bucketTypeHasTicker(
             tickerDetail.ticker_id,
-            bucket,
+            bucketType,
           );
 
           const areMultipleInstancesAllowed =
-            multiBucketInstancesAllowed.includes(type);
+            multiBucketInstancesAllowed.includes(bucketType);
 
           return (
-            <Grid item xs={12} sm={6} md={4} key={type}>
+            <Grid item xs={12} sm={6} md={4} key={bucketType}>
               <Button
                 onClick={() => handleToggleBucket(bucket)}
                 variant="contained"
                 color={
-                  isTickerInBucket && areMultipleInstancesAllowed
+                  isTickerInBucketType && areMultipleInstancesAllowed
                     ? "secondary"
-                    : isTickerInBucket
+                    : isTickerInBucketType
                       ? "error"
                       : "primary"
                 }
                 fullWidth
                 startIcon={
-                  isTickerInBucket && areMultipleInstancesAllowed ? (
+                  isTickerInBucketType && areMultipleInstancesAllowed ? (
                     <EditIcon />
-                  ) : isTickerInBucket ? (
+                  ) : isTickerInBucketType ? (
                     <DeleteIcon />
                   ) : (
                     <AddIcon />
@@ -146,11 +146,11 @@ export default function TickerDetailBucketManager({
                 }}
               >
                 <Box component="span" sx={{ flexGrow: 1, textAlign: "center" }}>
-                  {isTickerInBucket && areMultipleInstancesAllowed
-                    ? `Manage "${tickerDetail.symbol}" in ${tickerBucketDefaultNames[type]}s`
-                    : isTickerInBucket
-                      ? `Remove "${tickerDetail.symbol}" from ${tickerBucketDefaultNames[type]}`
-                      : `Add "${tickerDetail.symbol}" to ${tickerBucketDefaultNames[type]}`}
+                  {isTickerInBucketType && areMultipleInstancesAllowed
+                    ? `Manage "${tickerDetail.symbol}" in ${tickerBucketDefaultNames[bucketType]}s`
+                    : isTickerInBucketType
+                      ? `Remove "${tickerDetail.symbol}" from ${tickerBucketDefaultNames[bucketType]}`
+                      : `Add "${tickerDetail.symbol}" to ${tickerBucketDefaultNames[bucketType]}`}
                 </Box>
               </Button>
             </Grid>

@@ -1,11 +1,11 @@
-use serde::{Deserialize, Serialize};
-use std::collections::HashSet;
-use crate::JsValue;
-use crate::data_models::{DataURL, PaginatedResults, ExchangeById};
+use crate::types::{ExchangeId, TickerId};
 use crate::utils::extract_logo_filename;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
-use crate::types::{TickerId, ExchangeId};
+use crate::JsValue;
+use crate::{DataURL, ExchangeById, PaginatedResults};
+use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TickerSearch {
@@ -73,7 +73,8 @@ impl TickerSearch {
 
         // Extract the logo filename for each result
         for result in &mut results {
-            result.logo_filename = extract_logo_filename(result.logo_filename.as_deref(), &result.symbol);
+            result.logo_filename =
+                extract_logo_filename(result.logo_filename.as_deref(), &result.symbol);
         }
 
         let alternatives: Vec<String> = TickerSearch::generate_alternative_symbols(&trimmed_query);
@@ -87,7 +88,10 @@ impl TickerSearch {
             let query_lower: String = alternative.to_lowercase();
             for result in &results {
                 let symbol_lower = result.symbol.to_lowercase();
-                let company_lower = result.company_name.as_deref().map_or("".to_string(), |company_name| company_name.to_lowercase());
+                let company_lower = result
+                    .company_name
+                    .as_deref()
+                    .map_or("".to_string(), |company_name| company_name.to_lowercase());
 
                 let symbol_match = symbol_lower == query_lower;
                 let company_match = company_lower == query_lower;
@@ -102,7 +106,8 @@ impl TickerSearch {
                     let partial_symbol_match_contains = symbol_lower.contains(&query_lower);
                     let partial_company_match_contains = company_lower.contains(&query_lower);
                     let reverse_partial_symbol_match_contains = query_lower.contains(&symbol_lower);
-                    let reverse_partial_company_match_contains = query_lower.contains(&company_lower);
+                    let reverse_partial_company_match_contains =
+                        query_lower.contains(&company_lower);
 
                     if partial_symbol_match_same_start || partial_company_match_same_start {
                         if seen_symbols.insert(symbol_lower.clone()) {
@@ -112,7 +117,10 @@ impl TickerSearch {
                         if seen_symbols.insert(symbol_lower.clone()) {
                             contains_matches.push(result.clone());
                         }
-                    } else if (reverse_partial_symbol_match_contains || reverse_partial_company_match_contains) && seen_symbols.insert(symbol_lower.clone()) {
+                    } else if (reverse_partial_symbol_match_contains
+                        || reverse_partial_company_match_contains)
+                        && seen_symbols.insert(symbol_lower.clone())
+                    {
                         reverse_contains_matches.push(result.clone());
                     }
                 }
@@ -121,7 +129,10 @@ impl TickerSearch {
 
         // Combine matches in the desired order
         let mut matches: Vec<TickerSearch> = Vec::with_capacity(
-            exact_symbol_matches.len() + starts_with_matches.len() + contains_matches.len() + reverse_contains_matches.len(),
+            exact_symbol_matches.len()
+                + starts_with_matches.len()
+                + contains_matches.len()
+                + reverse_contains_matches.len(),
         );
         matches.append(&mut exact_symbol_matches);
 
@@ -135,7 +146,8 @@ impl TickerSearch {
         let paginated_results = PaginatedResults::paginate(matches.clone(), page, page_size)?;
 
         // Fetch exchange short names for the paginated results
-        let mut search_results: Vec<TickerSearchResult> = Vec::with_capacity(paginated_results.results.len());
+        let mut search_results: Vec<TickerSearchResult> =
+            Vec::with_capacity(paginated_results.results.len());
         for result in paginated_results.results {
             let exchange_short_name = if let Some(exchange_id) = result.exchange_id {
                 match ExchangeById::get_short_name_by_exchange_id(exchange_id).await {

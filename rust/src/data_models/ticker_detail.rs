@@ -1,7 +1,7 @@
-use crate::data_models::DataURL;
 use crate::types::{IndustryId, SectorId, TickerId};
 use crate::utils::logo_utils::extract_logo_filename;
 use crate::utils::shard::query_shard_for_id;
+use crate::DataURL;
 use crate::IndustryById;
 use crate::JsValue;
 use crate::SectorById;

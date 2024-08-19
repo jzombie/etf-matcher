@@ -12,6 +12,7 @@ import type {
   RustServicePaginatedResults,
   RustServiceTicker10KDetail,
   RustServiceTickerDetail,
+  RustServiceTickerDistance,
   RustServiceTickerSearchResult,
 } from "@src/types";
 
@@ -656,6 +657,17 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return tickerBucket.tickers.some((ticker) => ticker.tickerId === tickerId);
   }
 
+  bucketTypeHasTicker(
+    tickerId: number,
+    tickerBucketType: TickerBucket["type"],
+  ): boolean {
+    return this.state.tickerBuckets
+      .filter((bucket) => bucket.type === tickerBucketType)
+      .some((bucket) =>
+        bucket.tickers.some((ticker) => ticker.tickerId === tickerId),
+      );
+  }
+
   getTickerBucketsOfType(
     tickerBucketType: TickerBucket["type"],
   ): TickerBucket[] {
@@ -762,6 +774,27 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     Promise.all(clearPromises).finally(() => {
       // This prevents an issue where the UI might be in a non-recoverable state after resetting the store
       window.location.reload();
+    });
+  }
+
+  /// TODO: Refactor as needed
+
+  async fetchClosestTickers(
+    tickerId: number,
+  ): Promise<RustServiceTickerDistance[]> {
+    return callRustService<RustServiceTickerDistance[]>(
+      "find_closest_tickers",
+      [tickerId],
+    ).then((data) => {
+      customLogger.debug({ data });
+
+      // TODO: Remove; also include these with the Rust response in the API call
+      const detailPromises = data.map((item) =>
+        this.fetchTickerDetail(item.ticker_id),
+      );
+      Promise.allSettled(detailPromises).then(customLogger.debug);
+
+      return data;
     });
   }
 }

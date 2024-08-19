@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Grid } from "@mui/material";
 
 import Center from "@layoutKit/Center";
 import store from "@src/store";
 import type { RustServiceETFAggregateDetail } from "@src/types";
+
+import LazyRender from "@components/LazyRender";
 
 import useTickerDetail from "@hooks/useTickerDetail";
 
@@ -17,6 +19,7 @@ import ETFHoldingList from "./TickerDetail.ETFHoldingList";
 import FinancialChartsGrid from "./TickerDetail.FinancialChartsGrid";
 import TickerDetailHeader from "./TickerDetail.Header";
 import HistoricalPriceChart from "./TickerDetail.HistoricalPriceChart";
+import PCAScatterPlot from "./TickerDetail.PCAScatterPlot";
 
 export type TickerDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerId: number;
@@ -40,8 +43,6 @@ export default function TickerDetail({
   const [etfAggregateDetail, setETFAggregateDetail] = useState<
     RustServiceETFAggregateDetail | undefined
   >(undefined);
-
-  // const [showNews, setShowNews] = useState(false);
 
   useEffect(() => {
     if (tickerDetail?.is_etf) {
@@ -75,11 +76,20 @@ export default function TickerDetail({
       onIntersectionStateChange={onIntersectionStateChange}
       {...rest}
     >
-      <TickerDetailHeader
-        tickerDetail={tickerDetail}
-        etfAggregateDetail={etfAggregateDetail}
-        formattedSymbolWithExchange={formattedSymbolWithExchange}
-      />
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={6}>
+          <TickerDetailHeader
+            tickerDetail={tickerDetail}
+            etfAggregateDetail={etfAggregateDetail}
+            formattedSymbolWithExchange={formattedSymbolWithExchange}
+          />
+        </Grid>
+        <Grid item xs={12} md={6} mb={1}>
+          <LazyRender>
+            <PCAScatterPlot tickerDetail={tickerDetail} />
+          </LazyRender>
+        </Grid>
+      </Grid>
 
       <HistoricalPriceChart
         tickerSymbol={tickerDetail.symbol}
@@ -87,9 +97,6 @@ export default function TickerDetail({
       />
 
       <Box sx={{ textAlign: "center" }}>
-        {/* <Button onClick={() => setShowNews(!showNews)} startIcon={<NewsIcon />}>
-          {showNews ? "Hide News" : "View News"}
-        </Button> */}
         <TickerDetailBucketManager tickerDetail={tickerDetail} />
       </Box>
 

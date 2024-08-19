@@ -222,3 +222,10 @@ export type RustServiceImageInfo = {
   base64: string;
   rgba: string;
 };
+
+export type RustServiceTickerDistance = {
+  ticker_id: number;
+  distance: number;
+  original_pca_coords: number[];
+  translated_pca_coords: number[];
+};
