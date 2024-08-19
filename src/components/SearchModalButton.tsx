@@ -17,9 +17,8 @@ import {
   Typography,
 } from "@mui/material";
 
-import store from "@src/store";
-
 import useSearch from "@hooks/useSearch";
+import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import useURLState from "@hooks/useURLState";
 
 import DialogModal from "./DialogModal";
@@ -32,7 +31,10 @@ export type SearchModalButtonProps = {
 export default function SearchModalButton({
   highlight,
 }: SearchModalButtonProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // This state is managed by the store so that it can be opened elsewhere
+  const { isSearchModalOpen: isModalOpen } =
+    useStoreStateReader("isSearchModalOpen");
+
   const {
     searchQuery,
     setSearchQuery,
@@ -51,14 +53,14 @@ export default function SearchModalButton({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleShowModal = () => {
-    setIsModalOpen(true);
+    store.setState({ isSearchModalOpen: true });
   };
 
   const handleCloseModal = () => {
     // Reset search query on close
     setSearchQuery("");
 
-    setIsModalOpen(false);
+    store.setState({ isSearchModalOpen: false });
   };
 
   const { setURLState, toBooleanParam } = useURLState();
