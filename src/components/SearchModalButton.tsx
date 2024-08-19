@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useEffect, useRef, useState } from "react";
+import React, { SyntheticEvent, useEffect, useRef } from "react";
 
 import SearchIcon from "@mui/icons-material/Search";
 import {

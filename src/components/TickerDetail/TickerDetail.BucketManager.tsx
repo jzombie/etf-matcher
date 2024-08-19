@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 
 import AddIcon from "@mui/icons-material/Add";
-import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ListAltIcon from "@mui/icons-material/ListAlt";
