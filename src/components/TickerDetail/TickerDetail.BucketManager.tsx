@@ -89,7 +89,7 @@ export default function TickerDetailBucketManager({
     setSelectedBucketType(null);
   }, []);
 
-  const bucketTypes = useMemo(
+  const userConfigurableBucketTypes = useMemo(
     () => [
       ...new Set(
         tickerBuckets
@@ -103,7 +103,7 @@ export default function TickerDetailBucketManager({
   return (
     <Box sx={{ padding: 2 }}>
       <Grid container spacing={2}>
-        {bucketTypes.map((bucketType) => {
+        {userConfigurableBucketTypes.map((bucketType) => {
           const bucket = tickerBuckets.find(
             (bucket) => bucket.type === bucketType && bucket.isUserConfigurable,
           );
