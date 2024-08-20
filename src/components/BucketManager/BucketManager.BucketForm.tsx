@@ -23,6 +23,9 @@ export default function BucketForm({
   const [bucketName, setBucketName] = useState<string>("");
   const [bucketDescription, setBucketDescription] = useState<string>("");
 
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [descriptionError, setDescriptionError] = useState<string | null>(null);
+
   const { showNotification } = useNotification();
 
   useEffect(() => {
@@ -35,27 +38,44 @@ export default function BucketForm({
   const handleSaveBucket = useCallback(() => {
     let hasError = false;
 
-    if (existingBucket) {
-      store.updateTickerBucket(existingBucket, {
-        ...existingBucket,
-        name: bucketName,
-        description: bucketDescription,
-      });
-    } else {
-      try {
-        store.createTickerBucket({
-          name: bucketName,
-          type: bucketType,
-          description: bucketDescription,
-          isUserConfigurable: true,
-        });
-      } catch (err) {
-        showNotification(
-          `Could not create new bucket. Ensure the name is unique.`,
-          "error",
-        );
+    // Reset errors
+    setNameError(null);
+    setDescriptionError(null);
 
-        hasError = true;
+    // Validate the form fields
+    if (bucketName.trim() === "") {
+      setNameError("Name is required.");
+      hasError = true;
+    }
+
+    if (bucketName.trim().length < 3) {
+      setNameError("Name must be at least 3 characters long.");
+      hasError = true;
+    }
+
+    if (!hasError) {
+      if (existingBucket) {
+        store.updateTickerBucket(existingBucket, {
+          ...existingBucket,
+          name: bucketName,
+          description: bucketDescription,
+        });
+      } else {
+        try {
+          store.createTickerBucket({
+            name: bucketName,
+            type: bucketType,
+            description: bucketDescription,
+            isUserConfigurable: true,
+          });
+        } catch (err) {
+          showNotification(
+            `Could not create new bucket. Ensure the name is unique.`,
+            "error",
+          );
+
+          hasError = true;
+        }
       }
     }
 
@@ -90,7 +110,7 @@ export default function BucketForm({
     }
   }, [onClose, onCancel]);
 
-  const isFormValid = bucketName.trim() !== "";
+  const isFormValid = bucketName.trim() !== "" && bucketName.trim().length >= 3;
 
   return (
     <Box sx={{ mt: 2 }}>
@@ -112,6 +132,8 @@ export default function BucketForm({
             variant="outlined"
             fullWidth
             required
+            error={!!nameError}
+            helperText={nameError}
           />
           <TextField
             label={`${tickerBucketDefaultNames[bucketType]} Description`}
@@ -121,6 +143,8 @@ export default function BucketForm({
             fullWidth
             multiline
             rows={4}
+            error={!!descriptionError}
+            helperText={descriptionError}
           />
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
             <Button
