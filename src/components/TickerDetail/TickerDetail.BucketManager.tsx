@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useId, useMemo, useState } from "react";
 
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -114,6 +114,9 @@ export default function TickerDetailBucketManager({
     [tickerBuckets],
   );
 
+  const alertDialogTitleId = useId();
+  const alertDialogDescriptionId = useId();
+
   return (
     <Box sx={{ padding: 2 }}>
       <Grid container spacing={2}>
@@ -172,10 +175,15 @@ export default function TickerDetailBucketManager({
         })}
       </Grid>
 
-      <Dialog open={isDeleteDialogOpen} onClose={handleCloseDeleteDialog}>
-        <DialogTitle>Confirm Remove</DialogTitle>
+      <Dialog
+        open={isDeleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby={alertDialogTitleId}
+        aria-describedby={alertDialogDescriptionId}
+      >
+        <DialogTitle id={alertDialogTitleId}>Confirm Remove</DialogTitle>
         <DialogContent>
-          <DialogContentText>
+          <DialogContentText id={alertDialogDescriptionId}>
             Are you sure you want to remove &quot;{tickerDetail.symbol}&quot;
             from &quot;{selectedBucket?.name}&quot;?
           </DialogContentText>

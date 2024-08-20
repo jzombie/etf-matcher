@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useId, useState } from "react";
 
 import {
   Button,
@@ -51,6 +51,9 @@ export default function UserDataSection() {
     setIsDialogOpen(false);
   }, []);
 
+  const alertDialogTitleId = useId();
+  const alertDialogDescriptionId = useId();
+
   return (
     <>
       <Section>
@@ -69,12 +72,12 @@ export default function UserDataSection() {
       <Dialog
         open={isDialogOpen}
         onClose={handleCloseClearDataDialog}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
+        aria-labelledby={alertDialogTitleId}
+        aria-describedby={alertDialogDescriptionId}
       >
-        <DialogTitle id="alert-dialog-title">Confirm Reset</DialogTitle>
+        <DialogTitle id={alertDialogTitleId}>Confirm Reset</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
+          <DialogContentText id={alertDialogDescriptionId}>
             Are you sure you want to clear all user data? This action cannot be
             undone.
           </DialogContentText>
