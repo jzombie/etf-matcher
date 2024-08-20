@@ -36,7 +36,7 @@ export const DEFAULT_TICKER_TAPE_TICKERS: ReadonlyArray<{
   { symbol: "XLU", exchangeShortName: "AMEX" }, // Utilities
 ];
 
-export const COLOR_WHEEL_COLORS: Readonly<string[]> = [
+export const COLOR_WHEEL_COLORS = [
   "#00FF7F", // Neon Green
   "#1E90FF", // Neon Dodger Blue
   "#FF6347", // Neon Tomato
@@ -63,12 +63,17 @@ export const COLOR_WHEEL_COLORS: Readonly<string[]> = [
   "#39FF14", // Neon Green
   "#4169E1", // Neon Royal Blue
   "#FFD700", // Neon Gold
-];
+] as const;
 
 export const MAX_RECENTLY_VIEWED_ITEMS = 10;
 
 export const DEFAULT_CURRENCY_CODE = "USD";
 
-export const MQTT_SYNC_KEYS: Readonly<Set<keyof StoreStateProps>> = new Set([
+export const MQTT_SYNC_KEYS: readonly (keyof StoreStateProps)[] = [
   "tickerBuckets",
-]);
+] as const;
+
+export const INDEXED_DB_PERSISTENCE_KEYS: readonly (keyof StoreStateProps)[] = [
+  "tickerBuckets",
+  "subscribedMQTTRoomNames",
+] as const;

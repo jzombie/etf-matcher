@@ -1,5 +1,6 @@
 import {
   DEFAULT_TICKER_TAPE_TICKERS,
+  INDEXED_DB_PERSISTENCE_KEYS,
   MAX_RECENTLY_VIEWED_ITEMS,
 } from "@src/constants";
 import type {
@@ -62,6 +63,7 @@ export const tickerBucketDefaultNames: Readonly<
   recently_viewed: "Recently Viewed",
 };
 
+// The ticker bucket types which allow multiple instances
 export const multiBucketInstancesAllowed: Readonly<TickerBucket["type"][]> = [
   "watchlist",
   "portfolio",
@@ -96,8 +98,7 @@ export type StoreStateProps = {
 };
 
 export type IndexedDBPersistenceProps = {
-  tickerBuckets: TickerBucket[];
-  subscribedMQTTRoomNames: string[];
+  [K in (typeof INDEXED_DB_PERSISTENCE_KEYS)[number]]: StoreStateProps[K];
 };
 
 class _Store extends ReactStateEmitter<StoreStateProps> {
@@ -400,6 +401,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     const _handleStoreStateUpdate = (
       storeStateUpdateKeys: (keyof StoreStateProps)[],
     ) => {
+      // TODO: Refine the below to use constant keys
+
       if (storeStateUpdateKeys.includes("tickerBuckets")) {
         const { tickerBuckets } = this.getState(["tickerBuckets"]);
         this._indexedDBInterface.setItem("tickerBuckets", tickerBuckets);
