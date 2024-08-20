@@ -189,7 +189,7 @@ export default function TickerDetailBucketManager({
         onClose={handleCloseBucketDialog}
         contentAdjustedHeight
       >
-        <DialogTitle sx={{ padding: 0 }}>
+        <DialogTitle>
           <ListAltIcon sx={{ verticalAlign: "middle", marginRight: 1 }} />{" "}
           Manage &quot;{tickerDetail.symbol}&quot; in{" "}
           {selectedBucketType
