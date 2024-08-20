@@ -150,7 +150,7 @@ export default function SearchModalButton({
       >
         Search
       </Button>
-      <DialogModal open={isModalOpen} onClose={handleCloseModal}>
+      <DialogModal open={isModalOpen} onClose={handleCloseModal} staticHeight>
         <DialogTitle>
           <TextField
             fullWidth
