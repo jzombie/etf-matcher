@@ -2,6 +2,7 @@ import {
   DEFAULT_TICKER_TAPE_TICKERS,
   INDEXED_DB_PERSISTENCE_KEYS,
   MAX_RECENTLY_VIEWED_ITEMS,
+  MIN_TICKER_BUCKET_NAME_LENGTH,
 } from "@src/constants";
 import type {
   RustServiceCacheDetail,
@@ -554,15 +555,13 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     type: TickerBucket["type"],
     prevBucketName?: string,
   ): void {
-    const MIN_BUCKET_NAME_LENGTH = 3;
-
     if (name.trim() === "") {
       throw new TickerBucketNameError("Name is required.");
     }
 
-    if (name.trim().length < MIN_BUCKET_NAME_LENGTH) {
+    if (name.trim().length < MIN_TICKER_BUCKET_NAME_LENGTH) {
       throw new TickerBucketNameError(
-        `Name must be at least ${MIN_BUCKET_NAME_LENGTH} characters long.`,
+        `Name must be at least ${MIN_TICKER_BUCKET_NAME_LENGTH} characters long.`,
       );
     }
 
