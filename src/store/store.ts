@@ -401,21 +401,13 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     const _handleStoreStateUpdate = (
       storeStateUpdateKeys: (keyof StoreStateProps)[],
     ) => {
-      // TODO: Refine the below to use constant keys
+      const state = this.getState();
 
-      if (storeStateUpdateKeys.includes("tickerBuckets")) {
-        const { tickerBuckets } = this.getState(["tickerBuckets"]);
-        this._indexedDBInterface.setItem("tickerBuckets", tickerBuckets);
-      }
-
-      if (storeStateUpdateKeys.includes("subscribedMQTTRoomNames")) {
-        const { subscribedMQTTRoomNames } = this.getState([
-          "subscribedMQTTRoomNames",
-        ]);
-        this._indexedDBInterface.setItem(
-          "subscribedMQTTRoomNames",
-          subscribedMQTTRoomNames,
-        );
+      for (const persistenceKey of INDEXED_DB_PERSISTENCE_KEYS) {
+        if (storeStateUpdateKeys.includes(persistenceKey)) {
+          const valueToPersist = state[persistenceKey];
+          this._indexedDBInterface.setItem(persistenceKey, valueToPersist);
+        }
       }
     };
     this.on(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
