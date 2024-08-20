@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -44,6 +44,13 @@ export default function TickerDetailBucketManager({
   const [selectedBucketType, setSelectedBucketType] = useState<
     TickerBucket["type"] | null
   >(null);
+  const [isShowingBucketForm, setIsShowingBucketForm] = useState(false);
+
+  useEffect(() => {
+    if (!isBucketDialogOpen) {
+      setIsShowingBucketForm(false);
+    }
+  }, [isBucketDialogOpen]);
 
   const handleToggleBucket = useCallback(
     (bucket: TickerBucket, isManagementPane = false) => {
@@ -235,22 +242,30 @@ export default function TickerDetailBucketManager({
               })}
           </Box>
 
-          {selectedBucketType && (
+          {isShowingBucketForm && selectedBucketType && (
             <BucketForm
               bucketType={selectedBucketType}
               onCancel={handleCloseBucketDialog}
+              onClose={() => setIsShowingBucketForm(false)}
             />
           )}
         </DialogContent>
-        <DialogActions>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleCloseBucketDialog}
-          >
-            Cancel
-          </Button>
-        </DialogActions>
+        {!isShowingBucketForm && (
+          <DialogActions>
+            {selectedBucketType && (
+              <Button
+                onClick={() => setIsShowingBucketForm(true)}
+                disabled={isShowingBucketForm}
+              >
+                Create new {tickerBucketDefaultNames[selectedBucketType]}
+              </Button>
+            )}
+
+            <Button variant="contained" onClick={handleCloseBucketDialog}>
+              Close
+            </Button>
+          </DialogActions>
+        )}
       </DialogModal>
     </Box>
   );
