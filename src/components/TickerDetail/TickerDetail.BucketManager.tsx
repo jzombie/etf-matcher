@@ -176,7 +176,11 @@ export default function TickerDetailBucketManager({
         </DialogActions>
       </Dialog>
 
-      <DialogModal open={isBucketDialogOpen} onClose={handleCloseBucketDialog}>
+      <DialogModal
+        open={isBucketDialogOpen}
+        onClose={handleCloseBucketDialog}
+        contentAdjustedHeight
+      >
         <DialogTitle sx={{ padding: 0 }}>
           <ListAltIcon sx={{ verticalAlign: "middle", marginRight: 1 }} />{" "}
           Manage &quot;{tickerDetail.symbol}&quot; in{" "}

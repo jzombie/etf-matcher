@@ -10,12 +10,14 @@ export type DialogModalProps = {
   open: boolean;
   onClose?: () => void;
   children: React.ReactNode;
+  contentAdjustedHeight?: boolean;
 };
 
 export default function DialogModal({
   open: isOpen,
   onClose,
   children,
+  contentAdjustedHeight,
 }: DialogModalProps) {
   // Track the location when the modal is initially opened
   const location = useLocation();
@@ -42,20 +44,22 @@ export default function DialogModal({
       PaperProps={{
         sx: {
           width: {
-            xs: "100vw", // Full width for extra small screens
+            xs: "100dvw", // Full width for extra small screens
             sm: "50vw", // 50% width for small screens and up
           },
           maxWidth: {
-            xs: "100vw", // Full width for extra small screens
+            xs: "100dvw", // Full width for extra small screens
             sm: "500px", // Max width of 500px for small screens and up
           },
           minWidth: 320,
-          height: {
-            xs: "100vh", // Full height for extra small screens
-            sm: "60vh", // 60% height for small screens and up
-          },
-          minHeight: 300,
-          maxHeight: "80vh",
+          height: !contentAdjustedHeight
+            ? {
+                xs: "100dvh", // Full height for extra small screens
+                sm: "60dvh", // 60% height for small screens and up
+              }
+            : undefined,
+          minHeight: !contentAdjustedHeight ? 300 : undefined,
+          maxHeight: !contentAdjustedHeight ? "80vh" : undefined,
           margin: "auto",
           display: "flex",
           flexDirection: "column",
