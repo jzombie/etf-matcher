@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, TextField, Typography } from "@mui/material";
 
 import store, { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucket } from "@src/store";
@@ -24,7 +24,6 @@ export default function BucketForm({
   const [bucketDescription, setBucketDescription] = useState<string>("");
 
   const [nameError, setNameError] = useState<string | null>(null);
-  const [descriptionError, setDescriptionError] = useState<string | null>(null);
 
   const { showNotification } = useNotification();
 
@@ -40,15 +39,12 @@ export default function BucketForm({
 
     // Reset errors
     setNameError(null);
-    setDescriptionError(null);
 
     // Validate the form fields
     if (bucketName.trim() === "") {
       setNameError("Name is required.");
       hasError = true;
-    }
-
-    if (bucketName.trim().length < 3) {
+    } else if (bucketName.trim().length < 3) {
       setNameError("Name must be at least 3 characters long.");
       hasError = true;
     }
@@ -132,9 +128,21 @@ export default function BucketForm({
             variant="outlined"
             fullWidth
             required
-            error={!!nameError}
-            helperText={nameError}
           />
+          {bucketName.trim() !== "" && (
+            <Alert
+              severity={
+                bucketName.trim().length >= 3 && !nameError
+                  ? "success"
+                  : "error"
+              }
+              sx={{ mt: 2 }}
+            >
+              {bucketName.trim().length >= 3 && !nameError
+                ? "Name is valid."
+                : nameError || "Name must be at least 3 characters long."}
+            </Alert>
+          )}
           <TextField
             label={`${tickerBucketDefaultNames[bucketType]} Description`}
             value={bucketDescription}
@@ -143,8 +151,6 @@ export default function BucketForm({
             fullWidth
             multiline
             rows={4}
-            error={!!descriptionError}
-            helperText={descriptionError}
           />
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
             <Button
