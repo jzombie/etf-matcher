@@ -55,7 +55,7 @@ export default function TickerDetailHeader({
             top: 0,
             left: 0,
             width: "100%",
-            backgroundColor: "rgba(0,0,0,.4)",
+            backgroundColor: "rgba(0,0,0,.7)",
             padding: 1,
             zIndex: 1000,
             display: "flex",
