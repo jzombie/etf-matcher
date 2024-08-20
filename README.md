@@ -1,6 +1,6 @@
 # ETF Matcher
 
-Source code for up and coming [ETFMatcher.com](https://etfmatcher.com).
+Source code for up and coming [ETFMatcher.com](https://etfmatcher.com), a platform designed to help users customize a virtual portfolio with potential fractional shares and find ETFs that closely match their investment goals.
 
 ## Requirements
 
@@ -35,6 +35,12 @@ make build-prod
 ```
 
 Built artifacts will be written to `{project_root}/dist`.
+
+## Platform Testing
+
+<a href="https://www.browserstack.com" target="_blank"><img src="src/assets/vendor/browserstack-logo-600x315.png" alt="BrowserStack" width="320"></a>
+
+Thanks to [BrowserStack Open-Source Program](https://www.browserstack.com/open-source) for providing us with a free account which lets us test on real devices and operating systems.
 
 ## License
 
