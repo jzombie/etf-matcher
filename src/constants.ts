@@ -1,3 +1,5 @@
+import type { StoreStateProps } from "@src/store";
+
 export const INVESTMENT_DISCLAIMER =
   "Disclaimer: The information provided on this platform is for informational purposes only and does not constitute financial, investment, or other professional advice. You should not rely on this information to make any investment decisions. Always consult with a qualified financial advisor before making any investment decisions. We do not guarantee the accuracy, completeness, or timeliness of any information provided and shall not be held liable for any errors or omissions, or for any loss or damage incurred as a result of using this information.";
 
@@ -67,4 +69,6 @@ export const MAX_RECENTLY_VIEWED_ITEMS = 10;
 
 export const DEFAULT_CURRENCY_CODE = "USD";
 
-// TODO: Define static properties that will determine which store states should get persisted and which should be synced over MQTT
+export const MQTT_SYNC_KEYS: Readonly<Set<keyof StoreStateProps>> = new Set([
+  "tickerBuckets",
+]);

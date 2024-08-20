@@ -6,6 +6,7 @@ import React, {
   useState,
 } from "react";
 
+import { MQTT_SYNC_KEYS } from "@src/constants";
 import store, { StateEmitterDefaultEvents, StoreStateProps } from "@src/store";
 import { useLocation } from "react-router-dom";
 
@@ -82,11 +83,22 @@ export default function SharedSessionManagerProvider({
         return;
       }
 
-      if (keys.includes("tickerBuckets")) {
-        const { tickerBuckets } = store.getState(["tickerBuckets"]);
+      if (keys.some((key) => MQTT_SYNC_KEYS.has(key))) {
+        const state = store.getState();
+
+        const syncData = {} as Partial<
+          Record<keyof StoreStateProps, StoreStateProps[keyof StoreStateProps]>
+        >;
+
+        // Create an object containing only the properties defined in MQTT_SYNC_KEYS
+        for (const key of MQTT_SYNC_KEYS) {
+          const value = state[key];
+
+          syncData[key] = value;
+        }
 
         for (const room of Object.values(connectedRooms)) {
-          room.send({ tickerBuckets } as object, {
+          room.send(syncData as object, {
             qos: 2,
             retain: true,
           });
@@ -99,13 +111,14 @@ export default function SharedSessionManagerProvider({
     const _handleReceiveUpdate = (
       receivedData: MQTTRoomEvents["message"][0],
     ) => {
-      const batchUpdate: Partial<StoreStateProps> = {};
+      const batchUpdate = {} as Partial<
+        Record<keyof StoreStateProps, StoreStateProps[keyof StoreStateProps]>
+      >;
 
       for (const key of Object.keys(
         receivedData.data,
       ) as (keyof StoreStateProps)[]) {
         if (key in store.state) {
-          // @ts-expect-error  Note: This type isn't correct according to TypeScript
           batchUpdate[key] = (receivedData.data as Partial<StoreStateProps>)[
             key as keyof StoreStateProps
           ];
@@ -118,7 +131,7 @@ export default function SharedSessionManagerProvider({
 
         // FIXME: If `setState` is ever made into an asynchronous method, this
         // should be awaited
-        store.setState(batchUpdate);
+        store.setState(batchUpdate as Partial<StoreStateProps>);
 
         // Reenable outbound sync
         isOutboundSyncPaused = false;
