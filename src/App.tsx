@@ -10,6 +10,7 @@ import "@fontsource/roboto/700.css";
 import "animate.css";
 import { RouterProvider } from "react-router-dom";
 
+import NotificationProvider from "@components/NotificationProvider";
 import { TickerContainerProvider } from "@components/TickerContainer";
 
 import useGAPageTracking from "@hooks/useGAPageTracking";
@@ -137,9 +138,11 @@ export default function App() {
     <MultiMQTTRoomProvider>
       <ThemeProvider theme={darkTheme}>
         <CssBaseline />
-        <TickerContainerProvider>
-          <RouterProvider router={router} />
-        </TickerContainerProvider>
+        <NotificationProvider>
+          <TickerContainerProvider>
+            <RouterProvider router={router} />
+          </TickerContainerProvider>
+        </NotificationProvider>
       </ThemeProvider>
     </MultiMQTTRoomProvider>
   );

@@ -5,6 +5,8 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import store, { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucket } from "@src/store";
 
+import { useNotification } from "@hooks/useNotification";
+
 export type BucketFormProps = {
   bucketType: TickerBucket["type"];
   existingBucket?: TickerBucket;
@@ -20,6 +22,8 @@ export default function BucketForm({
 }: BucketFormProps) {
   const [bucketName, setBucketName] = useState<string>("");
   const [bucketDescription, setBucketDescription] = useState<string>("");
+
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     if (existingBucket) {
@@ -46,8 +50,10 @@ export default function BucketForm({
           isUserConfigurable: true,
         });
       } catch (err) {
-        // TODO: Pipe to UI notification!  Don't use this!
-        window.alert("Could not create ticker bucket");
+        showNotification(
+          `Could not create new bucket. Ensure the name is unique.`,
+          "error",
+        );
 
         hasError = true;
       }
@@ -62,7 +68,14 @@ export default function BucketForm({
         onClose();
       }
     }
-  }, [bucketType, bucketName, bucketDescription, existingBucket, onClose]);
+  }, [
+    bucketType,
+    bucketName,
+    bucketDescription,
+    existingBucket,
+    onClose,
+    showNotification,
+  ]);
 
   const handleCancel = useCallback(() => {
     setBucketName("");
