@@ -556,7 +556,14 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       isUserConfigurable,
     };
 
-    // TODO: Prevent bucket from being added if of same name and type
+    const tickerBucketsOfType = this.getTickerBucketsOfType(type);
+    for (const existingBucket of tickerBucketsOfType) {
+      if (existingBucket.name === name) {
+        throw new Error(
+          "Cannot add non-unique name to a ticker bucket collection",
+        );
+      }
+    }
 
     this.setState((prev) => ({
       tickerBuckets: [nextBucket, ...prev.tickerBuckets],

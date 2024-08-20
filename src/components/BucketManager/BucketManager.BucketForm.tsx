@@ -29,6 +29,8 @@ export default function BucketForm({
   }, [existingBucket]);
 
   const handleSaveBucket = useCallback(() => {
+    let hasError = false;
+
     if (existingBucket) {
       store.updateTickerBucket(existingBucket, {
         ...existingBucket,
@@ -36,20 +38,29 @@ export default function BucketForm({
         description: bucketDescription,
       });
     } else {
-      store.createTickerBucket({
-        name: bucketName,
-        type: bucketType,
-        description: bucketDescription,
-        isUserConfigurable: true,
-      });
+      try {
+        store.createTickerBucket({
+          name: bucketName,
+          type: bucketType,
+          description: bucketDescription,
+          isUserConfigurable: true,
+        });
+      } catch (err) {
+        // TODO: Pipe to UI notification!  Don't use this!
+        window.alert("Could not create ticker bucket");
+
+        hasError = true;
+      }
     }
 
-    // Reset fields and close the form
-    setBucketName("");
-    setBucketDescription("");
+    if (!hasError) {
+      // Reset fields and close the form
+      setBucketName("");
+      setBucketDescription("");
 
-    if (typeof onClose === "function") {
-      onClose();
+      if (typeof onClose === "function") {
+        onClose();
+      }
     }
   }, [bucketType, bucketName, bucketDescription, existingBucket, onClose]);
 
