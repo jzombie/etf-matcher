@@ -44,7 +44,7 @@ describe("useStateEmitterReader", () => {
     });
 
     expect(consoleWarnSpy).toHaveBeenCalledWith(
-      "useStateEmitterReader should be called with `stateKeyOrKeys` to improve rendering performance.",
+      "`useStateEmitterReader` should be called with `stateKeyOrKeys` to improve rendering performance.",
     );
   });
 
@@ -73,7 +73,7 @@ describe("useStateEmitterReader", () => {
     });
 
     expect(consoleWarnSpy).toHaveBeenCalledWith(
-      "useStateEmitterReader should be called with `stateKeyOrKeys` to improve rendering performance.",
+      "`useStateEmitterReader` should be called with `stateKeyOrKeys` to improve rendering performance.",
     );
   });
 
