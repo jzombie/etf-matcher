@@ -244,11 +244,14 @@ export default function TickerDetailBucketManager({
           </Box>
 
           {isShowingBucketForm && selectedBucketType && (
-            <BucketForm
-              bucketType={selectedBucketType}
-              onCancel={handleCloseBucketDialog}
-              onClose={() => setIsShowingBucketForm(false)}
-            />
+            <>
+              <hr />
+              <BucketForm
+                bucketType={selectedBucketType}
+                onCancel={handleCloseBucketDialog}
+                onClose={() => setIsShowingBucketForm(false)}
+              />
+            </>
           )}
         </DialogContent>
         {!isShowingBucketForm && (
