@@ -13,10 +13,6 @@ export {
   tickerBucketDefaultNames,
   StateEmitterDefaultEvents,
   multiBucketInstancesAllowed,
-};
-export type {
-  TickerBucket,
-  TickerBucketTicker,
   TickerBucketNameError,
-  StoreStateProps,
 };
+export type { TickerBucket, TickerBucketTicker, StoreStateProps };

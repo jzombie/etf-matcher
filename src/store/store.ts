@@ -58,7 +58,7 @@ export type TickerBucket = {
 export class TickerBucketNameError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = "DuplicateTickerBucketNameError";
+    this.name = "TickerBucketNameError";
   }
 }
 

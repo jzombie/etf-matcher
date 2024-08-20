@@ -2,7 +2,11 @@ import React, { useCallback, useEffect, useState } from "react";
 
 import { Box, Button, TextField, Typography } from "@mui/material";
 
-import store, { tickerBucketDefaultNames } from "@src/store";
+import { MIN_TICKER_BUCKET_NAME_LENGTH } from "@src/constants";
+import store, {
+  TickerBucketNameError,
+  tickerBucketDefaultNames,
+} from "@src/store";
 import type { TickerBucket } from "@src/store";
 
 import { useNotification } from "@hooks/useNotification";
@@ -27,15 +31,24 @@ export default function BucketForm({
 
   const { showNotification } = useNotification();
 
+  // Validate name as it is typed
   useEffect(() => {
-    let errMsg = "";
+    // Skip annoying errors on first few characters;
+    // these will be fully validated on submit, anyway
+    if (bucketName.length < MIN_TICKER_BUCKET_NAME_LENGTH) {
+      setNameError("");
+    } else {
+      let errMsg = "";
 
-    try {
-      store.validateTickerBucketName(bucketName, bucketType);
-    } catch (err) {
-      errMsg = err?.toString() || "";
-    } finally {
-      setNameError(errMsg);
+      try {
+        store.validateTickerBucketName(bucketName, bucketType);
+      } catch (err) {
+        if (err instanceof TickerBucketNameError) {
+          errMsg = err.message;
+        }
+      } finally {
+        setNameError(errMsg);
+      }
     }
   }, [bucketName, bucketType]);
 
@@ -71,7 +84,7 @@ export default function BucketForm({
         onClose();
       }
     } catch (err) {
-      if (err instanceof Error) {
+      if (err instanceof TickerBucketNameError) {
         setNameError(err.message);
         showNotification(err.message, "error");
       }
