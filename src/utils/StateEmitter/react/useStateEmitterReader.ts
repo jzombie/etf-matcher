@@ -59,7 +59,7 @@ const useStateEmitterReader = <T extends object, K extends keyof T>(
   useMemo(() => {
     if (!stateKeys) {
       customLogger.warn(
-        "useStateEmitterReader should be called with `stateKeyOrKeys` to improve rendering performance.",
+        "`useStateEmitterReader` should be called with `stateKeyOrKeys` to improve rendering performance.",
       );
     }
   }, [stateKeys]);

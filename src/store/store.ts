@@ -1,5 +1,6 @@
 import {
   DEFAULT_TICKER_TAPE_TICKERS,
+  INDEXED_DB_PERSISTENCE_KEYS,
   MAX_RECENTLY_VIEWED_ITEMS,
 } from "@src/constants";
 import type {
@@ -62,6 +63,7 @@ export const tickerBucketDefaultNames: Readonly<
   recently_viewed: "Recently Viewed",
 };
 
+// The ticker bucket types which allow multiple instances
 export const multiBucketInstancesAllowed: Readonly<TickerBucket["type"][]> = [
   "watchlist",
   "portfolio",
@@ -96,8 +98,7 @@ export type StoreStateProps = {
 };
 
 export type IndexedDBPersistenceProps = {
-  tickerBuckets: TickerBucket[];
-  subscribedMQTTRoomNames: string[];
+  [K in (typeof INDEXED_DB_PERSISTENCE_KEYS)[number]]: StoreStateProps[K];
 };
 
 class _Store extends ReactStateEmitter<StoreStateProps> {
@@ -400,19 +401,13 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     const _handleStoreStateUpdate = (
       storeStateUpdateKeys: (keyof StoreStateProps)[],
     ) => {
-      if (storeStateUpdateKeys.includes("tickerBuckets")) {
-        const { tickerBuckets } = this.getState(["tickerBuckets"]);
-        this._indexedDBInterface.setItem("tickerBuckets", tickerBuckets);
-      }
+      const state = this.getState();
 
-      if (storeStateUpdateKeys.includes("subscribedMQTTRoomNames")) {
-        const { subscribedMQTTRoomNames } = this.getState([
-          "subscribedMQTTRoomNames",
-        ]);
-        this._indexedDBInterface.setItem(
-          "subscribedMQTTRoomNames",
-          subscribedMQTTRoomNames,
-        );
+      for (const persistenceKey of INDEXED_DB_PERSISTENCE_KEYS) {
+        if (storeStateUpdateKeys.includes(persistenceKey)) {
+          const valueToPersist = state[persistenceKey];
+          this._indexedDBInterface.setItem(persistenceKey, valueToPersist);
+        }
       }
     };
     this.on(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
