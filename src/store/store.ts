@@ -54,6 +54,15 @@ export type TickerBucket = {
   // TODO: Track bucket last update time
 };
 
+export class DuplicateTickerBucketNameError extends Error {
+  constructor(tickerBucketName: TickerBucket["name"]) {
+    super(
+      `Cannot add non-unique name "${tickerBucketName}" to a ticker bucket collection.`,
+    );
+    this.name = "DuplicateTickerBucketNameError";
+  }
+}
+
 export const tickerBucketDefaultNames: Readonly<
   Record<TickerBucket["type"], string>
 > = {
@@ -559,9 +568,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     const tickerBucketsOfType = this.getTickerBucketsOfType(type);
     for (const existingBucket of tickerBucketsOfType) {
       if (existingBucket.name === name) {
-        throw new Error(
-          "Cannot add non-unique name to a ticker bucket collection",
-        );
+        throw new DuplicateTickerBucketNameError(name);
       }
     }
 
