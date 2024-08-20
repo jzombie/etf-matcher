@@ -97,14 +97,20 @@ export default function TickerDetailBucketManager({
     setSelectedBucketType(null);
   }, []);
 
+  // Sort bucket types to ensure consistent order
   const userConfigurableBucketTypes = useMemo(
-    () => [
-      ...new Set(
-        tickerBuckets
-          .filter((bucket) => bucket.isUserConfigurable)
-          .map((bucket) => bucket.type),
-      ),
-    ],
+    () =>
+      [
+        ...new Set(
+          tickerBuckets
+            .filter((bucket) => bucket.isUserConfigurable)
+            .map((bucket) => bucket.type),
+        ),
+      ].sort((a, b) => {
+        const nameA = tickerBucketDefaultNames[a].toLowerCase();
+        const nameB = tickerBucketDefaultNames[b].toLowerCase();
+        return nameA.localeCompare(nameB);
+      }),
     [tickerBuckets],
   );
 
