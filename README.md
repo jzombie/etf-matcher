@@ -38,9 +38,7 @@ Built artifacts will be written to `{project_root}/dist`.
 
 ## Platform Testing
 
-<div style="background-color: #fff">
 <a href="https://www.browserstack.com" target="_blank"><img src="src/assets/vendor/browserstack-logo-600x315.png" alt="BrowserStack" width="320"></a>
-</div>
 
 Thanks to [BrowserStack Open-Source Program](https://www.browserstack.com/open-source) for providing us with a free account which lets us test on real devices and operating systems.
 
