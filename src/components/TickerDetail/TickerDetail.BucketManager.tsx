@@ -238,6 +238,15 @@ export default function TickerDetailBucketManager({
             />
           )}
         </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleCloseBucketDialog}
+          >
+            Cancel
+          </Button>
+        </DialogActions>
       </DialogModal>
     </Box>
   );
