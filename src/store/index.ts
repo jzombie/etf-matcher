@@ -2,6 +2,7 @@ import store, {
   StateEmitterDefaultEvents,
   StoreStateProps,
   TickerBucket,
+  TickerBucketNameError,
   TickerBucketTicker,
   multiBucketInstancesAllowed,
   tickerBucketDefaultNames,
@@ -12,5 +13,6 @@ export {
   tickerBucketDefaultNames,
   StateEmitterDefaultEvents,
   multiBucketInstancesAllowed,
+  TickerBucketNameError,
 };
 export type { TickerBucket, TickerBucketTicker, StoreStateProps };

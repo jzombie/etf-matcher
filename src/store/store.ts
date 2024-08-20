@@ -2,6 +2,7 @@ import {
   DEFAULT_TICKER_TAPE_TICKERS,
   INDEXED_DB_PERSISTENCE_KEYS,
   MAX_RECENTLY_VIEWED_ITEMS,
+  MIN_TICKER_BUCKET_NAME_LENGTH,
 } from "@src/constants";
 import type {
   RustServiceCacheDetail,
@@ -53,6 +54,13 @@ export type TickerBucket = {
   isUserConfigurable: boolean;
   // TODO: Track bucket last update time
 };
+
+export class TickerBucketNameError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "TickerBucketNameError";
+  }
+}
 
 export const tickerBucketDefaultNames: Readonly<
   Record<TickerBucket["type"], string>
@@ -542,6 +550,36 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return callRustService("get_symbol_and_exchange_by_ticker_id", [tickerId]);
   }
 
+  validateTickerBucketName(
+    name: string,
+    type: TickerBucket["type"],
+    prevBucketName?: string,
+  ): void {
+    if (name.trim() === "") {
+      throw new TickerBucketNameError("Name is required.");
+    }
+
+    if (name.trim().length < MIN_TICKER_BUCKET_NAME_LENGTH) {
+      throw new TickerBucketNameError(
+        `Name must be at least ${MIN_TICKER_BUCKET_NAME_LENGTH} characters long.`,
+      );
+    }
+
+    // If the name isn't changing during an update, skip duplicate check
+    if (prevBucketName && prevBucketName === name) {
+      return;
+    }
+
+    const tickerBucketsOfType = this.getTickerBucketsOfType(type);
+    for (const existingBucket of tickerBucketsOfType) {
+      if (existingBucket.name === name) {
+        throw new TickerBucketNameError(
+          `Cannot add non-unique name "${name}" to a ticker bucket collection.`,
+        );
+      }
+    }
+  }
+
   createTickerBucket({
     name,
     type,
@@ -556,7 +594,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       isUserConfigurable,
     };
 
-    // TODO: Prevent bucket from being added if of same name and type
+    this.validateTickerBucketName(name, type);
 
     this.setState((prev) => ({
       tickerBuckets: [nextBucket, ...prev.tickerBuckets],
@@ -564,6 +602,13 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   updateTickerBucket(prevBucket: TickerBucket, updatedBucket: TickerBucket) {
+    // Validate the new name (but allow the same name to pass without throwing)
+    this.validateTickerBucketName(
+      updatedBucket.name,
+      updatedBucket.type,
+      prevBucket.name,
+    );
+
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.map((bucket) =>
         bucket.name === prevBucket.name && bucket.type === prevBucket.type

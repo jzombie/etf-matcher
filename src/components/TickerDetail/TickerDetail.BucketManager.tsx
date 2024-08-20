@@ -1,7 +1,6 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useId, useMemo, useState } from "react";
 
 import AddIcon from "@mui/icons-material/Add";
-import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ListAltIcon from "@mui/icons-material/ListAlt";
@@ -25,6 +24,7 @@ import type { TickerBucket } from "@src/store";
 import type { RustServiceTickerDetail } from "@src/types";
 
 import BucketForm from "@components/BucketManager/BucketManager.BucketForm";
+import DialogModal from "@components/DialogModal";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
@@ -44,6 +44,14 @@ export default function TickerDetailBucketManager({
   const [selectedBucketType, setSelectedBucketType] = useState<
     TickerBucket["type"] | null
   >(null);
+  const [isShowingBucketForm, setIsShowingBucketForm] = useState(false);
+
+  // Prevent bucket form from re-appearing by default when re-opening modal
+  useEffect(() => {
+    if (!isBucketDialogOpen) {
+      setIsShowingBucketForm(false);
+    }
+  }, [isBucketDialogOpen]);
 
   const handleToggleBucket = useCallback(
     (bucket: TickerBucket, isManagementPane = false) => {
@@ -89,21 +97,30 @@ export default function TickerDetailBucketManager({
     setSelectedBucketType(null);
   }, []);
 
-  const bucketTypes = useMemo(
-    () => [
-      ...new Set(
-        tickerBuckets
-          .filter((bucket) => bucket.isUserConfigurable)
-          .map((bucket) => bucket.type),
-      ),
-    ],
+  // Sort bucket types to ensure consistent order
+  const userConfigurableBucketTypes = useMemo(
+    () =>
+      [
+        ...new Set(
+          tickerBuckets
+            .filter((bucket) => bucket.isUserConfigurable)
+            .map((bucket) => bucket.type),
+        ),
+      ].sort((a, b) => {
+        const nameA = tickerBucketDefaultNames[a].toLowerCase();
+        const nameB = tickerBucketDefaultNames[b].toLowerCase();
+        return nameA.localeCompare(nameB);
+      }),
     [tickerBuckets],
   );
+
+  const alertDialogTitleId = useId();
+  const alertDialogDescriptionId = useId();
 
   return (
     <Box sx={{ padding: 2 }}>
       <Grid container spacing={2}>
-        {bucketTypes.map((bucketType) => {
+        {userConfigurableBucketTypes.map((bucketType) => {
           const bucket = tickerBuckets.find(
             (bucket) => bucket.type === bucketType && bucket.isUserConfigurable,
           );
@@ -158,10 +175,15 @@ export default function TickerDetailBucketManager({
         })}
       </Grid>
 
-      <Dialog open={isDeleteDialogOpen} onClose={handleCloseDeleteDialog}>
-        <DialogTitle>Confirm Remove</DialogTitle>
+      <Dialog
+        open={isDeleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby={alertDialogTitleId}
+        aria-describedby={alertDialogDescriptionId}
+      >
+        <DialogTitle id={alertDialogTitleId}>Confirm Remove</DialogTitle>
         <DialogContent>
-          <DialogContentText>
+          <DialogContentText id={alertDialogDescriptionId}>
             Are you sure you want to remove &quot;{tickerDetail.symbol}&quot;
             from &quot;{selectedBucket?.name}&quot;?
           </DialogContentText>
@@ -176,34 +198,14 @@ export default function TickerDetailBucketManager({
         </DialogActions>
       </Dialog>
 
-      <Dialog open={isBucketDialogOpen} onClose={handleCloseBucketDialog}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "16px 0px 24px 24px", // Roughly match `DialogTitle` padding, so that `Close` button can run inline
-          }}
-        >
-          <DialogTitle sx={{ padding: 0 }}>
-            <ListAltIcon sx={{ verticalAlign: "middle", marginRight: 1 }} />{" "}
-            Manage &quot;{tickerDetail.symbol}&quot; in{" "}
-            {selectedBucketType
-              ? `${tickerBucketDefaultNames[selectedBucketType]}s`
-              : "Buckets"}{" "}
-          </DialogTitle>
-          <DialogActions>
-            <Button
-              startIcon={<CloseIcon />}
-              onClick={handleCloseBucketDialog}
-              color="primary"
-              variant="contained"
-              sx={{ fontSize: "0.875rem" }}
-            >
-              Close
-            </Button>
-          </DialogActions>
-        </Box>
+      <DialogModal open={isBucketDialogOpen} onClose={handleCloseBucketDialog}>
+        <DialogTitle>
+          <ListAltIcon sx={{ verticalAlign: "middle", marginRight: 1 }} />{" "}
+          Manage &quot;{tickerDetail.symbol}&quot; in{" "}
+          {selectedBucketType
+            ? `${tickerBucketDefaultNames[selectedBucketType]}s`
+            : "Buckets"}{" "}
+        </DialogTitle>
         <DialogContent>
           <Typography variant="h6">
             Existing{" "}
@@ -251,14 +253,34 @@ export default function TickerDetailBucketManager({
               })}
           </Box>
 
-          {selectedBucketType && (
-            <BucketForm
-              bucketType={selectedBucketType}
-              onCancel={handleCloseBucketDialog}
-            />
+          {isShowingBucketForm && selectedBucketType && (
+            <>
+              <hr />
+              <BucketForm
+                bucketType={selectedBucketType}
+                onCancel={handleCloseBucketDialog}
+                onClose={() => setIsShowingBucketForm(false)}
+              />
+            </>
           )}
         </DialogContent>
-      </Dialog>
+        {!isShowingBucketForm && (
+          <DialogActions>
+            {selectedBucketType && (
+              <Button
+                onClick={() => setIsShowingBucketForm(true)}
+                disabled={isShowingBucketForm}
+              >
+                Create new {tickerBucketDefaultNames[selectedBucketType]}
+              </Button>
+            )}
+
+            <Button variant="contained" onClick={handleCloseBucketDialog}>
+              Close
+            </Button>
+          </DialogActions>
+        )}
+      </DialogModal>
     </Box>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useId, useMemo, useState } from "react";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -66,6 +66,9 @@ export default function BucketList({ bucketType }: BucketListProps) {
     }
   };
 
+  const alertDialogTitleId = useId();
+  const alertDialogDescriptionId = useId();
+
   return (
     <>
       {localTickerBucket?.map((tickerBucket, idx) => (
@@ -129,12 +132,12 @@ export default function BucketList({ bucketType }: BucketListProps) {
       <Dialog
         open={isDeleteDialogOpen}
         onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
+        aria-labelledby={alertDialogTitleId}
+        aria-describedby={alertDialogDescriptionId}
       >
-        <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
+        <DialogTitle id={alertDialogTitleId}>{"Confirm Delete"}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
+          <DialogContentText id={alertDialogDescriptionId}>
             Are you sure you want to delete the bucket &quot;
             {selectedBucket?.name}&quot;? This action cannot be undone.
           </DialogContentText>
