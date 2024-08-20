@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Box, Button, TextField, Typography } from "@mui/material";
 
@@ -24,6 +24,11 @@ export default function BucketForm({
   onClose,
   onCancel,
 }: BucketFormProps) {
+  const initialBucketName = useMemo(
+    () => existingBucket?.name,
+    [existingBucket],
+  );
+
   const [bucketName, setBucketName] = useState<string>("");
   const [bucketDescription, setBucketDescription] = useState<string>("");
 
@@ -41,7 +46,11 @@ export default function BucketForm({
       let errMsg = "";
 
       try {
-        store.validateTickerBucketName(bucketName, bucketType);
+        store.validateTickerBucketName(
+          bucketName,
+          bucketType,
+          initialBucketName,
+        );
       } catch (err) {
         if (err instanceof TickerBucketNameError) {
           errMsg = err.message;
@@ -50,7 +59,7 @@ export default function BucketForm({
         setNameError(errMsg);
       }
     }
-  }, [bucketName, bucketType]);
+  }, [bucketName, bucketType, initialBucketName]);
 
   useEffect(() => {
     if (existingBucket) {
