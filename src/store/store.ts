@@ -54,11 +54,9 @@ export type TickerBucket = {
   // TODO: Track bucket last update time
 };
 
-export class DuplicateTickerBucketNameError extends Error {
-  constructor(tickerBucketName: TickerBucket["name"]) {
-    super(
-      `Cannot add non-unique name "${tickerBucketName}" to a ticker bucket collection.`,
-    );
+export class TickerBucketNameError extends Error {
+  constructor(message: string) {
+    super(message);
     this.name = "DuplicateTickerBucketNameError";
   }
 }
@@ -559,11 +557,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     const MIN_BUCKET_NAME_LENGTH = 3;
 
     if (name.trim() === "") {
-      throw new Error("Name is required.");
+      throw new TickerBucketNameError("Name is required.");
     }
 
     if (name.trim().length < MIN_BUCKET_NAME_LENGTH) {
-      throw new Error(
+      throw new TickerBucketNameError(
         `Name must be at least ${MIN_BUCKET_NAME_LENGTH} characters long.`,
       );
     }
@@ -576,7 +574,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     const tickerBucketsOfType = this.getTickerBucketsOfType(type);
     for (const existingBucket of tickerBucketsOfType) {
       if (existingBucket.name === name) {
-        throw new DuplicateTickerBucketNameError(name);
+        throw new TickerBucketNameError(
+          `Cannot add non-unique name "${name}" to a ticker bucket collection.`,
+        );
       }
     }
   }
