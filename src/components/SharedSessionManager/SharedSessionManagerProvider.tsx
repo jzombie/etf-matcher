@@ -83,7 +83,7 @@ export default function SharedSessionManagerProvider({
         return;
       }
 
-      if (keys.some((key) => MQTT_SYNC_KEYS.has(key))) {
+      if (keys.some((key) => MQTT_SYNC_KEYS.includes(key))) {
         const state = store.getState();
 
         const syncData = {} as Partial<
@@ -93,7 +93,6 @@ export default function SharedSessionManagerProvider({
         // Create an object containing only the properties defined in MQTT_SYNC_KEYS
         for (const key of MQTT_SYNC_KEYS) {
           const value = state[key];
-
           syncData[key] = value;
         }
 
