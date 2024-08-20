@@ -163,7 +163,7 @@ export function useSharedSessionManagerContext() {
   const context = useContext(SharedSessionManagerContext);
   if (context === undefined) {
     throw new Error(
-      "useSharedSessionManager must be used within a SharedSessionManagerProvider",
+      "`useSharedSessionManager` must be used within a `SharedSessionManagerProvider`",
     );
   }
   return context;
