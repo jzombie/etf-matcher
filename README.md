@@ -1,6 +1,6 @@
 # ETF Matcher
 
-Source code for up and coming [ETFMatcher.com](https://etfmatcher.com).
+Source code for up and coming [ETFMatcher.com](https://etfmatcher.com), a platform designed to help users customize a virtual portfolio with potential fractional shares and find ETFs that closely match their investment goals.
 
 ## Requirements
 
