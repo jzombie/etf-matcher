@@ -7,6 +7,8 @@ import type { TickerBucket } from "@src/store";
 
 import { useNotification } from "@hooks/useNotification";
 
+const MIN_BUCKET_NAME_LENGTH: number = 3;
+
 export type BucketFormProps = {
   bucketType: TickerBucket["type"];
   existingBucket?: TickerBucket;
@@ -44,8 +46,10 @@ export default function BucketForm({
     if (bucketName.trim() === "") {
       setNameError("Name is required.");
       hasError = true;
-    } else if (bucketName.trim().length < 3) {
-      setNameError("Name must be at least 3 characters long.");
+    } else if (bucketName.trim().length < MIN_BUCKET_NAME_LENGTH) {
+      setNameError(
+        `Name must be at least ${MIN_BUCKET_NAME_LENGTH} character${MIN_BUCKET_NAME_LENGTH !== 1 ? "s" : ""} long.`,
+      );
       hasError = true;
     }
 
@@ -106,7 +110,9 @@ export default function BucketForm({
     }
   }, [onClose, onCancel]);
 
-  const isFormValid = bucketName.trim() !== "" && bucketName.trim().length >= 3;
+  const isFormValid =
+    bucketName.trim() !== "" &&
+    bucketName.trim().length >= MIN_BUCKET_NAME_LENGTH;
 
   return (
     <Box sx={{ mt: 2 }}>
@@ -132,15 +138,16 @@ export default function BucketForm({
           {bucketName.trim() !== "" && (
             <Alert
               severity={
-                bucketName.trim().length >= 3 && !nameError
+                bucketName.trim().length >= MIN_BUCKET_NAME_LENGTH && !nameError
                   ? "success"
                   : "error"
               }
               sx={{ mt: 2 }}
             >
-              {bucketName.trim().length >= 3 && !nameError
+              {bucketName.trim().length >= MIN_BUCKET_NAME_LENGTH && !nameError
                 ? "Name is valid."
-                : nameError || "Name must be at least 3 characters long."}
+                : nameError ||
+                  `Name must be at least ${MIN_BUCKET_NAME_LENGTH} character${MIN_BUCKET_NAME_LENGTH !== 1 ? "s" : ""} long.`}
             </Alert>
           )}
           <TextField
