@@ -46,6 +46,7 @@ export default function TickerDetailBucketManager({
   >(null);
   const [isShowingBucketForm, setIsShowingBucketForm] = useState(false);
 
+  // Prevent bucket form from re-appearing by default when re-opening modal
   useEffect(() => {
     if (!isBucketDialogOpen) {
       setIsShowingBucketForm(false);
