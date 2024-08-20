@@ -9,7 +9,7 @@ import customLogger from "@utils/customLogger";
 export type DialogModalProps = {
   open: boolean;
   onClose?: () => void;
-  children?: React.ReactNode;
+  children: React.ReactNode;
 };
 
 export default function DialogModal({
