@@ -1,13 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 
-import { Alert, Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 
 import store, { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucket } from "@src/store";
 
 import { useNotification } from "@hooks/useNotification";
-
-const MIN_BUCKET_NAME_LENGTH: number = 3;
 
 export type BucketFormProps = {
   bucketType: TickerBucket["type"];
@@ -30,6 +28,18 @@ export default function BucketForm({
   const { showNotification } = useNotification();
 
   useEffect(() => {
+    let errMsg = "";
+
+    try {
+      store.validateTickerBucketName(bucketName, bucketType);
+    } catch (err) {
+      errMsg = err?.toString() || "";
+    } finally {
+      setNameError(errMsg);
+    }
+  }, [bucketName, bucketType]);
+
+  useEffect(() => {
     if (existingBucket) {
       setBucketName(existingBucket.name);
       setBucketDescription(existingBucket.description);
@@ -37,23 +47,7 @@ export default function BucketForm({
   }, [existingBucket]);
 
   const handleSaveBucket = useCallback(() => {
-    let hasError = false;
-
-    // Reset errors
-    setNameError(null);
-
-    // Validate the form fields
-    if (bucketName.trim() === "") {
-      setNameError("Name is required.");
-      hasError = true;
-    } else if (bucketName.trim().length < MIN_BUCKET_NAME_LENGTH) {
-      setNameError(
-        `Name must be at least ${MIN_BUCKET_NAME_LENGTH} character${MIN_BUCKET_NAME_LENGTH !== 1 ? "s" : ""} long.`,
-      );
-      hasError = true;
-    }
-
-    if (!hasError) {
+    try {
       if (existingBucket) {
         store.updateTickerBucket(existingBucket, {
           ...existingBucket,
@@ -61,31 +55,25 @@ export default function BucketForm({
           description: bucketDescription,
         });
       } else {
-        try {
-          store.createTickerBucket({
-            name: bucketName,
-            type: bucketType,
-            description: bucketDescription,
-            isUserConfigurable: true,
-          });
-        } catch (err) {
-          showNotification(
-            `Could not create new bucket. Ensure the name is unique.`,
-            "error",
-          );
-
-          hasError = true;
-        }
+        store.createTickerBucket({
+          name: bucketName,
+          type: bucketType,
+          description: bucketDescription,
+          isUserConfigurable: true,
+        });
       }
-    }
 
-    if (!hasError) {
-      // Reset fields and close the form
+      // Reset fields and close the form if successful
       setBucketName("");
       setBucketDescription("");
 
       if (typeof onClose === "function") {
         onClose();
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        setNameError(err.message);
+        showNotification(err.message, "error");
       }
     }
   }, [
@@ -110,9 +98,7 @@ export default function BucketForm({
     }
   }, [onClose, onCancel]);
 
-  const isFormValid =
-    bucketName.trim() !== "" &&
-    bucketName.trim().length >= MIN_BUCKET_NAME_LENGTH;
+  const isFormValid = !nameError && bucketName.trim() !== "";
 
   return (
     <Box sx={{ mt: 2 }}>
@@ -130,26 +116,15 @@ export default function BucketForm({
           <TextField
             label={`${tickerBucketDefaultNames[bucketType]} Name`}
             value={bucketName}
-            onChange={(e) => setBucketName(e.target.value)}
+            onChange={(e) => {
+              setBucketName(e.target.value);
+            }}
             variant="outlined"
             fullWidth
             required
+            error={!!nameError}
+            helperText={nameError}
           />
-          {bucketName.trim() !== "" && (
-            <Alert
-              severity={
-                bucketName.trim().length >= MIN_BUCKET_NAME_LENGTH && !nameError
-                  ? "success"
-                  : "error"
-              }
-              sx={{ mt: 2 }}
-            >
-              {bucketName.trim().length >= MIN_BUCKET_NAME_LENGTH && !nameError
-                ? "Name is valid."
-                : nameError ||
-                  `Name must be at least ${MIN_BUCKET_NAME_LENGTH} character${MIN_BUCKET_NAME_LENGTH !== 1 ? "s" : ""} long.`}
-            </Alert>
-          )}
           <TextField
             label={`${tickerBucketDefaultNames[bucketType]} Description`}
             value={bucketDescription}

@@ -551,6 +551,36 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return callRustService("get_symbol_and_exchange_by_ticker_id", [tickerId]);
   }
 
+  validateTickerBucketName(
+    name: string,
+    type: TickerBucket["type"],
+    prevBucketName?: string,
+  ): void {
+    const MIN_BUCKET_NAME_LENGTH = 3;
+
+    if (name.trim() === "") {
+      throw new Error("Name is required.");
+    }
+
+    if (name.trim().length < MIN_BUCKET_NAME_LENGTH) {
+      throw new Error(
+        `Name must be at least ${MIN_BUCKET_NAME_LENGTH} characters long.`,
+      );
+    }
+
+    // If the name isn't changing during an update, skip duplicate check
+    if (prevBucketName && prevBucketName === name) {
+      return;
+    }
+
+    const tickerBucketsOfType = this.getTickerBucketsOfType(type);
+    for (const existingBucket of tickerBucketsOfType) {
+      if (existingBucket.name === name) {
+        throw new DuplicateTickerBucketNameError(name);
+      }
+    }
+  }
+
   createTickerBucket({
     name,
     type,
@@ -565,12 +595,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       isUserConfigurable,
     };
 
-    const tickerBucketsOfType = this.getTickerBucketsOfType(type);
-    for (const existingBucket of tickerBucketsOfType) {
-      if (existingBucket.name === name) {
-        throw new DuplicateTickerBucketNameError(name);
-      }
-    }
+    this.validateTickerBucketName(name, type);
 
     this.setState((prev) => ({
       tickerBuckets: [nextBucket, ...prev.tickerBuckets],
@@ -578,6 +603,13 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   updateTickerBucket(prevBucket: TickerBucket, updatedBucket: TickerBucket) {
+    // Validate the new name (but allow the same name to pass without throwing)
+    this.validateTickerBucketName(
+      updatedBucket.name,
+      updatedBucket.type,
+      prevBucket.name,
+    );
+
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.map((bucket) =>
         bucket.name === prevBucket.name && bucket.type === prevBucket.type
