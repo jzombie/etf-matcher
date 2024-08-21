@@ -32,9 +32,27 @@ export type SearchModalButtonProps = {
 export default function SearchModalButton({
   highlight,
 }: SearchModalButtonProps) {
+  const searchModalButtonRef = useRef<HTMLButtonElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
   // This state is managed by the store so that it can be opened elsewhere
-  const { isSearchModalOpen: isModalOpen } =
-    useStoreStateReader("isSearchModalOpen");
+  const { isSearchModalOpen } = useStoreStateReader("isSearchModalOpen");
+
+  // Handle auto-blur/focus
+  useEffect(() => {
+    const searchModalButton = searchModalButtonRef.current;
+
+    if (isSearchModalOpen && searchModalButton) {
+      // This prevents an issue where hitting `Enter` on the form input would
+      // re-open the modal
+      searchModalButton.blur();
+
+      // Auto-focus input
+      setTimeout(() => {
+        inputRef.current?.focus();
+      });
+    }
+  }, [isSearchModalOpen]);
 
   const {
     searchQuery,
@@ -51,9 +69,7 @@ export default function SearchModalButton({
     initialPageSize: 10,
   });
 
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleShowModal = useCallback(() => {
+  const handleOpenModal = useCallback(() => {
     store.setState({ isSearchModalOpen: true });
   }, []);
 
@@ -68,11 +84,13 @@ export default function SearchModalButton({
 
   const handleOk = useCallback(
     (_?: SyntheticEvent, exactSearchValue?: string) => {
-      store.setState({ isSearchModalOpen: false });
+      // Close the modal
+      handleCloseModal();
 
       const locSearchQuery = exactSearchValue || searchQuery;
 
       if (searchQuery.length) {
+        // Navigate to the search results
         setURLState(
           {
             query: locSearchQuery,
@@ -83,7 +101,7 @@ export default function SearchModalButton({
         );
       }
     },
-    [searchQuery, setURLState, toBooleanParam],
+    [searchQuery, setURLState, toBooleanParam, handleCloseModal],
   );
 
   const handleInputChange = useCallback(
@@ -132,25 +150,22 @@ export default function SearchModalButton({
     [handleOk, searchResults, selectedIndex, setSelectedIndex],
   );
 
-  useEffect(() => {
-    if (isModalOpen) {
-      setTimeout(() => {
-        inputRef.current?.focus();
-      });
-    }
-  }, [isModalOpen]);
-
   return (
     <>
       <Button
+        ref={searchModalButtonRef}
         variant="contained"
         startIcon={<SearchIcon />}
-        onClick={handleShowModal}
+        onClick={handleOpenModal}
         color={highlight ? "primary" : "inherit"}
       >
         Search
       </Button>
-      <DialogModal open={isModalOpen} onClose={handleCloseModal} staticHeight>
+      <DialogModal
+        open={isSearchModalOpen}
+        onClose={handleCloseModal}
+        staticHeight
+      >
         <DialogTitle>
           <TextField
             fullWidth
