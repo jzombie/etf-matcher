@@ -18,6 +18,10 @@ import useURLState from "@hooks/useURLState";
 
 import customLogger from "@utils/customLogger";
 
+export type TickerVectorWithDistance = RustServiceTickerDetail & {
+  distance: number;
+};
+
 export type TickerVectorTableProps = {
   tickerId: number;
 };
@@ -26,7 +30,7 @@ export default function TickerVectorTable({
   tickerId,
 }: TickerVectorTableProps) {
   const [tickerDetails, setTickerDetails] = useState<
-    RustServiceTickerDetail[] | null
+    TickerVectorWithDistance[] | null
   >(null);
 
   const { setURLState, toBooleanParam } = useURLState();
@@ -51,7 +55,10 @@ export default function TickerVectorTable({
         .fetchClosestTickers(tickerId)
         .then(async (closestTickers) => {
           const detailPromises = closestTickers.map((item) =>
-            store.fetchTickerDetail(item.ticker_id),
+            store.fetchTickerDetail(item.ticker_id).then((detail) => ({
+              ...detail,
+              distance: item.distance,
+            })),
           );
           const settledDetails = await Promise.allSettled(detailPromises);
 
@@ -59,7 +66,7 @@ export default function TickerVectorTable({
             .filter((result) => result.status === "fulfilled")
             .map(
               (result) =>
-                (result as PromiseFulfilledResult<RustServiceTickerDetail>)
+                (result as PromiseFulfilledResult<TickerVectorWithDistance>)
                   .value,
             );
 
@@ -67,7 +74,6 @@ export default function TickerVectorTable({
           customLogger.log({ fulfilledDetails, closestTickers });
         })
         .catch((error) => {
-          // TODO: Route errors to the UI
           customLogger.error("Error fetching closest tickers:", error);
         });
     }
@@ -91,6 +97,9 @@ export default function TickerVectorTable({
             </TableCell>
             <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
               Held in ETF
+            </TableCell>
+            <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+              Euclidian Distance
             </TableCell>
           </TableRow>
         </TableHead>
@@ -116,11 +125,14 @@ export default function TickerVectorTable({
                 <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
                   {detail.is_held_in_etf ? "Yes" : "No"}
                 </TableCell>
+                <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                  {detail.distance.toFixed(2)}{" "}
+                </TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={6}>
+              <TableCell colSpan={7}>
                 <Typography>No details available</Typography>
               </TableCell>
             </TableRow>
