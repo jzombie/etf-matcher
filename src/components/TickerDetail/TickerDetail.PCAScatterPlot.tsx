@@ -191,6 +191,7 @@ const renderCustomPoint = (props: {
   cy?: number;
   payload?: ChartVectorDistance;
 }): JSX.Element => {
+  // FIXME: Fighting with these types
   // eslint-disable-next-line react/prop-types
   const { cx = 0, cy = 0, payload } = props;
   return (
