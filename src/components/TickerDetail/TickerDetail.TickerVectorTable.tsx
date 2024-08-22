@@ -9,6 +9,7 @@ import {
   TableHead,
   TableRow,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 
 import store from "@src/store";
@@ -26,6 +27,8 @@ export default function TickerVectorTable({
   const [tickerDetails, setTickerDetails] = useState<
     RustServiceTickerDetail[] | null
   >(null);
+
+  const isMobile = useMediaQuery("(max-width:600px)");
 
   useEffect(() => {
     if (tickerId) {
@@ -59,13 +62,18 @@ export default function TickerVectorTable({
           <TableRow>
             <TableCell>Symbol</TableCell>
             <TableCell>Company Name</TableCell>
-            <TableCell>Exchange</TableCell>
-            <TableCell>Country</TableCell>
-            <TableCell>Industry</TableCell>
-            <TableCell>Sector</TableCell>
-            <TableCell>Score Avg DCA</TableCell>
-            <TableCell>ETF</TableCell>
-            <TableCell>Held in ETF</TableCell>
+            <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+              Industry
+            </TableCell>
+            <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+              Sector
+            </TableCell>
+            <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+              ETF
+            </TableCell>
+            <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+              Held in ETF
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -74,18 +82,23 @@ export default function TickerVectorTable({
               <TableRow key={detail.ticker_id}>
                 <TableCell>{detail.symbol}</TableCell>
                 <TableCell>{detail.company_name}</TableCell>
-                <TableCell>{detail.exchange_short_name || "N/A"}</TableCell>
-                <TableCell>{detail.country_code}</TableCell>
-                <TableCell>{detail.industry_name || "N/A"}</TableCell>
-                <TableCell>{detail.sector_name || "N/A"}</TableCell>
-                <TableCell>{detail.score_avg_dca}</TableCell>
-                <TableCell>{detail.is_etf ? "Yes" : "No"}</TableCell>
-                <TableCell>{detail.is_held_in_etf ? "Yes" : "No"}</TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                  {detail.industry_name || "N/A"}
+                </TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                  {detail.sector_name || "N/A"}
+                </TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                  {detail.is_etf ? "Yes" : "No"}
+                </TableCell>
+                <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                  {detail.is_held_in_etf ? "Yes" : "No"}
+                </TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={9}>
+              <TableCell colSpan={6}>
                 <Typography>No details available</Typography>
               </TableCell>
             </TableRow>
