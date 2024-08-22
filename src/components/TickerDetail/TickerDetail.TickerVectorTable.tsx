@@ -28,6 +28,7 @@ export type TickerVectorTableProps = {
   tickerId: number;
 };
 
+// TODO: Add ability to switch between `Euclidean Distance` and `Cosine Similarity`
 export default function TickerVectorTable({
   tickerId,
 }: TickerVectorTableProps) {
