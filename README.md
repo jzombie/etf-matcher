@@ -44,7 +44,7 @@ Thanks to [BrowserStack Open-Source Program](https://www.browserstack.com/open-s
 
 ## Code Reviews
 
-Code reviews powered by [https://coderabbit.ai/](https://coderabbit.ai/).
+Code reviews powered by [https://coderabbit.ai/](https://coderabbit.ai/) (as of August 22, 2024).
 
 <a href="https://coderabbit.ai" target="_blank"><img src="src/assets/vendor/coderabbit-logo.svg" alt="CodeRabbit" width="320"></a>
 
