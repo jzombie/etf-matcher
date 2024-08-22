@@ -826,7 +826,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       "find_closest_tickers",
       [tickerId],
     ).then((data) => {
-      customLogger.debug({ data });
+      customLogger.debug({ closestTickers: data });
 
       // TODO: Remove; also include these with the Rust response in the API call
       const detailPromises = data.map((item) =>

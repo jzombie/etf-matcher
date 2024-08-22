@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import AutoScaler from "@layoutKit/AutoScaler";
 import store from "@src/store";
@@ -16,6 +16,12 @@ import { NameType } from "recharts/types/component/DefaultTooltipContent";
 import customLogger from "@utils/customLogger";
 
 const RADIAL_STROKE_COLOR = "#999";
+const RADIAL_FILL_COLOR = "none";
+const YELLOW_DOT_COLOR = "yellow";
+const YELLOW_DOT_RADIUS = 5;
+
+// Prevent coordinates from overflowing radial chart
+const MAX_VALUE_MULT_BUFFER = 1.1;
 
 export type PCAScatterPlotProps = {
   tickerDetail: RustServiceTickerDetail;
@@ -55,61 +61,44 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
     );
   }, []);
 
+  // Calculate domain for the axes based on the chart data to ensure (0,0) is centered
+  const maxValue = useMemo(
+    () =>
+      chartData
+        ? Math.max(
+            ...chartData.map(({ pc1, pc2 }) =>
+              Math.max(Math.abs(pc1), Math.abs(pc2)),
+            ),
+          ) * MAX_VALUE_MULT_BUFFER
+        : 0,
+    [chartData],
+  );
+
   if (!chartData) {
     return null;
   }
 
-  // Custom tooltip content
-  // https://github.com/recharts/recharts/issues/2796
-  const CustomTooltip: React.FC<TooltipProps<number, NameType>> = ({
-    active,
-    payload,
-  }) => {
-    if (active && payload && payload.length) {
-      const { ticker_id, pc1, pc2 } = payload[0].payload;
-      return (
-        <div className="custom-tooltip">
-          <p>{`Ticker ID: ${ticker_id}`}</p>
-          <p>{`PC1: ${pc1}`}</p>
-          <p>{`PC2: ${pc2}`}</p>
-        </div>
-      );
-    }
-    return null;
-  };
-
-  // Custom scatter point content
-  const renderCustomPoint = (props: {
-    cx?: number;
-    cy?: number;
-    payload?: ChartVectorDistance;
-  }): JSX.Element => {
-    // FIXME: Fighting with these types
-    // eslint-disable-next-line react/prop-types
-    const { cx = 0, cy = 0, payload } = props;
-    return (
-      <g>
-        <circle cx={cx} cy={cy} r={6} fill="#8884d8" />
-        <text x={cx} y={cy} dy={-10} textAnchor="middle" fill="#333">
-          {
-            // FIXME: Fighting with these types
-            // eslint-disable-next-line react/prop-types
-            payload?.ticker_id
-          }
-        </text>
-      </g>
-    );
-  };
-
   return (
     <AutoScaler>
       <ScatterChart
-        margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+        margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
         width={400}
         height={400}
       >
-        <XAxis type="number" dataKey="pc1" name="PC1" hide />
-        <YAxis type="number" dataKey="pc2" name="PC2" hide />
+        <XAxis
+          type="number"
+          dataKey="pc1"
+          domain={[-maxValue, maxValue]}
+          name="PC1"
+          hide
+        />
+        <YAxis
+          type="number"
+          dataKey="pc2"
+          domain={[-maxValue, maxValue]}
+          name="PC2"
+          hide
+        />
         {renderRadialOverlay()}
         <Tooltip
           content={<CustomTooltip />}
@@ -128,45 +117,91 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
 }
 
 const renderRadialOverlay = () => {
+  // cx and cy are set to "50%" to align with the center of the chart
+  const cx = "50%";
+  const cy = "50%";
+
   return (
     <g>
       <circle
-        cx="50%"
-        cy="50%"
+        cx={cx}
+        cy={cy}
         r="50%"
         stroke={RADIAL_STROKE_COLOR}
-        fill="none"
+        fill={RADIAL_FILL_COLOR}
       />
       <circle
-        cx="50%"
-        cy="50%"
+        cx={cx}
+        cy={cy}
         r="40%"
         stroke={RADIAL_STROKE_COLOR}
-        fill="none"
+        fill={RADIAL_FILL_COLOR}
       />
       <circle
-        cx="50%"
-        cy="50%"
+        cx={cx}
+        cy={cy}
         r="30%"
         stroke={RADIAL_STROKE_COLOR}
-        fill="none"
+        fill={RADIAL_FILL_COLOR}
       />
       <circle
-        cx="50%"
-        cy="50%"
+        cx={cx}
+        cy={cy}
         r="20%"
         stroke={RADIAL_STROKE_COLOR}
-        fill="none"
+        fill={RADIAL_FILL_COLOR}
       />
       <circle
-        cx="50%"
-        cy="50%"
+        cx={cx}
+        cy={cy}
         r="10%"
         stroke={RADIAL_STROKE_COLOR}
-        fill="none"
+        fill={RADIAL_FILL_COLOR}
       />
-      {/* Add a yellow dot in the center */}
-      <circle cx="50%" cy="50%" r="5" fill="yellow" />
+      {/* Yellow dot at the center */}
+      <circle cx={cx} cy={cy} r={YELLOW_DOT_RADIUS} fill={YELLOW_DOT_COLOR} />
+    </g>
+  );
+};
+
+// Custom tooltip content
+// https://github.com/recharts/recharts/issues/2796
+const CustomTooltip: React.FC<TooltipProps<number, NameType>> = ({
+  active,
+  payload,
+}) => {
+  if (active && payload && payload.length) {
+    const { ticker_id, pc1, pc2 } = payload[0].payload;
+    return (
+      <div className="custom-tooltip">
+        <p>{`Ticker ID: ${ticker_id}`}</p>
+        <p>{`PC1: ${pc1}`}</p>
+        <p>{`PC2: ${pc2}`}</p>
+      </div>
+    );
+  }
+  return null;
+};
+
+// Custom scatter point content
+const renderCustomPoint = (props: {
+  cx?: number;
+  cy?: number;
+  payload?: ChartVectorDistance;
+}): JSX.Element => {
+  // FIXME: Fighting with these types
+  // eslint-disable-next-line react/prop-types
+  const { cx = 0, cy = 0, payload } = props;
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={6} fill="#8884d8" />
+      <text x={cx} y={cy} dy={-10} textAnchor="middle" fill="#333">
+        {
+          // FIXME: Fighting with these types
+          // eslint-disable-next-line react/prop-types
+          payload?.ticker_id
+        }
+      </text>
     </g>
   );
 };
