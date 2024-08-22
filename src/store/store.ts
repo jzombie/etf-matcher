@@ -6,6 +6,7 @@ import {
 } from "@src/constants";
 import type {
   RustServiceCacheDetail,
+  RustServiceCosineSimilarityResult,
   RustServiceDataBuildInfo,
   RustServiceETFAggregateDetail,
   RustServiceETFHoldingTickerResponse,
@@ -824,6 +825,13 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   ): Promise<RustServiceTickerDistance[]> {
     return callRustService<RustServiceTickerDistance[]>(
       "find_closest_tickers",
+      [tickerId],
+    );
+  }
+
+  async fetchRankedTickersByCosineSimilarity(tickerId: number) {
+    return callRustService<RustServiceCosineSimilarityResult>(
+      "rank_tickers_by_cosine_similarity",
       [tickerId],
     );
   }

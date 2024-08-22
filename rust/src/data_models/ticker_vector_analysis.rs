@@ -267,6 +267,7 @@ where
 pub struct CosineSimilarityResult {
     pub ticker_id: TickerId,
     pub similarity_score: f32,
+    // TODO: Are `PCA coords`` even relevant here?
     pub original_pca_coords: Option<Vec<f32>>,
     pub translated_pca_coords: Option<Vec<f32>>,
 }
