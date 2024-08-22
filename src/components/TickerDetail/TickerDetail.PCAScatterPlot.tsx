@@ -90,7 +90,6 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
           dataKey="pc1"
           domain={[-maxValue, maxValue]}
           name="PC1"
-          tick={false} // Hide ticks for a cleaner look
           hide
         />
         <YAxis
@@ -98,7 +97,6 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
           dataKey="pc2"
           domain={[-maxValue, maxValue]}
           name="PC2"
-          tick={false} // Hide ticks for a cleaner look
           hide
         />
         {renderRadialOverlay()}
