@@ -20,6 +20,9 @@ const RADIAL_FILL_COLOR = "none";
 const YELLOW_DOT_COLOR = "yellow";
 const YELLOW_DOT_RADIUS = 5;
 
+// Prevent coordinates from overflowing radial chart
+const MAX_VALUE_BUFFER = 1.1;
+
 export type PCAScatterPlotProps = {
   tickerDetail: RustServiceTickerDetail;
 };
@@ -66,7 +69,7 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
             ...chartData.map(({ pc1, pc2 }) =>
               Math.max(Math.abs(pc1), Math.abs(pc2)),
             ),
-          )
+          ) * MAX_VALUE_BUFFER
         : 0,
     [chartData],
   );
