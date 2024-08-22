@@ -14,6 +14,8 @@ import {
 import store from "@src/store";
 import type { RustServiceTickerDetail } from "@src/types";
 
+import EncodedImage from "@components/EncodedImage";
+
 import useURLState from "@hooks/useURLState";
 
 import customLogger from "@utils/customLogger";
@@ -111,7 +113,17 @@ export default function TickerVectorTable({
                 onClick={() => handleRowClick(detail.symbol)}
                 sx={{ cursor: "pointer" }}
               >
-                <TableCell>{detail.symbol}</TableCell>
+                <TableCell sx={{ textAlign: "center", fontWeight: "bold" }}>
+                  {
+                    // TODO: Use same avatar-like styling as in `SettingsManager`
+                  }
+                  <EncodedImage
+                    encSrc={detail.logo_filename}
+                    style={{ width: 50 }}
+                  />
+                  <br />
+                  {detail.symbol}
+                </TableCell>
                 <TableCell>{detail.company_name}</TableCell>
                 <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
                   {detail.industry_name || "N/A"}
