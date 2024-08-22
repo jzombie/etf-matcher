@@ -16,6 +16,9 @@ import { NameType } from "recharts/types/component/DefaultTooltipContent";
 import customLogger from "@utils/customLogger";
 
 const RADIAL_STROKE_COLOR = "#999";
+const RADIAL_FILL_COLOR = "none";
+const YELLOW_DOT_COLOR = "yellow";
+const YELLOW_DOT_RADIUS = 5;
 
 export type PCAScatterPlotProps = {
   tickerDetail: RustServiceTickerDetail;
@@ -84,7 +87,6 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
     cy?: number;
     payload?: ChartVectorDistance;
   }): JSX.Element => {
-    // FIXME: Fighting with these types
     // eslint-disable-next-line react/prop-types
     const { cx = 0, cy = 0, payload } = props;
     return (
@@ -101,15 +103,34 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
     );
   };
 
+  // Calculate domain for the axes based on the chart data to ensure (0,0) is centered
+  const maxValue = Math.max(
+    ...chartData.map(({ pc1, pc2 }) => Math.max(Math.abs(pc1), Math.abs(pc2))),
+  );
+
   return (
     <AutoScaler>
       <ScatterChart
-        margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+        margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
         width={400}
         height={400}
       >
-        <XAxis type="number" dataKey="pc1" name="PC1" hide />
-        <YAxis type="number" dataKey="pc2" name="PC2" hide />
+        <XAxis
+          type="number"
+          dataKey="pc1"
+          domain={[-maxValue, maxValue]}
+          name="PC1"
+          tick={false} // Hide ticks for a cleaner look
+          hide
+        />
+        <YAxis
+          type="number"
+          dataKey="pc2"
+          domain={[-maxValue, maxValue]}
+          name="PC2"
+          tick={false} // Hide ticks for a cleaner look
+          hide
+        />
         {renderRadialOverlay()}
         <Tooltip
           content={<CustomTooltip />}
@@ -128,45 +149,49 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
 }
 
 const renderRadialOverlay = () => {
+  // cx and cy are set to "50%" to align with the center of the chart
+  const cx = "50%";
+  const cy = "50%";
+
   return (
     <g>
       <circle
-        cx="50%"
-        cy="50%"
+        cx={cx}
+        cy={cy}
         r="50%"
         stroke={RADIAL_STROKE_COLOR}
-        fill="none"
+        fill={RADIAL_FILL_COLOR}
       />
       <circle
-        cx="50%"
-        cy="50%"
+        cx={cx}
+        cy={cy}
         r="40%"
         stroke={RADIAL_STROKE_COLOR}
-        fill="none"
+        fill={RADIAL_FILL_COLOR}
       />
       <circle
-        cx="50%"
-        cy="50%"
+        cx={cx}
+        cy={cy}
         r="30%"
         stroke={RADIAL_STROKE_COLOR}
-        fill="none"
+        fill={RADIAL_FILL_COLOR}
       />
       <circle
-        cx="50%"
-        cy="50%"
+        cx={cx}
+        cy={cy}
         r="20%"
         stroke={RADIAL_STROKE_COLOR}
-        fill="none"
+        fill={RADIAL_FILL_COLOR}
       />
       <circle
-        cx="50%"
-        cy="50%"
+        cx={cx}
+        cy={cy}
         r="10%"
         stroke={RADIAL_STROKE_COLOR}
-        fill="none"
+        fill={RADIAL_FILL_COLOR}
       />
-      {/* Add a yellow dot in the center */}
-      <circle cx="50%" cy="50%" r="5" fill="yellow" />
+      {/* Yellow dot at the center */}
+      <circle cx={cx} cy={cy} r={YELLOW_DOT_RADIUS} fill={YELLOW_DOT_COLOR} />
     </g>
   );
 };
