@@ -75,47 +75,6 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
     return null;
   }
 
-  // Custom tooltip content
-  // https://github.com/recharts/recharts/issues/2796
-  const CustomTooltip: React.FC<TooltipProps<number, NameType>> = ({
-    active,
-    payload,
-  }) => {
-    if (active && payload && payload.length) {
-      const { ticker_id, pc1, pc2 } = payload[0].payload;
-      return (
-        <div className="custom-tooltip">
-          <p>{`Ticker ID: ${ticker_id}`}</p>
-          <p>{`PC1: ${pc1}`}</p>
-          <p>{`PC2: ${pc2}`}</p>
-        </div>
-      );
-    }
-    return null;
-  };
-
-  // Custom scatter point content
-  const renderCustomPoint = (props: {
-    cx?: number;
-    cy?: number;
-    payload?: ChartVectorDistance;
-  }): JSX.Element => {
-    // eslint-disable-next-line react/prop-types
-    const { cx = 0, cy = 0, payload } = props;
-    return (
-      <g>
-        <circle cx={cx} cy={cy} r={6} fill="#8884d8" />
-        <text x={cx} y={cy} dy={-10} textAnchor="middle" fill="#333">
-          {
-            // FIXME: Fighting with these types
-            // eslint-disable-next-line react/prop-types
-            payload?.ticker_id
-          }
-        </text>
-      </g>
-    );
-  };
-
   return (
     <AutoScaler>
       <ScatterChart
@@ -200,6 +159,47 @@ const renderRadialOverlay = () => {
       />
       {/* Yellow dot at the center */}
       <circle cx={cx} cy={cy} r={YELLOW_DOT_RADIUS} fill={YELLOW_DOT_COLOR} />
+    </g>
+  );
+};
+
+// Custom tooltip content
+// https://github.com/recharts/recharts/issues/2796
+const CustomTooltip: React.FC<TooltipProps<number, NameType>> = ({
+  active,
+  payload,
+}) => {
+  if (active && payload && payload.length) {
+    const { ticker_id, pc1, pc2 } = payload[0].payload;
+    return (
+      <div className="custom-tooltip">
+        <p>{`Ticker ID: ${ticker_id}`}</p>
+        <p>{`PC1: ${pc1}`}</p>
+        <p>{`PC2: ${pc2}`}</p>
+      </div>
+    );
+  }
+  return null;
+};
+
+// Custom scatter point content
+const renderCustomPoint = (props: {
+  cx?: number;
+  cy?: number;
+  payload?: ChartVectorDistance;
+}): JSX.Element => {
+  // eslint-disable-next-line react/prop-types
+  const { cx = 0, cy = 0, payload } = props;
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={6} fill="#8884d8" />
+      <text x={cx} y={cy} dy={-10} textAnchor="middle" fill="#333">
+        {
+          // FIXME: Fighting with these types
+          // eslint-disable-next-line react/prop-types
+          payload?.ticker_id
+        }
+      </text>
     </g>
   );
 };
