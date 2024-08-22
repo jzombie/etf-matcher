@@ -9,7 +9,6 @@ import {
   TableHead,
   TableRow,
   Typography,
-  useMediaQuery,
 } from "@mui/material";
 
 import store from "@src/store";
@@ -27,8 +26,6 @@ export default function TickerVectorTable({
   const [tickerDetails, setTickerDetails] = useState<
     RustServiceTickerDetail[] | null
   >(null);
-
-  const isMobile = useMediaQuery("(max-width:600px)");
 
   useEffect(() => {
     if (tickerId) {
