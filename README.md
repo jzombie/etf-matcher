@@ -42,6 +42,12 @@ Built artifacts will be written to `{project_root}/dist`.
 
 Thanks to [BrowserStack Open-Source Program](https://www.browserstack.com/open-source) for providing us with a free account which lets us test on real devices and operating systems.
 
+## Code Reviews
+
+Code reviews powered by [https://coderabbit.ai/](https://coderabbit.ai/).
+
+<a href="https://coderabbit.ai" target="_blank"><img src="src/assets/vendor/coderabbit-logo.svg" alt="CodeRabbit" width="320"></a>
+
 ## License
 
 [MIT License](LICENSE) (c) 2024 Jeremy Harris.
