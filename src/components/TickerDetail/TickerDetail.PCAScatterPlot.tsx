@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import AutoScaler from "@layoutKit/AutoScaler";
 import store from "@src/store";
@@ -58,6 +58,19 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
     );
   }, []);
 
+  // Calculate domain for the axes based on the chart data to ensure (0,0) is centered
+  const maxValue = useMemo(
+    () =>
+      chartData
+        ? Math.max(
+            ...chartData.map(({ pc1, pc2 }) =>
+              Math.max(Math.abs(pc1), Math.abs(pc2)),
+            ),
+          )
+        : 0,
+    [chartData],
+  );
+
   if (!chartData) {
     return null;
   }
@@ -102,11 +115,6 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
       </g>
     );
   };
-
-  // Calculate domain for the axes based on the chart data to ensure (0,0) is centered
-  const maxValue = Math.max(
-    ...chartData.map(({ pc1, pc2 }) => Math.max(Math.abs(pc1), Math.abs(pc2))),
-  );
 
   return (
     <AutoScaler>
