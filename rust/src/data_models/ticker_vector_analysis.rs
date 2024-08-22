@@ -262,3 +262,100 @@ where
         .sum::<f32>()
         .sqrt()
 }
+
+#[derive(Debug, Clone)]
+pub struct CosineSimilarityResult {
+    pub ticker_id: TickerId,
+    pub similarity_score: f32,
+    pub original_pca_coords: Option<Vec<f32>>,
+    pub translated_pca_coords: Option<Vec<f32>>,
+}
+
+// TODO: Also use in `find_closest_tickers`
+fn find_target_vector_and_pca<'a>(
+    ticker_vectors: &'a financial_vectors::ten_k::TickerVectors<'a>,
+    ticker_id: TickerId,
+) -> Option<(flatbuffers::Vector<'a, f32>, Vec<f32>)> {
+    ticker_vectors.vectors()?.iter().find_map(|ticker_vector| {
+        if ticker_vector.ticker_id() as TickerId == ticker_id {
+            Some((
+                ticker_vector.vector()?,
+                ticker_vector
+                    .pca_coordinates()
+                    .map(|coords| coords.iter().collect::<Vec<f32>>())
+                    .unwrap_or_default(),
+            ))
+        } else {
+            None
+        }
+    })
+}
+
+pub async fn rank_tickers_by_cosine_similarity(
+    ticker_id: TickerId,
+) -> Result<Vec<CosineSimilarityResult>, String> {
+    let url = DataURL::FinancialVectors10K.value();
+    let file_content = utils::xhr_fetch_cached(url.to_string())
+        .await
+        .map_err(|err| format!("Failed to fetch file: {:?}", err))?;
+
+    let ticker_vectors = root_as_ticker_vectors(&file_content)
+        .map_err(|err| format!("Failed to parse TickerVectors: {:?}", err))?;
+
+    let (target_vector, target_pca_coords) =
+        match find_target_vector_and_pca(&ticker_vectors, ticker_id) {
+            Some(result) => result,
+            None => return Err("Ticker ID or PCA coordinates not found.".to_string()),
+        };
+
+    let mut results: Vec<CosineSimilarityResult> = ticker_vectors
+        .vectors()
+        .ok_or("No vectors found.")?
+        .iter()
+        .filter_map(|ticker_vector| {
+            if ticker_vector.ticker_id() as TickerId != ticker_id {
+                ticker_vector.vector().map(|other_vector| {
+                    let similarity = cosine_similarity(
+                        &target_vector.iter().collect::<Vec<_>>(),
+                        &other_vector.iter().collect::<Vec<_>>(),
+                    );
+
+                    let original_pca_coords = ticker_vector
+                        .pca_coordinates()
+                        .map(|coords| coords.iter().collect::<Vec<f32>>());
+
+                    let translated_pca_coords = original_pca_coords.as_ref().map(|coords| {
+                        coords
+                            .iter()
+                            .zip(&target_pca_coords)
+                            .map(|(c, &target_c)| c - target_c)
+                            .collect::<Vec<f32>>()
+                    });
+
+                    CosineSimilarityResult {
+                        ticker_id: ticker_vector.ticker_id() as TickerId,
+                        similarity_score: similarity,
+                        original_pca_coords,
+                        translated_pca_coords,
+                    }
+                })
+            } else {
+                None
+            }
+        })
+        .collect();
+
+    results.sort_by(|a, b| {
+        b.similarity_score
+            .partial_cmp(&a.similarity_score)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
+    Ok(results.into_iter().take(20).collect())
+}
+
+fn cosine_similarity(vector1: &[f32], vector2: &[f32]) -> f32 {
+    let dot_product: f32 = vector1.iter().zip(vector2).map(|(a, b)| a * b).sum();
+    let magnitude1: f32 = vector1.iter().map(|v| v * v).sum::<f32>().sqrt();
+    let magnitude2: f32 = vector2.iter().map(|v| v * v).sum::<f32>().sqrt();
+    dot_product / (magnitude1 * magnitude2)
+}

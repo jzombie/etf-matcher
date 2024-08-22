@@ -255,3 +255,67 @@ pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<JsValue, JsValu
 
     Ok(js_array.into())
 }
+
+#[wasm_bindgen]
+pub async fn rank_tickers_by_cosine_similarity(ticker_id: TickerId) -> Result<JsValue, JsValue> {
+    // Call the rank_tickers_by_cosine_similarity function from the ticker_vector_analysis module
+    let similar_tickers = ticker_vector_analysis::rank_tickers_by_cosine_similarity(ticker_id)
+        .await
+        .map_err(|err| {
+            JsValue::from_str(&format!(
+                "Failed to rank tickers by cosine similarity: {}",
+                err
+            ))
+        })?;
+
+    // Convert the results to JsValue
+    let js_array = js_sys::Array::new();
+
+    for similarity_result in similar_tickers {
+        let obj = js_sys::Object::new();
+        js_sys::Reflect::set(
+            &obj,
+            &JsValue::from_str("ticker_id"),
+            &JsValue::from(similarity_result.ticker_id),
+        )
+        .unwrap();
+        js_sys::Reflect::set(
+            &obj,
+            &JsValue::from_str("similarity_score"),
+            &JsValue::from(similarity_result.similarity_score),
+        )
+        .unwrap();
+
+        // Convert original PCA coordinates to JS array, if present
+        if let Some(original_pca_coords) = similarity_result.original_pca_coords {
+            let original_pca_array = js_sys::Array::new();
+            for coord in original_pca_coords {
+                original_pca_array.push(&JsValue::from_f64(coord as f64));
+            }
+            js_sys::Reflect::set(
+                &obj,
+                &JsValue::from_str("original_pca_coords"),
+                &original_pca_array.into(),
+            )
+            .unwrap();
+        }
+
+        // Convert translated PCA coordinates to JS array, if present
+        if let Some(translated_pca_coords) = similarity_result.translated_pca_coords {
+            let translated_pca_array = js_sys::Array::new();
+            for coord in translated_pca_coords {
+                translated_pca_array.push(&JsValue::from_f64(coord as f64));
+            }
+            js_sys::Reflect::set(
+                &obj,
+                &JsValue::from_str("translated_pca_coords"),
+                &translated_pca_array.into(),
+            )
+            .unwrap();
+        }
+
+        js_array.push(&obj);
+    }
+
+    Ok(js_array.into())
+}
