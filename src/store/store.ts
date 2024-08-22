@@ -825,17 +825,20 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return callRustService<RustServiceTickerDistance[]>(
       "find_closest_tickers",
       [tickerId],
-    ).then((data) => {
-      customLogger.debug({ closestTickers: data });
+    );
 
-      // TODO: Remove; also include these with the Rust response in the API call
-      const detailPromises = data.map((item) =>
-        this.fetchTickerDetail(item.ticker_id),
-      );
-      Promise.allSettled(detailPromises).then(customLogger.debug);
+    // TODO: Remove
+    // ).then((data) => {
+    //   // customLogger.debug({ closestTickers: data });
 
-      return data;
-    });
+    //   // TODO: Remove; also include these with the Rust response in the API call
+    //   // const detailPromises = data.map((item) =>
+    //   //   this.fetchTickerDetail(item.ticker_id),
+    //   // );
+    //   // Promise.allSettled(detailPromises).then(customLogger.debug);
+
+    //   return data;
+    // });
   }
 }
 

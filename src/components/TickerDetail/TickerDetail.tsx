@@ -20,6 +20,7 @@ import FinancialChartsGrid from "./TickerDetail.FinancialChartsGrid";
 import TickerDetailHeader from "./TickerDetail.Header";
 import HistoricalPriceChart from "./TickerDetail.HistoricalPriceChart";
 import PCAScatterPlot from "./TickerDetail.PCAScatterPlot";
+import TickerVectorTable from "./TickerDetail.TickerVectorTable";
 
 export type TickerDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerId: number;
@@ -91,16 +92,19 @@ export default function TickerDetail({
         </Grid>
       </Grid>
 
-      <HistoricalPriceChart
-        tickerSymbol={tickerDetail.symbol}
-        formattedSymbolWithExchange={formattedSymbolWithExchange}
-      />
+      <LazyRender>
+        <TickerVectorTable tickerId={tickerDetail.ticker_id} />
 
-      <Box sx={{ textAlign: "center" }}>
-        <TickerDetailBucketManager tickerDetail={tickerDetail} />
-      </Box>
+        <HistoricalPriceChart
+          tickerSymbol={tickerDetail.symbol}
+          formattedSymbolWithExchange={formattedSymbolWithExchange}
+        />
 
-      {/* {showNews && (
+        <Box sx={{ textAlign: "center" }}>
+          <TickerDetailBucketManager tickerDetail={tickerDetail} />
+        </Box>
+
+        {/* {showNews && (
         // TODO: This seems out of date for `CRWD`, regardless if using `formattedSymbolWithExchange`
         // or just the `tickerSymbol` itself. Other symbols seem to be okay.
         <Timeline
@@ -112,15 +116,16 @@ export default function TickerDetail({
         />
       )} */}
 
-      <FinancialChartsGrid tickerDetail={tickerDetail} />
+        <FinancialChartsGrid tickerDetail={tickerDetail} />
 
-      {tickerDetail?.is_etf && (
-        <ETFHoldingList etfTickerDetail={tickerDetail} />
-      )}
+        {tickerDetail?.is_etf && (
+          <ETFHoldingList etfTickerDetail={tickerDetail} />
+        )}
 
-      {tickerDetail?.is_held_in_etf && (
-        <ETFHolderList tickerDetail={tickerDetail} />
-      )}
+        {tickerDetail?.is_held_in_etf && (
+          <ETFHolderList tickerDetail={tickerDetail} />
+        )}
+      </LazyRender>
     </TickerContainer>
   );
 }
