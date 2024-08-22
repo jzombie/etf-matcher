@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import {
   Paper,
@@ -14,6 +14,8 @@ import {
 import store from "@src/store";
 import type { RustServiceTickerDetail } from "@src/types";
 
+import useURLState from "@hooks/useURLState";
+
 import customLogger from "@utils/customLogger";
 
 export type TickerVectorTableProps = {
@@ -26,6 +28,22 @@ export default function TickerVectorTable({
   const [tickerDetails, setTickerDetails] = useState<
     RustServiceTickerDetail[] | null
   >(null);
+
+  const { setURLState, toBooleanParam } = useURLState();
+
+  const handleRowClick = useCallback(
+    (tickerSymbol: string) => {
+      setURLState(
+        {
+          query: tickerSymbol,
+          exact: toBooleanParam(true),
+        },
+        false,
+        "/search",
+      );
+    },
+    [setURLState, toBooleanParam],
+  );
 
   useEffect(() => {
     if (tickerId) {
@@ -79,7 +97,11 @@ export default function TickerVectorTable({
         <TableBody>
           {tickerDetails && tickerDetails.length > 0 ? (
             tickerDetails.map((detail) => (
-              <TableRow key={detail.ticker_id}>
+              <TableRow
+                key={detail.ticker_id}
+                onClick={() => handleRowClick(detail.symbol)}
+                sx={{ cursor: "pointer" }}
+              >
                 <TableCell>{detail.symbol}</TableCell>
                 <TableCell>{detail.company_name}</TableCell>
                 <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
