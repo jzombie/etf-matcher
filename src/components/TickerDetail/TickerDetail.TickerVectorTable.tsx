@@ -29,26 +29,29 @@ export default function TickerVectorTable({
 
   useEffect(() => {
     if (tickerId) {
-      store.fetchClosestTickers(tickerId).then(async (closestTickers) => {
-        const detailPromises = closestTickers.map((item) =>
-          store.fetchTickerDetail(item.ticker_id),
-        );
-        const settledDetails = await Promise.allSettled(detailPromises);
-
-        // Extract only the fulfilled promises
-        const fulfilledDetails = settledDetails
-          .filter((result) => result.status === "fulfilled")
-          .map(
-            (result) =>
-              (result as PromiseFulfilledResult<RustServiceTickerDetail>).value,
+      store
+        .fetchClosestTickers(tickerId)
+        .then(async (closestTickers) => {
+          const detailPromises = closestTickers.map((item) =>
+            store.fetchTickerDetail(item.ticker_id),
           );
+          const settledDetails = await Promise.allSettled(detailPromises);
 
-        // Set the fulfilled details in state
-        setTickerDetails(fulfilledDetails);
+          const fulfilledDetails = settledDetails
+            .filter((result) => result.status === "fulfilled")
+            .map(
+              (result) =>
+                (result as PromiseFulfilledResult<RustServiceTickerDetail>)
+                  .value,
+            );
 
-        // Optional: log details
-        customLogger.log({ fulfilledDetails, closestTickers });
-      });
+          setTickerDetails(fulfilledDetails);
+          customLogger.log({ fulfilledDetails, closestTickers });
+        })
+        .catch((error) => {
+          // TODO: Route errors to the UI
+          customLogger.error("Error fetching closest tickers:", error);
+        });
     }
   }, [tickerId]);
 
