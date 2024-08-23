@@ -783,6 +783,22 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
+  async fetchClosestTickers(
+    tickerId: number,
+  ): Promise<RustServiceTickerDistance[]> {
+    return callRustService<RustServiceTickerDistance[]>(
+      "find_closest_tickers",
+      [tickerId],
+    );
+  }
+
+  async fetchRankedTickersByCosineSimilarity(tickerId: number) {
+    return callRustService<RustServiceCosineSimilarityResult[]>(
+      "rank_tickers_by_cosine_similarity",
+      [tickerId],
+    );
+  }
+
   async removeCacheEntry(key: string): Promise<void> {
     await callRustService("remove_cache_entry", [key]);
 
@@ -816,25 +832,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       // This prevents an issue where the UI might be in a non-recoverable state after resetting the store
       window.location.reload();
     });
-  }
-
-  /// TODO: Refactor as needed
-
-  // TODO: Rename to indicate `Euclidean`
-  async fetchClosestTickers(
-    tickerId: number,
-  ): Promise<RustServiceTickerDistance[]> {
-    return callRustService<RustServiceTickerDistance[]>(
-      "find_closest_tickers",
-      [tickerId],
-    );
-  }
-
-  async fetchRankedTickersByCosineSimilarity(tickerId: number) {
-    return callRustService<RustServiceCosineSimilarityResult[]>(
-      "rank_tickers_by_cosine_similarity",
-      [tickerId],
-    );
   }
 }
 
