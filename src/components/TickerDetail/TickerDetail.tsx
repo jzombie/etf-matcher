@@ -104,18 +104,6 @@ export default function TickerDetail({
           <TickerDetailBucketManager tickerDetail={tickerDetail} />
         </Box>
 
-        {/* {showNews && (
-        // TODO: This seems out of date for `CRWD`, regardless if using `formattedSymbolWithExchange`
-        // or just the `tickerSymbol` itself. Other symbols seem to be okay.
-        <Timeline
-          feedMode="symbol"
-          colorTheme="dark"
-          symbol={formattedSymbolWithExchange}
-          width="100%"
-          copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
-        />
-      )} */}
-
         <FinancialChartsGrid tickerDetail={tickerDetail} />
 
         {tickerDetail?.is_etf && (
