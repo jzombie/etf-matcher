@@ -56,6 +56,17 @@ export default function FinancialChartsGrid({
       <Typography variant="h6" sx={{ marginBottom: 2 }}>
         &quot;{tickerDetail.symbol}&quot; Financial Overview
       </Typography>
+
+      {/* Conditional rendering of the weighted average note */}
+      {tickerDetail.is_etf && (
+        <Box sx={{ marginBottom: 2 }}>
+          <Typography variant="body2" color="textSecondary" fontStyle="italic">
+            Note: The following metrics are based on a weighted average of the
+            holdings in this ETF.
+          </Typography>
+        </Box>
+      )}
+
       <Box
         sx={{
           display: "grid",
