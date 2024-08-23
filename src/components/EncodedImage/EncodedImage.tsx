@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 import ErrorIcon from "@mui/icons-material/Error";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import noImageAvailable from "@assets/no-image-available.png";
-import store from "@src/store";
-import type { RustServiceImageInfo } from "@src/types";
 
-import useStableCurrentRef from "@hooks/useStableCurrentRef";
+import useEncodedImage from "@hooks/useEncodedImage";
 
 export type EncodedImageProps = React.HTMLAttributes<HTMLImageElement> & {
   encSrc?: string;
@@ -21,43 +19,14 @@ export default function EncodedImage({
   className,
   ...rest
 }: EncodedImageProps) {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [base64, setBase64] = useState<string | null>(null);
-  const [hasError, setHasError] = useState<boolean>(false);
-
-  const encSrcStaticRef = useStableCurrentRef(encSrc);
-
-  useEffect(() => {
-    if (encSrcStaticRef.current !== encSrc) {
-      setBase64(null);
-      setHasError(false); // Reset error state on new image source
-    }
-
-    if (encSrc) {
-      setIsLoading(true);
-      store
-        .fetchImageInfo(encSrc)
-        .then((imageInfo: RustServiceImageInfo) => {
-          if (encSrcStaticRef.current === encSrc) {
-            setBase64(imageInfo.base64);
-            setHasError(false); // Reset error state if the image loads successfully
-          }
-        })
-        .catch(() => {
-          setHasError(true); // Set error state if the image fails to load
-        })
-        .finally(() => setIsLoading(false));
-    } else {
-      setIsLoading(false);
-    }
-  }, [encSrc, encSrcStaticRef]);
+  const { isLoading, base64, hasError } = useEncodedImage(encSrc);
 
   if (isLoading) {
     return <CircularProgress />;
   }
 
   if (hasError) {
-    return <ErrorIcon color="error" />; // Show error icon if there was an error
+    return <ErrorIcon color="error" />;
   }
 
   return (
