@@ -43,6 +43,13 @@ const darkTheme = createTheme({
       focus: "rgba(255, 255, 255, 0.12)",
     },
   },
+  typography: {
+    fontSize: 12, // Reduce the base font size (default is 14)
+    button: {
+      fontSize: "0.875rem", // Smaller button text
+    },
+  },
+  spacing: 4, // Reduce the spacing scale (default is 8)
   components: {
     MuiAppBar: {
       styleOverrides: {
@@ -54,10 +61,16 @@ const darkTheme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          textTransform: "none",
-          "&:hover": {
-            backgroundColor: "rgba(255, 255, 255, 0.08)",
-          },
+          padding: "4px 8px", // Smaller padding
+          fontSize: "0.875rem", // Smaller text size for buttons
+        },
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          fontSize: "0.875rem", // Smaller input text
+          padding: "4px 8px", // Smaller padding
         },
       },
     },
@@ -76,12 +89,13 @@ const darkTheme = createTheme({
     MuiDialog: {
       styleOverrides: {
         paper: {
+          padding: "8px", // Reduce padding inside dialogs
+          fontSize: "0.875rem", // Smaller text size inside dialogs,
           backgroundColor: "rgba(0,0,0,.8)",
           backdropFilter: "blur(10px)",
           color: "#ffffff",
           borderRadius: 10,
           border: "2px rgba(38,100,100,.8) solid",
-          padding: "16px",
         },
       },
     },
