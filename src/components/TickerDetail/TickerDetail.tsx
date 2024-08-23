@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import { Box, CircularProgress, Grid } from "@mui/material";
+import { Box, CircularProgress, Grid, Typography } from "@mui/material";
 
 import Center from "@layoutKit/Center";
+import Padding from "@layoutKit/Padding";
 import store from "@src/store";
 import type { RustServiceETFAggregateDetail } from "@src/types";
 
@@ -93,8 +94,6 @@ export default function TickerDetail({
       </Grid>
 
       <LazyRender>
-        <TickerVectorTable tickerId={tickerDetail.ticker_id} />
-
         <HistoricalPriceChart
           tickerSymbol={tickerDetail.symbol}
           formattedSymbolWithExchange={formattedSymbolWithExchange}
@@ -103,6 +102,13 @@ export default function TickerDetail({
         <Box sx={{ textAlign: "center" }}>
           <TickerDetailBucketManager tickerDetail={tickerDetail} />
         </Box>
+
+        <Padding>
+          <Typography variant="h6">
+            &quot;{tickerDetail.symbol}&quot; Similarity Matches
+          </Typography>
+          <TickerVectorTable tickerId={tickerDetail.ticker_id} />
+        </Padding>
 
         <FinancialChartsGrid tickerDetail={tickerDetail} />
 
