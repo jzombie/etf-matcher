@@ -12,6 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 
+import Center from "@layoutKit/Center";
 import store from "@src/store";
 import type { RustServiceTickerDetail } from "@src/types";
 
@@ -89,7 +90,11 @@ export default function TickerVectorTableEuclidean({
   }, [tickerId]);
 
   if (isLoading) {
-    return <CircularProgress />;
+    return (
+      <Center>
+        <CircularProgress />
+      </Center>
+    );
   }
 
   return (
