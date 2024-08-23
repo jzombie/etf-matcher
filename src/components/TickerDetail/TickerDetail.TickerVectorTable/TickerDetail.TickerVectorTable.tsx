@@ -2,7 +2,15 @@ import React, { useState } from "react";
 
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 import StraightenIcon from "@mui/icons-material/Straighten";
-import { ToggleButton, ToggleButtonGroup } from "@mui/material";
+import {
+  Box,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from "@mui/material";
+
+import Padding from "@layoutKit/Padding";
+import { RustServiceTickerDetail } from "@src/types";
 
 import Transition from "@components/Transition";
 
@@ -10,12 +18,14 @@ import Cosine from "./TickerDetail.TickerVectorTable.Cosine";
 import Euclidean from "./TickerDetail.TickerVectorTable.Euclidean";
 
 export type TickerVectorTableProps = {
-  tickerId: number;
+  tickerDetail: RustServiceTickerDetail;
 };
 
 export default function TickerVectorTable({
-  tickerId,
+  tickerDetail,
 }: TickerVectorTableProps) {
+  const tickerId = tickerDetail.ticker_id;
+
   const [alignment, setAlignment] = useState<"euclidean" | "cosine">(
     "euclidean",
   );
@@ -30,22 +40,29 @@ export default function TickerVectorTable({
   };
 
   return (
-    <>
-      <ToggleButtonGroup
-        value={alignment}
-        exclusive
-        onChange={handleAlignment}
-        aria-label="distance metric"
-      >
-        <ToggleButton value="euclidean" aria-label="euclidean">
-          <StraightenIcon />
-          Euclidean
-        </ToggleButton>
-        <ToggleButton value="cosine" aria-label="cosine">
-          <ShowChartIcon />
-          Cosine
-        </ToggleButton>
-      </ToggleButtonGroup>
+    <Padding>
+      <Box sx={{ overflow: "auto" }}>
+        <Typography variant="h6" sx={{ float: "left" }}>
+          &quot;{tickerDetail.symbol}&quot; Similarity Matches
+        </Typography>
+        <ToggleButtonGroup
+          value={alignment}
+          exclusive
+          onChange={handleAlignment}
+          aria-label="distance metric"
+          sx={{ float: "right" }}
+          size="small"
+        >
+          <ToggleButton value="euclidean" aria-label="euclidean">
+            <StraightenIcon />
+            Euclidean
+          </ToggleButton>
+          <ToggleButton value="cosine" aria-label="cosine">
+            <ShowChartIcon />
+            Cosine
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
 
       <Transition
         trigger={alignment === "euclidean"}
@@ -57,6 +74,6 @@ export default function TickerVectorTable({
           <Cosine tickerId={tickerId} />
         )}
       </Transition>
-    </>
+    </Padding>
   );
 }
