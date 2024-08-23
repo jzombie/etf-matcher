@@ -820,6 +820,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
   /// TODO: Refactor as needed
 
+  // TODO: Rename to indicate `Euclidean`
   async fetchClosestTickers(
     tickerId: number,
   ): Promise<RustServiceTickerDistance[]> {
@@ -830,7 +831,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   async fetchRankedTickersByCosineSimilarity(tickerId: number) {
-    return callRustService<RustServiceCosineSimilarityResult>(
+    return callRustService<RustServiceCosineSimilarityResult[]>(
       "rank_tickers_by_cosine_similarity",
       [tickerId],
     );
