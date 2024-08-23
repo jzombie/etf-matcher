@@ -78,9 +78,6 @@ export default function TickerVectorTableCosine({
             );
 
           setTickerDetails(fulfilledDetails);
-
-          // TODO: Remove
-          customLogger.debug({ fulfilledDetails, similarTickers });
         })
         .catch((error) => {
           customLogger.error("Error fetching similar tickers:", error);
