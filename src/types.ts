@@ -229,3 +229,10 @@ export type RustServiceTickerDistance = {
   original_pca_coords: number[];
   translated_pca_coords: number[];
 };
+
+export type RustServiceCosineSimilarityResult = {
+  ticker_id: number;
+  similarity_score: number;
+  original_pca_coords: number[];
+  translated_pca_coords: number[];
+};

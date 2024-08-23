@@ -6,6 +6,7 @@ import {
 } from "@src/constants";
 import type {
   RustServiceCacheDetail,
+  RustServiceCosineSimilarityResult,
   RustServiceDataBuildInfo,
   RustServiceETFAggregateDetail,
   RustServiceETFHoldingTickerResponse,
@@ -782,6 +783,22 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
+  async fetchClosestTickers(
+    tickerId: number,
+  ): Promise<RustServiceTickerDistance[]> {
+    return callRustService<RustServiceTickerDistance[]>(
+      "find_closest_tickers",
+      [tickerId],
+    );
+  }
+
+  async fetchRankedTickersByCosineSimilarity(tickerId: number) {
+    return callRustService<RustServiceCosineSimilarityResult[]>(
+      "rank_tickers_by_cosine_similarity",
+      [tickerId],
+    );
+  }
+
   async removeCacheEntry(key: string): Promise<void> {
     await callRustService("remove_cache_entry", [key]);
 
@@ -814,27 +831,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     Promise.all(clearPromises).finally(() => {
       // This prevents an issue where the UI might be in a non-recoverable state after resetting the store
       window.location.reload();
-    });
-  }
-
-  /// TODO: Refactor as needed
-
-  async fetchClosestTickers(
-    tickerId: number,
-  ): Promise<RustServiceTickerDistance[]> {
-    return callRustService<RustServiceTickerDistance[]>(
-      "find_closest_tickers",
-      [tickerId],
-    ).then((data) => {
-      customLogger.debug({ closestTickers: data });
-
-      // TODO: Remove; also include these with the Rust response in the API call
-      const detailPromises = data.map((item) =>
-        this.fetchTickerDetail(item.ticker_id),
-      );
-      Promise.allSettled(detailPromises).then(customLogger.debug);
-
-      return data;
     });
   }
 }

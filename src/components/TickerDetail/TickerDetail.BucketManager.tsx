@@ -275,7 +275,11 @@ export default function TickerDetailBucketManager({
               </Button>
             )}
 
-            <Button variant="contained" onClick={handleCloseBucketDialog}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleCloseBucketDialog}
+            >
               Close
             </Button>
           </DialogActions>
