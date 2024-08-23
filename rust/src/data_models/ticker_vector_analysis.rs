@@ -183,31 +183,12 @@ pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<Vec<TickerDista
     let ticker_vectors = root_as_ticker_vectors(&file_content)
         .map_err(|err| format!("Failed to parse TickerVectors: {:?}", err))?;
 
-    let mut target_vector: Option<flatbuffers::Vector<'_, f32>> = None;
-    let mut target_pca_coordinates: Option<flatbuffers::Vector<'_, f32>> = None;
-
-    if let Some(vectors) = ticker_vectors.vectors() {
-        for i in 0..vectors.len() {
-            let ticker_vector = vectors.get(i);
-            if ticker_vector.ticker_id() as TickerId == ticker_id {
-                target_vector = ticker_vector.vector();
-                target_pca_coordinates = ticker_vector.pca_coordinates();
-                break;
-            }
-        }
-    }
-
-    let target_vector = match target_vector {
-        Some(vector) => vector,
-        None => return Err("Ticker ID not found".to_string()),
-    };
-
-    let target_pca_coordinates = match target_pca_coordinates {
-        Some(coords) => coords,
-        None => return Err("PCA coordinates not found for the given Ticker ID.".to_string()),
-    };
-
-    let target_pca_coords: Vec<f32> = target_pca_coordinates.iter().collect();
+    // Use the helper function to find the target vector and PCA coordinates
+    let (target_vector, target_pca_coords) =
+        match find_target_vector_and_pca(&ticker_vectors, ticker_id) {
+            Some(result) => result,
+            None => return Err("Ticker ID or PCA coordinates not found.".to_string()),
+        };
 
     let mut results: Vec<TickerDistance> = Vec::new();
     if let Some(vectors) = ticker_vectors.vectors() {
@@ -272,7 +253,6 @@ pub struct CosineSimilarityResult {
     pub translated_pca_coords: Option<Vec<f32>>,
 }
 
-// TODO: Also use in `find_closest_tickers`
 fn find_target_vector_and_pca<'a>(
     ticker_vectors: &'a financial_vectors::ten_k::TickerVectors<'a>,
     ticker_id: TickerId,
