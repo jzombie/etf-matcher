@@ -20,6 +20,7 @@ import FinancialChartsGrid from "./TickerDetail.FinancialChartsGrid";
 import TickerDetailHeader from "./TickerDetail.Header";
 import HistoricalPriceChart from "./TickerDetail.HistoricalPriceChart";
 import PCAScatterPlot from "./TickerDetail.PCAScatterPlot";
+import TickerVectorTable from "./TickerDetail.TickerVectorTable";
 
 export type TickerDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerId: number;
@@ -91,36 +92,28 @@ export default function TickerDetail({
         </Grid>
       </Grid>
 
-      <HistoricalPriceChart
-        tickerSymbol={tickerDetail.symbol}
-        formattedSymbolWithExchange={formattedSymbolWithExchange}
-      />
-
-      <Box sx={{ textAlign: "center" }}>
-        <TickerDetailBucketManager tickerDetail={tickerDetail} />
-      </Box>
-
-      {/* {showNews && (
-        // TODO: This seems out of date for `CRWD`, regardless if using `formattedSymbolWithExchange`
-        // or just the `tickerSymbol` itself. Other symbols seem to be okay.
-        <Timeline
-          feedMode="symbol"
-          colorTheme="dark"
-          symbol={formattedSymbolWithExchange}
-          width="100%"
-          copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
+      <LazyRender>
+        <HistoricalPriceChart
+          tickerSymbol={tickerDetail.symbol}
+          formattedSymbolWithExchange={formattedSymbolWithExchange}
         />
-      )} */}
 
-      <FinancialChartsGrid tickerDetail={tickerDetail} />
+        <Box sx={{ textAlign: "center" }}>
+          <TickerDetailBucketManager tickerDetail={tickerDetail} />
+        </Box>
 
-      {tickerDetail?.is_etf && (
-        <ETFHoldingList etfTickerDetail={tickerDetail} />
-      )}
+        <TickerVectorTable tickerDetail={tickerDetail} />
 
-      {tickerDetail?.is_held_in_etf && (
-        <ETFHolderList tickerDetail={tickerDetail} />
-      )}
+        <FinancialChartsGrid tickerDetail={tickerDetail} />
+
+        {tickerDetail?.is_etf && (
+          <ETFHoldingList etfTickerDetail={tickerDetail} />
+        )}
+
+        {tickerDetail?.is_held_in_etf && (
+          <ETFHolderList tickerDetail={tickerDetail} />
+        )}
+      </LazyRender>
     </TickerContainer>
   );
 }

@@ -13,8 +13,9 @@ export default function useTickerDetail(
 
   const [isLoadingTickerDetail, setIsLoadingTickerDetail] =
     useState<boolean>(false);
-  const [tickerDetail, setTickerDetail] =
-    useState<RustServiceTickerDetail | null>(null);
+  const [tickerDetail, setTickerDetail] = useState<
+    RustServiceTickerDetail | undefined
+  >(undefined);
 
   useEffect(() => {
     if (tickerId) {

@@ -4,9 +4,8 @@ import { ButtonBase } from "@mui/material";
 
 import type { TickerBucketTicker } from "@src/store";
 
-import EncodedImage from "@components/EncodedImage";
+import AvatarLogo from "@components/AvatarLogo";
 
-import useImageBackgroundColor from "@hooks/useImageBackgroundColor";
 import useTickerDetail from "@hooks/useTickerDetail";
 import useURLState from "@hooks/useURLState";
 
@@ -20,8 +19,6 @@ export default function TickerBucketItem({
   const { isLoadingTickerDetail, tickerDetail } = useTickerDetail(
     tickerBucketTicker.tickerId,
   );
-
-  const logoBgColor = useImageBackgroundColor(tickerDetail?.logo_filename);
 
   const { setURLState, toBooleanParam } = useURLState();
 
@@ -43,16 +40,7 @@ export default function TickerBucketItem({
     >
       <div>
         <div>
-          <EncodedImage
-            encSrc={tickerDetail?.logo_filename}
-            style={{
-              width: 50,
-              height: 50,
-              border: `4px ${logoBgColor} solid`,
-              borderRadius: 50,
-              overflow: "hidden",
-            }}
-          />
+          <AvatarLogo tickerDetail={tickerDetail} />
         </div>
         <div style={{ fontWeight: "bold" }}>{tickerDetail?.symbol}</div>
       </div>
