@@ -73,7 +73,9 @@ export default function TickerVectorTableEuclidean({
             );
 
           setTickerDetails(fulfilledDetails);
-          customLogger.log({ fulfilledDetails, closestTickers });
+
+          // TODO: Remove
+          customLogger.debug({ fulfilledDetails, closestTickers });
         })
         .catch((error) => {
           customLogger.error("Error fetching closest tickers:", error);
