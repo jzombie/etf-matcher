@@ -28,7 +28,4 @@ pub use ticker_10k_detail::Ticker10KDetail;
 pub use ticker_detail::{TickerDetail, TickerDetailResponse};
 pub use ticker_etf_holder::TickerETFHolder;
 pub use ticker_search::{TickerSearch, TickerSearchResult};
-pub use ticker_vector_analysis::{
-    find_closest_tickers, get_ticker_vector, rank_tickers_by_cosine_similarity,
-};
 // pub use ticker_by_id::TickerById;
