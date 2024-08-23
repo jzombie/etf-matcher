@@ -1,7 +1,7 @@
 import React from "react";
 
 import ErrorIcon from "@mui/icons-material/Error";
-import { Avatar, CircularProgress } from "@mui/material";
+import { Avatar, AvatarProps, CircularProgress } from "@mui/material";
 
 import noImageAvailable from "@assets/no-image-available.png";
 import { RustServiceTickerDetail } from "@src/types";
@@ -12,7 +12,7 @@ import useImageBackgroundColor from "@hooks/useImageBackgroundColor";
 
 import styles from "./AvatarLogo.module.scss";
 
-export type AvatarLogoProps = {
+export type AvatarLogoProps = Omit<AvatarProps, "src"> & {
   tickerDetail?: RustServiceTickerDetail;
   alt?: string;
   className?: string;
@@ -21,9 +21,10 @@ export type AvatarLogoProps = {
 
 export default function AvatarLogo({
   tickerDetail,
-  alt = "Ticker Logo",
+  alt,
   className,
   style,
+  ...rest
 }: AvatarLogoProps) {
   const logoBgColor = useImageBackgroundColor(tickerDetail?.logo_filename);
 
@@ -50,7 +51,8 @@ export default function AvatarLogo({
 
   return (
     <Avatar
-      alt={alt}
+      {...rest}
+      alt={alt || `${tickerDetail.symbol} logo`}
       src={base64 ? `data:image/png;base64,${base64}` : noImageAvailable}
       className={clsx(styles.avatar_logo, className)}
       style={mergedStyle}
