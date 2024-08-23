@@ -40,9 +40,6 @@ export default function TickerBucketItem({
     >
       <div>
         <div>
-          {
-            // TODO: Replace with `AvatarLogo`
-          }
           <AvatarLogo tickerDetail={tickerDetail} />
         </div>
         <div style={{ fontWeight: "bold" }}>{tickerDetail?.symbol}</div>
