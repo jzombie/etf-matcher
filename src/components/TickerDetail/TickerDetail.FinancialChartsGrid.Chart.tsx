@@ -93,13 +93,13 @@ export default function RenderChart({
         <Typography variant="subtitle2">{title}</Typography>
         <ButtonGroup>
           <IconButton
-            color={chartType === "line" ? "primary" : "default"}
+            disabled={chartType === "line"}
             onClick={() => handleChartTypeChange("line")}
           >
             <ShowChartIcon />
           </IconButton>
           <IconButton
-            color={chartType === "bar" ? "primary" : "default"}
+            disabled={chartType === "bar"}
             onClick={() => handleChartTypeChange("bar")}
           >
             <BarChartIcon />
