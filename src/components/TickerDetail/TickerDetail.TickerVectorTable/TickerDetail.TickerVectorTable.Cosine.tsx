@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import {
+  CircularProgress,
   Paper,
   Table,
   TableBody,
@@ -31,6 +32,7 @@ export type TickerVectorTableCosineProps = {
 export default function TickerVectorTableCosine({
   tickerId,
 }: TickerVectorTableCosineProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const [tickerDetails, setTickerDetails] = useState<
     TickerVectorWithCosineSimilarityScore[] | null
   >(null);
@@ -53,6 +55,8 @@ export default function TickerVectorTableCosine({
 
   useEffect(() => {
     if (tickerId) {
+      setIsLoading(true);
+
       store
         .fetchRankedTickersByCosineSimilarity(tickerId)
         .then(async (similarTickers) => {
@@ -80,9 +84,16 @@ export default function TickerVectorTableCosine({
         })
         .catch((error) => {
           customLogger.error("Error fetching similar tickers:", error);
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
     }
   }, [tickerId]);
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
 
   return (
     <TableContainer component={Paper}>

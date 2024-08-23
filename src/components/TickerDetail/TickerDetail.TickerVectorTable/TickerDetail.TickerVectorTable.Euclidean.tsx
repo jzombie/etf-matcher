@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import {
+  CircularProgress,
   Paper,
   Table,
   TableBody,
@@ -31,6 +32,7 @@ export type TickerVectorTableEuclideanProps = {
 export default function TickerVectorTableEuclidean({
   tickerId,
 }: TickerVectorTableEuclideanProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const [tickerDetails, setTickerDetails] = useState<
     TickerVectorWithEuclideanDistance[] | null
   >(null);
@@ -53,6 +55,8 @@ export default function TickerVectorTableEuclidean({
 
   useEffect(() => {
     if (tickerId) {
+      setIsLoading(true);
+
       store
         .fetchClosestTickers(tickerId)
         .then(async (closestTickers) => {
@@ -77,9 +81,16 @@ export default function TickerVectorTableEuclidean({
         })
         .catch((error) => {
           customLogger.error("Error fetching closest tickers:", error);
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
     }
   }, [tickerId]);
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
 
   return (
     <TableContainer component={Paper}>
