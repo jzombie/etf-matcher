@@ -64,6 +64,7 @@ export default function EncodedImage({
     <img
       src={base64 ? `data:image/png;base64,${base64}` : noImageAvailable}
       alt={alt}
+      className={className}
       {...rest}
     />
   );

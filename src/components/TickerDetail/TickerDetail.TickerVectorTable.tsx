@@ -14,7 +14,7 @@ import {
 import store from "@src/store";
 import type { RustServiceTickerDetail } from "@src/types";
 
-import EncodedImage from "@components/EncodedImage";
+import AvatarLogo from "@components/AvatarLogo";
 
 import useURLState from "@hooks/useURLState";
 
@@ -118,9 +118,8 @@ export default function TickerVectorTable({
                   {
                     // TODO: Use same avatar-like styling as in `SettingsManager`
                   }
-                  <EncodedImage
-                    encSrc={detail.logo_filename}
-                    style={{ width: 50 }}
+                  <AvatarLogo
+                    tickerDetail={detail as RustServiceTickerDetail}
                   />
                   <br />
                   {detail.symbol}
