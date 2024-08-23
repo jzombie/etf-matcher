@@ -101,7 +101,7 @@ export default function TickerVectorTableEuclidean({
               Held in ETF
             </TableCell>
             <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
-              Euclidian Distance
+              Euclidean Distance
             </TableCell>
           </TableRow>
         </TableHead>
