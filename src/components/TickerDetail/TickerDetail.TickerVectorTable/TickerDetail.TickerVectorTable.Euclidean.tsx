@@ -116,9 +116,6 @@ export default function TickerVectorTableEuclidean({
                 sx={{ cursor: "pointer" }}
               >
                 <TableCell sx={{ textAlign: "center", fontWeight: "bold" }}>
-                  {
-                    // TODO: Use same avatar-like styling as in `SettingsManager`
-                  }
                   <AvatarLogo
                     tickerDetail={detail as RustServiceTickerDetail}
                   />
