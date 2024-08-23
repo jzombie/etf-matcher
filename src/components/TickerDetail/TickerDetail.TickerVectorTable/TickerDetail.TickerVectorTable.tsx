@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 
-import { Button } from "@mui/material";
+import ShowChartIcon from "@mui/icons-material/ShowChart";
+import StraightenIcon from "@mui/icons-material/Straighten";
+import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 
 import Transition from "@components/Transition";
 
@@ -14,25 +16,42 @@ export type TickerVectorTableProps = {
 export default function TickerVectorTable({
   tickerId,
 }: TickerVectorTableProps) {
-  const [isEuclidean, setIsEuclidean] = useState(true);
+  const [alignment, setAlignment] = useState<"euclidean" | "cosine">(
+    "euclidean",
+  );
+
+  const handleAlignment = (
+    event: React.MouseEvent<HTMLElement>,
+    newAlignment: "euclidean" | "cosine" | null,
+  ) => {
+    if (newAlignment !== null) {
+      setAlignment(newAlignment);
+    }
+  };
 
   return (
     <>
-      {
-        // TODO: Improve switch componentry
-      }
-      <Button onClick={() => setIsEuclidean(true)} disabled={isEuclidean}>
-        Euclidean
-      </Button>
-      <Button onClick={() => setIsEuclidean(false)} disabled={!isEuclidean}>
-        Cosine
-      </Button>
+      <ToggleButtonGroup
+        value={alignment}
+        exclusive
+        onChange={handleAlignment}
+        aria-label="distance metric"
+      >
+        <ToggleButton value="euclidean" aria-label="euclidean">
+          <StraightenIcon />
+          Euclidean
+        </ToggleButton>
+        <ToggleButton value="cosine" aria-label="cosine">
+          <ShowChartIcon />
+          Cosine
+        </ToggleButton>
+      </ToggleButtonGroup>
 
       <Transition
-        trigger={isEuclidean}
-        direction={isEuclidean ? "right" : "left"}
+        trigger={alignment === "euclidean"}
+        direction={alignment === "euclidean" ? "right" : "left"}
       >
-        {isEuclidean ? (
+        {alignment === "euclidean" ? (
           <Euclidean tickerId={tickerId} />
         ) : (
           <Cosine tickerId={tickerId} />
