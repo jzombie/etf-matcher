@@ -2,6 +2,8 @@ import React, { useState } from "react";
 
 import { Button } from "@mui/material";
 
+import Transition from "@components/Transition";
+
 import Cosine from "./TickerDetail.TickerVectorTable.Cosine";
 import Euclidean from "./TickerDetail.TickerVectorTable.Euclidean";
 
@@ -26,16 +28,16 @@ export default function TickerVectorTable({
         Cosine
       </Button>
 
-      {
-        // TODO: Use `Transition` view?
-      }
-      <div>
+      <Transition
+        trigger={isEuclidean}
+        direction={isEuclidean ? "right" : "left"}
+      >
         {isEuclidean ? (
           <Euclidean tickerId={tickerId} />
         ) : (
           <Cosine tickerId={tickerId} />
         )}
-      </div>
+      </Transition>
     </>
   );
 }
