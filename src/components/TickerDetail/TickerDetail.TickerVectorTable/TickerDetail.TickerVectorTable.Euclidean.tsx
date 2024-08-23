@@ -24,14 +24,13 @@ export type TickerVectorWithDistance = RustServiceTickerDetail & {
   distance: number;
 };
 
-export type TickerVectorTableProps = {
+export type TickerVectorTableEuclideanProps = {
   tickerId: number;
 };
 
-// TODO: Add ability to switch between `Euclidean Distance` and `Cosine Similarity`
-export default function TickerVectorTable({
+export default function TickerVectorTableEuclidean({
   tickerId,
-}: TickerVectorTableProps) {
+}: TickerVectorTableEuclideanProps) {
   const [tickerDetails, setTickerDetails] = useState<
     TickerVectorWithDistance[] | null
   >(null);
