@@ -445,6 +445,7 @@ pub async fn rank_tickers_by_custom_vector_cosine_similarity(
                 let similarity =
                     cosine_similarity(&custom_vector, &other_vector.iter().collect::<Vec<_>>());
 
+                // TODO: Handle
                 let original_pca_coords = ticker_vector
                     .pca_coordinates()
                     .map(|coords| coords.iter().collect::<Vec<f32>>());
