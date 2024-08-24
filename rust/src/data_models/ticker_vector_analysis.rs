@@ -265,6 +265,7 @@ pub async fn triangulate_pca_coordinates(user_vector: Vec<f32>) -> Result<Vec<f3
 
 // TODO: Refactor so that custom vectors can be triangulated against known vectors
 // using their PCA coordinates to determine the relative position in the PCA space.
+//      - Use common base function and extension functions that fetch by ticker and by custom vector
 pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<Vec<TickerDistance>, String> {
     let owned_ticker_vectors = get_all_ticker_vectors().await?;
     let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
