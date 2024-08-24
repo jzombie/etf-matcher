@@ -55,7 +55,9 @@ export default function TickerDetailHeader({
             top: 0,
             left: 0,
             width: "100%",
-            backgroundColor: "rgba(0,0,0,.7)",
+            // Apply a gradient fade-out so the static header doesn't appear to overlay the scrollbar
+            backgroundImage:
+              "linear-gradient(to right, rgba(0,0,0,.7) 80%, rgba(0,0,0,0) 100%)",
             padding: 1,
             zIndex: 1000,
             display: "flex",
