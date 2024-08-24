@@ -1,16 +1,33 @@
 import React from "react";
 
-import {
-  Box,
-  CircularProgress,
-  Divider,
-  Paper,
-  Typography,
-} from "@mui/material";
+import { Box, CircularProgress, Grid, Paper, Typography } from "@mui/material";
 
 import type { TickerBucketTicker } from "@src/store";
 
+import AvatarLogo from "@components/AvatarLogo";
+
 import useTickerDetail from "@hooks/useTickerDetail";
+
+// Custom component for consistent styling
+const InfoItem = ({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) => (
+  <Box sx={{ minWidth: "200px", padding: 1 }}>
+    <Typography
+      variant="subtitle2"
+      sx={{ fontWeight: "bold", color: "#ffffff" }}
+    >
+      {label}:
+    </Typography>
+    <Typography variant="body1" sx={{ color: "#e0e0e0" }}>
+      {children}
+    </Typography>
+  </Box>
+);
 
 export type BucketTickerProps = {
   bucketTicker: TickerBucketTicker;
@@ -32,135 +49,64 @@ export default function BucketTicker({ bucketTicker }: BucketTickerProps) {
   return (
     <Paper
       sx={{
-        padding: 3,
+        padding: 2,
         margin: 2,
         backgroundColor: "#2b2b2b",
         borderRadius: 2,
       }}
     >
-      <Box display="flex" flexWrap="wrap" justifyContent="space-between">
-        <Box sx={{ flex: "1 1 250px", minWidth: "200px", padding: 1 }}>
-          <Typography
-            variant="subtitle2"
-            sx={{ fontWeight: "bold", color: "#ffffff" }}
-          >
-            Symbol:
-          </Typography>
-          <Typography variant="body1" sx={{ color: "#e0e0e0" }}>
-            {tickerDetail.symbol}
-          </Typography>
-        </Box>
-        <Box sx={{ flex: "1 1 250px", minWidth: "200px", padding: 1 }}>
-          <Typography
-            variant="subtitle2"
-            sx={{ fontWeight: "bold", color: "#ffffff" }}
-          >
-            Exchange:
-          </Typography>
-          <Typography variant="body1" sx={{ color: "#e0e0e0" }}>
+      <Grid container spacing={2} alignItems="center">
+        <Grid item xs={12} sm={6} md={4}>
+          <Box display="flex" alignItems="center">
+            <AvatarLogo tickerDetail={tickerDetail} />
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: "bold", color: "#ffffff", ml: 2 }}
+            >
+              {tickerDetail.symbol}
+            </Typography>
+          </Box>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <InfoItem label="Exchange">
             {tickerDetail.exchange_short_name || "N/A"}
-          </Typography>
-        </Box>
-        <Box sx={{ flex: "1 1 250px", minWidth: "200px", padding: 1 }}>
-          <Typography
-            variant="subtitle2"
-            sx={{ fontWeight: "bold", color: "#ffffff" }}
-          >
-            Company Name:
-          </Typography>
-          <Typography variant="body1" sx={{ color: "#e0e0e0" }}>
-            {tickerDetail.company_name}
-          </Typography>
-        </Box>
-        <Box sx={{ flex: "1 1 250px", minWidth: "200px", padding: 1 }}>
-          <Typography
-            variant="subtitle2"
-            sx={{ fontWeight: "bold", color: "#ffffff" }}
-          >
-            CIK:
-          </Typography>
-          <Typography variant="body1" sx={{ color: "#e0e0e0" }}>
-            {tickerDetail.cik}
-          </Typography>
-        </Box>
-        <Box sx={{ flex: "1 1 250px", minWidth: "200px", padding: 1 }}>
-          <Typography
-            variant="subtitle2"
-            sx={{ fontWeight: "bold", color: "#ffffff" }}
-          >
-            Country Code:
-          </Typography>
-          <Typography variant="body1" sx={{ color: "#e0e0e0" }}>
-            {tickerDetail.country_code}
-          </Typography>
-        </Box>
-        <Box sx={{ flex: "1 1 250px", minWidth: "200px", padding: 1 }}>
-          <Typography
-            variant="subtitle2"
-            sx={{ fontWeight: "bold", color: "#ffffff" }}
-          >
-            Industry:
-          </Typography>
-          <Typography variant="body1" sx={{ color: "#e0e0e0" }}>
+          </InfoItem>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <InfoItem label="Company Name">{tickerDetail.company_name}</InfoItem>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <InfoItem label="CIK">{tickerDetail.cik}</InfoItem>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <InfoItem label="Country Code">{tickerDetail.country_code}</InfoItem>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <InfoItem label="Industry">
             {tickerDetail.industry_name || "N/A"}
-          </Typography>
-        </Box>
-        <Box sx={{ flex: "1 1 250px", minWidth: "200px", padding: 1 }}>
-          <Typography
-            variant="subtitle2"
-            sx={{ fontWeight: "bold", color: "#ffffff" }}
-          >
-            Sector:
-          </Typography>
-          <Typography variant="body1" sx={{ color: "#e0e0e0" }}>
+          </InfoItem>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <InfoItem label="Sector">
             {tickerDetail.sector_name || "N/A"}
-          </Typography>
-        </Box>
-        <Box sx={{ flex: "1 1 250px", minWidth: "200px", padding: 1 }}>
-          <Typography
-            variant="subtitle2"
-            sx={{ fontWeight: "bold", color: "#ffffff" }}
-          >
-            Is ETF:
-          </Typography>
-          <Typography variant="body1" sx={{ color: "#e0e0e0" }}>
+          </InfoItem>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <InfoItem label="Is ETF">
             {tickerDetail.is_etf ? "Yes" : "No"}
-          </Typography>
-        </Box>
-        <Box sx={{ flex: "1 1 250px", minWidth: "200px", padding: 1 }}>
-          <Typography
-            variant="subtitle2"
-            sx={{ fontWeight: "bold", color: "#ffffff" }}
-          >
-            Is Held in ETF:
-          </Typography>
-          <Typography variant="body1" sx={{ color: "#e0e0e0" }}>
+          </InfoItem>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <InfoItem label="Is Held in ETF">
             {tickerDetail.is_held_in_etf ? "Yes" : "No"}
-          </Typography>
-        </Box>
-        <Box sx={{ flex: "1 1 250px", minWidth: "200px", padding: 1 }}>
-          <Typography
-            variant="subtitle2"
-            sx={{ fontWeight: "bold", color: "#ffffff" }}
-          >
-            Score Avg DCA:
-          </Typography>
-          <Typography variant="body1" sx={{ color: "#e0e0e0" }}>
+          </InfoItem>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <InfoItem label="Score Avg DCA">
             {tickerDetail.score_avg_dca?.toFixed(2)}
-          </Typography>
-        </Box>
-        <Box sx={{ flex: "1 1 250px", minWidth: "200px", padding: 1 }}>
-          <Typography
-            variant="subtitle2"
-            sx={{ fontWeight: "bold", color: "#ffffff" }}
-          >
-            Logo:
-          </Typography>
-          <Typography variant="body1" sx={{ color: "#e0e0e0" }}>
-            {tickerDetail.logo_filename || "N/A"}
-          </Typography>
-        </Box>
-      </Box>
+          </InfoItem>
+        </Grid>
+      </Grid>
     </Paper>
   );
 }
