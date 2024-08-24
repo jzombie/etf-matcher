@@ -98,6 +98,17 @@ export default function BucketList({ bucketType }: BucketListProps) {
                 Edit
               </Button>
 
+              <Typography
+                style={{
+                  display: "inline-block",
+                  marginLeft: 8,
+                  fontStyle: "italic",
+                }}
+                variant="body2"
+              >
+                {`${tickerBucket.tickers.length} item${tickerBucket.tickers.length !== 1 ? "s" : ""}`}
+              </Typography>
+
               {isEditDialogOpen && selectedBucket === tickerBucket && (
                 <BucketForm
                   bucketType={bucketType}
