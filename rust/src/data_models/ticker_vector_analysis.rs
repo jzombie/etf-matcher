@@ -34,7 +34,7 @@ pub async fn proto_analyze_tickers_with_quantity(tickers_with_quantity: Vec<Tick
     }
 
     // Await the custom_vector future
-    let custom_vector_result = generate_vector(tickers_with_quantity).await;
+    let custom_vector_result = generate_vector(&tickers_with_quantity).await;
 
     match custom_vector_result {
         Ok(custom_vector) => {
@@ -46,6 +46,23 @@ pub async fn proto_analyze_tickers_with_quantity(tickers_with_quantity: Vec<Tick
         Err(err) => {
             web_sys::console::error_1(&JsValue::from_str(&format!(
                 "Error generating vector: {}",
+                err
+            )));
+        }
+    }
+
+    let triangulated_pca_result = triangulate_pca_coordinates(&tickers_with_quantity).await;
+
+    match triangulated_pca_result {
+        Ok(triangulated_pca) => {
+            web_sys::console::log_1(&JsValue::from_str(&format!(
+                "Triangulated PCA: {:?}",
+                triangulated_pca
+            )));
+        }
+        Err(err) => {
+            web_sys::console::error_1(&JsValue::from_str(&format!(
+                "Error generating triangulated PCA: {}",
                 err
             )));
         }
@@ -75,13 +92,13 @@ fn find_target_vector_and_pca<'a>(
 }
 
 pub async fn generate_vector(
-    tickers_with_quantity: Vec<TickerWithQuantity>,
+    tickers_with_quantity: &Vec<TickerWithQuantity>,
 ) -> Result<Vec<f32>, String> {
     // Initialize an empty vector to hold the aggregated result
     let mut aggregated_vector: Vec<f32> = Vec::new();
 
     // Loop through each ticker in the input list, along with its corresponding quantity
-    for ticker_with_quantity in &tickers_with_quantity {
+    for ticker_with_quantity in tickers_with_quantity {
         // Fetch the vector associated with the current ticker_id asynchronously
         let ticker_vector = get_ticker_vector(ticker_with_quantity.ticker_id).await?;
 
@@ -124,75 +141,75 @@ pub async fn generate_vector(
 
 // TODO: Use
 // TODO: Perhaps instead of using `tickers_with_quantity` as the arg, supply the vector itself
-// pub async fn triangulate_pca_coordinates(
-//     tickers_with_quantity: Vec<TickerWithQuantity>,
-// ) -> Result<Vec<f32>, String> {
-//     // Step 1: Generate the new vector based on the given tickers and their quantities
-//     let new_vector = generate_vector(tickers_with_quantity).await?;
+pub async fn triangulate_pca_coordinates(
+    tickers_with_quantity: &Vec<TickerWithQuantity>,
+) -> Result<Vec<f32>, String> {
+    // Step 1: Generate the new vector based on the given tickers and their quantities
+    let new_vector = generate_vector(tickers_with_quantity).await?;
 
-//     // Fetch the ticker vectors binary data using `xhr_fetch`
-//     let url: &str = DataURL::FinancialVectors10K.value();
+    // Fetch the ticker vectors binary data using `xhr_fetch`
+    let url: &str = DataURL::FinancialVectors10K.value();
 
-//     let file_content = utils::xhr_fetch_cached(url.to_string())
-//         .await
-//         .map_err(|err| format!("Failed to fetch file: {:?}", err))?;
+    let file_content = utils::xhr_fetch_cached(url.to_string())
+        .await
+        .map_err(|err| format!("Failed to fetch file: {:?}", err))?;
 
-//     // Use the FlatBuffers `root_as_ticker_vectors` function to parse the buffer
-//     let ticker_vectors = root_as_ticker_vectors(&file_content)
-//         .map_err(|err| format!("Failed to parse TickerVectors: {:?}", err))?;
+    // Use the FlatBuffers `root_as_ticker_vectors` function to parse the buffer
+    let ticker_vectors = root_as_ticker_vectors(&file_content)
+        .map_err(|err| format!("Failed to parse TickerVectors: {:?}", err))?;
 
-//     let mut weighted_pca_coords: Vec<f32> = Vec::new();
-//     let mut total_weight: f32 = 0.0;
+    let mut weighted_pca_coords: Vec<f32> = Vec::new();
+    let mut total_weight: f32 = 0.0;
 
-//     // Step 2: Compute Euclidean distance between the new vector and every known vector
-//     if let Some(vectors) = ticker_vectors.vectors() {
-//         for i in 0..vectors.len() {
-//             let ticker_vector = vectors.get(i);
-//             if let Some(other_vector) = ticker_vector.vector() {
-//                 let distance = euclidean_distance(&new_vector, &other_vector);
+    // Step 2: Compute Euclidean distance between the new vector and every known vector
+    if let Some(vectors) = ticker_vectors.vectors() {
+        for i in 0..vectors.len() {
+            let ticker_vector = vectors.get(i);
+            if let Some(other_vector) = ticker_vector.vector() {
+                let distance = euclidean_distance(&new_vector, &other_vector);
 
-//                 if distance == 0.0 {
-//                     // If the distance is zero, return the PCA coordinates directly
-//                     if let Some(coords) = ticker_vector.pca_coordinates() {
-//                         return Ok(coords.iter().map(|c| c).collect());
-//                     } else {
-//                         return Err("PCA coordinates not found for the exact match.".to_string());
-//                     }
-//                 }
+                if distance == 0.0 {
+                    // If the distance is zero, return the PCA coordinates directly
+                    if let Some(coords) = ticker_vector.pca_coordinates() {
+                        return Ok(coords.iter().map(|c| c).collect());
+                    } else {
+                        return Err("PCA coordinates not found for the exact match.".to_string());
+                    }
+                }
 
-//                 // Extract PCA coordinates for weighting
-//                 if let Some(pca_coords) = ticker_vector.pca_coordinates() {
-//                     let pca_coords_vec: Vec<f32> = pca_coords.iter().map(|c| c).collect();
+                // Extract PCA coordinates for weighting
+                if let Some(pca_coords) = ticker_vector.pca_coordinates() {
+                    let pca_coords_vec: Vec<f32> = pca_coords.iter().map(|c| c).collect();
 
-//                     // Calculate weight as the inverse of the distance
-//                     let weight = 1.0 / distance;
+                    // Calculate weight as the inverse of the distance
+                    let weight = 1.0 / distance;
 
-//                     // Accumulate the weighted PCA coordinates
-//                     if weighted_pca_coords.is_empty() {
-//                         weighted_pca_coords = pca_coords_vec.iter().map(|&c| c * weight).collect();
-//                     } else {
-//                         for (j, &coord) in pca_coords_vec.iter().enumerate() {
-//                             weighted_pca_coords[j] += coord * weight;
-//                         }
-//                     }
+                    // Accumulate the weighted PCA coordinates
+                    if weighted_pca_coords.is_empty() {
+                        weighted_pca_coords = pca_coords_vec.iter().map(|&c| c * weight).collect();
+                    } else {
+                        for (j, &coord) in pca_coords_vec.iter().enumerate() {
+                            weighted_pca_coords[j] += coord * weight;
+                        }
+                    }
 
-//                     total_weight += weight;
-//                 }
-//             }
-//         }
-//     }
+                    total_weight += weight;
+                }
+            }
+        }
+    }
 
-//     if total_weight == 0.0 {
-//         return Err("No valid PCA coordinates found to triangulate.".to_string());
-//     }
+    if total_weight == 0.0 {
+        return Err("No valid PCA coordinates found to triangulate.".to_string());
+    }
 
-//     // Step 3: Normalize the weighted PCA coordinates
-//     for coord in &mut weighted_pca_coords {
-//         *coord /= total_weight;
-//     }
+    // Step 3: Normalize the weighted PCA coordinates
+    for coord in &mut weighted_pca_coords {
+        *coord /= total_weight;
+    }
 
-//     Ok(weighted_pca_coords)
-// }
+    Ok(weighted_pca_coords)
+}
 
 pub async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> {
     // Fetch the ticker vectors binary data using `xhr_fetch`
