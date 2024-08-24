@@ -3,6 +3,7 @@ use crate::types::TickerId;
 use crate::utils;
 use crate::DataURL;
 use financial_vectors::ten_k::root_as_ticker_vectors;
+use financial_vectors::ten_k::TickerVectors;
 use serde::Deserialize;
 use wasm_bindgen::JsValue;
 
@@ -29,17 +30,37 @@ pub struct TickerWithQuantity {
     pub quantity: u32,
 }
 
-pub async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> {
-    // Fetch the ticker vectors binary data using `xhr_fetch`
-    let url: &str = DataURL::FinancialVectors10K.value();
+pub struct OwnedTickerVectors {
+    pub data: Vec<u8>,
+    pub ticker_vectors: TickerVectors<'static>,
+}
 
+pub async fn get_all_ticker_vectors() -> Result<OwnedTickerVectors, String> {
+    let url = DataURL::FinancialVectors10K.value();
     let file_content = utils::xhr_fetch_cached(url.to_string())
         .await
         .map_err(|err| format!("Failed to fetch file: {:?}", err))?;
 
-    // Use the FlatBuffers `root_as_ticker_vectors` function to parse the buffer
-    let ticker_vectors = root_as_ticker_vectors(&file_content)
+    // Move the data into a Box to keep it around after parsing
+    let boxed_content = file_content.into_boxed_slice();
+
+    // Parse the boxed buffer into TickerVectors using FlatBuffers
+    let ticker_vectors = root_as_ticker_vectors(&boxed_content)
         .map_err(|err| format!("Failed to parse TickerVectors: {:?}", err))?;
+
+    // Leak the Box to convert the slice into a 'static reference
+    let ticker_vectors =
+        unsafe { std::mem::transmute::<TickerVectors, TickerVectors<'static>>(ticker_vectors) };
+
+    Ok(OwnedTickerVectors {
+        data: boxed_content.into_vec(),
+        ticker_vectors,
+    })
+}
+
+pub async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> {
+    let owned_ticker_vectors = get_all_ticker_vectors().await?;
+    let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
     // Get the vectors, which is an Option containing a flatbuffers::Vector
     if let Some(vectors) = ticker_vectors.vectors() {
@@ -190,16 +211,8 @@ pub async fn triangulate_pca_coordinates(
     // Step 1: Generate the new vector based on the given tickers and their quantities
     let new_vector = generate_vector(tickers_with_quantity).await?;
 
-    // Fetch the ticker vectors binary data using `xhr_fetch`
-    let url: &str = DataURL::FinancialVectors10K.value();
-
-    let file_content = utils::xhr_fetch_cached(url.to_string())
-        .await
-        .map_err(|err| format!("Failed to fetch file: {:?}", err))?;
-
-    // Use the FlatBuffers `root_as_ticker_vectors` function to parse the buffer
-    let ticker_vectors = root_as_ticker_vectors(&file_content)
-        .map_err(|err| format!("Failed to parse TickerVectors: {:?}", err))?;
+    let owned_ticker_vectors = get_all_ticker_vectors().await?;
+    let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
     let mut weighted_pca_coords: Vec<f32> = Vec::new();
     let mut total_weight: f32 = 0.0;
@@ -257,13 +270,34 @@ pub async fn triangulate_pca_coordinates(
 // TODO: Refactor so that custom vectors can be triangulated against known vectors
 // using their PCA coordinates to determine the relative position in the PCA space.
 pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<Vec<TickerDistance>, String> {
-    let url: &str = DataURL::FinancialVectors10K.value();
-    let file_content = utils::xhr_fetch_cached(url.to_string())
-        .await
-        .map_err(|err| format!("Failed to fetch file: {:?}", err))?;
+    let owned_ticker_vectors = get_all_ticker_vectors().await?;
+    let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
-    let ticker_vectors = root_as_ticker_vectors(&file_content)
-        .map_err(|err| format!("Failed to parse TickerVectors: {:?}", err))?;
+    // TODO: Remove
+    web_sys::console::log_1(&JsValue::from_str("fetch"));
+
+    // TODO: Remove
+    for i in 0..ticker_vectors.vectors().unwrap_or_default().len() {
+        let ticker_vector = ticker_vectors.vectors().unwrap().get(i);
+        web_sys::console::log_1(&JsValue::from_str(&format!(
+            "Available Ticker ID: {}",
+            ticker_vector.ticker_id()
+        )));
+    }
+    if let Some(vectors) = ticker_vectors.vectors() {
+        web_sys::console::log_1(&JsValue::from_str("Ticker vectors are available"));
+
+        // Iterate and log each Ticker ID
+        for i in 0..vectors.len() {
+            let ticker_vector = vectors.get(i);
+            web_sys::console::log_1(&JsValue::from_str(&format!(
+                "Available Ticker ID: {}",
+                ticker_vector.ticker_id()
+            )));
+        }
+    } else {
+        web_sys::console::log_1(&JsValue::from_str("No ticker vectors found"));
+    }
 
     // Use the helper function to find the target vector and PCA coordinates
     let (target_vector, target_pca_coords) =
@@ -329,13 +363,8 @@ where
 pub async fn rank_tickers_by_cosine_similarity(
     ticker_id: TickerId,
 ) -> Result<Vec<CosineSimilarityResult>, String> {
-    let url = DataURL::FinancialVectors10K.value();
-    let file_content = utils::xhr_fetch_cached(url.to_string())
-        .await
-        .map_err(|err| format!("Failed to fetch file: {:?}", err))?;
-
-    let ticker_vectors = root_as_ticker_vectors(&file_content)
-        .map_err(|err| format!("Failed to parse TickerVectors: {:?}", err))?;
+    let owned_ticker_vectors = get_all_ticker_vectors().await?;
+    let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
     let (target_vector, target_pca_coords) =
         match find_target_vector_and_pca(&ticker_vectors, ticker_id) {
