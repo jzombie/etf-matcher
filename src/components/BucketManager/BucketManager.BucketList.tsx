@@ -30,6 +30,11 @@ export type BucketListProps = {
   bucketType: TickerBucket["type"];
 };
 
+{
+  // TODO: Finish wiring up `Delete` button and update the text accordingly
+  // TODO: Add button to navigate to the full symbol
+}
+
 export default function BucketList({ bucketType }: BucketListProps) {
   const { tickerBuckets } = useStoreStateReader("tickerBuckets");
 
