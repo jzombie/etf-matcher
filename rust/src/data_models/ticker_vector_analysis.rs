@@ -4,6 +4,7 @@ use crate::utils;
 use crate::DataURL;
 use financial_vectors::ten_k::root_as_ticker_vectors;
 use serde::Deserialize;
+use wasm_bindgen::JsValue;
 
 #[derive(Debug, Clone)]
 pub struct TickerDistance {
@@ -20,7 +21,7 @@ pub struct TickerWithQuantity {
 }
 
 // TODO: Refactor
-pub fn proto_analyze_tickers_with_quantity(tickers_with_quantity: Vec<TickerWithQuantity>) {
+pub async fn proto_analyze_tickers_with_quantity(tickers_with_quantity: Vec<TickerWithQuantity>) {
     // Log the start of the analysis
     web_sys::console::log_1(&"Starting analysis of tickers with quantities".into());
 
@@ -30,6 +31,24 @@ pub fn proto_analyze_tickers_with_quantity(tickers_with_quantity: Vec<TickerWith
             ticker_with_quantity.ticker_id, ticker_with_quantity.quantity
         );
         web_sys::console::log_1(&message.into());
+    }
+
+    // Await the custom_vector future
+    let custom_vector_result = generate_vector(tickers_with_quantity).await;
+
+    match custom_vector_result {
+        Ok(custom_vector) => {
+            web_sys::console::log_1(&JsValue::from_str(&format!(
+                "Custom vector: {:?}",
+                custom_vector
+            )));
+        }
+        Err(err) => {
+            web_sys::console::error_1(&JsValue::from_str(&format!(
+                "Error generating vector: {}",
+                err
+            )));
+        }
     }
 
     // Log the end of the analysis
@@ -55,54 +74,53 @@ fn find_target_vector_and_pca<'a>(
     })
 }
 
-// TODO: Use
-// pub async fn generate_vector(
-//     tickers_with_quantity: Vec<TickerWithQuantity>,
-// ) -> Result<Vec<f32>, String> {
-//     // Initialize an empty vector to hold the aggregated result
-//     let mut aggregated_vector: Vec<f32> = Vec::new();
+pub async fn generate_vector(
+    tickers_with_quantity: Vec<TickerWithQuantity>,
+) -> Result<Vec<f32>, String> {
+    // Initialize an empty vector to hold the aggregated result
+    let mut aggregated_vector: Vec<f32> = Vec::new();
 
-//     // Loop through each ticker in the input list, along with its corresponding quantity
-//     for ticker_with_quantity in &tickers_with_quantity {
-//         // Fetch the vector associated with the current ticker_id asynchronously
-//         let ticker_vector = get_ticker_vector(ticker_with_quantity.ticker_id).await?;
+    // Loop through each ticker in the input list, along with its corresponding quantity
+    for ticker_with_quantity in &tickers_with_quantity {
+        // Fetch the vector associated with the current ticker_id asynchronously
+        let ticker_vector = get_ticker_vector(ticker_with_quantity.ticker_id).await?;
 
-//         // Check if the aggregated_vector is empty, which will only be true for the first ticker
-//         if aggregated_vector.is_empty() {
-//             // Initialize the aggregated_vector with the values from the first ticker's vector,
-//             // scaling each value by the quantity associated with this ticker.
-//             aggregated_vector = ticker_vector
-//                 .iter()
-//                 .map(|&value| value * ticker_with_quantity.quantity as f32)
-//                 .collect();
-//         } else {
-//             // If this is not the first ticker, add the current ticker's vector to the
-//             // aggregated_vector. Each element of the vector is scaled by the quantity
-//             // associated with this ticker and then added to the corresponding element in the
-//             // aggregated_vector.
-//             for (i, &value) in ticker_vector.iter().enumerate() {
-//                 aggregated_vector[i] += value * ticker_with_quantity.quantity as f32;
-//             }
-//         }
-//     }
+        // Check if the aggregated_vector is empty, which will only be true for the first ticker
+        if aggregated_vector.is_empty() {
+            // Initialize the aggregated_vector with the values from the first ticker's vector,
+            // scaling each value by the quantity associated with this ticker.
+            aggregated_vector = ticker_vector
+                .iter()
+                .map(|&value| value * ticker_with_quantity.quantity as f32)
+                .collect();
+        } else {
+            // If this is not the first ticker, add the current ticker's vector to the
+            // aggregated_vector. Each element of the vector is scaled by the quantity
+            // associated with this ticker and then added to the corresponding element in the
+            // aggregated_vector.
+            for (i, &value) in ticker_vector.iter().enumerate() {
+                aggregated_vector[i] += value * ticker_with_quantity.quantity as f32;
+            }
+        }
+    }
 
-//     // Calculate the total quantity by summing up the quantities of all tickers
-//     let total_quantity: u32 = tickers_with_quantity.iter().map(|t| t.quantity).sum();
+    // Calculate the total quantity by summing up the quantities of all tickers
+    let total_quantity: u32 = tickers_with_quantity.iter().map(|t| t.quantity).sum();
 
-//     // Check if the total quantity is zero, which would mean that the function can't generate a valid vector
-//     if total_quantity == 0 {
-//         return Err("Total quantity is zero, cannot generate a valid vector.".to_string());
-//     }
+    // Check if the total quantity is zero, which would mean that the function can't generate a valid vector
+    if total_quantity == 0 {
+        return Err("Total quantity is zero, cannot generate a valid vector.".to_string());
+    }
 
-//     // Normalize the aggregated_vector by dividing each element by the total quantity.
-//     // This step essentially computes the weighted average of the vectors.
-//     for value in &mut aggregated_vector {
-//         *value /= total_quantity as f32;
-//     }
+    // Normalize the aggregated_vector by dividing each element by the total quantity.
+    // This step essentially computes the weighted average of the vectors.
+    for value in &mut aggregated_vector {
+        *value /= total_quantity as f32;
+    }
 
-//     // Return the resulting aggregated and normalized vector
-//     Ok(aggregated_vector)
-// }
+    // Return the resulting aggregated and normalized vector
+    Ok(aggregated_vector)
+}
 
 // TODO: Use
 // TODO: Perhaps instead of using `tickers_with_quantity` as the arg, supply the vector itself
@@ -176,40 +194,39 @@ fn find_target_vector_and_pca<'a>(
 //     Ok(weighted_pca_coords)
 // }
 
-// TODO: Use?
-// pub async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> {
-//     // Fetch the ticker vectors binary data using `xhr_fetch`
-//     let url: &str = DataURL::FinancialVectors10K.value();
+pub async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> {
+    // Fetch the ticker vectors binary data using `xhr_fetch`
+    let url: &str = DataURL::FinancialVectors10K.value();
 
-//     let file_content = utils::xhr_fetch_cached(url.to_string())
-//         .await
-//         .map_err(|err| format!("Failed to fetch file: {:?}", err))?;
+    let file_content = utils::xhr_fetch_cached(url.to_string())
+        .await
+        .map_err(|err| format!("Failed to fetch file: {:?}", err))?;
 
-//     // Use the FlatBuffers `root_as_ticker_vectors` function to parse the buffer
-//     let ticker_vectors = root_as_ticker_vectors(&file_content)
-//         .map_err(|err| format!("Failed to parse TickerVectors: {:?}", err))?;
+    // Use the FlatBuffers `root_as_ticker_vectors` function to parse the buffer
+    let ticker_vectors = root_as_ticker_vectors(&file_content)
+        .map_err(|err| format!("Failed to parse TickerVectors: {:?}", err))?;
 
-//     // Get the vectors, which is an Option containing a flatbuffers::Vector
-//     if let Some(vectors) = ticker_vectors.vectors() {
-//         // Loop through each ticker vector in the Vector
-//         for i in 0..vectors.len() {
-//             let ticker_vector = vectors.get(i);
-//             // TODO: Fix IDL so it doesn't have to cast
-//             if ticker_vector.ticker_id() as TickerId == ticker_id {
-//                 // Convert the vector to a Rust Vec<f32> and return it
-//                 if let Some(vector_data) = ticker_vector.vector() {
-//                     let vector: Vec<f32> = vector_data.iter().collect();
-//                     return Ok(vector);
-//                 } else {
-//                     return Err("No vector data found for the given Ticker ID".to_string());
-//                 }
-//             }
-//         }
-//     }
+    // Get the vectors, which is an Option containing a flatbuffers::Vector
+    if let Some(vectors) = ticker_vectors.vectors() {
+        // Loop through each ticker vector in the Vector
+        for i in 0..vectors.len() {
+            let ticker_vector = vectors.get(i);
+            // TODO: Fix IDL so it doesn't have to cast
+            if ticker_vector.ticker_id() as TickerId == ticker_id {
+                // Convert the vector to a Rust Vec<f32> and return it
+                if let Some(vector_data) = ticker_vector.vector() {
+                    let vector: Vec<f32> = vector_data.iter().collect();
+                    return Ok(vector);
+                } else {
+                    return Err("No vector data found for the given Ticker ID".to_string());
+                }
+            }
+        }
+    }
 
-//     // If the ticker_id was not found, return an error
-//     Err("Ticker ID not found".to_string())
-// }
+    // If the ticker_id was not found, return an error
+    Err("Ticker ID not found".to_string())
+}
 
 // TODO: Refactor so that custom vectors can be triangulated against known vectors
 // using their PCA coordinates to determine the relative position in the PCA space.

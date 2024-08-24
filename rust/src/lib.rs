@@ -323,7 +323,7 @@ pub fn clear_cache() {
 
 // TODO: Refactor as needed
 #[wasm_bindgen]
-pub fn proto_analyze_tickers_with_quantity(
+pub async fn proto_analyze_tickers_with_quantity(
     tickers_with_quantity: JsValue,
 ) -> Result<JsValue, JsValue> {
     // Deserialize the input JsValue into Rust Vec<TickerWithQuantity>
@@ -332,7 +332,7 @@ pub fn proto_analyze_tickers_with_quantity(
             .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
 
     // Call the Rust function to analyze the tickers
-    ticker_vector_analysis::proto_analyze_tickers_with_quantity(tickers_with_quantity);
+    ticker_vector_analysis::proto_analyze_tickers_with_quantity(tickers_with_quantity).await;
 
     // Return success response
     Ok(JsValue::from_bool(true))
