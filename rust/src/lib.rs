@@ -1,4 +1,5 @@
 extern crate flatbuffers as fb;
+use data_models::ticker_vector_analysis::TickerWithQuantity;
 use qrcode_generator::QrCodeEcc;
 use serde_wasm_bindgen::to_value;
 use std::panic;
@@ -182,26 +183,6 @@ pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<Js
 }
 
 #[wasm_bindgen]
-pub fn get_cache_size() -> usize {
-    lib_get_cache_size()
-}
-
-#[wasm_bindgen]
-pub fn get_cache_details() -> JsValue {
-    lib_get_cache_details()
-}
-
-#[wasm_bindgen]
-pub fn remove_cache_entry(key: &str) {
-    lib_remove_cache_entry(key);
-}
-
-#[wasm_bindgen]
-pub fn clear_cache() {
-    lib_clear_cache();
-}
-
-#[wasm_bindgen]
 pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<JsValue, JsValue> {
     // Call the find_closest_tickers function from the ticker_vector_analysis module
     let closest_tickers = ticker_vector_analysis::find_closest_tickers(ticker_id)
@@ -318,4 +299,41 @@ pub async fn rank_tickers_by_cosine_similarity(ticker_id: TickerId) -> Result<Js
     }
 
     Ok(js_array.into())
+}
+
+#[wasm_bindgen]
+pub fn get_cache_size() -> usize {
+    lib_get_cache_size()
+}
+
+#[wasm_bindgen]
+pub fn get_cache_details() -> JsValue {
+    lib_get_cache_details()
+}
+
+#[wasm_bindgen]
+pub fn remove_cache_entry(key: &str) {
+    lib_remove_cache_entry(key);
+}
+
+#[wasm_bindgen]
+pub fn clear_cache() {
+    lib_clear_cache();
+}
+
+// TODO: Refactor as needed
+#[wasm_bindgen]
+pub fn proto_analyze_tickers_with_quantity(
+    tickers_with_quantity: JsValue,
+) -> Result<JsValue, JsValue> {
+    // Deserialize the input JsValue into Rust Vec<TickerWithQuantity>
+    let tickers_with_quantity: Vec<TickerWithQuantity> =
+        serde_wasm_bindgen::from_value(tickers_with_quantity)
+            .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
+
+    // Call the Rust function to analyze the tickers
+    ticker_vector_analysis::proto_analyze_tickers_with_quantity(tickers_with_quantity);
+
+    // Return success response
+    Ok(JsValue::from_bool(true))
 }

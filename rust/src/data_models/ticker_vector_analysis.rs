@@ -3,6 +3,7 @@ use crate::types::TickerId;
 use crate::utils;
 use crate::DataURL;
 use financial_vectors::ten_k::root_as_ticker_vectors;
+use serde::Deserialize;
 
 #[derive(Debug, Clone)]
 pub struct TickerDistance {
@@ -12,11 +13,28 @@ pub struct TickerDistance {
     pub translated_pca_coords: Vec<f32>,
 }
 
-// TODO: Use
-// pub struct TickerWithQuantity {
-//     pub ticker_id: TickerId,
-//     pub quantity: u32,
-// }
+#[derive(Deserialize)]
+pub struct TickerWithQuantity {
+    pub ticker_id: TickerId,
+    pub quantity: u32,
+}
+
+// TODO: Refactor
+pub fn proto_analyze_tickers_with_quantity(tickers_with_quantity: Vec<TickerWithQuantity>) {
+    // Log the start of the analysis
+    web_sys::console::log_1(&"Starting analysis of tickers with quantities".into());
+
+    for ticker_with_quantity in tickers_with_quantity.iter() {
+        let message = format!(
+            "Ticker ID: {}, Quantity: {}",
+            ticker_with_quantity.ticker_id, ticker_with_quantity.quantity
+        );
+        web_sys::console::log_1(&message.into());
+    }
+
+    // Log the end of the analysis
+    web_sys::console::log_1(&"Analysis completed.".into());
+}
 
 fn find_target_vector_and_pca<'a>(
     ticker_vectors: &'a financial_vectors::ten_k::TickerVectors<'a>,

@@ -1,9 +1,10 @@
 import React, { useMemo } from "react";
 
 import AssessmentIcon from "@mui/icons-material/Assessment";
-import { Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 
 import { TickerBucket } from "@src/store";
+import store from "@src/store";
 
 import Section from "@components/Section";
 
@@ -66,6 +67,17 @@ export default function TickerBucketList({
                 />
               ))}
             </div>
+
+            {
+              // TODO: Remove; Just for debugging
+            }
+            <Button
+              onClick={() =>
+                store.protoAnalyzeTickersWithQuantity(tickerBucket)
+              }
+            >
+              PROTO::createCustomVector()
+            </Button>
           </Section>
         </li>
       ))}

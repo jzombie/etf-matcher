@@ -833,6 +833,21 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       window.location.reload();
     });
   }
+
+  // TODO: Refactor as needed
+  async protoAnalyzeTickersWithQuantity(tickerBucket: TickerBucket) {
+    // TODO: Define Rust translation type
+    const rustServiceTickersWithQuantity = tickerBucket.tickers.map(
+      (ticker) => ({
+        ticker_id: ticker.tickerId,
+        quantity: ticker.quantity,
+      }),
+    );
+
+    callRustService("proto_analyze_tickers_with_quantity", [
+      rustServiceTickersWithQuantity,
+    ]);
+  }
 }
 
 const store = new _Store();
