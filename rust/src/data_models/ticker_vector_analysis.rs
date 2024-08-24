@@ -20,7 +20,7 @@ pub struct TickerWithQuantity {
     pub quantity: u32,
 }
 
-pub async fn get_all_ticker_vectors() -> Result<Vec<(TickerId, Vec<f32>)>, String> {
+pub async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> {
     // Fetch the ticker vectors binary data using `xhr_fetch`
     let url: &str = DataURL::FinancialVectors10K.value();
 
@@ -32,29 +32,21 @@ pub async fn get_all_ticker_vectors() -> Result<Vec<(TickerId, Vec<f32>)>, Strin
     let ticker_vectors = root_as_ticker_vectors(&file_content)
         .map_err(|err| format!("Failed to parse TickerVectors: {:?}", err))?;
 
-    // Collect all vectors into a Vec<(TickerId, Vec<f32>)>
-    let all_vectors: Vec<(TickerId, Vec<f32>)> = ticker_vectors
-        .vectors()
-        .ok_or("No vectors found.")?
-        .iter()
-        .filter_map(|ticker_vector| {
-            let ticker_id = ticker_vector.ticker_id() as TickerId;
-            ticker_vector.vector().map(|vector_data| {
-                (ticker_id, vector_data.iter().collect::<Vec<f32>>()) // Pair TickerId with Vec<f32>
-            })
-        })
-        .collect();
-
-    Ok(all_vectors)
-}
-
-pub async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> {
-    let ticker_vectors = get_all_ticker_vectors().await?;
-
-    // Find the vector corresponding to the given ticker_id
-    for (id, vector) in ticker_vectors {
-        if id == ticker_id {
-            return Ok(vector);
+    // Get the vectors, which is an Option containing a flatbuffers::Vector
+    if let Some(vectors) = ticker_vectors.vectors() {
+        // Loop through each ticker vector in the Vector
+        for i in 0..vectors.len() {
+            let ticker_vector = vectors.get(i);
+            // TODO: Fix IDL so it doesn't have to cast
+            if ticker_vector.ticker_id() as TickerId == ticker_id {
+                // Convert the vector to a Rust Vec<f32> and return it
+                if let Some(vector_data) = ticker_vector.vector() {
+                    let vector: Vec<f32> = vector_data.iter().collect();
+                    return Ok(vector);
+                } else {
+                    return Err("No vector data found for the given Ticker ID".to_string());
+                }
+            }
         }
     }
 
