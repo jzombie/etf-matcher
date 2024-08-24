@@ -100,7 +100,7 @@ pub async fn proto_analyze_tickers_with_quantity(tickers_with_quantity: Vec<Tick
     }
 
     // Await the custom_vector future
-    let custom_vector_result = generate_vector(&tickers_with_quantity).await;
+    let custom_vector_result = generate_bucket_vector(&tickers_with_quantity).await;
 
     match custom_vector_result {
         Ok(custom_vector) => {
@@ -157,8 +157,7 @@ fn find_target_vector_and_pca<'a>(
     })
 }
 
-// TODO: Rename
-pub async fn generate_vector(
+pub async fn generate_bucket_vector(
     tickers_with_quantity: &Vec<TickerWithQuantity>,
 ) -> Result<Vec<f32>, String> {
     // Initialize an empty vector to hold the aggregated result
@@ -211,7 +210,7 @@ pub async fn triangulate_pca_coordinates(
     tickers_with_quantity: &Vec<TickerWithQuantity>,
 ) -> Result<Vec<f32>, String> {
     // Step 1: Generate the new vector based on the given tickers and their quantities
-    let new_vector = generate_vector(tickers_with_quantity).await?;
+    let new_vector = generate_bucket_vector(tickers_with_quantity).await?;
 
     let owned_ticker_vectors = get_all_ticker_vectors().await?;
     let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
