@@ -20,6 +20,40 @@ pub struct TickerWithQuantity {
     pub quantity: u32,
 }
 
+pub async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> {
+    // Fetch the ticker vectors binary data using `xhr_fetch`
+    let url: &str = DataURL::FinancialVectors10K.value();
+
+    let file_content = utils::xhr_fetch_cached(url.to_string())
+        .await
+        .map_err(|err| format!("Failed to fetch file: {:?}", err))?;
+
+    // Use the FlatBuffers `root_as_ticker_vectors` function to parse the buffer
+    let ticker_vectors = root_as_ticker_vectors(&file_content)
+        .map_err(|err| format!("Failed to parse TickerVectors: {:?}", err))?;
+
+    // Get the vectors, which is an Option containing a flatbuffers::Vector
+    if let Some(vectors) = ticker_vectors.vectors() {
+        // Loop through each ticker vector in the Vector
+        for i in 0..vectors.len() {
+            let ticker_vector = vectors.get(i);
+            // TODO: Fix IDL so it doesn't have to cast
+            if ticker_vector.ticker_id() as TickerId == ticker_id {
+                // Convert the vector to a Rust Vec<f32> and return it
+                if let Some(vector_data) = ticker_vector.vector() {
+                    let vector: Vec<f32> = vector_data.iter().collect();
+                    return Ok(vector);
+                } else {
+                    return Err("No vector data found for the given Ticker ID".to_string());
+                }
+            }
+        }
+    }
+
+    // If the ticker_id was not found, return an error
+    Err("Ticker ID not found".to_string())
+}
+
 // TODO: Refactor
 pub async fn proto_analyze_tickers_with_quantity(tickers_with_quantity: Vec<TickerWithQuantity>) {
     // Log the start of the analysis
@@ -139,7 +173,6 @@ pub async fn generate_vector(
     Ok(aggregated_vector)
 }
 
-// TODO: Use
 // TODO: Perhaps instead of using `tickers_with_quantity` as the arg, supply the vector itself
 pub async fn triangulate_pca_coordinates(
     tickers_with_quantity: &Vec<TickerWithQuantity>,
@@ -209,40 +242,6 @@ pub async fn triangulate_pca_coordinates(
     }
 
     Ok(weighted_pca_coords)
-}
-
-pub async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> {
-    // Fetch the ticker vectors binary data using `xhr_fetch`
-    let url: &str = DataURL::FinancialVectors10K.value();
-
-    let file_content = utils::xhr_fetch_cached(url.to_string())
-        .await
-        .map_err(|err| format!("Failed to fetch file: {:?}", err))?;
-
-    // Use the FlatBuffers `root_as_ticker_vectors` function to parse the buffer
-    let ticker_vectors = root_as_ticker_vectors(&file_content)
-        .map_err(|err| format!("Failed to parse TickerVectors: {:?}", err))?;
-
-    // Get the vectors, which is an Option containing a flatbuffers::Vector
-    if let Some(vectors) = ticker_vectors.vectors() {
-        // Loop through each ticker vector in the Vector
-        for i in 0..vectors.len() {
-            let ticker_vector = vectors.get(i);
-            // TODO: Fix IDL so it doesn't have to cast
-            if ticker_vector.ticker_id() as TickerId == ticker_id {
-                // Convert the vector to a Rust Vec<f32> and return it
-                if let Some(vector_data) = ticker_vector.vector() {
-                    let vector: Vec<f32> = vector_data.iter().collect();
-                    return Ok(vector);
-                } else {
-                    return Err("No vector data found for the given Ticker ID".to_string());
-                }
-            }
-        }
-    }
-
-    // If the ticker_id was not found, return an error
-    Err("Ticker ID not found".to_string())
 }
 
 // TODO: Refactor so that custom vectors can be triangulated against known vectors
