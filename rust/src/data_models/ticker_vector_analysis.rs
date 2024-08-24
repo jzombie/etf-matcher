@@ -263,9 +263,51 @@ pub async fn triangulate_pca_coordinates(user_vector: Vec<f32>) -> Result<Vec<f3
     Ok(weighted_pca_coords)
 }
 
-// TODO: Refactor so that custom vectors can be triangulated against known vectors
-// using their PCA coordinates to determine the relative position in the PCA space.
-//      - Use common base function and extension functions that fetch by ticker and by custom vector
+// Base function that computes distances and similarities
+async fn find_closest_tickers_by_vector(
+    target_vector: &[f32],
+    target_pca_coords: &[f32],
+    ticker_vectors: &TickerVectors<'_>,
+) -> Result<Vec<TickerDistance>, String> {
+    let mut results: Vec<TickerDistance> = Vec::new();
+
+    if let Some(vectors) = ticker_vectors.vectors() {
+        for i in 0..vectors.len() {
+            let ticker_vector = vectors.get(i);
+            if let Some(other_vector) = ticker_vector.vector() {
+                let distance = euclidean_distance(target_vector, &other_vector);
+
+                let original_pca_coords = ticker_vector
+                    .pca_coordinates()
+                    .map(|coords| coords.iter().collect::<Vec<f32>>())
+                    .unwrap_or_default();
+
+                let translated_pca_coords = original_pca_coords
+                    .iter()
+                    .zip(target_pca_coords)
+                    .map(|(c, &target_c)| c - target_c)
+                    .collect::<Vec<f32>>();
+
+                results.push(TickerDistance {
+                    ticker_id: ticker_vector.ticker_id() as TickerId,
+                    distance,
+                    original_pca_coords,
+                    translated_pca_coords,
+                });
+            }
+        }
+    }
+
+    results.sort_by(|a, b| {
+        a.distance
+            .partial_cmp(&b.distance)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
+    Ok(results.into_iter().take(20).collect())
+}
+
+// TODO: Rename
+// Wrapper function for finding closest tickers by `ticker_id`
 pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<Vec<TickerDistance>, String> {
     let owned_ticker_vectors = get_all_ticker_vectors().await?;
     let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
@@ -277,45 +319,24 @@ pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<Vec<TickerDista
             None => return Err("Ticker ID or PCA coordinates not found.".to_string()),
         };
 
-    let mut results: Vec<TickerDistance> = Vec::new();
-    if let Some(vectors) = ticker_vectors.vectors() {
-        for i in 0..vectors.len() {
-            let ticker_vector = vectors.get(i);
-            if ticker_vector.ticker_id() as TickerId != ticker_id {
-                if let Some(other_vector) = ticker_vector.vector() {
-                    let distance =
-                        euclidean_distance(&target_vector.iter().collect::<Vec<_>>(), other_vector);
+    find_closest_tickers_by_vector(
+        &target_vector.iter().collect::<Vec<_>>(),
+        &target_pca_coords,
+        &ticker_vectors,
+    )
+    .await
+}
 
-                    let original_pca_coords = ticker_vector
-                        .pca_coordinates()
-                        .map(|coords| coords.iter().collect::<Vec<f32>>())
-                        .unwrap_or_default();
+// TODO: Rename
+// Wrapper function for finding closest tickers using a custom vector
+pub async fn find_closest_tickers_by_custom_vector(
+    custom_vector: Vec<f32>,
+    custom_pca_coords: Vec<f32>,
+) -> Result<Vec<TickerDistance>, String> {
+    let owned_ticker_vectors = get_all_ticker_vectors().await?;
+    let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
-                    let translated_pca_coords = original_pca_coords
-                        .iter()
-                        .zip(&target_pca_coords)
-                        .map(|(c, &target_c)| c - target_c)
-                        .collect::<Vec<f32>>();
-
-                    results.push(TickerDistance {
-                        ticker_id: ticker_vector.ticker_id() as TickerId,
-                        distance,
-                        original_pca_coords,
-                        translated_pca_coords,
-                    });
-                }
-            }
-        }
-    }
-
-    results.sort_by(|a, b| {
-        a.distance
-            .partial_cmp(&b.distance)
-            .unwrap_or(std::cmp::Ordering::Equal)
-    });
-    let top_20 = results.into_iter().take(20).collect();
-
-    Ok(top_20)
+    find_closest_tickers_by_vector(&custom_vector, &custom_pca_coords, &ticker_vectors).await
 }
 
 // Helper function to compute Euclidean distance between two vectors
