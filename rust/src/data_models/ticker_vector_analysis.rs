@@ -133,6 +133,7 @@ fn find_target_vector_and_pca<'a>(
     })
 }
 
+// TODO: Rename
 pub async fn generate_vector(
     tickers_with_quantity: &Vec<TickerWithQuantity>,
 ) -> Result<Vec<f32>, String> {
