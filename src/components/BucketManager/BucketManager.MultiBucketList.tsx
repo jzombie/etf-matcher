@@ -3,7 +3,6 @@ import React, { useId, useMemo, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import {
-  Box,
   Button,
   Dialog,
   DialogActions,
@@ -25,11 +24,11 @@ import useStoreStateReader from "@hooks/useStoreStateReader";
 import TickerBucketView from "./BucketManager.Bucket";
 import BucketForm from "./BucketManager.BucketForm";
 
-export type BucketListProps = {
+export type MultiBucketListProps = {
   bucketType: TickerBucket["type"];
 };
 
-export default function BucketList({ bucketType }: BucketListProps) {
+export default function MultiBucketList({ bucketType }: MultiBucketListProps) {
   const { tickerBuckets } = useStoreStateReader("tickerBuckets");
 
   const localTickerBucket = useMemo(
