@@ -45,6 +45,11 @@ export type BucketTickerProps = {
   bucketTicker: TickerBucketTicker;
 };
 
+{
+  // TODO: Finish wiring up `Delete` button and update the text accordingly
+  // TODO: Add button to navigate to the full symbol
+}
+
 export default function BucketTicker({ bucketTicker }: BucketTickerProps) {
   const { isLoadingTickerDetail, tickerDetail } = useTickerDetail(
     bucketTicker.tickerId,

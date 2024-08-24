@@ -17,23 +17,17 @@ import Padding from "@layoutKit/Padding";
 import store from "@src/store";
 import type { TickerBucket } from "@src/store";
 
-import LazyRender from "@components/LazyRender";
 import SearchModalButton from "@components/SearchModalButton";
 import Section from "@components/Section";
 
 import useStoreStateReader from "@hooks/useStoreStateReader";
 
-import BucketTicker from "./BucketManager.Bucket.Ticker";
+import TickerBucketView from "./BucketManager.Bucket";
 import BucketForm from "./BucketManager.BucketForm";
 
 export type BucketListProps = {
   bucketType: TickerBucket["type"];
 };
-
-{
-  // TODO: Finish wiring up `Delete` button and update the text accordingly
-  // TODO: Add button to navigate to the full symbol
-}
 
 export default function BucketList({ bucketType }: BucketListProps) {
   const { tickerBuckets } = useStoreStateReader("tickerBuckets");
@@ -138,16 +132,7 @@ export default function BucketList({ bucketType }: BucketListProps) {
                   <SearchModalButton />
                 </>
               ) : (
-                <LazyRender>
-                  <Box sx={{ marginTop: 1 }}>
-                    {tickerBucket.tickers.map((bucketTicker) => (
-                      <BucketTicker
-                        key={bucketTicker.tickerId}
-                        bucketTicker={bucketTicker}
-                      />
-                    ))}
-                  </Box>
-                </LazyRender>
+                <TickerBucketView tickerBucket={tickerBucket} />
               )}
             </Section>
           </Padding>
