@@ -1,9 +1,0 @@
-# Specify the paths to include or exclude from the review
-reviews:
-  path_filters:
-    include:
-      - "**/*" # Include all files
-    exclude: []
-
-# Set language preferences (optional)
-language: en-US
