@@ -4,9 +4,9 @@ import { Box, ButtonBase } from "@mui/material";
 
 import type { RustServiceTickerDetail } from "@src/types";
 
-import useURLState from "@hooks/useURLState";
+import AvatarLogo from "@components/AvatarLogo";
 
-import EncodedImage from "../EncodedImage";
+import useURLState from "@hooks/useURLState";
 
 export type TickerDetailStaticHeaderProps = {
   tickerDetail: RustServiceTickerDetail;
@@ -47,15 +47,9 @@ export default function TickerDetailStaticHeader({
           )
         }
       >
-        {
-          // TODO: Replace w/ AvatarLogo
-        }
-        <EncodedImage
-          encSrc={tickerDetail?.logo_filename}
-          title={`${tickerDetail?.symbol} logo`}
+        <AvatarLogo
+          tickerDetail={tickerDetail}
           style={{
-            width: 40,
-            height: 40,
             verticalAlign: "middle",
             marginRight: 8,
             flexShrink: 0,
