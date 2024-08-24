@@ -844,9 +844,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       }),
     );
 
-    callRustService("proto_analyze_tickers_with_quantity", [
+    callRustService("find_closest_tickers_by_quantity", [
       rustServiceTickersWithQuantity,
-    ]);
+    ]).then((closestTickers) => customLogger.debug({ closestTickers }));
   }
 }
 

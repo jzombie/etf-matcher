@@ -321,18 +321,23 @@ pub fn clear_cache() {
     lib_clear_cache();
 }
 
-// TODO: Refactor as needed
+// TODO: Rename as needed
 #[wasm_bindgen]
-pub async fn proto_analyze_tickers_with_quantity(
+pub async fn find_closest_tickers_by_quantity(
     tickers_with_quantity: JsValue,
-) -> Result<(), JsValue> {
+) -> Result<JsValue, JsValue> {
     // Deserialize the input JsValue into Rust Vec<TickerWithQuantity>
     let tickers_with_quantity: Vec<TickerWithQuantity> =
         serde_wasm_bindgen::from_value(tickers_with_quantity)
             .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
 
-    // Call the Rust function to analyze the tickers
-    ticker_vector_analysis::proto_analyze_tickers_with_quantity(tickers_with_quantity).await;
+    // Find the closest tickers by quantity
+    let closest_tickers: Vec<ticker_vector_analysis::TickerDistance> =
+        ticker_vector_analysis::find_closest_tickers_by_quantity(&tickers_with_quantity)
+            .await
+            .map_err(|err| JsValue::from_str(&err))?;
 
-    Ok(())
+    // Serialize the result back to JsValue
+    serde_wasm_bindgen::to_value(&closest_tickers)
+        .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
 }
