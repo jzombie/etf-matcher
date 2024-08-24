@@ -15,6 +15,7 @@ export type TickerBucketProps = {
 };
 
 export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
+  // TODO: Consider showing by default, depending on how many buckets there are
   const [isCollapsed, setIsCollapsed] = useState(true);
 
   const toggleCollapse = () => {
@@ -23,7 +24,6 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
 
   return (
     <div>
-      {/* Toggle button for collapse/expand */}
       <Button
         onClick={toggleCollapse}
         disabled={!tickerBucket.tickers.length}
