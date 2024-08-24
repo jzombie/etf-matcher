@@ -267,34 +267,6 @@ pub async fn rank_tickers_by_cosine_similarity(ticker_id: TickerId) -> Result<Js
         )
         .unwrap();
 
-        // Convert original PCA coordinates to JS array, if present
-        if let Some(original_pca_coords) = similarity_result.original_pca_coords {
-            let original_pca_array = js_sys::Array::new();
-            for coord in original_pca_coords {
-                original_pca_array.push(&JsValue::from_f64(coord as f64));
-            }
-            js_sys::Reflect::set(
-                &obj,
-                &JsValue::from_str("original_pca_coords"),
-                &original_pca_array.into(),
-            )
-            .unwrap();
-        }
-
-        // Convert translated PCA coordinates to JS array, if present
-        if let Some(translated_pca_coords) = similarity_result.translated_pca_coords {
-            let translated_pca_array = js_sys::Array::new();
-            for coord in translated_pca_coords {
-                translated_pca_array.push(&JsValue::from_f64(coord as f64));
-            }
-            js_sys::Reflect::set(
-                &obj,
-                &JsValue::from_str("translated_pca_coords"),
-                &translated_pca_array.into(),
-            )
-            .unwrap();
-        }
-
         js_array.push(&obj);
     }
 

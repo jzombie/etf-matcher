@@ -18,9 +18,6 @@ pub struct TickerDistance {
 pub struct CosineSimilarityResult {
     pub ticker_id: TickerId,
     pub similarity_score: f32,
-    // TODO: Are `PCA coords`` even relevant here?
-    pub original_pca_coords: Option<Vec<f32>>,
-    pub translated_pca_coords: Option<Vec<f32>>,
 }
 
 #[derive(Deserialize)]
@@ -378,7 +375,7 @@ pub async fn rank_tickers_by_cosine_similarity(
     let owned_ticker_vectors = get_all_ticker_vectors().await?;
     let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
-    let (target_vector, target_pca_coords) =
+    let (target_vector, _target_pca_coords) =
         match find_target_vector_and_pca(&ticker_vectors, ticker_id) {
             Some(result) => result,
             None => return Err("Ticker ID or PCA coordinates not found.".to_string()),
@@ -396,23 +393,9 @@ pub async fn rank_tickers_by_cosine_similarity(
                         &other_vector.iter().collect::<Vec<_>>(),
                     );
 
-                    let original_pca_coords = ticker_vector
-                        .pca_coordinates()
-                        .map(|coords| coords.iter().collect::<Vec<f32>>());
-
-                    let translated_pca_coords = original_pca_coords.as_ref().map(|coords| {
-                        coords
-                            .iter()
-                            .zip(&target_pca_coords)
-                            .map(|(c, &target_c)| c - target_c)
-                            .collect::<Vec<f32>>()
-                    });
-
                     CosineSimilarityResult {
                         ticker_id: ticker_vector.ticker_id() as TickerId,
                         similarity_score: similarity,
-                        original_pca_coords,
-                        translated_pca_coords,
                     }
                 })
             } else {
@@ -445,20 +428,9 @@ pub async fn rank_tickers_by_custom_vector_cosine_similarity(
                 let similarity =
                     cosine_similarity(&custom_vector, &other_vector.iter().collect::<Vec<_>>());
 
-                // TODO: Handle
-                let original_pca_coords = ticker_vector
-                    .pca_coordinates()
-                    .map(|coords| coords.iter().collect::<Vec<f32>>());
-
-                // Note: For a custom vector, we don’t have original PCA coordinates to translate,
-                // so `translated_pca_coords` will not be relevant. Instead, we'll just store
-                // `None` for `original_pca_coords` and `translated_pca_coords`.
-
                 CosineSimilarityResult {
                     ticker_id: ticker_vector.ticker_id() as TickerId,
                     similarity_score: similarity,
-                    original_pca_coords: None,
-                    translated_pca_coords: None,
                 }
             })
         })
