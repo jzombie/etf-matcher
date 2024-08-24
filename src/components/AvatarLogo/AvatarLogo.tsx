@@ -14,14 +14,14 @@ import styles from "./AvatarLogo.module.scss";
 
 export type AvatarLogoProps = Omit<AvatarProps, "src"> & {
   tickerDetail?: RustServiceTickerDetail;
-  alt?: string;
-  className?: string;
-  style?: React.CSSProperties;
+  title?: AvatarProps["title"];
+  className?: AvatarProps["className"];
+  style?: AvatarProps["style"];
 };
 
 export default function AvatarLogo({
   tickerDetail,
-  alt,
+  title,
   className,
   style,
   ...rest
@@ -42,7 +42,7 @@ export default function AvatarLogo({
   }
 
   if (isLoading) {
-    return <CircularProgress />;
+    return <CircularProgress style={style} className={className} />;
   }
 
   if (hasError) {
@@ -52,7 +52,7 @@ export default function AvatarLogo({
   return (
     <Avatar
       {...rest}
-      alt={alt || `${tickerDetail.symbol} logo`}
+      title={title || `${tickerDetail.symbol} logo`}
       src={base64 ? `data:image/png;base64,${base64}` : noImageAvailable}
       className={clsx(styles.avatar_logo, className)}
       style={mergedStyle}
