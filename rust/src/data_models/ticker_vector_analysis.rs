@@ -371,6 +371,7 @@ where
         .sqrt()
 }
 
+// TODO: Similar to distance metrics, this show allow custom vectors to be ranked as well
 pub async fn rank_tickers_by_cosine_similarity(
     ticker_id: TickerId,
 ) -> Result<Vec<CosineSimilarityResult>, String> {
