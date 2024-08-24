@@ -14,6 +14,15 @@ pub struct TickerDistance {
     pub translated_pca_coords: Vec<f32>,
 }
 
+#[derive(Debug, Clone)]
+pub struct CosineSimilarityResult {
+    pub ticker_id: TickerId,
+    pub similarity_score: f32,
+    // TODO: Are `PCA coords`` even relevant here?
+    pub original_pca_coords: Option<Vec<f32>>,
+    pub translated_pca_coords: Option<Vec<f32>>,
+}
+
 #[derive(Deserialize)]
 pub struct TickerWithQuantity {
     pub ticker_id: TickerId,
@@ -315,15 +324,6 @@ where
         .map(|(a, b)| (a - b).powi(2))
         .sum::<f32>()
         .sqrt()
-}
-
-#[derive(Debug, Clone)]
-pub struct CosineSimilarityResult {
-    pub ticker_id: TickerId,
-    pub similarity_score: f32,
-    // TODO: Are `PCA coords`` even relevant here?
-    pub original_pca_coords: Option<Vec<f32>>,
-    pub translated_pca_coords: Option<Vec<f32>>,
 }
 
 pub async fn rank_tickers_by_cosine_similarity(
