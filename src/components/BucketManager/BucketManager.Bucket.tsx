@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Button } from "@mui/material";
 
 import type { TickerBucket } from "@src/store";
@@ -22,7 +24,11 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
   return (
     <div>
       {/* Toggle button for collapse/expand */}
-      <Button onClick={toggleCollapse} disabled={!tickerBucket.tickers.length}>
+      <Button
+        onClick={toggleCollapse}
+        disabled={!tickerBucket.tickers.length}
+        endIcon={isCollapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+      >
         {isCollapsed ? "Expand" : "Collapse"} List
       </Button>
 

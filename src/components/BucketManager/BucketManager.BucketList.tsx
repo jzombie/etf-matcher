@@ -80,6 +80,10 @@ export default function BucketList({ bucketType }: BucketListProps) {
 
               <div>{tickerBucket.description}</div>
 
+              {
+                // TODO: Move these into the bucket view itself
+              }
+
               <Button
                 color="error"
                 variant="outlined"
