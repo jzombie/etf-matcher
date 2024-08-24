@@ -325,7 +325,7 @@ pub fn clear_cache() {
 #[wasm_bindgen]
 pub async fn proto_analyze_tickers_with_quantity(
     tickers_with_quantity: JsValue,
-) -> Result<JsValue, JsValue> {
+) -> Result<(), JsValue> {
     // Deserialize the input JsValue into Rust Vec<TickerWithQuantity>
     let tickers_with_quantity: Vec<TickerWithQuantity> =
         serde_wasm_bindgen::from_value(tickers_with_quantity)
@@ -334,6 +334,5 @@ pub async fn proto_analyze_tickers_with_quantity(
     // Call the Rust function to analyze the tickers
     ticker_vector_analysis::proto_analyze_tickers_with_quantity(tickers_with_quantity).await;
 
-    // Return success response
-    Ok(JsValue::from_bool(true))
+    Ok(())
 }
