@@ -3,6 +3,7 @@ import React, { useId, useMemo, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -16,12 +17,13 @@ import Padding from "@layoutKit/Padding";
 import store from "@src/store";
 import type { TickerBucket } from "@src/store";
 
+import LazyRender from "@components/LazyRender";
 import SearchModalButton from "@components/SearchModalButton";
 import Section from "@components/Section";
-import TickerDetailList from "@components/TickerDetailList";
 
 import useStoreStateReader from "@hooks/useStoreStateReader";
 
+import BucketTicker from "./BucketManager.Bucket.Ticker";
 import BucketForm from "./BucketManager.BucketForm";
 
 export type BucketListProps = {
@@ -104,7 +106,7 @@ export default function BucketList({ bucketType }: BucketListProps) {
                 />
               )}
 
-              {!tickerBucket.tickers.length && (
+              {!tickerBucket.tickers.length ? (
                 <>
                   <Typography variant="body2" color="textSecondary">
                     No items in &quot;{tickerBucket.name}&quot;.
@@ -119,13 +121,20 @@ export default function BucketList({ bucketType }: BucketListProps) {
                   </Typography>
                   <SearchModalButton />
                 </>
+              ) : (
+                <LazyRender>
+                  <Box sx={{ marginTop: 1 }}>
+                    {tickerBucket.tickers.map((bucketTicker) => (
+                      <BucketTicker
+                        key={bucketTicker.tickerId}
+                        bucketTicker={bucketTicker}
+                      />
+                    ))}
+                  </Box>
+                </LazyRender>
               )}
             </Section>
           </Padding>
-
-          <TickerDetailList
-            tickerIds={tickerBucket.tickers.map(({ tickerId }) => tickerId)}
-          />
         </React.Fragment>
       ))}
 
