@@ -233,8 +233,11 @@ pub async fn triangulate_pca_coordinates(user_vector: Vec<f32>) -> Result<Vec<f3
                 if let Some(pca_coords) = ticker_vector.pca_coordinates() {
                     let pca_coords_vec: Vec<f32> = pca_coords.iter().map(|c| c).collect();
 
+                    // TODO: Determine if this epsilon value is actually needed
+                    const EPSILON: f32 = 1e-9;
+
                     // Calculate weight as the inverse of the distance with stability adjustment
-                    let weight = 1.0 / (distance + 1e-9);
+                    let weight = 1.0 / (distance + EPSILON);
 
                     // Accumulate the weighted PCA coordinates
                     if weighted_pca_coords.is_empty() {
