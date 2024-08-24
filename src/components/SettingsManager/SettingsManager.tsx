@@ -1,6 +1,7 @@
 import React from "react";
 
 import {
+  Alert,
   Box,
   Button,
   FormControlLabel,
@@ -148,16 +149,16 @@ export default function SettingsManager() {
         <Section>
           <h2>Rust Service Errors</h2>
           {!Object.keys(rustServiceXHRRequestErrors).length ? (
-            <div>No reported errors.</div>
+            <Alert color="success">No reported errors.</Alert>
           ) : (
             Object.keys(rustServiceXHRRequestErrors).map((pathName) => {
               const { errCount, lastTimestamp } =
                 rustServiceXHRRequestErrors[pathName];
               return (
-                <div key={pathName}>
+                <Alert color="error" key={pathName}>
                   {pathName}: {errCount} error(s) (last:{" "}
                   {formatLocalTime(lastTimestamp)})
-                </div>
+                </Alert>
               );
             })
           )}
