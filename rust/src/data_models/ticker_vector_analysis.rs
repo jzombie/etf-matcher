@@ -108,27 +108,28 @@ pub async fn proto_analyze_tickers_with_quantity(tickers_with_quantity: Vec<Tick
                 "Custom vector: {:?}",
                 custom_vector
             )));
+
+            // Now you can safely pass the unwrapped custom_vector
+            let triangulated_pca_result = triangulate_pca_coordinates(custom_vector).await;
+
+            match triangulated_pca_result {
+                Ok(triangulated_pca) => {
+                    web_sys::console::log_1(&JsValue::from_str(&format!(
+                        "Triangulated PCA: {:?}",
+                        triangulated_pca
+                    )));
+                }
+                Err(err) => {
+                    web_sys::console::error_1(&JsValue::from_str(&format!(
+                        "Error generating triangulated PCA: {}",
+                        err
+                    )));
+                }
+            }
         }
         Err(err) => {
             web_sys::console::error_1(&JsValue::from_str(&format!(
                 "Error generating vector: {}",
-                err
-            )));
-        }
-    }
-
-    let triangulated_pca_result = triangulate_pca_coordinates(&tickers_with_quantity).await;
-
-    match triangulated_pca_result {
-        Ok(triangulated_pca) => {
-            web_sys::console::log_1(&JsValue::from_str(&format!(
-                "Triangulated PCA: {:?}",
-                triangulated_pca
-            )));
-        }
-        Err(err) => {
-            web_sys::console::error_1(&JsValue::from_str(&format!(
-                "Error generating triangulated PCA: {}",
                 err
             )));
         }
@@ -205,13 +206,7 @@ pub async fn generate_bucket_vector(
     Ok(aggregated_vector)
 }
 
-// TODO: Perhaps instead of using `tickers_with_quantity` as the arg, supply the vector itself
-pub async fn triangulate_pca_coordinates(
-    tickers_with_quantity: &Vec<TickerWithQuantity>,
-) -> Result<Vec<f32>, String> {
-    // Step 1: Generate the new vector based on the given tickers and their quantities
-    let new_vector = generate_bucket_vector(tickers_with_quantity).await?;
-
+pub async fn triangulate_pca_coordinates(user_vector: Vec<f32>) -> Result<Vec<f32>, String> {
     let owned_ticker_vectors = get_all_ticker_vectors().await?;
     let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
@@ -223,7 +218,7 @@ pub async fn triangulate_pca_coordinates(
         for i in 0..vectors.len() {
             let ticker_vector = vectors.get(i);
             if let Some(other_vector) = ticker_vector.vector() {
-                let distance = euclidean_distance(&new_vector, &other_vector);
+                let distance = euclidean_distance(&user_vector, &other_vector);
 
                 if distance == 0.0 {
                     // If the distance is zero, return the PCA coordinates directly
