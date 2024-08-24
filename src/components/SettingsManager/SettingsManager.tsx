@@ -72,6 +72,15 @@ export default function SettingsManager() {
             You can create multiple sessions, each with its own unique name, to
             keep your data organized across different devices.
           </Typography>
+          <Typography
+            variant="body2"
+            component="p"
+            mt={1}
+            sx={{ fontStyle: "italic" }}
+          >
+            This feature is currently in beta and it can be unreliable, and
+            prone to disconnect without warning.
+          </Typography>
 
           <Box mt={2}>
             <SharedSessionManager />
