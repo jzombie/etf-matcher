@@ -273,32 +273,6 @@ pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<Vec<TickerDista
     let owned_ticker_vectors = get_all_ticker_vectors().await?;
     let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
-    // TODO: Remove
-    web_sys::console::log_1(&JsValue::from_str("fetch"));
-
-    // TODO: Remove
-    for i in 0..ticker_vectors.vectors().unwrap_or_default().len() {
-        let ticker_vector = ticker_vectors.vectors().unwrap().get(i);
-        web_sys::console::log_1(&JsValue::from_str(&format!(
-            "Available Ticker ID: {}",
-            ticker_vector.ticker_id()
-        )));
-    }
-    if let Some(vectors) = ticker_vectors.vectors() {
-        web_sys::console::log_1(&JsValue::from_str("Ticker vectors are available"));
-
-        // Iterate and log each Ticker ID
-        for i in 0..vectors.len() {
-            let ticker_vector = vectors.get(i);
-            web_sys::console::log_1(&JsValue::from_str(&format!(
-                "Available Ticker ID: {}",
-                ticker_vector.ticker_id()
-            )));
-        }
-    } else {
-        web_sys::console::log_1(&JsValue::from_str("No ticker vectors found"));
-    }
-
     // Use the helper function to find the target vector and PCA coordinates
     let (target_vector, target_pca_coords) =
         match find_target_vector_and_pca(&ticker_vectors, ticker_id) {
