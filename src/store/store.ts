@@ -783,6 +783,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
+  // TODO: Rename
   async fetchClosestTickers(
     tickerId: number,
   ): Promise<RustServiceTickerDistance[]> {
@@ -790,6 +791,37 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       "find_closest_tickers",
       [tickerId],
     );
+  }
+
+  // TODO: Rename and refactor as needed
+  async protoAnalyzeTickersWithQuantity(
+    tickerBucket: TickerBucket,
+  ): Promise<RustServiceTickerDistance[]> {
+    // TODO: Define Rust translation type
+    const rustServiceTickersWithQuantity = tickerBucket.tickers.map(
+      (ticker) => ({
+        ticker_id: ticker.tickerId,
+        quantity: ticker.quantity,
+      }),
+    );
+
+    // TODO: Return directly
+    const closestTickers = await callRustService<RustServiceTickerDistance[]>(
+      "find_closest_tickers_by_quantity",
+      [rustServiceTickersWithQuantity],
+    );
+
+    // TODO: Remove
+    const detailPromises = closestTickers.map((item) =>
+      store.fetchTickerDetail(item.ticker_id).then((detail) => ({
+        ...detail,
+        distance: item.distance,
+      })),
+    );
+    const settledDetails = await Promise.allSettled(detailPromises);
+    customLogger.debug({ settledDetails });
+
+    return closestTickers;
   }
 
   async fetchRankedTickersByCosineSimilarity(tickerId: number) {
@@ -832,21 +864,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       // This prevents an issue where the UI might be in a non-recoverable state after resetting the store
       window.location.reload();
     });
-  }
-
-  // TODO: Refactor as needed
-  async protoAnalyzeTickersWithQuantity(tickerBucket: TickerBucket) {
-    // TODO: Define Rust translation type
-    const rustServiceTickersWithQuantity = tickerBucket.tickers.map(
-      (ticker) => ({
-        ticker_id: ticker.tickerId,
-        quantity: ticker.quantity,
-      }),
-    );
-
-    callRustService("find_closest_tickers_by_quantity", [
-      rustServiceTickersWithQuantity,
-    ]).then((closestTickers) => customLogger.debug({ closestTickers }));
   }
 }
 
