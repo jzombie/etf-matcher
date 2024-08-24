@@ -9,20 +9,22 @@ import useEncodedImage from "@hooks/useEncodedImage";
 
 export type EncodedImageProps = React.HTMLAttributes<HTMLImageElement> & {
   encSrc?: string;
-  alt?: string;
-  className?: string;
+  title?: React.HTMLAttributes<HTMLImageElement>["title"];
+  className?: React.HTMLAttributes<HTMLImageElement>["className"];
+  style?: React.HTMLAttributes<HTMLImageElement>["style"];
 };
 
 export default function EncodedImage({
   encSrc,
-  alt = "Encoded Image",
+  title = "Encoded Image",
   className,
+  style,
   ...rest
 }: EncodedImageProps) {
   const { isLoading, base64, hasError } = useEncodedImage(encSrc);
 
   if (isLoading) {
-    return <CircularProgress />;
+    return <CircularProgress style={style} className={className} />;
   }
 
   if (hasError) {
@@ -32,8 +34,9 @@ export default function EncodedImage({
   return (
     <img
       src={base64 ? `data:image/png;base64,${base64}` : noImageAvailable}
-      alt={alt}
+      title={title}
       className={className}
+      style={style}
       {...rest}
     />
   );
