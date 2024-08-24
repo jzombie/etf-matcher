@@ -371,7 +371,7 @@ where
         .sqrt()
 }
 
-// TODO: Similar to distance metrics, this show allow custom vectors to be ranked as well
+// TODO: Rename
 pub async fn rank_tickers_by_cosine_similarity(
     ticker_id: TickerId,
 ) -> Result<Vec<CosineSimilarityResult>, String> {
@@ -418,6 +418,48 @@ pub async fn rank_tickers_by_cosine_similarity(
             } else {
                 None
             }
+        })
+        .collect();
+
+    results.sort_by(|a, b| {
+        b.similarity_score
+            .partial_cmp(&a.similarity_score)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
+    Ok(results.into_iter().take(20).collect())
+}
+
+// TODO: Rename
+pub async fn rank_tickers_by_custom_vector_cosine_similarity(
+    custom_vector: Vec<f32>,
+) -> Result<Vec<CosineSimilarityResult>, String> {
+    let owned_ticker_vectors = get_all_ticker_vectors().await?;
+    let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
+
+    let mut results: Vec<CosineSimilarityResult> = ticker_vectors
+        .vectors()
+        .ok_or("No vectors found.")?
+        .iter()
+        .filter_map(|ticker_vector| {
+            ticker_vector.vector().map(|other_vector| {
+                let similarity =
+                    cosine_similarity(&custom_vector, &other_vector.iter().collect::<Vec<_>>());
+
+                let original_pca_coords = ticker_vector
+                    .pca_coordinates()
+                    .map(|coords| coords.iter().collect::<Vec<f32>>());
+
+                // Note: For a custom vector, we don’t have original PCA coordinates to translate,
+                // so `translated_pca_coords` will not be relevant. Instead, we'll just store
+                // `None` for `original_pca_coords` and `translated_pca_coords`.
+
+                CosineSimilarityResult {
+                    ticker_id: ticker_vector.ticker_id() as TickerId,
+                    similarity_score: similarity,
+                    original_pca_coords: None,
+                    translated_pca_coords: None,
+                }
+            })
         })
         .collect();
 
