@@ -10,6 +10,8 @@ import AvatarLogo from "@components/AvatarLogo";
 
 import useSearch from "@hooks/useSearch";
 
+import customLogger from "@utils/customLogger";
+
 export type PortfolioFormFieldsItemProps = {
   initialBucketTicker?: TickerBucketTicker;
 };
@@ -36,10 +38,19 @@ export default function PortfolioFormFieldsItem({
 
   const handleQuantityInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const { name, value } = event.target;
-      console.debug({ name, value });
+      const { value } = event.target;
+      if (bucketTicker) {
+        setBucketTicker({
+          ...bucketTicker,
+          quantity: parseFloat(value),
+        });
+      } else {
+        customLogger.error(
+          "Cannot add quantity to non-existing `bucketTicker`",
+        );
+      }
     },
-    [],
+    [bucketTicker],
   );
 
   const handleSelectSearchResult = useCallback(
@@ -132,6 +143,7 @@ export default function PortfolioFormFieldsItem({
           fullWidth
           required
           type="number"
+          value={bucketTicker?.quantity || ""}
           onChange={handleQuantityInputChange}
           disabled={!bucketTicker}
         />
