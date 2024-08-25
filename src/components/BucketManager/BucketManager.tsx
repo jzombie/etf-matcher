@@ -12,7 +12,7 @@ import type { TickerBucket } from "@src/store";
 import Section from "@components/Section";
 
 import BucketForm from "./BucketManager.BucketForm";
-import BucketList from "./BucketManager.BucketList";
+import MultiBucketList from "./BucketManager.MultiBucketList";
 
 export type BucketManagerProps = {
   bucketType: TickerBucket["type"];
@@ -52,7 +52,7 @@ export default function BucketManager({ bucketType }: BucketManagerProps) {
         </Section>
       </Padding>
 
-      <BucketList bucketType={bucketType} />
+      <MultiBucketList bucketType={bucketType} />
     </>
   );
 }

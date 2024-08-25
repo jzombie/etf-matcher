@@ -1,4 +1,5 @@
 extern crate flatbuffers as fb;
+use data_models::ticker_vector_analysis::TickerWithQuantity;
 use qrcode_generator::QrCodeEcc;
 use serde_wasm_bindgen::to_value;
 use std::panic;
@@ -182,29 +183,9 @@ pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<Js
 }
 
 #[wasm_bindgen]
-pub fn get_cache_size() -> usize {
-    lib_get_cache_size()
-}
-
-#[wasm_bindgen]
-pub fn get_cache_details() -> JsValue {
-    lib_get_cache_details()
-}
-
-#[wasm_bindgen]
-pub fn remove_cache_entry(key: &str) {
-    lib_remove_cache_entry(key);
-}
-
-#[wasm_bindgen]
-pub fn clear_cache() {
-    lib_clear_cache();
-}
-
-#[wasm_bindgen]
 pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<JsValue, JsValue> {
     // Call the find_closest_tickers function from the ticker_vector_analysis module
-    let closest_tickers = ticker_vector_analysis::find_closest_tickers(ticker_id)
+    let closest_tickers = ticker_vector_analysis::TickerDistance::find_closest_tickers(ticker_id)
         .await
         .map_err(|err| JsValue::from_str(&format!("Failed to find closest ticker IDs: {}", err)))?;
 
@@ -259,7 +240,10 @@ pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<JsValue, JsValu
 #[wasm_bindgen]
 pub async fn rank_tickers_by_cosine_similarity(ticker_id: TickerId) -> Result<JsValue, JsValue> {
     // Call the rank_tickers_by_cosine_similarity function from the ticker_vector_analysis module
-    let similar_tickers = ticker_vector_analysis::rank_tickers_by_cosine_similarity(ticker_id)
+    let similar_tickers =
+        ticker_vector_analysis::CosineSimilarityResult::rank_tickers_by_cosine_similarity(
+            ticker_id,
+        )
         .await
         .map_err(|err| {
             JsValue::from_str(&format!(
@@ -286,36 +270,51 @@ pub async fn rank_tickers_by_cosine_similarity(ticker_id: TickerId) -> Result<Js
         )
         .unwrap();
 
-        // Convert original PCA coordinates to JS array, if present
-        if let Some(original_pca_coords) = similarity_result.original_pca_coords {
-            let original_pca_array = js_sys::Array::new();
-            for coord in original_pca_coords {
-                original_pca_array.push(&JsValue::from_f64(coord as f64));
-            }
-            js_sys::Reflect::set(
-                &obj,
-                &JsValue::from_str("original_pca_coords"),
-                &original_pca_array.into(),
-            )
-            .unwrap();
-        }
-
-        // Convert translated PCA coordinates to JS array, if present
-        if let Some(translated_pca_coords) = similarity_result.translated_pca_coords {
-            let translated_pca_array = js_sys::Array::new();
-            for coord in translated_pca_coords {
-                translated_pca_array.push(&JsValue::from_f64(coord as f64));
-            }
-            js_sys::Reflect::set(
-                &obj,
-                &JsValue::from_str("translated_pca_coords"),
-                &translated_pca_array.into(),
-            )
-            .unwrap();
-        }
-
         js_array.push(&obj);
     }
 
     Ok(js_array.into())
+}
+
+#[wasm_bindgen]
+pub fn get_cache_size() -> usize {
+    lib_get_cache_size()
+}
+
+#[wasm_bindgen]
+pub fn get_cache_details() -> JsValue {
+    lib_get_cache_details()
+}
+
+#[wasm_bindgen]
+pub fn remove_cache_entry(key: &str) {
+    lib_remove_cache_entry(key);
+}
+
+#[wasm_bindgen]
+pub fn clear_cache() {
+    lib_clear_cache();
+}
+
+// TODO: Rename as needed (subsequent PR)
+#[wasm_bindgen]
+pub async fn find_closest_tickers_by_quantity(
+    tickers_with_quantity: JsValue,
+) -> Result<JsValue, JsValue> {
+    // Deserialize the input JsValue into Rust Vec<TickerWithQuantity>
+    let tickers_with_quantity: Vec<TickerWithQuantity> =
+        serde_wasm_bindgen::from_value(tickers_with_quantity)
+            .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
+
+    // Find the closest tickers by quantity
+    let closest_tickers: Vec<ticker_vector_analysis::TickerDistance> =
+        ticker_vector_analysis::TickerWithQuantity::find_closest_tickers_by_quantity(
+            &tickers_with_quantity,
+        )
+        .await
+        .map_err(|err| JsValue::from_str(&err))?;
+
+    // Serialize the result back to JsValue
+    serde_wasm_bindgen::to_value(&closest_tickers)
+        .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
 }

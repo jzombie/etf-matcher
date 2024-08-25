@@ -7,6 +7,7 @@ import Cover from "@layoutKit/Cover";
 import Full from "@layoutKit/Full";
 import FullViewport from "@layoutKit/FullViewport";
 import Layout, { Content, Header } from "@layoutKit/Layout";
+import { Outlet } from "react-router-dom";
 
 import LockScreen from "@components/LockScreen";
 
@@ -14,7 +15,6 @@ import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
 import MainLayoutFooter from "./Footer";
 import HeaderMenu from "./HeaderMenu";
-import TransitionOutlet from "./TransitionOutlet";
 
 export default function MainLayout() {
   const { isAppUnlocked, isRustInit, isProfilingCacheOverlayOpen } =
@@ -48,7 +48,7 @@ export default function MainLayout() {
               </Center>
             </Full>
           ) : (
-            <TransitionOutlet />
+            <Outlet />
           )}
         </Content>
         <MainLayoutFooter />
