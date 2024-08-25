@@ -16,6 +16,7 @@ export type PortfolioFormFieldsItemProps = {
   initialBucketTicker?: TickerBucketTicker;
 };
 
+// TODO: Extract keyboard-selectable grid into a separate component?
 export default function PortfolioFormFieldsItem({
   initialBucketTicker,
 }: PortfolioFormFieldsItemProps) {
@@ -42,7 +43,8 @@ export default function PortfolioFormFieldsItem({
       if (bucketTicker) {
         setBucketTicker({
           ...bucketTicker,
-          quantity: parseFloat(value),
+          // Coerce to positive values
+          quantity: Math.abs(parseFloat(value)),
         });
       } else {
         customLogger.error(

@@ -172,7 +172,7 @@ export default function BucketForm({
           </Button>
 
           {bucketType === "portfolio" && !disablePortfolioFormFields && (
-            <PortfolioFormFields />
+            <PortfolioFormFields tickerBucket={existingBucket} />
           )}
 
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>

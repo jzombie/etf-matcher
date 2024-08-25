@@ -2,72 +2,53 @@
 import React, { useState } from "react";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
-import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  IconButton,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Container, Grid } from "@mui/material";
+
+import type { TickerBucket, TickerBucketTicker } from "@src/store";
+
+import BucketTicker from "@components/BucketManager/BucketManager.Bucket.Ticker";
 
 import PortfolioFormFieldsItem from "./PortfolioFormFields.Item";
 
-// TODO: Refactor; rename
-interface Asset {
-  // TODO: Needs to account for exchange! The only way to do this effectively is tie this into the symbol search mechanism.
-  symbol: string;
-  shares: number;
-}
+export type PortfolioFormFieldsProps = {
+  tickerBucket?: TickerBucket;
+};
 
-const PortfolioForm: React.FC = () => {
-  const [assets, setAssets] = useState<Asset[]>([{ symbol: "", shares: 0 }]);
+export default function PortfolioFormFields({
+  tickerBucket,
+}: PortfolioFormFieldsProps) {
+  // const handleAddFields = () => {
+  //   setAssets([...assets, { symbol: "", shares: 1 }]);
+  // };
 
-  const handleInputChange = (
-    index: number,
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = event.target;
-    const values = [...assets];
+  // const handleRemoveFields = (index: number) => {
+  //   const values = [...assets];
+  //   values.splice(index, 1);
+  //   setAssets(values);
+  // };
 
-    if (name === "shares") {
-      values[index].shares = parseInt(value, 10);
-    } else if (name === "symbol") {
-      // TODO: Implement query symbols while typing
-      //  |
-      //  |_ Perform a regular symbol search
-      // store.PROTO_getTickerIdsWithSymbol(value);
+  // const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  //   event.preventDefault();
+  //   console.log("Form Data:", assets);
+  // };
 
-      values[index].symbol = value;
-    }
-    setAssets(values);
-  };
-
-  const handleAddFields = () => {
-    setAssets([...assets, { symbol: "", shares: 1 }]);
-  };
-
-  const handleRemoveFields = (index: number) => {
-    const values = [...assets];
-    values.splice(index, 1);
-    setAssets(values);
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log("Form Data:", assets);
-  };
+  // TODO: Improve this
+  const tickerBucketTickers: TickerBucketTicker[] = tickerBucket?.tickers || [];
 
   return (
     <Container maxWidth="md">
       <Box sx={{ my: 4 }}>
         <Grid container spacing={3}>
-          {assets.map((asset, index) => (
-            // TODO: Use `tickerId` for index
-            <PortfolioFormFieldsItem key={index} />
-          ))}
+          {
+            // Render new form fields
+          }
+          <PortfolioFormFieldsItem />
+          {
+            // Render existing form fields
+            tickerBucketTickers.map((bucketTicker, idx) => (
+              <PortfolioFormFieldsItem key={bucketTicker?.tickerId || idx} />
+            ))
+          }
           <Grid item xs={12}>
             {
               // TODO: Prevent add unless no current symbol is being edited, and there is at least one populated symbol
@@ -76,7 +57,7 @@ const PortfolioForm: React.FC = () => {
               variant="contained"
               color="primary"
               startIcon={<AddCircleOutlineIcon />}
-              onClick={handleAddFields}
+              // onClick={handleAddFields}
               disabled
             >
               Add Additional Symbol
@@ -86,6 +67,4 @@ const PortfolioForm: React.FC = () => {
       </Box>
     </Container>
   );
-};
-
-export default PortfolioForm;
+}
