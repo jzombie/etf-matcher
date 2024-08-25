@@ -146,13 +146,16 @@ export default function BucketTicker({
       {/* Delete Button */}
       <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
         <Button
-          variant="contained"
           color="error"
           onClick={handleOpen}
           startIcon={<DeleteIcon />} // Add the Delete icon here
         >
           Delete from Bucket
         </Button>
+        {
+          // TODO: Finish wiring up
+        }
+        <Button variant="contained">View</Button>
       </Box>
 
       {/* Delete Confirmation Dialog */}
