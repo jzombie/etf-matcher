@@ -82,59 +82,6 @@ pub async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> 
     Err("Ticker ID not found".to_string())
 }
 
-// TODO: Remove
-// pub async fn proto_analyze_tickers_with_quantity(tickers_with_quantity: Vec<TickerWithQuantity>) {
-//     // Log the start of the analysis
-//     web_sys::console::log_1(&"Starting analysis of tickers with quantities".into());
-
-//     for ticker_with_quantity in tickers_with_quantity.iter() {
-//         let message = format!(
-//             "Ticker ID: {}, Quantity: {}",
-//             ticker_with_quantity.ticker_id, ticker_with_quantity.quantity
-//         );
-//         web_sys::console::log_1(&message.into());
-//     }
-
-//     // Await the custom_vector future
-//     let custom_vector_result = generate_bucket_vector(&tickers_with_quantity).await;
-
-//     match custom_vector_result {
-//         Ok(custom_vector) => {
-//             web_sys::console::log_1(&JsValue::from_str(&format!(
-//                 "Custom vector: {:?}",
-//                 custom_vector
-//             )));
-
-//             // Now you can safely pass the unwrapped custom_vector
-//             let triangulated_pca_result = triangulate_pca_coordinates(custom_vector).await;
-
-//             match triangulated_pca_result {
-//                 Ok(triangulated_pca) => {
-//                     web_sys::console::log_1(&JsValue::from_str(&format!(
-//                         "Triangulated PCA: {:?}",
-//                         triangulated_pca
-//                     )));
-//                 }
-//                 Err(err) => {
-//                     web_sys::console::error_1(&JsValue::from_str(&format!(
-//                         "Error generating triangulated PCA: {}",
-//                         err
-//                     )));
-//                 }
-//             }
-//         }
-//         Err(err) => {
-//             web_sys::console::error_1(&JsValue::from_str(&format!(
-//                 "Error generating vector: {}",
-//                 err
-//             )));
-//         }
-//     }
-
-//     // Log the end of the analysis
-//     web_sys::console::log_1(&"Analysis completed.".into());
-// }
-
 fn find_target_vector_and_pca<'a>(
     ticker_vectors: &'a financial_vectors::ten_k::TickerVectors<'a>,
     ticker_id: TickerId,
@@ -332,20 +279,7 @@ pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<Vec<TickerDista
     .await
 }
 
-// TODO: Remove
-// Wrapper function for finding closest tickers using a custom vector
-// pub async fn find_closest_tickers_by_custom_vector(
-//     custom_vector: Vec<f32>,
-//     custom_pca_coords: Vec<f32>,
-// ) -> Result<Vec<TickerDistance>, String> {
-//     let owned_ticker_vectors = get_all_ticker_vectors().await?;
-//     let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
-
-//     find_closest_tickers_by_vector(&custom_vector, &custom_pca_coords, &ticker_vectors).await
-// }
-
 // TODO: Rename
-
 pub async fn find_closest_tickers_by_quantity(
     tickers_with_quantity: &Vec<TickerWithQuantity>,
 ) -> Result<Vec<TickerDistance>, String> {
