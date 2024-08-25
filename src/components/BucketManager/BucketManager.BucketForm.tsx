@@ -35,6 +35,9 @@ export default function BucketForm({
 
   const [bucketName, setBucketName] = useState<string>("");
   const [bucketDescription, setBucketDescription] = useState<string>("");
+  const [isShowingDescription, setIsShowingDescription] = useState<boolean>(
+    Boolean(existingBucket?.description),
+  );
 
   const [nameError, setNameError] = useState<string | null>(null);
 
@@ -152,15 +155,21 @@ export default function BucketForm({
             error={!!nameError}
             helperText={nameError}
           />
-          <TextField
-            label={`${tickerBucketDefaultNames[bucketType]} Description`}
-            value={bucketDescription}
-            onChange={(e) => setBucketDescription(e.target.value)}
-            variant="outlined"
-            fullWidth
-            multiline
-            rows={4}
-          />
+          {isShowingDescription && (
+            <TextField
+              label={`${tickerBucketDefaultNames[bucketType]} Description`}
+              value={bucketDescription}
+              onChange={(e) => setBucketDescription(e.target.value)}
+              variant="outlined"
+              fullWidth
+              multiline
+              rows={4}
+            />
+          )}
+
+          <Button onClick={() => setIsShowingDescription((prev) => !prev)}>
+            {isShowingDescription ? "Hide" : "Show"} Description Field
+          </Button>
 
           {bucketType === "portfolio" && !disablePortfolioFormFields && (
             <PortfolioFormFields />
