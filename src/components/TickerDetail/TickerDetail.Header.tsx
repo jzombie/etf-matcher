@@ -12,7 +12,7 @@ import type {
 import useImageBackgroundColor from "@hooks/useImageBackgroundColor";
 import useIntersectionObserver from "@hooks/useIntersectionObserver";
 import useStoreStateReader from "@hooks/useStoreStateReader";
-import useURLState from "@hooks/useURLState";
+import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
 import formatCurrency from "@utils/formatCurrency";
 
@@ -45,7 +45,7 @@ export default function TickerDetailHeader({
 
   const isShowingStaticHeader = useStaticHeaderDeterminer(elRef, tickerDetail);
 
-  const { setURLState, toBooleanParam } = useURLState();
+  const navigateToSymbol = useTickerSymbolNavigation();
 
   return (
     <>
@@ -60,18 +60,7 @@ export default function TickerDetailHeader({
               : {}
           }
         >
-          <ButtonBase
-            onClick={() =>
-              setURLState(
-                {
-                  query: tickerDetail?.symbol,
-                  exact: toBooleanParam(true),
-                },
-                false,
-                "/search",
-              )
-            }
-          >
+          <ButtonBase onClick={() => navigateToSymbol(tickerDetail?.symbol)}>
             <EncodedImage
               encSrc={tickerDetail?.logo_filename}
               title={`${tickerDetail?.symbol} logo`}

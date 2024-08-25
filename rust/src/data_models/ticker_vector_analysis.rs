@@ -267,32 +267,38 @@ async fn find_closest_tickers_by_vector(
     target_vector: &[f32],
     target_pca_coords: &[f32],
     ticker_vectors: &TickerVectors<'_>,
+    exclude_ticker_ids: Option<&[TickerId]>, // Optional list of ticker IDs to exclude
 ) -> Result<Vec<TickerDistance>, String> {
     let mut results: Vec<TickerDistance> = Vec::new();
 
     if let Some(vectors) = ticker_vectors.vectors() {
         for i in 0..vectors.len() {
             let ticker_vector = vectors.get(i);
-            if let Some(other_vector) = ticker_vector.vector() {
-                let distance = euclidean_distance(target_vector, &other_vector);
+            // Exclude tickers with IDs in exclude_ticker_ids if provided
+            if exclude_ticker_ids.map_or(true, |ids| {
+                !ids.contains(&(ticker_vector.ticker_id() as TickerId))
+            }) {
+                if let Some(other_vector) = ticker_vector.vector() {
+                    let distance = euclidean_distance(target_vector, &other_vector);
 
-                let original_pca_coords = ticker_vector
-                    .pca_coordinates()
-                    .map(|coords| coords.iter().collect::<Vec<f32>>())
-                    .unwrap_or_default();
+                    let original_pca_coords = ticker_vector
+                        .pca_coordinates()
+                        .map(|coords| coords.iter().collect::<Vec<f32>>())
+                        .unwrap_or_default();
 
-                let translated_pca_coords = original_pca_coords
-                    .iter()
-                    .zip(target_pca_coords)
-                    .map(|(c, &target_c)| c - target_c)
-                    .collect::<Vec<f32>>();
+                    let translated_pca_coords = original_pca_coords
+                        .iter()
+                        .zip(target_pca_coords)
+                        .map(|(c, &target_c)| c - target_c)
+                        .collect::<Vec<f32>>();
 
-                results.push(TickerDistance {
-                    ticker_id: ticker_vector.ticker_id() as TickerId,
-                    distance,
-                    original_pca_coords,
-                    translated_pca_coords,
-                });
+                    results.push(TickerDistance {
+                        ticker_id: ticker_vector.ticker_id() as TickerId,
+                        distance,
+                        original_pca_coords,
+                        translated_pca_coords,
+                    });
+                }
             }
         }
     }
@@ -311,7 +317,6 @@ pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<Vec<TickerDista
     let owned_ticker_vectors = get_all_ticker_vectors().await?;
     let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
-    // Use the helper function to find the target vector and PCA coordinates
     let (target_vector, target_pca_coords) =
         match find_target_vector_and_pca(&ticker_vectors, ticker_id) {
             Some(result) => result,
@@ -322,6 +327,7 @@ pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<Vec<TickerDista
         &target_vector.iter().collect::<Vec<_>>(),
         &target_pca_coords,
         &ticker_vectors,
+        Some(&[ticker_id]), // Ensure the current ticker is excluded
     )
     .await
 }
@@ -339,6 +345,7 @@ pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<Vec<TickerDista
 // }
 
 // TODO: Rename
+
 pub async fn find_closest_tickers_by_quantity(
     tickers_with_quantity: &Vec<TickerWithQuantity>,
 ) -> Result<Vec<TickerDistance>, String> {
@@ -352,7 +359,19 @@ pub async fn find_closest_tickers_by_quantity(
     let owned_ticker_vectors = get_all_ticker_vectors().await?;
     let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
-    find_closest_tickers_by_vector(&custom_vector, &custom_pca_coords, &ticker_vectors).await
+    // Collect all ticker_ids in the input tickers_with_quantity to exclude them
+    let exclude_ticker_ids: Vec<TickerId> = tickers_with_quantity
+        .iter()
+        .map(|ticker_with_quantity| ticker_with_quantity.ticker_id)
+        .collect();
+
+    find_closest_tickers_by_vector(
+        &custom_vector,
+        &custom_pca_coords,
+        &ticker_vectors,
+        Some(&exclude_ticker_ids), // Pass the exclude_ticker_ids list
+    )
+    .await
 }
 
 // Helper function to compute Euclidean distance between two vectors
@@ -386,6 +405,7 @@ pub async fn rank_tickers_by_cosine_similarity(
         .ok_or("No vectors found.")?
         .iter()
         .filter_map(|ticker_vector| {
+            // Exclude the current ticker ID
             if ticker_vector.ticker_id() as TickerId != ticker_id {
                 ticker_vector.vector().map(|other_vector| {
                     let similarity = cosine_similarity(

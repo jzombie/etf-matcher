@@ -7,7 +7,7 @@ import type { TickerBucketTicker } from "@src/store";
 import AvatarLogo from "@components/AvatarLogo";
 
 import useTickerDetail from "@hooks/useTickerDetail";
-import useURLState from "@hooks/useURLState";
+import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
 export type TickerBucketItemProps = {
   tickerBucketTicker: TickerBucketTicker;
@@ -20,7 +20,7 @@ export default function TickerBucketItem({
     tickerBucketTicker.tickerId,
   );
 
-  const { setURLState, toBooleanParam } = useURLState();
+  const navigateToSymbol = useTickerSymbolNavigation();
 
   if (isLoadingTickerDetail) {
     return null;
@@ -29,13 +29,7 @@ export default function TickerBucketItem({
   return (
     <ButtonBase
       title={tickerDetail?.company_name}
-      onClick={() =>
-        setURLState(
-          { query: tickerBucketTicker.symbol, exact: toBooleanParam(true) },
-          false,
-          "/search",
-        )
-      }
+      onClick={() => navigateToSymbol(tickerBucketTicker.symbol)}
       style={{ display: "inline-block", margin: 4 }}
     >
       <div>

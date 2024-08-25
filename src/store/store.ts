@@ -43,7 +43,7 @@ const IS_PROD = import.meta.env.PROD;
 export type TickerBucketTicker = {
   tickerId: number;
   symbol: string;
-  exchange_short_name?: string;
+  exchangeShortName?: string;
   quantity: number;
 };
 
@@ -722,7 +722,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     const tickerBucketTicker: TickerBucketTicker = {
       tickerId,
       symbol: tickerDetail.symbol,
-      exchange_short_name: tickerDetail.exchange_short_name,
+      exchangeShortName: tickerDetail.exchange_short_name,
       quantity: 1,
     };
 
