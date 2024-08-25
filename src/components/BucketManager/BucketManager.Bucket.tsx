@@ -64,11 +64,11 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
     setIsEditDialogOpen(true);
   }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setIsDeleteDialogOpen(false);
     setIsEditDialogOpen(false);
     setSelectedBucket(null);
-  };
+  }, []);
 
   return (
     <>
