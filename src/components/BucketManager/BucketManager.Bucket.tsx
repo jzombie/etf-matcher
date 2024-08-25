@@ -36,9 +36,6 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [selectedBucket, setSelectedBucket] = useState<TickerBucket | null>(
-    null,
-  );
 
   const alertDialogTitleId = useId();
   const alertDialogDescriptionId = useId();
@@ -47,27 +44,21 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
     setIsCollapsed((prev) => !prev);
   }, []);
 
-  const handleDeleteClick = useCallback((tickerBucket: TickerBucket) => {
-    setSelectedBucket(tickerBucket);
+  const handleDeleteClick = useCallback(() => {
     setIsDeleteDialogOpen(true);
   }, []);
 
   const handleConfirmDelete = useCallback(() => {
-    if (selectedBucket) {
-      store.deleteTickerBucket(selectedBucket);
-      handleClose();
-    }
-  }, [selectedBucket]);
+    store.deleteTickerBucket(tickerBucket);
+  }, [tickerBucket]);
 
-  const handleEditClick = useCallback((tickerBucket: TickerBucket) => {
-    setSelectedBucket(tickerBucket);
+  const handleEditClick = useCallback(() => {
     setIsEditDialogOpen(true);
   }, []);
 
   const handleClose = useCallback(() => {
     setIsDeleteDialogOpen(false);
     setIsEditDialogOpen(false);
-    setSelectedBucket(null);
   }, []);
 
   return (
@@ -78,10 +69,10 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
 
           <div>{tickerBucket.description}</div>
 
-          {isEditDialogOpen && selectedBucket === tickerBucket && (
+          {isEditDialogOpen && (
             <BucketForm
               bucketType={tickerBucket.type}
-              existingBucket={selectedBucket}
+              existingBucket={tickerBucket}
               onClose={handleClose}
             />
           )}
@@ -98,7 +89,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
             color="error"
             variant="outlined"
             startIcon={<DeleteIcon />}
-            onClick={() => handleDeleteClick(tickerBucket)}
+            onClick={handleDeleteClick}
           >
             Delete
           </Button>
@@ -106,7 +97,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
             color="primary"
             variant="outlined"
             startIcon={<EditIcon />}
-            onClick={() => handleEditClick(tickerBucket)}
+            onClick={handleEditClick}
           >
             Edit
           </Button>
@@ -163,7 +154,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
         <DialogContent>
           <DialogContentText id={alertDialogDescriptionId}>
             Are you sure you want to delete the bucket &quot;
-            {selectedBucket?.name}&quot;? This action cannot be undone.
+            {tickerBucket?.name}&quot;? This action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
