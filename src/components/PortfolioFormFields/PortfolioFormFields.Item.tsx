@@ -120,6 +120,7 @@ export default function PortfolioFormFieldsItem({
           fullWidth
           required
           value={bucketTicker?.symbol || searchQuery}
+          disabled={Boolean(bucketTicker)}
           onChange={handleSymbolInputChange}
         />
       </Grid>
