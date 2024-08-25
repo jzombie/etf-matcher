@@ -108,7 +108,7 @@ impl TickerDistance {
         Ok(results.into_iter().take(20).collect())
     }
 
-    // TODO: Rename
+    // TODO: Rename (subsequent PR)
     // Wrapper function for finding closest tickers by `ticker_id`
     pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<Vec<TickerDistance>, String> {
         let owned_ticker_vectors = OwnedTickerVectors::get_all_ticker_vectors().await?;
@@ -158,7 +158,7 @@ impl TickerDistance {
                     if let Some(pca_coords) = ticker_vector.pca_coordinates() {
                         let pca_coords_vec: Vec<f32> = pca_coords.iter().map(|c| c).collect();
 
-                        // TODO: Determine if this epsilon value is actually needed
+                        // TODO: Determine if this epsilon value is actually needed (subsequent PR)
                         const EPSILON: f32 = 1e-9;
 
                         // Calculate weight as the inverse of the distance with stability adjustment
@@ -207,7 +207,7 @@ impl TickerDistance {
 }
 
 impl CosineSimilarityResult {
-    // TODO: Rename
+    // TODO: Rename (subsequent PR)
     pub async fn rank_tickers_by_cosine_similarity(
         ticker_id: TickerId,
     ) -> Result<Vec<CosineSimilarityResult>, String> {
@@ -252,7 +252,7 @@ impl CosineSimilarityResult {
         Ok(results.into_iter().take(20).collect())
     }
 
-    // TODO: Rename
+    // TODO: Rename (subsequent PR)
     pub async fn rank_tickers_by_custom_vector_cosine_similarity(
         custom_vector: Vec<f32>,
     ) -> Result<Vec<CosineSimilarityResult>, String> {
@@ -295,7 +295,7 @@ impl CosineSimilarityResult {
 }
 
 impl TickerWithQuantity {
-    // TODO: Rename
+    // TODO: Rename (subsequent PR)
     pub async fn find_closest_tickers_by_quantity(
         tickers_with_quantity: &Vec<TickerWithQuantity>,
     ) -> Result<Vec<TickerDistance>, String> {
@@ -335,7 +335,7 @@ pub async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> 
         // Loop through each ticker vector in the Vector
         for i in 0..vectors.len() {
             let ticker_vector = vectors.get(i);
-            // TODO: Fix IDL so it doesn't have to cast
+            // FIXME: Fix IDL so it doesn't have to cast
             if ticker_vector.ticker_id() as TickerId == ticker_id {
                 // Convert the vector to a Rust Vec<f32> and return it
                 if let Some(vector_data) = ticker_vector.vector() {
