@@ -24,6 +24,7 @@ const DEFAULT_PROPS: Required<UseSearchProps> = {
   initialSelectedIndex: -1,
 };
 
+// TODO: Capture error state
 export default function useSearch(
   props: Partial<UseSearchProps> = DEFAULT_PROPS,
 ) {

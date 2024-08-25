@@ -4,7 +4,10 @@ import ErrorIcon from "@mui/icons-material/Error";
 import { Avatar, AvatarProps, CircularProgress } from "@mui/material";
 
 import noImageAvailable from "@assets/no-image-available.png";
-import { RustServiceTickerDetail } from "@src/types";
+import {
+  RustServiceTickerDetail,
+  RustServiceTickerSearchResult,
+} from "@src/types";
 import clsx from "clsx";
 
 import useEncodedImage from "@hooks/useEncodedImage";
@@ -13,7 +16,7 @@ import useImageBackgroundColor from "@hooks/useImageBackgroundColor";
 import styles from "./AvatarLogo.module.scss";
 
 export type AvatarLogoProps = Omit<AvatarProps, "src"> & {
-  tickerDetail?: RustServiceTickerDetail;
+  tickerDetail?: RustServiceTickerDetail | RustServiceTickerSearchResult;
   title?: AvatarProps["title"];
   className?: AvatarProps["className"];
   style?: AvatarProps["style"];

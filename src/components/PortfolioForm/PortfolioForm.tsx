@@ -1,19 +1,21 @@
 /* eslint-disable */
 import React, { useState } from "react";
-import {
-  Container,
-  TextField,
-  Button,
-  Grid,
-  Box,
-  Typography,
-  IconButton,
-} from "@mui/material";
+
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+  IconButton,
+  TextField,
+  Typography,
+} from "@mui/material";
 
-// import store from "@src/store";
+import PortfolioFormItem from "./PortfolioForm.Item";
 
+// TODO: Refactor; rename
 interface Asset {
   // TODO: Needs to account for exchange! The only way to do this effectively is tie this into the symbol search mechanism.
   symbol: string;
@@ -25,7 +27,7 @@ const PortfolioForm: React.FC = () => {
 
   const handleInputChange = (
     index: number,
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = event.target;
     const values = [...assets];
@@ -67,45 +69,13 @@ const PortfolioForm: React.FC = () => {
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
             {assets.map((asset, index) => (
-              <React.Fragment key={index}>
-                <Grid item xs={5}>
-                  {
-                    // TODO: Enable typical symbol/company search here; show icon for results, etc.
-                  }
-                  <TextField
-                    name="symbol"
-                    label="Symbol"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    value={asset.symbol}
-                    onChange={(event) => handleInputChange(index, event)}
-                  />
-                </Grid>
-                <Grid item xs={5}>
-                  <TextField
-                    name="shares"
-                    label="Shares"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    type="number"
-                    value={asset.shares}
-                    onChange={(event) => handleInputChange(index, event)}
-                  />
-                </Grid>
-                <Grid
-                  item
-                  xs={2}
-                  sx={{ display: "flex", alignItems: "center" }}
-                >
-                  <IconButton onClick={() => handleRemoveFields(index)}>
-                    <RemoveCircleOutlineIcon color="error" />
-                  </IconButton>
-                </Grid>
-              </React.Fragment>
+              // TODO: Use `tickerId` for index
+              <PortfolioFormItem key={index} />
             ))}
             <Grid item xs={12}>
+              {
+                // TODO: Prevent add unless no current symbol is being edited, and there is at least one populated symbol
+              }
               <Button
                 variant="contained"
                 color="primary"
@@ -121,6 +91,7 @@ const PortfolioForm: React.FC = () => {
                 variant="contained"
                 color="primary"
                 fullWidth
+                disabled
               >
                 Submit
               </Button>
