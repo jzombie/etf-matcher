@@ -16,7 +16,9 @@ export default function useTickerDetail(
   const [tickerDetail, setTickerDetail] = useState<
     RustServiceTickerDetail | undefined
   >(undefined);
-  const [tickerDetailError, setTickerDetailError] = useState(undefined);
+  const [tickerDetailError, setTickerDetailError] = useState<Error | unknown>(
+    undefined,
+  );
 
   useEffect(() => {
     if (tickerId) {
