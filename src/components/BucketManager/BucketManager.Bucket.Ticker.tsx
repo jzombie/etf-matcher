@@ -83,7 +83,14 @@ export default function BucketTicker({
 
   if (!tickerDetail) {
     return (
-      // Note: This
+      // FIXME: The delayed fade-in is a workaround for this element briefly
+      // flashing in. I tried various ways of updating `useTickerDetail` itself
+      // to try to prevent this from briefly appearing and came to the
+      // conclusion that setting an object for the state, where multiple keys
+      // can be set at once, might be necessary to prevent this from happening.
+      //
+      // Alternatively, perhaps setting `tickerDetail` before `isLoadingTickerDetail`
+      // could potentially be a workaround.
       <div className="animate__animated animate__fadeIn animate__delay-1s">
         No data available
       </div>
