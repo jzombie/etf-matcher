@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
@@ -57,13 +57,13 @@ export default function BucketTicker({ bucketTicker }: BucketTickerProps) {
 
   const [open, setOpen] = useState(false);
 
-  const handleClickOpen = () => {
+  const handleOpen = useCallback(() => {
     setOpen(true);
-  };
+  }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setOpen(false);
-  };
+  }, []);
 
   if (isLoadingTickerDetail) {
     return <CircularProgress />;
@@ -140,7 +140,7 @@ export default function BucketTicker({ bucketTicker }: BucketTickerProps) {
         <Button
           variant="contained"
           color="error"
-          onClick={handleClickOpen}
+          onClick={handleOpen}
           startIcon={<DeleteIcon />} // Add the Delete icon here
         >
           Delete from Bucket
