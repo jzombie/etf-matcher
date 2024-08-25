@@ -49,6 +49,10 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
   }, []);
 
   const handleConfirmDelete = useCallback(() => {
+    // Prevent delete dialog from staying open after delete; I think this could be a
+    // bug with MUI because the dialog *should* close when this component unmounts.
+    setIsDeleteDialogOpen(false);
+
     store.deleteTickerBucket(tickerBucket);
   }, [tickerBucket]);
 
@@ -153,6 +157,9 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
         <DialogTitle id={alertDialogTitleId}>{"Confirm Delete"}</DialogTitle>
         <DialogContent>
           <DialogContentText id={alertDialogDescriptionId}>
+            {
+              // TODO: Use proper name type instead of "bucket"
+            }
             Are you sure you want to delete the bucket &quot;
             {tickerBucket?.name}&quot;? This action cannot be undone.
           </DialogContentText>
