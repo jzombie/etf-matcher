@@ -21,8 +21,9 @@ export default function PortfolioFormFieldsItem({
   initialBucketTicker,
 }: PortfolioFormFieldsItemProps) {
   const { searchQuery, setSearchQuery, searchResults } = useSearch();
-  const [bucketTicker, setBucketTicker] =
-    useState<TickerBucketTicker | void | null>(initialBucketTicker);
+  const [bucketTicker, setBucketTicker] = useState<
+    TickerBucketTicker | undefined | null
+  >(initialBucketTicker);
 
   const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
   const columns = 3; // Assuming 3 columns in the grid (adjust as necessary)
