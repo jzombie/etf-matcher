@@ -149,14 +149,17 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
 
               {
                 // TODO: Remove; Just for debugging
+
+                import.meta.env.DEV && (
+                  <Button
+                    onClick={() =>
+                      store.fetchClosestTickersByQuantity(tickerBucket)
+                    }
+                  >
+                    PROTO::createCustomVector()
+                  </Button>
+                )
               }
-              <Button
-                onClick={() =>
-                  store.fetchClosestTickersByQuantity(tickerBucket)
-                }
-              >
-                PROTO::createCustomVector()
-              </Button>
             </Box>
           )}
         </Section>
