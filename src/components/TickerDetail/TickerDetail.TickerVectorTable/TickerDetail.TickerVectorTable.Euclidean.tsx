@@ -18,7 +18,7 @@ import type { RustServiceTickerDetail } from "@src/types";
 
 import AvatarLogo from "@components/AvatarLogo";
 
-import useURLState from "@hooks/useURLState";
+import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
 import customLogger from "@utils/customLogger";
 
@@ -38,20 +38,13 @@ export default function TickerVectorTableEuclidean({
     TickerVectorWithEuclideanDistance[] | null
   >(null);
 
-  const { setURLState, toBooleanParam } = useURLState();
+  const navigateToSymbol = useTickerSymbolNavigation();
 
   const handleRowClick = useCallback(
     (tickerSymbol: string) => {
-      setURLState(
-        {
-          query: tickerSymbol,
-          exact: toBooleanParam(true),
-        },
-        false,
-        "/search",
-      );
+      navigateToSymbol(tickerSymbol);
     },
-    [setURLState, toBooleanParam],
+    [navigateToSymbol],
   );
 
   useEffect(() => {

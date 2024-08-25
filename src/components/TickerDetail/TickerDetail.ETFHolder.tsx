@@ -20,7 +20,7 @@ import type {
   RustServiceTickerDetail,
 } from "@src/types";
 
-import useURLState from "@hooks/useURLState";
+import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
 import formatCurrency from "@utils/formatCurrency";
 
@@ -33,8 +33,6 @@ export default function ETFHolder({
   etfAggregateDetail,
   holdingTickerDetail,
 }: ETFHolderProps) {
-  const { setURLState } = useURLState();
-
   const [holdingPercentage, setHoldingPercentage] = useState<number | null>(
     null,
   );
@@ -56,17 +54,13 @@ export default function ETFHolder({
     <TableCell>{value !== null ? value : "N/A"}</TableCell>
   );
 
+  const navigateToSymbol = useTickerSymbolNavigation();
+
   return (
     <Box sx={{ paddingBottom: 2 }}>
       <ButtonBase
         onClick={() => {
-          setURLState(
-            {
-              query: etfAggregateDetail.etf_symbol,
-            },
-            false,
-            "/search",
-          );
+          navigateToSymbol(etfAggregateDetail.etf_symbol);
         }}
         sx={{ display: "block", width: "100%", textAlign: "left" }}
       >
