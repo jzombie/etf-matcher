@@ -22,6 +22,9 @@ export default function useTickerDetail(
 
   useEffect(() => {
     if (tickerId) {
+      // Unset ticker error, if exists
+      setTickerDetailError(null);
+
       setIsLoadingTickerDetail(true);
 
       store
