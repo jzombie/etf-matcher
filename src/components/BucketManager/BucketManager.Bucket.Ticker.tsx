@@ -15,7 +15,8 @@ import {
   Typography,
 } from "@mui/material";
 
-import type { TickerBucketTicker } from "@src/store";
+import type { TickerBucket, TickerBucketTicker } from "@src/store";
+import store, { tickerBucketDefaultNames } from "@src/store";
 
 import AvatarLogo from "@components/AvatarLogo";
 
@@ -43,14 +44,17 @@ const InfoItem = ({
 
 export type BucketTickerProps = {
   bucketTicker: TickerBucketTicker;
+  tickerBucket: TickerBucket;
 };
 
 {
-  // TODO: Finish wiring up `Delete` button and update the text accordingly
   // TODO: Add button to navigate to the full symbol
 }
 
-export default function BucketTicker({ bucketTicker }: BucketTickerProps) {
+export default function BucketTicker({
+  bucketTicker,
+  tickerBucket,
+}: BucketTickerProps) {
   const { isLoadingTickerDetail, tickerDetail } = useTickerDetail(
     bucketTicker.tickerId,
   );
@@ -64,6 +68,10 @@ export default function BucketTicker({ bucketTicker }: BucketTickerProps) {
   const handleClose = useCallback(() => {
     setOpen(false);
   }, []);
+
+  const handleDelete = useCallback(() => {
+    store.removeTickerFromBucket(bucketTicker.tickerId, tickerBucket);
+  }, [bucketTicker, tickerBucket]);
 
   if (isLoadingTickerDetail) {
     return <CircularProgress />;
@@ -157,15 +165,17 @@ export default function BucketTicker({ bucketTicker }: BucketTickerProps) {
         <DialogTitle id="alert-dialog-title">{"Delete Item"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure you want to delete this item from the bucket? This
-            action cannot be undone.
+            Are you sure you want to delete &quot;{bucketTicker.symbol}&quot;
+            from the {tickerBucketDefaultNames[tickerBucket.type].toLowerCase()}{" "}
+            &quot;
+            {tickerBucket.name}&quot;? This action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleClose} color="error" autoFocus>
+          <Button onClick={handleDelete} color="error" autoFocus>
             Delete
           </Button>
         </DialogActions>

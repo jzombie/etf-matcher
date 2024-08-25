@@ -138,7 +138,10 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                 <UnstyledUL>
                   {tickerBucket.tickers.map((bucketTicker) => (
                     <UnstyledLI key={bucketTicker.tickerId}>
-                      <BucketTicker bucketTicker={bucketTicker} />
+                      <BucketTicker
+                        bucketTicker={bucketTicker}
+                        tickerBucket={tickerBucket}
+                      />
                     </UnstyledLI>
                   ))}
                 </UnstyledUL>
