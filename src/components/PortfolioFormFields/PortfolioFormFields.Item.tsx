@@ -1,27 +1,31 @@
 import React, { useCallback, useEffect, useState } from "react";
 
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
-import {
-  Box,
-  Grid,
-  IconButton,
-  Paper,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Grid, IconButton, Paper, TextField, Typography } from "@mui/material";
+
+import type { TickerBucketTicker } from "@src/store";
+import { RustServiceTickerSearchResult } from "@src/types";
 
 import AvatarLogo from "@components/AvatarLogo";
 
 import useSearch from "@hooks/useSearch";
 
-export default function PortfolioFormFieldsItem() {
+export type PortfolioFormFieldsItemProps = {
+  initialBucketTicker?: TickerBucketTicker;
+};
+
+export default function PortfolioFormFieldsItem({
+  initialBucketTicker,
+}: PortfolioFormFieldsItemProps) {
   const { searchQuery, setSearchQuery, searchResults } = useSearch();
-  // const [selectedSymbol, setSelectedSymbol] = useState<string>("");
+  const [bucketTicker, setBucketTicker] =
+    useState<TickerBucketTicker | void | null>(initialBucketTicker);
 
   const handleSymbolInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { value } = event.target;
+
+      setBucketTicker(null);
       setSearchQuery(value);
     },
     [setSearchQuery],
@@ -35,9 +39,19 @@ export default function PortfolioFormFieldsItem() {
     [],
   );
 
-  const handleSelectSymbol = useCallback((symbol: string) => {
-    // setSelectedSymbol(symbol);
-  }, []);
+  const handleSelectSearchResult = useCallback(
+    (tickerSearchResult: RustServiceTickerSearchResult) => {
+      setBucketTicker({
+        tickerId: tickerSearchResult.ticker_id,
+        symbol: tickerSearchResult.symbol,
+        exchangeShortName: tickerSearchResult.exchange_short_name,
+        quantity: 1,
+      });
+
+      setSearchQuery("");
+    },
+    [setSearchQuery],
+  );
 
   useEffect(() => {
     console.log({ searchResults });
@@ -50,16 +64,16 @@ export default function PortfolioFormFieldsItem() {
           // TODO: Show logo, if selected
         }
         <TextField
-          name="symbol"
-          label="Symbol"
+          name="symbol_or_company_name"
+          label="Symbol or Company Name"
           variant="outlined"
           fullWidth
           required
-          value={searchQuery}
+          value={bucketTicker?.symbol || searchQuery}
           onChange={handleSymbolInputChange}
         />
       </Grid>
-      <Grid item xs={5}>
+      <Grid item xs={2}>
         <TextField
           name="shares"
           label="Shares"
@@ -68,19 +82,19 @@ export default function PortfolioFormFieldsItem() {
           required
           type="number"
           onChange={handleQuantityInputChange}
-          disabled
+          disabled={!bucketTicker}
         />
       </Grid>
       <Grid item xs={2} sx={{ display: "flex", alignItems: "center" }}>
-        <IconButton>
-          <RemoveCircleOutlineIcon color="error" />
+        <IconButton disabled>
+          <RemoveCircleOutlineIcon color={"disabled" /** or "error" */} />
         </IconButton>
       </Grid>
 
       {searchResults.length > 0 && (
         <Grid container spacing={2} sx={{ mt: 2 }}>
-          {searchResults.map((result) => (
-            <Grid item xs={12} sm={6} md={4} key={result.ticker_id}>
+          {searchResults.map((handleSelectTicker) => (
+            <Grid item xs={12} sm={6} md={4} key={handleSelectTicker.ticker_id}>
               <Paper
                 elevation={3}
                 sx={{
@@ -92,13 +106,17 @@ export default function PortfolioFormFieldsItem() {
                   width: "100%",
                   height: "100%",
                 }}
-                onClick={() => handleSelectSymbol(result.symbol)}
+                onClick={() => handleSelectSearchResult(handleSelectTicker)}
               >
-                <AvatarLogo tickerDetail={result} />
-                <Typography variant="h6">{result.symbol}</Typography>
-                <Typography variant="body2">{result.company_name}</Typography>
+                <AvatarLogo tickerDetail={handleSelectTicker} />
+                <Typography variant="h6">
+                  {handleSelectTicker.symbol}
+                </Typography>
+                <Typography variant="body2">
+                  {handleSelectTicker.company_name}
+                </Typography>
                 <Typography variant="caption">
-                  {result.exchange_short_name}
+                  {handleSelectTicker.exchange_short_name}
                 </Typography>
               </Paper>
             </Grid>
