@@ -146,6 +146,17 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                   ))}
                 </UnstyledUL>
               )}
+
+              {
+                // TODO: Remove; Just for debugging
+              }
+              <Button
+                onClick={() =>
+                  store.protoAnalyzeTickersWithQuantity(tickerBucket)
+                }
+              >
+                PROTO::createCustomVector()
+              </Button>
             </Box>
           )}
         </Section>
