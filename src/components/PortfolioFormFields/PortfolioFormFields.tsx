@@ -47,7 +47,10 @@ export default function PortfolioFormFields({
           {
             // Render existing form fields
             tickerBucketTickers.map((bucketTicker, idx) => (
-              <PortfolioFormFieldsItem key={bucketTicker?.tickerId || idx} />
+              <PortfolioFormFieldsItem
+                key={bucketTicker?.tickerId || idx}
+                initialBucketTicker={bucketTicker}
+              />
             ))
           }
           <Grid item xs={12}>
