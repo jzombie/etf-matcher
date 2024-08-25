@@ -2,6 +2,7 @@ import React, { useCallback, useState } from "react";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
+  Alert,
   Box,
   Button,
   CircularProgress,
@@ -52,9 +53,8 @@ export default function BucketTicker({
   bucketTicker,
   tickerBucket,
 }: BucketTickerProps) {
-  const { isLoadingTickerDetail, tickerDetail } = useTickerDetail(
-    bucketTicker.tickerId,
-  );
+  const { isLoadingTickerDetail, tickerDetail, tickerDetailError } =
+    useTickerDetail(bucketTicker.tickerId);
 
   const [open, setOpen] = useState(false);
 
@@ -76,8 +76,17 @@ export default function BucketTicker({
     return <CircularProgress />;
   }
 
+  if (tickerDetailError) {
+    return <Alert color="error">Could not load ticker detail.</Alert>;
+  }
+
   if (!tickerDetail) {
-    return <div>No data available</div>;
+    return (
+      // Note: This
+      <div className="animate__animated animate__fadeIn animate__delay-1s">
+        No data available
+      </div>
+    );
   }
 
   return (
