@@ -1,6 +1,7 @@
 import React from "react";
 
 import {
+  Alert,
   Box,
   Button,
   FormControlLabel,
@@ -63,17 +64,23 @@ export default function SettingsManager() {
     <Scrollable>
       <Padding>
         <Section>
-          <h2>Session Sharing</h2>
+          <h2>Session Syncing (Beta)</h2>
           <Typography variant="body2" component="p">
-            ETF Matcher doesn&apos;t use user accounts, but session data can be
-            retained and shared with other devices in real-time.
+            Use a unique session name to link your devices and share session
+            data in real-time.
           </Typography>
           <Typography variant="body2" component="p" mt={1}>
-            Your devices can be linked using a common room name.
+            You can create multiple sessions, each with its own unique name, to
+            keep your data organized across different devices.
           </Typography>
-          <Typography variant="body2" component="p" mt={1}>
-            Multiple rooms can also be used simultaneously for different
-            sessions.
+          <Typography
+            variant="body2"
+            component="p"
+            mt={1}
+            sx={{ fontStyle: "italic" }}
+          >
+            This feature is currently in beta and it can be unreliable, and
+            prone to disconnect without warning.
           </Typography>
 
           <Box mt={2}>
@@ -142,16 +149,16 @@ export default function SettingsManager() {
         <Section>
           <h2>Rust Service Errors</h2>
           {!Object.keys(rustServiceXHRRequestErrors).length ? (
-            <div>No reported errors.</div>
+            <Alert color="success">No reported errors.</Alert>
           ) : (
             Object.keys(rustServiceXHRRequestErrors).map((pathName) => {
               const { errCount, lastTimestamp } =
                 rustServiceXHRRequestErrors[pathName];
               return (
-                <div key={pathName}>
+                <Alert color="error" key={pathName}>
                   {pathName}: {errCount} error(s) (last:{" "}
                   {formatLocalTime(lastTimestamp)})
-                </div>
+                </Alert>
               );
             })
           )}
