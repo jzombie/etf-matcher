@@ -129,7 +129,6 @@ export default function BucketForm({
 
   const isFormValid = !nameError && bucketName.trim() !== "";
 
-  // TODO: Wrap in form
   return (
     <Box sx={{ mt: 2 }}>
       <Typography variant="h6">
