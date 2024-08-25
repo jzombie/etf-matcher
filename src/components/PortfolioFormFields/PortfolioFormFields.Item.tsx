@@ -15,7 +15,7 @@ import AvatarLogo from "@components/AvatarLogo";
 
 import useSearch from "@hooks/useSearch";
 
-export default function PortfolioFormItem() {
+export default function PortfolioFormFieldsItem() {
   const { searchQuery, setSearchQuery, searchResults } = useSearch();
   // const [selectedSymbol, setSelectedSymbol] = useState<string>("");
 
@@ -46,6 +46,9 @@ export default function PortfolioFormItem() {
   return (
     <>
       <Grid item xs={5}>
+        {
+          // TODO: Show logo, if selected
+        }
         <TextField
           name="symbol"
           label="Symbol"
@@ -65,6 +68,7 @@ export default function PortfolioFormItem() {
           required
           type="number"
           onChange={handleQuantityInputChange}
+          disabled
         />
       </Grid>
       <Grid item xs={2} sx={{ display: "flex", alignItems: "center" }}>
@@ -83,8 +87,10 @@ export default function PortfolioFormItem() {
                   padding: 2,
                   cursor: "pointer",
                   "&:hover": {
-                    backgroundColor: "#f5f5f5",
+                    backgroundColor: "rgba(255,255,255,.1)",
                   },
+                  width: "100%",
+                  height: "100%",
                 }}
                 onClick={() => handleSelectSymbol(result.symbol)}
               >
@@ -97,6 +103,9 @@ export default function PortfolioFormItem() {
               </Paper>
             </Grid>
           ))}
+          {
+            // TODO: Add pagination?
+          }
         </Grid>
       )}
     </>

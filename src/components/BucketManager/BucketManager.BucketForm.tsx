@@ -9,6 +9,8 @@ import store, {
 } from "@src/store";
 import type { TickerBucket } from "@src/store";
 
+import PortfolioFormFields from "@components/PortfolioFormFields";
+
 import { useNotification } from "@hooks/useNotification";
 
 export type BucketFormProps = {
@@ -16,6 +18,7 @@ export type BucketFormProps = {
   existingBucket?: TickerBucket;
   onClose?: () => void;
   onCancel?: () => void;
+  disablePortfolioFormFields?: boolean;
 };
 
 export default function BucketForm({
@@ -23,6 +26,7 @@ export default function BucketForm({
   existingBucket,
   onClose,
   onCancel,
+  disablePortfolioFormFields = false,
 }: BucketFormProps) {
   const initialBucketName = useMemo(
     () => existingBucket?.name,
@@ -122,6 +126,7 @@ export default function BucketForm({
 
   const isFormValid = !nameError && bucketName.trim() !== "";
 
+  // TODO: Wrap in form
   return (
     <Box sx={{ mt: 2 }}>
       <Typography variant="h6">
@@ -156,6 +161,11 @@ export default function BucketForm({
             multiline
             rows={4}
           />
+
+          {bucketType === "portfolio" && !disablePortfolioFormFields && (
+            <PortfolioFormFields />
+          )}
+
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
             <Button
               variant="contained"

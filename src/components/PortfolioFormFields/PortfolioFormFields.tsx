@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 
-import PortfolioFormItem from "./PortfolioForm.Item";
+import PortfolioFormFieldsItem from "./PortfolioFormFields.Item";
 
 // TODO: Refactor; rename
 interface Asset {
@@ -63,41 +63,26 @@ const PortfolioForm: React.FC = () => {
   return (
     <Container maxWidth="md">
       <Box sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Custom Portfolio
-        </Typography>
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={3}>
-            {assets.map((asset, index) => (
-              // TODO: Use `tickerId` for index
-              <PortfolioFormItem key={index} />
-            ))}
-            <Grid item xs={12}>
-              {
-                // TODO: Prevent add unless no current symbol is being edited, and there is at least one populated symbol
-              }
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AddCircleOutlineIcon />}
-                onClick={handleAddFields}
-              >
-                Add Symbol
-              </Button>
-            </Grid>
-            <Grid item xs={12}>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                fullWidth
-                disabled
-              >
-                Submit
-              </Button>
-            </Grid>
+        <Grid container spacing={3}>
+          {assets.map((asset, index) => (
+            // TODO: Use `tickerId` for index
+            <PortfolioFormFieldsItem key={index} />
+          ))}
+          <Grid item xs={12}>
+            {
+              // TODO: Prevent add unless no current symbol is being edited, and there is at least one populated symbol
+            }
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddCircleOutlineIcon />}
+              onClick={handleAddFields}
+              disabled
+            >
+              Add Additional Symbol
+            </Button>
           </Grid>
-        </form>
+        </Grid>
       </Box>
     </Container>
   );
