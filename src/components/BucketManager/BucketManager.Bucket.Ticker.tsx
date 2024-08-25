@@ -93,7 +93,13 @@ export default function BucketTicker({
         borderRadius: 2,
       }}
     >
-      <Grid container spacing={2} alignItems="center">
+      <Grid
+        container
+        spacing={2}
+        alignItems="center"
+        sx={{ cursor: "pointer" }}
+        onClick={() => navigateToSymbol(bucketTicker.symbol)}
+      >
         <Grid item xs={12} sm={6} md={4}>
           <Box display="flex" alignItems="center">
             <AvatarLogo tickerDetail={tickerDetail} />
