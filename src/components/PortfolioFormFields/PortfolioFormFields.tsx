@@ -1,12 +1,9 @@
-/* eslint-disable */
-import React, { useState } from "react";
+import React from "react";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { Box, Button, Container, Grid } from "@mui/material";
 
 import type { TickerBucket, TickerBucketTicker } from "@src/store";
-
-import BucketTicker from "@components/BucketManager/BucketManager.Bucket.Ticker";
 
 import PortfolioFormFieldsItem from "./PortfolioFormFields.Item";
 
@@ -17,16 +14,19 @@ export type PortfolioFormFieldsProps = {
 export default function PortfolioFormFields({
   tickerBucket,
 }: PortfolioFormFieldsProps) {
+  // TODO: Handle
   // const handleAddFields = () => {
   //   setAssets([...assets, { symbol: "", shares: 1 }]);
   // };
 
+  // TODO: Handle
   // const handleRemoveFields = (index: number) => {
   //   const values = [...assets];
   //   values.splice(index, 1);
   //   setAssets(values);
   // };
 
+  // TODO: Handle
   // const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
   //   event.preventDefault();
   //   console.log("Form Data:", assets);
@@ -40,6 +40,7 @@ export default function PortfolioFormFields({
       <Box sx={{ my: 4 }}>
         <Grid container spacing={3}>
           {
+            // TODO: Determine if should render, first
             // Render new form fields
           }
           <PortfolioFormFieldsItem />
