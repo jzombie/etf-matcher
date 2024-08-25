@@ -2,6 +2,7 @@ import React, { useCallback, useState } from "react";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
+  Alert,
   Box,
   Button,
   CircularProgress,
@@ -15,6 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 
+import { DEFAULT_COUNTRY_CODE } from "@src/constants";
 import type { TickerBucket, TickerBucketTicker } from "@src/store";
 import store, { tickerBucketDefaultNames } from "@src/store";
 
@@ -52,9 +54,8 @@ export default function BucketTicker({
   bucketTicker,
   tickerBucket,
 }: BucketTickerProps) {
-  const { isLoadingTickerDetail, tickerDetail } = useTickerDetail(
-    bucketTicker.tickerId,
-  );
+  const { isLoadingTickerDetail, tickerDetail, tickerDetailError } =
+    useTickerDetail(bucketTicker.tickerId);
 
   const [open, setOpen] = useState(false);
 
@@ -76,8 +77,24 @@ export default function BucketTicker({
     return <CircularProgress />;
   }
 
+  if (tickerDetailError) {
+    return <Alert color="error">Could not load ticker detail.</Alert>;
+  }
+
   if (!tickerDetail) {
-    return <div>No data available</div>;
+    return (
+      // FIXME: The delayed fade-in is a workaround for this element briefly
+      // flashing in. I tried various ways of updating `useTickerDetail` itself
+      // to try to prevent this from briefly appearing and came to the
+      // conclusion that setting an object for the state, where multiple keys
+      // can be set at once, might be necessary to prevent this from happening.
+      //
+      // Alternatively, perhaps setting `tickerDetail` before `isLoadingTickerDetail`
+      // could potentially be a workaround.
+      <div className="animate__animated animate__fadeIn animate__delay-1s">
+        No data available
+      </div>
+    );
   }
 
   return (
@@ -119,7 +136,9 @@ export default function BucketTicker({
           <InfoItem label="CIK">{tickerDetail.cik}</InfoItem>
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
-          <InfoItem label="Country Code">{tickerDetail.country_code}</InfoItem>
+          <InfoItem label="Country Code">
+            {tickerDetail.country_code || DEFAULT_COUNTRY_CODE}
+          </InfoItem>
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
           <InfoItem label="Industry">
@@ -143,7 +162,7 @@ export default function BucketTicker({
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
           <InfoItem label="Score Avg DCA">
-            {tickerDetail.score_avg_dca?.toFixed(2)}
+            {tickerDetail.score_avg_dca?.toFixed(2) || "N/A"}
           </InfoItem>
         </Grid>
       </Grid>

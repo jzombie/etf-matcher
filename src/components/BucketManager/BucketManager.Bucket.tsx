@@ -81,41 +81,45 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
             />
           )}
 
-          <Button
-            onClick={toggleCollapse}
-            disabled={!tickerBucket.tickers.length}
-            endIcon={isCollapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />}
-          >
-            {isCollapsed ? "Expand" : "Collapse"} List
-          </Button>
+          <Box>
+            <Button
+              color="error"
+              variant="outlined"
+              startIcon={<DeleteIcon />}
+              onClick={handleDeleteClick}
+            >
+              Delete
+            </Button>
+            <Button
+              color="primary"
+              variant="outlined"
+              startIcon={<EditIcon />}
+              onClick={handleEditClick}
+            >
+              Edit
+            </Button>
 
-          <Button
-            color="error"
-            variant="outlined"
-            startIcon={<DeleteIcon />}
-            onClick={handleDeleteClick}
-          >
-            Delete
-          </Button>
-          <Button
-            color="primary"
-            variant="outlined"
-            startIcon={<EditIcon />}
-            onClick={handleEditClick}
-          >
-            Edit
-          </Button>
+            <Typography
+              style={{
+                display: "inline-block",
+                marginLeft: 8,
+                fontStyle: "italic",
+              }}
+              variant="body2"
+            >
+              {`${tickerBucket.tickers.length} item${tickerBucket.tickers.length !== 1 ? "s" : ""}`}
+            </Typography>
+          </Box>
 
-          <Typography
-            style={{
-              display: "inline-block",
-              marginLeft: 8,
-              fontStyle: "italic",
-            }}
-            variant="body2"
-          >
-            {`${tickerBucket.tickers.length} item${tickerBucket.tickers.length !== 1 ? "s" : ""}`}
-          </Typography>
+          <Box sx={{ textAlign: "center" }}>
+            <Button
+              onClick={toggleCollapse}
+              disabled={!tickerBucket.tickers.length}
+              endIcon={isCollapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+            >
+              {isCollapsed ? "Expand" : "Collapse"} List
+            </Button>
+          </Box>
 
           {!tickerBucket.tickers.length ? (
             <>
@@ -149,14 +153,17 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
 
               {
                 // TODO: Remove; Just for debugging
+
+                import.meta.env.DEV && (
+                  <Button
+                    onClick={() =>
+                      store.fetchClosestTickersByQuantity(tickerBucket)
+                    }
+                  >
+                    PROTO::createCustomVector()
+                  </Button>
+                )
               }
-              <Button
-                onClick={() =>
-                  store.fetchClosestTickersByQuantity(tickerBucket)
-                }
-              >
-                PROTO::createCustomVector()
-              </Button>
             </Box>
           )}
         </Section>

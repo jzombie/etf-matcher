@@ -16,6 +16,9 @@ export default function useTickerDetail(
   const [tickerDetail, setTickerDetail] = useState<
     RustServiceTickerDetail | undefined
   >(undefined);
+  const [tickerDetailError, setTickerDetailError] = useState<Error | unknown>(
+    undefined,
+  );
 
   useEffect(() => {
     if (tickerId) {
@@ -30,11 +33,12 @@ export default function useTickerDetail(
             onLoadStableCurrentRef.current(tickerDetail);
           }
         })
+        .catch((err) => setTickerDetailError(err))
         .finally(() => {
           setIsLoadingTickerDetail(false);
         });
     }
   }, [onLoadStableCurrentRef, tickerId]);
 
-  return { isLoadingTickerDetail, tickerDetail };
+  return { isLoadingTickerDetail, tickerDetail, tickerDetailError };
 }
