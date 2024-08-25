@@ -48,10 +48,6 @@ export type BucketTickerProps = {
   tickerBucket: TickerBucket;
 };
 
-{
-  // TODO: Add button to navigate to the full symbol
-}
-
 export default function BucketTicker({
   bucketTicker,
   tickerBucket,
