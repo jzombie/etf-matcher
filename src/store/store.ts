@@ -794,7 +794,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   // TODO: Rename and refactor as needed
-  async protoAnalyzeTickersWithQuantity(
+  async fetchClosestTickersByQuantity(
     tickerBucket: TickerBucket,
   ): Promise<RustServiceTickerDistance[]> {
     // TODO: Define Rust translation type

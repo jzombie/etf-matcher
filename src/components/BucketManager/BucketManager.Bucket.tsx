@@ -152,7 +152,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
               }
               <Button
                 onClick={() =>
-                  store.protoAnalyzeTickersWithQuantity(tickerBucket)
+                  store.fetchClosestTickersByQuantity(tickerBucket)
                 }
               >
                 PROTO::createCustomVector()
