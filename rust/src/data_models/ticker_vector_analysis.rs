@@ -29,13 +29,12 @@ pub struct TickerWithQuantity {
 pub struct OwnedTickerVectors {
     #[allow(dead_code)]
     /// Holds the raw data to ensure that `ticker_vectors` has a valid reference.
-    pub data: Vec<u8>, // TODO: No pub?
-    pub ticker_vectors: TickerVectors<'static>, // TODO: No pub?
+    data: Vec<u8>,
+    ticker_vectors: TickerVectors<'static>,
 }
 
 impl OwnedTickerVectors {
-    // TODO: No pub?
-    pub async fn get_all_ticker_vectors() -> Result<OwnedTickerVectors, String> {
+    async fn get_all_ticker_vectors() -> Result<OwnedTickerVectors, String> {
         let url = DataURL::FinancialVectors10K.value();
         let file_content = utils::xhr_fetch_cached(url.to_string())
             .await
