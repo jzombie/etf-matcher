@@ -16,6 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 
+import { DEFAULT_COUNTRY_CODE } from "@src/constants";
 import type { TickerBucket, TickerBucketTicker } from "@src/store";
 import store, { tickerBucketDefaultNames } from "@src/store";
 
@@ -128,7 +129,9 @@ export default function BucketTicker({
           <InfoItem label="CIK">{tickerDetail.cik}</InfoItem>
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
-          <InfoItem label="Country Code">{tickerDetail.country_code}</InfoItem>
+          <InfoItem label="Country Code">
+            {tickerDetail.country_code || DEFAULT_COUNTRY_CODE}
+          </InfoItem>
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
           <InfoItem label="Industry">
@@ -152,7 +155,7 @@ export default function BucketTicker({
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
           <InfoItem label="Score Avg DCA">
-            {tickerDetail.score_avg_dca?.toFixed(2)}
+            {tickerDetail.score_avg_dca?.toFixed(2) || "N/A"}
           </InfoItem>
         </Grid>
       </Grid>
