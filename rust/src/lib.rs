@@ -185,7 +185,7 @@ pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<Js
 #[wasm_bindgen]
 pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<JsValue, JsValue> {
     // Call the find_closest_tickers function from the ticker_vector_analysis module
-    let closest_tickers = ticker_vector_analysis::find_closest_tickers(ticker_id)
+    let closest_tickers = ticker_vector_analysis::TickerDistance::find_closest_tickers(ticker_id)
         .await
         .map_err(|err| JsValue::from_str(&format!("Failed to find closest ticker IDs: {}", err)))?;
 
@@ -240,7 +240,10 @@ pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<JsValue, JsValu
 #[wasm_bindgen]
 pub async fn rank_tickers_by_cosine_similarity(ticker_id: TickerId) -> Result<JsValue, JsValue> {
     // Call the rank_tickers_by_cosine_similarity function from the ticker_vector_analysis module
-    let similar_tickers = ticker_vector_analysis::rank_tickers_by_cosine_similarity(ticker_id)
+    let similar_tickers =
+        ticker_vector_analysis::CosineSimilarityResult::rank_tickers_by_cosine_similarity(
+            ticker_id,
+        )
         .await
         .map_err(|err| {
             JsValue::from_str(&format!(
@@ -305,9 +308,11 @@ pub async fn find_closest_tickers_by_quantity(
 
     // Find the closest tickers by quantity
     let closest_tickers: Vec<ticker_vector_analysis::TickerDistance> =
-        ticker_vector_analysis::find_closest_tickers_by_quantity(&tickers_with_quantity)
-            .await
-            .map_err(|err| JsValue::from_str(&err))?;
+        ticker_vector_analysis::TickerWithQuantity::find_closest_tickers_by_quantity(
+            &tickers_with_quantity,
+        )
+        .await
+        .map_err(|err| JsValue::from_str(&err))?;
 
     // Serialize the result back to JsValue
     serde_wasm_bindgen::to_value(&closest_tickers)
