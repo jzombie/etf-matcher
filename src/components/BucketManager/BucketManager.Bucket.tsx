@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 
 import Padding from "@layoutKit/Padding";
-import store from "@src/store";
+import store, { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucket } from "@src/store";
 
 import SearchModalButton from "@components/SearchModalButton";
@@ -157,10 +157,8 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
         <DialogTitle id={alertDialogTitleId}>{"Confirm Delete"}</DialogTitle>
         <DialogContent>
           <DialogContentText id={alertDialogDescriptionId}>
-            {
-              // TODO: Use proper name type instead of "bucket"
-            }
-            Are you sure you want to delete the bucket &quot;
+            Are you sure you want to delete the{" "}
+            {tickerBucketDefaultNames[tickerBucket.type].toLowerCase()} &quot;
             {tickerBucket?.name}&quot;? This action cannot be undone.
           </DialogContentText>
         </DialogContent>
