@@ -21,6 +21,7 @@ import store, { tickerBucketDefaultNames } from "@src/store";
 import AvatarLogo from "@components/AvatarLogo";
 
 import useTickerDetail from "@hooks/useTickerDetail";
+import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
 const InfoItem = ({
   label,
@@ -72,6 +73,8 @@ export default function BucketTicker({
   const handleDelete = useCallback(() => {
     store.removeTickerFromBucket(bucketTicker.tickerId, tickerBucket);
   }, [bucketTicker, tickerBucket]);
+
+  const navigateToSymbol = useTickerSymbolNavigation();
 
   if (isLoadingTickerDetail) {
     return <CircularProgress />;
@@ -152,10 +155,13 @@ export default function BucketTicker({
         >
           Delete from Bucket
         </Button>
-        {
-          // TODO: Finish wiring up
-        }
-        <Button variant="contained">View</Button>
+
+        <Button
+          variant="contained"
+          onClick={() => navigateToSymbol(bucketTicker.symbol)}
+        >
+          View
+        </Button>
       </Box>
 
       {/* Delete Confirmation Dialog */}
