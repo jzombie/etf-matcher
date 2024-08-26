@@ -5,6 +5,8 @@ import { Box, Button, Container, Grid } from "@mui/material";
 
 import type { TickerBucket, TickerBucketTicker } from "@src/store";
 
+import customLogger from "@utils/customLogger";
+
 import PortfolioFormFieldsItem from "./PortfolioFormFields.Item";
 
 export type PortfolioFormFieldsProps = {
@@ -43,13 +45,22 @@ export default function PortfolioFormFields({
             // TODO: Determine if should render, first
             // Render new form fields
           }
-          <PortfolioFormFieldsItem />
+          <PortfolioFormFieldsItem
+            onUpdate={(bucketTicker) =>
+              // TODO: Handle
+              customLogger.debug({ bucketTicker })
+            }
+          />
           {
             // Render existing form fields
             tickerBucketTickers.map((bucketTicker, idx) => (
               <PortfolioFormFieldsItem
                 key={bucketTicker?.tickerId || idx}
                 initialBucketTicker={bucketTicker}
+                onUpdate={(bucketTicker) =>
+                  // TODO: Handle
+                  customLogger.debug({ bucketTicker })
+                }
               />
             ))
           }

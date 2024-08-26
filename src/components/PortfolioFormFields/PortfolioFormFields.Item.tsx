@@ -9,21 +9,36 @@ import { RustServiceTickerSearchResult } from "@src/types";
 import AvatarLogo from "@components/AvatarLogo";
 
 import useSearch from "@hooks/useSearch";
+import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 import customLogger from "@utils/customLogger";
 
 export type PortfolioFormFieldsItemProps = {
   initialBucketTicker?: TickerBucketTicker;
+  onUpdate: (bucketTicker: TickerBucketTicker | null) => void;
 };
 
 // TODO: Extract keyboard-selectable grid into a separate component?
 export default function PortfolioFormFieldsItem({
   initialBucketTicker,
+  onUpdate,
 }: PortfolioFormFieldsItemProps) {
+  const onUpdateStableRef = useStableCurrentRef(onUpdate);
+
   const { searchQuery, setSearchQuery, searchResults } = useSearch();
-  const [bucketTicker, setBucketTicker] = useState<
+  const [bucketTicker, _setBucketTicker] = useState<
     TickerBucketTicker | undefined | null
   >(initialBucketTicker);
+
+  const handleSetBucketTicker = useCallback(
+    (bucketTicker: TickerBucketTicker | null) => {
+      _setBucketTicker(bucketTicker);
+
+      const onUpdate = onUpdateStableRef.current;
+      onUpdate(bucketTicker);
+    },
+    [onUpdateStableRef],
+  );
 
   const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
   const columns = 3; // Assuming 3 columns in the grid (adjust as necessary)
@@ -31,18 +46,18 @@ export default function PortfolioFormFieldsItem({
   const handleSymbolInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { value } = event.target;
-      setBucketTicker(null);
+      handleSetBucketTicker(null);
       setSearchQuery(value);
       setHighlightedIndex(null); // Reset highlighted index when query changes
     },
-    [setSearchQuery],
+    [handleSetBucketTicker, setSearchQuery],
   );
 
   const handleQuantityInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { value } = event.target;
       if (bucketTicker) {
-        setBucketTicker({
+        handleSetBucketTicker({
           ...bucketTicker,
           // Coerce to positive values
           quantity: Math.abs(parseFloat(value)),
@@ -53,12 +68,12 @@ export default function PortfolioFormFieldsItem({
         );
       }
     },
-    [bucketTicker],
+    [bucketTicker, handleSetBucketTicker],
   );
 
   const handleSelectSearchResult = useCallback(
     (tickerSearchResult: RustServiceTickerSearchResult) => {
-      setBucketTicker({
+      handleSetBucketTicker({
         tickerId: tickerSearchResult.ticker_id,
         symbol: tickerSearchResult.symbol,
         exchangeShortName: tickerSearchResult.exchange_short_name,
@@ -68,7 +83,7 @@ export default function PortfolioFormFieldsItem({
       setSearchQuery("");
       setHighlightedIndex(null); // Reset the highlighted index after selection
     },
-    [setSearchQuery],
+    [handleSetBucketTicker, setSearchQuery],
   );
 
   // Handle keyboard navigation
