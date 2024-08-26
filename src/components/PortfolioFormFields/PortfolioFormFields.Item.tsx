@@ -46,11 +46,14 @@ export default function PortfolioFormFieldsItem({
   const handleSymbolInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { value } = event.target;
-      handleSetBucketTicker(null);
+
+      // Only clear out the data
+      _setBucketTicker(null);
+
       setSearchQuery(value);
       setHighlightedIndex(null); // Reset highlighted index when query changes
     },
-    [handleSetBucketTicker, setSearchQuery],
+    [setSearchQuery],
   );
 
   const handleQuantityInputChange = useCallback(

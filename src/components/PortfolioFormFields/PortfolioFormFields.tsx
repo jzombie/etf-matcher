@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { Box, Button, Container, Grid } from "@mui/material";
@@ -16,25 +16,45 @@ export type PortfolioFormFieldsProps = {
 export default function PortfolioFormFields({
   tickerBucket,
 }: PortfolioFormFieldsProps) {
-  // TODO: Handle
-  // const handleAddFields = () => {
-  //   setAssets([...assets, { symbol: "", shares: 1 }]);
-  // };
+  const [pendingTickers, setPendingTickers] = useState<
+    (TickerBucketTicker | null)[]
+  >([]);
 
-  // TODO: Handle
-  // const handleRemoveFields = (index: number) => {
-  //   const values = [...assets];
-  //   values.splice(index, 1);
-  //   setAssets(values);
-  // };
+  // Determine if the new PortfolioFormFieldsItem should be rendered
+  const shouldShowNewField = !tickerBucket && pendingTickers.length === 0;
 
-  // TODO: Handle
-  // const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault();
-  //   console.log("Form Data:", assets);
-  // };
+  // Handle adding a new ticker field
+  const handleAddFields = () => {
+    setPendingTickers([
+      ...pendingTickers,
+      { tickerId: 0, symbol: "", quantity: 1 }, // Default values for a new ticker
+    ]);
+  };
 
-  // TODO: Improve this
+  // Handle updating a ticker field, handling the case where it might be null
+  const handleUpdateFields = (
+    index: number,
+    updatedTicker: TickerBucketTicker | null,
+  ) => {
+    const updatedTickers = [...pendingTickers];
+
+    if (updatedTicker) {
+      updatedTickers[index] = updatedTicker;
+    } else {
+      // If the updatedTicker is null, we may want to remove or reset the field
+      updatedTickers[index] = { tickerId: 0, symbol: "", quantity: 1 };
+    }
+
+    setPendingTickers(updatedTickers);
+  };
+
+  // Handle removing a ticker field
+  const handleRemoveFields = (index: number) => {
+    const values = [...pendingTickers];
+    values.splice(index, 1);
+    setPendingTickers(values);
+  };
+
   const tickerBucketTickers: TickerBucketTicker[] = tickerBucket?.tickers || [];
 
   return (
@@ -42,38 +62,49 @@ export default function PortfolioFormFields({
       <Box sx={{ my: 4 }}>
         <Grid container spacing={3}>
           {
-            // TODO: Determine if should render, first
-            // Render new form fields
+            // Render new form fields if conditions are met
+            shouldShowNewField && (
+              <PortfolioFormFieldsItem
+                onUpdate={(bucketTicker) => handleUpdateFields(0, bucketTicker)}
+              />
+            )
           }
-          <PortfolioFormFieldsItem
-            onUpdate={(bucketTicker) =>
-              // TODO: Handle
-              customLogger.debug({ bucketTicker })
-            }
-          />
           {
-            // Render existing form fields
+            // Render pending form fields
+            pendingTickers.map((bucketTicker, idx) => (
+              <PortfolioFormFieldsItem
+                key={bucketTicker?.tickerId || idx}
+                initialBucketTicker={bucketTicker || undefined}
+                onUpdate={(updatedTicker) =>
+                  handleUpdateFields(idx, updatedTicker)
+                }
+                // TODO: Implement
+                // onRemove={() => handleRemoveFields(idx)}
+              />
+            ))
+          }
+          {
+            // Render existing form fields from the tickerBucket
             tickerBucketTickers.map((bucketTicker, idx) => (
               <PortfolioFormFieldsItem
                 key={bucketTicker?.tickerId || idx}
                 initialBucketTicker={bucketTicker}
-                onUpdate={(bucketTicker) =>
-                  // TODO: Handle
-                  customLogger.debug({ bucketTicker })
+                onUpdate={(updatedTicker) =>
+                  customLogger.debug({ updatedTicker })
                 }
               />
             ))
           }
           <Grid item xs={12}>
             {
-              // TODO: Prevent add unless no current symbol is being edited, and there is at least one populated symbol
+              // Prevent add unless there is no empty or pending symbol
             }
             <Button
               variant="contained"
               color="primary"
               startIcon={<AddCircleOutlineIcon />}
-              // onClick={handleAddFields}
-              disabled
+              onClick={handleAddFields}
+              disabled={pendingTickers.length > 0}
             >
               Add Additional Symbol
             </Button>
