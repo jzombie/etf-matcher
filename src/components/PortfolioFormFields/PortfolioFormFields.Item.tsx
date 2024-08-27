@@ -41,19 +41,6 @@ export default function PortfolioFormFieldsItem({
     [onUpdateStableRef],
   );
 
-  // const handleSymbolInputChange = useCallback(
-  //   (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-  //     const { value } = event.target;
-
-  //     // Only clear out the data
-  //     _setBucketTicker(null);
-
-  //     setSearchQuery(value);
-  //     setHighlightedIndex(null); // Reset highlighted index when query changes
-  //   },
-  //   [setSearchQuery],
-  // );
-
   const handleQuantityInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { value } = event.target;
@@ -74,7 +61,6 @@ export default function PortfolioFormFieldsItem({
 
   const [isSearchModalOpen, setIsSearchModalOpen] = useState<boolean>(false);
 
-  // TODO: Refactor as necessary
   const handleSelectTicker = useCallback(
     (tickerSearchResult: RustServiceTickerSearchResult) => {
       setIsSearchModalOpen(false);
