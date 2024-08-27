@@ -86,12 +86,14 @@ export default function BucketForm({
   const handleSaveBucket = useCallback(() => {
     try {
       if (existingBucket) {
+        const nextBucket = { ...existingBucket };
+
         if (explicitTickers) {
-          existingBucket["tickers"] = explicitTickers;
+          nextBucket["tickers"] = explicitTickers;
         }
 
         store.updateTickerBucket(existingBucket, {
-          ...existingBucket,
+          ...nextBucket,
           name: bucketName,
           description: bucketDescription,
         });
