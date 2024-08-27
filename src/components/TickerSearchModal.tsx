@@ -23,6 +23,8 @@ import { RustServiceTickerSearchResult } from "@src/types";
 import useSearch from "@hooks/useSearch";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
+import customLogger from "@utils/customLogger";
+
 import DialogModal, { DialogModalProps } from "./DialogModal";
 import EncodedImage from "./EncodedImage";
 
@@ -112,22 +114,27 @@ export default function TickerSearchModal({
       exactSearchValue?: string,
       selectedTicker?: RustServiceTickerSearchResult,
     ) => {
-      // Close the modal
-      handleClose();
+      try {
+        // Close the modal
+        handleClose();
 
-      const locSearchQuery = exactSearchValue || searchQuery;
+        const locSearchQuery = exactSearchValue || searchQuery;
 
-      const onSelectSearchQuery = onSelectSearchQueryStableCurrentRef.current;
-      if (typeof onSelectSearchQuery === "function") {
-        onSelectSearchQuery(locSearchQuery, Boolean(exactSearchValue));
-      }
-
-      if (selectedTicker) {
-        const onSelectTickerResult =
-          onSelectTickerResultStableCurrentRef.current;
-        if (typeof onSelectTickerResult === "function") {
-          onSelectTickerResult(selectedTicker);
+        const onSelectSearchQuery = onSelectSearchQueryStableCurrentRef.current;
+        if (typeof onSelectSearchQuery === "function") {
+          onSelectSearchQuery(locSearchQuery, Boolean(exactSearchValue));
         }
+
+        if (selectedTicker) {
+          const onSelectTickerResult =
+            onSelectTickerResultStableCurrentRef.current;
+          if (typeof onSelectTickerResult === "function") {
+            onSelectTickerResult(selectedTicker);
+          }
+        }
+      } catch (error) {
+        // TODO: Route error up to UI
+        customLogger.error("Error confirming search:", error);
       }
     },
     [
