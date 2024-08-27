@@ -1,3 +1,6 @@
+// FIXME: These consist solely of the `Rust service worker` types and perhaps
+// this file should be renamed.
+
 export type RustServiceDataBuildInfo = {
   time: string;
   hash: string;
