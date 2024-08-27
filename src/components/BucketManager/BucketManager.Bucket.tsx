@@ -118,7 +118,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
 
           {tickerBucket.tickers.length > 0 ? (
             <>
-              <Box sx={{ textAlign: "center", marginTop: 2 }}>
+              <Box sx={{ textAlign: "center" }} mt={1}>
                 <Button
                   onClick={toggleCollapse}
                   disabled={!tickerBucket.tickers.length}
