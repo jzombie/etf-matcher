@@ -112,6 +112,7 @@ export default function PortfolioFormFields({
               <PortfolioFormFieldsItem
                 key={bucketTicker?.tickerId || idx}
                 initialBucketTicker={bucketTicker}
+                existingBucketTickers={existingTickers}
                 onUpdate={(updatedTicker: TickerBucketTicker | null) =>
                   handleUpdateField(updatedTicker)
                 }
@@ -123,6 +124,7 @@ export default function PortfolioFormFields({
             // Render the new form field if a new ticker is being added
             newTicker && (
               <PortfolioFormFieldsItem
+                existingBucketTickers={existingTickers}
                 onUpdate={handleUpdateField}
                 onDelete={() => setNewTicker(null)}
               />

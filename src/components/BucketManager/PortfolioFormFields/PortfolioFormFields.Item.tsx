@@ -16,16 +16,17 @@ import customLogger from "@utils/customLogger";
 
 export type PortfolioFormFieldsItemProps = {
   initialBucketTicker?: TickerBucketTicker;
+  existingBucketTickers: TickerBucketTicker[];
   onUpdate: (bucketTicker: TickerBucketTicker | null) => void;
   onDelete?: (bucketTicker: TickerBucketTicker) => void;
 };
 
 // TODO: Prompt for confirmation before deleting
-// TODO: Prevent trying to add the same ticker twice
 export default function PortfolioFormFieldsItem({
   initialBucketTicker,
   onUpdate,
   onDelete,
+  existingBucketTickers = [],
 }: PortfolioFormFieldsItemProps) {
   const onUpdateStableRef = useStableCurrentRef(onUpdate);
   const onDeleteStableRef = useStableCurrentRef(onDelete);
@@ -35,15 +36,26 @@ export default function PortfolioFormFieldsItem({
   >(initialBucketTicker);
 
   const { tickerDetail } = useTickerDetail(bucketTicker?.tickerId);
+  const [tickerError, setTickerError] = useState<string | null>(null);
 
   const handleSetBucketTicker = useCallback(
     (bucketTicker: TickerBucketTicker | null) => {
-      _setBucketTicker(bucketTicker);
+      if (
+        bucketTicker &&
+        existingBucketTickers.some(
+          (existingTicker) => existingTicker.tickerId === bucketTicker.tickerId,
+        )
+      ) {
+        setTickerError("This ticker is already in your portfolio.");
+      } else {
+        setTickerError(null);
+        _setBucketTicker(bucketTicker);
 
-      const onUpdate = onUpdateStableRef.current;
-      onUpdate(bucketTicker);
+        const onUpdate = onUpdateStableRef.current;
+        onUpdate(bucketTicker);
+      }
     },
-    [onUpdateStableRef],
+    [existingBucketTickers, onUpdateStableRef],
   );
 
   const handleQuantityInputChange = useCallback(
@@ -105,6 +117,8 @@ export default function PortfolioFormFieldsItem({
             disabled={Boolean(bucketTicker)}
             onChange={() => setIsSearchModalOpen(true)}
             onClick={() => setIsSearchModalOpen(true)}
+            error={Boolean(tickerError)}
+            helperText={tickerError}
             size="small"
           />
         </Grid>
