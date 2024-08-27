@@ -63,8 +63,7 @@ export default function TickerSearchModal({
     initialPageSize: 10,
   });
 
-  // TODO: Rename to handleClose
-  const handleCloseModal = useCallback(() => {
+  const handleClose = useCallback(() => {
     // Reset search query on close
     setSearchQuery("");
 
@@ -74,11 +73,10 @@ export default function TickerSearchModal({
     }
   }, [setSearchQuery, onCloseStableCurrentRef]);
 
-  // TODO: Rename to handleSearch
   const handleOk = useCallback(
     (_?: SyntheticEvent, exactSearchValue?: string) => {
       // Close the modal
-      handleCloseModal();
+      handleClose();
 
       const locSearchQuery = exactSearchValue || searchQuery;
 
@@ -87,7 +85,7 @@ export default function TickerSearchModal({
         onSearch(locSearchQuery, Boolean(exactSearchValue));
       }
     },
-    [handleCloseModal, searchQuery, onSearchStableCurrentRef],
+    [handleClose, searchQuery, onSearchStableCurrentRef],
   );
 
   const handleInputChange = useCallback(
@@ -137,7 +135,7 @@ export default function TickerSearchModal({
   );
 
   return (
-    <DialogModal open={isOpen} onClose={handleCloseModal} staticHeight>
+    <DialogModal open={isOpen} onClose={handleClose} staticHeight>
       <DialogTitle>
         <TextField
           fullWidth
@@ -248,7 +246,7 @@ export default function TickerSearchModal({
           </div>
         )}
         <Button
-          onClick={handleCloseModal}
+          onClick={handleClose}
           variant={!searchResults.length ? "contained" : "text"}
           color="error"
         >
