@@ -175,6 +175,9 @@ export default function PortfolioFormFieldsItem({
         </IconButton>
       </Grid>
 
+      {
+        // TODO: Replace with `TickerSearchModal`
+      }
       {searchResults.length > 0 && (
         <Grid container spacing={2} sx={{ mt: 2 }}>
           {searchResults.map((result, index) => (
