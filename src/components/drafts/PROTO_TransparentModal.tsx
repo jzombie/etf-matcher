@@ -21,7 +21,6 @@ const TransparentModalStyled = styled(Dialog)(() => ({
   },
 }));
 
-// TODO: Add open state to props
 export type TransparentModalProps = DialogProps;
 
 export default function TransparentModal({
