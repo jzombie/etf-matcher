@@ -6,7 +6,7 @@ import type { RustServiceTickerDetail } from "@src/types";
 import useStableCurrentRef from "./useStableCurrentRef";
 
 export default function useTickerDetail(
-  tickerId: number,
+  tickerId?: number,
   onLoad?: (tickerDetail: RustServiceTickerDetail) => void,
 ) {
   const onLoadStableCurrentRef = useStableCurrentRef(onLoad);
