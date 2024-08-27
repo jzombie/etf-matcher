@@ -128,6 +128,30 @@ const darkTheme = createTheme({
         },
       },
     },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          "& .MuiOutlinedInput-root": {
+            backgroundColor: "#2c2c2c", // Lighter background for input fields
+            "& fieldset": {
+              borderColor: "#1976d2", // Border color for input fields
+            },
+            "&:hover fieldset": {
+              borderColor: "#64b5f6", // Border color on hover
+            },
+            "&.Mui-focused fieldset": {
+              borderColor: "#1565c0", // Border color when focused
+            },
+          },
+          "& .MuiInputBase-input": {
+            color: "#ffffff", // Text color inside the input fields
+          },
+          "& .MuiInputLabel-root": {
+            color: "#b0bec5", // Label color for input fields
+          },
+        },
+      },
+    },
   },
 });
 
