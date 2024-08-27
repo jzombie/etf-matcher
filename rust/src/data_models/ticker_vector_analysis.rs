@@ -23,7 +23,8 @@ pub struct CosineSimilarityResult {
 #[derive(Deserialize)]
 pub struct TickerWithQuantity {
     pub ticker_id: TickerId,
-    pub quantity: u32,
+    // Float is used to allow usage of fractional shares
+    pub quantity: f32,
 }
 
 pub struct OwnedTickerVectors {
@@ -267,7 +268,7 @@ impl CosineSimilarityResult {
                 ticker_vector.vector().map(|other_vector| {
                     let similarity = Self::cosine_similarity(
                         &custom_vector,
-                        &other_vector.iter().collect::<Vec<_>>(),
+                        &other_vector.iter().collect::<Vec<f32>>()[..],
                     );
 
                     CosineSimilarityResult {
@@ -402,17 +403,17 @@ pub async fn generate_bucket_vector(
     }
 
     // Calculate the total quantity by summing up the quantities of all tickers
-    let total_quantity: u32 = tickers_with_quantity.iter().map(|t| t.quantity).sum();
+    let total_quantity: f32 = tickers_with_quantity.iter().map(|t| t.quantity).sum();
 
     // Check if the total quantity is zero, which would mean that the function can't generate a valid vector
-    if total_quantity == 0 {
+    if total_quantity == 0.0 {
         return Err("Total quantity is zero, cannot generate a valid vector.".to_string());
     }
 
     // Normalize the aggregated_vector by dividing each element by the total quantity.
     // This step essentially computes the weighted average of the vectors.
     for value in &mut aggregated_vector {
-        *value /= total_quantity as f32;
+        *value /= total_quantity;
     }
 
     // Return the resulting aggregated and normalized vector
