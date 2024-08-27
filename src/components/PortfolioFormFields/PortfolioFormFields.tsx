@@ -13,6 +13,10 @@ import PortfolioFormFieldsItem from "./PortfolioFormFields.Item";
 
 export type PortfolioFormFieldsProps = {
   tickerBucket?: TickerBucket;
+  // FIXME: Rename to `onSaveStateChange`? I'm hesitant to do so because these
+  // form fields do not save directly. An alternative name could be something
+  // that connotates `blocking` the save state, and if used, the boolean logic
+  // might need to be inverted.
   onSaveableStateChange: (isSaveable: boolean) => void;
 };
 
