@@ -6,9 +6,11 @@ import { Grid, IconButton, TextField } from "@mui/material";
 import type { TickerBucketTicker } from "@src/store";
 import { RustServiceTickerSearchResult } from "@src/types";
 
+import AvatarLogo from "@components/AvatarLogo";
 import TickerSearchModal from "@components/TickerSearchModal";
 
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
+import useTickerDetail from "@hooks/useTickerDetail";
 
 import customLogger from "@utils/customLogger";
 
@@ -26,6 +28,8 @@ export default function PortfolioFormFieldsItem({
   const [bucketTicker, _setBucketTicker] = useState<
     TickerBucketTicker | undefined | null
   >(initialBucketTicker);
+
+  const { tickerDetail } = useTickerDetail(bucketTicker?.tickerId);
 
   const handleSetBucketTicker = useCallback(
     (bucketTicker: TickerBucketTicker | null) => {
@@ -88,10 +92,10 @@ export default function PortfolioFormFieldsItem({
   return (
     <>
       <Grid container spacing={2}>
+        <Grid item xs={2} sm={1}>
+          {tickerDetail && <AvatarLogo tickerDetail={tickerDetail} />}
+        </Grid>
         <Grid item xs={12} sm={5}>
-          {
-            // TODO: Show logo, if selected
-          }
           <TextField
             name="symbol_or_company_name"
             label="Symbol"
