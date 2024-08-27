@@ -111,18 +111,51 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
             </Typography>
           </Box>
 
-          <Box sx={{ textAlign: "center" }}>
-            <Button
-              onClick={toggleCollapse}
-              disabled={!tickerBucket.tickers.length}
-              endIcon={isCollapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />}
-            >
-              {isCollapsed ? "Expand" : "Collapse"} List
-            </Button>
-          </Box>
-
-          {!tickerBucket.tickers.length ? (
+          {tickerBucket.tickers.length > 0 ? (
             <>
+              <Box sx={{ textAlign: "center" }}>
+                <Button
+                  onClick={toggleCollapse}
+                  disabled={!tickerBucket.tickers.length}
+                  endIcon={
+                    isCollapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />
+                  }
+                >
+                  {isCollapsed ? "Expand" : "Collapse"} List
+                </Button>
+              </Box>
+
+              <Box>
+                {!isCollapsed && (
+                  <UnstyledUL>
+                    {tickerBucket.tickers.map((bucketTicker) => (
+                      <UnstyledLI key={bucketTicker.tickerId}>
+                        <BucketTicker
+                          bucketTicker={bucketTicker}
+                          tickerBucket={tickerBucket}
+                        />
+                      </UnstyledLI>
+                    ))}
+                  </UnstyledUL>
+                )}
+
+                {
+                  // TODO: Remove; Just for debugging
+
+                  import.meta.env.DEV && (
+                    <Button
+                      onClick={() =>
+                        store.fetchClosestTickersByQuantity(tickerBucket)
+                      }
+                    >
+                      PROTO::createCustomVector()
+                    </Button>
+                  )
+                }
+              </Box>
+            </>
+          ) : (
+            <Box sx={{ textAlign: "center", py: 2 }}>
               <Typography variant="body2" color="textSecondary">
                 No items in &quot;{tickerBucket.name}&quot;.
               </Typography>
@@ -135,35 +168,6 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                 {/* [`Search` button follows] */}
               </Typography>
               <SearchModalButton />
-            </>
-          ) : (
-            <Box>
-              {!isCollapsed && (
-                <UnstyledUL>
-                  {tickerBucket.tickers.map((bucketTicker) => (
-                    <UnstyledLI key={bucketTicker.tickerId}>
-                      <BucketTicker
-                        bucketTicker={bucketTicker}
-                        tickerBucket={tickerBucket}
-                      />
-                    </UnstyledLI>
-                  ))}
-                </UnstyledUL>
-              )}
-
-              {
-                // TODO: Remove; Just for debugging
-
-                import.meta.env.DEV && (
-                  <Button
-                    onClick={() =>
-                      store.fetchClosestTickersByQuantity(tickerBucket)
-                    }
-                  >
-                    PROTO::createCustomVector()
-                  </Button>
-                )
-              }
             </Box>
           )}
         </Section>
