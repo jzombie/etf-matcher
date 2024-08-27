@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Box, Button, TextField, Typography } from "@mui/material";
 
 import { MIN_TICKER_BUCKET_NAME_LENGTH } from "@src/constants";
@@ -166,7 +168,12 @@ export default function BucketForm({
             />
           )}
 
-          <Button onClick={() => setIsShowingDescription((prev) => !prev)}>
+          <Button
+            onClick={() => setIsShowingDescription((prev) => !prev)}
+            endIcon={
+              !isShowingDescription ? <ExpandMoreIcon /> : <ExpandLessIcon />
+            }
+          >
             {isShowingDescription ? "Hide" : "Show"} Description Field
           </Button>
 
