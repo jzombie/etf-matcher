@@ -77,8 +77,23 @@ export default function PortfolioFormFields({
   // Handle updating the new ticker field
   const handleUpdateField = (updatedTicker: TickerBucketTicker | null) => {
     if (updatedTicker) {
-      setExistingTickers([...existingTickers, updatedTicker]);
-      setNewTicker(null); // Clear the new ticker field after it's added
+      setExistingTickers((prevTickers) => {
+        const tickerIndex = prevTickers.findIndex(
+          (ticker) => ticker.tickerId === updatedTicker.tickerId,
+        );
+
+        if (tickerIndex !== -1) {
+          // Update the existing ticker
+          const updatedTickers = [...prevTickers];
+          updatedTickers[tickerIndex] = updatedTicker;
+          return updatedTickers;
+        } else {
+          // Add a new ticker
+          return [...prevTickers, updatedTicker];
+        }
+      });
+
+      setNewTicker(null); // Clear the new ticker field after it's added or updated
     }
   };
 
@@ -100,7 +115,7 @@ export default function PortfolioFormFields({
                 key={bucketTicker?.tickerId || idx}
                 initialBucketTicker={bucketTicker}
                 onUpdate={(updatedTicker: TickerBucketTicker | null) =>
-                  customLogger.debug({ updatedTicker })
+                  handleUpdateField(updatedTicker)
                 }
                 onDelete={() => handleRemoveField(bucketTicker.tickerId)}
               />
