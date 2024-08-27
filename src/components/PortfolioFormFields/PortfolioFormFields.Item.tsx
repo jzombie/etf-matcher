@@ -20,6 +20,8 @@ export type PortfolioFormFieldsItemProps = {
   onDelete?: (bucketTicker: TickerBucketTicker) => void;
 };
 
+// TODO: Prompt for confirmation before deleting
+// TODO: Prevent trying to add the same ticker twice
 export default function PortfolioFormFieldsItem({
   initialBucketTicker,
   onUpdate,
@@ -88,7 +90,7 @@ export default function PortfolioFormFieldsItem({
 
   return (
     <>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} mb={1}>
         <Grid item xs={2} sm={1}>
           {tickerDetail && <AvatarLogo tickerDetail={tickerDetail} />}
         </Grid>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { Box, Button, Container, Grid } from "@mui/material";
@@ -17,73 +17,73 @@ export default function PortfolioFormFields({
   tickerBucket,
 }: PortfolioFormFieldsProps) {
   const [newTicker, setNewTicker] = useState<TickerBucketTicker | null>(null);
+  const [existingTickers, setExistingTickers] = useState<TickerBucketTicker[]>(
+    [],
+  );
 
-  // Determine if the new PortfolioFormFieldsItem should be rendered
-  const shouldShowNewField = !tickerBucket && newTicker === null;
+  // Initialize existing tickers from the tickerBucket prop
+  useEffect(() => {
+    if (tickerBucket?.tickers) {
+      setExistingTickers(tickerBucket.tickers);
+    }
+  }, [tickerBucket]);
 
-  // Handle adding a new ticker field
-  const handleAddField = () => {
-    setNewTicker({ tickerId: 0, symbol: "", quantity: 1 }); // Default values for a new ticker
-  };
+  // If there are no existing tickers and no new ticker, add a new ticker field by default
+  useEffect(() => {
+    if (existingTickers.length === 0 && !newTicker) {
+      setNewTicker({ tickerId: 0, symbol: "", quantity: 1 });
+    }
+  }, [existingTickers, newTicker]);
 
   // Handle updating the new ticker field
   const handleUpdateField = (updatedTicker: TickerBucketTicker | null) => {
-    setNewTicker(updatedTicker);
+    if (updatedTicker) {
+      setExistingTickers([...existingTickers, updatedTicker]);
+      setNewTicker(null); // Clear the new ticker field after it's added
+    }
   };
 
-  // Handle removing the new ticker field
-  const handleRemoveField = () => {
-    setNewTicker(null);
+  // Handle removing an existing ticker
+  const handleRemoveField = (tickerId: number) => {
+    setExistingTickers(
+      existingTickers.filter((ticker) => ticker.tickerId !== tickerId),
+    );
   };
-
-  const tickerBucketTickers: TickerBucketTicker[] = tickerBucket?.tickers || [];
 
   return (
     <Container maxWidth="md">
       <Box sx={{ my: 4 }}>
         <Grid container spacing={3}>
           {
-            // Render new form field if conditions are met
-            shouldShowNewField && (
+            // Render existing form fields from the tickerBucket or newly added ones
+            existingTickers.map((bucketTicker, idx) => (
               <PortfolioFormFieldsItem
-                initialBucketTicker={newTicker || undefined}
-                onUpdate={handleUpdateField}
+                key={bucketTicker?.tickerId || idx}
+                initialBucketTicker={bucketTicker}
+                onUpdate={(updatedTicker: TickerBucketTicker | null) =>
+                  customLogger.debug({ updatedTicker })
+                }
+                onDelete={() => handleRemoveField(bucketTicker.tickerId)}
               />
-            )
+            ))
           }
           {
             // Render the new form field if a new ticker is being added
             newTicker && (
               <PortfolioFormFieldsItem
-                initialBucketTicker={newTicker}
                 onUpdate={handleUpdateField}
-                onDelete={handleRemoveField}
+                onDelete={() => setNewTicker(null)}
               />
             )
           }
-          {
-            // Render existing form fields from the tickerBucket
-            tickerBucketTickers.map((bucketTicker, idx) => (
-              <PortfolioFormFieldsItem
-                key={bucketTicker?.tickerId || idx}
-                initialBucketTicker={bucketTicker}
-                onUpdate={(updatedTicker: TickerBucketTicker | null) =>
-                  // TODO: Handle
-                  customLogger.debug({ updatedTicker })
-                }
-                onDelete={() => handleRemoveField()}
-              />
-            ))
-          }
           <Grid item xs={12}>
-            {
-              // Prevent add if there's already a new ticker being added
-            }
             <Button
               variant="contained"
               color="primary"
               startIcon={<AddCircleOutlineIcon />}
-              onClick={handleAddField}
+              onClick={() =>
+                setNewTicker({ tickerId: 0, symbol: "", quantity: 1 })
+              }
               disabled={!!newTicker}
             >
               Add Additional Symbol
