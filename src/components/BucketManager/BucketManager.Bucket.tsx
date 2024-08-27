@@ -34,7 +34,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
   // TODO: Consider showing by default, depending on how many buckets there are
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const alertDialogTitleId = useId();
   const alertDialogDescriptionId = useId();
@@ -53,12 +53,12 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
   }, [tickerBucket]);
 
   const handleEditClick = useCallback(() => {
-    setIsEditDialogOpen(true);
+    setIsEditing(true);
   }, []);
 
   const handleClose = useCallback(() => {
     setIsDeleteDialogOpen(false);
-    setIsEditDialogOpen(false);
+    setIsEditing(false);
   }, []);
 
   return (
@@ -87,6 +87,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                 startIcon={<EditIcon />}
                 onClick={handleEditClick}
                 sx={{ marginRight: 1 }}
+                disabled={isEditing}
               >
                 Edit
               </Button>
@@ -107,7 +108,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
             </Typography>
           )}
 
-          {isEditDialogOpen && (
+          {isEditing && (
             <BucketForm
               bucketType={tickerBucket.type}
               existingBucket={tickerBucket}
