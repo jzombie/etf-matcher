@@ -65,7 +65,9 @@ export default function PortfolioFormFields({
             // Render new form fields if conditions are met
             shouldShowNewField && (
               <PortfolioFormFieldsItem
-                onUpdate={(bucketTicker) => handleUpdateFields(0, bucketTicker)}
+                onUpdate={(bucketTicker: TickerBucketTicker | null) =>
+                  handleUpdateFields(0, bucketTicker)
+                }
               />
             )
           }
@@ -75,7 +77,7 @@ export default function PortfolioFormFields({
               <PortfolioFormFieldsItem
                 key={bucketTicker?.tickerId || idx}
                 initialBucketTicker={bucketTicker || undefined}
-                onUpdate={(updatedTicker) =>
+                onUpdate={(updatedTicker: TickerBucketTicker | null) =>
                   handleUpdateFields(idx, updatedTicker)
                 }
                 // TODO: Implement
@@ -89,7 +91,8 @@ export default function PortfolioFormFields({
               <PortfolioFormFieldsItem
                 key={bucketTicker?.tickerId || idx}
                 initialBucketTicker={bucketTicker}
-                onUpdate={(updatedTicker) =>
+                onUpdate={(updatedTicker: TickerBucketTicker | null) =>
+                  // TODO: Handle
                   customLogger.debug({ updatedTicker })
                 }
               />
