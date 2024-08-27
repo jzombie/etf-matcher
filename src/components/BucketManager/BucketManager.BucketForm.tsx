@@ -35,6 +35,11 @@ export default function BucketForm({
     [existingBucket],
   );
 
+  const [
+    arePortfolioFormFieldsBlockingSave,
+    setArePortfolioFormFieldsBlockingSave,
+  ] = useState<boolean>(false);
+
   const [bucketName, setBucketName] = useState<string>("");
   const [bucketDescription, setBucketDescription] = useState<string>("");
   const [isShowingDescription, setIsShowingDescription] = useState<boolean>(
@@ -131,6 +136,8 @@ export default function BucketForm({
 
   const isFormValid = !nameError && bucketName.trim() !== "";
 
+  console.log({ arePortfolioFormFieldsBlockingSave });
+
   return (
     <Box sx={{ mt: 2 }}>
       <Typography variant="h6">
@@ -178,18 +185,20 @@ export default function BucketForm({
           </Button>
 
           {bucketType === "portfolio" && !disablePortfolioFormFields && (
-            <PortfolioFormFields tickerBucket={existingBucket} />
+            <PortfolioFormFields
+              tickerBucket={existingBucket}
+              onSaveableStateChange={(isSaveable) =>
+                setArePortfolioFormFieldsBlockingSave(!isSaveable)
+              }
+            />
           )}
 
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-            {
-              // TODO: Disable `submit` if `PortfolioFormFields` should render and it is not in a saveable state
-            }
             <Button
               variant="contained"
               color="success"
               type="submit"
-              disabled={!isFormValid}
+              disabled={!isFormValid || arePortfolioFormFieldsBlockingSave}
             >
               Save {tickerBucketDefaultNames[bucketType]}
             </Button>

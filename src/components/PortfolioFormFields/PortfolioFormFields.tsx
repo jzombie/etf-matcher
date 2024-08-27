@@ -13,15 +13,29 @@ import PortfolioFormFieldsItem from "./PortfolioFormFields.Item";
 
 export type PortfolioFormFieldsProps = {
   tickerBucket?: TickerBucket;
+  onSaveableStateChange: (isSaveable: boolean) => void;
 };
 
 export default function PortfolioFormFields({
   tickerBucket,
+  onSaveableStateChange,
 }: PortfolioFormFieldsProps) {
   const [newTicker, setNewTicker] = useState<TickerBucketTicker | null>(null);
   const [existingTickers, setExistingTickers] = useState<TickerBucketTicker[]>(
     [],
   );
+
+  const onSaveableStateChangeStableCurrentRef = useStableCurrentRef(
+    onSaveableStateChange,
+  );
+
+  useEffect(() => {
+    const onSaveableStateChange = onSaveableStateChangeStableCurrentRef.current;
+
+    if (typeof onSaveableStateChange === "function") {
+      onSaveableStateChange(!newTicker);
+    }
+  }, [onSaveableStateChangeStableCurrentRef, newTicker]);
 
   // Initialize existing tickers from the tickerBucket prop
   useEffect(() => {
