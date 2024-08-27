@@ -123,12 +123,21 @@ const darkTheme = createTheme({
             "&.Mui-focused fieldset": {
               borderColor: "#1565c0", // Border color when focused
             },
+            "&.Mui-disabled fieldset": {
+              borderColor: "#565d60", // Border color when disabled
+            },
+            "&.Mui-disabled:hover fieldset": {
+              borderColor: "#565d60", // Prevent hover border color change when disabled
+            },
           },
           "& .MuiInputBase-input": {
             color: "#ffffff", // Text color inside the input fields
           },
           "& .MuiInputLabel-root": {
             color: "#b0bec5", // Label color for input fields
+          },
+          "&.Mui-disabled .MuiInputLabel-root": {
+            color: "#b0bec5", // Label color when disabled
           },
         },
       },
