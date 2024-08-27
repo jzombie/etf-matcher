@@ -94,39 +94,48 @@ export default function PortfolioFormFieldsItem({
 
   return (
     <>
-      <Grid item xs={5}>
-        {
-          // TODO: Show logo, if selected
-        }
-        <TextField
-          name="symbol_or_company_name"
-          label="Symbol or Company Name"
-          variant="outlined"
-          fullWidth
-          required
-          value={bucketTicker?.symbol}
-          disabled={Boolean(bucketTicker)}
-          onChange={() => setIsSearchModalOpen(true)}
-          onClick={() => setIsSearchModalOpen(true)}
-        />
-      </Grid>
-      <Grid item xs={4}>
-        <TextField
-          name="shares"
-          label="Shares"
-          variant="outlined"
-          fullWidth
-          required
-          type="number"
-          value={bucketTicker?.quantity || ""}
-          onChange={handleQuantityInputChange}
-          disabled={!bucketTicker}
-        />
-      </Grid>
-      <Grid item xs={2} sx={{ display: "flex", alignItems: "center" }}>
-        <IconButton disabled>
-          <RemoveCircleOutlineIcon color={"disabled" /** or "error" */} />
-        </IconButton>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={5}>
+          {
+            // TODO: Show logo, if selected
+          }
+          <TextField
+            name="symbol_or_company_name"
+            label="Symbol"
+            variant="outlined"
+            fullWidth
+            required
+            value={bucketTicker?.symbol}
+            disabled={Boolean(bucketTicker)}
+            onChange={() => setIsSearchModalOpen(true)}
+            onClick={() => setIsSearchModalOpen(true)}
+            size="small"
+          />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            name="shares"
+            label="Shares"
+            variant="outlined"
+            fullWidth
+            required
+            type="number"
+            value={bucketTicker?.quantity || ""}
+            onChange={handleQuantityInputChange}
+            disabled={!bucketTicker}
+            size="small"
+          />
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          sm={2}
+          sx={{ display: "flex", alignItems: "center" }}
+        >
+          <IconButton disabled>
+            <RemoveCircleOutlineIcon color={"disabled"} />
+          </IconButton>
+        </Grid>
       </Grid>
 
       <TickerSearchModal
