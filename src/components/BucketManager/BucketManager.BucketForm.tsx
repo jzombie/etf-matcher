@@ -11,9 +11,9 @@ import store, {
 } from "@src/store";
 import type { TickerBucket, TickerBucketTicker } from "@src/store";
 
-import PortfolioFormFields from "@components/PortfolioFormFields";
-
 import { useNotification } from "@hooks/useNotification";
+
+import PortfolioFormFields from "./PortfolioFormFields";
 
 export type BucketFormProps = {
   bucketType: TickerBucket["type"];
