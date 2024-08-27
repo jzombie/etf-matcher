@@ -18,11 +18,13 @@ export type PortfolioFormFieldsProps = {
   // that connotates `blocking` the save state, and if used, the boolean logic
   // might need to be inverted.
   onSaveableStateChange: (isSaveable: boolean) => void;
+  onDataChange: (formData: TickerBucketTicker[]) => void;
 };
 
 export default function PortfolioFormFields({
   tickerBucket,
   onSaveableStateChange,
+  onDataChange,
 }: PortfolioFormFieldsProps) {
   const [newTicker, setNewTicker] = useState<TickerBucketTicker | null>(null);
   const [existingTickers, setExistingTickers] = useState<TickerBucketTicker[]>(
@@ -32,7 +34,16 @@ export default function PortfolioFormFields({
   const onSaveableStateChangeStableCurrentRef = useStableCurrentRef(
     onSaveableStateChange,
   );
+  const onDataChangeStableCurrentRef = useStableCurrentRef(onDataChange);
 
+  useEffect(() => {
+    const onDataChange = onDataChangeStableCurrentRef.current;
+    if (typeof onDataChange === "function") {
+      onDataChange(existingTickers);
+    }
+  }, [existingTickers, onDataChangeStableCurrentRef]);
+
+  // Handle `saveable` state changes
   useEffect(() => {
     const onSaveableStateChange = onSaveableStateChangeStableCurrentRef.current;
 

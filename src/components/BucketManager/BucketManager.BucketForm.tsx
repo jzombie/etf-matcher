@@ -9,7 +9,7 @@ import store, {
   TickerBucketNameError,
   tickerBucketDefaultNames,
 } from "@src/store";
-import type { TickerBucket } from "@src/store";
+import type { TickerBucket, TickerBucketTicker } from "@src/store";
 
 import PortfolioFormFields from "@components/PortfolioFormFields";
 
@@ -43,6 +43,9 @@ export default function BucketForm({
   const [isShowingDescription, setIsShowingDescription] = useState<boolean>(
     Boolean(existingBucket?.description),
   );
+  const [explicitTickers, setExplicitTickers] = useState<
+    TickerBucketTicker[] | undefined
+  >(undefined);
 
   const [nameError, setNameError] = useState<string | null>(null);
 
@@ -83,6 +86,10 @@ export default function BucketForm({
   const handleSaveBucket = useCallback(() => {
     try {
       if (existingBucket) {
+        if (explicitTickers) {
+          existingBucket["tickers"] = explicitTickers;
+        }
+
         store.updateTickerBucket(existingBucket, {
           ...existingBucket,
           name: bucketName,
@@ -92,6 +99,7 @@ export default function BucketForm({
         store.createTickerBucket({
           name: bucketName,
           type: bucketType,
+          tickers: explicitTickers || [],
           description: bucketDescription,
           isUserConfigurable: true,
         });
@@ -114,6 +122,7 @@ export default function BucketForm({
     bucketType,
     bucketName,
     bucketDescription,
+    explicitTickers,
     existingBucket,
     onClose,
     showNotification,
@@ -186,6 +195,7 @@ export default function BucketForm({
               onSaveableStateChange={(isSaveable) =>
                 setIsPortfolioSaveBlocked(!isSaveable)
               }
+              onDataChange={setExplicitTickers}
             />
           )}
 

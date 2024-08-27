@@ -587,10 +587,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     type,
     description,
     isUserConfigurable,
-  }: Omit<TickerBucket, "tickers">) {
+    tickers = [],
+  }: TickerBucket) {
     const nextBucket: TickerBucket = {
       name,
-      tickers: [],
+      tickers,
       type,
       description,
       isUserConfigurable,
