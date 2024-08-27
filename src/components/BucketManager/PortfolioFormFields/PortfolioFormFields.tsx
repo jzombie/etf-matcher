@@ -7,8 +7,6 @@ import type { TickerBucket, TickerBucketTicker } from "@src/store";
 
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
-import customLogger from "@utils/customLogger";
-
 import PortfolioFormFieldsItem from "./PortfolioFormFields.Item";
 
 export type PortfolioFormFieldsProps = {
