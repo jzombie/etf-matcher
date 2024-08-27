@@ -72,24 +72,17 @@ export default function PortfolioFormFieldsItem({
 
   // TODO: Refactor as necessary
   const handleSelectTicker = useCallback(
-    (searchResult: RustServiceTickerSearchResult) => {
-      console.debug({ searchResult });
-
+    (tickerSearchResult: RustServiceTickerSearchResult) => {
       setIsSearchModalOpen(false);
 
-      // TODO: Capture `ticker_id` and `exchange_short_name`
-      // handleSetBucketTicker({
-      //   tickerId: tickerSearchResult.ticker_id,
-      //   symbol: tickerSearchResult.symbol,
-      //   exchangeShortName: tickerSearchResult.exchange_short_name,
-      //   quantity: 1,
-      // });
-
-      // TODO: Remove
-      // setSearchQuery("");
-      // setHighlightedIndex(null); // Reset the highlighted index after selection
+      handleSetBucketTicker({
+        tickerId: tickerSearchResult.ticker_id,
+        symbol: tickerSearchResult.symbol,
+        exchangeShortName: tickerSearchResult.exchange_short_name,
+        quantity: 1,
+      });
     },
-    [],
+    [handleSetBucketTicker],
   );
 
   return (
