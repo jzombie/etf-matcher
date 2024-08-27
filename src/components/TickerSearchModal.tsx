@@ -81,15 +81,21 @@ export default function TickerSearchModal({
     setSearchQuery("");
 
     const onCancel = onCancelStableCurrentRef.current;
+    const onClose = onCloseStableCurrentRef.current;
+
     if (typeof onCancel === "function") {
       onCancel();
     }
-  }, [setSearchQuery, onCancelStableCurrentRef]);
+
+    if (typeof onClose === "function") {
+      onClose();
+    }
+  }, [setSearchQuery, onCancelStableCurrentRef, onCloseStableCurrentRef]);
 
   const handleClose = useCallback(() => {
     // Invoke `handleCancel` if no search query
     if (searchQuery === "") {
-      handleCancel();
+      return handleCancel();
     }
 
     // Reset search query on close
