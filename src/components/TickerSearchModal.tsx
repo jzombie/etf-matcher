@@ -1,4 +1,10 @@
-import React, { SyntheticEvent, useCallback, useEffect, useRef } from "react";
+import React, {
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import SearchIcon from "@mui/icons-material/Search";
 import {
@@ -42,6 +48,7 @@ export default function TickerSearchModal({
   onSelectTicker,
   onCancel,
 }: TickerSearchModalProps) {
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const onCancelStableCurrentRef = useStableCurrentRef(onCancel);
@@ -79,8 +86,9 @@ export default function TickerSearchModal({
 
   const handleCancel = useCallback(() => {
     try {
-      // Reset search query on close
+      // Reset search query and error on close
       setSearchQuery("");
+      setError(null);
 
       const onCancel = onCancelStableCurrentRef.current;
       const onClose = onCloseStableCurrentRef.current;
@@ -93,7 +101,7 @@ export default function TickerSearchModal({
         onClose();
       }
     } catch (error) {
-      // TODO: Route error up to UI
+      // TODO: Route error to UI notification
       customLogger.error("Error cancelling search:", error);
     }
   }, [setSearchQuery, onCancelStableCurrentRef, onCloseStableCurrentRef]);
@@ -105,15 +113,16 @@ export default function TickerSearchModal({
         return handleCancel();
       }
 
-      // Reset search query on close
+      // Reset search query and error on close
       setSearchQuery("");
+      setError(null);
 
       const onClose = onCloseStableCurrentRef.current;
       if (typeof onClose === "function") {
         onClose();
       }
     } catch (error) {
-      // TODO: Route error up to UI
+      // TODO: Route error to UI notification
       customLogger.error("Error closing search:", error);
     }
   }, [searchQuery, handleCancel, setSearchQuery, onCloseStableCurrentRef]);
@@ -143,7 +152,7 @@ export default function TickerSearchModal({
           }
         }
       } catch (error) {
-        // TODO: Route error up to UI
+        // TODO: Route error to UI notification
         customLogger.error("Error confirming search:", error);
       }
     },
@@ -157,7 +166,18 @@ export default function TickerSearchModal({
 
   const handleInputChange = useCallback(
     (evt: React.BaseSyntheticEvent) => {
-      setSearchQuery(evt.target.value);
+      const { value } = evt.target;
+
+      // Validate input
+      if (!/^[a-zA-Z0-9.-]*$/.test(value)) {
+        setError(
+          "Only alphanumeric characters, hyphens, and periods are allowed.",
+        );
+        return;
+      }
+
+      setError(null); // Clear the error if the input is valid
+      setSearchQuery(value);
       setSelectedIndex(-1);
     },
     [setSearchQuery, setSelectedIndex],
@@ -211,6 +231,8 @@ export default function TickerSearchModal({
           onChange={handleInputChange}
           onKeyDown={handleInputKeyDown}
           value={searchQuery}
+          error={Boolean(error)}
+          helperText={error}
           InputProps={{
             startAdornment: (
               <IconButton>
