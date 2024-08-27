@@ -28,12 +28,14 @@ export default function PortfolioFormFields({
     }
   }, [tickerBucket]);
 
-  // If there are no existing tickers and no new ticker, add a new ticker field by default
+  // Show the new ticker field by default only if there are no existing tickers
   useEffect(() => {
     if (existingTickers.length === 0 && !newTicker) {
       setNewTicker({ tickerId: 0, symbol: "", quantity: 1 });
+    } else if (existingTickers.length > 0) {
+      setNewTicker(null); // Ensure the new ticker field is not shown if there are existing tickers
     }
-  }, [existingTickers, newTicker]);
+  }, [existingTickers]);
 
   // Handle updating the new ticker field
   const handleUpdateField = (updatedTicker: TickerBucketTicker | null) => {
