@@ -110,7 +110,7 @@ export default function PortfolioFormFieldsItem({
           onClick={() => setIsSearchModalOpen(true)}
         />
       </Grid>
-      <Grid item xs={2}>
+      <Grid item xs={4}>
         <TextField
           name="shares"
           label="Shares"
