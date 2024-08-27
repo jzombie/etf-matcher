@@ -26,15 +26,19 @@ import EncodedImage from "./EncodedImage";
 
 export type TickerSearchModalProps = Omit<DialogModalProps, "children"> & {
   onSearch?: (searchQuery: string, isExact: boolean) => void;
+  onCancel?: () => void;
 };
 
+// TODO: Implement `initialValue`
 export default function TickerSearchModal({
   open: isOpen,
   onClose,
   onSearch,
+  onCancel,
 }: TickerSearchModalProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const onCancelStableCurrentRef = useStableCurrentRef(onCancel);
   const onCloseStableCurrentRef = useStableCurrentRef(onClose);
   const onSearchStableCurrentRef = useStableCurrentRef(onSearch);
 
@@ -63,7 +67,22 @@ export default function TickerSearchModal({
     initialPageSize: 10,
   });
 
+  const handleCancel = useCallback(() => {
+    // Reset search query on close
+    setSearchQuery("");
+
+    const onCancel = onCancelStableCurrentRef.current;
+    if (typeof onCancel === "function") {
+      onCancel();
+    }
+  }, [setSearchQuery, onCancelStableCurrentRef]);
+
   const handleClose = useCallback(() => {
+    // Invoke `handleCancel` if no search query
+    if (searchQuery === "") {
+      handleCancel();
+    }
+
     // Reset search query on close
     setSearchQuery("");
 
@@ -71,7 +90,7 @@ export default function TickerSearchModal({
     if (typeof onClose === "function") {
       onClose();
     }
-  }, [setSearchQuery, onCloseStableCurrentRef]);
+  }, [searchQuery, handleCancel, setSearchQuery, onCloseStableCurrentRef]);
 
   const handleOk = useCallback(
     (_?: SyntheticEvent, exactSearchValue?: string) => {
@@ -246,7 +265,7 @@ export default function TickerSearchModal({
           </div>
         )}
         <Button
-          onClick={handleClose}
+          onClick={handleCancel}
           variant={!searchResults.length ? "contained" : "text"}
           color="error"
         >

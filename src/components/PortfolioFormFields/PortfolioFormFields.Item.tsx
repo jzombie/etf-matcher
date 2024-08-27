@@ -1,14 +1,13 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
-import { Grid, IconButton, Paper, TextField, Typography } from "@mui/material";
+import { Grid, IconButton, TextField } from "@mui/material";
 
 import type { TickerBucketTicker } from "@src/store";
 import { RustServiceTickerSearchResult } from "@src/types";
 
-import AvatarLogo from "@components/AvatarLogo";
+import TickerSearchModal from "@components/TickerSearchModal";
 
-import useSearch from "@hooks/useSearch";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 import customLogger from "@utils/customLogger";
@@ -18,14 +17,12 @@ export type PortfolioFormFieldsItemProps = {
   onUpdate: (bucketTicker: TickerBucketTicker | null) => void;
 };
 
-// TODO: Extract keyboard-selectable grid into a separate component?
 export default function PortfolioFormFieldsItem({
   initialBucketTicker,
   onUpdate,
 }: PortfolioFormFieldsItemProps) {
   const onUpdateStableRef = useStableCurrentRef(onUpdate);
 
-  const { searchQuery, setSearchQuery, searchResults } = useSearch();
   const [bucketTicker, _setBucketTicker] = useState<
     TickerBucketTicker | undefined | null
   >(initialBucketTicker);
@@ -40,21 +37,18 @@ export default function PortfolioFormFieldsItem({
     [onUpdateStableRef],
   );
 
-  const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
-  const columns = 3; // Assuming 3 columns in the grid (adjust as necessary)
+  // const handleSymbolInputChange = useCallback(
+  //   (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  //     const { value } = event.target;
 
-  const handleSymbolInputChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const { value } = event.target;
+  //     // Only clear out the data
+  //     _setBucketTicker(null);
 
-      // Only clear out the data
-      _setBucketTicker(null);
-
-      setSearchQuery(value);
-      setHighlightedIndex(null); // Reset highlighted index when query changes
-    },
-    [setSearchQuery],
-  );
+  //     setSearchQuery(value);
+  //     setHighlightedIndex(null); // Reset highlighted index when query changes
+  //   },
+  //   [setSearchQuery],
+  // );
 
   const handleQuantityInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -74,70 +68,31 @@ export default function PortfolioFormFieldsItem({
     [bucketTicker, handleSetBucketTicker],
   );
 
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState<boolean>(false);
+
+  // TODO: Refactor as necessary
   const handleSelectSearchResult = useCallback(
-    (tickerSearchResult: RustServiceTickerSearchResult) => {
-      handleSetBucketTicker({
-        tickerId: tickerSearchResult.ticker_id,
-        symbol: tickerSearchResult.symbol,
-        exchangeShortName: tickerSearchResult.exchange_short_name,
-        quantity: 1,
-      });
+    (searchResult: RustServiceTickerSearchResult, isExact: boolean) => {
+      console.log({ searchResult, isExact });
 
-      setSearchQuery("");
-      setHighlightedIndex(null); // Reset the highlighted index after selection
-    },
-    [handleSetBucketTicker, setSearchQuery],
-  );
+      if (isExact) {
+        setIsSearchModalOpen(false);
 
-  // Handle keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (searchResults.length === 0) return;
-
-      switch (event.key) {
-        case "ArrowDown":
-          setHighlightedIndex((prevIndex) =>
-            prevIndex === null || prevIndex + columns >= searchResults.length
-              ? prevIndex === null
-                ? 0
-                : prevIndex // Stay on the last row if it's not full
-              : prevIndex + columns,
-          );
-          break;
-        case "ArrowUp":
-          setHighlightedIndex((prevIndex) =>
-            prevIndex === null || prevIndex - columns < 0
-              ? prevIndex // Stay on the first row
-              : prevIndex - columns,
-          );
-          break;
-        case "ArrowRight":
-          setHighlightedIndex((prevIndex) =>
-            prevIndex === null || prevIndex === searchResults.length - 1
-              ? 0 // Loop around to the first item
-              : prevIndex + 1,
-          );
-          break;
-        case "ArrowLeft":
-          setHighlightedIndex((prevIndex) =>
-            prevIndex === null || prevIndex === 0
-              ? searchResults.length - 1 // Loop around to the last item
-              : prevIndex - 1,
-          );
-          break;
-        case "Enter":
-          if (highlightedIndex !== null && searchResults[highlightedIndex]) {
-            handleSelectSearchResult(searchResults[highlightedIndex]);
-          }
-          break;
-        default:
-          break;
+        // TODO: Capture `ticker_id` and `exchange_short_name`
+        // handleSetBucketTicker({
+        //   tickerId: tickerSearchResult.ticker_id,
+        //   symbol: tickerSearchResult.symbol,
+        //   exchangeShortName: tickerSearchResult.exchange_short_name,
+        //   quantity: 1,
+        // });
       }
-    };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [searchResults, highlightedIndex, handleSelectSearchResult, columns]);
+      // TODO: Remove
+      // setSearchQuery("");
+      // setHighlightedIndex(null); // Reset the highlighted index after selection
+    },
+    [handleSetBucketTicker],
+  );
 
   return (
     <>
@@ -151,9 +106,10 @@ export default function PortfolioFormFieldsItem({
           variant="outlined"
           fullWidth
           required
-          value={bucketTicker?.symbol || searchQuery}
+          value={bucketTicker?.symbol}
           disabled={Boolean(bucketTicker)}
-          onChange={handleSymbolInputChange}
+          onChange={() => setIsSearchModalOpen(true)}
+          onClick={() => setIsSearchModalOpen(true)}
         />
       </Grid>
       <Grid item xs={2}>
@@ -175,44 +131,11 @@ export default function PortfolioFormFieldsItem({
         </IconButton>
       </Grid>
 
-      {
-        // TODO: Replace with `TickerSearchModal`
-      }
-      {searchResults.length > 0 && (
-        <Grid container spacing={2} sx={{ mt: 2 }}>
-          {searchResults.map((result, index) => (
-            <Grid item xs={12} sm={6} md={4} key={result.ticker_id}>
-              <Paper
-                elevation={3}
-                sx={{
-                  padding: 2,
-                  cursor: "pointer",
-                  "&:hover": {
-                    backgroundColor: "rgba(255,255,255,.1)",
-                  },
-                  width: "100%",
-                  height: "100%",
-                  backgroundColor:
-                    highlightedIndex === index
-                      ? "rgba(255,255,255,.2)"
-                      : "inherit",
-                }}
-                onClick={() => handleSelectSearchResult(result)}
-              >
-                <AvatarLogo tickerDetail={result} />
-                <Typography variant="h6">{result.symbol}</Typography>
-                <Typography variant="body2">{result.company_name}</Typography>
-                <Typography variant="caption">
-                  {result.exchange_short_name}
-                </Typography>
-              </Paper>
-            </Grid>
-          ))}
-          {
-            // TODO: Add pagination?
-          }
-        </Grid>
-      )}
+      <TickerSearchModal
+        open={isSearchModalOpen}
+        onSearch={handleSelectSearchResult}
+        onCancel={() => setIsSearchModalOpen(false)}
+      />
     </>
   );
 }
