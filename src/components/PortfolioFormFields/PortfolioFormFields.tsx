@@ -16,43 +16,24 @@ export type PortfolioFormFieldsProps = {
 export default function PortfolioFormFields({
   tickerBucket,
 }: PortfolioFormFieldsProps) {
-  const [pendingTickers, setPendingTickers] = useState<
-    (TickerBucketTicker | null)[]
-  >([]);
+  const [newTicker, setNewTicker] = useState<TickerBucketTicker | null>(null);
 
   // Determine if the new PortfolioFormFieldsItem should be rendered
-  const shouldShowNewField = !tickerBucket && pendingTickers.length === 0;
+  const shouldShowNewField = !tickerBucket && newTicker === null;
 
   // Handle adding a new ticker field
-  const handleAddFields = () => {
-    setPendingTickers([
-      ...pendingTickers,
-      { tickerId: 0, symbol: "", quantity: 1 }, // Default values for a new ticker
-    ]);
+  const handleAddField = () => {
+    setNewTicker({ tickerId: 0, symbol: "", quantity: 1 }); // Default values for a new ticker
   };
 
-  // Handle updating a ticker field, handling the case where it might be null
-  const handleUpdateFields = (
-    index: number,
-    updatedTicker: TickerBucketTicker | null,
-  ) => {
-    const updatedTickers = [...pendingTickers];
-
-    if (updatedTicker) {
-      updatedTickers[index] = updatedTicker;
-    } else {
-      // If the updatedTicker is null, we may want to remove or reset the field
-      updatedTickers[index] = { tickerId: 0, symbol: "", quantity: 1 };
-    }
-
-    setPendingTickers(updatedTickers);
+  // Handle updating the new ticker field
+  const handleUpdateField = (updatedTicker: TickerBucketTicker | null) => {
+    setNewTicker(updatedTicker);
   };
 
-  // Handle removing a ticker field
-  const handleRemoveFields = (index: number) => {
-    const values = [...pendingTickers];
-    values.splice(index, 1);
-    setPendingTickers(values);
+  // Handle removing the new ticker field
+  const handleRemoveField = () => {
+    setNewTicker(null);
   };
 
   const tickerBucketTickers: TickerBucketTicker[] = tickerBucket?.tickers || [];
@@ -62,28 +43,23 @@ export default function PortfolioFormFields({
       <Box sx={{ my: 4 }}>
         <Grid container spacing={3}>
           {
-            // Render new form fields if conditions are met
+            // Render new form field if conditions are met
             shouldShowNewField && (
               <PortfolioFormFieldsItem
-                onUpdate={(bucketTicker: TickerBucketTicker | null) =>
-                  handleUpdateFields(0, bucketTicker)
-                }
+                initialBucketTicker={newTicker || undefined}
+                onUpdate={handleUpdateField}
               />
             )
           }
           {
-            // Render pending form fields
-            pendingTickers.map((bucketTicker, idx) => (
+            // Render the new form field if a new ticker is being added
+            newTicker && (
               <PortfolioFormFieldsItem
-                key={bucketTicker?.tickerId || idx}
-                initialBucketTicker={bucketTicker || undefined}
-                onUpdate={(updatedTicker: TickerBucketTicker | null) =>
-                  handleUpdateFields(idx, updatedTicker)
-                }
-                // TODO: Implement
-                // onRemove={() => handleRemoveFields(idx)}
+                initialBucketTicker={newTicker}
+                onUpdate={handleUpdateField}
+                onDelete={handleRemoveField}
               />
-            ))
+            )
           }
           {
             // Render existing form fields from the tickerBucket
@@ -95,19 +71,20 @@ export default function PortfolioFormFields({
                   // TODO: Handle
                   customLogger.debug({ updatedTicker })
                 }
+                onDelete={() => handleRemoveField()}
               />
             ))
           }
           <Grid item xs={12}>
             {
-              // Prevent add unless there is no empty or pending symbol
+              // Prevent add if there's already a new ticker being added
             }
             <Button
               variant="contained"
               color="primary"
               startIcon={<AddCircleOutlineIcon />}
-              onClick={handleAddFields}
-              disabled={pendingTickers.length > 0}
+              onClick={handleAddField}
+              disabled={!!newTicker}
             >
               Add Additional Symbol
             </Button>

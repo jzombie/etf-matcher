@@ -17,13 +17,16 @@ import customLogger from "@utils/customLogger";
 export type PortfolioFormFieldsItemProps = {
   initialBucketTicker?: TickerBucketTicker;
   onUpdate: (bucketTicker: TickerBucketTicker | null) => void;
+  onDelete?: (bucketTicker: TickerBucketTicker) => void;
 };
 
 export default function PortfolioFormFieldsItem({
   initialBucketTicker,
   onUpdate,
+  onDelete,
 }: PortfolioFormFieldsItemProps) {
   const onUpdateStableRef = useStableCurrentRef(onUpdate);
+  const onDeleteStableRef = useStableCurrentRef(onDelete);
 
   const [bucketTicker, _setBucketTicker] = useState<
     TickerBucketTicker | undefined | null
@@ -75,6 +78,14 @@ export default function PortfolioFormFieldsItem({
     [handleSetBucketTicker],
   );
 
+  const handleDelete = useCallback(() => {
+    const onDelete = onDeleteStableRef.current;
+
+    if (bucketTicker && typeof onDelete === "function") {
+      onDelete(bucketTicker);
+    }
+  }, [bucketTicker, onDeleteStableRef]);
+
   return (
     <>
       <Grid container spacing={2}>
@@ -109,16 +120,20 @@ export default function PortfolioFormFieldsItem({
             size="small"
           />
         </Grid>
-        <Grid
-          item
-          xs={12}
-          sm={2}
-          sx={{ display: "flex", alignItems: "center" }}
-        >
-          <IconButton disabled>
-            <RemoveCircleOutlineIcon color={"disabled"} />
-          </IconButton>
-        </Grid>
+        {bucketTicker && (
+          <Grid
+            item
+            xs={12}
+            sm={2}
+            sx={{ display: "flex", alignItems: "center" }}
+          >
+            <IconButton disabled={!bucketTicker} onClick={handleDelete}>
+              <RemoveCircleOutlineIcon
+                color={!bucketTicker ? "disabled" : "error"}
+              />
+            </IconButton>
+          </Grid>
+        )}
       </Grid>
 
       <TickerSearchModal
