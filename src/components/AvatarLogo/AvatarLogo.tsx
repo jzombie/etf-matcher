@@ -4,7 +4,7 @@ import ErrorIcon from "@mui/icons-material/Error";
 import { Avatar, AvatarProps, CircularProgress } from "@mui/material";
 
 import noImageAvailable from "@assets/no-image-available.png";
-import {
+import type {
   RustServiceTickerDetail,
   RustServiceTickerSearchResult,
 } from "@src/types";
