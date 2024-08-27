@@ -20,7 +20,6 @@
 //   onUpdate: (bucketTicker: TickerBucketTicker | null) => void;
 // };
 
-// // TODO: Extract keyboard-selectable grid into a separate component?
 // export default function PortfolioFormFieldsItem({
 //   initialBucketTicker,
 //   onUpdate,
@@ -144,9 +143,6 @@
 //   return (
 //     <>
 //       <Grid item xs={5}>
-//         {
-//           // TODO: Show logo, if selected
-//         }
 //         <TextField
 //           name="symbol_or_company_name"
 //           label="Symbol or Company Name"
@@ -177,9 +173,6 @@
 //         </IconButton>
 //       </Grid>
 
-//       {
-//         // TODO: Replace with `TickerSearchModal`
-//       }
 //       {searchResults.length > 0 && (
 //         <Grid container spacing={2} sx={{ mt: 2 }}>
 //           {searchResults.map((result, index) => (
@@ -210,9 +203,6 @@
 //               </Paper>
 //             </Grid>
 //           ))}
-//           {
-//             // TODO: Add pagination?
-//           }
 //         </Grid>
 //       )}
 //     </>
