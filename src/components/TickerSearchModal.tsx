@@ -78,33 +78,43 @@ export default function TickerSearchModal({
   });
 
   const handleCancel = useCallback(() => {
-    // Reset search query on close
-    setSearchQuery("");
+    try {
+      // Reset search query on close
+      setSearchQuery("");
 
-    const onCancel = onCancelStableCurrentRef.current;
-    const onClose = onCloseStableCurrentRef.current;
+      const onCancel = onCancelStableCurrentRef.current;
+      const onClose = onCloseStableCurrentRef.current;
 
-    if (typeof onCancel === "function") {
-      onCancel();
-    }
+      if (typeof onCancel === "function") {
+        onCancel();
+      }
 
-    if (typeof onClose === "function") {
-      onClose();
+      if (typeof onClose === "function") {
+        onClose();
+      }
+    } catch (error) {
+      // TODO: Route error up to UI
+      customLogger.error("Error cancelling search:", error);
     }
   }, [setSearchQuery, onCancelStableCurrentRef, onCloseStableCurrentRef]);
 
   const handleClose = useCallback(() => {
-    // Invoke `handleCancel` if no search query
-    if (searchQuery === "") {
-      return handleCancel();
-    }
+    try {
+      // Invoke `handleCancel` if no search query
+      if (searchQuery === "") {
+        return handleCancel();
+      }
 
-    // Reset search query on close
-    setSearchQuery("");
+      // Reset search query on close
+      setSearchQuery("");
 
-    const onClose = onCloseStableCurrentRef.current;
-    if (typeof onClose === "function") {
-      onClose();
+      const onClose = onCloseStableCurrentRef.current;
+      if (typeof onClose === "function") {
+        onClose();
+      }
+    } catch (error) {
+      // TODO: Route error up to UI
+      customLogger.error("Error closing search:", error);
     }
   }, [searchQuery, handleCancel, setSearchQuery, onCloseStableCurrentRef]);
 
