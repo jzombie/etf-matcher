@@ -138,6 +138,9 @@ export default function PortfolioFormFieldsItem({
         )}
       </Grid>
 
+      {
+        // TODO: Add existing tickers to disable (so they cannot be re-selected)
+      }
       <TickerSearchModal
         open={isSearchModalOpen}
         onSelectTicker={handleSelectTicker}

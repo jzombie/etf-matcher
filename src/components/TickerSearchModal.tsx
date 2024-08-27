@@ -41,6 +41,7 @@ export type TickerSearchModalProps = Omit<DialogModalProps, "children"> & {
 };
 
 // TODO: Implement `initialValue`
+// TODO: Implement ability to disable items (for the purposes of adding new tickers to an existing list)
 export default function TickerSearchModal({
   open: isOpen,
   onClose,
