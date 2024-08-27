@@ -47,7 +47,6 @@ export default function TickerSearchModal({
   const onSelectSearchQueryStableCurrentRef =
     useStableCurrentRef(onSelectSearchQuery);
 
-  // TODO: Implement
   const onSelectTickerResultStableCurrentRef =
     useStableCurrentRef(onSelectTicker);
 
@@ -108,7 +107,11 @@ export default function TickerSearchModal({
   }, [searchQuery, handleCancel, setSearchQuery, onCloseStableCurrentRef]);
 
   const handleOk = useCallback(
-    (_?: SyntheticEvent, exactSearchValue?: string) => {
+    (
+      _?: SyntheticEvent,
+      exactSearchValue?: string,
+      selectedTicker?: RustServiceTickerSearchResult,
+    ) => {
       // Close the modal
       handleClose();
 
@@ -118,8 +121,21 @@ export default function TickerSearchModal({
       if (typeof onSelectSearchQuery === "function") {
         onSelectSearchQuery(locSearchQuery, Boolean(exactSearchValue));
       }
+
+      if (selectedTicker) {
+        const onSelectTickerResult =
+          onSelectTickerResultStableCurrentRef.current;
+        if (typeof onSelectTickerResult === "function") {
+          onSelectTickerResult(selectedTicker);
+        }
+      }
     },
-    [handleClose, searchQuery, onSelectSearchQueryStableCurrentRef],
+    [
+      handleClose,
+      searchQuery,
+      onSelectSearchQueryStableCurrentRef,
+      onSelectTickerResultStableCurrentRef,
+    ],
   );
 
   const handleInputChange = useCallback(
@@ -137,7 +153,7 @@ export default function TickerSearchModal({
           handleOk(evt);
         } else if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
           const selectedSearchResult = searchResults[selectedIndex];
-          handleOk(evt, selectedSearchResult.symbol);
+          handleOk(evt, selectedSearchResult.symbol, selectedSearchResult);
         }
       } else if (evt.code === "ArrowDown") {
         setSelectedIndex((prevIndex) => {
@@ -197,7 +213,7 @@ export default function TickerSearchModal({
           {searchResults.map((searchResult, idx) => (
             <ButtonBase
               key={idx}
-              onClick={(_) => handleOk(_, searchResult.symbol)}
+              onClick={(_) => handleOk(_, searchResult.symbol, searchResult)}
               sx={{
                 display: "block",
                 width: "100%",
