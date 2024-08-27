@@ -202,6 +202,9 @@ export default function BucketForm({
           )}
 
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+            <Button color="error" onClick={handleCancel}>
+              Cancel
+            </Button>
             <Button
               variant="contained"
               color="success"
@@ -209,9 +212,6 @@ export default function BucketForm({
               disabled={!isFormValid || isPortfolioSaveBlocked}
             >
               Save {tickerBucketDefaultNames[bucketType]}
-            </Button>
-            <Button variant="outlined" color="error" onClick={handleCancel}>
-              Cancel
             </Button>
           </Box>
         </Box>

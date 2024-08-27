@@ -34,7 +34,6 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
   // TODO: Consider showing by default, depending on how many buckets there are
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const alertDialogTitleId = useId();
@@ -49,10 +48,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
   }, []);
 
   const handleConfirmDelete = useCallback(() => {
-    // Prevent delete dialog from staying open after delete; I think this could be a
-    // bug with MUI because the dialog *should* close when this component unmounts.
     setIsDeleteDialogOpen(false);
-
     store.deleteTickerBucket(tickerBucket);
   }, [tickerBucket]);
 
@@ -69,9 +65,47 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
     <>
       <Padding>
         <Section>
-          <h2>{tickerBucket.name}</h2>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="h5">{tickerBucket.name}</Typography>
+            <Box>
+              <Button
+                color="error"
+                startIcon={<DeleteIcon />}
+                onClick={handleDeleteClick}
+              >
+                Delete
+              </Button>
+              <Button
+                color="primary"
+                variant="contained"
+                startIcon={<EditIcon />}
+                onClick={handleEditClick}
+                sx={{ marginRight: 1 }}
+              >
+                Edit
+              </Button>
+            </Box>
+          </Box>
+          <Typography
+            style={{
+              fontStyle: "italic",
+            }}
+            variant="body2"
+          >
+            {`${tickerBucket.tickers.length} item${tickerBucket.tickers.length !== 1 ? "s" : ""}`}
+          </Typography>
 
-          <div>{tickerBucket.description}</div>
+          {tickerBucket.description && (
+            <Typography variant="body2" color="textSecondary" mt={1}>
+              {tickerBucket.description}
+            </Typography>
+          )}
 
           {isEditDialogOpen && (
             <BucketForm
@@ -81,39 +115,9 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
             />
           )}
 
-          <Box>
-            <Button
-              color="error"
-              variant="outlined"
-              startIcon={<DeleteIcon />}
-              onClick={handleDeleteClick}
-            >
-              Delete
-            </Button>
-            <Button
-              color="primary"
-              variant="outlined"
-              startIcon={<EditIcon />}
-              onClick={handleEditClick}
-            >
-              Edit
-            </Button>
-
-            <Typography
-              style={{
-                display: "inline-block",
-                marginLeft: 8,
-                fontStyle: "italic",
-              }}
-              variant="body2"
-            >
-              {`${tickerBucket.tickers.length} item${tickerBucket.tickers.length !== 1 ? "s" : ""}`}
-            </Typography>
-          </Box>
-
           {tickerBucket.tickers.length > 0 ? (
             <>
-              <Box sx={{ textAlign: "center" }}>
+              <Box sx={{ textAlign: "center", marginTop: 2 }}>
                 <Button
                   onClick={toggleCollapse}
                   disabled={!tickerBucket.tickers.length}
