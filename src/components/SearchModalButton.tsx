@@ -48,7 +48,7 @@ export default function SearchModalButton({
 
   const { setURLState, toBooleanParam } = useURLState();
 
-  const handleSearch = useCallback(
+  const handleSearchQuery = useCallback(
     (searchQuery: string, isExact: boolean) => {
       // Close the modal
       handleClose();
@@ -82,7 +82,7 @@ export default function SearchModalButton({
       <TickerSearchModal
         open={isSearchModalOpen}
         onClose={handleClose}
-        onSearch={handleSearch}
+        onSelectSearchQuery={handleSearchQuery}
       />
     </>
   );

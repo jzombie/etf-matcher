@@ -71,27 +71,25 @@ export default function PortfolioFormFieldsItem({
   const [isSearchModalOpen, setIsSearchModalOpen] = useState<boolean>(false);
 
   // TODO: Refactor as necessary
-  const handleSelectSearchResult = useCallback(
-    (searchResult: RustServiceTickerSearchResult, isExact: boolean) => {
-      console.log({ searchResult, isExact });
+  const handleSelectTicker = useCallback(
+    (searchResult: RustServiceTickerSearchResult) => {
+      console.debug({ searchResult });
 
-      if (isExact) {
-        setIsSearchModalOpen(false);
+      setIsSearchModalOpen(false);
 
-        // TODO: Capture `ticker_id` and `exchange_short_name`
-        // handleSetBucketTicker({
-        //   tickerId: tickerSearchResult.ticker_id,
-        //   symbol: tickerSearchResult.symbol,
-        //   exchangeShortName: tickerSearchResult.exchange_short_name,
-        //   quantity: 1,
-        // });
-      }
+      // TODO: Capture `ticker_id` and `exchange_short_name`
+      // handleSetBucketTicker({
+      //   tickerId: tickerSearchResult.ticker_id,
+      //   symbol: tickerSearchResult.symbol,
+      //   exchangeShortName: tickerSearchResult.exchange_short_name,
+      //   quantity: 1,
+      // });
 
       // TODO: Remove
       // setSearchQuery("");
       // setHighlightedIndex(null); // Reset the highlighted index after selection
     },
-    [handleSetBucketTicker],
+    [],
   );
 
   return (
@@ -133,7 +131,7 @@ export default function PortfolioFormFieldsItem({
 
       <TickerSearchModal
         open={isSearchModalOpen}
-        onSearch={handleSelectSearchResult}
+        onSelectTicker={handleSelectTicker}
         onCancel={() => setIsSearchModalOpen(false)}
       />
     </>

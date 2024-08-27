@@ -18,6 +18,8 @@ import {
   Typography,
 } from "@mui/material";
 
+import { RustServiceTickerSearchResult } from "@src/types";
+
 import useSearch from "@hooks/useSearch";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
@@ -25,7 +27,8 @@ import DialogModal, { DialogModalProps } from "./DialogModal";
 import EncodedImage from "./EncodedImage";
 
 export type TickerSearchModalProps = Omit<DialogModalProps, "children"> & {
-  onSearch?: (searchQuery: string, isExact: boolean) => void;
+  onSelectSearchQuery?: (searchQuery: string, isExact: boolean) => void;
+  onSelectTicker?: (searchResult: RustServiceTickerSearchResult) => void;
   onCancel?: () => void;
 };
 
@@ -33,14 +36,20 @@ export type TickerSearchModalProps = Omit<DialogModalProps, "children"> & {
 export default function TickerSearchModal({
   open: isOpen,
   onClose,
-  onSearch,
+  onSelectSearchQuery,
+  onSelectTicker,
   onCancel,
 }: TickerSearchModalProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const onCancelStableCurrentRef = useStableCurrentRef(onCancel);
   const onCloseStableCurrentRef = useStableCurrentRef(onClose);
-  const onSearchStableCurrentRef = useStableCurrentRef(onSearch);
+  const onSelectSearchQueryStableCurrentRef =
+    useStableCurrentRef(onSelectSearchQuery);
+
+  // TODO: Implement
+  const onSelectTickerResultStableCurrentRef =
+    useStableCurrentRef(onSelectTicker);
 
   // Handle auto-blur/focus
   useEffect(() => {
@@ -99,12 +108,12 @@ export default function TickerSearchModal({
 
       const locSearchQuery = exactSearchValue || searchQuery;
 
-      const onSearch = onSearchStableCurrentRef.current;
-      if (typeof onSearch === "function") {
-        onSearch(locSearchQuery, Boolean(exactSearchValue));
+      const onSelectSearchQuery = onSelectSearchQueryStableCurrentRef.current;
+      if (typeof onSelectSearchQuery === "function") {
+        onSelectSearchQuery(locSearchQuery, Boolean(exactSearchValue));
       }
     },
-    [handleClose, searchQuery, onSearchStableCurrentRef],
+    [handleClose, searchQuery, onSelectSearchQueryStableCurrentRef],
   );
 
   const handleInputChange = useCallback(
