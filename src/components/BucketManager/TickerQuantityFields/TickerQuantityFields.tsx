@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { Box, Button, Container, Grid } from "@mui/material";
@@ -27,6 +27,15 @@ export default function TickerQuantityFields({
   omitShares = false,
 }: TickerQuantityFieldsProps) {
   const [newTicker, setNewTicker] = useState<TickerBucketTicker | null>(null);
+
+  const handleAddNewTickerFields = useCallback(() => {
+    setNewTicker({ tickerId: 0, symbol: "", quantity: 1 });
+  }, []);
+
+  const handleRemoveNewTickerFields = useCallback(() => {
+    setNewTicker(null);
+  }, []);
+
   const [existingTickers, setExistingTickers] = useState<TickerBucketTicker[]>(
     [],
   );
@@ -129,7 +138,7 @@ export default function TickerQuantityFields({
               <TickerQuantityFieldsItem
                 existingBucketTickers={existingTickers}
                 onUpdate={handleUpdateField}
-                onDelete={() => setNewTicker(null)}
+                onCancel={handleRemoveNewTickerFields}
                 omitShares={omitShares}
               />
             )
@@ -139,9 +148,7 @@ export default function TickerQuantityFields({
               variant="contained"
               color="primary"
               startIcon={<AddCircleOutlineIcon />}
-              onClick={() =>
-                setNewTicker({ tickerId: 0, symbol: "", quantity: 1 })
-              }
+              onClick={handleAddNewTickerFields}
               disabled={!!newTicker}
             >
               Add Additional Symbol

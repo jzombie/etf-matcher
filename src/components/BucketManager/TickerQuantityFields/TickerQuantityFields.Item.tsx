@@ -20,6 +20,7 @@ export type TickerQuantityFieldsItemProps = {
   existingBucketTickers: TickerBucketTicker[];
   onUpdate: (bucketTicker: TickerBucketTicker | null) => void;
   onDelete?: (bucketTicker: TickerBucketTicker) => void;
+  onCancel?: () => void;
   omitShares?: boolean;
 };
 
@@ -27,17 +28,19 @@ export default function TickerQuantityFieldsItem({
   initialBucketTicker,
   onUpdate,
   onDelete,
+  onCancel,
   existingBucketTickers = [],
   omitShares = false,
 }: TickerQuantityFieldsItemProps) {
   const onUpdateStableRef = useStableCurrentRef(onUpdate);
   const onDeleteStableRef = useStableCurrentRef(onDelete);
+  const onCancelStableRef = useStableCurrentRef(onCancel);
 
   const [bucketTicker, _setBucketTicker] = useState<
     TickerBucketTicker | undefined | null
   >(initialBucketTicker);
 
-  const [inputValue, setInputValue] = useState<string>(
+  const [quantityInputValue, setQuantityInputValue] = useState<string>(
     bucketTicker?.quantity
       ? bucketTicker.quantity.toString() // Start with the raw value
       : "",
@@ -94,7 +97,7 @@ export default function TickerQuantityFieldsItem({
           ? `${formattedInteger}.${fractionalPart}`
           : formattedInteger;
 
-      setInputValue(formattedValue);
+      setQuantityInputValue(formattedValue);
 
       if (bucketTicker && rawValue) {
         const numericValue = parseFloat(rawValue);
@@ -125,11 +128,16 @@ export default function TickerQuantityFieldsItem({
 
   const handleDelete = useCallback(() => {
     const onDelete = onDeleteStableRef.current;
+    const onCancel = onCancelStableRef.current;
 
     if (bucketTicker && typeof onDelete === "function") {
       onDelete(bucketTicker);
+    } else if (typeof onCancel === "function") {
+      onCancel();
     }
-  }, [bucketTicker, onDeleteStableRef]);
+  }, [bucketTicker, onDeleteStableRef, onCancelStableRef]);
+
+  const isDeleteButtonDisabled = !bucketTicker && !existingBucketTickers.length;
 
   return (
     <>
@@ -144,7 +152,7 @@ export default function TickerQuantityFieldsItem({
             variant="outlined"
             fullWidth
             required
-            value={bucketTicker?.symbol}
+            value={bucketTicker?.symbol || ""}
             disabled={Boolean(bucketTicker)}
             onChange={() => setIsSearchModalOpen(true)}
             onClick={() => setIsSearchModalOpen(true)}
@@ -162,7 +170,7 @@ export default function TickerQuantityFieldsItem({
               fullWidth
               required
               type="text" // `text` is used so the number can be numerically formatted
-              value={inputValue}
+              value={quantityInputValue}
               onChange={handleQuantityInputChange}
               disabled={!bucketTicker}
               size="small"
@@ -170,7 +178,7 @@ export default function TickerQuantityFieldsItem({
           </Grid>
         )}
 
-        {bucketTicker && (
+        {existingBucketTickers.length > 0 && (
           <Grid
             item
             xs={12}
@@ -184,9 +192,14 @@ export default function TickerQuantityFieldsItem({
               },
             }}
           >
-            <IconButton disabled={!bucketTicker} onClick={handleDelete}>
+            <IconButton
+              disabled={isDeleteButtonDisabled}
+              onClick={handleDelete}
+              aria-label="delete"
+              data-testid={`delete-button${bucketTicker?.symbol ? `--${bucketTicker.symbol}` : ""}`}
+            >
               <RemoveCircleOutlineIcon
-                color={!bucketTicker ? "disabled" : "error"}
+                color={isDeleteButtonDisabled ? "disabled" : "error"}
               />
             </IconButton>
           </Grid>
