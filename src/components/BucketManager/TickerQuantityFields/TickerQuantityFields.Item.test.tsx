@@ -1,44 +1,15 @@
 import React from "react";
 
-import { fireEvent, screen, within } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 
 import { TickerBucketTicker } from "@src/store";
-import type { RustServiceTickerSearchResult } from "@src/types";
 import { vi } from "vitest";
 
 import TickerQuantityFieldsItem, {
   TickerQuantityFieldsItemProps,
 } from "@components/BucketManager/TickerQuantityFields/TickerQuantityFields.Item";
-import TickerSearchModal from "@components/TickerSearchModal";
 
 import { render } from "../../../../test/customRender";
-
-// Mock the TickerSearchModal component
-vi.mock("@components/TickerSearchModal", () => ({
-  __esModule: true,
-  default: ({
-    open,
-    onSelectTicker,
-  }: {
-    open: boolean;
-    onSelectTicker: (ticker: RustServiceTickerSearchResult) => void;
-  }) => (
-    <div data-testid="ticker-search-modal">
-      <button
-        onClick={() =>
-          onSelectTicker({
-            ticker_id: 123,
-            symbol: "AAPL",
-            company_name: "Apple",
-            exchange_short_name: "NASDAQ",
-          })
-        }
-      >
-        Select Ticker
-      </button>
-    </div>
-  ),
-}));
 
 const renderComponent = (
   props: Partial<TickerQuantityFieldsItemProps> = {},
@@ -126,33 +97,24 @@ describe("TickerQuantityFieldsItem", () => {
     }
   });
 
-  // FIXME: Patch
-  // it("should set bucketTicker when a ticker is selected", () => {
-  //   const onUpdate = vi.fn();
+  it("opens ticker search dialog when input is clicked", () => {
+    const onUpdate = vi.fn();
 
-  //   // Render the component with the mocked onUpdate handler
-  //   render(
-  //     <TickerQuantityFieldsItem
-  //       onUpdate={onUpdate}
-  //       existingBucketTickers={[]}
-  //     />,
-  //   );
+    render(
+      <TickerQuantityFieldsItem
+        onUpdate={onUpdate}
+        existingBucketTickers={[]}
+      />,
+    );
 
-  //   // Open the ticker search modal by clicking the symbol field
-  //   fireEvent.click(screen.getByLabelText(/symbol/i));
+    // Ensure the dialog with the "presentation" role is not rendered initially
+    expect(screen.queryByRole("presentation")).not.toBeInTheDocument();
 
-  //   // Click the mock button to simulate ticker selection
-  //   fireEvent.click(screen.getByText(/select ticker/i));
+    // Open the ticker search modal by clicking the symbol field
+    fireEvent.click(screen.getByLabelText(/symbol/i));
 
-  //   // Assert that onUpdate was called with the correct values
-  //   expect(onUpdate).toHaveBeenCalledWith({
-  //     tickerId: 123,
-  //     symbol: "AAPL",
-  //     exchangeShortName: "NASDAQ",
-  //     quantity: 1,
-  //   });
-
-  //   // Further assertions, if needed, for other state changes
-  //   expect(screen.getByLabelText(/symbol/i)).toHaveValue("AAPL");
-  // });
+    // Ensure at least one element with the "presentation" role is rendered
+    const presentations = screen.getAllByRole("presentation");
+    expect(presentations.length).toBeGreaterThan(0);
+  });
 });
