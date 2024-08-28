@@ -20,6 +20,8 @@ export type TickerQuantityFieldsProps = {
   omitShares?: boolean;
 };
 
+// TODO: Fix issue where if editing the form, and adding a new field, the form cannot
+// be saved unless filling out that field
 export default function TickerQuantityFields({
   tickerBucket,
   onSaveableStateChange,
