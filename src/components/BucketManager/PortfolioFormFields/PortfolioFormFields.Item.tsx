@@ -141,7 +141,14 @@ export default function PortfolioFormFieldsItem({
             item
             xs={12}
             sm={2}
-            sx={{ display: "flex", alignItems: "center" }}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: {
+                xs: "flex-end", // Align the button to the right on mobile
+                sm: "flex-start", // Align as before on larger screens
+              },
+            }}
           >
             <IconButton disabled={!bucketTicker} onClick={handleDelete}>
               <RemoveCircleOutlineIcon
