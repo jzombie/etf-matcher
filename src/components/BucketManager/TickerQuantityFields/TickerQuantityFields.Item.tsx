@@ -30,7 +30,6 @@ export default function TickerQuantityFieldsItem({
   onDelete,
   existingBucketTickers = [],
   omitShares = false,
-  // TODO: Route error state up
 }: TickerQuantityFieldsItemProps) {
   const onUpdateStableRef = useStableCurrentRef(onUpdate);
   const onDeleteStableRef = useStableCurrentRef(onDelete);
@@ -41,7 +40,7 @@ export default function TickerQuantityFieldsItem({
 
   const [inputValue, setInputValue] = useState<string>(
     bucketTicker?.quantity
-      ? formatNumberWithCommas(bucketTicker.quantity.toString())
+      ? bucketTicker.quantity.toString() // Start with the raw value
       : "",
   );
 
@@ -73,45 +72,29 @@ export default function TickerQuantityFieldsItem({
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value;
 
-      // Remove commas to handle the raw number input
-      const rawValue = removeCommas(value);
-
-      // Ensure the input is a valid number or a valid fractional input
-      if (!/^\d*\.?\d*$/.test(rawValue)) {
+      // Allow the input field to be empty or contain a valid fraction
+      if (!/^\d*\.?\d*$/.test(value)) {
         setTickerError("Invalid number format");
         return;
       }
 
-      // Allow the input field to be empty or contain a valid fraction (like ".001")
-      if (rawValue === "" || rawValue === "." || rawValue.startsWith(".")) {
-        setTickerError(null);
-        setInputValue(value);
-        return;
-      }
-
-      const numericValue = parseFloat(rawValue);
-
-      // Enforce the value to be greater than 0
-      if (numericValue <= 0) {
-        setTickerError("The quantity must be greater than 0");
-        return;
-      }
-
       setTickerError(null);
+      setInputValue(value);
 
-      // Format with commas
-      const formattedValue = formatNumberWithCommas(rawValue);
-      setInputValue(formattedValue);
+      if (value !== "" && !value.endsWith(".")) {
+        // If the value is a valid number and doesn't end with a decimal point
+        const rawValue = removeCommas(value);
+        const numericValue = parseFloat(rawValue);
 
-      if (bucketTicker) {
-        handleSetBucketTicker({
-          ...bucketTicker,
-          quantity: numericValue,
-        });
-      } else {
-        customLogger.error(
-          "Cannot add quantity to non-existing `bucketTicker`",
-        );
+        if (numericValue > 0 && bucketTicker) {
+          handleSetBucketTicker({
+            ...bucketTicker,
+            quantity: numericValue,
+          });
+          setInputValue(formatNumberWithCommas(rawValue));
+        } else {
+          setTickerError("The quantity must be greater than 0");
+        }
       }
     },
     [bucketTicker, handleSetBucketTicker],
@@ -203,9 +186,6 @@ export default function TickerQuantityFieldsItem({
         )}
       </Grid>
 
-      {
-        // TODO: Add existing tickers to disable (so they cannot be re-selected)
-      }
       <TickerSearchModal
         open={isSearchModalOpen}
         onSelectTicker={handleSelectTicker}
