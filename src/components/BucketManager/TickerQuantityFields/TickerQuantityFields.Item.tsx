@@ -22,7 +22,21 @@ export type TickerQuantityFieldsItemProps = {
   omitShares?: boolean;
 };
 
-// TODO: Prompt for confirmation before deleting
+// TODO: Refactor
+// Utility function to format number with commas
+const formatNumberWithCommas = (value: string) => {
+  const numericValue = parseFloat(value);
+  if (isNaN(numericValue)) {
+    return value; // Return the original string if it's not a valid number
+  }
+  return new Intl.NumberFormat("en-US").format(numericValue);
+};
+
+// Utility function to remove commas for processing
+const removeCommas = (value: string) => {
+  return value.replace(/,/g, "");
+};
+
 export default function TickerQuantityFieldsItem({
   initialBucketTicker,
   onUpdate,
@@ -37,6 +51,12 @@ export default function TickerQuantityFieldsItem({
     TickerBucketTicker | undefined | null
   >(initialBucketTicker);
 
+  const [inputValue, setInputValue] = useState<string>(
+    bucketTicker?.quantity
+      ? formatNumberWithCommas(bucketTicker.quantity.toString())
+      : "",
+  );
+
   const { tickerDetail } = useTickerDetail(bucketTicker?.tickerId);
   const [tickerError, setTickerError] = useState<string | null>(null);
 
@@ -44,7 +64,7 @@ export default function TickerQuantityFieldsItem({
     (bucketTicker: TickerBucketTicker | null) => {
       if (
         bucketTicker &&
-        bucketTicker.tickerId !== initialBucketTicker?.tickerId && // New condition
+        bucketTicker.tickerId !== initialBucketTicker?.tickerId &&
         existingBucketTickers.some(
           (existingTicker) => existingTicker.tickerId === bucketTicker.tickerId,
         )
@@ -62,13 +82,28 @@ export default function TickerQuantityFieldsItem({
   );
 
   const handleQuantityInputChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const { value } = event.target;
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+
+      // Remove commas to handle the raw number input
+      const rawValue = removeCommas(value);
+
+      // Ensure the input is a valid number
+      if (!/^\d*\.?\d*$/.test(rawValue)) {
+        setTickerError("Invalid number format");
+        return;
+      }
+
+      setTickerError(null);
+
+      // Format with commas
+      const formattedValue = formatNumberWithCommas(rawValue);
+      setInputValue(formattedValue);
+
       if (bucketTicker) {
         handleSetBucketTicker({
           ...bucketTicker,
-          // Coerce to positive values
-          quantity: Math.abs(parseFloat(value)),
+          quantity: parseFloat(rawValue),
         });
       } else {
         customLogger.error(
@@ -133,8 +168,8 @@ export default function TickerQuantityFieldsItem({
               variant="outlined"
               fullWidth
               required
-              type="number"
-              value={bucketTicker?.quantity || ""}
+              type="text" // `text` is used so the number can be numerically formatted
+              value={inputValue}
               onChange={handleQuantityInputChange}
               disabled={!bucketTicker}
               size="small"
