@@ -13,14 +13,14 @@ import type { TickerBucket, TickerBucketTicker } from "@src/store";
 
 import { useNotification } from "@hooks/useNotification";
 
-import PortfolioFormFields from "./PortfolioFormFields";
+import TickerQuantityFields from "./TickerQuantityFields";
 
 export type BucketFormProps = {
   bucketType: TickerBucket["type"];
   existingBucket?: TickerBucket;
   onClose?: () => void;
   onCancel?: () => void;
-  disablePortfolioFormFields?: boolean;
+  disableTickerQuantityFields?: boolean;
 };
 
 export default function BucketForm({
@@ -28,7 +28,7 @@ export default function BucketForm({
   existingBucket,
   onClose,
   onCancel,
-  disablePortfolioFormFields = false,
+  disableTickerQuantityFields = false,
 }: BucketFormProps) {
   const initialBucketName = useMemo(
     () => existingBucket?.name,
@@ -191,8 +191,8 @@ export default function BucketForm({
             {isShowingDescription ? "Hide" : "Show"} Description Field
           </Button>
 
-          {!disablePortfolioFormFields && (
-            <PortfolioFormFields
+          {!disableTickerQuantityFields && (
+            <TickerQuantityFields
               tickerBucket={existingBucket}
               onSaveableStateChange={(isSaveable) =>
                 setIsPortfolioSaveBlocked(!isSaveable)

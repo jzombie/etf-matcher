@@ -7,9 +7,9 @@ import type { TickerBucket, TickerBucketTicker } from "@src/store";
 
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
-import PortfolioFormFieldsItem from "./PortfolioFormFields.Item";
+import TickerQuantityFieldsItem from "./TickerQuantityFields.Item";
 
-export type PortfolioFormFieldsProps = {
+export type TickerQuantityFieldsProps = {
   tickerBucket?: TickerBucket;
   // FIXME: Rename to `onSaveStateChange`? I'm hesitant to do so because these
   // form fields do not save directly. An alternative name could be something
@@ -20,12 +20,12 @@ export type PortfolioFormFieldsProps = {
   omitShares?: boolean;
 };
 
-export default function PortfolioFormFields({
+export default function TickerQuantityFields({
   tickerBucket,
   onSaveableStateChange,
   onDataChange,
   omitShares = false,
-}: PortfolioFormFieldsProps) {
+}: TickerQuantityFieldsProps) {
   const [newTicker, setNewTicker] = useState<TickerBucketTicker | null>(null);
   const [existingTickers, setExistingTickers] = useState<TickerBucketTicker[]>(
     [],
@@ -111,7 +111,7 @@ export default function PortfolioFormFields({
           {
             // Render existing form fields from the tickerBucket or newly added ones
             existingTickers.map((bucketTicker, idx) => (
-              <PortfolioFormFieldsItem
+              <TickerQuantityFieldsItem
                 key={bucketTicker?.tickerId || idx}
                 initialBucketTicker={bucketTicker}
                 existingBucketTickers={existingTickers}
@@ -126,7 +126,7 @@ export default function PortfolioFormFields({
           {
             // Render the new form field if a new ticker is being added
             newTicker && (
-              <PortfolioFormFieldsItem
+              <TickerQuantityFieldsItem
                 existingBucketTickers={existingTickers}
                 onUpdate={handleUpdateField}
                 onDelete={() => setNewTicker(null)}

@@ -15,15 +15,15 @@
 
 // import customLogger from "@utils/customLogger";
 
-// export type PortfolioFormFieldsItemProps = {
+// export type TickerQuantityFieldsItemProps = {
 //   initialBucketTicker?: TickerBucketTicker;
 //   onUpdate: (bucketTicker: TickerBucketTicker | null) => void;
 // };
 
-// export default function PortfolioFormFieldsItem({
+// export default function TickerQuantityFieldsItem({
 //   initialBucketTicker,
 //   onUpdate,
-// }: PortfolioFormFieldsItemProps) {
+// }: TickerQuantityFieldsItemProps) {
 //   const onUpdateStableRef = useStableCurrentRef(onUpdate);
 
 //   const { searchQuery, setSearchQuery, searchResults } = useSearch();

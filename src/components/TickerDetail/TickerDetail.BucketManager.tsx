@@ -260,7 +260,7 @@ export default function TickerDetailBucketManager({
                 bucketType={selectedBucketType}
                 onCancel={handleCloseBucketDialog}
                 onClose={() => setIsShowingBucketForm(false)}
-                disablePortfolioFormFields
+                disableTickerQuantityFields
               />
             </>
           )}

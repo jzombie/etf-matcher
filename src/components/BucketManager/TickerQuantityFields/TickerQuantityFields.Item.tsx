@@ -14,7 +14,7 @@ import useTickerDetail from "@hooks/useTickerDetail";
 
 import customLogger from "@utils/customLogger";
 
-export type PortfolioFormFieldsItemProps = {
+export type TickerQuantityFieldsItemProps = {
   initialBucketTicker?: TickerBucketTicker;
   existingBucketTickers: TickerBucketTicker[];
   onUpdate: (bucketTicker: TickerBucketTicker | null) => void;
@@ -23,13 +23,13 @@ export type PortfolioFormFieldsItemProps = {
 };
 
 // TODO: Prompt for confirmation before deleting
-export default function PortfolioFormFieldsItem({
+export default function TickerQuantityFieldsItem({
   initialBucketTicker,
   onUpdate,
   onDelete,
   existingBucketTickers = [],
   omitShares = false,
-}: PortfolioFormFieldsItemProps) {
+}: TickerQuantityFieldsItemProps) {
   const onUpdateStableRef = useStableCurrentRef(onUpdate);
   const onDeleteStableRef = useStableCurrentRef(onDelete);
 
