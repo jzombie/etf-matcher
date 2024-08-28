@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Box, Button, TextField, Typography } from "@mui/material";
 
 import { MIN_TICKER_BUCKET_NAME_LENGTH } from "@src/constants";
@@ -7,15 +9,18 @@ import store, {
   TickerBucketNameError,
   tickerBucketDefaultNames,
 } from "@src/store";
-import type { TickerBucket } from "@src/store";
+import type { TickerBucket, TickerBucketTicker } from "@src/store";
 
 import { useNotification } from "@hooks/useNotification";
+
+import TickerQuantityFields from "./TickerQuantityFields";
 
 export type BucketFormProps = {
   bucketType: TickerBucket["type"];
   existingBucket?: TickerBucket;
   onClose?: () => void;
   onCancel?: () => void;
+  disableTickerQuantityFields?: boolean;
 };
 
 export default function BucketForm({
@@ -23,14 +28,24 @@ export default function BucketForm({
   existingBucket,
   onClose,
   onCancel,
+  disableTickerQuantityFields = false,
 }: BucketFormProps) {
   const initialBucketName = useMemo(
     () => existingBucket?.name,
     [existingBucket],
   );
 
+  const [isPortfolioSaveBlocked, setIsPortfolioSaveBlocked] =
+    useState<boolean>(false);
+
   const [bucketName, setBucketName] = useState<string>("");
   const [bucketDescription, setBucketDescription] = useState<string>("");
+  const [isShowingDescription, setIsShowingDescription] = useState<boolean>(
+    Boolean(existingBucket?.description),
+  );
+  const [explicitTickers, setExplicitTickers] = useState<
+    TickerBucketTicker[] | undefined
+  >(undefined);
 
   const [nameError, setNameError] = useState<string | null>(null);
 
@@ -71,8 +86,14 @@ export default function BucketForm({
   const handleSaveBucket = useCallback(() => {
     try {
       if (existingBucket) {
+        const nextBucket = { ...existingBucket };
+
+        if (explicitTickers) {
+          nextBucket["tickers"] = explicitTickers;
+        }
+
         store.updateTickerBucket(existingBucket, {
-          ...existingBucket,
+          ...nextBucket,
           name: bucketName,
           description: bucketDescription,
         });
@@ -80,6 +101,7 @@ export default function BucketForm({
         store.createTickerBucket({
           name: bucketName,
           type: bucketType,
+          tickers: explicitTickers || [],
           description: bucketDescription,
           isUserConfigurable: true,
         });
@@ -102,6 +124,7 @@ export default function BucketForm({
     bucketType,
     bucketName,
     bucketDescription,
+    explicitTickers,
     existingBucket,
     onClose,
     showNotification,
@@ -147,26 +170,49 @@ export default function BucketForm({
             error={!!nameError}
             helperText={nameError}
           />
-          <TextField
-            label={`${tickerBucketDefaultNames[bucketType]} Description`}
-            value={bucketDescription}
-            onChange={(e) => setBucketDescription(e.target.value)}
-            variant="outlined"
-            fullWidth
-            multiline
-            rows={4}
-          />
+          {isShowingDescription && (
+            <TextField
+              label={`${tickerBucketDefaultNames[bucketType]} Description`}
+              value={bucketDescription}
+              onChange={(e) => setBucketDescription(e.target.value)}
+              variant="outlined"
+              fullWidth
+              multiline
+              rows={4}
+            />
+          )}
+
+          <Button
+            onClick={() => setIsShowingDescription((prev) => !prev)}
+            endIcon={
+              !isShowingDescription ? <ExpandMoreIcon /> : <ExpandLessIcon />
+            }
+          >
+            {isShowingDescription ? "Hide" : "Show"} Description Field
+          </Button>
+
+          {!disableTickerQuantityFields && (
+            <TickerQuantityFields
+              tickerBucket={existingBucket}
+              onSaveableStateChange={(isSaveable) =>
+                setIsPortfolioSaveBlocked(!isSaveable)
+              }
+              onDataChange={setExplicitTickers}
+              omitShares={bucketType !== "portfolio"}
+            />
+          )}
+
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+            <Button color="error" onClick={handleCancel}>
+              Cancel
+            </Button>
             <Button
               variant="contained"
               color="success"
               type="submit"
-              disabled={!isFormValid}
+              disabled={!isFormValid || isPortfolioSaveBlocked}
             >
               Save {tickerBucketDefaultNames[bucketType]}
-            </Button>
-            <Button variant="outlined" color="error" onClick={handleCancel}>
-              Cancel
             </Button>
           </Box>
         </Box>

@@ -34,8 +34,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
   // TODO: Consider showing by default, depending on how many buckets there are
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const alertDialogTitleId = useId();
   const alertDialogDescriptionId = useId();
@@ -49,31 +48,72 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
   }, []);
 
   const handleConfirmDelete = useCallback(() => {
-    // Prevent delete dialog from staying open after delete; I think this could be a
-    // bug with MUI because the dialog *should* close when this component unmounts.
     setIsDeleteDialogOpen(false);
-
     store.deleteTickerBucket(tickerBucket);
   }, [tickerBucket]);
 
   const handleEditClick = useCallback(() => {
-    setIsEditDialogOpen(true);
+    setIsEditing(true);
   }, []);
 
   const handleClose = useCallback(() => {
     setIsDeleteDialogOpen(false);
-    setIsEditDialogOpen(false);
+    setIsEditing(false);
   }, []);
 
   return (
     <>
       <Padding>
         <Section>
-          <h2>{tickerBucket.name}</h2>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: !isEditing ? "space-between" : "right",
+              alignItems: "center",
+            }}
+          >
+            {!isEditing && (
+              <Typography variant="h5">{tickerBucket.name}</Typography>
+            )}
 
-          <div>{tickerBucket.description}</div>
+            <Box>
+              <Button
+                color="error"
+                startIcon={<DeleteIcon />}
+                onClick={handleDeleteClick}
+              >
+                Delete
+              </Button>
+              <Button
+                color="primary"
+                variant="contained"
+                startIcon={<EditIcon />}
+                onClick={handleEditClick}
+                sx={{ marginRight: 1 }}
+                disabled={isEditing}
+              >
+                Edit
+              </Button>
+            </Box>
+          </Box>
+          {!isEditing && (
+            <Typography
+              style={{
+                fontStyle: "italic",
+              }}
+              variant="body2"
+            >
+              {`${tickerBucket.tickers.length} item${tickerBucket.tickers.length !== 1 ? "s" : ""}`}
+            </Typography>
+          )}
 
-          {isEditDialogOpen && (
+          {tickerBucket.description && (
+            <Typography variant="body2" color="textSecondary" mt={1}>
+              {tickerBucket.description}
+            </Typography>
+          )}
+
+          {isEditing && (
             <BucketForm
               bucketType={tickerBucket.type}
               existingBucket={tickerBucket}
@@ -81,91 +121,70 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
             />
           )}
 
-          <Box>
-            <Button
-              color="error"
-              variant="outlined"
-              startIcon={<DeleteIcon />}
-              onClick={handleDeleteClick}
-            >
-              Delete
-            </Button>
-            <Button
-              color="primary"
-              variant="outlined"
-              startIcon={<EditIcon />}
-              onClick={handleEditClick}
-            >
-              Edit
-            </Button>
+          <>
+            {!isEditing && (
+              <>
+                {tickerBucket.tickers.length > 0 ? (
+                  <>
+                    <Box sx={{ textAlign: "center" }} mt={1}>
+                      <Button
+                        onClick={toggleCollapse}
+                        disabled={!tickerBucket.tickers.length}
+                        endIcon={
+                          isCollapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />
+                        }
+                      >
+                        {isCollapsed ? "Expand" : "Collapse"} List
+                      </Button>
+                    </Box>
 
-            <Typography
-              style={{
-                display: "inline-block",
-                marginLeft: 8,
-                fontStyle: "italic",
-              }}
-              variant="body2"
-            >
-              {`${tickerBucket.tickers.length} item${tickerBucket.tickers.length !== 1 ? "s" : ""}`}
-            </Typography>
-          </Box>
+                    <Box>
+                      {!isCollapsed && (
+                        <UnstyledUL>
+                          {tickerBucket.tickers.map((bucketTicker) => (
+                            <UnstyledLI key={bucketTicker.tickerId}>
+                              <BucketTicker
+                                bucketTicker={bucketTicker}
+                                tickerBucket={tickerBucket}
+                              />
+                            </UnstyledLI>
+                          ))}
+                        </UnstyledUL>
+                      )}
 
-          <Box sx={{ textAlign: "center" }}>
-            <Button
-              onClick={toggleCollapse}
-              disabled={!tickerBucket.tickers.length}
-              endIcon={isCollapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />}
-            >
-              {isCollapsed ? "Expand" : "Collapse"} List
-            </Button>
-          </Box>
-
-          {!tickerBucket.tickers.length ? (
-            <>
-              <Typography variant="body2" color="textSecondary">
-                No items in &quot;{tickerBucket.name}&quot;.
-              </Typography>
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                sx={{ display: "inline-block", marginRight: 1 }}
-              >
-                Perhaps you might wish to perform a{" "}
-                {/* [`Search` button follows] */}
-              </Typography>
-              <SearchModalButton />
-            </>
-          ) : (
-            <Box>
-              {!isCollapsed && (
-                <UnstyledUL>
-                  {tickerBucket.tickers.map((bucketTicker) => (
-                    <UnstyledLI key={bucketTicker.tickerId}>
-                      <BucketTicker
-                        bucketTicker={bucketTicker}
-                        tickerBucket={tickerBucket}
-                      />
-                    </UnstyledLI>
-                  ))}
-                </UnstyledUL>
-              )}
-
-              {
-                // TODO: Remove; Just for debugging
-
-                import.meta.env.DEV && (
-                  <Button
-                    onClick={() =>
-                      store.fetchClosestTickersByQuantity(tickerBucket)
-                    }
-                  >
-                    PROTO::createCustomVector()
-                  </Button>
-                )
-              }
-            </Box>
-          )}
+                      {
+                        // TODO: Remove; Just for debugging
+                        import.meta.env.DEV && (
+                          <Button
+                            onClick={() =>
+                              store.fetchClosestTickersByQuantity(tickerBucket)
+                            }
+                          >
+                            PROTO::createCustomVector()
+                          </Button>
+                        )
+                      }
+                    </Box>
+                  </>
+                ) : (
+                  <Box sx={{ textAlign: "center", py: 2 }}>
+                    <Typography variant="body2" color="textSecondary">
+                      No items in &quot;{tickerBucket.name}&quot;.
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      sx={{ display: "inline-block", marginRight: 1 }}
+                    >
+                      Perhaps you might wish to perform a{" "}
+                      {/* [`Search` button follows] */}
+                    </Typography>
+                    <SearchModalButton />
+                  </Box>
+                )}
+              </>
+            )}
+          </>
         </Section>
       </Padding>
 

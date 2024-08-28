@@ -53,6 +53,7 @@ export type TickerBucket = {
   type: "watchlist" | "portfolio" | "ticker_tape" | "recently_viewed";
   description: string;
   isUserConfigurable: boolean;
+  // TODO: Add `uuid` field
   // TODO: Track bucket last update time
 };
 
@@ -586,10 +587,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     type,
     description,
     isUserConfigurable,
-  }: Omit<TickerBucket, "tickers">) {
+    tickers = [],
+  }: TickerBucket) {
     const nextBucket: TickerBucket = {
       name,
-      tickers: [],
+      tickers,
       type,
       description,
       isUserConfigurable,
