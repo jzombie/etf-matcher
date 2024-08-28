@@ -30,6 +30,7 @@ export default function TickerQuantityFieldsItem({
   onDelete,
   existingBucketTickers = [],
   omitShares = false,
+  // TODO: Route error state up
 }: TickerQuantityFieldsItemProps) {
   const onUpdateStableRef = useStableCurrentRef(onUpdate);
   const onDeleteStableRef = useStableCurrentRef(onDelete);
@@ -81,6 +82,17 @@ export default function TickerQuantityFieldsItem({
         return;
       }
 
+      const numericValue = parseFloat(rawValue);
+
+      // Enforce the value to be greater than 0
+      if (numericValue <= 0) {
+        setTickerError("The quantity must be greater than 0");
+
+        // TODO: Fix issues where setting and editing fractional shares is difficult!
+        // setInputValue("");
+        return;
+      }
+
       setTickerError(null);
 
       // Format with commas
@@ -90,7 +102,7 @@ export default function TickerQuantityFieldsItem({
       if (bucketTicker) {
         handleSetBucketTicker({
           ...bucketTicker,
-          quantity: parseFloat(rawValue),
+          quantity: numericValue,
         });
       } else {
         customLogger.error(
