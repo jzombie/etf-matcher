@@ -44,6 +44,7 @@ export default function TickerQuantityFieldsItem({
     (bucketTicker: TickerBucketTicker | null) => {
       if (
         bucketTicker &&
+        bucketTicker.tickerId !== initialBucketTicker?.tickerId && // New condition
         existingBucketTickers.some(
           (existingTicker) => existingTicker.tickerId === bucketTicker.tickerId,
         )
@@ -57,7 +58,7 @@ export default function TickerQuantityFieldsItem({
         onUpdate(bucketTicker);
       }
     },
-    [existingBucketTickers, onUpdateStableRef],
+    [existingBucketTickers, initialBucketTicker, onUpdateStableRef],
   );
 
   const handleQuantityInputChange = useCallback(
