@@ -12,7 +12,7 @@ import TickerSearchModal from "@components/TickerSearchModal";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useTickerDetail from "@hooks/useTickerDetail";
 
-import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
+import customLogger from "@utils/customLogger";
 import removeCommas from "@utils/string/removeCommas";
 
 export type TickerQuantityFieldsItemProps = {
@@ -67,33 +67,45 @@ export default function TickerQuantityFieldsItem({
     [existingBucketTickers, initialBucketTicker, onUpdateStableRef],
   );
 
+  const formatNumberWithCommas = (value: string): string => {
+    // Split the value into integer and fractional parts
+    const [integerPart, fractionalPart] = value.split(".");
+
+    // Format the integer part with commas
+    const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    // Reconstruct the formatted number
+    return fractionalPart !== undefined
+      ? `${formattedInteger}.${fractionalPart}`
+      : formattedInteger;
+  };
+
   const handleQuantityInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value;
 
-      // Allow the input field to be empty or contain a valid fraction
-      if (!/^\d*\.?\d*$/.test(value)) {
+      // Remove commas for processing
+      const rawValue = removeCommas(value);
+
+      // Allow only valid numeric input, including decimals
+      if (!/^\d*\.?\d*$/.test(rawValue)) {
         setTickerError("Invalid number format");
         return;
       }
 
       setTickerError(null);
-      setInputValue(value);
 
-      if (value !== "" && !value.endsWith(".")) {
-        // If the value is a valid number and doesn't end with a decimal point
-        const rawValue = removeCommas(value);
+      // Format the value with commas as the user types
+      const formattedValue = formatNumberWithCommas(rawValue);
+
+      setInputValue(formattedValue);
+
+      if (bucketTicker && rawValue) {
         const numericValue = parseFloat(rawValue);
-
-        if (numericValue > 0 && bucketTicker) {
-          handleSetBucketTicker({
-            ...bucketTicker,
-            quantity: numericValue,
-          });
-          setInputValue(formatNumberWithCommas(rawValue));
-        } else {
-          setTickerError("The quantity must be greater than 0");
-        }
+        handleSetBucketTicker({
+          ...bucketTicker,
+          quantity: numericValue,
+        });
       }
     },
     [bucketTicker, handleSetBucketTicker],
