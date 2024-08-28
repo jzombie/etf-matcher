@@ -1,0 +1,88 @@
+import React from "react";
+
+import { fireEvent, screen } from "@testing-library/react";
+
+import { TickerBucket, TickerBucketTicker } from "@src/store";
+import { vi } from "vitest";
+
+import TickerQuantityFields, {
+  TickerQuantityFieldsProps,
+} from "@components/BucketManager/TickerQuantityFields";
+
+import { render } from "../../../../test/customRender";
+
+const renderComponent = (props: Partial<TickerQuantityFieldsProps> = {}) => {
+  const defaultProps: TickerQuantityFieldsProps = {
+    onSaveableStateChange: vi.fn(),
+    onDataChange: vi.fn(),
+    omitShares: false,
+  };
+  return render(<TickerQuantityFields {...defaultProps} {...props} />);
+};
+
+describe("TickerQuantityFields", () => {
+  it("should render the add button", () => {
+    renderComponent();
+    expect(
+      screen.getByRole("button", { name: /add additional symbol/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("should add a new ticker field when add button is clicked", () => {
+    renderComponent();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /add additional symbol/i }),
+    );
+
+    expect(screen.getByLabelText(/symbol/i)).toBeInTheDocument();
+  });
+
+  it("should update existing ticker", () => {
+    const onDataChange = vi.fn();
+    const existingTickers: TickerBucketTicker[] = [
+      { tickerId: 1, symbol: "AAPL", quantity: 10 },
+    ];
+    renderComponent({
+      tickerBucket: { tickers: existingTickers } as TickerBucket,
+      onDataChange,
+    });
+
+    fireEvent.change(screen.getByLabelText(/shares/i), {
+      target: { value: "20" },
+    });
+
+    expect(onDataChange).toHaveBeenCalledWith([
+      { tickerId: 1, symbol: "AAPL", quantity: 20 },
+    ]);
+  });
+
+  // TODO: Rework
+  // it("should remove ticker when delete button is clicked", () => {
+  //   const existingTickers: TickerBucketTicker[] = [
+  //     { tickerId: 1, symbol: "AAPL", quantity: 10 },
+  //   ];
+  //   const { queryByLabelText, getByRole } = renderComponent({
+  //     tickerBucket: { tickers: existingTickers } as TickerBucket,
+  //   });
+
+  //   // Assuming the delete button has an aria-label or specific text.
+  //   // If not, you can use `data-testid` to make this more reliable.
+  //   fireEvent.click(getByRole("button", { name: /delete/i }));
+
+  //   expect(queryByLabelText(/symbol/i)).not.toBeInTheDocument();
+  // });
+
+  // TODO: Rework
+  // it("should disable add button when a new ticker is being added", () => {
+  //   renderComponent();
+
+  //   fireEvent.click(
+  //     screen.getByRole("button", { name: /add additional symbol/i }),
+  //   );
+
+  //   expect(
+  //     screen.getByRole("button", { name: /add additional symbol/i }),
+  //   ).toBeDisabled();
+  // });
+});

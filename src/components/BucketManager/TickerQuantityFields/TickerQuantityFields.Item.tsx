@@ -195,6 +195,8 @@ export default function TickerQuantityFieldsItem({
             <IconButton
               disabled={isDeleteButtonDisabled}
               onClick={handleDelete}
+              aria-label="delete"
+              data-testid="delete-button"
             >
               <RemoveCircleOutlineIcon
                 color={isDeleteButtonDisabled ? "disabled" : "error"}
