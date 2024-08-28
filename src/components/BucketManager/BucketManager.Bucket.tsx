@@ -116,65 +116,71 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
             />
           )}
 
-          {tickerBucket.tickers.length > 0 ? (
-            <>
-              <Box sx={{ textAlign: "center" }} mt={1}>
-                <Button
-                  onClick={toggleCollapse}
-                  disabled={!tickerBucket.tickers.length}
-                  endIcon={
-                    isCollapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />
-                  }
-                >
-                  {isCollapsed ? "Expand" : "Collapse"} List
-                </Button>
-              </Box>
+          <>
+            {!isEditing && (
+              <>
+                {tickerBucket.tickers.length > 0 ? (
+                  <>
+                    <Box sx={{ textAlign: "center" }} mt={1}>
+                      <Button
+                        onClick={toggleCollapse}
+                        disabled={!tickerBucket.tickers.length}
+                        endIcon={
+                          isCollapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />
+                        }
+                      >
+                        {isCollapsed ? "Expand" : "Collapse"} List
+                      </Button>
+                    </Box>
 
-              <Box>
-                {!isCollapsed && (
-                  <UnstyledUL>
-                    {tickerBucket.tickers.map((bucketTicker) => (
-                      <UnstyledLI key={bucketTicker.tickerId}>
-                        <BucketTicker
-                          bucketTicker={bucketTicker}
-                          tickerBucket={tickerBucket}
-                        />
-                      </UnstyledLI>
-                    ))}
-                  </UnstyledUL>
-                )}
+                    <Box>
+                      {!isCollapsed && (
+                        <UnstyledUL>
+                          {tickerBucket.tickers.map((bucketTicker) => (
+                            <UnstyledLI key={bucketTicker.tickerId}>
+                              <BucketTicker
+                                bucketTicker={bucketTicker}
+                                tickerBucket={tickerBucket}
+                              />
+                            </UnstyledLI>
+                          ))}
+                        </UnstyledUL>
+                      )}
 
-                {
-                  // TODO: Remove; Just for debugging
+                      {
+                        // TODO: Remove; Just for debugging
 
-                  import.meta.env.DEV && (
-                    <Button
-                      onClick={() =>
-                        store.fetchClosestTickersByQuantity(tickerBucket)
+                        import.meta.env.DEV && (
+                          <Button
+                            onClick={() =>
+                              store.fetchClosestTickersByQuantity(tickerBucket)
+                            }
+                          >
+                            PROTO::createCustomVector()
+                          </Button>
+                        )
                       }
+                    </Box>
+                  </>
+                ) : (
+                  <Box sx={{ textAlign: "center", py: 2 }}>
+                    <Typography variant="body2" color="textSecondary">
+                      No items in &quot;{tickerBucket.name}&quot;.
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      sx={{ display: "inline-block", marginRight: 1 }}
                     >
-                      PROTO::createCustomVector()
-                    </Button>
-                  )
-                }
-              </Box>
-            </>
-          ) : (
-            <Box sx={{ textAlign: "center", py: 2 }}>
-              <Typography variant="body2" color="textSecondary">
-                No items in &quot;{tickerBucket.name}&quot;.
-              </Typography>
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                sx={{ display: "inline-block", marginRight: 1 }}
-              >
-                Perhaps you might wish to perform a{" "}
-                {/* [`Search` button follows] */}
-              </Typography>
-              <SearchModalButton />
-            </Box>
-          )}
+                      Perhaps you might wish to perform a{" "}
+                      {/* [`Search` button follows] */}
+                    </Typography>
+                    <SearchModalButton />
+                  </Box>
+                )}
+              </>
+            )}
+          </>
         </Section>
       </Padding>
 
