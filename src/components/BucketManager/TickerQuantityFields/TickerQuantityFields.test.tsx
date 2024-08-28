@@ -57,32 +57,33 @@ describe("TickerQuantityFields", () => {
     ]);
   });
 
-  // TODO: Rework
-  // it("should remove ticker when delete button is clicked", () => {
-  //   const existingTickers: TickerBucketTicker[] = [
-  //     { tickerId: 1, symbol: "AAPL", quantity: 10 },
-  //   ];
-  //   const { queryByLabelText, getByRole } = renderComponent({
-  //     tickerBucket: { tickers: existingTickers } as TickerBucket,
-  //   });
+  it("should remove ticker when delete button is clicked", () => {
+    const existingTickers: TickerBucketTicker[] = [
+      { tickerId: 1, symbol: "AAPL", quantity: 10 },
+    ];
+    const { queryByDisplayValue } = renderComponent({
+      tickerBucket: { tickers: existingTickers } as TickerBucket,
+    });
 
-  //   // Assuming the delete button has an aria-label or specific text.
-  //   // If not, you can use `data-testid` to make this more reliable.
-  //   fireEvent.click(getByRole("button", { name: /delete/i }));
+    // Ensure the ticker with value "AAPL" is in the document
+    expect(queryByDisplayValue("AAPL")).toBeInTheDocument();
 
-  //   expect(queryByLabelText(/symbol/i)).not.toBeInTheDocument();
-  // });
+    // Click the delete button
+    fireEvent.click(screen.getByTestId("delete-button--AAPL"));
 
-  // TODO: Rework
-  // it("should disable add button when a new ticker is being added", () => {
-  //   renderComponent();
+    // Ensure the ticker with value "AAPL" is no longer in the document
+    expect(queryByDisplayValue("AAPL")).not.toBeInTheDocument();
+  });
 
-  //   fireEvent.click(
-  //     screen.getByRole("button", { name: /add additional symbol/i }),
-  //   );
+  it("should disable add button when a new ticker is being added", () => {
+    renderComponent();
 
-  //   expect(
-  //     screen.getByRole("button", { name: /add additional symbol/i }),
-  //   ).toBeDisabled();
-  // });
+    fireEvent.click(
+      screen.getByRole("button", { name: /add additional symbol/i }),
+    );
+
+    expect(
+      screen.getByRole("button", { name: /add additional symbol/i }),
+    ).toBeDisabled();
+  });
 });

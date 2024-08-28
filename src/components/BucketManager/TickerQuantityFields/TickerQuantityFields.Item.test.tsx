@@ -63,7 +63,7 @@ describe("TickerQuantityFieldsItem", () => {
     });
 
     // Click the delete button
-    const deleteButton = screen.getByTestId("delete-button");
+    const deleteButton = screen.getByTestId("delete-button--AAPL");
     fireEvent.click(deleteButton);
 
     // Assert that onDelete was called with the correct values
