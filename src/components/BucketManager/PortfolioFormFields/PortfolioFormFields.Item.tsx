@@ -19,6 +19,7 @@ export type PortfolioFormFieldsItemProps = {
   existingBucketTickers: TickerBucketTicker[];
   onUpdate: (bucketTicker: TickerBucketTicker | null) => void;
   onDelete?: (bucketTicker: TickerBucketTicker) => void;
+  omitShares?: boolean;
 };
 
 // TODO: Prompt for confirmation before deleting
@@ -27,6 +28,7 @@ export default function PortfolioFormFieldsItem({
   onUpdate,
   onDelete,
   existingBucketTickers = [],
+  omitShares = false,
 }: PortfolioFormFieldsItemProps) {
   const onUpdateStableRef = useStableCurrentRef(onUpdate);
   const onDeleteStableRef = useStableCurrentRef(onDelete);
@@ -122,20 +124,23 @@ export default function PortfolioFormFieldsItem({
             size="small"
           />
         </Grid>
-        <Grid item xs={12} sm={4}>
-          <TextField
-            name="shares"
-            label="Shares"
-            variant="outlined"
-            fullWidth
-            required
-            type="number"
-            value={bucketTicker?.quantity || ""}
-            onChange={handleQuantityInputChange}
-            disabled={!bucketTicker}
-            size="small"
-          />
-        </Grid>
+        {!omitShares && (
+          <Grid item xs={12} sm={4}>
+            <TextField
+              name="shares"
+              label="Shares"
+              variant="outlined"
+              fullWidth
+              required
+              type="number"
+              value={bucketTicker?.quantity || ""}
+              onChange={handleQuantityInputChange}
+              disabled={!bucketTicker}
+              size="small"
+            />
+          </Grid>
+        )}
+
         {bucketTicker && (
           <Grid
             item

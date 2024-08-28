@@ -191,13 +191,14 @@ export default function BucketForm({
             {isShowingDescription ? "Hide" : "Show"} Description Field
           </Button>
 
-          {bucketType === "portfolio" && !disablePortfolioFormFields && (
+          {!disablePortfolioFormFields && (
             <PortfolioFormFields
               tickerBucket={existingBucket}
               onSaveableStateChange={(isSaveable) =>
                 setIsPortfolioSaveBlocked(!isSaveable)
               }
               onDataChange={setExplicitTickers}
+              omitShares={bucketType !== "portfolio"}
             />
           )}
 

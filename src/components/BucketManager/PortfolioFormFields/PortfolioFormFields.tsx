@@ -17,12 +17,14 @@ export type PortfolioFormFieldsProps = {
   // might need to be inverted.
   onSaveableStateChange: (isSaveable: boolean) => void;
   onDataChange: (formData: TickerBucketTicker[]) => void;
+  omitShares?: boolean;
 };
 
 export default function PortfolioFormFields({
   tickerBucket,
   onSaveableStateChange,
   onDataChange,
+  omitShares = false,
 }: PortfolioFormFieldsProps) {
   const [newTicker, setNewTicker] = useState<TickerBucketTicker | null>(null);
   const [existingTickers, setExistingTickers] = useState<TickerBucketTicker[]>(
@@ -117,6 +119,7 @@ export default function PortfolioFormFields({
                   handleUpdateField(updatedTicker)
                 }
                 onDelete={() => handleRemoveField(bucketTicker.tickerId)}
+                omitShares={omitShares}
               />
             ))
           }
@@ -127,6 +130,7 @@ export default function PortfolioFormFields({
                 existingBucketTickers={existingTickers}
                 onUpdate={handleUpdateField}
                 onDelete={() => setNewTicker(null)}
+                omitShares={omitShares}
               />
             )
           }
