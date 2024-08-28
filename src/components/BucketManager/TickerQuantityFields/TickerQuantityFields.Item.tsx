@@ -20,6 +20,7 @@ export type TickerQuantityFieldsItemProps = {
   existingBucketTickers: TickerBucketTicker[];
   onUpdate: (bucketTicker: TickerBucketTicker | null) => void;
   onDelete?: (bucketTicker: TickerBucketTicker) => void;
+  onCancel?: () => void;
   omitShares?: boolean;
 };
 
@@ -27,11 +28,13 @@ export default function TickerQuantityFieldsItem({
   initialBucketTicker,
   onUpdate,
   onDelete,
+  onCancel,
   existingBucketTickers = [],
   omitShares = false,
 }: TickerQuantityFieldsItemProps) {
   const onUpdateStableRef = useStableCurrentRef(onUpdate);
   const onDeleteStableRef = useStableCurrentRef(onDelete);
+  const onCancelStableRef = useStableCurrentRef(onCancel);
 
   const [bucketTicker, _setBucketTicker] = useState<
     TickerBucketTicker | undefined | null
@@ -125,11 +128,16 @@ export default function TickerQuantityFieldsItem({
 
   const handleDelete = useCallback(() => {
     const onDelete = onDeleteStableRef.current;
+    const onCancel = onCancelStableRef.current;
 
     if (bucketTicker && typeof onDelete === "function") {
       onDelete(bucketTicker);
+    } else if (typeof onCancel === "function") {
+      onCancel();
     }
-  }, [bucketTicker, onDeleteStableRef]);
+  }, [bucketTicker, onDeleteStableRef, onCancelStableRef]);
+
+  const isDeleteButtonDisabled = !bucketTicker && !existingBucketTickers.length;
 
   return (
     <>
@@ -170,7 +178,7 @@ export default function TickerQuantityFieldsItem({
           </Grid>
         )}
 
-        {bucketTicker && (
+        {existingBucketTickers.length > 0 && (
           <Grid
             item
             xs={12}
@@ -184,9 +192,12 @@ export default function TickerQuantityFieldsItem({
               },
             }}
           >
-            <IconButton disabled={!bucketTicker} onClick={handleDelete}>
+            <IconButton
+              disabled={isDeleteButtonDisabled}
+              onClick={handleDelete}
+            >
               <RemoveCircleOutlineIcon
-                color={!bucketTicker ? "disabled" : "error"}
+                color={isDeleteButtonDisabled ? "disabled" : "error"}
               />
             </IconButton>
           </Grid>

@@ -20,8 +20,6 @@ export type TickerQuantityFieldsProps = {
   omitShares?: boolean;
 };
 
-// TODO: Fix issue where if editing the form, and adding a new field, the form cannot
-// be saved unless filling out that field
 export default function TickerQuantityFields({
   tickerBucket,
   onSaveableStateChange,
@@ -131,7 +129,7 @@ export default function TickerQuantityFields({
               <TickerQuantityFieldsItem
                 existingBucketTickers={existingTickers}
                 onUpdate={handleUpdateField}
-                onDelete={() => setNewTicker(null)}
+                onCancel={() => setNewTicker(null)}
                 omitShares={omitShares}
               />
             )
@@ -142,6 +140,7 @@ export default function TickerQuantityFields({
               color="primary"
               startIcon={<AddCircleOutlineIcon />}
               onClick={() =>
+                // TODO: Re-route to helper method
                 setNewTicker({ tickerId: 0, symbol: "", quantity: 1 })
               }
               disabled={!!newTicker}
