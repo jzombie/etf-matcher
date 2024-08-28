@@ -12,7 +12,6 @@ import TickerSearchModal from "@components/TickerSearchModal";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useTickerDetail from "@hooks/useTickerDetail";
 
-import customLogger from "@utils/customLogger";
 import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
 import removeCommas from "@utils/string/removeCommas";
 
