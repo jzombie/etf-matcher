@@ -170,9 +170,9 @@ export default function TickerSearchModal({
       const { value } = evt.target;
 
       // Validate input
-      if (!/^[a-zA-Z0-9.-]*$/.test(value)) {
+      if (!/^[a-zA-Z0-9.\-\s]*$/.test(value)) {
         setError(
-          "Only alphanumeric characters, hyphens, and periods are allowed.",
+          "Only alphanumeric characters, hyphens, periods, and spaces are allowed.",
         );
         return;
       }
