@@ -68,11 +68,14 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
           <Box
             sx={{
               display: "flex",
-              justifyContent: "space-between",
+              justifyContent: !isEditing ? "space-between" : "right",
               alignItems: "center",
             }}
           >
-            <Typography variant="h5">{tickerBucket.name}</Typography>
+            {!isEditing && (
+              <Typography variant="h5">{tickerBucket.name}</Typography>
+            )}
+
             <Box>
               <Button
                 color="error"
@@ -93,14 +96,16 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
               </Button>
             </Box>
           </Box>
-          <Typography
-            style={{
-              fontStyle: "italic",
-            }}
-            variant="body2"
-          >
-            {`${tickerBucket.tickers.length} item${tickerBucket.tickers.length !== 1 ? "s" : ""}`}
-          </Typography>
+          {!isEditing && (
+            <Typography
+              style={{
+                fontStyle: "italic",
+              }}
+              variant="body2"
+            >
+              {`${tickerBucket.tickers.length} item${tickerBucket.tickers.length !== 1 ? "s" : ""}`}
+            </Typography>
+          )}
 
           {tickerBucket.description && (
             <Typography variant="body2" color="textSecondary" mt={1}>
