@@ -40,7 +40,7 @@ export default function TickerQuantityFieldsItem({
     TickerBucketTicker | undefined | null
   >(initialBucketTicker);
 
-  const [inputValue, setInputValue] = useState<string>(
+  const [quantityInputValue, setQuantityInputValue] = useState<string>(
     bucketTicker?.quantity
       ? bucketTicker.quantity.toString() // Start with the raw value
       : "",
@@ -97,7 +97,7 @@ export default function TickerQuantityFieldsItem({
           ? `${formattedInteger}.${fractionalPart}`
           : formattedInteger;
 
-      setInputValue(formattedValue);
+      setQuantityInputValue(formattedValue);
 
       if (bucketTicker && rawValue) {
         const numericValue = parseFloat(rawValue);
@@ -152,7 +152,7 @@ export default function TickerQuantityFieldsItem({
             variant="outlined"
             fullWidth
             required
-            value={bucketTicker?.symbol}
+            value={bucketTicker?.symbol || ""}
             disabled={Boolean(bucketTicker)}
             onChange={() => setIsSearchModalOpen(true)}
             onClick={() => setIsSearchModalOpen(true)}
@@ -170,7 +170,7 @@ export default function TickerQuantityFieldsItem({
               fullWidth
               required
               type="text" // `text` is used so the number can be numerically formatted
-              value={inputValue}
+              value={quantityInputValue}
               onChange={handleQuantityInputChange}
               disabled={!bucketTicker}
               size="small"
