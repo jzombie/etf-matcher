@@ -40,10 +40,10 @@ describe("TickerQuantityFieldsItem", () => {
     expect(screen.getByText(/invalid number format/i)).toBeInTheDocument();
   });
 
-  it("should call onDelete when delete button is clicked if tickers exist", () => {
-    const onDelete = vi.fn();
+  it("should call onCancel when delete button is clicked if tickers exist", () => {
+    const onCancel = vi.fn();
     renderComponent({
-      onDelete,
+      onCancel,
       existingBucketTickers: [
         {
           tickerId: 1,
@@ -58,7 +58,7 @@ describe("TickerQuantityFieldsItem", () => {
 
     if (deleteButton) {
       fireEvent.click(deleteButton);
-      expect(onDelete).toHaveBeenCalled();
+      expect(onCancel).toHaveBeenCalled();
     }
   });
 
