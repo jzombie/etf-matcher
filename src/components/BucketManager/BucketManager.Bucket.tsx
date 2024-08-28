@@ -60,6 +60,8 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
   const handleClose = useCallback(() => {
     setIsDeleteDialogOpen(false);
     setIsEditing(false);
+
+    setIsCollapsed(false);
   }, []);
 
   return (
@@ -115,11 +117,13 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
           )}
 
           {isEditing && (
-            <BucketForm
-              bucketType={tickerBucket.type}
-              existingBucket={tickerBucket}
-              onClose={handleClose}
-            />
+            <ScrollTo>
+              <BucketForm
+                bucketType={tickerBucket.type}
+                existingBucket={tickerBucket}
+                onClose={handleClose}
+              />
+            </ScrollTo>
           )}
 
           <>
