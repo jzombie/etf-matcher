@@ -76,9 +76,16 @@ export default function TickerQuantityFieldsItem({
       // Remove commas to handle the raw number input
       const rawValue = removeCommas(value);
 
-      // Ensure the input is a valid number
+      // Ensure the input is a valid number or a valid fractional input
       if (!/^\d*\.?\d*$/.test(rawValue)) {
         setTickerError("Invalid number format");
+        return;
+      }
+
+      // Allow the input field to be empty or contain a valid fraction (like ".001")
+      if (rawValue === "" || rawValue === "." || rawValue.startsWith(".")) {
+        setTickerError(null);
+        setInputValue(value);
         return;
       }
 
@@ -87,9 +94,6 @@ export default function TickerQuantityFieldsItem({
       // Enforce the value to be greater than 0
       if (numericValue <= 0) {
         setTickerError("The quantity must be greater than 0");
-
-        // TODO: Fix issues where setting and editing fractional shares is difficult!
-        // setInputValue("");
         return;
       }
 
