@@ -13,6 +13,8 @@ import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useTickerDetail from "@hooks/useTickerDetail";
 
 import customLogger from "@utils/customLogger";
+import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
+import removeCommas from "@utils/string/removeCommas";
 
 export type TickerQuantityFieldsItemProps = {
   initialBucketTicker?: TickerBucketTicker;
@@ -20,21 +22,6 @@ export type TickerQuantityFieldsItemProps = {
   onUpdate: (bucketTicker: TickerBucketTicker | null) => void;
   onDelete?: (bucketTicker: TickerBucketTicker) => void;
   omitShares?: boolean;
-};
-
-// TODO: Refactor
-// Utility function to format number with commas
-const formatNumberWithCommas = (value: string) => {
-  const numericValue = parseFloat(value);
-  if (isNaN(numericValue)) {
-    return value; // Return the original string if it's not a valid number
-  }
-  return new Intl.NumberFormat("en-US").format(numericValue);
-};
-
-// Utility function to remove commas for processing
-const removeCommas = (value: string) => {
-  return value.replace(/,/g, "");
 };
 
 export default function TickerQuantityFieldsItem({
