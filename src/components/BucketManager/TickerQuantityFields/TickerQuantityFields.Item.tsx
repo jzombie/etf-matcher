@@ -13,6 +13,7 @@ import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useTickerDetail from "@hooks/useTickerDetail";
 
 import customLogger from "@utils/customLogger";
+import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
 import removeCommas from "@utils/string/removeCommas";
 
 export type TickerQuantityFieldsItemProps = {
@@ -67,19 +68,6 @@ export default function TickerQuantityFieldsItem({
     [existingBucketTickers, initialBucketTicker, onUpdateStableRef],
   );
 
-  const formatNumberWithCommas = (value: string): string => {
-    // Split the value into integer and fractional parts
-    const [integerPart, fractionalPart] = value.split(".");
-
-    // Format the integer part with commas
-    const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
-    // Reconstruct the formatted number
-    return fractionalPart !== undefined
-      ? `${formattedInteger}.${fractionalPart}`
-      : formattedInteger;
-  };
-
   const handleQuantityInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value;
@@ -95,8 +83,17 @@ export default function TickerQuantityFieldsItem({
 
       setTickerError(null);
 
-      // Format the value with commas as the user types
-      const formattedValue = formatNumberWithCommas(rawValue);
+      // Split the value into integer and fractional parts
+      const [integerPart, fractionalPart] = rawValue.split(".");
+
+      // Format the integer part with commas
+      const formattedInteger = formatNumberWithCommas(integerPart);
+
+      // Reconstruct the full value
+      const formattedValue =
+        fractionalPart !== undefined
+          ? `${formattedInteger}.${fractionalPart}`
+          : formattedInteger;
 
       setInputValue(formattedValue);
 
