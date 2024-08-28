@@ -57,7 +57,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
     setIsEditing(true);
   }, []);
 
-  const handleClose = useCallback(() => {
+  const handleFormClose = useCallback(() => {
     setIsDeleteDialogOpen(false);
     setIsEditing(false);
 
@@ -66,73 +66,73 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
 
   return (
     <>
-      <Padding>
-        <Section>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: !isEditing ? "space-between" : "right",
-              alignItems: "center",
-            }}
-          >
+      <ScrollTo disabled={isCollapsed}>
+        <Padding>
+          <Section>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: !isEditing ? "space-between" : "right",
+                alignItems: "center",
+              }}
+            >
+              {!isEditing && (
+                <Typography variant="h5">{tickerBucket.name}</Typography>
+              )}
+
+              <Box>
+                <Button
+                  color="error"
+                  startIcon={<DeleteIcon />}
+                  onClick={handleDeleteClick}
+                >
+                  Delete
+                </Button>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  startIcon={<EditIcon />}
+                  onClick={handleEditClick}
+                  sx={{ marginRight: 1 }}
+                  disabled={isEditing}
+                >
+                  Edit
+                </Button>
+              </Box>
+            </Box>
             {!isEditing && (
-              <Typography variant="h5">{tickerBucket.name}</Typography>
+              <Typography
+                style={{
+                  fontStyle: "italic",
+                }}
+                variant="body2"
+              >
+                {`${tickerBucket.tickers.length} item${tickerBucket.tickers.length !== 1 ? "s" : ""}`}
+              </Typography>
             )}
 
-            <Box>
-              <Button
-                color="error"
-                startIcon={<DeleteIcon />}
-                onClick={handleDeleteClick}
-              >
-                Delete
-              </Button>
-              <Button
-                color="primary"
-                variant="contained"
-                startIcon={<EditIcon />}
-                onClick={handleEditClick}
-                sx={{ marginRight: 1 }}
-                disabled={isEditing}
-              >
-                Edit
-              </Button>
-            </Box>
-          </Box>
-          {!isEditing && (
-            <Typography
-              style={{
-                fontStyle: "italic",
-              }}
-              variant="body2"
-            >
-              {`${tickerBucket.tickers.length} item${tickerBucket.tickers.length !== 1 ? "s" : ""}`}
-            </Typography>
-          )}
+            {tickerBucket.description && (
+              <Typography variant="body2" color="textSecondary" mt={1}>
+                {tickerBucket.description}
+              </Typography>
+            )}
 
-          {tickerBucket.description && (
-            <Typography variant="body2" color="textSecondary" mt={1}>
-              {tickerBucket.description}
-            </Typography>
-          )}
+            {isEditing && (
+              <ScrollTo>
+                <BucketForm
+                  bucketType={tickerBucket.type}
+                  existingBucket={tickerBucket}
+                  onClose={handleFormClose}
+                />
+              </ScrollTo>
+            )}
 
-          {isEditing && (
-            <ScrollTo>
-              <BucketForm
-                bucketType={tickerBucket.type}
-                existingBucket={tickerBucket}
-                onClose={handleClose}
-              />
-            </ScrollTo>
-          )}
-
-          <>
-            {!isEditing && (
-              <>
-                {tickerBucket.tickers.length > 0 ? (
-                  <>
-                    <Box sx={{ textAlign: "center" }} mt={1}>
-                      <ScrollTo disabled={isCollapsed}>
+            <>
+              {!isEditing && (
+                <>
+                  {tickerBucket.tickers.length > 0 ? (
+                    <>
+                      <Box sx={{ textAlign: "center" }} mt={1}>
                         <Button
                           onClick={toggleCollapse}
                           disabled={!tickerBucket.tickers.length}
@@ -146,62 +146,64 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                         >
                           {isCollapsed ? "Expand" : "Collapse"} List
                         </Button>
-                      </ScrollTo>
-                    </Box>
+                      </Box>
 
-                    <Box>
-                      {!isCollapsed && (
-                        <UnstyledUL>
-                          {tickerBucket.tickers.map((bucketTicker) => (
-                            <UnstyledLI key={bucketTicker.tickerId}>
-                              <BucketTicker
-                                bucketTicker={bucketTicker}
-                                tickerBucket={tickerBucket}
-                              />
-                            </UnstyledLI>
-                          ))}
-                        </UnstyledUL>
-                      )}
+                      <Box>
+                        {!isCollapsed && (
+                          <UnstyledUL>
+                            {tickerBucket.tickers.map((bucketTicker) => (
+                              <UnstyledLI key={bucketTicker.tickerId}>
+                                <BucketTicker
+                                  bucketTicker={bucketTicker}
+                                  tickerBucket={tickerBucket}
+                                />
+                              </UnstyledLI>
+                            ))}
+                          </UnstyledUL>
+                        )}
 
-                      {
-                        // TODO: Remove; Just for debugging
-                        import.meta.env.DEV && (
-                          <Button
-                            onClick={() =>
-                              store.fetchClosestTickersByQuantity(tickerBucket)
-                            }
-                          >
-                            PROTO::createCustomVector()
-                          </Button>
-                        )
-                      }
+                        {
+                          // TODO: Remove; Just for debugging
+                          import.meta.env.DEV && (
+                            <Button
+                              onClick={() =>
+                                store.fetchClosestTickersByQuantity(
+                                  tickerBucket,
+                                )
+                              }
+                            >
+                              PROTO::createCustomVector()
+                            </Button>
+                          )
+                        }
+                      </Box>
+                    </>
+                  ) : (
+                    <Box sx={{ textAlign: "center", py: 2 }}>
+                      <Typography variant="body2" color="textSecondary">
+                        No items in &quot;{tickerBucket.name}&quot;.
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        sx={{ display: "inline-block", marginRight: 1 }}
+                      >
+                        Perhaps you might wish to perform a{" "}
+                        {/* [`Search` button follows] */}
+                      </Typography>
+                      <SearchModalButton />
                     </Box>
-                  </>
-                ) : (
-                  <Box sx={{ textAlign: "center", py: 2 }}>
-                    <Typography variant="body2" color="textSecondary">
-                      No items in &quot;{tickerBucket.name}&quot;.
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      sx={{ display: "inline-block", marginRight: 1 }}
-                    >
-                      Perhaps you might wish to perform a{" "}
-                      {/* [`Search` button follows] */}
-                    </Typography>
-                    <SearchModalButton />
-                  </Box>
-                )}
-              </>
-            )}
-          </>
-        </Section>
-      </Padding>
+                  )}
+                </>
+              )}
+            </>
+          </Section>
+        </Padding>
+      </ScrollTo>
 
       <Dialog
         open={isDeleteDialogOpen}
-        onClose={handleClose}
+        onClose={handleFormClose}
         aria-labelledby={alertDialogTitleId}
         aria-describedby={alertDialogDescriptionId}
       >
@@ -214,7 +216,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleFormClose} color="primary">
             Cancel
           </Button>
           <Button onClick={handleConfirmDelete} color="error" autoFocus>
