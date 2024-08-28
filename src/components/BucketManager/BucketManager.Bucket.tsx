@@ -19,6 +19,7 @@ import Padding from "@layoutKit/Padding";
 import store, { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucket } from "@src/store";
 
+import ScrollTo from "@components/ScrollTo";
 import SearchModalButton from "@components/SearchModalButton";
 import Section from "@components/Section";
 import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
@@ -127,15 +128,21 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                 {tickerBucket.tickers.length > 0 ? (
                   <>
                     <Box sx={{ textAlign: "center" }} mt={1}>
-                      <Button
-                        onClick={toggleCollapse}
-                        disabled={!tickerBucket.tickers.length}
-                        endIcon={
-                          isCollapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />
-                        }
-                      >
-                        {isCollapsed ? "Expand" : "Collapse"} List
-                      </Button>
+                      <ScrollTo disabled={isCollapsed}>
+                        <Button
+                          onClick={toggleCollapse}
+                          disabled={!tickerBucket.tickers.length}
+                          endIcon={
+                            isCollapsed ? (
+                              <ExpandMoreIcon />
+                            ) : (
+                              <ExpandLessIcon />
+                            )
+                          }
+                        >
+                          {isCollapsed ? "Expand" : "Collapse"} List
+                        </Button>
+                      </ScrollTo>
                     </Box>
 
                     <Box>
