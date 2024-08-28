@@ -22,6 +22,7 @@ import {
 } from "@src/store";
 import type { TickerBucket } from "@src/store";
 import type { RustServiceTickerDetail } from "@src/types";
+import { Link } from "react-router-dom";
 
 import BucketForm from "@components/BucketManager/BucketManager.BucketForm";
 import DialogModal from "@components/DialogModal";
@@ -207,6 +208,17 @@ export default function TickerDetailBucketManager({
             : "Buckets"}{" "}
         </DialogTitle>
         <DialogContent>
+          {selectedBucketType === "portfolio" && (
+            <Typography
+              variant="body2"
+              sx={{ fontStyle: "italic", opacity: 0.7 }}
+              mb={1}
+            >
+              Please note: Ticker quantities (or, &quot;virtual shares&quot;)
+              for portfolios can currently be managed only on the{" "}
+              <Link to="/portfolios">Portfolios</Link> page.
+            </Typography>
+          )}
           <Typography variant="h6">
             Existing{" "}
             {selectedBucketType
