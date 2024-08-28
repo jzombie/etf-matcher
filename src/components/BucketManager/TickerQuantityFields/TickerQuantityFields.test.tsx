@@ -75,6 +75,27 @@ describe("TickerQuantityFields", () => {
     expect(queryByDisplayValue("AAPL")).not.toBeInTheDocument();
   });
 
+  it("should disable add button by default for new buckets", () => {
+    renderComponent();
+
+    expect(
+      screen.getByRole("button", { name: /add additional symbol/i }),
+    ).toBeDisabled();
+  });
+
+  it("should enable add button by default for existing buckets", () => {
+    const existingTickers: TickerBucketTicker[] = [
+      { tickerId: 1, symbol: "AAPL", quantity: 10 },
+    ];
+    renderComponent({
+      tickerBucket: { tickers: existingTickers } as TickerBucket,
+    });
+
+    expect(
+      screen.getByRole("button", { name: /add additional symbol/i }),
+    ).toBeEnabled();
+  });
+
   it("should disable add button when a new ticker is being added", () => {
     renderComponent();
 
