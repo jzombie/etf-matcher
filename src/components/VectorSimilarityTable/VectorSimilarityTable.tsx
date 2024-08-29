@@ -10,22 +10,29 @@ import {
 } from "@mui/material";
 
 import Padding from "@layoutKit/Padding";
-import { RustServiceTickerDetail } from "@src/types";
 
 import Transition from "@components/Transition";
+
+import useTickerVectorQuery, {
+  TickerVectorQueryProps,
+} from "@hooks/useTickerVectorQuery";
 
 import Cosine from "./VectorSimilarityTable.Cosine";
 import Euclidean from "./VectorSimilarityTable.Euclidean";
 
 export type VectorSimiliartyTableProps = {
-  tickerDetail: RustServiceTickerDetail;
-  // queryMode: "ticker" | "bucket";
+  queryMode: TickerVectorQueryProps["queryMode"];
+  query: TickerVectorQueryProps["query"];
 };
 
 export default function VectorSimilarityTable({
-  tickerDetail,
+  queryMode,
+  query,
 }: VectorSimiliartyTableProps) {
-  const tickerId = tickerDetail.ticker_id;
+  const { queryName } = useTickerVectorQuery({
+    queryMode,
+    query,
+  });
 
   const [alignment, setAlignment] = useState<"euclidean" | "cosine">(
     "euclidean",
@@ -44,7 +51,7 @@ export default function VectorSimilarityTable({
     <Padding>
       <Box sx={{ overflow: "auto" }}>
         <Typography variant="h6">
-          &quot;{tickerDetail.symbol}&quot; Similarity Matches
+          &quot;{queryName}&quot; Similarity Matches
         </Typography>
         <Typography variant="body2" color="textSecondary" fontStyle="italic">
           Note: Similarity matches are based on 10 years of financial data from
@@ -78,9 +85,9 @@ export default function VectorSimilarityTable({
         direction={alignment === "euclidean" ? "right" : "left"}
       >
         {alignment === "euclidean" ? (
-          <Euclidean tickerId={tickerId} />
+          <Euclidean queryMode={queryMode} query={query} />
         ) : (
-          <Cosine tickerId={tickerId} />
+          <Cosine queryMode={queryMode} query={query} />
         )}
       </Transition>
     </Padding>

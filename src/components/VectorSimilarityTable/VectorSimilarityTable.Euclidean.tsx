@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 
 import {
   CircularProgress,
@@ -13,32 +13,24 @@ import {
 } from "@mui/material";
 
 import Center from "@layoutKit/Center";
-import store from "@src/store";
 import type { RustServiceTickerDetail } from "@src/types";
 
 import AvatarLogo from "@components/AvatarLogo";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
-
-import customLogger from "@utils/customLogger";
-
-// TODO: Rename
-export type TickerVectorWithEuclideanDistance = RustServiceTickerDetail & {
-  distance: number;
-};
+import useTickerVectorQuery, {
+  TickerVectorQueryProps,
+} from "@hooks/useTickerVectorQuery";
 
 export type VectorSimilarityTableEuclideanProps = {
-  tickerId: number;
+  queryMode: TickerVectorQueryProps["queryMode"];
+  query: TickerVectorQueryProps["query"];
 };
 
 export default function VectorSimilarityTableEuclidean({
-  tickerId,
+  queryMode,
+  query,
 }: VectorSimilarityTableEuclideanProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [tickerDetails, setTickerDetails] = useState<
-    TickerVectorWithEuclideanDistance[] | null
-  >(null);
-
   const navigateToSymbol = useTickerSymbolNavigation();
 
   const handleRowClick = useCallback(
@@ -48,41 +40,10 @@ export default function VectorSimilarityTableEuclidean({
     [navigateToSymbol],
   );
 
-  useEffect(() => {
-    if (tickerId) {
-      setIsLoading(true);
-
-      // TODO: Fetch based on query mode
-      store
-        .fetchClosestTickers(tickerId)
-        .then(async (closestTickers) => {
-          const detailPromises = closestTickers.map((item) =>
-            store.fetchTickerDetail(item.ticker_id).then((detail) => ({
-              ...detail,
-              distance: item.distance,
-            })),
-          );
-          const settledDetails = await Promise.allSettled(detailPromises);
-
-          const fulfilledDetails = settledDetails
-            .filter((result) => result.status === "fulfilled")
-            .map(
-              (result) =>
-                (
-                  result as PromiseFulfilledResult<TickerVectorWithEuclideanDistance>
-                ).value,
-            );
-
-          setTickerDetails(fulfilledDetails);
-        })
-        .catch((error) => {
-          customLogger.error("Error fetching closest tickers:", error);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-    }
-  }, [tickerId]);
+  const { isLoadingEuclidean: isLoading } = useTickerVectorQuery({
+    queryMode,
+    query,
+  });
 
   if (isLoading) {
     return (
