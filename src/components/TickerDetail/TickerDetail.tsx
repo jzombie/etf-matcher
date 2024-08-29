@@ -7,6 +7,7 @@ import store from "@src/store";
 import type { RustServiceETFAggregateDetail } from "@src/types";
 
 import LazyRender from "@components/LazyRender";
+import TickerVectorTable from "@components/VectorSimilarityTable";
 
 import useTickerDetail from "@hooks/useTickerDetail";
 
@@ -20,7 +21,6 @@ import FinancialChartsGrid from "./TickerDetail.FinancialChartsGrid";
 import TickerDetailHeader from "./TickerDetail.Header";
 import HistoricalPriceChart from "./TickerDetail.HistoricalPriceChart";
 import PCAScatterPlot from "./TickerDetail.PCAScatterPlot";
-import TickerVectorTable from "./TickerDetail.TickerVectorTable";
 
 export type TickerDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerId: number;

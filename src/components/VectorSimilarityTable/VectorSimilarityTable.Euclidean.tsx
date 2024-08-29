@@ -22,20 +22,21 @@ import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
 import customLogger from "@utils/customLogger";
 
-export type TickerVectorWithCosineSimilarityScore = RustServiceTickerDetail & {
-  cosineSimilarityScore: number;
+// TODO: Rename
+export type TickerVectorWithEuclideanDistance = RustServiceTickerDetail & {
+  distance: number;
 };
 
-export type TickerVectorTableCosineProps = {
+export type VectorSimilarityTableEuclideanProps = {
   tickerId: number;
 };
 
-export default function TickerVectorTableCosine({
+export default function VectorSimilarityTableEuclidean({
   tickerId,
-}: TickerVectorTableCosineProps) {
+}: VectorSimilarityTableEuclideanProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [tickerDetails, setTickerDetails] = useState<
-    TickerVectorWithCosineSimilarityScore[] | null
+    TickerVectorWithEuclideanDistance[] | null
   >(null);
 
   const navigateToSymbol = useTickerSymbolNavigation();
@@ -51,13 +52,14 @@ export default function TickerVectorTableCosine({
     if (tickerId) {
       setIsLoading(true);
 
+      // TODO: Fetch based on query mode
       store
-        .fetchRankedTickersByCosineSimilarity(tickerId)
-        .then(async (similarTickers) => {
-          const detailPromises = similarTickers.map((item) =>
+        .fetchClosestTickers(tickerId)
+        .then(async (closestTickers) => {
+          const detailPromises = closestTickers.map((item) =>
             store.fetchTickerDetail(item.ticker_id).then((detail) => ({
               ...detail,
-              cosineSimilarityScore: item.similarity_score,
+              distance: item.distance,
             })),
           );
           const settledDetails = await Promise.allSettled(detailPromises);
@@ -67,14 +69,14 @@ export default function TickerVectorTableCosine({
             .map(
               (result) =>
                 (
-                  result as PromiseFulfilledResult<TickerVectorWithCosineSimilarityScore>
+                  result as PromiseFulfilledResult<TickerVectorWithEuclideanDistance>
                 ).value,
             );
 
           setTickerDetails(fulfilledDetails);
         })
         .catch((error) => {
-          customLogger.error("Error fetching similar tickers:", error);
+          customLogger.error("Error fetching closest tickers:", error);
         })
         .finally(() => {
           setIsLoading(false);
@@ -110,7 +112,7 @@ export default function TickerVectorTableCosine({
               Held in ETF
             </TableCell>
             <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
-              Cosine Similarity
+              Euclidean Distance
             </TableCell>
           </TableRow>
         </TableHead>
@@ -143,7 +145,7 @@ export default function TickerVectorTableCosine({
                   {detail.is_held_in_etf ? "Yes" : "No"}
                 </TableCell>
                 <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
-                  {detail.cosineSimilarityScore.toFixed(2)}{" "}
+                  {detail.distance.toFixed(2)}{" "}
                 </TableCell>
               </TableRow>
             ))

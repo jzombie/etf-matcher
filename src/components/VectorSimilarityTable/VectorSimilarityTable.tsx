@@ -14,16 +14,17 @@ import { RustServiceTickerDetail } from "@src/types";
 
 import Transition from "@components/Transition";
 
-import Cosine from "./TickerDetail.TickerVectorTable.Cosine";
-import Euclidean from "./TickerDetail.TickerVectorTable.Euclidean";
+import Cosine from "./VectorSimilarityTable.Cosine";
+import Euclidean from "./VectorSimilarityTable.Euclidean";
 
-export type TickerVectorTableProps = {
+export type VectorSimiliartyTableProps = {
   tickerDetail: RustServiceTickerDetail;
+  // queryMode: "ticker" | "bucket";
 };
 
-export default function TickerVectorTable({
+export default function VectorSimilarityTable({
   tickerDetail,
-}: TickerVectorTableProps) {
+}: VectorSimiliartyTableProps) {
   const tickerId = tickerDetail.ticker_id;
 
   const [alignment, setAlignment] = useState<"euclidean" | "cosine">(
