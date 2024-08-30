@@ -26,10 +26,16 @@ export default function useTickerVectorQuery({
   query,
 }: TickerVectorQueryProps) {
   const [isLoadingEuclidean, _setIsLoadingEuclidean] = useState(false);
-  const [errorEuclidean, _setErrorEuclidean] = useState(null);
+  const [resultsEuclidean, _setResultsEuclidean] = useState<
+    TickerVectorWithEuclideanDistance[]
+  >([]);
+  const [errorEuclidean, _setErrorEuclidean] = useState<string | null>(null);
 
   const [isLoadingCosine, _setIsLoadingCosine] = useState(false);
-  const [errorCosine, _setErrorCosine] = useState(null);
+  const [resultsCosine, _setResultsCosine] = useState<
+    TickerVectorWithCosineSimilarityScore[]
+  >([]);
+  const [errorCosine, _setErrorCosine] = useState<string | null>(null);
 
   const queryName = useMemo(() => {
     switch (queryMode) {
@@ -71,7 +77,7 @@ export default function useTickerVectorQuery({
                 ).value,
             );
 
-          _setErrorEuclidean(fulfilledDetails);
+          _setResultsEuclidean(fulfilledDetails);
         })
         .catch((error) => {
           customLogger.error("Error fetching closest tickers:", error);
@@ -112,7 +118,7 @@ export default function useTickerVectorQuery({
                 ).value,
             );
 
-          _setErrorCosine(fulfilledDetails);
+          _setResultsCosine(fulfilledDetails);
         })
         .catch((error) => {
           customLogger.error("Error fetching similar tickers:", error);
@@ -129,11 +135,15 @@ export default function useTickerVectorQuery({
 
   return {
     queryName,
+    //
     fetchEuclidean,
-    fetchCosine,
     isLoadingEuclidean,
+    resultsEuclidean,
     errorEuclidean,
+    //
+    fetchCosine,
     isLoadingCosine,
+    resultsCosine,
     errorCosine,
   };
 }

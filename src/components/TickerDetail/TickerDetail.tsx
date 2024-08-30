@@ -102,7 +102,7 @@ export default function TickerDetail({
           <TickerDetailBucketManager tickerDetail={tickerDetail} />
         </Box>
 
-        <TickerVectorTable tickerDetail={tickerDetail} />
+        <TickerVectorTable queryMode={"ticker-detail"} query={tickerDetail} />
 
         <FinancialChartsGrid tickerDetail={tickerDetail} />
 

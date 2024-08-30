@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import {
   CircularProgress,
@@ -40,10 +40,21 @@ export default function TickerVectorQueryTableCosine({
     [navigateToSymbol],
   );
 
-  const { isLoadingCosine: isLoading } = useTickerVectorQuery({
+  const {
+    isLoadingCosine: isLoading,
+    resultsCosine: tickerDetails,
+    fetchCosine,
+  } = useTickerVectorQuery({
     queryMode,
     query,
   });
+
+  // Auto-fetch
+  useEffect(() => {
+    if (query && fetchCosine) {
+      fetchCosine();
+    }
+  }, [fetchCosine, query]);
 
   if (isLoading) {
     return (

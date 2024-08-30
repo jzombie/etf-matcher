@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import {
   CircularProgress,
@@ -40,10 +40,21 @@ export default function TickerVectorQueryTableEuclidean({
     [navigateToSymbol],
   );
 
-  const { isLoadingEuclidean: isLoading } = useTickerVectorQuery({
+  const {
+    isLoadingEuclidean: isLoading,
+    fetchEuclidean,
+    resultsEuclidean: tickerDetails,
+  } = useTickerVectorQuery({
     queryMode,
     query,
   });
+
+  // Auto-fetch
+  useEffect(() => {
+    if (query && fetchEuclidean) {
+      fetchEuclidean();
+    }
+  }, [fetchEuclidean, query]);
 
   if (isLoading) {
     return (
