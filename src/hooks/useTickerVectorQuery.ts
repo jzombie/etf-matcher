@@ -51,85 +51,92 @@ export default function useTickerVectorQuery({
   }, [queryMode, query]);
 
   const fetchEuclidean = useCallback(() => {
-    // TODO: Fetch based on query mode
-    if (queryMode === "ticker-detail") {
-      _setIsLoadingEuclidean(true);
+    switch (queryMode) {
+      case "ticker-detail":
+        return (() => {
+          _setIsLoadingEuclidean(true);
 
-      const tickerId = (query as RustServiceTickerDetail).ticker_id;
+          const tickerId = (query as RustServiceTickerDetail).ticker_id;
 
-      store
-        .fetchClosestTickers(tickerId)
-        .then(async (closestTickers) => {
-          const detailPromises = closestTickers.map((item) =>
-            store.fetchTickerDetail(item.ticker_id).then((detail) => ({
-              ...detail,
-              distance: item.distance,
-            })),
-          );
-          const settledDetails = await Promise.allSettled(detailPromises);
+          store
+            .fetchClosestTickers(tickerId)
+            .then(async (closestTickers) => {
+              const detailPromises = closestTickers.map((item) =>
+                store.fetchTickerDetail(item.ticker_id).then((detail) => ({
+                  ...detail,
+                  distance: item.distance,
+                })),
+              );
+              const settledDetails = await Promise.allSettled(detailPromises);
 
-          const fulfilledDetails = settledDetails
-            .filter((result) => result.status === "fulfilled")
-            .map(
-              (result) =>
-                (
-                  result as PromiseFulfilledResult<TickerVectorWithEuclideanDistance>
-                ).value,
-            );
+              const fulfilledDetails = settledDetails
+                .filter((result) => result.status === "fulfilled")
+                .map(
+                  (result) =>
+                    (
+                      result as PromiseFulfilledResult<TickerVectorWithEuclideanDistance>
+                    ).value,
+                );
 
-          _setResultsEuclidean(fulfilledDetails);
-        })
-        .catch((error) => {
-          customLogger.error("Error fetching closest tickers:", error);
+              _setResultsEuclidean(fulfilledDetails);
+            })
+            .catch((error) => {
+              customLogger.error("Error fetching closest tickers:", error);
 
-          _setErrorEuclidean("Error fetching closest tickers");
-        })
-        .finally(() => {
-          _setIsLoadingEuclidean(false);
-        });
-    } else {
-      throw new Error("TODO: Handle bucket Euclidean query");
+              _setErrorEuclidean("Error fetching closest tickers");
+            })
+            .finally(() => {
+              _setIsLoadingEuclidean(false);
+            });
+        })();
+
+      default:
+        throw new Error(`Unhanded queryMode: ${queryMode}`);
     }
   }, [queryMode, query]);
 
   const fetchCosine = useCallback(() => {
-    if (queryMode === "ticker-detail") {
-      _setIsLoadingCosine(true);
+    switch (queryMode) {
+      case "ticker-detail":
+        return (() => {
+          _setIsLoadingCosine(true);
 
-      const tickerId = (query as RustServiceTickerDetail).ticker_id;
+          const tickerId = (query as RustServiceTickerDetail).ticker_id;
 
-      store
-        .fetchRankedTickersByCosineSimilarity(tickerId)
-        .then(async (similarTickers) => {
-          const detailPromises = similarTickers.map((item) =>
-            store.fetchTickerDetail(item.ticker_id).then((detail) => ({
-              ...detail,
-              cosineSimilarityScore: item.similarity_score,
-            })),
-          );
-          const settledDetails = await Promise.allSettled(detailPromises);
+          store
+            .fetchRankedTickersByCosineSimilarity(tickerId)
+            .then(async (similarTickers) => {
+              const detailPromises = similarTickers.map((item) =>
+                store.fetchTickerDetail(item.ticker_id).then((detail) => ({
+                  ...detail,
+                  cosineSimilarityScore: item.similarity_score,
+                })),
+              );
+              const settledDetails = await Promise.allSettled(detailPromises);
 
-          const fulfilledDetails = settledDetails
-            .filter((result) => result.status === "fulfilled")
-            .map(
-              (result) =>
-                (
-                  result as PromiseFulfilledResult<TickerVectorWithCosineSimilarityScore>
-                ).value,
-            );
+              const fulfilledDetails = settledDetails
+                .filter((result) => result.status === "fulfilled")
+                .map(
+                  (result) =>
+                    (
+                      result as PromiseFulfilledResult<TickerVectorWithCosineSimilarityScore>
+                    ).value,
+                );
 
-          _setResultsCosine(fulfilledDetails);
-        })
-        .catch((error) => {
-          customLogger.error("Error fetching similar tickers:", error);
+              _setResultsCosine(fulfilledDetails);
+            })
+            .catch((error) => {
+              customLogger.error("Error fetching similar tickers:", error);
 
-          _setErrorCosine("Error fetching similar tickers");
-        })
-        .finally(() => {
-          _setIsLoadingCosine(false);
-        });
-    } else {
-      throw new Error("TODO: Handle bucket Cosine query");
+              _setErrorCosine("Error fetching similar tickers");
+            })
+            .finally(() => {
+              _setIsLoadingCosine(false);
+            });
+        })();
+
+      default:
+        throw new Error(`Unhanded queryMode: ${queryMode}`);
     }
   }, [queryMode, query]);
 
