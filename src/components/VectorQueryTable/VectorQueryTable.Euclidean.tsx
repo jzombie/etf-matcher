@@ -22,15 +22,15 @@ import useTickerVectorQuery, {
   TickerVectorQueryProps,
 } from "@hooks/useTickerVectorQuery";
 
-export type VectorSimilarityTableCosineProps = {
+export type VectorQueryTableEuclideanProps = {
   queryMode: TickerVectorQueryProps["queryMode"];
   query: TickerVectorQueryProps["query"];
 };
 
-export default function VectorSimilarityTableCosine({
+export default function VectorQueryTableEuclidean({
   queryMode,
   query,
-}: VectorSimilarityTableCosineProps) {
+}: VectorQueryTableEuclideanProps) {
   const navigateToSymbol = useTickerSymbolNavigation();
 
   const handleRowClick = useCallback(
@@ -40,7 +40,7 @@ export default function VectorSimilarityTableCosine({
     [navigateToSymbol],
   );
 
-  const { isLoadingCosine: isLoading } = useTickerVectorQuery({
+  const { isLoadingEuclidean: isLoading } = useTickerVectorQuery({
     queryMode,
     query,
   });
@@ -73,7 +73,7 @@ export default function VectorSimilarityTableCosine({
               Held in ETF
             </TableCell>
             <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
-              Cosine Similarity
+              Euclidean Distance
             </TableCell>
           </TableRow>
         </TableHead>
@@ -106,7 +106,7 @@ export default function VectorSimilarityTableCosine({
                   {detail.is_held_in_etf ? "Yes" : "No"}
                 </TableCell>
                 <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
-                  {detail.cosineSimilarityScore.toFixed(2)}{" "}
+                  {detail.distance.toFixed(2)}{" "}
                 </TableCell>
               </TableRow>
             ))

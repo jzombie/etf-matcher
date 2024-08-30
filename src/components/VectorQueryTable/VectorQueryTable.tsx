@@ -17,15 +17,15 @@ import useTickerVectorQuery, {
   TickerVectorQueryProps,
 } from "@hooks/useTickerVectorQuery";
 
-import Cosine from "./VectorSimilarityTable.Cosine";
-import Euclidean from "./VectorSimilarityTable.Euclidean";
+import Cosine from "./VectorQueryTable.Cosine";
+import Euclidean from "./VectorQueryTable.Euclidean";
 
 export type VectorSimiliartyTableProps = {
   queryMode: TickerVectorQueryProps["queryMode"];
   query: TickerVectorQueryProps["query"];
 };
 
-export default function VectorSimilarityTable({
+export default function VectorQueryTable({
   queryMode,
   query,
 }: VectorSimiliartyTableProps) {

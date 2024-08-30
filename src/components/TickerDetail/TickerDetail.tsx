@@ -7,7 +7,7 @@ import store from "@src/store";
 import type { RustServiceETFAggregateDetail } from "@src/types";
 
 import LazyRender from "@components/LazyRender";
-import TickerVectorTable from "@components/VectorSimilarityTable";
+import TickerVectorTable from "@components/VectorQueryTable";
 
 import useTickerDetail from "@hooks/useTickerDetail";
 
