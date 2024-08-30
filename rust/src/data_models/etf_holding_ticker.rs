@@ -61,19 +61,28 @@ impl ETFHoldingTicker {
         // Retrieve additional information for each holding
         let mut detailed_holdings = Vec::with_capacity(etf_holdings.len());
         for holding in etf_holdings {
-            let ticker_detail = TickerDetail::get_ticker_detail(holding.holding_ticker_id).await?;
-
-            detailed_holdings.push(ETFHoldingTickerResponse {
-                holding_ticker_id: holding.holding_ticker_id,
-                holding_symbol: ticker_detail.symbol,
-                holding_market_value: holding.holding_market_value,
-                holding_percentage: holding.holding_percentage,
-                company_name: Some(ticker_detail.company_name),
-                industry_name: ticker_detail.industry_name,
-                sector_name: ticker_detail.sector_name,
-                logo_filename: ticker_detail.logo_filename,
-                is_etf: ticker_detail.is_etf,
-            });
+            match TickerDetail::get_ticker_detail(holding.holding_ticker_id).await {
+                Ok(ticker_detail) => {
+                    detailed_holdings.push(ETFHoldingTickerResponse {
+                        holding_ticker_id: holding.holding_ticker_id,
+                        holding_symbol: ticker_detail.symbol,
+                        holding_market_value: holding.holding_market_value,
+                        holding_percentage: holding.holding_percentage,
+                        company_name: Some(ticker_detail.company_name),
+                        industry_name: ticker_detail.industry_name,
+                        sector_name: ticker_detail.sector_name,
+                        logo_filename: ticker_detail.logo_filename,
+                        is_etf: ticker_detail.is_etf,
+                    });
+                }
+                Err(e) => {
+                    web_sys::console::error_1(&JsValue::from_str(&format!(
+                        "Failed to get ticker detail for holding_ticker_id (via get_etf_holdings_by_etf_ticker_id): {}. Error: {:?}",
+                        holding.holding_ticker_id, e
+                    )));
+                    continue; // Skip to the next iteration
+                }
+            }
         }
 
         // Paginate the results
