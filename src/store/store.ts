@@ -14,7 +14,6 @@ import {
 } from "@utils/StateEmitter";
 import type {
   RustServiceCacheDetail,
-  RustServiceCosineSimilarityResult,
   RustServiceDataBuildInfo,
   RustServiceETFAggregateDetail,
   RustServiceETFHoldingTickerResponse,
@@ -23,7 +22,6 @@ import type {
   RustServicePaginatedResults,
   RustServiceTicker10KDetail,
   RustServiceTickerDetail,
-  RustServiceTickerDistance,
   RustServiceTickerSearchResult,
 } from "@utils/callRustService";
 import { clearCache, removeCacheEntry } from "@utils/callRustService";
