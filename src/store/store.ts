@@ -28,6 +28,7 @@ import {
   clearCache,
   fetchCacheDetails,
   fetchCacheSize,
+  fetchTickerId,
   removeCacheEntry,
 } from "@utils/callRustService";
 import callRustService, {
@@ -207,7 +208,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     const results = await Promise.allSettled(
       DEFAULT_TICKER_TAPE_TICKERS.map((ticker) =>
-        this.fetchTickerId(ticker.symbol, ticker.exchangeShortName),
+        fetchTickerId(ticker.symbol, ticker.exchangeShortName),
       ),
     );
 
@@ -429,16 +430,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     this.registerDispose(() => {
       this.off(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
     });
-  }
-
-  async fetchTickerId(
-    tickerSymbol: string,
-    exchangeShortName: string,
-  ): Promise<number> {
-    return callRustService<number>("get_ticker_id", [
-      tickerSymbol,
-      exchangeShortName,
-    ]);
   }
 
   /**

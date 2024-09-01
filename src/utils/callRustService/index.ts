@@ -13,6 +13,7 @@ import {
   fetchEuclideanByTicker,
   fetchEuclideanByTickerBucket,
 } from "./lib/fetchEuclidean";
+import fetchTickerId from "./lib/fetchTickerId";
 import type {
   RustServiceCacheDetail,
   RustServiceCosineSimilarityResult,
@@ -57,4 +58,5 @@ export {
   fetchEuclideanByTickerBucket,
   fetchCacheSize,
   fetchCacheDetails,
+  fetchTickerId,
 };
