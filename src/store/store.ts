@@ -15,7 +15,6 @@ import {
 import type {
   RustServiceCacheDetail,
   RustServiceETFAggregateDetail,
-  RustServiceTicker10KDetail,
 } from "@utils/callRustService";
 import {
   clearCache,
@@ -469,15 +468,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         dataBuildTime: dataBuildInfo.time,
       });
     });
-  }
-
-  async fetchTicker10KDetail(
-    tickerId: number,
-  ): Promise<RustServiceTicker10KDetail> {
-    return callRustService<RustServiceTicker10KDetail>(
-      "get_ticker_10k_detail",
-      [tickerId],
-    );
   }
 
   async fetchETFAggregateDetailByTickerId(

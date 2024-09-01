@@ -6,6 +6,7 @@ import type {
   RustServiceETFAggregateDetail,
   RustServiceTicker10KDetail,
 } from "@utils/callRustService";
+import { fetchTicker10KDetail } from "@utils/callRustService";
 
 import useStableCurrentRef from "./useStableCurrentRef";
 
@@ -32,7 +33,7 @@ export default function useTicker10KDetail(
         try {
           const result = isETF
             ? await store.fetchETFAggregateDetailByTickerId(tickerId)
-            : await store.fetchTicker10KDetail(tickerId);
+            : await fetchTicker10KDetail(tickerId);
 
           setDetail(result);
 
