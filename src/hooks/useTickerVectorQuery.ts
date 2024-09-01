@@ -5,6 +5,7 @@ import type { TickerBucket } from "@src/store";
 import type {
   RustServiceCosineSimilarityResult,
   RustServiceTickerDetail,
+  RustServiceTickerDistance,
 } from "@src/types";
 
 import customLogger from "@utils/customLogger";
@@ -55,11 +56,11 @@ export default function useTickerVectorQuery({
 
   // Utility function to handle common fetching logic
   const _fetchData = useCallback(
-    async <T, R>(
+    async <T, R, M>(
       fetchFunction: (id: T) => Promise<R[]>,
-      mapFunction: (item: R) => Promise<any>,
+      mapFunction: (item: R) => Promise<M>,
       setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-      setResults: React.Dispatch<React.SetStateAction<any[]>>,
+      setResults: React.Dispatch<React.SetStateAction<M[]>>,
       setError: React.Dispatch<React.SetStateAction<string | null>>,
       id: T,
     ) => {
@@ -70,8 +71,11 @@ export default function useTickerVectorQuery({
         const settledDetails = await Promise.allSettled(detailPromises);
 
         const fulfilledDetails = settledDetails
-          .filter((result) => result.status === "fulfilled")
-          .map((result) => (result as PromiseFulfilledResult<any>).value);
+          .filter(
+            (result): result is PromiseFulfilledResult<Awaited<M>> =>
+              result.status === "fulfilled",
+          )
+          .map((result) => result.value);
 
         setResults(fulfilledDetails);
       } catch (error) {
@@ -85,55 +89,75 @@ export default function useTickerVectorQuery({
   );
 
   const fetchEuclidean = useCallback(() => {
-    const fetchFn =
-      queryMode === "ticker-detail"
-        ? store.fetchClosestTickers
-        : store.fetchClosestTickersByQuantity;
+    if (queryMode === "ticker-detail") {
+      const fetchFn = store.fetchClosestTickers;
+      const mapFn = async (item: RustServiceTickerDistance) => {
+        const detail = await store.fetchTickerDetail(item.ticker_id);
+        return { ...detail, distance: item.distance };
+      };
+      const id = (query as RustServiceTickerDetail).ticker_id;
 
-    const mapFn = async (item: TickerVectorWithEuclideanDistance) => {
-      const detail = await store.fetchTickerDetail(item.ticker_id);
-      return { ...detail, distance: item.distance };
-    };
+      _fetchData(
+        fetchFn,
+        mapFn,
+        _setIsLoadingEuclidean,
+        _setResultsEuclidean,
+        _setErrorEuclidean,
+        id,
+      );
+    } else {
+      const fetchFn = store.fetchClosestTickersByQuantity;
+      const mapFn = async (item: RustServiceTickerDistance) => {
+        const detail = await store.fetchTickerDetail(item.ticker_id);
+        return { ...detail, distance: item.distance };
+      };
+      const id = query as TickerBucket;
 
-    const id =
-      queryMode === "ticker-detail"
-        ? (query as RustServiceTickerDetail).ticker_id
-        : (query as TickerBucket);
-
-    _fetchData(
-      fetchFn,
-      mapFn,
-      _setIsLoadingEuclidean,
-      _setResultsEuclidean,
-      _setErrorEuclidean,
-      id,
-    );
+      _fetchData(
+        fetchFn,
+        mapFn,
+        _setIsLoadingEuclidean,
+        _setResultsEuclidean,
+        _setErrorEuclidean,
+        id,
+      );
+    }
   }, [queryMode, query, _fetchData]);
 
   const fetchCosine = useCallback(() => {
-    const fetchFn =
-      queryMode === "ticker-detail"
-        ? store.fetchRankedTickersByCosineSimilarity
-        : store.fetchRankedTickersByQuantityCosineSimilarity;
+    if (queryMode === "ticker-detail") {
+      const fetchFn = store.fetchRankedTickersByCosineSimilarity;
+      const mapFn = async (item: RustServiceCosineSimilarityResult) => {
+        const detail = await store.fetchTickerDetail(item.ticker_id);
+        return { ...detail, cosineSimilarityScore: item.similarity_score };
+      };
+      const id = (query as RustServiceTickerDetail).ticker_id;
 
-    const mapFn = async (item: RustServiceCosineSimilarityResult) => {
-      const detail = await store.fetchTickerDetail(item.ticker_id);
-      return { ...detail, cosineSimilarityScore: item.similarity_score };
-    };
+      _fetchData(
+        fetchFn,
+        mapFn,
+        _setIsLoadingCosine,
+        _setResultsCosine,
+        _setErrorCosine,
+        id,
+      );
+    } else {
+      const fetchFn = store.fetchRankedTickersByQuantityCosineSimilarity;
+      const mapFn = async (item: RustServiceCosineSimilarityResult) => {
+        const detail = await store.fetchTickerDetail(item.ticker_id);
+        return { ...detail, cosineSimilarityScore: item.similarity_score };
+      };
+      const id = query as TickerBucket;
 
-    const id =
-      queryMode === "ticker-detail"
-        ? (query as RustServiceTickerDetail).ticker_id
-        : (query as TickerBucket);
-
-    _fetchData(
-      fetchFn,
-      mapFn,
-      _setIsLoadingCosine,
-      _setResultsCosine,
-      _setErrorCosine,
-      id,
-    );
+      _fetchData(
+        fetchFn,
+        mapFn,
+        _setIsLoadingCosine,
+        _setResultsCosine,
+        _setErrorCosine,
+        id,
+      );
+    }
   }, [queryMode, query, _fetchData]);
 
   return {
