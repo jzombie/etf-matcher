@@ -21,6 +21,7 @@ import {
   fetchEuclideanByTickerBucket,
 } from "./lib/fetchEuclidean";
 import fetchImageInfo from "./lib/fetchImageInfo";
+import fetchTickerDetail from "./lib/fetchTickerDetail";
 import fetchTickerId from "./lib/fetchTickerId";
 import generateQRCode from "./lib/generateQRCode";
 import searchTickers from "./lib/searchTickers";
@@ -77,4 +78,5 @@ export {
   fetchETFHoldingsByETFTickerId,
   fetchETFHoldingWeight,
   fetchETFHoldersAggregateDetailByTickerId,
+  fetchTickerDetail,
 };

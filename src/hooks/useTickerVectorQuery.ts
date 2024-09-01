@@ -13,6 +13,7 @@ import {
   fetchCosineByTickerBucket,
   fetchEuclideanByTicker,
   fetchEuclideanByTickerBucket,
+  fetchTickerDetail,
 } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
@@ -96,7 +97,7 @@ export default function useTickerVectorQuery({
 
   const fetchEuclidean = useCallback(() => {
     const mapFn = async (item: RustServiceTickerDistance) => {
-      const detail = await store.fetchTickerDetail(item.ticker_id);
+      const detail = await fetchTickerDetail(item.ticker_id);
       return { ...detail, distance: item.distance };
     };
 
@@ -129,7 +130,7 @@ export default function useTickerVectorQuery({
 
   const fetchCosine = useCallback(() => {
     const mapFn = async (item: RustServiceCosineSimilarityResult) => {
-      const detail = await store.fetchTickerDetail(item.ticker_id);
+      const detail = await fetchTickerDetail(item.ticker_id);
       return { ...detail, cosineSimilarityScore: item.similarity_score };
     };
 

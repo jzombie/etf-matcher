@@ -16,13 +16,13 @@ import type {
   RustServiceCacheDetail,
   RustServiceETFAggregateDetail,
   RustServiceTicker10KDetail,
-  RustServiceTickerDetail,
 } from "@utils/callRustService";
 import {
   clearCache,
   fetchCacheDetails,
   fetchCacheSize,
   fetchDataBuildInfo,
+  fetchTickerDetail,
   fetchTickerId,
   preloadSearchCache,
   removeCacheEntry,
@@ -471,12 +471,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     });
   }
 
-  async fetchTickerDetail(tickerId: number): Promise<RustServiceTickerDetail> {
-    return callRustService<RustServiceTickerDetail>("get_ticker_detail", [
-      tickerId,
-    ]);
-  }
-
   async fetchTicker10KDetail(
     tickerId: number,
   ): Promise<RustServiceTicker10KDetail> {
@@ -669,7 +663,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   private async _addRecentlyViewedTicker(tickerId: number) {
-    const tickerDetail = await this.fetchTickerDetail(tickerId);
+    const tickerDetail = await fetchTickerDetail(tickerId);
     const tickerBucketTicker: TickerBucketTicker = {
       tickerId,
       symbol: tickerDetail.symbol,

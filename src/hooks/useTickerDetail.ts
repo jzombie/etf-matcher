@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 
-import store from "@src/store";
-
 import type { RustServiceTickerDetail } from "@utils/callRustService";
+import { fetchTickerDetail } from "@utils/callRustService";
 
 import useStableCurrentRef from "./useStableCurrentRef";
 
@@ -28,8 +27,7 @@ export default function useTickerDetail(
 
       setIsLoadingTickerDetail(true);
 
-      store
-        .fetchTickerDetail(tickerId)
+      fetchTickerDetail(tickerId)
         .then((tickerDetail) => {
           setTickerDetail(tickerDetail);
 
