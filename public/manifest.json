@@ -1,7 +1,7 @@
 {
   "name": "ETF Matcher",
   "short_name": "ETF Matcher",
-  "description": "Customize a virtual portfolio with potential fractional shares and find ETFs that closely match your investment goals.",
+  "description": "Customize a virual portfolio and find ETFs that match your strategy, leveraging machine learning to analyze 10-K statements and financial disclosures for stocks and ETFs.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
