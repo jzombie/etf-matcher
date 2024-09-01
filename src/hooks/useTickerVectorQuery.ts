@@ -1,6 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
 
-import store from "@src/store";
 import type { TickerBucket } from "@src/store";
 
 import type {
