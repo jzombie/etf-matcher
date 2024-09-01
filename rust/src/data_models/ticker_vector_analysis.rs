@@ -14,7 +14,7 @@ pub struct TickerDistance {
     pub translated_pca_coords: Vec<f32>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct CosineSimilarityResult {
     pub ticker_id: TickerId,
     pub similarity_score: f32,
@@ -254,9 +254,14 @@ impl CosineSimilarityResult {
     }
 
     // TODO: Rename (subsequent PR)
-    pub async fn rank_tickers_by_custom_vector_cosine_similarity(
-        custom_vector: Vec<f32>,
+    pub async fn rank_tickers_by_quantity_cosine_similarity(
+        tickers_with_quantity: &Vec<TickerWithQuantity>,
     ) -> Result<Vec<CosineSimilarityResult>, String> {
+        // Generate the custom vector based on the quantities of the tickers
+        let custom_vector =
+            TickerWithQuantity::generate_bucket_vector(tickers_with_quantity).await?;
+
+        // Get all ticker vectors
         let owned_ticker_vectors = OwnedTickerVectors::get_all_ticker_vectors().await?;
         let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
@@ -268,7 +273,7 @@ impl CosineSimilarityResult {
                 ticker_vector.vector().map(|other_vector| {
                     let similarity = Self::cosine_similarity(
                         &custom_vector,
-                        &other_vector.iter().collect::<Vec<f32>>()[..],
+                        &other_vector.iter().collect::<Vec<f32>>(),
                     );
 
                     CosineSimilarityResult {

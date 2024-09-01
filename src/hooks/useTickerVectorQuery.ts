@@ -177,6 +177,44 @@ export default function useTickerVectorQuery({
             });
         })();
 
+      case "bucket":
+        return (() => {
+          _setIsLoadingCosine(true);
+
+          const tickerBucket = query as TickerBucket;
+
+          store
+            .fetchRankedTickersByQuantityCosineSimilarity(tickerBucket)
+            .then(async (similarTickers) => {
+              const detailPromises = similarTickers.map((item) =>
+                store.fetchTickerDetail(item.ticker_id).then((detail) => ({
+                  ...detail,
+                  cosineSimilarityScore: item.similarity_score,
+                })),
+              );
+              const settledDetails = await Promise.allSettled(detailPromises);
+
+              const fulfilledDetails = settledDetails
+                .filter((result) => result.status === "fulfilled")
+                .map(
+                  (result) =>
+                    (
+                      result as PromiseFulfilledResult<TickerVectorWithCosineSimilarityScore>
+                    ).value,
+                );
+
+              _setResultsCosine(fulfilledDetails);
+            })
+            .catch((error) => {
+              customLogger.error("Error fetching similar tickers:", error);
+
+              _setErrorCosine("Error fetching similar tickers");
+            })
+            .finally(() => {
+              _setIsLoadingCosine(false);
+            });
+        })();
+
       default:
         throw new Error(`Unhanded queryMode: ${queryMode}`);
     }

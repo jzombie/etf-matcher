@@ -30,6 +30,7 @@ import callRustService, {
   NotifierEvent,
   subscribe as libRustServiceSubscribe,
 } from "@utils/callRustService";
+// TODO: Move `callRustService` methods out of store
 import customLogger from "@utils/customLogger";
 import debounceWithKey from "@utils/debounceWithKey";
 
@@ -799,6 +800,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   async fetchClosestTickersByQuantity(
     tickerBucket: TickerBucket,
   ): Promise<RustServiceTickerDistance[]> {
+    // TODO: Make this a helper method (see duplicate usage)
     // TODO: Define Rust translation type
     const rustServiceTickersWithQuantity = tickerBucket.tickers.map(
       (ticker) => ({
@@ -826,14 +828,33 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return closestTickers;
   }
 
-  async fetchRankedTickersByCosineSimilarity(tickerId: number) {
+  // TODO: Rename?
+  async fetchRankedTickersByCosineSimilarity(
+    tickerId: number,
+  ): Promise<RustServiceCosineSimilarityResult[]> {
     return callRustService<RustServiceCosineSimilarityResult[]>(
       "rank_tickers_by_cosine_similarity",
       [tickerId],
     );
   }
 
-  // TODO: Add method to retrieve cosine-ranked tickers by quantity
+  // TODO: Rename
+  async fetchRankedTickersByQuantityCosineSimilarity(
+    tickerBucket: TickerBucket,
+  ): Promise<RustServiceCosineSimilarityResult[]> {
+    // TODO: Make this a helper method (see duplicate usage)
+    // TODO: Define Rust translation type
+    const rustServiceTickersWithQuantity = tickerBucket.tickers.map(
+      (ticker) => ({
+        ticker_id: ticker.tickerId,
+        quantity: ticker.quantity,
+      }),
+    );
+
+    return callRustService("rank_tickers_by_quantity_cosine_similarity", [
+      rustServiceTickersWithQuantity,
+    ]);
+  }
 
   async removeCacheEntry(key: string): Promise<void> {
     await callRustService("remove_cache_entry", [key]);
