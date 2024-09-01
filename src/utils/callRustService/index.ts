@@ -7,6 +7,7 @@ import {
   removeCacheEntry,
 } from "./lib/cache";
 import {
+  fetchETFHoldersAggregateDetailByTickerId,
   fetchETFHoldingWeight,
   fetchETFHoldingsByETFTickerId,
 } from "./lib/etfHoldings";
@@ -75,4 +76,5 @@ export {
   fetchImageInfo,
   fetchETFHoldingsByETFTickerId,
   fetchETFHoldingWeight,
+  fetchETFHoldersAggregateDetailByTickerId,
 };

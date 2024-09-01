@@ -15,7 +15,6 @@ import {
 import type {
   RustServiceCacheDetail,
   RustServiceETFAggregateDetail,
-  RustServicePaginatedResults,
   RustServiceTicker10KDetail,
   RustServiceTickerDetail,
 } from "@utils/callRustService";
@@ -470,20 +469,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         dataBuildTime: dataBuildInfo.time,
       });
     });
-  }
-
-  async fetchETFHoldersAggregateDetailByTickerId(
-    tickerId: number,
-    page: number = 1,
-    pageSize: number = 20,
-  ): Promise<RustServicePaginatedResults<RustServiceETFAggregateDetail>> {
-    return callRustService<
-      RustServicePaginatedResults<RustServiceETFAggregateDetail>
-    >("get_etf_holders_aggregate_detail_by_ticker_id", [
-      tickerId,
-      page,
-      pageSize,
-    ]);
   }
 
   async fetchTickerDetail(tickerId: number): Promise<RustServiceTickerDetail> {
