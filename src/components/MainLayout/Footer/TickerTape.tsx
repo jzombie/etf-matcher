@@ -9,6 +9,7 @@ import {
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
+import { fetchTickerDetail } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 import deepEqual from "@utils/deepEqual";
 
@@ -49,7 +50,7 @@ export default function TickerTape() {
       const tickers = tickerTapeBucket.tickers;
 
       Promise.all(
-        tickers.map((ticker) => store.fetchTickerDetail(ticker.tickerId)),
+        tickers.map((ticker) => fetchTickerDetail(ticker.tickerId)),
       ).then((tickerDetails) => {
         setTickerTapeSymbols(
           tickerDetails.map((tickerDetail) => ({

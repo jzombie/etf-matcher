@@ -40,7 +40,6 @@ describe("TickerQuantityFieldsItem", () => {
     expect(screen.getByText(/invalid number format/i)).toBeInTheDocument();
   });
 
-  // FIXME: Patch
   it("should call onDelete when the delete button is clicked if modifying existing item", () => {
     const onDelete = vi.fn();
 

@@ -10,21 +10,29 @@ import {
 } from "@mui/material";
 
 import Padding from "@layoutKit/Padding";
-import { RustServiceTickerDetail } from "@src/types";
 
 import Transition from "@components/Transition";
 
-import Cosine from "./TickerDetail.TickerVectorTable.Cosine";
-import Euclidean from "./TickerDetail.TickerVectorTable.Euclidean";
+import useTickerVectorQuery, {
+  TickerVectorQueryProps,
+} from "@hooks/useTickerVectorQuery";
 
-export type TickerVectorTableProps = {
-  tickerDetail: RustServiceTickerDetail;
+import Cosine from "./TickerVectorQueryTable.Cosine";
+import Euclidean from "./TickerVectorQueryTable.Euclidean";
+
+export type VectorSimiliartyTableProps = {
+  queryMode: TickerVectorQueryProps["queryMode"];
+  query: TickerVectorQueryProps["query"];
 };
 
-export default function TickerVectorTable({
-  tickerDetail,
-}: TickerVectorTableProps) {
-  const tickerId = tickerDetail.ticker_id;
+export default function TickerVectorQueryTable({
+  queryMode,
+  query,
+}: VectorSimiliartyTableProps) {
+  const { queryName } = useTickerVectorQuery({
+    queryMode,
+    query,
+  });
 
   const [alignment, setAlignment] = useState<"euclidean" | "cosine">(
     "euclidean",
@@ -43,7 +51,7 @@ export default function TickerVectorTable({
     <Padding>
       <Box sx={{ overflow: "auto" }}>
         <Typography variant="h6">
-          &quot;{tickerDetail.symbol}&quot; Similarity Matches
+          &quot;{queryName}&quot; Similarity Matches
         </Typography>
         <Typography variant="body2" color="textSecondary" fontStyle="italic">
           Note: Similarity matches are based on 10 years of financial data from
@@ -77,9 +85,9 @@ export default function TickerVectorTable({
         direction={alignment === "euclidean" ? "right" : "left"}
       >
         {alignment === "euclidean" ? (
-          <Euclidean tickerId={tickerId} />
+          <Euclidean queryMode={queryMode} query={query} />
         ) : (
-          <Cosine tickerId={tickerId} />
+          <Cosine queryMode={queryMode} query={query} />
         )}
       </Transition>
     </Padding>

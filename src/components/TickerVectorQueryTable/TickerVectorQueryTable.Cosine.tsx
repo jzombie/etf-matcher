@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import {
   CircularProgress,
@@ -13,31 +13,25 @@ import {
 } from "@mui/material";
 
 import Center from "@layoutKit/Center";
-import store from "@src/store";
-import type { RustServiceTickerDetail } from "@src/types";
 
 import AvatarLogo from "@components/AvatarLogo";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
+import useTickerVectorQuery, {
+  TickerVectorQueryProps,
+} from "@hooks/useTickerVectorQuery";
 
-import customLogger from "@utils/customLogger";
+import type { RustServiceTickerDetail } from "@utils/callRustService";
 
-export type TickerVectorWithCosineSimilarityScore = RustServiceTickerDetail & {
-  cosineSimilarityScore: number;
+export type TickerVectorQueryTableCosineProps = {
+  queryMode: TickerVectorQueryProps["queryMode"];
+  query: TickerVectorQueryProps["query"];
 };
 
-export type TickerVectorTableCosineProps = {
-  tickerId: number;
-};
-
-export default function TickerVectorTableCosine({
-  tickerId,
-}: TickerVectorTableCosineProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [tickerDetails, setTickerDetails] = useState<
-    TickerVectorWithCosineSimilarityScore[] | null
-  >(null);
-
+export default function TickerVectorQueryTableCosine({
+  queryMode,
+  query,
+}: TickerVectorQueryTableCosineProps) {
   const navigateToSymbol = useTickerSymbolNavigation();
 
   const handleRowClick = useCallback(
@@ -47,40 +41,21 @@ export default function TickerVectorTableCosine({
     [navigateToSymbol],
   );
 
+  const {
+    isLoadingCosine: isLoading,
+    resultsCosine: tickerDetails,
+    fetchCosine,
+  } = useTickerVectorQuery({
+    queryMode,
+    query,
+  });
+
+  // Auto-fetch
   useEffect(() => {
-    if (tickerId) {
-      setIsLoading(true);
-
-      store
-        .fetchRankedTickersByCosineSimilarity(tickerId)
-        .then(async (similarTickers) => {
-          const detailPromises = similarTickers.map((item) =>
-            store.fetchTickerDetail(item.ticker_id).then((detail) => ({
-              ...detail,
-              cosineSimilarityScore: item.similarity_score,
-            })),
-          );
-          const settledDetails = await Promise.allSettled(detailPromises);
-
-          const fulfilledDetails = settledDetails
-            .filter((result) => result.status === "fulfilled")
-            .map(
-              (result) =>
-                (
-                  result as PromiseFulfilledResult<TickerVectorWithCosineSimilarityScore>
-                ).value,
-            );
-
-          setTickerDetails(fulfilledDetails);
-        })
-        .catch((error) => {
-          customLogger.error("Error fetching similar tickers:", error);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+    if (query && fetchCosine) {
+      fetchCosine();
     }
-  }, [tickerId]);
+  }, [fetchCosine, query]);
 
   if (isLoading) {
     return (

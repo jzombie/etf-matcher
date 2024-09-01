@@ -6,7 +6,7 @@
 // import { Grid, IconButton, Paper, TextField, Typography } from "@mui/material";
 
 // import type { TickerBucketTicker } from "@src/store";
-// import { RustServiceTickerSearchResult } from "@src/types";
+// import { RustServiceTickerSearchResult } from "@utils/callRustService";
 
 // import AvatarLogo from "@components/AvatarLogo";
 

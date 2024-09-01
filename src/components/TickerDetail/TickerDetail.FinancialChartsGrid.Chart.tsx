@@ -6,10 +6,6 @@ import { Box, ButtonGroup, IconButton, Typography } from "@mui/material";
 
 import { DEFAULT_CURRENCY_CODE } from "@src/constants";
 import { COLOR_WHEEL_COLORS } from "@src/constants";
-import type {
-  RustServiceETFAggregateDetail,
-  RustServiceTicker10KDetail,
-} from "@src/types";
 import {
   Bar,
   BarChart,
@@ -22,6 +18,10 @@ import {
   YAxis,
 } from "recharts";
 
+import type {
+  RustServiceETFAggregateDetail,
+  RustServiceTicker10KDetail,
+} from "@utils/callRustService";
 import formatCurrency from "@utils/formatCurrency";
 
 // TODO: Refactor

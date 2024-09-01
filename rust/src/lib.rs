@@ -183,11 +183,14 @@ pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<Js
 }
 
 #[wasm_bindgen]
-pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<JsValue, JsValue> {
+pub async fn get_euclidean_by_ticker(ticker_id: TickerId) -> Result<JsValue, JsValue> {
     // Call the find_closest_tickers function from the ticker_vector_analysis module
-    let closest_tickers = ticker_vector_analysis::TickerDistance::find_closest_tickers(ticker_id)
-        .await
-        .map_err(|err| JsValue::from_str(&format!("Failed to find closest ticker IDs: {}", err)))?;
+    let closest_tickers =
+        ticker_vector_analysis::TickerDistance::get_euclidean_by_ticker(ticker_id)
+            .await
+            .map_err(|err| {
+                JsValue::from_str(&format!("Failed to find closest ticker IDs: {}", err))
+            })?;
 
     // Convert the results to JsValue
     let js_array = js_sys::Array::new();
@@ -238,19 +241,39 @@ pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<JsValue, JsValu
 }
 
 #[wasm_bindgen]
-pub async fn rank_tickers_by_cosine_similarity(ticker_id: TickerId) -> Result<JsValue, JsValue> {
-    // Call the rank_tickers_by_cosine_similarity function from the ticker_vector_analysis module
-    let similar_tickers =
-        ticker_vector_analysis::CosineSimilarityResult::rank_tickers_by_cosine_similarity(
-            ticker_id,
+pub async fn get_euclidean_by_ticker_bucket(
+    tickers_with_quantity: JsValue,
+) -> Result<JsValue, JsValue> {
+    // Deserialize the input JsValue into Rust Vec<TickerWithQuantity>
+    let tickers_with_quantity: Vec<TickerWithQuantity> =
+        serde_wasm_bindgen::from_value(tickers_with_quantity)
+            .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
+
+    // Find the closest tickers by quantity
+    let closest_tickers: Vec<ticker_vector_analysis::TickerDistance> =
+        ticker_vector_analysis::TickerDistance::get_euclidean_by_ticker_bucket(
+            &tickers_with_quantity,
         )
         .await
-        .map_err(|err| {
-            JsValue::from_str(&format!(
-                "Failed to rank tickers by cosine similarity: {}",
-                err
-            ))
-        })?;
+        .map_err(|err| JsValue::from_str(&err))?;
+
+    // Serialize the result back to JsValue
+    serde_wasm_bindgen::to_value(&closest_tickers)
+        .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
+}
+
+#[wasm_bindgen]
+pub async fn get_cosine_by_ticker(ticker_id: TickerId) -> Result<JsValue, JsValue> {
+    // Call the rank_tickers_by_cosine_similarity function from the ticker_vector_analysis module
+    let similar_tickers =
+        ticker_vector_analysis::CosineSimilarityResult::get_cosine_by_ticker(ticker_id)
+            .await
+            .map_err(|err| {
+                JsValue::from_str(&format!(
+                    "Failed to rank tickers by cosine similarity: {}",
+                    err
+                ))
+            })?;
 
     // Convert the results to JsValue
     let js_array = js_sys::Array::new();
@@ -277,6 +300,28 @@ pub async fn rank_tickers_by_cosine_similarity(ticker_id: TickerId) -> Result<Js
 }
 
 #[wasm_bindgen]
+pub async fn get_cosine_by_ticker_bucket(
+    tickers_with_quantity: JsValue,
+) -> Result<JsValue, JsValue> {
+    // Deserialize the input JsValue into Rust Vec<TickerWithQuantity>
+    let tickers_with_quantity: Vec<TickerWithQuantity> =
+        serde_wasm_bindgen::from_value(tickers_with_quantity)
+            .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
+
+    // Rank tickers by cosine similarity using the quantity
+    let ranked_tickers: Vec<ticker_vector_analysis::CosineSimilarityResult> =
+        ticker_vector_analysis::CosineSimilarityResult::get_cosine_by_ticker_bucket(
+            &tickers_with_quantity,
+        )
+        .await
+        .map_err(|err| JsValue::from_str(&err))?;
+
+    // Serialize the result back to JsValue
+    serde_wasm_bindgen::to_value(&ranked_tickers)
+        .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
+}
+
+#[wasm_bindgen]
 pub fn get_cache_size() -> usize {
     lib_get_cache_size()
 }
@@ -294,27 +339,4 @@ pub fn remove_cache_entry(key: &str) {
 #[wasm_bindgen]
 pub fn clear_cache() {
     lib_clear_cache();
-}
-
-// TODO: Rename as needed (subsequent PR)
-#[wasm_bindgen]
-pub async fn find_closest_tickers_by_quantity(
-    tickers_with_quantity: JsValue,
-) -> Result<JsValue, JsValue> {
-    // Deserialize the input JsValue into Rust Vec<TickerWithQuantity>
-    let tickers_with_quantity: Vec<TickerWithQuantity> =
-        serde_wasm_bindgen::from_value(tickers_with_quantity)
-            .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
-
-    // Find the closest tickers by quantity
-    let closest_tickers: Vec<ticker_vector_analysis::TickerDistance> =
-        ticker_vector_analysis::TickerWithQuantity::find_closest_tickers_by_quantity(
-            &tickers_with_quantity,
-        )
-        .await
-        .map_err(|err| JsValue::from_str(&err))?;
-
-    // Serialize the result back to JsValue
-    serde_wasm_bindgen::to_value(&closest_tickers)
-        .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
 }

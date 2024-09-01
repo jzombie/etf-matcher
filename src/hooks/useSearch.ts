@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import type { RustServiceTickerSearchResult } from "@src/types";
-
-import { store } from "@hooks/useStoreStateReader";
-
+import type { RustServiceTickerSearchResult } from "@utils/callRustService";
+import { searchTickers } from "@utils/callRustService";
 import debounceWithKey from "@utils/debounceWithKey";
 
 import usePagination from "./usePagination";
@@ -105,8 +103,7 @@ export default function useSearch(
       const debouncedSearch = debounceWithKey(
         "use_search:search_tickers",
         () => {
-          store
-            .searchTickers(searchQuery, activePage, pageSize, onlyExactMatches)
+          searchTickers(searchQuery, activePage, pageSize, onlyExactMatches)
             .then((searchResultsWithTotalCount) => {
               const { results, total_count } = searchResultsWithTotalCount;
 

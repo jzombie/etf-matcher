@@ -4,7 +4,6 @@ import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import { Grid, IconButton, TextField } from "@mui/material";
 
 import type { TickerBucketTicker } from "@src/store";
-import { RustServiceTickerSearchResult } from "@src/types";
 
 import AvatarLogo from "@components/AvatarLogo";
 import TickerSearchModal from "@components/TickerSearchModal";
@@ -12,6 +11,7 @@ import TickerSearchModal from "@components/TickerSearchModal";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useTickerDetail from "@hooks/useTickerDetail";
 
+import { RustServiceTickerSearchResult } from "@utils/callRustService";
 import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
 import removeCommas from "@utils/string/removeCommas";
 

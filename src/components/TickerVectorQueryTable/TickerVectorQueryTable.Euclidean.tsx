@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import {
   CircularProgress,
@@ -13,31 +13,25 @@ import {
 } from "@mui/material";
 
 import Center from "@layoutKit/Center";
-import store from "@src/store";
-import type { RustServiceTickerDetail } from "@src/types";
 
 import AvatarLogo from "@components/AvatarLogo";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
+import useTickerVectorQuery, {
+  TickerVectorQueryProps,
+} from "@hooks/useTickerVectorQuery";
 
-import customLogger from "@utils/customLogger";
+import type { RustServiceTickerDetail } from "@utils/callRustService";
 
-export type TickerVectorWithEuclideanDistance = RustServiceTickerDetail & {
-  distance: number;
+export type TickerVectorQueryTableEuclideanProps = {
+  queryMode: TickerVectorQueryProps["queryMode"];
+  query: TickerVectorQueryProps["query"];
 };
 
-export type TickerVectorTableEuclideanProps = {
-  tickerId: number;
-};
-
-export default function TickerVectorTableEuclidean({
-  tickerId,
-}: TickerVectorTableEuclideanProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [tickerDetails, setTickerDetails] = useState<
-    TickerVectorWithEuclideanDistance[] | null
-  >(null);
-
+export default function TickerVectorQueryTableEuclidean({
+  queryMode,
+  query,
+}: TickerVectorQueryTableEuclideanProps) {
   const navigateToSymbol = useTickerSymbolNavigation();
 
   const handleRowClick = useCallback(
@@ -47,40 +41,21 @@ export default function TickerVectorTableEuclidean({
     [navigateToSymbol],
   );
 
+  const {
+    isLoadingEuclidean: isLoading,
+    fetchEuclidean,
+    resultsEuclidean: tickerDetails,
+  } = useTickerVectorQuery({
+    queryMode,
+    query,
+  });
+
+  // Auto-fetch
   useEffect(() => {
-    if (tickerId) {
-      setIsLoading(true);
-
-      store
-        .fetchClosestTickers(tickerId)
-        .then(async (closestTickers) => {
-          const detailPromises = closestTickers.map((item) =>
-            store.fetchTickerDetail(item.ticker_id).then((detail) => ({
-              ...detail,
-              distance: item.distance,
-            })),
-          );
-          const settledDetails = await Promise.allSettled(detailPromises);
-
-          const fulfilledDetails = settledDetails
-            .filter((result) => result.status === "fulfilled")
-            .map(
-              (result) =>
-                (
-                  result as PromiseFulfilledResult<TickerVectorWithEuclideanDistance>
-                ).value,
-            );
-
-          setTickerDetails(fulfilledDetails);
-        })
-        .catch((error) => {
-          customLogger.error("Error fetching closest tickers:", error);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+    if (query && fetchEuclidean) {
+      fetchEuclidean();
     }
-  }, [tickerId]);
+  }, [fetchEuclidean, query]);
 
   if (isLoading) {
     return (

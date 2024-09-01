@@ -142,6 +142,18 @@ const darkTheme = createTheme({
         },
       },
     },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          "& a": {
+            color: "inherit",
+            "&:visited": {
+              color: "inherit",
+            },
+          },
+        },
+      },
+    },
   },
 });
 
