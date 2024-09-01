@@ -833,6 +833,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
+  // TODO: Add method to retrieve cosine-ranked tickers by quantity
+
   async removeCacheEntry(key: string): Promise<void> {
     await callRustService("remove_cache_entry", [key]);
 
