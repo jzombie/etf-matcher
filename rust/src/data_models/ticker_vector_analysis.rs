@@ -109,7 +109,7 @@ impl TickerDistance {
         Ok(results.into_iter().take(20).collect())
     }
 
-    // TODO: Rename (subsequent PR)
+    // TODO: Rename
     // Wrapper function for finding closest tickers by `ticker_id`
     pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<Vec<TickerDistance>, String> {
         let owned_ticker_vectors = OwnedTickerVectors::get_all_ticker_vectors().await?;
@@ -159,7 +159,7 @@ impl TickerDistance {
                     if let Some(pca_coords) = ticker_vector.pca_coordinates() {
                         let pca_coords_vec: Vec<f32> = pca_coords.iter().map(|c| c).collect();
 
-                        // TODO: Determine if this epsilon value is actually needed (subsequent PR)
+                        // TODO: Determine if this epsilon value is actually needed
                         const EPSILON: f32 = 1e-9;
 
                         // Calculate weight as the inverse of the distance with stability adjustment
@@ -208,7 +208,7 @@ impl TickerDistance {
 }
 
 impl CosineSimilarityResult {
-    // TODO: Rename (subsequent PR)
+    // TODO: Rename
     pub async fn rank_tickers_by_cosine_similarity(
         ticker_id: TickerId,
     ) -> Result<Vec<CosineSimilarityResult>, String> {
@@ -253,7 +253,7 @@ impl CosineSimilarityResult {
         Ok(results.into_iter().take(20).collect())
     }
 
-    // TODO: Rename (subsequent PR)
+    // TODO: Rename
     pub async fn rank_tickers_by_quantity_cosine_similarity(
         tickers_with_quantity: &Vec<TickerWithQuantity>,
     ) -> Result<Vec<CosineSimilarityResult>, String> {
@@ -301,7 +301,7 @@ impl CosineSimilarityResult {
 }
 
 impl TickerWithQuantity {
-    // TODO: Rename (subsequent PR)
+    // TODO: Rename
     pub async fn find_closest_tickers_by_quantity(
         tickers_with_quantity: &Vec<TickerWithQuantity>,
     ) -> Result<Vec<TickerDistance>, String> {

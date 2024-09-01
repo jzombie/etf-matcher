@@ -299,7 +299,7 @@ pub fn clear_cache() {
 // -----
 // TODO: Regroup the following
 
-// TODO: Rename as needed (subsequent PR)
+// TODO: Rename as needed
 #[wasm_bindgen]
 pub async fn find_closest_tickers_by_quantity(
     tickers_with_quantity: JsValue,
@@ -322,7 +322,7 @@ pub async fn find_closest_tickers_by_quantity(
         .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
 }
 
-// TODO: Rename as needed (subsequent PR)
+// TODO: Rename as needed
 #[wasm_bindgen]
 pub async fn rank_tickers_by_quantity_cosine_similarity(
     tickers_with_quantity: JsValue,

@@ -796,7 +796,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
-  // TODO: Rename and refactor as needed (subsequent PR)
+  // TODO: Rename and refactor as needed
   async fetchClosestTickersByQuantity(
     tickerBucket: TickerBucket,
   ): Promise<RustServiceTickerDistance[]> {
@@ -809,13 +809,13 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       }),
     );
 
-    // TODO: Return directly (subsequent PR)
+    // TODO: Return directly
     const closestTickers = await callRustService<RustServiceTickerDistance[]>(
       "find_closest_tickers_by_quantity",
       [rustServiceTickersWithQuantity],
     );
 
-    // TODO: Remove (subsequent PR)
+    // TODO: Remove
     const detailPromises = closestTickers.map((item) =>
       store.fetchTickerDetail(item.ticker_id).then((detail) => ({
         ...detail,
