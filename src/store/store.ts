@@ -786,17 +786,15 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
-  // TODO: Rename
   async fetchEuclideanByTicker(
     tickerId: number,
   ): Promise<RustServiceTickerDistance[]> {
     return callRustService<RustServiceTickerDistance[]>(
-      "find_closest_tickers",
+      "get_euclidean_by_ticker",
       [tickerId],
     );
   }
 
-  // TODO: Rename and refactor as needed
   async fetchEuclideanByTickerBucket(
     tickerBucket: TickerBucket,
   ): Promise<RustServiceTickerDistance[]> {
@@ -809,36 +807,21 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       }),
     );
 
-    // TODO: Return directly
-    const closestTickers = await callRustService<RustServiceTickerDistance[]>(
-      "find_closest_tickers_by_quantity",
+    return callRustService<RustServiceTickerDistance[]>(
+      "get_euclidean_by_ticker_bucket",
       [rustServiceTickersWithQuantity],
     );
-
-    // TODO: Remove
-    const detailPromises = closestTickers.map((item) =>
-      store.fetchTickerDetail(item.ticker_id).then((detail) => ({
-        ...detail,
-        distance: item.distance,
-      })),
-    );
-    const settledDetails = await Promise.allSettled(detailPromises);
-    customLogger.debug({ settledDetails });
-
-    return closestTickers;
   }
 
-  // TODO: Rename?
   async fetchCosineByTicker(
     tickerId: number,
   ): Promise<RustServiceCosineSimilarityResult[]> {
     return callRustService<RustServiceCosineSimilarityResult[]>(
-      "rank_tickers_by_cosine_similarity",
+      "get_cosine_by_ticker",
       [tickerId],
     );
   }
 
-  // TODO: Rename
   async fetchCosineByTickerBucket(
     tickerBucket: TickerBucket,
   ): Promise<RustServiceCosineSimilarityResult[]> {
@@ -851,7 +834,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       }),
     );
 
-    return callRustService("rank_tickers_by_quantity_cosine_similarity", [
+    return callRustService("get_cosine_by_ticker_bucket", [
       rustServiceTickersWithQuantity,
     ]);
   }

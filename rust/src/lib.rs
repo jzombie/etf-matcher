@@ -183,7 +183,7 @@ pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<Js
 }
 
 #[wasm_bindgen]
-pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<JsValue, JsValue> {
+pub async fn get_euclidean_by_ticker(ticker_id: TickerId) -> Result<JsValue, JsValue> {
     // Call the find_closest_tickers function from the ticker_vector_analysis module
     let closest_tickers = ticker_vector_analysis::TickerDistance::find_closest_tickers(ticker_id)
         .await
@@ -238,7 +238,29 @@ pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<JsValue, JsValu
 }
 
 #[wasm_bindgen]
-pub async fn rank_tickers_by_cosine_similarity(ticker_id: TickerId) -> Result<JsValue, JsValue> {
+pub async fn get_euclidean_by_ticker_bucket(
+    tickers_with_quantity: JsValue,
+) -> Result<JsValue, JsValue> {
+    // Deserialize the input JsValue into Rust Vec<TickerWithQuantity>
+    let tickers_with_quantity: Vec<TickerWithQuantity> =
+        serde_wasm_bindgen::from_value(tickers_with_quantity)
+            .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
+
+    // Find the closest tickers by quantity
+    let closest_tickers: Vec<ticker_vector_analysis::TickerDistance> =
+        ticker_vector_analysis::TickerWithQuantity::find_closest_tickers_by_quantity(
+            &tickers_with_quantity,
+        )
+        .await
+        .map_err(|err| JsValue::from_str(&err))?;
+
+    // Serialize the result back to JsValue
+    serde_wasm_bindgen::to_value(&closest_tickers)
+        .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
+}
+
+#[wasm_bindgen]
+pub async fn get_cosine_by_ticker(ticker_id: TickerId) -> Result<JsValue, JsValue> {
     // Call the rank_tickers_by_cosine_similarity function from the ticker_vector_analysis module
     let similar_tickers =
         ticker_vector_analysis::CosineSimilarityResult::rank_tickers_by_cosine_similarity(
@@ -277,54 +299,7 @@ pub async fn rank_tickers_by_cosine_similarity(ticker_id: TickerId) -> Result<Js
 }
 
 #[wasm_bindgen]
-pub fn get_cache_size() -> usize {
-    lib_get_cache_size()
-}
-
-#[wasm_bindgen]
-pub fn get_cache_details() -> JsValue {
-    lib_get_cache_details()
-}
-
-#[wasm_bindgen]
-pub fn remove_cache_entry(key: &str) {
-    lib_remove_cache_entry(key);
-}
-
-#[wasm_bindgen]
-pub fn clear_cache() {
-    lib_clear_cache();
-}
-
-// -----
-// TODO: Regroup the following
-
-// TODO: Rename as needed
-#[wasm_bindgen]
-pub async fn find_closest_tickers_by_quantity(
-    tickers_with_quantity: JsValue,
-) -> Result<JsValue, JsValue> {
-    // Deserialize the input JsValue into Rust Vec<TickerWithQuantity>
-    let tickers_with_quantity: Vec<TickerWithQuantity> =
-        serde_wasm_bindgen::from_value(tickers_with_quantity)
-            .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
-
-    // Find the closest tickers by quantity
-    let closest_tickers: Vec<ticker_vector_analysis::TickerDistance> =
-        ticker_vector_analysis::TickerWithQuantity::find_closest_tickers_by_quantity(
-            &tickers_with_quantity,
-        )
-        .await
-        .map_err(|err| JsValue::from_str(&err))?;
-
-    // Serialize the result back to JsValue
-    serde_wasm_bindgen::to_value(&closest_tickers)
-        .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
-}
-
-// TODO: Rename as needed
-#[wasm_bindgen]
-pub async fn rank_tickers_by_quantity_cosine_similarity(
+pub async fn get_cosine_by_ticker_bucket(
     tickers_with_quantity: JsValue,
 ) -> Result<JsValue, JsValue> {
     // Deserialize the input JsValue into Rust Vec<TickerWithQuantity>
@@ -343,4 +318,24 @@ pub async fn rank_tickers_by_quantity_cosine_similarity(
     // Serialize the result back to JsValue
     serde_wasm_bindgen::to_value(&ranked_tickers)
         .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
+}
+
+#[wasm_bindgen]
+pub fn get_cache_size() -> usize {
+    lib_get_cache_size()
+}
+
+#[wasm_bindgen]
+pub fn get_cache_details() -> JsValue {
+    lib_get_cache_details()
+}
+
+#[wasm_bindgen]
+pub fn remove_cache_entry(key: &str) {
+    lib_remove_cache_entry(key);
+}
+
+#[wasm_bindgen]
+pub fn clear_cache() {
+    lib_clear_cache();
 }
