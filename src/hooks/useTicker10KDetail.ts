@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 
-import store from "@src/store";
-
 import type {
   RustServiceETFAggregateDetail,
   RustServiceTicker10KDetail,
 } from "@utils/callRustService";
-import { fetchTicker10KDetail } from "@utils/callRustService";
+import {
+  fetchETFAggregateDetailByTickerId,
+  fetchTicker10KDetail,
+} from "@utils/callRustService";
 
 import useStableCurrentRef from "./useStableCurrentRef";
 
@@ -32,7 +33,7 @@ export default function useTicker10KDetail(
       const fetchData = async () => {
         try {
           const result = isETF
-            ? await store.fetchETFAggregateDetailByTickerId(tickerId)
+            ? await fetchETFAggregateDetailByTickerId(tickerId)
             : await fetchTicker10KDetail(tickerId);
 
           setDetail(result);

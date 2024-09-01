@@ -16,6 +16,7 @@ import {
   fetchCosineByTickerBucket,
 } from "./lib/fetchCosine";
 import fetchDataBuildInfo from "./lib/fetchDataBuildInfo";
+import fetchETFAggregateDetailByTickerId from "./lib/fetchETFAggregateDetailByTickerId";
 import {
   fetchEuclideanByTicker,
   fetchEuclideanByTickerBucket,
@@ -83,4 +84,5 @@ export {
   fetchTickerDetail,
   fetchTicker10KDetail,
   fetchSymbolAndExchangeByTickerId,
+  fetchETFAggregateDetailByTickerId,
 };

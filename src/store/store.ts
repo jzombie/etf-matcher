@@ -12,11 +12,9 @@ import {
   ReactStateEmitter,
   StateEmitterDefaultEvents,
 } from "@utils/StateEmitter";
-import type {
-  RustServiceCacheDetail,
-  RustServiceETFAggregateDetail,
-} from "@utils/callRustService";
+import type { RustServiceCacheDetail } from "@utils/callRustService";
 import {
+  NotifierEvent,
   clearCache,
   fetchCacheDetails,
   fetchCacheSize,
@@ -24,12 +22,9 @@ import {
   fetchSymbolAndExchangeByTickerId,
   fetchTickerDetail,
   fetchTickerId,
+  subscribe as libRustServiceSubscribe,
   preloadSearchCache,
   removeCacheEntry,
-} from "@utils/callRustService";
-import callRustService, {
-  NotifierEvent,
-  subscribe as libRustServiceSubscribe,
 } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 import debounceWithKey from "@utils/debounceWithKey";
@@ -469,15 +464,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         dataBuildTime: dataBuildInfo.time,
       });
     });
-  }
-
-  async fetchETFAggregateDetailByTickerId(
-    etfTickerId: number,
-  ): Promise<RustServiceETFAggregateDetail> {
-    return callRustService<RustServiceETFAggregateDetail>(
-      "get_etf_aggregate_detail_by_ticker_id",
-      [etfTickerId],
-    );
   }
 
   validateTickerBucketName(
