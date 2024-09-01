@@ -17,6 +17,7 @@ import {
 } from "./lib/fetchEuclidean";
 import fetchTickerId from "./lib/fetchTickerId";
 import generateQRCode from "./lib/generateQRCode";
+import searchTickers from "./lib/searchTickers";
 import type {
   RustServiceCacheDetail,
   RustServiceCosineSimilarityResult,
@@ -65,4 +66,5 @@ export {
   fetchDataBuildInfo,
   preloadSearchCache,
   generateQRCode,
+  searchTickers,
 };

@@ -21,7 +21,6 @@ import type {
   RustServicePaginatedResults,
   RustServiceTicker10KDetail,
   RustServiceTickerDetail,
-  RustServiceTickerSearchResult,
 } from "@utils/callRustService";
 import {
   clearCache,
@@ -474,22 +473,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         dataBuildTime: dataBuildInfo.time,
       });
     });
-  }
-
-  async searchTickers(
-    query: string,
-    page: number = 1,
-    pageSize: number = 20,
-    onlyExactMatches: boolean = false,
-    abortSignal?: AbortSignal,
-  ): Promise<RustServicePaginatedResults<RustServiceTickerSearchResult>> {
-    return callRustService<
-      RustServicePaginatedResults<RustServiceTickerSearchResult>
-    >(
-      "search_tickers",
-      [query.trim(), page, pageSize, onlyExactMatches],
-      abortSignal,
-    );
   }
 
   async fetchETFHoldersAggregateDetailByTickerId(
