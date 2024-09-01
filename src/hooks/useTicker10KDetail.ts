@@ -8,6 +8,7 @@ import type {
 
 import useStableCurrentRef from "./useStableCurrentRef";
 
+// TODO: Handle error state (and rename variables; see `useTickerDetail`)
 export default function useTicker10KDetail(
   tickerId: number,
   isETF: boolean,

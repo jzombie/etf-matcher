@@ -69,7 +69,9 @@ export const MAX_RECENTLY_VIEWED_ITEMS = 10;
 
 export const MIN_TICKER_BUCKET_NAME_LENGTH = 3;
 
+export const DEFAULT_COUNTRY_CODE = "US";
 export const DEFAULT_CURRENCY_CODE = "USD";
+export const DEFAULT_LOCALE = "en-US";
 
 export const MQTT_SYNC_KEYS: readonly (keyof StoreStateProps)[] = [
   "tickerBuckets",

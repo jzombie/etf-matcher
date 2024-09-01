@@ -6,7 +6,7 @@ import type { RustServiceTickerDetail } from "@src/types";
 
 import AvatarLogo from "@components/AvatarLogo";
 
-import useURLState from "@hooks/useURLState";
+import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
 export type TickerDetailStaticHeaderProps = {
   tickerDetail: RustServiceTickerDetail;
@@ -15,7 +15,7 @@ export type TickerDetailStaticHeaderProps = {
 export default function TickerDetailStaticHeader({
   tickerDetail,
 }: TickerDetailStaticHeaderProps) {
-  const { setURLState, toBooleanParam } = useURLState();
+  const navigateToSymbol = useTickerSymbolNavigation();
 
   return (
     <Box
@@ -36,16 +36,7 @@ export default function TickerDetailStaticHeader({
     >
       <ButtonBase
         sx={{ width: "100%", overflow: "hidden" }}
-        onClick={() =>
-          setURLState(
-            {
-              query: tickerDetail.symbol,
-              exact: toBooleanParam(true),
-            },
-            false,
-            "/search",
-          )
-        }
+        onClick={() => navigateToSymbol(tickerDetail.symbol)}
       >
         <AvatarLogo
           tickerDetail={tickerDetail}

@@ -22,7 +22,6 @@ export default function Section({
       sx={{
         backgroundColor: bgColor || "rgba(255, 255, 255, 0.05)",
         borderRadius: "8px",
-        marginBottom: "20px",
       }}
       {...rest}
     >

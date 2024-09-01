@@ -42,9 +42,17 @@ export default function TickerVectorTable({
   return (
     <Padding>
       <Box sx={{ overflow: "auto" }}>
-        <Typography variant="h6" sx={{ float: "left" }}>
+        <Typography variant="h6">
           &quot;{tickerDetail.symbol}&quot; Similarity Matches
         </Typography>
+        <Typography variant="body2" color="textSecondary" fontStyle="italic">
+          Note: Similarity matches are based on 10 years of financial data from
+          10-K statements. For ETFs, we use weighted averages of these
+          statements. The data is analyzed and compared using machine learning
+          and linear algebra techniques to help you find the most similar
+          investments.
+        </Typography>
+
         <ToggleButtonGroup
           value={alignment}
           exclusive
@@ -63,13 +71,6 @@ export default function TickerVectorTable({
           </ToggleButton>
         </ToggleButtonGroup>
       </Box>
-
-      <Typography variant="body2" color="textSecondary" fontStyle="italic">
-        Note: Similarity searches are based on 10 years of financial data from
-        10-K statements. For ETFs, we use weighted averages of these statements.
-        The data is analyzed and compared using machine learning and linear
-        algebra techniques to help you find the most similar investments.
-      </Typography>
 
       <Transition
         trigger={alignment === "euclidean"}

@@ -24,6 +24,8 @@ const DEFAULT_PROPS: Required<UseSearchProps> = {
   initialSelectedIndex: -1,
 };
 
+// TODO: Capture error state
+// TODO: Rename to `useTickerSearch`
 export default function useSearch(
   props: Partial<UseSearchProps> = DEFAULT_PROPS,
 ) {

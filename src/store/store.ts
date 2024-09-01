@@ -43,7 +43,7 @@ const IS_PROD = import.meta.env.PROD;
 export type TickerBucketTicker = {
   tickerId: number;
   symbol: string;
-  exchange_short_name?: string;
+  exchangeShortName?: string;
   quantity: number;
 };
 
@@ -53,6 +53,7 @@ export type TickerBucket = {
   type: "watchlist" | "portfolio" | "ticker_tape" | "recently_viewed";
   description: string;
   isUserConfigurable: boolean;
+  // TODO: Add `uuid` field
   // TODO: Track bucket last update time
 };
 
@@ -586,10 +587,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     type,
     description,
     isUserConfigurable,
-  }: Omit<TickerBucket, "tickers">) {
+    tickers = [],
+  }: TickerBucket) {
     const nextBucket: TickerBucket = {
       name,
-      tickers: [],
+      tickers,
       type,
       description,
       isUserConfigurable,
@@ -722,7 +724,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     const tickerBucketTicker: TickerBucketTicker = {
       tickerId,
       symbol: tickerDetail.symbol,
-      exchange_short_name: tickerDetail.exchange_short_name,
+      exchangeShortName: tickerDetail.exchange_short_name,
       quantity: 1,
     };
 
@@ -783,6 +785,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
+  // TODO: Rename
   async fetchClosestTickers(
     tickerId: number,
   ): Promise<RustServiceTickerDistance[]> {
@@ -790,6 +793,37 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       "find_closest_tickers",
       [tickerId],
     );
+  }
+
+  // TODO: Rename and refactor as needed (subsequent PR)
+  async fetchClosestTickersByQuantity(
+    tickerBucket: TickerBucket,
+  ): Promise<RustServiceTickerDistance[]> {
+    // TODO: Define Rust translation type
+    const rustServiceTickersWithQuantity = tickerBucket.tickers.map(
+      (ticker) => ({
+        ticker_id: ticker.tickerId,
+        quantity: ticker.quantity,
+      }),
+    );
+
+    // TODO: Return directly (subsequent PR)
+    const closestTickers = await callRustService<RustServiceTickerDistance[]>(
+      "find_closest_tickers_by_quantity",
+      [rustServiceTickersWithQuantity],
+    );
+
+    // TODO: Remove (subsequent PR)
+    const detailPromises = closestTickers.map((item) =>
+      store.fetchTickerDetail(item.ticker_id).then((detail) => ({
+        ...detail,
+        distance: item.distance,
+      })),
+    );
+    const settledDetails = await Promise.allSettled(detailPromises);
+    customLogger.debug({ settledDetails });
+
+    return closestTickers;
   }
 
   async fetchRankedTickersByCosineSimilarity(tickerId: number) {

@@ -13,7 +13,7 @@ import { RustServiceTickerDetail } from "@src/types";
 
 import EncodedImage from "@components/EncodedImage";
 
-import useURLState from "@hooks/useURLState";
+import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
 export type ETFHoldingListProps = {
   etfTickerDetail: RustServiceTickerDetail;
@@ -41,7 +41,7 @@ export default function ETFHoldingList({
     }
   }, [etfTickerDetail]);
 
-  const { setURLState, toBooleanParam } = useURLState();
+  const navigateToSymbol = useTickerSymbolNavigation();
 
   if (!paginatedHoldings && isLoadingETFHoldings) {
     return (
@@ -61,13 +61,7 @@ export default function ETFHoldingList({
         <ButtonBase
           key={result.holding_ticker_id}
           sx={{ overflow: "auto", margin: 1 }}
-          onClick={() =>
-            setURLState(
-              { query: result.holding_symbol, exact: toBooleanParam(true) },
-              false,
-              "/search",
-            )
-          }
+          onClick={() => navigateToSymbol(result.holding_symbol)}
         >
           <div>
             <EncodedImage

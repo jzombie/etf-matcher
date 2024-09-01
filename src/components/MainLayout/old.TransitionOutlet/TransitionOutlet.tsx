@@ -9,6 +9,8 @@ import useNavigationDirection from "@hooks/useNavigationDirection";
 
 import SingleUseOutlet from "./SingleUseOutlet";
 
+// FIXME: This was disabled due to having a blinking effect on dynamically loaded
+// content during page changes. It might could be improved.
 export default function TransitionOutlet() {
   const navigationDirection = useNavigationDirection();
   const { pathname: locationPathname } = useLocation();

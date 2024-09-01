@@ -1,3 +1,6 @@
+// FIXME: These consist solely of the `Rust service worker` types and perhaps
+// this file should be renamed.
+
 export type RustServiceDataBuildInfo = {
   time: string;
   hash: string;
@@ -233,6 +236,4 @@ export type RustServiceTickerDistance = {
 export type RustServiceCosineSimilarityResult = {
   ticker_id: number;
   similarity_score: number;
-  original_pca_coords: number[];
-  translated_pca_coords: number[];
 };

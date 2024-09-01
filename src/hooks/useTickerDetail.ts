@@ -6,7 +6,7 @@ import type { RustServiceTickerDetail } from "@src/types";
 import useStableCurrentRef from "./useStableCurrentRef";
 
 export default function useTickerDetail(
-  tickerId: number,
+  tickerId?: number,
   onLoad?: (tickerDetail: RustServiceTickerDetail) => void,
 ) {
   const onLoadStableCurrentRef = useStableCurrentRef(onLoad);
@@ -16,9 +16,15 @@ export default function useTickerDetail(
   const [tickerDetail, setTickerDetail] = useState<
     RustServiceTickerDetail | undefined
   >(undefined);
+  const [tickerDetailError, setTickerDetailError] = useState<Error | unknown>(
+    undefined,
+  );
 
   useEffect(() => {
     if (tickerId) {
+      // Unset ticker error, if exists
+      setTickerDetailError(null);
+
       setIsLoadingTickerDetail(true);
 
       store
@@ -30,11 +36,12 @@ export default function useTickerDetail(
             onLoadStableCurrentRef.current(tickerDetail);
           }
         })
+        .catch((err) => setTickerDetailError(err))
         .finally(() => {
           setIsLoadingTickerDetail(false);
         });
     }
   }, [onLoadStableCurrentRef, tickerId]);
 
-  return { isLoadingTickerDetail, tickerDetail };
+  return { isLoadingTickerDetail, tickerDetail, tickerDetailError };
 }
