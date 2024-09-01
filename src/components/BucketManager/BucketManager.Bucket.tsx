@@ -22,6 +22,7 @@ import type { TickerBucket } from "@src/store";
 import ScrollTo from "@components/ScrollTo";
 import SearchModalButton from "@components/SearchModalButton";
 import Section from "@components/Section";
+import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
 import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
 
 import BucketTicker from "./BucketManager.Bucket.Ticker";
@@ -197,6 +198,17 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                 </>
               )}
             </>
+          </Section>
+        </Padding>
+
+        <Padding>
+          <Section>
+            [PROTO VECTOR QUERY]
+            {
+              // TODO: Re-handle
+              // TODO: Ensure re-render when tickerBucket content changes (perhaps just make the component `key-based`)
+            }
+            <TickerVectorQueryTable queryMode="bucket" query={tickerBucket} />
           </Section>
         </Padding>
       </ScrollTo>

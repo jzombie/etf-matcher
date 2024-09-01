@@ -51,6 +51,8 @@ export default function useTickerVectorQuery({
   }, [queryMode, query]);
 
   const fetchEuclidean = useCallback(() => {
+    // TODO: Combine `fulfilledDetails` handling for all query modes
+
     switch (queryMode) {
       case "ticker-detail":
         return (() => {
@@ -90,12 +92,52 @@ export default function useTickerVectorQuery({
             });
         })();
 
+      case "bucket":
+        return (() => {
+          _setIsLoadingEuclidean(true);
+
+          const tickerBucket = query as TickerBucket;
+
+          store
+            .fetchClosestTickersByQuantity(tickerBucket)
+            .then(async (closestTickers) => {
+              const detailPromises = closestTickers.map((item) =>
+                store.fetchTickerDetail(item.ticker_id).then((detail) => ({
+                  ...detail,
+                  distance: item.distance,
+                })),
+              );
+              const settledDetails = await Promise.allSettled(detailPromises);
+
+              const fulfilledDetails = settledDetails
+                .filter((result) => result.status === "fulfilled")
+                .map(
+                  (result) =>
+                    (
+                      result as PromiseFulfilledResult<TickerVectorWithEuclideanDistance>
+                    ).value,
+                );
+
+              _setResultsEuclidean(fulfilledDetails);
+            })
+            .catch((error) => {
+              customLogger.error("Error fetching closest tickers:", error);
+
+              _setErrorEuclidean("Error fetching closest tickers");
+            })
+            .finally(() => {
+              _setIsLoadingEuclidean(false);
+            });
+        })();
+
       default:
         throw new Error(`Unhanded queryMode: ${queryMode}`);
     }
   }, [queryMode, query]);
 
   const fetchCosine = useCallback(() => {
+    // TODO: Combine `fulfilledDetails` handling for all query modes
+
     switch (queryMode) {
       case "ticker-detail":
         return (() => {
