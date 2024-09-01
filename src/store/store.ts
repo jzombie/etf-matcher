@@ -14,7 +14,6 @@ import {
 } from "@utils/StateEmitter";
 import type {
   RustServiceCacheDetail,
-  RustServiceDataBuildInfo,
   RustServiceETFAggregateDetail,
   RustServiceETFHoldingTickerResponse,
   RustServiceETFHoldingWeightResponse,
@@ -28,6 +27,7 @@ import {
   clearCache,
   fetchCacheDetails,
   fetchCacheSize,
+  fetchDataBuildInfo,
   fetchTickerId,
   removeCacheEntry,
 } from "@utils/callRustService";
@@ -466,15 +466,13 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   private _syncDataBuildInfo(): void {
-    callRustService<RustServiceDataBuildInfo>("get_data_build_info").then(
-      (dataBuildInfo) => {
-        this.setState({
-          isRustInit: true,
-          // TODO: If data build time is already set as state, but this indicates otherwise, that's a signal the app needs to update
-          dataBuildTime: dataBuildInfo.time,
-        });
-      },
-    );
+    fetchDataBuildInfo().then((dataBuildInfo) => {
+      this.setState({
+        isRustInit: true,
+        // TODO: If data build time is already set as state, but this indicates otherwise, that's a signal the app needs to update
+        dataBuildTime: dataBuildInfo.time,
+      });
+    });
   }
 
   private async _preloadTickerSearchCache() {

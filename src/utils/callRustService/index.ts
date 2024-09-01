@@ -9,6 +9,7 @@ import {
   fetchCosineByTicker,
   fetchCosineByTickerBucket,
 } from "./lib/fetchCosine";
+import fetchDataBuildInfo from "./lib/fetchDataBuildInfo";
 import {
   fetchEuclideanByTicker,
   fetchEuclideanByTickerBucket,
@@ -59,4 +60,5 @@ export {
   fetchCacheSize,
   fetchCacheDetails,
   fetchTickerId,
+  fetchDataBuildInfo,
 };
