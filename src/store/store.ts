@@ -749,10 +749,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     }
   }
 
-  async generateQRCode(data: string): Promise<string> {
-    return callRustService<string>("generate_qr_code", [data]);
-  }
-
   async fetchETFHoldingsByETFTickerId(
     tickerId: number,
     page: number = 1,
