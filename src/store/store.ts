@@ -787,7 +787,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   // TODO: Rename
-  async fetchClosestTickers(
+  async fetchEuclideanByTicker(
     tickerId: number,
   ): Promise<RustServiceTickerDistance[]> {
     return callRustService<RustServiceTickerDistance[]>(
@@ -797,7 +797,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   // TODO: Rename and refactor as needed
-  async fetchClosestTickersByQuantity(
+  async fetchEuclideanByTickerBucket(
     tickerBucket: TickerBucket,
   ): Promise<RustServiceTickerDistance[]> {
     // TODO: Make this a helper method (see duplicate usage)
@@ -829,7 +829,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   // TODO: Rename?
-  async fetchRankedTickersByCosineSimilarity(
+  async fetchCosineByTicker(
     tickerId: number,
   ): Promise<RustServiceCosineSimilarityResult[]> {
     return callRustService<RustServiceCosineSimilarityResult[]>(
@@ -839,7 +839,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   // TODO: Rename
-  async fetchRankedTickersByQuantityCosineSimilarity(
+  async fetchCosineByTickerBucket(
     tickerBucket: TickerBucket,
   ): Promise<RustServiceCosineSimilarityResult[]> {
     // TODO: Make this a helper method (see duplicate usage)

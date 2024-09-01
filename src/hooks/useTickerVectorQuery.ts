@@ -95,7 +95,7 @@ export default function useTickerVectorQuery({
     };
 
     if (queryMode === "ticker-detail") {
-      const fetchFn = store.fetchClosestTickers;
+      const fetchFn = store.fetchEuclideanByTicker;
       const tickerId = (query as RustServiceTickerDetail).ticker_id;
 
       _fetchData(
@@ -107,7 +107,7 @@ export default function useTickerVectorQuery({
         tickerId,
       );
     } else {
-      const fetchFn = store.fetchClosestTickersByQuantity;
+      const fetchFn = store.fetchEuclideanByTickerBucket;
       const tickerBucket = query as TickerBucket;
 
       _fetchData(
@@ -128,7 +128,7 @@ export default function useTickerVectorQuery({
     };
 
     if (queryMode === "ticker-detail") {
-      const fetchFn = store.fetchRankedTickersByCosineSimilarity;
+      const fetchFn = store.fetchCosineByTicker;
       const tickerId = (query as RustServiceTickerDetail).ticker_id;
 
       _fetchData(
@@ -140,7 +140,7 @@ export default function useTickerVectorQuery({
         tickerId,
       );
     } else {
-      const fetchFn = store.fetchRankedTickersByQuantityCosineSimilarity;
+      const fetchFn = store.fetchCosineByTickerBucket;
       const tickerBucket = query as TickerBucket;
 
       _fetchData(

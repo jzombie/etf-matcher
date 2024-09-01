@@ -43,7 +43,7 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
   useEffect(() => {
     if (tickerDetail) {
       store
-        .fetchClosestTickers(tickerDetail.ticker_id)
+        .fetchEuclideanByTicker(tickerDetail.ticker_id)
         .then((data) =>
           data.map((item) => ({
             ticker_id: item.ticker_id,
