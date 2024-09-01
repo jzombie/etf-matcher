@@ -4,20 +4,6 @@ import {
   MAX_RECENTLY_VIEWED_ITEMS,
   MIN_TICKER_BUCKET_NAME_LENGTH,
 } from "@src/constants";
-import type {
-  RustServiceCacheDetail,
-  RustServiceCosineSimilarityResult,
-  RustServiceDataBuildInfo,
-  RustServiceETFAggregateDetail,
-  RustServiceETFHoldingTickerResponse,
-  RustServiceETFHoldingWeightResponse,
-  RustServiceImageInfo,
-  RustServicePaginatedResults,
-  RustServiceTicker10KDetail,
-  RustServiceTickerDetail,
-  RustServiceTickerDistance,
-  RustServiceTickerSearchResult,
-} from "@src/types";
 
 import IndexedDBInterface from "@utils/IndexedDBInterface";
 import MQTTRoom from "@utils/MQTTRoom";
@@ -26,11 +12,20 @@ import {
   ReactStateEmitter,
   StateEmitterDefaultEvents,
 } from "@utils/StateEmitter";
-import callRustService, {
+import type { RustServiceCacheDetail } from "@utils/callRustService";
+import {
   NotifierEvent,
+  clearCache,
+  fetchCacheDetails,
+  fetchCacheSize,
+  fetchDataBuildInfo,
+  fetchSymbolAndExchangeByTickerId,
+  fetchTickerDetail,
+  fetchTickerId,
   subscribe as libRustServiceSubscribe,
+  preloadSearchCache,
+  removeCacheEntry,
 } from "@utils/callRustService";
-// TODO: Move `callRustService` methods out of store
 import customLogger from "@utils/customLogger";
 import debounceWithKey from "@utils/debounceWithKey";
 
@@ -176,7 +171,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     this._syncDataBuildInfo();
 
     // Make initial searches faster
-    this._preloadTickerSearchCache();
+    preloadSearchCache();
 
     this._indexedDBInterface = new IndexedDBInterface();
 
@@ -204,7 +199,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     const results = await Promise.allSettled(
       DEFAULT_TICKER_TAPE_TICKERS.map((ticker) =>
-        this.fetchTickerId(ticker.symbol, ticker.exchangeShortName),
+        fetchTickerId(ticker.symbol, ticker.exchangeShortName),
       ),
     );
 
@@ -428,16 +423,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     });
   }
 
-  async fetchTickerId(
-    tickerSymbol: string,
-    exchangeShortName: string,
-  ): Promise<number> {
-    return callRustService<number>("get_ticker_id", [
-      tickerSymbol,
-      exchangeShortName,
-    ]);
-  }
-
   /**
    * Invoked by the `MultiMQTTRoomProvider` to update state of currently subscribed rooms.
    */
@@ -465,92 +450,20 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   private async _syncCacheDetails(): Promise<void> {
-    callRustService<number>("get_cache_size").then((cacheSize) => {
+    fetchCacheSize().then((cacheSize) => {
       this.setState({ cacheSize });
     });
-    callRustService<RustServiceCacheDetail[]>("get_cache_details").then(
-      (cacheDetails) => this.setState({ cacheDetails }),
-    );
+    fetchCacheDetails().then((cacheDetails) => this.setState({ cacheDetails }));
   }
 
   private _syncDataBuildInfo(): void {
-    callRustService<RustServiceDataBuildInfo>("get_data_build_info").then(
-      (dataBuildInfo) => {
-        this.setState({
-          isRustInit: true,
-          // TODO: If data build time is already set as state, but this indicates otherwise, that's a signal the app needs to update
-          dataBuildTime: dataBuildInfo.time,
-        });
-      },
-    );
-  }
-
-  private async _preloadTickerSearchCache() {
-    return callRustService("preload_symbol_search_cache");
-  }
-
-  async searchTickers(
-    query: string,
-    page: number = 1,
-    pageSize: number = 20,
-    onlyExactMatches: boolean = false,
-    abortSignal?: AbortSignal,
-  ): Promise<RustServicePaginatedResults<RustServiceTickerSearchResult>> {
-    return callRustService<
-      RustServicePaginatedResults<RustServiceTickerSearchResult>
-    >(
-      "search_tickers",
-      [query.trim(), page, pageSize, onlyExactMatches],
-      abortSignal,
-    );
-  }
-
-  async fetchETFHoldersAggregateDetailByTickerId(
-    tickerId: number,
-    page: number = 1,
-    pageSize: number = 20,
-  ): Promise<RustServicePaginatedResults<RustServiceETFAggregateDetail>> {
-    return callRustService<
-      RustServicePaginatedResults<RustServiceETFAggregateDetail>
-    >("get_etf_holders_aggregate_detail_by_ticker_id", [
-      tickerId,
-      page,
-      pageSize,
-    ]);
-  }
-
-  async fetchTickerDetail(tickerId: number): Promise<RustServiceTickerDetail> {
-    return callRustService<RustServiceTickerDetail>("get_ticker_detail", [
-      tickerId,
-    ]);
-  }
-
-  async fetchTicker10KDetail(
-    tickerId: number,
-  ): Promise<RustServiceTicker10KDetail> {
-    return callRustService<RustServiceTicker10KDetail>(
-      "get_ticker_10k_detail",
-      [tickerId],
-    );
-  }
-
-  async fetchETFAggregateDetailByTickerId(
-    etfTickerId: number,
-  ): Promise<RustServiceETFAggregateDetail> {
-    return callRustService<RustServiceETFAggregateDetail>(
-      "get_etf_aggregate_detail_by_ticker_id",
-      [etfTickerId],
-    );
-  }
-
-  async fetchImageInfo(filename: string): Promise<RustServiceImageInfo> {
-    return callRustService<RustServiceImageInfo>("get_image_info", [filename]);
-  }
-
-  async fetchSymbolAndExchangeByTickerId(
-    tickerId: number,
-  ): Promise<[string, string]> {
-    return callRustService("get_symbol_and_exchange_by_ticker_id", [tickerId]);
+    fetchDataBuildInfo().then((dataBuildInfo) => {
+      this.setState({
+        isRustInit: true,
+        // TODO: If data build time is already set as state, but this indicates otherwise, that's a signal the app needs to update
+        dataBuildTime: dataBuildInfo.time,
+      });
+    });
   }
 
   validateTickerBucketName(
@@ -645,8 +558,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     quantity: number,
     tickerBucket: TickerBucket,
   ) {
-    const tickerAndExchange =
-      await this.fetchSymbolAndExchangeByTickerId(tickerId);
+    const tickerAndExchange = await fetchSymbolAndExchangeByTickerId(tickerId);
 
     const symbol = tickerAndExchange[0];
     const exchange_short_name = tickerAndExchange[1];
@@ -721,7 +633,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   private async _addRecentlyViewedTicker(tickerId: number) {
-    const tickerDetail = await this.fetchTickerDetail(tickerId);
+    const tickerDetail = await fetchTickerDetail(tickerId);
     const tickerBucketTicker: TickerBucketTicker = {
       tickerId,
       symbol: tickerDetail.symbol,
@@ -762,85 +674,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     }
   }
 
-  async generateQRCode(data: string): Promise<string> {
-    return callRustService<string>("generate_qr_code", [data]);
-  }
-
-  async fetchETFHoldingsByETFTickerId(
-    tickerId: number,
-    page: number = 1,
-    pageSize: number = 20,
-  ): Promise<RustServicePaginatedResults<RustServiceETFHoldingTickerResponse>> {
-    return callRustService<
-      RustServicePaginatedResults<RustServiceETFHoldingTickerResponse>
-    >("get_etf_holdings_by_etf_ticker_id", [tickerId, page, pageSize]);
-  }
-
-  async fetchETFHoldingWeight(
-    etfTickerId: number,
-    holdingTickerId: number,
-  ): Promise<RustServiceETFHoldingWeightResponse> {
-    return callRustService<RustServiceETFHoldingWeightResponse>(
-      "get_etf_holding_weight",
-      [etfTickerId, holdingTickerId],
-    );
-  }
-
-  async fetchEuclideanByTicker(
-    tickerId: number,
-  ): Promise<RustServiceTickerDistance[]> {
-    return callRustService<RustServiceTickerDistance[]>(
-      "get_euclidean_by_ticker",
-      [tickerId],
-    );
-  }
-
-  async fetchEuclideanByTickerBucket(
-    tickerBucket: TickerBucket,
-  ): Promise<RustServiceTickerDistance[]> {
-    // TODO: Make this a helper method (see duplicate usage)
-    // TODO: Define Rust translation type
-    const rustServiceTickersWithQuantity = tickerBucket.tickers.map(
-      (ticker) => ({
-        ticker_id: ticker.tickerId,
-        quantity: ticker.quantity,
-      }),
-    );
-
-    return callRustService<RustServiceTickerDistance[]>(
-      "get_euclidean_by_ticker_bucket",
-      [rustServiceTickersWithQuantity],
-    );
-  }
-
-  async fetchCosineByTicker(
-    tickerId: number,
-  ): Promise<RustServiceCosineSimilarityResult[]> {
-    return callRustService<RustServiceCosineSimilarityResult[]>(
-      "get_cosine_by_ticker",
-      [tickerId],
-    );
-  }
-
-  async fetchCosineByTickerBucket(
-    tickerBucket: TickerBucket,
-  ): Promise<RustServiceCosineSimilarityResult[]> {
-    // TODO: Make this a helper method (see duplicate usage)
-    // TODO: Define Rust translation type
-    const rustServiceTickersWithQuantity = tickerBucket.tickers.map(
-      (ticker) => ({
-        ticker_id: ticker.tickerId,
-        quantity: ticker.quantity,
-      }),
-    );
-
-    return callRustService("get_cosine_by_ticker_bucket", [
-      rustServiceTickersWithQuantity,
-    ]);
-  }
-
   async removeCacheEntry(key: string): Promise<void> {
-    await callRustService("remove_cache_entry", [key]);
+    await removeCacheEntry(key);
 
     // For rapid UI update
     // This forces an immediate sync so that the UI does not appear laggy when clearing cache entries
@@ -848,7 +683,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   async clearCache() {
-    callRustService("clear_cache");
+    await clearCache();
 
     // For rapid UI update
     // This forces an immediate sync so that the UI does not appear laggy when clearing cache entries

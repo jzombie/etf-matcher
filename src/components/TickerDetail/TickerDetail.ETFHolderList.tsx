@@ -4,16 +4,17 @@ import { Box, CircularProgress, Pagination } from "@mui/material";
 
 import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
-import type {
-  RustServiceETFAggregateDetail,
-  RustServicePaginatedResults,
-  RustServiceTickerDetail,
-} from "@src/types";
 
 import Transition from "@components/Transition";
 
 import usePagination from "@hooks/usePagination";
-import { store } from "@hooks/useStoreStateReader";
+
+import type {
+  RustServiceETFAggregateDetail,
+  RustServicePaginatedResults,
+  RustServiceTickerDetail,
+} from "@utils/callRustService";
+import { fetchETFHoldersAggregateDetailByTickerId } from "@utils/callRustService";
 
 import ETFHolder from "./TickerDetail.ETFHolder";
 
@@ -41,8 +42,7 @@ export default function ETFHolderList({ tickerDetail }: ETFHolderListProps) {
     if (tickerId) {
       setIsLoadingETFHolders(true);
 
-      store
-        .fetchETFHoldersAggregateDetailByTickerId(tickerId, page)
+      fetchETFHoldersAggregateDetailByTickerId(tickerId, page)
         .then(setPaginatedETFHolders)
         .finally(() => setIsLoadingETFHolders(false));
     }

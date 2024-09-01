@@ -1,5 +1,4 @@
-import type { RustServiceTickerDetail } from "@src/types";
-
+import type { RustServiceTickerDetail } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
 // Converts a symbol detail object into a formatted symbol with exchange identifier

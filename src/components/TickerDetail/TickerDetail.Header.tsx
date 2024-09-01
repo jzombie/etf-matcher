@@ -4,16 +4,16 @@ import { Box, ButtonBase, Grid, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 
 import Padding from "@layoutKit/Padding";
-import type {
-  RustServiceETFAggregateDetail,
-  RustServiceTickerDetail,
-} from "@src/types";
 
 import useImageBackgroundColor from "@hooks/useImageBackgroundColor";
 import useIntersectionObserver from "@hooks/useIntersectionObserver";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
+import type {
+  RustServiceETFAggregateDetail,
+  RustServiceTickerDetail,
+} from "@utils/callRustService";
 import formatCurrency from "@utils/formatCurrency";
 
 import EncodedImage from "../EncodedImage";

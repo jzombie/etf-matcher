@@ -24,11 +24,10 @@ import {
   Typography,
 } from "@mui/material";
 
-import { RustServiceTickerSearchResult } from "@src/types";
-
 import useSearch from "@hooks/useSearch";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
+import { RustServiceTickerSearchResult } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
 import DialogModal, { DialogModalProps } from "./DialogModal";

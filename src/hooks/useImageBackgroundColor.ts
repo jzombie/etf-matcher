@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import store from "@src/store";
+import { fetchImageInfo } from "@utils/callRustService";
 
 // Derived from `image.rs` @ `format!("rgba({}, {}, {}, {})", r, g, b, a as f32 / 255.0)`
 const FULLY_TRANSPARENT = "rgba(0, 0, 0, 0)";
@@ -13,7 +13,7 @@ export default function useImageBackgroundColor(
   >(null);
   useEffect(() => {
     if (imageFilename) {
-      store.fetchImageInfo(imageFilename).then((imageInfo) => {
+      fetchImageInfo(imageFilename).then((imageInfo) => {
         // If fully transparent, just return null (this is so that components
         // can determine their own handling for fully-transparent background
         // states [i.e. `SymbolDetail` currently relies on this])

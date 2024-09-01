@@ -11,12 +11,12 @@ import {
 } from "@mui/material";
 
 import AutoScaler from "@layoutKit/AutoScaler";
-import store from "@src/store";
 
 import useEventRefresh from "@hooks/useEventRefresh";
 
 import MQTTRoom, { MQTTRoomEvents } from "@utils/MQTTRoom";
 import { useMultiMQTTRoomContext } from "@utils/MQTTRoom/react";
+import { generateQRCode as libGenerateQRCode } from "@utils/callRustService";
 
 import { useSharedSessionManagerContext } from "./SharedSessionManagerProvider";
 
@@ -36,7 +36,7 @@ export default function Room({ room }: RoomProps) {
   const generateQRCode = useCallback(() => {
     const roomShareURL = getRoomShareURL(room);
 
-    store.generateQRCode(roomShareURL).then(setQRCode);
+    libGenerateQRCode(roomShareURL).then(setQRCode);
   }, [getRoomShareURL, room]);
 
   const toggleQRCode = useCallback(() => {

@@ -2,11 +2,11 @@ import React from "react";
 
 import { Box, ButtonBase } from "@mui/material";
 
-import type { RustServiceTickerDetail } from "@src/types";
-
 import AvatarLogo from "@components/AvatarLogo";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
+
+import type { RustServiceTickerDetail } from "@utils/callRustService";
 
 export type TickerDetailStaticHeaderProps = {
   tickerDetail: RustServiceTickerDetail;

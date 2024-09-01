@@ -3,14 +3,14 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Box, CircularProgress, Grid } from "@mui/material";
 
 import Center from "@layoutKit/Center";
-import store from "@src/store";
-import type { RustServiceETFAggregateDetail } from "@src/types";
 
 import LazyRender from "@components/LazyRender";
 import TickerVectorTable from "@components/TickerVectorQueryTable";
 
 import useTickerDetail from "@hooks/useTickerDetail";
 
+import type { RustServiceETFAggregateDetail } from "@utils/callRustService";
+import { fetchETFAggregateDetailByTickerId } from "@utils/callRustService";
 import formatSymbolWithExchange from "@utils/formatSymbolWithExchange";
 
 import TickerContainer from "../TickerContainer";
@@ -47,9 +47,9 @@ export default function TickerDetail({
 
   useEffect(() => {
     if (tickerDetail?.is_etf) {
-      store
-        .fetchETFAggregateDetailByTickerId(tickerDetail.ticker_id)
-        .then(setETFAggregateDetail);
+      fetchETFAggregateDetailByTickerId(tickerDetail.ticker_id).then(
+        setETFAggregateDetail,
+      );
     }
   }, [tickerDetail]);
 
