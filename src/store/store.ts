@@ -21,6 +21,7 @@ import {
   fetchCacheDetails,
   fetchCacheSize,
   fetchDataBuildInfo,
+  fetchSymbolAndExchangeByTickerId,
   fetchTickerDetail,
   fetchTickerId,
   preloadSearchCache,
@@ -479,12 +480,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
-  async fetchSymbolAndExchangeByTickerId(
-    tickerId: number,
-  ): Promise<[string, string]> {
-    return callRustService("get_symbol_and_exchange_by_ticker_id", [tickerId]);
-  }
-
   validateTickerBucketName(
     name: string,
     type: TickerBucket["type"],
@@ -577,8 +572,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     quantity: number,
     tickerBucket: TickerBucket,
   ) {
-    const tickerAndExchange =
-      await this.fetchSymbolAndExchangeByTickerId(tickerId);
+    const tickerAndExchange = await fetchSymbolAndExchangeByTickerId(tickerId);
 
     const symbol = tickerAndExchange[0];
     const exchange_short_name = tickerAndExchange[1];

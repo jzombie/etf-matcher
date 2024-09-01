@@ -21,6 +21,7 @@ import {
   fetchEuclideanByTickerBucket,
 } from "./lib/fetchEuclidean";
 import fetchImageInfo from "./lib/fetchImageInfo";
+import fetchSymbolAndExchangeByTickerId from "./lib/fetchSymbolAndExchangeByTickerId";
 import fetchTicker10KDetail from "./lib/fetchTicker10KDetail";
 import fetchTickerDetail from "./lib/fetchTickerDetail";
 import fetchTickerId from "./lib/fetchTickerId";
@@ -81,4 +82,5 @@ export {
   fetchETFHoldersAggregateDetailByTickerId,
   fetchTickerDetail,
   fetchTicker10KDetail,
+  fetchSymbolAndExchangeByTickerId,
 };
