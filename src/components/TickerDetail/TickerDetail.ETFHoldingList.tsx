@@ -4,12 +4,12 @@ import { ButtonBase } from "@mui/material";
 import { CircularProgress } from "@mui/material";
 
 import Center from "@layoutKit/Center";
-import store from "@src/store";
 
 import EncodedImage from "@components/EncodedImage";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
+import { fetchETFHoldingsByETFTickerId } from "@utils/callRustService";
 import type {
   RustServiceETFHoldingTickerResponse,
   RustServicePaginatedResults,
@@ -35,8 +35,7 @@ export default function ETFHoldingList({
     if (etfTickerDetail.is_etf) {
       setIsLoadingETFHoldings(true);
 
-      store
-        .fetchETFHoldingsByETFTickerId(etfTickerDetail.ticker_id)
+      fetchETFHoldingsByETFTickerId(etfTickerDetail.ticker_id)
         .then(setPaginatedHoldings)
         .finally(() => setIsLoadingETFHoldings(false));
     }

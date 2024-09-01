@@ -14,10 +14,9 @@ import {
   Typography,
 } from "@mui/material";
 
-import store from "@src/store";
-
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
+import { fetchETFHoldingWeight } from "@utils/callRustService";
 import type {
   RustServiceETFAggregateDetail,
   RustServiceTickerDetail,
@@ -44,7 +43,7 @@ export default function ETFHolder({
     const etfTickerId = etfAggregateDetail.ticker_id;
     const holdingTickerId = holdingTickerDetail.ticker_id;
 
-    store.fetchETFHoldingWeight(etfTickerId, holdingTickerId).then((resp) => {
+    fetchETFHoldingWeight(etfTickerId, holdingTickerId).then((resp) => {
       setHoldingPercentage(resp.holding_percentage);
       setHoldingMarketValue(resp.holding_market_value);
     });

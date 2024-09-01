@@ -7,6 +7,10 @@ import {
   removeCacheEntry,
 } from "./lib/cache";
 import {
+  fetchETFHoldingWeight,
+  fetchETFHoldingsByETFTickerId,
+} from "./lib/etfHoldings";
+import {
   fetchCosineByTicker,
   fetchCosineByTickerBucket,
 } from "./lib/fetchCosine";
@@ -69,4 +73,6 @@ export {
   generateQRCode,
   searchTickers,
   fetchImageInfo,
+  fetchETFHoldingsByETFTickerId,
+  fetchETFHoldingWeight,
 };
