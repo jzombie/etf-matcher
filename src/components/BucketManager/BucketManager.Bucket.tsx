@@ -148,16 +148,25 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
 
                       <Box>
                         {!isCollapsed && (
-                          <UnstyledUL>
-                            {tickerBucket.tickers.map((bucketTicker) => (
-                              <UnstyledLI key={bucketTicker.tickerId}>
-                                <BucketTicker
-                                  bucketTicker={bucketTicker}
-                                  tickerBucket={tickerBucket}
-                                />
-                              </UnstyledLI>
-                            ))}
-                          </UnstyledUL>
+                          <>
+                            <UnstyledUL>
+                              {tickerBucket.tickers.map((bucketTicker) => (
+                                <UnstyledLI key={bucketTicker.tickerId}>
+                                  <BucketTicker
+                                    bucketTicker={bucketTicker}
+                                    tickerBucket={tickerBucket}
+                                  />
+                                </UnstyledLI>
+                              ))}
+                            </UnstyledUL>
+                            [PROTO VECTOR QUERY]
+                            <TickerVectorQueryTable
+                              queryMode="bucket"
+                              query={tickerBucket}
+                              // TODO: This could be improved
+                              key={JSON.stringify(tickerBucket)}
+                            />
+                          </>
                         )}
                       </Box>
                     </>
@@ -180,14 +189,6 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                 </>
               )}
             </>
-            <div>
-              [PROTO VECTOR QUERY]
-              {
-                // TODO: Re-handle
-                // TODO: Ensure re-render when tickerBucket content changes (perhaps just make the component `key-based`)
-              }
-              <TickerVectorQueryTable queryMode="bucket" query={tickerBucket} />
-            </div>
           </Section>
         </Padding>
       </ScrollTo>
