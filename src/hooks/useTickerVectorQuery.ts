@@ -10,15 +10,15 @@ import type {
 
 import customLogger from "@utils/customLogger";
 
-// TODO: Rename
-export type TickerVectorWithEuclideanDistance = RustServiceTickerDetail & {
-  distance: number;
-};
+export type RustServiceTickerDetailWithEuclideanDistance =
+  RustServiceTickerDetail & {
+    distance: number;
+  };
 
-// TODO: Rename
-export type TickerVectorWithCosineSimilarityScore = RustServiceTickerDetail & {
-  cosineSimilarityScore: number;
-};
+export type RustServiceTickerDetailWithCosineSimilarity =
+  RustServiceTickerDetail & {
+    cosineSimilarityScore: number;
+  };
 
 export type TickerVectorQueryProps = {
   queryMode: "ticker-detail" | "bucket";
@@ -31,13 +31,13 @@ export default function useTickerVectorQuery({
 }: TickerVectorQueryProps) {
   const [isLoadingEuclidean, _setIsLoadingEuclidean] = useState(false);
   const [resultsEuclidean, _setResultsEuclidean] = useState<
-    TickerVectorWithEuclideanDistance[]
+    RustServiceTickerDetailWithEuclideanDistance[]
   >([]);
   const [errorEuclidean, _setErrorEuclidean] = useState<string | null>(null);
 
   const [isLoadingCosine, _setIsLoadingCosine] = useState(false);
   const [resultsCosine, _setResultsCosine] = useState<
-    TickerVectorWithCosineSimilarityScore[]
+    RustServiceTickerDetailWithCosineSimilarity[]
   >([]);
   const [errorCosine, _setErrorCosine] = useState<string | null>(null);
 
