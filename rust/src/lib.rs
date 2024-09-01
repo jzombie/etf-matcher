@@ -185,9 +185,12 @@ pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<Js
 #[wasm_bindgen]
 pub async fn get_euclidean_by_ticker(ticker_id: TickerId) -> Result<JsValue, JsValue> {
     // Call the find_closest_tickers function from the ticker_vector_analysis module
-    let closest_tickers = ticker_vector_analysis::TickerDistance::find_closest_tickers(ticker_id)
-        .await
-        .map_err(|err| JsValue::from_str(&format!("Failed to find closest ticker IDs: {}", err)))?;
+    let closest_tickers =
+        ticker_vector_analysis::TickerDistance::get_euclidean_by_ticker(ticker_id)
+            .await
+            .map_err(|err| {
+                JsValue::from_str(&format!("Failed to find closest ticker IDs: {}", err))
+            })?;
 
     // Convert the results to JsValue
     let js_array = js_sys::Array::new();
@@ -248,7 +251,7 @@ pub async fn get_euclidean_by_ticker_bucket(
 
     // Find the closest tickers by quantity
     let closest_tickers: Vec<ticker_vector_analysis::TickerDistance> =
-        ticker_vector_analysis::TickerWithQuantity::find_closest_tickers_by_quantity(
+        ticker_vector_analysis::TickerWithQuantity::get_euclidean_by_ticker_bucket(
             &tickers_with_quantity,
         )
         .await
@@ -263,16 +266,14 @@ pub async fn get_euclidean_by_ticker_bucket(
 pub async fn get_cosine_by_ticker(ticker_id: TickerId) -> Result<JsValue, JsValue> {
     // Call the rank_tickers_by_cosine_similarity function from the ticker_vector_analysis module
     let similar_tickers =
-        ticker_vector_analysis::CosineSimilarityResult::rank_tickers_by_cosine_similarity(
-            ticker_id,
-        )
-        .await
-        .map_err(|err| {
-            JsValue::from_str(&format!(
-                "Failed to rank tickers by cosine similarity: {}",
-                err
-            ))
-        })?;
+        ticker_vector_analysis::CosineSimilarityResult::get_cosine_by_ticker(ticker_id)
+            .await
+            .map_err(|err| {
+                JsValue::from_str(&format!(
+                    "Failed to rank tickers by cosine similarity: {}",
+                    err
+                ))
+            })?;
 
     // Convert the results to JsValue
     let js_array = js_sys::Array::new();
@@ -309,7 +310,7 @@ pub async fn get_cosine_by_ticker_bucket(
 
     // Rank tickers by cosine similarity using the quantity
     let ranked_tickers: Vec<ticker_vector_analysis::CosineSimilarityResult> =
-        ticker_vector_analysis::CosineSimilarityResult::rank_tickers_by_quantity_cosine_similarity(
+        ticker_vector_analysis::CosineSimilarityResult::get_cosine_by_ticker_bucket(
             &tickers_with_quantity,
         )
         .await

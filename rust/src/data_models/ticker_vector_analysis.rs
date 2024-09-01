@@ -109,9 +109,9 @@ impl TickerDistance {
         Ok(results.into_iter().take(20).collect())
     }
 
-    // TODO: Rename
-    // Wrapper function for finding closest tickers by `ticker_id`
-    pub async fn find_closest_tickers(ticker_id: TickerId) -> Result<Vec<TickerDistance>, String> {
+    pub async fn get_euclidean_by_ticker(
+        ticker_id: TickerId,
+    ) -> Result<Vec<TickerDistance>, String> {
         let owned_ticker_vectors = OwnedTickerVectors::get_all_ticker_vectors().await?;
         let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
@@ -208,8 +208,7 @@ impl TickerDistance {
 }
 
 impl CosineSimilarityResult {
-    // TODO: Rename
-    pub async fn rank_tickers_by_cosine_similarity(
+    pub async fn get_cosine_by_ticker(
         ticker_id: TickerId,
     ) -> Result<Vec<CosineSimilarityResult>, String> {
         let owned_ticker_vectors = OwnedTickerVectors::get_all_ticker_vectors().await?;
@@ -253,8 +252,7 @@ impl CosineSimilarityResult {
         Ok(results.into_iter().take(20).collect())
     }
 
-    // TODO: Rename
-    pub async fn rank_tickers_by_quantity_cosine_similarity(
+    pub async fn get_cosine_by_ticker_bucket(
         tickers_with_quantity: &Vec<TickerWithQuantity>,
     ) -> Result<Vec<CosineSimilarityResult>, String> {
         // Generate the custom vector based on the quantities of the tickers
@@ -301,8 +299,7 @@ impl CosineSimilarityResult {
 }
 
 impl TickerWithQuantity {
-    // TODO: Rename
-    pub async fn find_closest_tickers_by_quantity(
+    pub async fn get_euclidean_by_ticker_bucket(
         tickers_with_quantity: &Vec<TickerWithQuantity>,
     ) -> Result<Vec<TickerDistance>, String> {
         // Generate the custom vector based on the quantities of the tickers
