@@ -2,12 +2,12 @@ import { useCallback, useMemo, useState } from "react";
 
 import store from "@src/store";
 import type { TickerBucket } from "@src/store";
+
 import type {
   RustServiceCosineSimilarityResult,
   RustServiceTickerDetail,
   RustServiceTickerDistance,
-} from "@src/types";
-
+} from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
 export type RustServiceTickerDetailWithEuclideanDistance =

@@ -21,13 +21,14 @@ import {
   tickerBucketDefaultNames,
 } from "@src/store";
 import type { TickerBucket } from "@src/store";
-import type { RustServiceTickerDetail } from "@src/types";
 import { Link } from "react-router-dom";
 
 import BucketForm from "@components/BucketManager/BucketManager.BucketForm";
 import DialogModal from "@components/DialogModal";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
+
+import type { RustServiceTickerDetail } from "@utils/callRustService";
 
 export type TickerDetailBucketManagerProps = {
   tickerDetail: RustServiceTickerDetail;

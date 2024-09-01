@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 
 import store from "@src/store";
-import type { RustServiceTickerDetail } from "@src/types";
+
+import type { RustServiceTickerDetail } from "@utils/callRustService";
 
 import useStableCurrentRef from "./useStableCurrentRef";
 

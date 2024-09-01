@@ -4,13 +4,13 @@ import { Box, CircularProgress, Grid } from "@mui/material";
 
 import Center from "@layoutKit/Center";
 import store from "@src/store";
-import type { RustServiceETFAggregateDetail } from "@src/types";
 
 import LazyRender from "@components/LazyRender";
 import TickerVectorTable from "@components/TickerVectorQueryTable";
 
 import useTickerDetail from "@hooks/useTickerDetail";
 
+import type { RustServiceETFAggregateDetail } from "@utils/callRustService";
 import formatSymbolWithExchange from "@utils/formatSymbolWithExchange";
 
 import TickerContainer from "../TickerContainer";

@@ -15,13 +15,13 @@ import {
 } from "@mui/material";
 
 import store from "@src/store";
-import type {
-  RustServiceETFAggregateDetail,
-  RustServiceTickerDetail,
-} from "@src/types";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
+import type {
+  RustServiceETFAggregateDetail,
+  RustServiceTickerDetail,
+} from "@utils/callRustService";
 import formatCurrency from "@utils/formatCurrency";
 
 export type ETFHolderProps = {

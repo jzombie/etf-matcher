@@ -2,13 +2,13 @@ import React from "react";
 
 import { Box, Paper, Typography } from "@mui/material";
 
+import useTicker10KDetail from "@hooks/useTicker10KDetail";
+
 import type {
   RustServiceETFAggregateDetail,
   RustServiceTicker10KDetail,
   RustServiceTickerDetail,
-} from "@src/types";
-
-import useTicker10KDetail from "@hooks/useTicker10KDetail";
+} from "@utils/callRustService";
 
 import RenderChart from "./TickerDetail.FinancialChartsGrid.Chart";
 

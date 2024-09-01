@@ -4,6 +4,14 @@ import {
   MAX_RECENTLY_VIEWED_ITEMS,
   MIN_TICKER_BUCKET_NAME_LENGTH,
 } from "@src/constants";
+
+import IndexedDBInterface from "@utils/IndexedDBInterface";
+import MQTTRoom from "@utils/MQTTRoom";
+import detectHTMLJSVersionSync from "@utils/PROTO_detectHTMLJSVersionSync";
+import {
+  ReactStateEmitter,
+  StateEmitterDefaultEvents,
+} from "@utils/StateEmitter";
 import type {
   RustServiceCacheDetail,
   RustServiceCosineSimilarityResult,
@@ -17,20 +25,11 @@ import type {
   RustServiceTickerDetail,
   RustServiceTickerDistance,
   RustServiceTickerSearchResult,
-} from "@src/types";
-
-import IndexedDBInterface from "@utils/IndexedDBInterface";
-import MQTTRoom from "@utils/MQTTRoom";
-import detectHTMLJSVersionSync from "@utils/PROTO_detectHTMLJSVersionSync";
-import {
-  ReactStateEmitter,
-  StateEmitterDefaultEvents,
-} from "@utils/StateEmitter";
+} from "@utils/callRustService";
 import callRustService, {
   NotifierEvent,
   subscribe as libRustServiceSubscribe,
 } from "@utils/callRustService";
-// TODO: Move `callRustService` methods out of store
 import customLogger from "@utils/customLogger";
 import debounceWithKey from "@utils/debounceWithKey";
 

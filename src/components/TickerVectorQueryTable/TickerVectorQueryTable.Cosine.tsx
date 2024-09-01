@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 
 import Center from "@layoutKit/Center";
-import type { RustServiceTickerDetail } from "@src/types";
 
 import AvatarLogo from "@components/AvatarLogo";
 
@@ -21,6 +20,8 @@ import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 import useTickerVectorQuery, {
   TickerVectorQueryProps,
 } from "@hooks/useTickerVectorQuery";
+
+import type { RustServiceTickerDetail } from "@utils/callRustService";
 
 export type TickerVectorQueryTableCosineProps = {
   queryMode: TickerVectorQueryProps["queryMode"];

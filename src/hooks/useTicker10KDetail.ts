@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 
 import store from "@src/store";
+
 import type {
   RustServiceETFAggregateDetail,
   RustServiceTicker10KDetail,
-} from "@src/types";
+} from "@utils/callRustService";
 
 import useStableCurrentRef from "./useStableCurrentRef";
 
