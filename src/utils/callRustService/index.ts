@@ -11,16 +11,8 @@ import {
   fetchETFHoldingWeight,
   fetchETFHoldingsByETFTickerId,
 } from "./lib/etfHoldings";
-import {
-  fetchCosineByTicker,
-  fetchCosineByTickerBucket,
-} from "./lib/fetchCosine";
 import fetchDataBuildInfo from "./lib/fetchDataBuildInfo";
 import fetchETFAggregateDetailByTickerId from "./lib/fetchETFAggregateDetailByTickerId";
-import {
-  fetchEuclideanByTicker,
-  fetchEuclideanByTickerBucket,
-} from "./lib/fetchEuclidean";
 import fetchImageInfo from "./lib/fetchImageInfo";
 import fetchSymbolAndExchangeByTickerId from "./lib/fetchSymbolAndExchangeByTickerId";
 import fetchTicker10KDetail from "./lib/fetchTicker10KDetail";
@@ -28,6 +20,12 @@ import fetchTickerDetail from "./lib/fetchTickerDetail";
 import fetchTickerId from "./lib/fetchTickerId";
 import generateQRCode from "./lib/generateQRCode";
 import searchTickers from "./lib/searchTickers";
+import {
+  fetchCosineByTicker,
+  fetchCosineByTickerBucket,
+  fetchEuclideanByTicker,
+  fetchEuclideanByTickerBucket,
+} from "./lib/tickerVector";
 import type {
   RustServiceCacheDetail,
   RustServiceCosineSimilarityResult,
