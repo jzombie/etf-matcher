@@ -26,6 +26,7 @@ import type {
   RustServiceTickerDistance,
   RustServiceTickerSearchResult,
 } from "@utils/callRustService";
+import { clearCache, removeCacheEntry } from "@utils/callRustService";
 import callRustService, {
   NotifierEvent,
   subscribe as libRustServiceSubscribe,
@@ -785,61 +786,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
-  async fetchEuclideanByTicker(
-    tickerId: number,
-  ): Promise<RustServiceTickerDistance[]> {
-    return callRustService<RustServiceTickerDistance[]>(
-      "get_euclidean_by_ticker",
-      [tickerId],
-    );
-  }
-
-  async fetchEuclideanByTickerBucket(
-    tickerBucket: TickerBucket,
-  ): Promise<RustServiceTickerDistance[]> {
-    // TODO: Make this a helper method (see duplicate usage)
-    // TODO: Define Rust translation type
-    const rustServiceTickersWithQuantity = tickerBucket.tickers.map(
-      (ticker) => ({
-        ticker_id: ticker.tickerId,
-        quantity: ticker.quantity,
-      }),
-    );
-
-    return callRustService<RustServiceTickerDistance[]>(
-      "get_euclidean_by_ticker_bucket",
-      [rustServiceTickersWithQuantity],
-    );
-  }
-
-  async fetchCosineByTicker(
-    tickerId: number,
-  ): Promise<RustServiceCosineSimilarityResult[]> {
-    return callRustService<RustServiceCosineSimilarityResult[]>(
-      "get_cosine_by_ticker",
-      [tickerId],
-    );
-  }
-
-  async fetchCosineByTickerBucket(
-    tickerBucket: TickerBucket,
-  ): Promise<RustServiceCosineSimilarityResult[]> {
-    // TODO: Make this a helper method (see duplicate usage)
-    // TODO: Define Rust translation type
-    const rustServiceTickersWithQuantity = tickerBucket.tickers.map(
-      (ticker) => ({
-        ticker_id: ticker.tickerId,
-        quantity: ticker.quantity,
-      }),
-    );
-
-    return callRustService("get_cosine_by_ticker_bucket", [
-      rustServiceTickersWithQuantity,
-    ]);
-  }
-
   async removeCacheEntry(key: string): Promise<void> {
-    await callRustService("remove_cache_entry", [key]);
+    await removeCacheEntry(key);
 
     // For rapid UI update
     // This forces an immediate sync so that the UI does not appear laggy when clearing cache entries
@@ -847,7 +795,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   async clearCache() {
-    callRustService("clear_cache");
+    await clearCache();
 
     // For rapid UI update
     // This forces an immediate sync so that the UI does not appear laggy when clearing cache entries

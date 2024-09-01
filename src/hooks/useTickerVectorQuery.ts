@@ -8,6 +8,12 @@ import type {
   RustServiceTickerDetail,
   RustServiceTickerDistance,
 } from "@utils/callRustService";
+import {
+  fetchCosineByTicker,
+  fetchCosineByTickerBucket,
+  fetchEuclideanByTicker,
+  fetchEuclideanByTickerBucket,
+} from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
 export type RustServiceTickerDetailWithEuclideanDistance =
@@ -95,7 +101,7 @@ export default function useTickerVectorQuery({
     };
 
     if (queryMode === "ticker-detail") {
-      const fetchFn = store.fetchEuclideanByTicker;
+      const fetchFn = fetchEuclideanByTicker;
       const tickerId = (query as RustServiceTickerDetail).ticker_id;
 
       _fetchData(
@@ -107,7 +113,7 @@ export default function useTickerVectorQuery({
         tickerId,
       );
     } else {
-      const fetchFn = store.fetchEuclideanByTickerBucket;
+      const fetchFn = fetchEuclideanByTickerBucket;
       const tickerBucket = query as TickerBucket;
 
       _fetchData(
@@ -128,7 +134,7 @@ export default function useTickerVectorQuery({
     };
 
     if (queryMode === "ticker-detail") {
-      const fetchFn = store.fetchCosineByTicker;
+      const fetchFn = fetchCosineByTicker;
       const tickerId = (query as RustServiceTickerDetail).ticker_id;
 
       _fetchData(
@@ -140,7 +146,7 @@ export default function useTickerVectorQuery({
         tickerId,
       );
     } else {
-      const fetchFn = store.fetchCosineByTickerBucket;
+      const fetchFn = fetchCosineByTickerBucket;
       const tickerBucket = query as TickerBucket;
 
       _fetchData(
