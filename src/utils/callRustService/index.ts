@@ -3,6 +3,7 @@ import {
   clearCache,
   fetchCacheDetails,
   fetchCacheSize,
+  preloadSearchCache,
   removeCacheEntry,
 } from "./lib/cache";
 import {
@@ -61,4 +62,5 @@ export {
   fetchCacheDetails,
   fetchTickerId,
   fetchDataBuildInfo,
+  preloadSearchCache,
 };

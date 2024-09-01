@@ -29,6 +29,7 @@ import {
   fetchCacheSize,
   fetchDataBuildInfo,
   fetchTickerId,
+  preloadSearchCache,
   removeCacheEntry,
 } from "@utils/callRustService";
 import callRustService, {
@@ -180,7 +181,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     this._syncDataBuildInfo();
 
     // Make initial searches faster
-    this._preloadTickerSearchCache();
+    preloadSearchCache();
 
     this._indexedDBInterface = new IndexedDBInterface();
 
@@ -473,10 +474,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         dataBuildTime: dataBuildInfo.time,
       });
     });
-  }
-
-  private async _preloadTickerSearchCache() {
-    return callRustService("preload_symbol_search_cache");
   }
 
   async searchTickers(

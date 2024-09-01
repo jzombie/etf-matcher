@@ -1,6 +1,10 @@
 import callRustService from "../callRustService";
 import type { RustServiceCacheDetail } from "../types";
 
+export async function preloadSearchCache(): Promise<void> {
+  return callRustService("preload_symbol_search_cache");
+}
+
 export async function clearCache(): Promise<void> {
   return callRustService("clear_cache");
 }
