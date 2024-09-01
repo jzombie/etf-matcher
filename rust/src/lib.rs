@@ -251,7 +251,7 @@ pub async fn get_euclidean_by_ticker_bucket(
 
     // Find the closest tickers by quantity
     let closest_tickers: Vec<ticker_vector_analysis::TickerDistance> =
-        ticker_vector_analysis::TickerWithQuantity::get_euclidean_by_ticker_bucket(
+        ticker_vector_analysis::TickerDistance::get_euclidean_by_ticker_bucket(
             &tickers_with_quantity,
         )
         .await

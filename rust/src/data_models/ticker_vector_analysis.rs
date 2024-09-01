@@ -130,6 +130,36 @@ impl TickerDistance {
         .await
     }
 
+    pub async fn get_euclidean_by_ticker_bucket(
+        tickers_with_quantity: &Vec<TickerWithQuantity>,
+    ) -> Result<Vec<TickerDistance>, String> {
+        // Generate the custom vector based on the quantities of the tickers
+        let custom_vector =
+            TickerWithQuantity::generate_bucket_vector(tickers_with_quantity).await?;
+
+        // Triangulate the PCA coordinates for the custom vector
+        let custom_pca_coords =
+            TickerDistance::triangulate_pca_coordinates(custom_vector.clone()).await?;
+
+        // Call the base method directly with the custom vector and triangulated PCA coordinates
+        let owned_ticker_vectors = OwnedTickerVectors::get_all_ticker_vectors().await?;
+        let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
+
+        // Collect all ticker_ids in the input tickers_with_quantity to exclude them
+        let exclude_ticker_ids: Vec<TickerId> = tickers_with_quantity
+            .iter()
+            .map(|ticker_with_quantity| ticker_with_quantity.ticker_id)
+            .collect();
+
+        TickerDistance::find_closest_tickers_by_vector(
+            &custom_vector,
+            &custom_pca_coords,
+            &ticker_vectors,
+            Some(&exclude_ticker_ids), // Pass the exclude_ticker_ids list
+        )
+        .await
+    }
+
     pub async fn triangulate_pca_coordinates(user_vector: Vec<f32>) -> Result<Vec<f32>, String> {
         let owned_ticker_vectors = OwnedTickerVectors::get_all_ticker_vectors().await?;
         let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
@@ -299,35 +329,6 @@ impl CosineSimilarityResult {
 }
 
 impl TickerWithQuantity {
-    pub async fn get_euclidean_by_ticker_bucket(
-        tickers_with_quantity: &Vec<TickerWithQuantity>,
-    ) -> Result<Vec<TickerDistance>, String> {
-        // Generate the custom vector based on the quantities of the tickers
-        let custom_vector = Self::generate_bucket_vector(tickers_with_quantity).await?;
-
-        // Triangulate the PCA coordinates for the custom vector
-        let custom_pca_coords =
-            TickerDistance::triangulate_pca_coordinates(custom_vector.clone()).await?;
-
-        // Call the base method directly with the custom vector and triangulated PCA coordinates
-        let owned_ticker_vectors = OwnedTickerVectors::get_all_ticker_vectors().await?;
-        let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
-
-        // Collect all ticker_ids in the input tickers_with_quantity to exclude them
-        let exclude_ticker_ids: Vec<TickerId> = tickers_with_quantity
-            .iter()
-            .map(|ticker_with_quantity| ticker_with_quantity.ticker_id)
-            .collect();
-
-        TickerDistance::find_closest_tickers_by_vector(
-            &custom_vector,
-            &custom_pca_coords,
-            &ticker_vectors,
-            Some(&exclude_ticker_ids), // Pass the exclude_ticker_ids list
-        )
-        .await
-    }
-
     async fn generate_bucket_vector(
         tickers_with_quantity: &Vec<TickerWithQuantity>,
     ) -> Result<Vec<f32>, String> {
