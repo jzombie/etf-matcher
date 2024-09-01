@@ -15,6 +15,7 @@ import {
   fetchEuclideanByTicker,
   fetchEuclideanByTickerBucket,
 } from "./lib/fetchEuclidean";
+import fetchImageInfo from "./lib/fetchImageInfo";
 import fetchTickerId from "./lib/fetchTickerId";
 import generateQRCode from "./lib/generateQRCode";
 import searchTickers from "./lib/searchTickers";
@@ -67,4 +68,5 @@ export {
   preloadSearchCache,
   generateQRCode,
   searchTickers,
+  fetchImageInfo,
 };

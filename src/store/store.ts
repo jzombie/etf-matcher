@@ -17,7 +17,6 @@ import type {
   RustServiceETFAggregateDetail,
   RustServiceETFHoldingTickerResponse,
   RustServiceETFHoldingWeightResponse,
-  RustServiceImageInfo,
   RustServicePaginatedResults,
   RustServiceTicker10KDetail,
   RustServiceTickerDetail,
@@ -511,10 +510,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       "get_etf_aggregate_detail_by_ticker_id",
       [etfTickerId],
     );
-  }
-
-  async fetchImageInfo(filename: string): Promise<RustServiceImageInfo> {
-    return callRustService<RustServiceImageInfo>("get_image_info", [filename]);
   }
 
   async fetchSymbolAndExchangeByTickerId(

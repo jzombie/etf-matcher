@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
-import store from "@src/store";
-
+import { fetchImageInfo } from "@utils/callRustService";
 import type { RustServiceImageInfo } from "@utils/callRustService";
 
 import useStableCurrentRef from "./useStableCurrentRef";
@@ -21,8 +20,7 @@ export default function useEncodedImage(encSrc?: string) {
 
     if (encSrc) {
       setIsLoading(true);
-      store
-        .fetchImageInfo(encSrc)
+      fetchImageInfo(encSrc)
         .then((imageInfo: RustServiceImageInfo) => {
           if (encSrcStaticRef.current === encSrc) {
             setBase64(imageInfo.base64);
