@@ -111,13 +111,11 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                 {`${tickerBucket.tickers.length} item${tickerBucket.tickers.length !== 1 ? "s" : ""}`}
               </Typography>
             )}
-
             {tickerBucket.description && (
               <Typography variant="body2" color="textSecondary" mt={1}>
                 {tickerBucket.description}
               </Typography>
             )}
-
             {isEditing && (
               <ScrollTo>
                 <BucketForm
@@ -127,7 +125,6 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                 />
               </ScrollTo>
             )}
-
             <>
               {!isEditing && (
                 <>
@@ -183,17 +180,14 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                 </>
               )}
             </>
-          </Section>
-        </Padding>
-
-        <Padding>
-          <Section>
-            [PROTO VECTOR QUERY]
-            {
-              // TODO: Re-handle
-              // TODO: Ensure re-render when tickerBucket content changes (perhaps just make the component `key-based`)
-            }
-            <TickerVectorQueryTable queryMode="bucket" query={tickerBucket} />
+            <div>
+              [PROTO VECTOR QUERY]
+              {
+                // TODO: Re-handle
+                // TODO: Ensure re-render when tickerBucket content changes (perhaps just make the component `key-based`)
+              }
+              <TickerVectorQueryTable queryMode="bucket" query={tickerBucket} />
+            </div>
           </Section>
         </Padding>
       </ScrollTo>
