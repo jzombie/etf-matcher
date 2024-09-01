@@ -24,7 +24,12 @@ import type {
   RustServiceTickerDetail,
   RustServiceTickerSearchResult,
 } from "@utils/callRustService";
-import { clearCache, removeCacheEntry } from "@utils/callRustService";
+import {
+  clearCache,
+  fetchCacheDetails,
+  fetchCacheSize,
+  removeCacheEntry,
+} from "@utils/callRustService";
 import callRustService, {
   NotifierEvent,
   subscribe as libRustServiceSubscribe,
@@ -463,12 +468,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   private async _syncCacheDetails(): Promise<void> {
-    callRustService<number>("get_cache_size").then((cacheSize) => {
+    fetchCacheSize().then((cacheSize) => {
       this.setState({ cacheSize });
     });
-    callRustService<RustServiceCacheDetail[]>("get_cache_details").then(
-      (cacheDetails) => this.setState({ cacheDetails }),
-    );
+    fetchCacheDetails().then((cacheDetails) => this.setState({ cacheDetails }));
   }
 
   private _syncDataBuildInfo(): void {

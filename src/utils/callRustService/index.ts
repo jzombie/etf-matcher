@@ -1,5 +1,10 @@
 import callRustService, { subscribe } from "./callRustService";
-import clearCache from "./lib/clearCache";
+import {
+  clearCache,
+  fetchCacheDetails,
+  fetchCacheSize,
+  removeCacheEntry,
+} from "./lib/cache";
 import {
   fetchCosineByTicker,
   fetchCosineByTickerBucket,
@@ -8,7 +13,6 @@ import {
   fetchEuclideanByTicker,
   fetchEuclideanByTickerBucket,
 } from "./lib/fetchEuclidean";
-import removeCacheEntry from "./lib/removeCacheEntry";
 import type {
   RustServiceCacheDetail,
   RustServiceCosineSimilarityResult,
@@ -51,4 +55,6 @@ export {
   fetchCosineByTickerBucket,
   fetchEuclideanByTicker,
   fetchEuclideanByTickerBucket,
+  fetchCacheSize,
+  fetchCacheDetails,
 };
