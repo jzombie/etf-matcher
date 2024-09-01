@@ -18,8 +18,8 @@ import SharedSessionManager from "@components/SharedSessionManager";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
-import formatByteSize from "@utils/formatByteSize";
 import formatLocalTime from "@utils/formatLocalTime";
+import formatByteSize from "@utils/string/formatByteSize";
 
 import RustCachePieChart from "./SettingsManager.RustCachePieChart";
 import RustCacheTable from "./SettingsManager.RustCacheTable";

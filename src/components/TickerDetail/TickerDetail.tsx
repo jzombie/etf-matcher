@@ -11,7 +11,7 @@ import useTickerDetail from "@hooks/useTickerDetail";
 
 import type { RustServiceETFAggregateDetail } from "@utils/callRustService";
 import { fetchETFAggregateDetailByTickerId } from "@utils/callRustService";
-import formatSymbolWithExchange from "@utils/formatSymbolWithExchange";
+import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
 import TickerContainer from "../TickerContainer";
 import TickerDetailBucketManager from "./TickerDetail.BucketManager";

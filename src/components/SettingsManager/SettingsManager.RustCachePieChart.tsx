@@ -14,7 +14,7 @@ import {
 import useStoreStateReader from "@hooks/useStoreStateReader";
 
 import type { RustServiceCacheDetail } from "@utils/callRustService";
-import formatByteSize from "@utils/formatByteSize";
+import formatByteSize from "@utils/string/formatByteSize";
 
 // Define a type for the data entries
 interface CacheDetail {
