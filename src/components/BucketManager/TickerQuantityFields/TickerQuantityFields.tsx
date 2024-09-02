@@ -27,6 +27,25 @@ export default function TickerQuantityFields({
   omitShares = false,
 }: TickerQuantityFieldsProps) {
   const [newTicker, setNewTicker] = useState<TickerBucketTicker | null>(null);
+  const [errorFields, setErrorFields] = useState<Set<number | string>>(
+    new Set(),
+  );
+
+  // Handle error state changes by adding/removing field IDs to/from the Set
+  const handleErrorStateChange = useCallback(
+    (fieldId: number | string, hasError: boolean) => {
+      setErrorFields((prevErrors) => {
+        const updatedErrors = new Set(prevErrors);
+        if (hasError) {
+          updatedErrors.add(fieldId);
+        } else {
+          updatedErrors.delete(fieldId);
+        }
+        return updatedErrors;
+      });
+    },
+    [],
+  );
 
   const handleAddNewTickerFields = useCallback(() => {
     setNewTicker({ tickerId: 0, symbol: "", quantity: 1 });
@@ -57,9 +76,9 @@ export default function TickerQuantityFields({
     const onSaveableStateChange = onSaveableStateChangeStableCurrentRef.current;
 
     if (typeof onSaveableStateChange === "function") {
-      onSaveableStateChange(!newTicker);
+      onSaveableStateChange(errorFields.size === 0 && !newTicker);
     }
-  }, [onSaveableStateChangeStableCurrentRef, newTicker]);
+  }, [onSaveableStateChangeStableCurrentRef, newTicker, errorFields]);
 
   // Initialize existing tickers from the tickerBucket prop
   useEffect(() => {
@@ -111,38 +130,43 @@ export default function TickerQuantityFields({
     setExistingTickers(
       existingTickers.filter((ticker) => ticker.tickerId !== tickerId),
     );
+    setErrorFields((prevErrors) => {
+      const updatedErrors = new Set(prevErrors);
+      updatedErrors.delete(tickerId);
+      return updatedErrors;
+    });
   };
 
   return (
     <Container maxWidth="md">
       <Box sx={{ my: 4 }}>
         <Grid container spacing={3}>
-          {
-            // Render existing form fields from the tickerBucket or newly added ones
-            existingTickers.map((bucketTicker, idx) => (
-              <TickerQuantityFieldsItem
-                key={bucketTicker?.tickerId || idx}
-                initialBucketTicker={bucketTicker}
-                existingBucketTickers={existingTickers}
-                onUpdate={(updatedTicker: TickerBucketTicker | null) =>
-                  handleUpdateField(updatedTicker)
-                }
-                onDelete={() => handleRemoveField(bucketTicker.tickerId)}
-                omitShares={omitShares}
-              />
-            ))
-          }
-          {
-            // Render the new form field if a new ticker is being added
-            newTicker && (
-              <TickerQuantityFieldsItem
-                existingBucketTickers={existingTickers}
-                onUpdate={handleUpdateField}
-                onCancel={handleRemoveNewTickerFields}
-                omitShares={omitShares}
-              />
-            )
-          }
+          {existingTickers.map((bucketTicker, idx) => (
+            <TickerQuantityFieldsItem
+              key={bucketTicker?.tickerId || idx}
+              initialBucketTicker={bucketTicker}
+              existingBucketTickers={existingTickers}
+              onUpdate={(updatedTicker: TickerBucketTicker | null) =>
+                handleUpdateField(updatedTicker)
+              }
+              onDelete={() => handleRemoveField(bucketTicker.tickerId)}
+              onErrorStateChange={(hasError) =>
+                handleErrorStateChange(bucketTicker?.tickerId || idx, hasError)
+              }
+              omitShares={omitShares}
+            />
+          ))}
+          {newTicker && (
+            <TickerQuantityFieldsItem
+              existingBucketTickers={existingTickers}
+              onUpdate={handleUpdateField}
+              onCancel={handleRemoveNewTickerFields}
+              onErrorStateChange={(hasError) =>
+                handleErrorStateChange(newTicker.tickerId || "new", hasError)
+              }
+              omitShares={omitShares}
+            />
+          )}
           <Grid item xs={12}>
             <Button
               variant="contained"

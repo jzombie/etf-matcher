@@ -237,3 +237,8 @@ export type RustServiceCosineSimilarityResult = {
   ticker_id: number;
   similarity_score: number;
 };
+
+export type RustServiceTickerWithQuantity = {
+  ticker_id: number;
+  quantity: number;
+};

@@ -12,11 +12,10 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 
-import { RustServiceCacheDetail } from "@src/types";
-
 import useStoreStateReader from "@hooks/useStoreStateReader";
 
-import formatByteSize from "@utils/formatByteSize";
+import { RustServiceCacheDetail } from "@utils/callRustService";
+import formatByteSize from "@utils/string/formatByteSize";
 
 // Import the utility function
 

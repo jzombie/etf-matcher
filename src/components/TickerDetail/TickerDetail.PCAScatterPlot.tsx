@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import AutoScaler from "@layoutKit/AutoScaler";
-import store from "@src/store";
-import { RustServiceTickerDetail } from "@src/types";
 import {
   Scatter,
   ScatterChart,
@@ -13,6 +11,8 @@ import {
 } from "recharts";
 import { NameType } from "recharts/types/component/DefaultTooltipContent";
 
+import { fetchEuclideanByTicker } from "@utils/callRustService";
+import { RustServiceTickerDetail } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
 const RADIAL_STROKE_COLOR = "#999";
@@ -42,8 +42,7 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
 
   useEffect(() => {
     if (tickerDetail) {
-      store
-        .fetchClosestTickers(tickerDetail.ticker_id)
+      fetchEuclideanByTicker(tickerDetail.ticker_id)
         .then((data) =>
           data.map((item) => ({
             ticker_id: item.ticker_id,

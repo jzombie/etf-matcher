@@ -3,14 +3,15 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Box, CircularProgress, Grid } from "@mui/material";
 
 import Center from "@layoutKit/Center";
-import store from "@src/store";
-import type { RustServiceETFAggregateDetail } from "@src/types";
 
 import LazyRender from "@components/LazyRender";
+import TickerVectorTable from "@components/TickerVectorQueryTable";
 
 import useTickerDetail from "@hooks/useTickerDetail";
 
-import formatSymbolWithExchange from "@utils/formatSymbolWithExchange";
+import type { RustServiceETFAggregateDetail } from "@utils/callRustService";
+import { fetchETFAggregateDetailByTickerId } from "@utils/callRustService";
+import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
 import TickerContainer from "../TickerContainer";
 import TickerDetailBucketManager from "./TickerDetail.BucketManager";
@@ -20,7 +21,6 @@ import FinancialChartsGrid from "./TickerDetail.FinancialChartsGrid";
 import TickerDetailHeader from "./TickerDetail.Header";
 import HistoricalPriceChart from "./TickerDetail.HistoricalPriceChart";
 import PCAScatterPlot from "./TickerDetail.PCAScatterPlot";
-import TickerVectorTable from "./TickerDetail.TickerVectorTable";
 
 export type TickerDetailProps = React.HTMLAttributes<HTMLDivElement> & {
   tickerId: number;
@@ -47,9 +47,9 @@ export default function TickerDetail({
 
   useEffect(() => {
     if (tickerDetail?.is_etf) {
-      store
-        .fetchETFAggregateDetailByTickerId(tickerDetail.ticker_id)
-        .then(setETFAggregateDetail);
+      fetchETFAggregateDetailByTickerId(tickerDetail.ticker_id).then(
+        setETFAggregateDetail,
+      );
     }
   }, [tickerDetail]);
 
@@ -102,7 +102,7 @@ export default function TickerDetail({
           <TickerDetailBucketManager tickerDetail={tickerDetail} />
         </Box>
 
-        <TickerVectorTable tickerDetail={tickerDetail} />
+        <TickerVectorTable queryMode={"ticker-detail"} query={tickerDetail} />
 
         <FinancialChartsGrid tickerDetail={tickerDetail} />
 
