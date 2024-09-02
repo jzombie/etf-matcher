@@ -19,6 +19,7 @@ const renderComponent = (
     onUpdate: vi.fn(),
     onDelete: vi.fn(),
     onCancel: vi.fn(),
+    onErrorStateChange: vi.fn(),
     omitShares: false,
   };
   return render(<TickerQuantityFieldsItem {...defaultProps} {...props} />);
@@ -103,6 +104,7 @@ describe("TickerQuantityFieldsItem", () => {
       <TickerQuantityFieldsItem
         onUpdate={onUpdate}
         existingBucketTickers={[]}
+        onErrorStateChange={vi.fn()}
       />,
     );
 
@@ -137,6 +139,7 @@ describe("TickerQuantityFieldsItem", () => {
             quantity: 1000000,
           },
         ]}
+        onErrorStateChange={vi.fn()}
       />,
     );
 
