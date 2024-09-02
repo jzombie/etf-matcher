@@ -116,4 +116,61 @@ describe("TickerQuantityFieldsItem", () => {
     const presentations = screen.getAllByRole("presentation");
     expect(presentations.length).toBeGreaterThan(0);
   });
+
+  it("correctly formats and updates the quantity with commas in the Shares input field while typing", () => {
+    const onUpdate = vi.fn();
+
+    render(
+      <TickerQuantityFieldsItem
+        onUpdate={onUpdate}
+        initialBucketTicker={{
+          tickerId: 1,
+          symbol: "AAPL",
+          exchangeShortName: "NASDAQ",
+          quantity: 1000000, // Start with a value that should be formatted
+        }}
+        existingBucketTickers={[
+          {
+            tickerId: 1,
+            symbol: "AAPL",
+            exchangeShortName: "NASDAQ",
+            quantity: 1000000,
+          },
+        ]}
+      />,
+    );
+
+    // Verify the initial quantity is correctly formatted with commas
+    expect(screen.getByLabelText(/shares/i)).toHaveValue("1,000,000");
+
+    // Simulate typing to update the value and check formatting
+    const sharesInput = screen.getByLabelText(/shares/i);
+
+    // Simulate clearing the input and typing a new value
+    fireEvent.change(sharesInput, { target: { value: "2000" } });
+    expect(sharesInput).toHaveValue("2,000");
+
+    fireEvent.change(sharesInput, { target: { value: "200000" } });
+    expect(sharesInput).toHaveValue("200,000");
+
+    fireEvent.change(sharesInput, { target: { value: "2000000" } });
+    expect(sharesInput).toHaveValue("2,000,000");
+
+    // Continue typing to reach a larger formatted value
+    fireEvent.change(sharesInput, { target: { value: "123456789" } });
+    expect(sharesInput).toHaveValue("123,456,789");
+
+    // Test backspacing to remove digits and check the updated format
+    fireEvent.change(sharesInput, { target: { value: "12345678" } });
+    expect(sharesInput).toHaveValue("12,345,678");
+
+    fireEvent.change(sharesInput, { target: { value: "1234567" } });
+    expect(sharesInput).toHaveValue("1,234,567");
+
+    fireEvent.change(sharesInput, { target: { value: "123456" } });
+    expect(sharesInput).toHaveValue("123,456");
+
+    fireEvent.change(sharesInput, { target: { value: "12345" } });
+    expect(sharesInput).toHaveValue("12,345");
+  });
 });

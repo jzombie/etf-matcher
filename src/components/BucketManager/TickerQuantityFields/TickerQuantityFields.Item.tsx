@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import { Grid, IconButton, TextField } from "@mui/material";
@@ -45,6 +45,21 @@ export default function TickerQuantityFieldsItem({
       ? bucketTicker.quantity.toString() // Start with the raw value
       : "",
   );
+  const formattedQuantityInputValue = useMemo(() => {
+    // Split the value into integer and fractional parts
+    const [integerPart, fractionalPart] = quantityInputValue.split(".");
+
+    // Format the integer part with commas
+    const formattedInteger = formatNumberWithCommas(integerPart);
+
+    // Reconstruct the full value
+    const formattedValue =
+      fractionalPart !== undefined
+        ? `${formattedInteger}.${fractionalPart}`
+        : formattedInteger;
+
+    return formattedValue;
+  }, [quantityInputValue]);
 
   const { tickerDetail } = useTickerDetail(bucketTicker?.tickerId);
   const [tickerError, setTickerError] = useState<string | null>(null);
@@ -85,19 +100,7 @@ export default function TickerQuantityFieldsItem({
 
       setTickerError(null);
 
-      // Split the value into integer and fractional parts
-      const [integerPart, fractionalPart] = rawValue.split(".");
-
-      // Format the integer part with commas
-      const formattedInteger = formatNumberWithCommas(integerPart);
-
-      // Reconstruct the full value
-      const formattedValue =
-        fractionalPart !== undefined
-          ? `${formattedInteger}.${fractionalPart}`
-          : formattedInteger;
-
-      setQuantityInputValue(formattedValue);
+      setQuantityInputValue(rawValue);
 
       if (bucketTicker && rawValue) {
         const numericValue = parseFloat(rawValue);
@@ -170,7 +173,7 @@ export default function TickerQuantityFieldsItem({
               fullWidth
               required
               type="text" // `text` is used so the number can be numerically formatted
-              value={quantityInputValue}
+              value={formattedQuantityInputValue}
               onChange={handleQuantityInputChange}
               disabled={!bucketTicker}
               size="small"
