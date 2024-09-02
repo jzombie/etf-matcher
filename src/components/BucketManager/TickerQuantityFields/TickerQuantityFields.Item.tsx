@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import { Grid, IconButton, TextField } from "@mui/material";
@@ -21,6 +21,7 @@ export type TickerQuantityFieldsItemProps = {
   onUpdate: (bucketTicker: TickerBucketTicker | null) => void;
   onDelete?: (bucketTicker: TickerBucketTicker) => void;
   onCancel?: () => void;
+  onErrorStateChange: (hasError: boolean) => void;
   omitShares?: boolean;
 };
 
@@ -29,12 +30,14 @@ export default function TickerQuantityFieldsItem({
   onUpdate,
   onDelete,
   onCancel,
+  onErrorStateChange,
   existingBucketTickers = [],
   omitShares = false,
 }: TickerQuantityFieldsItemProps) {
   const onUpdateStableRef = useStableCurrentRef(onUpdate);
   const onDeleteStableRef = useStableCurrentRef(onDelete);
   const onCancelStableRef = useStableCurrentRef(onCancel);
+  const onErrorStateChangeStableRef = useStableCurrentRef(onErrorStateChange);
 
   const [bucketTicker, _setBucketTicker] = useState<
     TickerBucketTicker | undefined | null
@@ -64,6 +67,15 @@ export default function TickerQuantityFieldsItem({
   const { tickerDetail } = useTickerDetail(bucketTicker?.tickerId);
   const [tickerError, setTickerError] = useState<string | null>(null);
 
+  // Handle `onErrorStateChange` callback
+  useEffect(() => {
+    const onErrorStateChange = onErrorStateChangeStableRef.current;
+
+    if (typeof onErrorStateChange === "function") {
+      onErrorStateChange(Boolean(tickerError));
+    }
+  }, [tickerError, onErrorStateChangeStableRef]);
+
   const handleSetBucketTicker = useCallback(
     (bucketTicker: TickerBucketTicker | null) => {
       if (
@@ -87,7 +99,7 @@ export default function TickerQuantityFieldsItem({
 
   const handleQuantityInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      const value = event.target.value;
+      const value = event.target.value.trim();
 
       // Remove commas for processing
       const rawValue = removeCommas(value);
