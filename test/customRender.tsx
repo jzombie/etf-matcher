@@ -4,7 +4,7 @@ import { RenderOptions, render } from "@testing-library/react";
 
 import { BrowserRouter } from "react-router-dom";
 
-import NotificationProvider from "../src/components/NotificationProvider";
+import NotificationProvider from "../src/providers/NotificationProvider";
 
 const AllProviders = ({ children }: { children: React.ReactNode }) => {
   return (
