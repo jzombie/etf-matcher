@@ -7,7 +7,6 @@ import ListAltIcon from "@mui/icons-material/ListAlt";
 import {
   Box,
   Button,
-  Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
@@ -24,6 +23,7 @@ import type { TickerBucket } from "@src/store";
 import { Link } from "react-router-dom";
 
 import BucketForm from "@components/BucketManager/BucketManager.BucketForm";
+import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
 import DialogModal from "@components/DialogModal";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
@@ -177,7 +177,7 @@ export default function TickerDetailBucketManager({
         })}
       </Grid>
 
-      <Dialog
+      <DeleteEntityDialogModal
         open={isDeleteDialogOpen}
         onClose={handleCloseDeleteDialog}
         aria-labelledby={alertDialogTitleId}
@@ -198,7 +198,7 @@ export default function TickerDetailBucketManager({
             Delete
           </Button>
         </DialogActions>
-      </Dialog>
+      </DeleteEntityDialogModal>
 
       <DialogModal open={isBucketDialogOpen} onClose={handleCloseBucketDialog}>
         <DialogTitle>

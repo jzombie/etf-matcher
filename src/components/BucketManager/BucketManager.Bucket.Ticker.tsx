@@ -6,7 +6,6 @@ import {
   Box,
   Button,
   CircularProgress,
-  Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
@@ -21,6 +20,7 @@ import type { TickerBucket, TickerBucketTicker } from "@src/store";
 import store, { tickerBucketDefaultNames } from "@src/store";
 
 import AvatarLogo from "@components/AvatarLogo";
+import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
 
 import useTickerDetail from "@hooks/useTickerDetail";
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
@@ -186,7 +186,7 @@ export default function BucketTicker({
       </Box>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog
+      <DeleteEntityDialogModal
         open={open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
@@ -209,7 +209,7 @@ export default function BucketTicker({
             Delete
           </Button>
         </DialogActions>
-      </Dialog>
+      </DeleteEntityDialogModal>
     </Paper>
   );
 }

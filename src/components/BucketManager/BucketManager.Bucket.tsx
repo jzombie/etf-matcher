@@ -7,7 +7,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   Box,
   Button,
-  Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
@@ -19,6 +18,7 @@ import Padding from "@layoutKit/Padding";
 import store, { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucket } from "@src/store";
 
+import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
 import ScrollTo from "@components/ScrollTo";
 import SearchModalButton from "@components/SearchModalButton";
 import Section from "@components/Section";
@@ -193,7 +193,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
         </Padding>
       </ScrollTo>
 
-      <Dialog
+      <DeleteEntityDialogModal
         open={isDeleteDialogOpen}
         onClose={handleFormClose}
         aria-labelledby={alertDialogTitleId}
@@ -215,7 +215,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
             Delete
           </Button>
         </DialogActions>
-      </Dialog>
+      </DeleteEntityDialogModal>
     </>
   );
 }

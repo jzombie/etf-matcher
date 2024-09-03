@@ -2,13 +2,13 @@ import React, { useCallback, useId, useState } from "react";
 
 import {
   Button,
-  Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
 
+import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
 import Section from "@components/Section";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
@@ -69,7 +69,7 @@ export default function UserDataSection() {
         <TickerBucketList tickerBuckets={tickerBuckets} />
       </Section>
 
-      <Dialog
+      <DeleteEntityDialogModal
         open={isDialogOpen}
         onClose={handleCloseClearDataDialog}
         aria-labelledby={alertDialogTitleId}
@@ -90,7 +90,7 @@ export default function UserDataSection() {
             Confirm
           </Button>
         </DialogActions>
-      </Dialog>
+      </DeleteEntityDialogModal>
     </>
   );
 }
