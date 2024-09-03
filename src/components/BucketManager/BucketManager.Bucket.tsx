@@ -195,27 +195,18 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
 
       <DeleteEntityDialogModal
         open={isDeleteDialogOpen}
-        onClose={handleFormClose}
-        aria-labelledby={alertDialogTitleId}
-        aria-describedby={alertDialogDescriptionId}
-      >
-        <DialogTitle id={alertDialogTitleId}>{"Confirm Delete"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id={alertDialogDescriptionId}>
+        title="Confirm Delete"
+        content={
+          <>
             Are you sure you want to delete the{" "}
             {tickerBucketDefaultNames[tickerBucket.type].toLowerCase()} &quot;
             {tickerBucket?.name}&quot;? This action cannot be undone.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleFormClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleConfirmDelete} color="error" autoFocus>
-            Delete
-          </Button>
-        </DialogActions>
-      </DeleteEntityDialogModal>
+          </>
+        }
+        onClose={handleFormClose}
+        onCancel={handleFormClose}
+        onDelete={handleConfirmDelete}
+      />
     </>
   );
 }
