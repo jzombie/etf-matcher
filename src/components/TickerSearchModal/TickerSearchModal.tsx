@@ -81,7 +81,9 @@ export default function TickerSearchModal({
     setPage,
     pageSize,
     totalPages,
-  } = useTickerSearchModalContent();
+  } = useTickerSearchModalContent({
+    isSearchModalOpen: isOpen,
+  });
 
   const handleCancel = useCallback(() => {
     try {
