@@ -16,6 +16,8 @@ export default function useTickerSearchModalContent({
 }: TickerSearchModalContentProps) {
   const [recentlyViewedSearchResults, setRecentlyViewedSearchResults] =
     useState<RustServiceTickerSearchResult[]>([]);
+  const [recentlyViewedSelectedIndex, setRecentlyViewedSelectedIndex] =
+    useState<number>(-1);
 
   const {
     searchQuery: tickerSearchQuery,
@@ -62,10 +64,11 @@ export default function useTickerSearchModalContent({
 
         setRecentlyViewedSearchResults(recentlyViewedSearchResults);
       });
+    } else {
+      // Reset selected index
+      setRecentlyViewedSelectedIndex(-1);
     }
   }, [isSearchModalOpen, tickerSearchQuery]);
-
-  // TODO: If no search results, show most recently viewed
 
   // Output adapter
   const {
@@ -81,8 +84,8 @@ export default function useTickerSearchModalContent({
     if (!tickerSearchQuery.trim().length) {
       return {
         searchResults: recentlyViewedSearchResults,
-        setSelectedIndex: () => null, // TODO: Handle
-        selectedIndex: 0, // TODO: Handle
+        setSelectedIndex: setRecentlyViewedSelectedIndex,
+        selectedIndex: recentlyViewedSelectedIndex,
         totalSearchResults: recentlyViewedSearchResults.length,
         page: 1,
         setPage: () => null,
@@ -111,8 +114,8 @@ export default function useTickerSearchModalContent({
     setTickerResultsPage,
     setTickerResultsPageSize,
     totalTickerResultsPages,
-    //
     recentlyViewedSearchResults,
+    recentlyViewedSelectedIndex,
   ]);
 
   // TODO: Also return `mode` to show which type of results are being used
