@@ -11,8 +11,10 @@ export type TickerSearchModalContentProps = {
   isSearchModalOpen: boolean;
 };
 
-// TODO: Rename accordingly
-type TickerSearchModalResultsMode = "ticker-search-results" | "bucket-view";
+type TickerSearchModalResultsMode =
+  | "ticker_search_results"
+  | "recently_viewed"
+  | "ticker_tape";
 
 type TickerSearchModalResultsResponse = {
   searchQuery: string;
@@ -36,6 +38,10 @@ export default function useTickerSearchModalContent({
   const [recentlyViewedSelectedIndex, setRecentlyViewedSelectedIndex] =
     useState<number>(-1);
 
+  const [resultsMode, setResultsMode] = useState<TickerSearchModalResultsMode>(
+    "ticker_search_results",
+  );
+
   const {
     searchQuery: tickerSearchQuery,
     setSearchQuery: setTickerSearchQuery,
@@ -56,6 +62,8 @@ export default function useTickerSearchModalContent({
     if (isSearchModalOpen && !tickerSearchQuery.trim().length) {
       const recentlyViewed =
         store.getFirstTickerBucketOfType("recently_viewed");
+
+      setResultsMode("recently_viewed");
 
       const resultsPromise =
         recentlyViewed?.tickers &&
@@ -84,6 +92,8 @@ export default function useTickerSearchModalContent({
     } else {
       // Reset selected index
       setRecentlyViewedSelectedIndex(-1);
+
+      setResultsMode("ticker_search_results");
     }
   }, [isSearchModalOpen, tickerSearchQuery]);
 
@@ -97,14 +107,13 @@ export default function useTickerSearchModalContent({
     setPage,
     pageSize,
     totalPages,
-    resultsMode,
-  } = useMemo<TickerSearchModalResultsResponse>(() => {
+  } = useMemo<Omit<TickerSearchModalResultsResponse, "resultsMode">>(() => {
     const common = {
       searchQuery: tickerSearchQuery,
       setSearchQuery: setTickerSearchQuery,
     };
 
-    if (!tickerSearchQuery.trim().length) {
+    if (resultsMode !== "ticker_search_results") {
       return {
         ...common,
         searchResults: recentlyViewedSearchResults,
@@ -115,7 +124,6 @@ export default function useTickerSearchModalContent({
         setPage: () => {}, // no-op
         pageSize: recentlyViewedSearchResults.length,
         totalPages: 1,
-        resultsMode: "bucket-view",
       };
     }
 
@@ -129,7 +137,6 @@ export default function useTickerSearchModalContent({
       setPage: setTickerResultsPage,
       pageSize: setTickerResultsPageSize,
       totalPages: totalTickerResultsPages,
-      resultsMode: "ticker-search-results",
     };
   }, [
     tickerSearchQuery,
@@ -144,6 +151,7 @@ export default function useTickerSearchModalContent({
     totalTickerResultsPages,
     recentlyViewedSearchResults,
     recentlyViewedSelectedIndex,
+    resultsMode,
   ]);
 
   return {
