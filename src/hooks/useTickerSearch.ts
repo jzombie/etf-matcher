@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { RustServiceTickerSearchResult } from "@utils/callRustService";
 import { searchTickers } from "@utils/callRustService";
+import customLogger from "@utils/customLogger";
 import debounceWithKey from "@utils/debounceWithKey";
 
 import usePagination from "./usePagination";
@@ -23,7 +24,6 @@ const DEFAULT_PROPS: Required<TickerSearchProps> = {
 };
 
 // TODO: Capture error state
-// TODO: Rename to `useTickerSearch`
 export default function useTickerSearch(
   props: Partial<TickerSearchProps> = DEFAULT_PROPS,
 ) {
@@ -111,6 +111,9 @@ export default function useTickerSearch(
               _setTotalSearchResults(total_count);
               setPage(activePage);
               setSelectedIndex(DEFAULT_PROPS.initialSelectedIndex);
+            })
+            .catch((err) => {
+              customLogger.error("Caught error when searching tickers", err);
             })
             .finally(() => {
               _setisLoading(false);
