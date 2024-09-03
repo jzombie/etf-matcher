@@ -58,7 +58,7 @@ export default class AppErrorBoundaryProvider extends Component<
 }
 
 // Export the context for use in other components
-export function useErrorBoundary() {
+export function useAppErrorBoundary() {
   const context = React.useContext(ErrorBoundaryContext);
   if (context === undefined) {
     throw new Error(
