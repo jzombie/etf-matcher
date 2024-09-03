@@ -33,10 +33,10 @@ type TickerSearchModalResultsResponse = {
 export default function useTickerSearchModalContent({
   isSearchModalOpen,
 }: TickerSearchModalContentProps): TickerSearchModalResultsResponse {
-  const [recentlyViewedSearchResults, setRecentlyViewedSearchResults] =
-    useState<RustServiceTickerSearchResult[]>([]);
-  const [recentlyViewedSelectedIndex, setRecentlyViewedSelectedIndex] =
-    useState<number>(-1);
+  const [altSearchResults, setAltSearchResults] = useState<
+    RustServiceTickerSearchResult[]
+  >([]);
+  const [altSelectedIndex, setAltSelectedIndex] = useState<number>(-1);
 
   const [resultsMode, setResultsMode] = useState<TickerSearchModalResultsMode>(
     "ticker_search_results",
@@ -78,7 +78,7 @@ export default function useTickerSearchModalContent({
           .filter((result) => result.status === "fulfilled")
           .map((result) => result.value);
 
-        const recentlyViewedSearchResults: RustServiceTickerSearchResult[] =
+        const altSearchResults: RustServiceTickerSearchResult[] =
           fulfilledDetails.map((tickerDetail) => ({
             ticker_id: tickerDetail.ticker_id,
             symbol: tickerDetail.symbol,
@@ -87,11 +87,11 @@ export default function useTickerSearchModalContent({
             logo_filename: tickerDetail.logo_filename,
           }));
 
-        setRecentlyViewedSearchResults(recentlyViewedSearchResults);
+        setAltSearchResults(altSearchResults);
       });
     } else {
       // Reset selected index
-      setRecentlyViewedSelectedIndex(-1);
+      setAltSelectedIndex(-1);
 
       setResultsMode("ticker_search_results");
     }
@@ -116,13 +116,13 @@ export default function useTickerSearchModalContent({
     if (resultsMode !== "ticker_search_results") {
       return {
         ...common,
-        searchResults: recentlyViewedSearchResults,
-        setSelectedIndex: setRecentlyViewedSelectedIndex,
-        selectedIndex: recentlyViewedSelectedIndex,
-        totalSearchResults: recentlyViewedSearchResults.length,
+        searchResults: altSearchResults,
+        setSelectedIndex: setAltSelectedIndex,
+        selectedIndex: altSelectedIndex,
+        totalSearchResults: altSearchResults.length,
         page: 1,
         setPage: () => {}, // no-op
-        pageSize: recentlyViewedSearchResults.length,
+        pageSize: altSearchResults.length,
         totalPages: 1,
       };
     }
@@ -141,6 +141,7 @@ export default function useTickerSearchModalContent({
   }, [
     tickerSearchQuery,
     setTickerSearchQuery,
+    resultsMode,
     tickerSearchResults,
     setTickerSearchSelectedIndex,
     tickerSearchSelectedIndex,
@@ -149,9 +150,8 @@ export default function useTickerSearchModalContent({
     setTickerResultsPage,
     setTickerResultsPageSize,
     totalTickerResultsPages,
-    recentlyViewedSearchResults,
-    recentlyViewedSelectedIndex,
-    resultsMode,
+    altSearchResults,
+    altSelectedIndex,
   ]);
 
   return {
