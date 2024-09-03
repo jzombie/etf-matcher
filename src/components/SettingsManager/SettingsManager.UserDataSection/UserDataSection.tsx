@@ -1,4 +1,4 @@
-import React, { useCallback, useId, useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import { Button } from "@mui/material";
 
@@ -44,9 +44,6 @@ export default function UserDataSection() {
     store.reset();
     setIsDialogOpen(false);
   }, []);
-
-  const alertDialogTitleId = useId();
-  const alertDialogDescriptionId = useId();
 
   return (
     <>
