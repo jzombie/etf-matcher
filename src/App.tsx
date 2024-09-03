@@ -13,6 +13,8 @@ import TickerContainerProvider from "@providers/TickerContainerProvider";
 import "animate.css";
 import { RouterProvider } from "react-router-dom";
 
+import AppErrorBoundary from "@components/AppErrorBoundary";
+
 import useGAPageTracking from "@hooks/useGAPageTracking";
 
 import router from "./router";
@@ -22,15 +24,17 @@ export default function App() {
   useGAPageTracking();
 
   return (
-    <MultiMQTTRoomProvider>
-      <ThemeProvider theme={darkTheme}>
-        <CssBaseline />
-        <NotificationProvider>
-          <TickerContainerProvider>
-            <RouterProvider router={router} />
-          </TickerContainerProvider>
-        </NotificationProvider>
-      </ThemeProvider>
-    </MultiMQTTRoomProvider>
+    <AppErrorBoundary>
+      <MultiMQTTRoomProvider>
+        <ThemeProvider theme={darkTheme}>
+          <CssBaseline />
+          <NotificationProvider>
+            <TickerContainerProvider>
+              <RouterProvider router={router} />
+            </TickerContainerProvider>
+          </NotificationProvider>
+        </ThemeProvider>
+      </MultiMQTTRoomProvider>
+    </AppErrorBoundary>
   );
 }
