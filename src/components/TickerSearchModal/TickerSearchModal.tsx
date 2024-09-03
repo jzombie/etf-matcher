@@ -28,10 +28,11 @@ import DialogModal, { DialogModalProps } from "@components/DialogModal";
 import EncodedImage from "@components/EncodedImage";
 
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
-import useTickerSearch from "@hooks/useTickerSearch";
 
 import { RustServiceTickerSearchResult } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
+
+import useTickerSearchModalContent from "./useTickerSearchModalContent";
 
 export type TickerSearchModalProps = Omit<DialogModalProps, "children"> & {
   onSelectSearchQuery?: (searchQuery: string, isExact: boolean) => void;
@@ -80,9 +81,7 @@ export default function TickerSearchModal({
     setPage,
     pageSize,
     totalPages,
-  } = useTickerSearch({
-    initialPageSize: 10,
-  });
+  } = useTickerSearchModalContent();
 
   const handleCancel = useCallback(() => {
     try {
