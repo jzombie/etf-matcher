@@ -323,7 +323,7 @@ export default function TickerSearchModal({
         )}
       </Box>
       <DialogActions>
-        {totalSearchResults > 0 && (
+        {searchQuery.trim() && totalSearchResults > 0 && (
           <div
             style={{
               fontStyle: "italic",
