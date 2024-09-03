@@ -1,14 +1,8 @@
-import React, { useCallback, useId, useState } from "react";
+import React, { useCallback, useState } from "react";
 
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from "@mui/material";
+import { Button } from "@mui/material";
 
+import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
 import Section from "@components/Section";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
@@ -51,9 +45,6 @@ export default function UserDataSection() {
     setIsDialogOpen(false);
   }, []);
 
-  const alertDialogTitleId = useId();
-  const alertDialogDescriptionId = useId();
-
   return (
     <>
       <Section>
@@ -69,28 +60,19 @@ export default function UserDataSection() {
         <TickerBucketList tickerBuckets={tickerBuckets} />
       </Section>
 
-      <Dialog
+      <DeleteEntityDialogModal
         open={isDialogOpen}
         onClose={handleCloseClearDataDialog}
-        aria-labelledby={alertDialogTitleId}
-        aria-describedby={alertDialogDescriptionId}
-      >
-        <DialogTitle id={alertDialogTitleId}>Confirm Reset</DialogTitle>
-        <DialogContent>
-          <DialogContentText id={alertDialogDescriptionId}>
+        onCancel={handleCloseClearDataDialog}
+        onDelete={handleConfirmDataReset}
+        title="Confirm Reset"
+        content={
+          <>
             Are you sure you want to clear all user data? This action cannot be
             undone.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseClearDataDialog} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleConfirmDataReset} color="error" autoFocus>
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
+          </>
+        }
+      />
     </>
   );
 }

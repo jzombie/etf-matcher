@@ -6,11 +6,6 @@ import {
   Box,
   Button,
   CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   Grid,
   Paper,
   Typography,
@@ -21,6 +16,7 @@ import type { TickerBucket, TickerBucketTicker } from "@src/store";
 import store, { tickerBucketDefaultNames } from "@src/store";
 
 import AvatarLogo from "@components/AvatarLogo";
+import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
 
 import useTickerDetail from "@hooks/useTickerDetail";
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
@@ -185,31 +181,21 @@ export default function BucketTicker({
         </Button>
       </Box>
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog
+      <DeleteEntityDialogModal
         open={open}
         onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">{"Delete Item"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
+        onCancel={handleClose}
+        onDelete={handleDelete}
+        title={"Delete Item"}
+        content={
+          <>
             Are you sure you want to delete &quot;{bucketTicker.symbol}&quot;
             from the {tickerBucketDefaultNames[tickerBucket.type].toLowerCase()}{" "}
             &quot;
             {tickerBucket.name}&quot;? This action cannot be undone.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleDelete} color="error" autoFocus>
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+          </>
+        }
+      />
     </Paper>
   );
 }

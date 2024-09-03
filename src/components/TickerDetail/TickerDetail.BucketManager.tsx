@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useId, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -7,10 +7,8 @@ import ListAltIcon from "@mui/icons-material/ListAlt";
 import {
   Box,
   Button,
-  Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Grid,
   Typography,
@@ -24,6 +22,7 @@ import type { TickerBucket } from "@src/store";
 import { Link } from "react-router-dom";
 
 import BucketForm from "@components/BucketManager/BucketManager.BucketForm";
+import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
 import DialogModal from "@components/DialogModal";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
@@ -116,9 +115,6 @@ export default function TickerDetailBucketManager({
     [tickerBuckets],
   );
 
-  const alertDialogTitleId = useId();
-  const alertDialogDescriptionId = useId();
-
   return (
     <Box sx={{ padding: 2 }}>
       <Grid container spacing={2}>
@@ -177,28 +173,20 @@ export default function TickerDetailBucketManager({
         })}
       </Grid>
 
-      <Dialog
+      <DeleteEntityDialogModal
         open={isDeleteDialogOpen}
         onClose={handleCloseDeleteDialog}
-        aria-labelledby={alertDialogTitleId}
-        aria-describedby={alertDialogDescriptionId}
-      >
-        <DialogTitle id={alertDialogTitleId}>Confirm Remove</DialogTitle>
-        <DialogContent>
-          <DialogContentText id={alertDialogDescriptionId}>
+        onCancel={handleCloseDeleteDialog}
+        onDelete={handleConfirmRemove}
+        title="Confirm Delete"
+        content={
+          <>
             Are you sure you want to remove &quot;{tickerDetail.symbol}&quot;
-            from &quot;{selectedBucket?.name}&quot;?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDeleteDialog} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleConfirmRemove} color="error">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+            from &quot;{selectedBucket?.name}&quot;? This action cannot be
+            undone.
+          </>
+        }
+      />
 
       <DialogModal open={isBucketDialogOpen} onClose={handleCloseBucketDialog}>
         <DialogTitle>
