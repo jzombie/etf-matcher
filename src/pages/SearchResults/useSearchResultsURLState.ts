@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import useSearch from "@hooks/useSearch";
+import useTickerSearch from "@hooks/useTickerSearch";
 import useURLState from "@hooks/useURLState";
 
 import usePageTitleSetter from "@utils/usePageTitleSetter";
@@ -12,7 +12,7 @@ export default function useSearchResultsURLState() {
     setOnlyExactMatches: _setOnlyExactMatches,
     setPage: _setPage,
     ...rest
-  } = useSearch();
+  } = useTickerSearch();
 
   usePageTitleSetter(searchQuery ? `Search results for: ${searchQuery}` : null);
 

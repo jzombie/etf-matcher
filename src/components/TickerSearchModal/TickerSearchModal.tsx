@@ -24,14 +24,15 @@ import {
   Typography,
 } from "@mui/material";
 
-import useSearch from "@hooks/useSearch";
+import DialogModal, { DialogModalProps } from "@components/DialogModal";
+import EncodedImage from "@components/EncodedImage";
+
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 import { RustServiceTickerSearchResult } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
-import DialogModal, { DialogModalProps } from "./DialogModal";
-import EncodedImage from "./EncodedImage";
+import useTickerSearchModalContent from "./useTickerSearchModalContent";
 
 export type TickerSearchModalProps = Omit<DialogModalProps, "children"> & {
   onSelectSearchQuery?: (searchQuery: string, isExact: boolean) => void;
@@ -80,8 +81,9 @@ export default function TickerSearchModal({
     setPage,
     pageSize,
     totalPages,
-  } = useSearch({
-    initialPageSize: 10,
+    resultsMode,
+  } = useTickerSearchModalContent({
+    isSearchModalOpen: isOpen,
   });
 
   const handleCancel = useCallback(() => {
@@ -248,6 +250,18 @@ export default function TickerSearchModal({
           overflowY: "auto",
         }}
       >
+        {searchResults.length > 0 && (
+          <Typography
+            variant="body2"
+            sx={{ fontStyle: "italic", opacity: 0.5 }}
+          >
+            {resultsMode == "recently_viewed" &&
+              `Recently viewed result${searchResults.length !== 1 ? "s" : ""}`}
+            {resultsMode == "ticker_tape" &&
+              `Result${searchResults.length !== 1 ? "s" : ""} from Ticker Tape`}
+          </Typography>
+        )}
+
         <List>
           {searchResults.map((searchResult, idx) => (
             <ButtonBase
@@ -302,7 +316,7 @@ export default function TickerSearchModal({
       </DialogContent>
       {
         // FIXME: This box should technically be inside of `DialogActions` but
-        // the overall UI layout is perfect here.
+        // the overall UI layout is decent here.
         //
         // TODO: On very small viewports, move the pagination into the scroll body.
       }
@@ -322,7 +336,7 @@ export default function TickerSearchModal({
         )}
       </Box>
       <DialogActions>
-        {totalSearchResults > 0 && (
+        {searchQuery.trim() && totalSearchResults > 0 && (
           <div
             style={{
               fontStyle: "italic",
