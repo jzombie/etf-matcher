@@ -14,8 +14,7 @@ export type TickerSearchModalContentProps = {
 // TODO: Rename accordingly
 type TickerSearchModalResultsMode = "ticker-search-results" | "bucket-view";
 
-// TODO: Rename accordingly
-type TickerSearchModalContentResponse = {
+type TickerSearchModalResultsResponse = {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   searchResults: RustServiceTickerSearchResult[];
@@ -31,7 +30,7 @@ type TickerSearchModalContentResponse = {
 
 export default function useTickerSearchModalContent({
   isSearchModalOpen,
-}: TickerSearchModalContentProps): TickerSearchModalContentResponse {
+}: TickerSearchModalContentProps): TickerSearchModalResultsResponse {
   const [recentlyViewedSearchResults, setRecentlyViewedSearchResults] =
     useState<RustServiceTickerSearchResult[]>([]);
   const [recentlyViewedSelectedIndex, setRecentlyViewedSelectedIndex] =
@@ -99,7 +98,7 @@ export default function useTickerSearchModalContent({
     pageSize,
     totalPages,
     resultsMode,
-  } = useMemo<TickerSearchModalContentResponse>(() => {
+  } = useMemo<TickerSearchModalResultsResponse>(() => {
     const common = {
       searchQuery: tickerSearchQuery,
       setSearchQuery: setTickerSearchQuery,
