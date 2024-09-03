@@ -81,6 +81,7 @@ export default function TickerSearchModal({
     setPage,
     pageSize,
     totalPages,
+    resultsMode,
   } = useTickerSearchModalContent({
     isSearchModalOpen: isOpen,
   });
@@ -249,6 +250,18 @@ export default function TickerSearchModal({
           overflowY: "auto",
         }}
       >
+        {searchResults.length > 0 && (
+          <Typography
+            variant="body2"
+            sx={{ fontStyle: "italic", opacity: 0.5 }}
+          >
+            {resultsMode == "recently_viewed" &&
+              `Recently viewed result${searchResults.length !== 1 ? "s" : ""}`}
+            {resultsMode == "ticker_tape" &&
+              `Result${searchResults.length !== 1 ? "s" : ""} from Ticker Tape`}
+          </Typography>
+        )}
+
         <List>
           {searchResults.map((searchResult, idx) => (
             <ButtonBase

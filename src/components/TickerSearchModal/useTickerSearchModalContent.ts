@@ -6,6 +6,7 @@ import useTickerSearch from "@hooks/useTickerSearch";
 
 import { fetchTickerDetail } from "@utils/callRustService";
 import type { RustServiceTickerSearchResult } from "@utils/callRustService";
+import customLogger from "@utils/customLogger";
 
 export type TickerSearchModalContentProps = {
   isSearchModalOpen: boolean;
@@ -58,53 +59,56 @@ export default function useTickerSearchModalContent({
   });
 
   useEffect(() => {
-    if (isSearchModalOpen && !tickerSearchQuery.trim().length) {
-      const recentlyViewedBucket =
-        store.getFirstTickerBucketOfType("recently_viewed");
-
-      let altResultsBucket = recentlyViewedBucket;
-
-      if (recentlyViewedBucket?.tickers.length) {
-        setResultsMode("recently_viewed");
-      } else {
-        const tickerTapeBucket =
-          store.getFirstTickerBucketOfType("ticker_tape");
-        setResultsMode("ticker_tape");
-
-        altResultsBucket = tickerTapeBucket;
-      }
-
-      const resultsPromise =
-        altResultsBucket?.tickers &&
-        Promise.allSettled(
-          altResultsBucket.tickers.map((ticker) =>
-            fetchTickerDetail(ticker.tickerId),
-          ),
-        );
-
-      resultsPromise?.then((settledDetails) => {
-        const fulfilledDetails = settledDetails
-          .filter((result) => result.status === "fulfilled")
-          .map((result) => result.value);
-
-        const altSearchResults: RustServiceTickerSearchResult[] =
-          fulfilledDetails.map((tickerDetail) => ({
-            ticker_id: tickerDetail.ticker_id,
-            symbol: tickerDetail.symbol,
-            exchange_short_name: tickerDetail.exchange_short_name,
-            company_name: tickerDetail.company_name,
-            logo_filename: tickerDetail.logo_filename,
-          }));
-
-        setAltSearchResults(altSearchResults);
-      });
-    } else {
-      // Reset selected index
+    if (!isSearchModalOpen || tickerSearchQuery.trim().length) {
+      // Reset selected index and results mode when the search query is present or modal is closed
       setAltSelectedIndex(-1);
-
       setResultsMode("ticker_search_results");
+      return;
     }
-  }, [isSearchModalOpen, tickerSearchQuery]);
+
+    const recentlyViewedBucket =
+      store.getFirstTickerBucketOfType("recently_viewed");
+    let altResultsBucket = recentlyViewedBucket;
+
+    if (recentlyViewedBucket?.tickers.length) {
+      setResultsMode("recently_viewed");
+    } else {
+      const tickerTapeBucket = store.getFirstTickerBucketOfType("ticker_tape");
+      altResultsBucket = tickerTapeBucket;
+      setResultsMode("ticker_tape");
+    }
+
+    if (altResultsBucket?.tickers.length) {
+      Promise.allSettled(
+        altResultsBucket.tickers.map((ticker) =>
+          fetchTickerDetail(ticker.tickerId),
+        ),
+      )
+        .then((settledDetails) => {
+          const altSearchResults: RustServiceTickerSearchResult[] =
+            settledDetails
+              .filter((result) => result.status === "fulfilled")
+              .map((result) => ({
+                ticker_id: result.value.ticker_id,
+                symbol: result.value.symbol,
+                exchange_short_name: result.value.exchange_short_name,
+                company_name: result.value.company_name,
+                logo_filename: result.value.logo_filename,
+              }));
+
+          setAltSearchResults(altSearchResults);
+        })
+        .catch((error) => {
+          customLogger.error("Error fetching ticker details:", error);
+        });
+    }
+  }, [
+    isSearchModalOpen,
+    tickerSearchQuery,
+    setAltSearchResults,
+    setAltSelectedIndex,
+    setResultsMode,
+  ]);
 
   // Output adapter
   const {
