@@ -5,6 +5,7 @@ import { Box, CircularProgress, Grid } from "@mui/material";
 import Center from "@layoutKit/Center";
 
 import LazyRender from "@components/LazyRender";
+import SectorsRadarChart from "@components/SectorsRadarChart";
 import TickerVectorTable from "@components/TickerVectorQueryTable";
 
 import useTickerDetail from "@hooks/useTickerDetail";
@@ -93,6 +94,11 @@ export default function TickerDetail({
       </Grid>
 
       <LazyRender>
+        {
+          // TODO: Incorporate as necessary
+        }
+        <SectorsRadarChart />
+
         <HistoricalPriceChart
           tickerSymbol={tickerDetail.symbol}
           formattedSymbolWithExchange={formattedSymbolWithExchange}

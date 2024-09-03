@@ -35,6 +35,17 @@ impl SectorById {
         Err(JsValue::from_str("Sector ID not found"))
     }
 
+    pub async fn get_all_sectors() -> Result<HashMap<SectorId, String>, JsValue> {
+        // Ensure cache is preloaded
+        if SECTOR_NAME_BY_ID_CACHE.lock().unwrap().is_empty() {
+            Self::preload_sector_name_cache().await?;
+        }
+
+        // Return a clone of the cache
+        let cache = SECTOR_NAME_BY_ID_CACHE.lock().unwrap();
+        Ok(cache.clone())
+    }
+
     async fn preload_sector_name_cache() -> Result<(), JsValue> {
         // Fetch and decompress the CSV data
         let url = DataURL::SectorByIdIndex.value();
