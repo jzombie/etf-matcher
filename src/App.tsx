@@ -7,15 +7,13 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import MultiMQTTRoomProvider from "@providers/MultiMQTTRoomProvider";
+import NotificationProvider from "@providers/NotificationProvider";
+import TickerContainerProvider from "@providers/TickerContainerProvider";
 import "animate.css";
 import { RouterProvider } from "react-router-dom";
 
-import NotificationProvider from "@components/NotificationProvider";
-import { TickerContainerProvider } from "@components/TickerContainer";
-
 import useGAPageTracking from "@hooks/useGAPageTracking";
-
-import MultiMQTTRoomProvider from "@utils/MQTTRoom/react/MultiMQTTRoomProvider";
 
 import router from "./router";
 import { darkTheme } from "./theme";
