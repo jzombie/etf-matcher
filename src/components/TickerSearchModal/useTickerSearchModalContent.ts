@@ -57,18 +57,27 @@ export default function useTickerSearchModalContent({
     initialPageSize: 10,
   });
 
-  // TODO: Adapt so this can query different ticker buckets
   useEffect(() => {
     if (isSearchModalOpen && !tickerSearchQuery.trim().length) {
-      const recentlyViewed =
+      const recentlyViewedBucket =
         store.getFirstTickerBucketOfType("recently_viewed");
 
-      setResultsMode("recently_viewed");
+      let altResultsBucket = recentlyViewedBucket;
+
+      if (recentlyViewedBucket?.tickers.length) {
+        setResultsMode("recently_viewed");
+      } else {
+        const tickerTapeBucket =
+          store.getFirstTickerBucketOfType("ticker_tape");
+        setResultsMode("ticker_tape");
+
+        altResultsBucket = tickerTapeBucket;
+      }
 
       const resultsPromise =
-        recentlyViewed?.tickers &&
+        altResultsBucket?.tickers &&
         Promise.allSettled(
-          recentlyViewed.tickers.map((ticker) =>
+          altResultsBucket.tickers.map((ticker) =>
             fetchTickerDetail(ticker.tickerId),
           ),
         );
