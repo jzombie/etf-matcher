@@ -24,14 +24,14 @@ import {
   Typography,
 } from "@mui/material";
 
-import useSearch from "@hooks/useSearch";
+import DialogModal, { DialogModalProps } from "@components/DialogModal";
+import EncodedImage from "@components/EncodedImage";
+
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
+import useTickerSearch from "@hooks/useTickerSearch";
 
 import { RustServiceTickerSearchResult } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
-
-import DialogModal, { DialogModalProps } from "./DialogModal";
-import EncodedImage from "./EncodedImage";
 
 export type TickerSearchModalProps = Omit<DialogModalProps, "children"> & {
   onSelectSearchQuery?: (searchQuery: string, isExact: boolean) => void;
@@ -80,7 +80,7 @@ export default function TickerSearchModal({
     setPage,
     pageSize,
     totalPages,
-  } = useSearch({
+  } = useTickerSearch({
     initialPageSize: 10,
   });
 
