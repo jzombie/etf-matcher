@@ -1,12 +1,6 @@
 import React, { useCallback, useId, useState } from "react";
 
-import {
-  Button,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from "@mui/material";
+import { Button } from "@mui/material";
 
 import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
 import Section from "@components/Section";

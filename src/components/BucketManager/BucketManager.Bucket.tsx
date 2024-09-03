@@ -1,18 +1,10 @@
-import React, { useCallback, useId, useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {
-  Box,
-  Button,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 
 import Padding from "@layoutKit/Padding";
 import store, { tickerBucketDefaultNames } from "@src/store";
@@ -37,9 +29,6 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-
-  const alertDialogTitleId = useId();
-  const alertDialogDescriptionId = useId();
 
   const toggleCollapse = useCallback(() => {
     setIsCollapsed((prev) => !prev);
