@@ -7,13 +7,12 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import AppErrorBoundaryProvider from "@providers/AppErrorBoundaryProvider";
 import MultiMQTTRoomProvider from "@providers/MultiMQTTRoomProvider";
 import NotificationProvider from "@providers/NotificationProvider";
 import TickerContainerProvider from "@providers/TickerContainerProvider";
 import "animate.css";
 import { RouterProvider } from "react-router-dom";
-
-import AppErrorBoundary from "@components/AppErrorBoundary";
 
 import useGAPageTracking from "@hooks/useGAPageTracking";
 
@@ -24,7 +23,7 @@ export default function App() {
   useGAPageTracking();
 
   return (
-    <AppErrorBoundary>
+    <AppErrorBoundaryProvider>
       <MultiMQTTRoomProvider>
         <ThemeProvider theme={darkTheme}>
           <CssBaseline />
@@ -35,6 +34,6 @@ export default function App() {
           </NotificationProvider>
         </ThemeProvider>
       </MultiMQTTRoomProvider>
-    </AppErrorBoundary>
+    </AppErrorBoundaryProvider>
   );
 }
