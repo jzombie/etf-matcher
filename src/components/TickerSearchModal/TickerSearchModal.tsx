@@ -303,7 +303,7 @@ export default function TickerSearchModal({
       </DialogContent>
       {
         // FIXME: This box should technically be inside of `DialogActions` but
-        // the overall UI layout is perfect here.
+        // the overall UI layout is decent here.
         //
         // TODO: On very small viewports, move the pagination into the scroll body.
       }
