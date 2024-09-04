@@ -2,9 +2,9 @@ import React from "react";
 
 import { RenderOptions, render } from "@testing-library/react";
 
-import AppErrorBoundaryProvider from "@providers/AppErrorBoundaryProvider";
 import { BrowserRouter } from "react-router-dom";
 
+import AppErrorBoundaryProvider from "../src/providers/AppErrorBoundaryProvider";
 import NotificationProvider from "../src/providers/NotificationProvider";
 
 const AllProviders = ({ children }: { children: React.ReactNode }) => {
