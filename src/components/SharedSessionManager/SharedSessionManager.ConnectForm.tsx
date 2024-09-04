@@ -16,7 +16,7 @@ export default function ConnectForm() {
     (e: React.FormEvent) => {
       e.preventDefault();
       if (!validateRoomName(roomName)) {
-        customLogger.error("Invalid room name");
+        customLogger.error(`Invalid room name: ${roomName}`);
         return;
       }
       connectToRoom(roomName);

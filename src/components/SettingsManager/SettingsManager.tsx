@@ -16,6 +16,7 @@ import LazyRender from "@components/LazyRender";
 import Section from "@components/Section";
 import SharedSessionManager from "@components/SharedSessionManager";
 
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
 import formatLocalTime from "@utils/formatLocalTime";

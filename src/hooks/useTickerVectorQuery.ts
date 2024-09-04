@@ -2,6 +2,8 @@ import { useCallback, useMemo, useState } from "react";
 
 import type { TickerBucket } from "@src/store";
 
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
+
 import type {
   RustServiceCosineSimilarityResult,
   RustServiceTickerDetail,
@@ -35,6 +37,8 @@ export default function useTickerVectorQuery({
   queryMode,
   query,
 }: TickerVectorQueryProps) {
+  const { triggerUIError } = useAppErrorBoundary();
+
   const [isLoadingEuclidean, _setIsLoadingEuclidean] = useState(false);
   const [resultsEuclidean, _setResultsEuclidean] = useState<
     RustServiceTickerDetailWithEuclideanDistance[]
@@ -85,13 +89,14 @@ export default function useTickerVectorQuery({
 
         setResults(fulfilledDetails);
       } catch (error) {
-        customLogger.error("Error fetching data:", error);
+        triggerUIError(new Error("Error fetching vector query data"));
+        customLogger.error(error);
         setError("Error fetching data");
       } finally {
         setLoading(false);
       }
     },
-    [],
+    [triggerUIError],
   );
 
   const fetchEuclidean = useCallback(() => {
