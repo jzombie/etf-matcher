@@ -214,7 +214,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         return {
           tickerId: fulfilledResult.value,
           symbol: DEFAULT_TICKER_TAPE_TICKERS[index].symbol,
-          exchange_short_name:
+          exchangeShortName:
             DEFAULT_TICKER_TAPE_TICKERS[index].exchangeShortName,
           quantity: 1,
         };
@@ -582,7 +582,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     const tickerAndExchange = await fetchSymbolAndExchangeByTickerId(tickerId);
 
     const symbol = tickerAndExchange[0];
-    const exchange_short_name = tickerAndExchange[1];
+    const exchangeShortName = tickerAndExchange[1];
 
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.map((bucket) => {
@@ -595,7 +595,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
                 {
                   tickerId,
                   symbol,
-                  exchange_short_name,
+                  exchangeShortName,
                   quantity,
                 },
                 ...bucket.tickers,

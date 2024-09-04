@@ -28,20 +28,9 @@ pub struct TickerBucketWrapper {
 }
 
 impl TickerBucket {
-    // Minimal function just to log names for now
-    // pub fn ticker_buckets_to_csv(buckets: Vec<TickerBucket>) -> String {
-    //     let mut csv_data = String::from("Name\n");
-
-    //     for bucket in buckets {
-    //         csv_data.push_str(&format!("{}\n", bucket.name));
-    //     }
-
-    //     // Log to console for debugging
-    //     web_sys::console::log_1(&csv_data.clone().into());
-    //     csv_data
-    // }
-
     pub fn ticker_buckets_to_csv(buckets: Vec<TickerBucket>) -> String {
+        // TODO: Use proper CSV handling
+
         let mut csv_data =
             String::from("Name,Type,Description,Configurable,TickerId,Symbol,Exchange,Quantity\n");
 
