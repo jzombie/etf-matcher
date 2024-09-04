@@ -1,7 +1,8 @@
 extern crate flatbuffers as fb;
 use data_models::ticker_vector_analysis::TickerWithQuantity;
 use qrcode_generator::QrCodeEcc;
-use serde_wasm_bindgen::to_value;
+use serde::{Deserialize, Serialize};
+use serde_wasm_bindgen::{from_value, to_value};
 use std::panic;
 use wasm_bindgen::prelude::*;
 
@@ -15,7 +16,7 @@ use crate::types::TickerId;
 use crate::data_models::{
     ticker_vector_analysis, DataBuildInfo, DataURL, ETFAggregateDetail, ETFAggregateDetailResponse,
     ETFHoldingTicker, ETFHoldingTickerResponse, ETFHoldingWeightResponse, ExchangeById,
-    IndustryById, PaginatedResults, SectorById, Ticker10KDetail, TickerDetail,
+    IndustryById, PaginatedResults, SectorById, Ticker10KDetail, TickerBucket, TickerDetail,
     TickerDetailResponse, TickerETFHolder, TickerSearch, TickerSearchResult,
 };
 
@@ -324,13 +325,30 @@ pub async fn get_cosine_by_ticker_bucket(
 // TODO: Finish implementing
 #[wasm_bindgen]
 pub async fn ticker_buckets_to_csv(json_ticker_buckets: JsValue) -> Result<JsValue, JsValue> {
-    // Log the raw JSON data to the console
+    // Log the raw JSON data to the console for debugging
     web_sys::console::log_1(&json_ticker_buckets);
 
-    // TODO: Return CSV as buffer
-    Ok(JsValue::from_str(
-        "JSON data logged to console successfully",
-    ))
+    // Convert the JsValue to a string first
+    let json_string = json_ticker_buckets
+        .as_string()
+        .ok_or_else(|| JsValue::from_str("Failed to convert JsValue to string"))?;
+
+    // Deserialize the JSON into a vector of TickerBucket structs
+    let datas: Vec<TickerBucket> = serde_json::from_str(&json_string).map_err(|err| {
+        web_sys::console::error_1(&JsValue::from_str(&format!(
+            "Deserialization error: {}",
+            err
+        )));
+        JsValue::from_str(&format!("Deserialization error: {}", err))
+    })?;
+
+    // Log the deserialized data for debugging
+    for data in &datas {
+        web_sys::console::log_1(&JsValue::from_str(&format!("{:?}", data)));
+    }
+
+    // Return the CSV data or perform further processing as needed
+    Ok(JsValue::from_str("CSV data here")) // Placeholder, replace with actual CSV output
 }
 
 #[wasm_bindgen]
