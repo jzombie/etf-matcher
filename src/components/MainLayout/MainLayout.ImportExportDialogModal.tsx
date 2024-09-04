@@ -27,6 +27,29 @@ export default function ImportExportDialogModal() {
   const titleId = useId();
   const descriptionId = useId();
 
+  const handleExport = useCallback(() => {
+    // TODO: Refactor accordingly
+    tickerBucketsToCSV().then((resp: string) => {
+      customLogger.debug(resp);
+
+      // Create a blob with the CSV content
+      const blob = new Blob([resp], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+
+      // Create a link element and trigger a download
+      const a = window.document.createElement("a");
+      a.href = url;
+
+      // TODO: Rename accordingly
+      a.download = "export.csv"; // Name of the file
+
+      window.document.body.appendChild(a); // Append the element to the body
+      a.click(); // Trigger the download
+      window.document.body.removeChild(a); // Remove the element after download
+      URL.revokeObjectURL(url); // Release the URL object
+    });
+  }, []);
+
   return (
     <DialogModal
       open={isImportExportModalOpen}
@@ -37,14 +60,7 @@ export default function ImportExportDialogModal() {
       <DialogTitle id={titleId}>Import/Export</DialogTitle>
       <DialogContent>
         <DialogContentText id={descriptionId}>
-          <Button
-            onClick={() =>
-              // TODO: Handle accordingly
-              tickerBucketsToCSV().then((resp) => customLogger.debug(resp))
-            }
-          >
-            Proto::export()
-          </Button>
+          <Button onClick={handleExport}>Proto::export()</Button>
         </DialogContentText>
       </DialogContent>
       <DialogActions>
