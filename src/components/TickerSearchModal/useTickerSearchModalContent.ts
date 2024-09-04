@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 
 import store from "@src/store";
 
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import useTickerSearch from "@hooks/useTickerSearch";
 
 import { fetchTickerDetail } from "@utils/callRustService";
@@ -34,6 +35,8 @@ type TickerSearchModalResultsResponse = {
 export default function useTickerSearchModalContent({
   isSearchModalOpen,
 }: TickerSearchModalContentProps): TickerSearchModalResultsResponse {
+  const { triggerUIError } = useAppErrorBoundary();
+
   const [altSearchResults, setAltSearchResults] = useState<
     RustServiceTickerSearchResult[]
   >([]);
@@ -99,6 +102,7 @@ export default function useTickerSearchModalContent({
           setAltSearchResults(altSearchResults);
         })
         .catch((error) => {
+          triggerUIError(new Error("Error fetching ticker details"));
           customLogger.error("Error fetching ticker details:", error);
         });
     }
@@ -108,6 +112,7 @@ export default function useTickerSearchModalContent({
     setAltSearchResults,
     setAltSelectedIndex,
     setResultsMode,
+    triggerUIError,
   ]);
 
   // Output adapter

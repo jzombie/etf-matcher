@@ -7,6 +7,7 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import AppErrorBoundaryProvider from "@providers/AppErrorBoundaryProvider";
 import MultiMQTTRoomProvider from "@providers/MultiMQTTRoomProvider";
 import NotificationProvider from "@providers/NotificationProvider";
 import TickerContainerProvider from "@providers/TickerContainerProvider";
@@ -22,15 +23,17 @@ export default function App() {
   useGAPageTracking();
 
   return (
-    <MultiMQTTRoomProvider>
-      <ThemeProvider theme={darkTheme}>
-        <CssBaseline />
-        <NotificationProvider>
-          <TickerContainerProvider>
-            <RouterProvider router={router} />
-          </TickerContainerProvider>
-        </NotificationProvider>
-      </ThemeProvider>
-    </MultiMQTTRoomProvider>
+    <AppErrorBoundaryProvider>
+      <MultiMQTTRoomProvider>
+        <ThemeProvider theme={darkTheme}>
+          <CssBaseline />
+          <NotificationProvider>
+            <TickerContainerProvider>
+              <RouterProvider router={router} />
+            </TickerContainerProvider>
+          </NotificationProvider>
+        </ThemeProvider>
+      </MultiMQTTRoomProvider>
+    </AppErrorBoundaryProvider>
   );
 }
