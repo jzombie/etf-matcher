@@ -3,6 +3,7 @@ import React, { useMemo, useRef, useState } from "react";
 import {
   Assessment as AssessmentIcon,
   Home,
+  ImportExport as ImportExportIcon,
   ListAlt as ListAltIcon,
   Menu as MenuIcon,
   Search as SearchIcon,
@@ -39,7 +40,7 @@ export default function HeaderMenu() {
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
-  const isDesktop = useMediaQuery("@media (min-width:800px)");
+  const isDesktop = useMediaQuery("@media (min-width:900px)");
 
   const { tickerBuckets } = useStoreStateReader("tickerBuckets");
 
@@ -77,6 +78,15 @@ export default function HeaderMenu() {
         icon: <ListAltIcon fontSize="small" />,
         link: "/watchlists",
         badgeContent: totalWatchlistBuckets,
+      },
+      {
+        key: "/import-export",
+        label: "Import/Export",
+        icon: <ImportExportIcon fontSize="small" />, // You can replace this with <ImportExportIcon fontSize="small" /> if preferred
+        link: "#",
+        onClick: () => {
+          console.warn("TODO: Add import/export functionality");
+        },
       },
       {
         key: "/settings",
@@ -142,6 +152,7 @@ export default function HeaderMenu() {
                 className={clsx({
                   active: item.key === selectedKey,
                 })}
+                onClick={item.onClick}
                 sx={{
                   color: item.key === selectedKey ? "white" : "inherit",
                   position: "relative",
