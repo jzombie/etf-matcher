@@ -38,11 +38,7 @@ export default function Home() {
               disabled={isSearchModalOpen}
               startIcon={<TrendingUpIcon />}
             >
-              {
-                // TODO: Don't say "Get Started" if already started... ("Continue" maybe?)
-                // (base the determination on if the ticker buckets are their default value?)
-              }
-              {!isSearchModalOpen ? "Get Started" : "You're on your way!"}
+              {store.isFreshSession ? "Get Started" : "Continue"}
             </Button>
           </div>
         </div>

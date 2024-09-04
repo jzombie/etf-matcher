@@ -425,6 +425,23 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     });
   }
 
+  get isFreshSession() {
+    const recentlyViewedBucket =
+      this.getFirstTickerBucketOfType("recently_viewed");
+
+    if (!recentlyViewedBucket) {
+      // Somehow the user deleted this bucket, so assume not a fresh session
+      return false;
+    }
+
+    if (!recentlyViewedBucket.tickers.length) {
+      // Has not viewed any tickers
+      return true;
+    }
+
+    return false;
+  }
+
   /**
    * Invoked by the `MultiMQTTRoomProvider` to update state of currently subscribed rooms.
    */
