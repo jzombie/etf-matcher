@@ -8,7 +8,7 @@ export type ErrorBoundaryContextType = {
 };
 
 // Create the context with a default value
-const ErrorBoundaryContext = createContext<
+export const ErrorBoundaryContext = createContext<
   ErrorBoundaryContextType | undefined
 >(undefined);
 
@@ -55,15 +55,4 @@ export default class AppErrorBoundaryProvider extends Component<
       </ErrorBoundaryContext.Provider>
     );
   }
-}
-
-// Export the context for use in other components
-export function useAppErrorBoundary() {
-  const context = React.useContext(ErrorBoundaryContext);
-  if (context === undefined) {
-    throw new Error(
-      "useErrorBoundary must be used within an AppErrorBoundaryProvider",
-    );
-  }
-  return context;
 }

@@ -1,7 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
 
-import { useAppErrorBoundary } from "@providers/AppErrorBoundaryProvider";
 import type { TickerBucket } from "@src/store";
+
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 
 import type {
   RustServiceCosineSimilarityResult,

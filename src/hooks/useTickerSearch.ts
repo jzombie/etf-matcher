@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { useAppErrorBoundary } from "@providers/AppErrorBoundaryProvider";
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 
 import type { RustServiceTickerSearchResult } from "@utils/callRustService";
 import { searchTickers } from "@utils/callRustService";

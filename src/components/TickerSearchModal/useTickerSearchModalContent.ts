@@ -1,8 +1,8 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 
-import { useAppErrorBoundary } from "@providers/AppErrorBoundaryProvider";
 import store from "@src/store";
 
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import useTickerSearch from "@hooks/useTickerSearch";
 
 import { fetchTickerDetail } from "@utils/callRustService";

@@ -6,9 +6,9 @@ import React, {
   useState,
 } from "react";
 
-import { useAppErrorBoundary } from "@providers/AppErrorBoundaryProvider";
 import store from "@src/store";
 
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import useOnlyOnce from "@hooks/useOnlyOnce";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
