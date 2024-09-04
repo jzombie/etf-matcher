@@ -1,5 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode, createContext } from "react";
 
+import store from "@src/store";
+
 import customLogger from "@utils/customLogger";
 
 // Define the context type
@@ -44,6 +46,8 @@ export default class AppErrorBoundaryProvider extends Component<
   triggerUIError = (error: Error) => {
     this.setState(AppErrorBoundaryProvider.getDerivedStateFromError(error));
     this.componentDidCatch(error, { componentStack: "" });
+
+    store.addUIError(error);
   };
 
   render() {

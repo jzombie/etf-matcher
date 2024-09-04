@@ -101,6 +101,7 @@ export type StoreStateProps = {
   latestXHROpenedRequestPathName: string | null;
   latestCacheOpenedRequestPathName: string | null;
   subscribedMQTTRoomNames: string[];
+  uiErrors: Error[];
 };
 
 export type IndexedDBPersistenceProps = {
@@ -162,6 +163,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       latestXHROpenedRequestPathName: null,
       latestCacheOpenedRequestPathName: null,
       subscribedMQTTRoomNames: [],
+      uiErrors: [],
     });
 
     // Only deepfreeze in development
@@ -688,6 +690,12 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // For rapid UI update
     // This forces an immediate sync so that the UI does not appear laggy when clearing cache entries
     this._syncCacheDetails();
+  }
+
+  addUIError(error: Error) {
+    this.setState((prev) => ({
+      uiErrors: [error, ...prev.uiErrors],
+    }));
   }
 
   reset() {
