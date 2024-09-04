@@ -321,6 +321,18 @@ pub async fn get_cosine_by_ticker_bucket(
         .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
 }
 
+// TODO: Finish implementing
+#[wasm_bindgen]
+pub async fn ticker_buckets_to_csv(json_ticker_buckets: JsValue) -> Result<JsValue, JsValue> {
+    // Log the raw JSON data to the console
+    web_sys::console::log_1(&json_ticker_buckets);
+
+    // TODO: Return CSV as buffer
+    Ok(JsValue::from_str(
+        "JSON data logged to console successfully",
+    ))
+}
+
 #[wasm_bindgen]
 pub fn get_cache_size() -> usize {
     lib_get_cache_size()
