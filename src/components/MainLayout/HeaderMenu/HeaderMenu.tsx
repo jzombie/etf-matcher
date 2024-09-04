@@ -85,7 +85,12 @@ export default function HeaderMenu() {
         icon: <ImportExportIcon fontSize="small" />, // You can replace this with <ImportExportIcon fontSize="small" /> if preferred
         link: "#",
         onClick: () => {
-          console.warn("TODO: Add import/export functionality");
+          // FIXME: The `setTimeout` is used to allow the initial location to change before
+          // opening the modal, and prevents it from auto-closing immediately upon opening.
+          // This could be improved.
+          setTimeout(() => {
+            store.setState({ isImportExportModalOpen: true });
+          });
         },
       },
       {
@@ -221,7 +226,13 @@ export default function HeaderMenu() {
                     key={item.key}
                     component={Link}
                     to={item.link}
-                    onClick={toggleDrawer}
+                    onClick={() => {
+                      toggleDrawer();
+
+                      if (typeof item.onClick === "function") {
+                        item.onClick();
+                      }
+                    }}
                     className={clsx({
                       active: item.key === selectedKey,
                     })}
