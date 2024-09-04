@@ -1,4 +1,5 @@
 use crate::types::TickerId;
+use csv::Writer;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -21,36 +22,42 @@ pub struct TickerBucketTicker {
     pub quantity: f32,
 }
 
-// This is the new wrapper struct to match your JSON structure
-#[derive(Serialize, Deserialize, Debug)]
-pub struct TickerBucketWrapper {
-    pub ticker_buckets: Vec<TickerBucket>,
-}
-
 impl TickerBucket {
     pub fn ticker_buckets_to_csv(buckets: Vec<TickerBucket>) -> String {
-        // TODO: Use proper CSV handling
+        let mut wtr = Writer::from_writer(vec![]);
 
-        let mut csv_data =
-            String::from("Name,Type,Description,Configurable,TickerId,Symbol,Exchange,Quantity\n");
+        // Write the header row
+        wtr.write_record(&[
+            "Name",
+            "Type",
+            "Description",
+            "Configurable",
+            "TickerId",
+            "Symbol",
+            "Exchange",
+            "Quantity",
+        ])
+        .expect("Failed to write header");
 
+        // Write the data rows
         for bucket in buckets {
-            for ticker in bucket.tickers {
-                csv_data.push_str(&format!(
-                    "{},{},{},{},{},{},{:?},{}\n",
-                    bucket.name,
-                    bucket.bucket_type,
-                    bucket.description,
-                    bucket.is_user_configurable,
-                    ticker.ticker_id,
-                    ticker.symbol,
-                    ticker.exchange_short_name.unwrap_or_default(),
-                    ticker.quantity
-                ));
+            for ticker in &bucket.tickers {
+                wtr.write_record(&[
+                    &bucket.name,
+                    &bucket.bucket_type,
+                    &bucket.description,
+                    &bucket.is_user_configurable.to_string(),
+                    &ticker.ticker_id.to_string(),
+                    &ticker.symbol,
+                    &ticker.exchange_short_name.clone().unwrap_or_default(),
+                    &ticker.quantity.to_string(),
+                ])
+                .expect("Failed to write record");
             }
         }
 
-        web_sys::console::log_1(&csv_data.clone().into());
-        csv_data
+        // Convert the written data to a string and return it
+        String::from_utf8(wtr.into_inner().expect("Failed to extract CSV data"))
+            .expect("Failed to convert CSV data to UTF-8")
     }
 }

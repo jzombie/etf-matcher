@@ -13,6 +13,7 @@ import DialogModal from "@components/DialogModal";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
 import { tickerBucketsToCSV } from "@utils/callRustService";
+import customLogger from "@utils/customLogger";
 
 export default function ImportExportDialogModal() {
   const { isImportExportModalOpen } = useStoreStateReader(
@@ -36,7 +37,14 @@ export default function ImportExportDialogModal() {
       <DialogTitle id={titleId}>Import/Export</DialogTitle>
       <DialogContent>
         <DialogContentText id={descriptionId}>
-          <Button onClick={() => tickerBucketsToCSV()}>Proto::export()</Button>
+          <Button
+            onClick={() =>
+              // TODO: Handle accordingly
+              tickerBucketsToCSV().then((resp) => customLogger.debug(resp))
+            }
+          >
+            Proto::export()
+          </Button>
         </DialogContentText>
       </DialogContent>
       <DialogActions>
