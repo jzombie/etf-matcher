@@ -35,7 +35,7 @@ type TickerSearchModalResultsResponse = {
 export default function useTickerSearchModalContent({
   isSearchModalOpen,
 }: TickerSearchModalContentProps): TickerSearchModalResultsResponse {
-  const { triggerError } = useAppErrorBoundary();
+  const { triggerUIError } = useAppErrorBoundary();
 
   const [altSearchResults, setAltSearchResults] = useState<
     RustServiceTickerSearchResult[]
@@ -102,7 +102,7 @@ export default function useTickerSearchModalContent({
           setAltSearchResults(altSearchResults);
         })
         .catch((error) => {
-          triggerError(new Error("Error fetching ticker details"));
+          triggerUIError(new Error("Error fetching ticker details"));
           customLogger.error("Error fetching ticker details:", error);
         });
     }
@@ -112,7 +112,7 @@ export default function useTickerSearchModalContent({
     setAltSearchResults,
     setAltSelectedIndex,
     setResultsMode,
-    triggerError,
+    triggerUIError,
   ]);
 
   // Output adapter

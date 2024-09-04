@@ -50,7 +50,7 @@ export default function TickerSearchModal({
   onSelectTicker,
   onCancel,
 }: TickerSearchModalProps) {
-  const { triggerError } = useAppErrorBoundary();
+  const { triggerUIError } = useAppErrorBoundary();
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -105,14 +105,14 @@ export default function TickerSearchModal({
         onClose();
       }
     } catch (error) {
-      triggerError(new Error("Error cancelling search"));
+      triggerUIError(new Error("Error cancelling search"));
       customLogger.error("Error cancelling search:", error);
     }
   }, [
     setSearchQuery,
     onCancelStableCurrentRef,
     onCloseStableCurrentRef,
-    triggerError,
+    triggerUIError,
   ]);
 
   const handleClose = useCallback(() => {
@@ -131,7 +131,7 @@ export default function TickerSearchModal({
         onClose();
       }
     } catch (error) {
-      triggerError(new Error("Error closing search"));
+      triggerUIError(new Error("Error closing search"));
       customLogger.error("Error closing search:", error);
     }
   }, [
@@ -139,7 +139,7 @@ export default function TickerSearchModal({
     handleCancel,
     setSearchQuery,
     onCloseStableCurrentRef,
-    triggerError,
+    triggerUIError,
   ]);
 
   const handleOk = useCallback(
@@ -167,7 +167,7 @@ export default function TickerSearchModal({
           }
         }
       } catch (error) {
-        triggerError(new Error("Error confirming search"));
+        triggerUIError(new Error("Error confirming search"));
         customLogger.error("Error confirming search:", error);
       }
     },
@@ -176,7 +176,7 @@ export default function TickerSearchModal({
       searchQuery,
       onSelectSearchQueryStableCurrentRef,
       onSelectTickerResultStableCurrentRef,
-      triggerError,
+      triggerUIError,
     ],
   );
 

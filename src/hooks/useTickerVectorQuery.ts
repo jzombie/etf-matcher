@@ -37,7 +37,7 @@ export default function useTickerVectorQuery({
   queryMode,
   query,
 }: TickerVectorQueryProps) {
-  const { triggerError } = useAppErrorBoundary();
+  const { triggerUIError } = useAppErrorBoundary();
 
   const [isLoadingEuclidean, _setIsLoadingEuclidean] = useState(false);
   const [resultsEuclidean, _setResultsEuclidean] = useState<
@@ -89,14 +89,14 @@ export default function useTickerVectorQuery({
 
         setResults(fulfilledDetails);
       } catch (error) {
-        triggerError(new Error("Error fetching vector query data"));
+        triggerUIError(new Error("Error fetching vector query data"));
         customLogger.error(error);
         setError("Error fetching data");
       } finally {
         setLoading(false);
       }
     },
-    [triggerError],
+    [triggerUIError],
   );
 
   const fetchEuclidean = useCallback(() => {

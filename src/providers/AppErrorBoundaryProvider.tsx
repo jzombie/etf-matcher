@@ -4,7 +4,7 @@ import customLogger from "@utils/customLogger";
 
 // Define the context type
 export type ErrorBoundaryContextType = {
-  triggerError: (error: Error) => void;
+  triggerUIError: (error: Error) => void;
 };
 
 // Create the context with a default value
@@ -41,7 +41,7 @@ export default class AppErrorBoundaryProvider extends Component<
   }
 
   // Method to trigger an error manually
-  triggerError = (error: Error) => {
+  triggerUIError = (error: Error) => {
     this.setState(AppErrorBoundaryProvider.getDerivedStateFromError(error));
     this.componentDidCatch(error, { componentStack: "" });
   };
@@ -49,7 +49,7 @@ export default class AppErrorBoundaryProvider extends Component<
   render() {
     return (
       <ErrorBoundaryContext.Provider
-        value={{ triggerError: this.triggerError }}
+        value={{ triggerUIError: this.triggerUIError }}
       >
         {this.props.children}
       </ErrorBoundaryContext.Provider>
