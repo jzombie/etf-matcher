@@ -24,6 +24,8 @@ import {
   Typography,
 } from "@mui/material";
 
+import { useAppErrorBoundary } from "@providers/AppErrorBoundaryProvider";
+
 import DialogModal, { DialogModalProps } from "@components/DialogModal";
 import EncodedImage from "@components/EncodedImage";
 
@@ -49,6 +51,7 @@ export default function TickerSearchModal({
   onSelectTicker,
   onCancel,
 }: TickerSearchModalProps) {
+  const { triggerError } = useAppErrorBoundary();
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -103,10 +106,15 @@ export default function TickerSearchModal({
         onClose();
       }
     } catch (error) {
-      // TODO: Route error to UI notification
+      triggerError(new Error("Error cancelling search"));
       customLogger.error("Error cancelling search:", error);
     }
-  }, [setSearchQuery, onCancelStableCurrentRef, onCloseStableCurrentRef]);
+  }, [
+    setSearchQuery,
+    onCancelStableCurrentRef,
+    onCloseStableCurrentRef,
+    triggerError,
+  ]);
 
   const handleClose = useCallback(() => {
     try {
@@ -124,10 +132,16 @@ export default function TickerSearchModal({
         onClose();
       }
     } catch (error) {
-      // TODO: Route error to UI notification
+      triggerError(new Error("Error closing search"));
       customLogger.error("Error closing search:", error);
     }
-  }, [searchQuery, handleCancel, setSearchQuery, onCloseStableCurrentRef]);
+  }, [
+    searchQuery,
+    handleCancel,
+    setSearchQuery,
+    onCloseStableCurrentRef,
+    triggerError,
+  ]);
 
   const handleOk = useCallback(
     (
@@ -154,7 +168,7 @@ export default function TickerSearchModal({
           }
         }
       } catch (error) {
-        // TODO: Route error to UI notification
+        triggerError(new Error("Error confirming search"));
         customLogger.error("Error confirming search:", error);
       }
     },
@@ -163,6 +177,7 @@ export default function TickerSearchModal({
       searchQuery,
       onSelectSearchQueryStableCurrentRef,
       onSelectTickerResultStableCurrentRef,
+      triggerError,
     ],
   );
 

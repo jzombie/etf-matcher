@@ -6,6 +6,7 @@ import React, {
   useState,
 } from "react";
 
+import { useAppErrorBoundary } from "@providers/AppErrorBoundaryProvider";
 import store from "@src/store";
 
 import useOnlyOnce from "@hooks/useOnlyOnce";
@@ -36,6 +37,8 @@ export default function MultiMQTTRoomProvider({
 }: {
   children: ReactNode;
 }) {
+  const { triggerError } = useAppErrorBoundary();
+
   const [rooms, setRooms] = useState<Record<string, MQTTRoom>>({});
   const [connectedRooms, setConnectedRooms] = useState<
     Record<string, MQTTRoom>
@@ -108,7 +111,9 @@ export default function MultiMQTTRoomProvider({
       const rooms = stableRoomsRef.current;
 
       if (!validateTopic(roomName) || rooms[roomName]) {
-        customLogger.error("Invalid or already connected room name");
+        triggerError(
+          new Error(`Invalid or already connected room name: ${roomName}`),
+        );
         return;
       }
 
@@ -124,8 +129,8 @@ export default function MultiMQTTRoomProvider({
 
       newRoom.on("connectingstateupdate", handleConnectingStateChange);
 
-      // TODO: Pipe up as UI notification
       newRoom.on("error", (err) => {
+        triggerError(new Error(`Error connecting to room "${roomName}"`));
         customLogger.error(err);
       });
 
@@ -174,6 +179,7 @@ export default function MultiMQTTRoomProvider({
       stableRoomsRef,
       handleConnectingStateChange,
       calcTotalParticipantsForAllRooms,
+      triggerError,
     ],
   );
 

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { useAppErrorBoundary } from "@providers/AppErrorBoundaryProvider";
+
 import type { RustServiceTickerSearchResult } from "@utils/callRustService";
 import { searchTickers } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
@@ -27,6 +29,8 @@ const DEFAULT_PROPS: Required<TickerSearchProps> = {
 export default function useTickerSearch(
   props: Partial<TickerSearchProps> = DEFAULT_PROPS,
 ) {
+  const { triggerError } = useAppErrorBoundary();
+
   const mergedProps: Required<TickerSearchProps> = useMemo(
     () => ({ ...DEFAULT_PROPS, ...props }),
     [props],
@@ -113,6 +117,7 @@ export default function useTickerSearch(
               setSelectedIndex(DEFAULT_PROPS.initialSelectedIndex);
             })
             .catch((err) => {
+              triggerError(new Error("Error when searching tickers"));
               customLogger.error("Caught error when searching tickers", err);
             })
             .finally(() => {
@@ -128,7 +133,15 @@ export default function useTickerSearch(
         debouncedSearch.clear();
       };
     }
-  }, [searchQuery, page, pageSize, resetSearch, onlyExactMatches, setPage]);
+  }, [
+    searchQuery,
+    page,
+    pageSize,
+    resetSearch,
+    onlyExactMatches,
+    setPage,
+    triggerError,
+  ]);
 
   return {
     searchQuery,
