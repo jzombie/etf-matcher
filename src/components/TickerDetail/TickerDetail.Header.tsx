@@ -31,7 +31,6 @@ export type TickerDetailHeaderProps = {
   formattedSymbolWithExchange: string;
 };
 
-// TODO: Add `expense_ratio` here
 export default function TickerDetailHeader({
   tickerDetail,
   etfAggregateDetail,
