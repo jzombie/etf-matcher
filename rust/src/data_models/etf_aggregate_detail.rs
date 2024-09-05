@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 pub struct ETFAggregateDetail {
     pub ticker_id: TickerId,
     pub etf_name: Option<String>,
+    pub expense_ratio: f32,
     pub top_market_value_sector_id: Option<SectorId>,
     pub top_market_value_industry_id: Option<IndustryId>,
     pub top_sector_market_value: f64,
@@ -92,6 +93,7 @@ pub struct ETFAggregateDetail {
 pub struct ETFAggregateDetailResponse {
     pub ticker_id: TickerId,
     pub etf_symbol: String,
+    pub expense_ratio: f32,
     pub exchange_short_name: Option<String>,
     pub etf_name: Option<String>,
     pub top_market_value_sector_name: Option<String>,
@@ -224,6 +226,7 @@ impl ETFAggregateDetail {
         let response = ETFAggregateDetailResponse {
             ticker_id: etf_aggregate_detail.ticker_id,
             etf_symbol,
+            expense_ratio: etf_aggregate_detail.expense_ratio,
             exchange_short_name,
             etf_name: etf_aggregate_detail.etf_name,
             top_market_value_sector_name,
