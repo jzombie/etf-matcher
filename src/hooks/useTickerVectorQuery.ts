@@ -19,18 +19,20 @@ import {
 } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
+type RustServiceTickerDetailWithETFExpenseRatio = RustServiceTickerDetail & {
+  etf_expense_ratio: number | null;
+};
+
 // TODO: Rename type
 export type RustServiceTickerDetailWithEuclideanDistance =
-  RustServiceTickerDetail & {
+  RustServiceTickerDetailWithETFExpenseRatio & {
     distance: number;
-    etf_expense_ratio: number | null;
   };
 
 // TODO: Rename type
 export type RustServiceTickerDetailWithCosineSimilarity =
-  RustServiceTickerDetail & {
+  RustServiceTickerDetailWithETFExpenseRatio & {
     cosineSimilarityScore: number;
-    etf_expense_ratio: number | null;
   };
 
 export type TickerVectorQueryProps = {
@@ -104,20 +106,29 @@ export default function useTickerVectorQuery({
     [triggerUIError],
   );
 
-  const fetchEuclidean = useCallback(() => {
-    const mapFn = async (item: RustServiceTickerDistance) => {
-      // TODO: Reduce duplication
-      const detail = await fetchTickerDetail(item.ticker_id);
+  const fetchTickerDetailWithETFExpenseRatio: (
+    tickerId: number,
+  ) => Promise<RustServiceTickerDetailWithETFExpenseRatio> = useCallback(
+    async (tickerId: number) => {
+      const tickerDetail = await fetchTickerDetail(tickerId);
       let etf_expense_ratio = null;
 
-      if (detail.is_etf) {
-        const { expense_ratio } = await fetchETFAggregateDetailByTickerId(
-          item.ticker_id,
-        );
+      if (tickerDetail.is_etf) {
+        const { expense_ratio } =
+          await fetchETFAggregateDetailByTickerId(tickerId);
         etf_expense_ratio = expense_ratio;
       }
 
-      return { ...detail, distance: item.distance, etf_expense_ratio };
+      return { ...tickerDetail, etf_expense_ratio };
+    },
+    [],
+  );
+
+  const fetchEuclidean = useCallback(() => {
+    const mapFn = async (item: RustServiceTickerDistance) => {
+      const detail = await fetchTickerDetailWithETFExpenseRatio(item.ticker_id);
+
+      return { ...detail, distance: item.distance };
     };
 
     if (queryMode === "ticker-detail") {
@@ -145,25 +156,15 @@ export default function useTickerVectorQuery({
         tickerBucket,
       );
     }
-  }, [queryMode, query, _fetchData]);
+  }, [queryMode, fetchTickerDetailWithETFExpenseRatio, query, _fetchData]);
 
   const fetchCosine = useCallback(() => {
     const mapFn = async (item: RustServiceCosineSimilarityResult) => {
-      // TODO: Reduce duplication
-      const detail = await fetchTickerDetail(item.ticker_id);
-      let etf_expense_ratio = null;
-
-      if (detail.is_etf) {
-        const { expense_ratio } = await fetchETFAggregateDetailByTickerId(
-          item.ticker_id,
-        );
-        etf_expense_ratio = expense_ratio;
-      }
+      const detail = await fetchTickerDetailWithETFExpenseRatio(item.ticker_id);
 
       return {
         ...detail,
         cosineSimilarityScore: item.similarity_score,
-        etf_expense_ratio,
       };
     };
 
@@ -192,7 +193,7 @@ export default function useTickerVectorQuery({
         tickerBucket,
       );
     }
-  }, [queryMode, query, _fetchData]);
+  }, [queryMode, fetchTickerDetailWithETFExpenseRatio, query, _fetchData]);
 
   return {
     queryName,
