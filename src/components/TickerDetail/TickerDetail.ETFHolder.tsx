@@ -52,8 +52,12 @@ export default function ETFHolder({
   const renderDetail = useCallback(
     (label: string, value: string | number | null) => (
       <>
-        <TableCell>{label}</TableCell>
-        <TableCell>{value !== null ? value : "N/A"}</TableCell>
+        <TableCell sx={{ width: "50%", whiteSpace: "nowrap" }}>
+          {label}
+        </TableCell>
+        <TableCell sx={{ width: "50%", whiteSpace: "nowrap" }}>
+          {value !== null ? value : "N/A"}
+        </TableCell>
       </>
     ),
     [],
@@ -83,8 +87,8 @@ export default function ETFHolder({
             <Table aria-label="etf details">
               <TableHead>
                 <TableRow>
-                  <TableCell>Detail</TableCell>
-                  <TableCell>Value</TableCell>
+                  <TableCell sx={{ width: "50%" }}>Detail</TableCell>
+                  <TableCell sx={{ width: "50%" }}>Value</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
