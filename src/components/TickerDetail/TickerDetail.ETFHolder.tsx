@@ -83,6 +83,13 @@ export default function ETFHolder({
               </TableHead>
               <TableBody>
                 <TableRow>
+                  <TableCell>Expense Ratio</TableCell>
+                  {renderDetail(
+                    "Expense Ratio",
+                    etfAggregateDetail.expense_ratio,
+                  )}
+                </TableRow>
+                <TableRow>
                   <TableCell>Top Sector Market Value</TableCell>
                   {renderDetail(
                     "Top Sector Market Value",
