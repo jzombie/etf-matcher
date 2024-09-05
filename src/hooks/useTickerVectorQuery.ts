@@ -12,6 +12,7 @@ import type {
 import {
   fetchCosineByTicker,
   fetchCosineByTickerBucket,
+  fetchETFAggregateDetailByTickerId,
   fetchEuclideanByTicker,
   fetchEuclideanByTickerBucket,
   fetchTickerDetail,
@@ -102,6 +103,15 @@ export default function useTickerVectorQuery({
   const fetchEuclidean = useCallback(() => {
     const mapFn = async (item: RustServiceTickerDistance) => {
       const detail = await fetchTickerDetail(item.ticker_id);
+
+      // TODO: Handle
+      if (detail.is_etf) {
+        const { expense_ratio } = await fetchETFAggregateDetailByTickerId(
+          item.ticker_id,
+        );
+        console.debug({ expense_ratio });
+      }
+
       return { ...detail, distance: item.distance };
     };
 
@@ -135,6 +145,15 @@ export default function useTickerVectorQuery({
   const fetchCosine = useCallback(() => {
     const mapFn = async (item: RustServiceCosineSimilarityResult) => {
       const detail = await fetchTickerDetail(item.ticker_id);
+
+      // TODO: Handle
+      if (detail.is_etf) {
+        const { expense_ratio } = await fetchETFAggregateDetailByTickerId(
+          item.ticker_id,
+        );
+        console.debug({ expense_ratio });
+      }
+
       return { ...detail, cosineSimilarityScore: item.similarity_score };
     };
 
