@@ -1,16 +1,12 @@
-import store, { TickerBucket } from "@src/store";
+import { TickerBucket } from "@src/store";
 
 import customLogger from "@utils/customLogger";
 
 import callRustService from "../callRustService";
 
 export async function tickerBucketsToCSV(
-  tickerBuckets?: TickerBucket[],
+  tickerBuckets: TickerBucket[],
 ): Promise<string> {
-  if (!tickerBuckets) {
-    tickerBuckets = store.state.tickerBuckets;
-  }
-
   customLogger.debug({ tickerBuckets });
 
   const jsonTickerBuckets = JSON.stringify(tickerBuckets);

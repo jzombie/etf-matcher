@@ -28,8 +28,11 @@ export default function ImportExportDialogModal() {
   const descriptionId = useId();
 
   const handleExport = useCallback(() => {
+    // TODO: Enable manual selection
+    const tickerBuckets = store.state.tickerBuckets;
+
     // TODO: Refactor accordingly
-    tickerBucketsToCSV().then((resp: string) => {
+    tickerBucketsToCSV(tickerBuckets).then((resp: string) => {
       customLogger.debug(resp);
 
       // Create a blob with the CSV content
