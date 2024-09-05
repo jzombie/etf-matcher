@@ -65,7 +65,7 @@ export default function ImportExportDialogModal() {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} color="error" variant="contained">
-          Cancel
+          Close
         </Button>
       </DialogActions>
     </DialogModal>
