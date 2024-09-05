@@ -95,7 +95,9 @@ export default function ETFHolder({
                 <TableRow>
                   {renderDetail(
                     "Expense Ratio",
-                    etfAggregateDetail.expense_ratio,
+                    etfAggregateDetail.expense_ratio
+                      ? `${etfAggregateDetail.expense_ratio.toFixed(2)}%`
+                      : null,
                   )}
                 </TableRow>
                 <TableRow>
