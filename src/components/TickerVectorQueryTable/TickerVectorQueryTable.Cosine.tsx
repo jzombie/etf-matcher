@@ -85,6 +85,9 @@ export default function TickerVectorQueryTableCosine({
               Held in ETF
             </TableCell>
             <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+              {
+                // TODO: Prefix with proper type
+              }
               Cosine Similarity
             </TableCell>
           </TableRow>

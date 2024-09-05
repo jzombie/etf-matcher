@@ -85,6 +85,9 @@ export default function TickerVectorQueryTableEuclidean({
               Held in ETF
             </TableCell>
             <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+              {
+                // TODO: Prefix with proper type
+              }
               Euclidean Distance
             </TableCell>
           </TableRow>
