@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import {
   Box,
@@ -49,8 +49,14 @@ export default function ETFHolder({
     });
   }, [etfAggregateDetail, holdingTickerDetail]);
 
-  const renderDetail = (label: string, value: string | number | null) => (
-    <TableCell>{value !== null ? value : "N/A"}</TableCell>
+  const renderDetail = useCallback(
+    (label: string, value: string | number | null) => (
+      <>
+        <TableCell>{label}</TableCell>
+        <TableCell>{value !== null ? value : "N/A"}</TableCell>
+      </>
+    ),
+    [],
   );
 
   const navigateToSymbol = useTickerSymbolNavigation();
@@ -83,14 +89,12 @@ export default function ETFHolder({
               </TableHead>
               <TableBody>
                 <TableRow>
-                  <TableCell>Expense Ratio</TableCell>
                   {renderDetail(
                     "Expense Ratio",
                     etfAggregateDetail.expense_ratio,
                   )}
                 </TableRow>
                 <TableRow>
-                  <TableCell>Top Sector Market Value</TableCell>
                   {renderDetail(
                     "Top Sector Market Value",
                     etfAggregateDetail.top_sector_market_value
@@ -102,23 +106,18 @@ export default function ETFHolder({
                   )}
                 </TableRow>
                 <TableRow>
-                  <TableCell>Top Market Value Industry</TableCell>
                   {renderDetail(
                     "Top Market Value Industry",
                     etfAggregateDetail?.top_market_value_industry_name || "N/A",
                   )}
                 </TableRow>
                 <TableRow>
-                  <TableCell>Top Market Value Sector</TableCell>
                   {renderDetail(
                     "Top Market Value Sector",
                     etfAggregateDetail?.top_market_value_sector_name || "N/A",
                   )}
                 </TableRow>
                 <TableRow>
-                  <TableCell>
-                    {holdingTickerDetail.symbol} Holding Percentage
-                  </TableCell>
                   {renderDetail(
                     `${holdingTickerDetail.symbol} Holding Percentage`,
                     holdingPercentage !== null
@@ -127,9 +126,6 @@ export default function ETFHolder({
                   )}
                 </TableRow>
                 <TableRow>
-                  <TableCell>
-                    {holdingTickerDetail.symbol} Holding Market Value
-                  </TableCell>
                   {renderDetail(
                     `${holdingTickerDetail.symbol} Holding Market Value`,
                     holdingMarketValue
