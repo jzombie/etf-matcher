@@ -14,7 +14,6 @@ import type {
   RustServiceETFAggregateDetail,
   RustServiceTickerDetail,
 } from "@utils/callRustService";
-import formatCurrency from "@utils/formatCurrency";
 
 import EncodedImage from "../EncodedImage";
 import TickerDetailStaticHeader from "./TickerDetail.Header.Static";
@@ -130,80 +129,22 @@ export default function TickerDetailHeader({
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
+                {
+                  // TODO: Use asset class instead
+                }
                 <Typography variant="h6" component="div">
                   ETF Status
                 </Typography>
-                {!tickerDetail?.is_etf ? (
-                  <>Not ETF</>
-                ) : (
-                  <>
-                    {etfAggregateDetail ? (
-                      <div
-                        style={{
-                          border: "1px rgba(255,255,255,.1) solid",
-                          borderRadius: 2,
-                          marginTop: 1,
-                          padding: 1,
-                          margin: 4,
-                        }}
-                      >
-                        <Typography
-                          variant="subtitle1"
-                          sx={{ fontWeight: "bold" }}
-                        >
-                          Top Holdings
-                        </Typography>
-                        <Grid container spacing={1}>
-                          <Grid item xs={6}>
-                            <Typography variant="subtitle1">
-                              Market Value
-                            </Typography>
-                            <Typography variant="body2">
-                              Sector:{" "}
-                              {etfAggregateDetail?.top_market_value_sector_name}
-                            </Typography>
-                            <Typography variant="body2">
-                              Industry:{" "}
-                              {
-                                etfAggregateDetail?.top_market_value_industry_name
-                              }
-                            </Typography>
-                            <Typography variant="body2">
-                              Value:{" "}
-                              {etfAggregateDetail?.top_sector_market_value &&
-                                etfAggregateDetail?.currency_code &&
-                                formatCurrency(
-                                  etfAggregateDetail.currency_code,
-                                  etfAggregateDetail.top_sector_market_value,
-                                )}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography variant="subtitle1">
-                              Percentage Weight
-                            </Typography>
-                            <Typography variant="body2">
-                              Sector: {etfAggregateDetail?.top_pct_sector_name}
-                            </Typography>
-                            <Typography variant="body2">
-                              Industry:{" "}
-                              {etfAggregateDetail?.top_pct_industry_name}
-                            </Typography>
-                            <Typography variant="body2">
-                              Weight:{" "}
-                              {etfAggregateDetail?.top_pct_sector_weight?.toFixed(
-                                2,
-                              )}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      </div>
-                    ) : (
-                      <div>ETF</div>
-                    )}
-                  </>
-                )}
+                {tickerDetail?.is_etf ? <>ETF</> : <>Not ETF</>}
               </Grid>
+              {etfAggregateDetail?.expense_ratio && (
+                <Grid item xs={12} md={6}>
+                  <Typography variant="h6" component="div">
+                    Expense Ratio
+                  </Typography>
+                  {etfAggregateDetail.expense_ratio.toFixed(2)}%
+                </Grid>
+              )}
             </Grid>
           </Padding>
         </InfoContainer>
