@@ -130,7 +130,7 @@ export default function TickerDetailHeader({
               </Grid>
               <Grid item xs={12} md={6}>
                 {
-                  // TODO: Use asset class instead
+                  // TODO: Use ticker type or asset class instead
                 }
                 <Typography variant="h6" component="div">
                   ETF Status
