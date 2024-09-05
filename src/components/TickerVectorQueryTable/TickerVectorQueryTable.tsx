@@ -25,7 +25,6 @@ export type VectorSimiliartyTableProps = {
   query: TickerVectorQueryProps["query"];
 };
 
-// TODO: Add `expense_ratio` to ETF results
 export default function TickerVectorQueryTable({
   queryMode,
   query,
