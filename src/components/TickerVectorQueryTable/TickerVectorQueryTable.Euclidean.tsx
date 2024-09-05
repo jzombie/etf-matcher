@@ -23,6 +23,8 @@ import useTickerVectorQuery, {
 
 import type { RustServiceTickerDetail } from "@utils/callRustService";
 
+import FormattedETFExpenseRatio from "./FormattedETFExpenseRatio";
+
 export type TickerVectorQueryTableEuclideanProps = {
   queryMode: TickerVectorQueryProps["queryMode"];
   query: TickerVectorQueryProps["query"];
@@ -79,7 +81,7 @@ export default function TickerVectorQueryTableEuclidean({
               Sector
             </TableCell>
             <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
-              ETF
+              ETF Expense Ratio
             </TableCell>
             <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
               Held in ETF
@@ -115,7 +117,7 @@ export default function TickerVectorQueryTableEuclidean({
                   {detail.sector_name || "N/A"}
                 </TableCell>
                 <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
-                  {detail.is_etf ? "Yes" : "No"}
+                  <FormattedETFExpenseRatio tickerDetail={detail} />
                 </TableCell>
                 <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
                   {detail.is_held_in_etf ? "Yes" : "No"}

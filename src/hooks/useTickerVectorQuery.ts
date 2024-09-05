@@ -19,14 +19,18 @@ import {
 } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
+// TODO: Rename type
 export type RustServiceTickerDetailWithEuclideanDistance =
   RustServiceTickerDetail & {
     distance: number;
+    etf_expense_ratio: number | null;
   };
 
+// TODO: Rename type
 export type RustServiceTickerDetailWithCosineSimilarity =
   RustServiceTickerDetail & {
     cosineSimilarityScore: number;
+    etf_expense_ratio: number | null;
   };
 
 export type TickerVectorQueryProps = {
@@ -102,17 +106,18 @@ export default function useTickerVectorQuery({
 
   const fetchEuclidean = useCallback(() => {
     const mapFn = async (item: RustServiceTickerDistance) => {
+      // TODO: Reduce duplication
       const detail = await fetchTickerDetail(item.ticker_id);
+      let etf_expense_ratio = null;
 
-      // TODO: Handle
       if (detail.is_etf) {
         const { expense_ratio } = await fetchETFAggregateDetailByTickerId(
           item.ticker_id,
         );
-        console.debug({ expense_ratio });
+        etf_expense_ratio = expense_ratio;
       }
 
-      return { ...detail, distance: item.distance };
+      return { ...detail, distance: item.distance, etf_expense_ratio };
     };
 
     if (queryMode === "ticker-detail") {
@@ -144,17 +149,22 @@ export default function useTickerVectorQuery({
 
   const fetchCosine = useCallback(() => {
     const mapFn = async (item: RustServiceCosineSimilarityResult) => {
+      // TODO: Reduce duplication
       const detail = await fetchTickerDetail(item.ticker_id);
+      let etf_expense_ratio = null;
 
-      // TODO: Handle
       if (detail.is_etf) {
         const { expense_ratio } = await fetchETFAggregateDetailByTickerId(
           item.ticker_id,
         );
-        console.debug({ expense_ratio });
+        etf_expense_ratio = expense_ratio;
       }
 
-      return { ...detail, cosineSimilarityScore: item.similarity_score };
+      return {
+        ...detail,
+        cosineSimilarityScore: item.similarity_score,
+        etf_expense_ratio,
+      };
     };
 
     if (queryMode === "ticker-detail") {
