@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
+
 import type { RustServiceTickerSearchResult } from "@utils/callRustService";
 import { searchTickers } from "@utils/callRustService";
+import customLogger from "@utils/customLogger";
 import debounceWithKey from "@utils/debounceWithKey";
 
 import usePagination from "./usePagination";
 
-export type UseSearchProps = {
+export type TickerSearchProps = {
   initialQuery?: string;
   initialOnlyExactMatches: boolean;
   initialPage?: number;
@@ -14,7 +17,7 @@ export type UseSearchProps = {
   initialSelectedIndex?: number;
 };
 
-const DEFAULT_PROPS: Required<UseSearchProps> = {
+const DEFAULT_PROPS: Required<TickerSearchProps> = {
   initialQuery: "",
   initialOnlyExactMatches: false,
   initialPage: 1,
@@ -23,11 +26,12 @@ const DEFAULT_PROPS: Required<UseSearchProps> = {
 };
 
 // TODO: Capture error state
-// TODO: Rename to `useTickerSearch`
-export default function useSearch(
-  props: Partial<UseSearchProps> = DEFAULT_PROPS,
+export default function useTickerSearch(
+  props: Partial<TickerSearchProps> = DEFAULT_PROPS,
 ) {
-  const mergedProps: Required<UseSearchProps> = useMemo(
+  const { triggerUIError } = useAppErrorBoundary();
+
+  const mergedProps: Required<TickerSearchProps> = useMemo(
     () => ({ ...DEFAULT_PROPS, ...props }),
     [props],
   );
@@ -112,6 +116,10 @@ export default function useSearch(
               setPage(activePage);
               setSelectedIndex(DEFAULT_PROPS.initialSelectedIndex);
             })
+            .catch((err) => {
+              triggerUIError(new Error("Error when searching tickers"));
+              customLogger.error("Caught error when searching tickers", err);
+            })
             .finally(() => {
               _setisLoading(false);
             });
@@ -125,7 +133,15 @@ export default function useSearch(
         debouncedSearch.clear();
       };
     }
-  }, [searchQuery, page, pageSize, resetSearch, onlyExactMatches, setPage]);
+  }, [
+    searchQuery,
+    page,
+    pageSize,
+    resetSearch,
+    onlyExactMatches,
+    setPage,
+    triggerUIError,
+  ]);
 
   return {
     searchQuery,

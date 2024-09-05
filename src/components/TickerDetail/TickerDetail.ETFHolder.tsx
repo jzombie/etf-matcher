@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import {
   Box,
@@ -49,8 +49,18 @@ export default function ETFHolder({
     });
   }, [etfAggregateDetail, holdingTickerDetail]);
 
-  const renderDetail = (label: string, value: string | number | null) => (
-    <TableCell>{value !== null ? value : "N/A"}</TableCell>
+  const renderDetail = useCallback(
+    (label: string, value: string | number | null) => (
+      <>
+        <TableCell sx={{ width: "50%", whiteSpace: "nowrap" }}>
+          {label}
+        </TableCell>
+        <TableCell sx={{ width: "50%", whiteSpace: "nowrap" }}>
+          {value !== null ? value : "N/A"}
+        </TableCell>
+      </>
+    ),
+    [],
   );
 
   const navigateToSymbol = useTickerSymbolNavigation();
@@ -77,13 +87,20 @@ export default function ETFHolder({
             <Table aria-label="etf details">
               <TableHead>
                 <TableRow>
-                  <TableCell>Detail</TableCell>
-                  <TableCell>Value</TableCell>
+                  <TableCell sx={{ width: "50%" }}>Detail</TableCell>
+                  <TableCell sx={{ width: "50%" }}>Value</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 <TableRow>
-                  <TableCell>Top Sector Market Value</TableCell>
+                  {renderDetail(
+                    "Expense Ratio",
+                    etfAggregateDetail.expense_ratio
+                      ? `${etfAggregateDetail.expense_ratio.toFixed(2)}%`
+                      : null,
+                  )}
+                </TableRow>
+                <TableRow>
                   {renderDetail(
                     "Top Sector Market Value",
                     etfAggregateDetail.top_sector_market_value
@@ -95,23 +112,18 @@ export default function ETFHolder({
                   )}
                 </TableRow>
                 <TableRow>
-                  <TableCell>Top Market Value Industry</TableCell>
                   {renderDetail(
                     "Top Market Value Industry",
                     etfAggregateDetail?.top_market_value_industry_name || "N/A",
                   )}
                 </TableRow>
                 <TableRow>
-                  <TableCell>Top Market Value Sector</TableCell>
                   {renderDetail(
                     "Top Market Value Sector",
                     etfAggregateDetail?.top_market_value_sector_name || "N/A",
                   )}
                 </TableRow>
                 <TableRow>
-                  <TableCell>
-                    {holdingTickerDetail.symbol} Holding Percentage
-                  </TableCell>
                   {renderDetail(
                     `${holdingTickerDetail.symbol} Holding Percentage`,
                     holdingPercentage !== null
@@ -120,9 +132,6 @@ export default function ETFHolder({
                   )}
                 </TableRow>
                 <TableRow>
-                  <TableCell>
-                    {holdingTickerDetail.symbol} Holding Market Value
-                  </TableCell>
                   {renderDetail(
                     `${holdingTickerDetail.symbol} Holding Market Value`,
                     holdingMarketValue

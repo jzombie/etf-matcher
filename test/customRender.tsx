@@ -4,13 +4,16 @@ import { RenderOptions, render } from "@testing-library/react";
 
 import { BrowserRouter } from "react-router-dom";
 
-import NotificationProvider from "../src/components/NotificationProvider";
+import AppErrorBoundaryProvider from "../src/providers/AppErrorBoundaryProvider";
+import NotificationProvider from "../src/providers/NotificationProvider";
 
 const AllProviders = ({ children }: { children: React.ReactNode }) => {
   return (
-    <BrowserRouter>
-      <NotificationProvider>{children}</NotificationProvider>
-    </BrowserRouter>
+    <AppErrorBoundaryProvider>
+      <BrowserRouter>
+        <NotificationProvider>{children}</NotificationProvider>
+      </BrowserRouter>
+    </AppErrorBoundaryProvider>
   );
 };
 
