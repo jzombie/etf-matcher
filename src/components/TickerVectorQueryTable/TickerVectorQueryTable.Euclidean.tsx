@@ -23,7 +23,7 @@ import useTickerVectorQuery, {
 
 import type { RustServiceTickerDetail } from "@utils/callRustService";
 
-import FormattedETFExpenseRatio from "./FormattedETFExpenseRatio";
+import FormattedETFExpenseRatio from "./TickerVectorQueryTable.FormattedETFExpenseRatio";
 
 export type TickerVectorQueryTableEuclideanProps = {
   queryMode: TickerVectorQueryProps["queryMode"];
