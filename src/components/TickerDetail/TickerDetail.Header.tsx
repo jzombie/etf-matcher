@@ -83,16 +83,6 @@ export default function TickerDetailHeader({
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="h6" component="div">
-                  Durability Rating
-                </Typography>
-                <Typography variant="body2">
-                  {(tickerDetail?.score_avg_dca &&
-                    `${tickerDetail?.score_avg_dca.toFixed(2)} / 5.00`) ||
-                    "N/A"}
-                </Typography>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Typography variant="h6" component="div">
                   Sector
                 </Typography>
                 <Typography variant="body2">
