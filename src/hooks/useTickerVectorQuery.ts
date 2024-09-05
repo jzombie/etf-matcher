@@ -23,13 +23,11 @@ type RustServiceTickerDetailWithETFExpenseRatio = RustServiceTickerDetail & {
   etf_expense_ratio: number | null;
 };
 
-// TODO: Rename type
 export type RustServiceTickerDetailWithEuclideanDistance =
   RustServiceTickerDetailWithETFExpenseRatio & {
     distance: number;
   };
 
-// TODO: Rename type
 export type RustServiceTickerDetailWithCosineSimilarity =
   RustServiceTickerDetailWithETFExpenseRatio & {
     cosineSimilarityScore: number;
