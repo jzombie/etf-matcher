@@ -39,6 +39,7 @@ export type RustServiceTickerDetail = {
 export type RustServiceETFAggregateDetail = {
   ticker_id: number;
   etf_symbol: string;
+  expense_ratio: number;
   exchange_short_name?: string;
   etf_name?: string;
   top_market_value_sector_name?: string;

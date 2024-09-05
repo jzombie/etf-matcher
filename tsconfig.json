@@ -18,6 +18,7 @@
       "@assets/*": ["src/assets/*"],
       "@layoutKit/*": ["src/components/layout-kit/*"],
       "@components/*": ["src/components/*"],
+      "@providers/*": ["src/providers/*"],
       "@hooks/*": ["src/hooks/*"],
       "@pages/*": ["src/pages/*"],
       "@utils/*": ["src/utils/*"],
