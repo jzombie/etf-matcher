@@ -12,19 +12,24 @@ import type {
 import {
   fetchCosineByTicker,
   fetchCosineByTickerBucket,
+  fetchETFAggregateDetailByTickerId,
   fetchEuclideanByTicker,
   fetchEuclideanByTickerBucket,
   fetchTickerDetail,
 } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
+type RustServiceTickerDetailWithETFExpenseRatio = RustServiceTickerDetail & {
+  etf_expense_ratio: number | null;
+};
+
 export type RustServiceTickerDetailWithEuclideanDistance =
-  RustServiceTickerDetail & {
+  RustServiceTickerDetailWithETFExpenseRatio & {
     distance: number;
   };
 
 export type RustServiceTickerDetailWithCosineSimilarity =
-  RustServiceTickerDetail & {
+  RustServiceTickerDetailWithETFExpenseRatio & {
     cosineSimilarityScore: number;
   };
 
@@ -99,9 +104,28 @@ export default function useTickerVectorQuery({
     [triggerUIError],
   );
 
+  const fetchTickerDetailWithETFExpenseRatio: (
+    tickerId: number,
+  ) => Promise<RustServiceTickerDetailWithETFExpenseRatio> = useCallback(
+    async (tickerId: number) => {
+      const tickerDetail = await fetchTickerDetail(tickerId);
+      let etf_expense_ratio = null;
+
+      if (tickerDetail.is_etf) {
+        const { expense_ratio } =
+          await fetchETFAggregateDetailByTickerId(tickerId);
+        etf_expense_ratio = expense_ratio;
+      }
+
+      return { ...tickerDetail, etf_expense_ratio };
+    },
+    [],
+  );
+
   const fetchEuclidean = useCallback(() => {
     const mapFn = async (item: RustServiceTickerDistance) => {
-      const detail = await fetchTickerDetail(item.ticker_id);
+      const detail = await fetchTickerDetailWithETFExpenseRatio(item.ticker_id);
+
       return { ...detail, distance: item.distance };
     };
 
@@ -130,12 +154,16 @@ export default function useTickerVectorQuery({
         tickerBucket,
       );
     }
-  }, [queryMode, query, _fetchData]);
+  }, [queryMode, fetchTickerDetailWithETFExpenseRatio, query, _fetchData]);
 
   const fetchCosine = useCallback(() => {
     const mapFn = async (item: RustServiceCosineSimilarityResult) => {
-      const detail = await fetchTickerDetail(item.ticker_id);
-      return { ...detail, cosineSimilarityScore: item.similarity_score };
+      const detail = await fetchTickerDetailWithETFExpenseRatio(item.ticker_id);
+
+      return {
+        ...detail,
+        cosineSimilarityScore: item.similarity_score,
+      };
     };
 
     if (queryMode === "ticker-detail") {
@@ -163,7 +191,7 @@ export default function useTickerVectorQuery({
         tickerBucket,
       );
     }
-  }, [queryMode, query, _fetchData]);
+  }, [queryMode, fetchTickerDetailWithETFExpenseRatio, query, _fetchData]);
 
   return {
     queryName,
