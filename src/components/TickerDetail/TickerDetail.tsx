@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import { Box, CircularProgress, Grid } from "@mui/material";
+import { Box, CircularProgress, Grid, Paper, Typography } from "@mui/material";
 
 import Center from "@layoutKit/Center";
 
@@ -85,11 +85,21 @@ export default function TickerDetail({
       {...rest}
     >
       {/* Header Section */}
-      <TickerDetailHeader
-        tickerDetail={tickerDetail}
-        etfAggregateDetail={etfAggregateDetail}
-        formattedSymbolWithExchange={formattedSymbolWithExchange}
-      />
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={6}>
+          <TickerDetailHeader
+            tickerDetail={tickerDetail}
+            etfAggregateDetail={etfAggregateDetail}
+            formattedSymbolWithExchange={formattedSymbolWithExchange}
+          />
+        </Grid>
+
+        {/* Optional Second Section (Add any other overview info here if needed) */}
+        <Grid item xs={12} md={6}>
+          {/* Placeholder for additional summary information */}
+          {/* You can add a Paper or other components here */}
+        </Grid>
+      </Grid>
 
       {/* Historical Price Chart - Full Width */}
       <Grid container spacing={2} sx={{ marginTop: 2 }}>
@@ -100,7 +110,6 @@ export default function TickerDetail({
           />
         </Grid>
       </Grid>
-
       {/* Bucket Manager */}
       <Box sx={{ textAlign: "center", margin: "20px 0" }}>
         <TickerDetailBucketManager tickerDetail={tickerDetail} />
@@ -138,19 +147,30 @@ export default function TickerDetail({
         )}
       </Grid>
 
-      {/* Query Table and Financial Information */}
-      <TickerVectorTable queryMode={"ticker-detail"} query={tickerDetail} />
+      {/* Split into two equal columns for data and charts */}
+      <Grid container spacing={2} sx={{ marginTop: 2 }}>
+        <Grid item xs={12} md={6}>
+          <TickerVectorTable queryMode={"ticker-detail"} query={tickerDetail} />
+        </Grid>
 
-      {/* Financial Charts Section */}
-      <FinancialChartsGrid tickerDetail={tickerDetail} />
+        <Grid item xs={12} md={6}>
+          <FinancialChartsGrid tickerDetail={tickerDetail} />
+        </Grid>
+      </Grid>
 
-      {/* Conditional Rendering for ETF Holdings */}
-      {tickerDetail?.is_etf && (
-        <ETFHoldingList etfTickerDetail={tickerDetail} />
-      )}
-      {tickerDetail?.is_held_in_etf && (
-        <ETFHolderList tickerDetail={tickerDetail} />
-      )}
+      {/* ETF Holding Information */}
+      <Grid container spacing={2} sx={{ marginTop: 2 }}>
+        {tickerDetail?.is_etf && (
+          <Grid item xs={12}>
+            <ETFHoldingList etfTickerDetail={tickerDetail} />
+          </Grid>
+        )}
+        {tickerDetail?.is_held_in_etf && (
+          <Grid item xs={12}>
+            <ETFHolderList tickerDetail={tickerDetail} />
+          </Grid>
+        )}
+      </Grid>
     </TickerContainer>
   );
 }
