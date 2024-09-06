@@ -1,0 +1,80 @@
+import React, { useEffect, useState } from "react";
+
+import { ButtonBase } from "@mui/material";
+import { CircularProgress } from "@mui/material";
+
+import Center from "@layoutKit/Center";
+
+import EncodedImage from "@components/EncodedImage";
+
+import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
+
+import { fetchETFHoldingsByETFTickerId } from "@utils/callRustService";
+import type {
+  RustServiceETFHoldingTickerResponse,
+  RustServicePaginatedResults,
+} from "@utils/callRustService";
+import { RustServiceTickerDetail } from "@utils/callRustService";
+
+export type ETFHoldingListProps = {
+  etfTickerDetail: RustServiceTickerDetail;
+};
+
+export default function ETFHoldingList({
+  etfTickerDetail,
+}: ETFHoldingListProps) {
+  const [isLoadingETFHoldings, setIsLoadingETFHoldings] =
+    useState<boolean>(false);
+
+  const [paginatedHoldings, setPaginatedHoldings] =
+    useState<RustServicePaginatedResults<RustServiceETFHoldingTickerResponse> | null>(
+      null,
+    );
+
+  useEffect(() => {
+    if (etfTickerDetail.is_etf) {
+      setIsLoadingETFHoldings(true);
+
+      fetchETFHoldingsByETFTickerId(etfTickerDetail.ticker_id)
+        .then(setPaginatedHoldings)
+        .finally(() => setIsLoadingETFHoldings(false));
+    }
+  }, [etfTickerDetail]);
+
+  const navigateToSymbol = useTickerSymbolNavigation();
+
+  if (!paginatedHoldings && isLoadingETFHoldings) {
+    return (
+      <Center>
+        <CircularProgress />
+      </Center>
+    );
+  }
+
+  if (!paginatedHoldings) {
+    return null;
+  }
+
+  return (
+    <div style={{ textAlign: "center" }}>
+      {paginatedHoldings.results.map((result) => (
+        <ButtonBase
+          key={result.holding_ticker_id}
+          sx={{ overflow: "auto", margin: 1 }}
+          onClick={() => navigateToSymbol(result.holding_symbol)}
+        >
+          <div>
+            <EncodedImage
+              encSrc={result.logo_filename}
+              style={{ width: 50, height: 50 }}
+            />
+            <div>Company Name: {result.company_name}</div>
+            <div>Symbol: {result.holding_symbol}</div>
+            <div>Industry: {result.industry_name}</div>
+            <div>Sector: {result.sector_name}</div>
+          </div>
+        </ButtonBase>
+      ))}
+    </div>
+  );
+}

@@ -12,6 +12,7 @@ import useTickerDetail from "@hooks/useTickerDetail";
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
 import ETFHolderList from "./applets/ETFHolderList.applet";
+import ETFHoldingList from "./applets/ETFHoldingList.applet";
 import HistoricalPriceChart from "./applets/HistoricalPriceChart.applet";
 
 export type TickerViewAppletProps = {
@@ -32,6 +33,16 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
         ) : (
           <Scrollable>
             <ETFHolderList tickerDetail={tickerDetail} />
+          </Scrollable>
+        ),
+      "ETF Holdings":
+        isLoadingTickerDetail || !tickerDetail ? (
+          // TODO: Use spinner
+          // TODO: Handle error condition
+          <Center>Loading</Center>
+        ) : (
+          <Scrollable>
+            <ETFHoldingList etfTickerDetail={tickerDetail} />
           </Scrollable>
         ),
       "Historical Prices":
@@ -57,14 +68,18 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
   // Use 'row' and 'column' instead of generic strings
   const initialValue: MosaicNode<string> = useMemo(
     () => ({
-      direction: "column", // Use 'column'
-      first: "ETF Holders",
-      second: {
-        direction: "row", // Use 'row'
-        first: "Historical Prices",
-        second: "Similarity Search",
+      direction: "column", // Main direction is 'column' to stack rows vertically
+      first: {
+        direction: "row", // First row will have two cells side by side
+        first: "Historical Prices", // First cell in the first row
+        second: "Similarity Search", // Second cell in the first row
       },
-      splitPercentage: 40,
+      second: {
+        direction: "row", // Second row will also have two cells side by side
+        first: "ETF Holders", // First cell in the second row
+        second: "ETF Holdings", // Second cell in the second row
+      },
+      splitPercentage: 50, // Adjust the split percentage between the two rows
     }),
     [],
   );
