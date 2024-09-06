@@ -64,8 +64,18 @@ export default function WindowManager({
             />
           )}
           initialValue={initialValue}
+          zeroStateView={<CustomZeroStateView />}
         />
       </Box>
     </Full>
   );
 }
+
+const CustomZeroStateView = () => {
+  return (
+    <div style={{ textAlign: "center", padding: "20px", color: "#fff" }}>
+      <h2>No windows open</h2>
+      <p>Use the controls to open new windows.</p>
+    </div>
+  );
+};
