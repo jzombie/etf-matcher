@@ -5,7 +5,7 @@ import Center from "@layoutKit/Center";
 import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
 import { MosaicNode } from "react-mosaic-component";
 
-import HistoricalPriceChart from "@components/TickerDetail/TickerDetail.HistoricalPriceChart";
+// import HistoricalPriceChart from "@components/TickerDetail/TickerDetail.HistoricalPriceChart";
 import WindowManager from "@components/WindowManager";
 
 const contentMap = {
@@ -18,10 +18,11 @@ const contentMap = {
   ),
   "Historical Prices": (
     <AutoScaler>
-      <HistoricalPriceChart
+      {/* <HistoricalPriceChart
         tickerSymbol="AAPL"
         formattedSymbolWithExchange="NASDAQ:AAPL"
-      />
+      /> */}
+      [HistoricalPriceChart]
     </AutoScaler>
   ),
   "Similarity Search": <Center>Similarity Search content</Center>,
