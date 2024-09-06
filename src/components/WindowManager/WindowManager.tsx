@@ -62,13 +62,30 @@ const ExampleWindow = ({ id, path, totalWindowCount }: ExampleWindowProps) => {
     height: "100%",
   };
 
+  const toolbarStyles = {
+    backgroundColor: theme.palette.background.paper,
+    color: theme.palette.primary.contrastText,
+    padding: theme.spacing(1),
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+  };
+
   return (
     <MosaicWindow<string>
       title={`Window ${id}`}
       path={path}
       onDragStart={() => console.log("MosaicWindow.onDragStart")}
       onDragEnd={(type) => console.log("MosaicWindow.onDragEnd", type)}
-      toolbarControls={React.Children.toArray([<RemoveButton path={path} />])}
+      renderToolbar={() => (
+        <div style={toolbarStyles}>
+          <span>{`Window ${id}`}</span>
+          <div>
+            <RemoveButton path={path} />
+          </div>
+        </div>
+      )}
     >
       <div style={windowStyles}>
         {id === "b" ? (
@@ -100,14 +117,7 @@ const ExampleWindow = ({ id, path, totalWindowCount }: ExampleWindowProps) => {
                 test {totalWindowCount}
               </Box>
             </Content>
-            <Footer
-              sx={{
-                backgroundColor: theme.palette.primary.dark,
-                color: theme.palette.primary.contrastText,
-              }}
-            >
-              test
-            </Footer>
+            <Footer>test</Footer>
           </Layout>
         )}
       </div>
@@ -123,5 +133,18 @@ interface RemoveButtonProps {
 function RemoveButton({ path }: RemoveButtonProps) {
   const { mosaicActions } = useContext(MosaicContext);
 
-  return <button onClick={() => mosaicActions.remove(path)}>X</button>;
+  return (
+    <button
+      onClick={() => mosaicActions.remove(path)}
+      style={{
+        backgroundColor: "#f50057",
+        color: "#fff",
+        border: "none",
+        padding: "5px 10px",
+        cursor: "pointer",
+      }}
+    >
+      X
+    </button>
+  );
 }
