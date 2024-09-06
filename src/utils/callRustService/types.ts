@@ -119,7 +119,7 @@ export type RustServiceETFAggregateDetail = {
   major_sector_distribution?: {
     major_sector_name: string;
     weight: number;
-  };
+  }[];
 };
 
 export type RustServiceTicker10KDetail = {

@@ -102,10 +102,13 @@ export default function TickerDetail({
       </Grid>
 
       <LazyRender>
-        {
-          // TODO: Incorporate as necessary
-        }
-        <SectorsRadarChart />
+        {etfAggregateDetail?.major_sector_distribution && (
+          <SectorsRadarChart
+            majorSectorDistribution={
+              etfAggregateDetail?.major_sector_distribution
+            }
+          />
+        )}
 
         <HistoricalPriceChart
           tickerSymbol={tickerDetail.symbol}

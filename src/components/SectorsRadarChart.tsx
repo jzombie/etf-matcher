@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 
 import {
   Legend,
@@ -10,55 +10,53 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import { getAllMajorSectors } from "@utils/callRustService";
+import type { RustServiceETFAggregateDetail } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
+
+export type SectorsRadarChartProps = {
+  majorSectorDistribution: RustServiceETFAggregateDetail["major_sector_distribution"];
+};
 
 type SectorData = {
   subject: string;
-  A: number;
-  B: number;
-  fullMark: number;
+  A: number; // Weight for sector A
+  fullMark: number; // Max mark, could be static or dynamic
 };
 
-export default function SectorsRadarChart() {
-  const [data, setData] = useState<SectorData[]>([]);
+export default function SectorsRadarChart({
+  majorSectorDistribution,
+}: SectorsRadarChartProps) {
+  // Transform the majorSectorDistribution data into the format the radar chart expects
+  const data: SectorData[] = useMemo(
+    () =>
+      majorSectorDistribution?.map((sector) => ({
+        subject: sector.major_sector_name, // Sector name
+        A: sector.weight * 100, // Normalize the weight (as a percentage)
+        fullMark: 100, // Assuming 100 is the full mark for the radar chart
+      })) || [],
+    [majorSectorDistribution],
+  );
 
+  // TODO: Remove
   useEffect(() => {
-    getAllMajorSectors().then((sectorMap) => {
-      // TODO: Implement actual data
+    customLogger.debug("Radar Chart Data: ", data);
+  }, [data]);
 
-      customLogger.debug(sectorMap);
-
-      // Dynamically generate the data
-      const generatedData = Array.from(sectorMap).map(([_, sectorName]) => ({
-        subject: sectorName,
-        A: Math.floor(Math.random() * 150), // Random value for A (TODO: Update logic)
-        B: Math.floor(Math.random() * 150), // Random value for B (TODO: Update logic)
-        fullMark: 150,
-      }));
-
-      setData(generatedData);
-    });
-  }, []);
+  if (!data.length) {
+    return null;
+  }
 
   return (
-    <ResponsiveContainer width="100%" height={200}>
+    <ResponsiveContainer width="100%" height={300}>
       <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data}>
         <PolarGrid />
         <PolarAngleAxis dataKey="subject" />
-        <PolarRadiusAxis angle={30} domain={[0, 150]} />
+        <PolarRadiusAxis angle={30} domain={[0, 100]} />
         <Radar
-          name="A"
+          name="Sector Weight"
           dataKey="A"
           stroke="#8884d8"
           fill="#8884d8"
-          fillOpacity={0.6}
-        />
-        <Radar
-          name="B"
-          dataKey="B"
-          stroke="#82ca9d"
-          fill="#82ca9d"
           fillOpacity={0.6}
         />
         <Legend />
