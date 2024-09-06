@@ -117,7 +117,7 @@ export type RustServiceETFAggregateDetail = {
   avg_net_cash_used_provided_by_financing_activities_4_yr?: number;
   //
   major_sector_distribution?: {
-    major_sector_id: number;
+    major_sector_name: string;
     weight: number;
   };
 };

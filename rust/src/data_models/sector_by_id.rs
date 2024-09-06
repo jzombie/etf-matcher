@@ -37,6 +37,29 @@ impl SectorById {
         Err(JsValue::from_str("Sector ID not found"))
     }
 
+    pub async fn get_major_sector_name_with_id(
+        major_sector_id: SectorId,
+    ) -> Result<String, JsValue> {
+        // Ensure cache is preloaded
+        if SECTOR_NAME_BY_ID_CACHE.lock().unwrap().is_empty() {
+            Self::preload_sector_name_cache().await?;
+        }
+
+        // Check if the major sector is in the cache
+        let cache = SECTOR_NAME_BY_ID_CACHE.lock().unwrap();
+        for sector in cache.values() {
+            if let (Some(id), Some(name)) =
+                (sector.major_sector_id, sector.major_sector_name.as_ref())
+            {
+                if id == major_sector_id {
+                    return Ok(name.clone());
+                }
+            }
+        }
+
+        Err(JsValue::from_str("Major Sector ID not found"))
+    }
+
     // TODO: Uncomment?
     // pub async fn get_all_sectors() -> Result<HashMap<SectorId, String>, JsValue> {
     //     // Ensure cache is preloaded
