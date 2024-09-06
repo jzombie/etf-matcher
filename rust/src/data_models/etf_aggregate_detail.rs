@@ -6,8 +6,36 @@ use crate::IndustryById;
 use crate::JsValue;
 use crate::SectorById;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
-// use web_sys::console;
+#[derive(Serialize, Deserialize, Debug)]
+pub struct MajorSectorWeight {
+    pub major_sector_id: SectorId,
+    pub weight: f32,
+}
+
+fn parse_major_sector_distribution(json_str: &str) -> Option<Vec<MajorSectorWeight>> {
+    let parsed_json: Value = serde_json::from_str(json_str).ok()?;
+    let mut result = Vec::new();
+
+    // Iterate over the JSON object and convert keys to integers
+    if let Value::Object(map) = parsed_json {
+        for (key, value) in map {
+            if let (Ok(major_sector_id), Some(weight)) = (
+                key.parse::<SectorId>(), // Convert key to u32
+                value.as_f64(),          // Convert the value to f64
+            ) {
+                result.push(MajorSectorWeight {
+                    major_sector_id,
+                    weight: weight as f32, // Convert f64 to f32 safely
+                });
+            }
+        }
+        Some(result)
+    } else {
+        None
+    }
+}
 
 // TODO: Add `major_sector` mapping
 #[derive(Serialize, Deserialize, Debug)]
@@ -88,6 +116,8 @@ pub struct ETFAggregateDetail {
     pub avg_net_cash_used_provided_by_financing_activities_2_yr: Option<f64>,
     pub avg_net_cash_used_provided_by_financing_activities_3_yr: Option<f64>,
     pub avg_net_cash_used_provided_by_financing_activities_4_yr: Option<f64>,
+    //
+    pub major_sector_distribution: Option<String>,
 }
 
 // TODO: Rename without `Response` suffix. Rename original `ETFAggregateDetail`.
@@ -171,6 +201,8 @@ pub struct ETFAggregateDetailResponse {
     pub avg_net_cash_used_provided_by_financing_activities_2_yr: Option<f64>,
     pub avg_net_cash_used_provided_by_financing_activities_3_yr: Option<f64>,
     pub avg_net_cash_used_provided_by_financing_activities_4_yr: Option<f64>,
+    //
+    pub major_sector_distribution: Option<Vec<MajorSectorWeight>>,
 }
 
 impl ETFAggregateDetail {
@@ -224,6 +256,20 @@ impl ETFAggregateDetail {
             }
             None => None,
         };
+
+        let major_sector_distribution: Option<Vec<MajorSectorWeight>> = etf_aggregate_detail
+            .major_sector_distribution
+            .as_ref()
+            .and_then(|json_str| parse_major_sector_distribution(json_str));
+
+        // TODO: Remove
+        // web_sys::console::log_1(
+        //     &format!(
+        //         "major_sector_distribution: {:?}, raw: {:?}",
+        //         major_sector_distribution, etf_aggregate_detail.major_sector_distribution
+        //     )
+        //     .into(),
+        // );
 
         let response = ETFAggregateDetailResponse {
             ticker_id: etf_aggregate_detail.ticker_id,
@@ -324,6 +370,8 @@ impl ETFAggregateDetail {
                 .avg_net_cash_used_provided_by_financing_activities_3_yr,
             avg_net_cash_used_provided_by_financing_activities_4_yr: etf_aggregate_detail
                 .avg_net_cash_used_provided_by_financing_activities_4_yr,
+            //
+            major_sector_distribution,
         };
 
         Ok(response)

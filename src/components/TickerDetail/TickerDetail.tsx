@@ -12,6 +12,7 @@ import useTickerDetail from "@hooks/useTickerDetail";
 
 import type { RustServiceETFAggregateDetail } from "@utils/callRustService";
 import { fetchETFAggregateDetailByTickerId } from "@utils/callRustService";
+import customLogger from "@utils/customLogger";
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
 import TickerContainer from "../TickerContainer";
@@ -53,6 +54,13 @@ export default function TickerDetail({
       );
     }
   }, [tickerDetail]);
+
+  // TODO: Remove
+  useEffect(() => {
+    if (etfAggregateDetail) {
+      customLogger.debug({ etfAggregateDetail });
+    }
+  }, [etfAggregateDetail]);
 
   const formattedSymbolWithExchange = useMemo(
     () => tickerDetail && formatSymbolWithExchange(tickerDetail),
