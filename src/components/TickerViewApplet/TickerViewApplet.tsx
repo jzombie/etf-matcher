@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import AutoScaler from "@layoutKit/AutoScaler";
 import Center from "@layoutKit/Center";
 import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
 import { MosaicNode } from "react-mosaic-component";
 
-// import HistoricalPriceChart from "@components/TickerDetail/TickerDetail.HistoricalPriceChart";
 import WindowManager from "@components/WindowManager";
+
+import HistoricalPriceChart from "./applets/HistoricalPriceChart.applet";
 
 const contentMap = {
   Detail: (
@@ -18,11 +19,10 @@ const contentMap = {
   ),
   "Historical Prices": (
     <AutoScaler>
-      {/* <HistoricalPriceChart
+      <HistoricalPriceChart
         tickerSymbol="AAPL"
         formattedSymbolWithExchange="NASDAQ:AAPL"
-      /> */}
-      [HistoricalPriceChart]
+      />
     </AutoScaler>
   ),
   "Similarity Search": <Center>Similarity Search content</Center>,
@@ -44,7 +44,7 @@ export type TickerViewAppletProps = {
   tickerId: number;
 };
 
+// TODO: Ensure `WindowManager` gets wrapped with `TickerContainer`
 export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
-  // TODO: Ensure `WindowManager` gets wrapped with `TickerContainer`
   return <WindowManager initialValue={initialValue} contentMap={contentMap} />;
 }
