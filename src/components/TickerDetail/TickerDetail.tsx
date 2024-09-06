@@ -5,7 +5,7 @@ import { Box, CircularProgress, Grid } from "@mui/material";
 import Center from "@layoutKit/Center";
 
 import LazyRender from "@components/LazyRender";
-import SectorsRadarChart from "@components/SectorsRadarChart";
+import SectorsPieChart from "@components/SectorsPieChart";
 import TickerVectorTable from "@components/TickerVectorQueryTable";
 
 import useTickerDetail from "@hooks/useTickerDetail";
@@ -103,7 +103,7 @@ export default function TickerDetail({
 
       <LazyRender>
         {etfAggregateDetail?.major_sector_distribution && (
-          <SectorsRadarChart
+          <SectorsPieChart
             majorSectorDistribution={
               etfAggregateDetail?.major_sector_distribution
             }
