@@ -44,6 +44,10 @@ export default function Window({
     width: "100%",
   };
 
+  const toolbarTitleStyles = {
+    fontWeight: "bold",
+  };
+
   return (
     <MosaicWindow<string>
       title={`Window ${id}`}
@@ -52,7 +56,7 @@ export default function Window({
       onDragEnd={(type) => console.log("MosaicWindow.onDragEnd", type)}
       renderToolbar={() => (
         <div style={toolbarStyles}>
-          <span>{id}</span>
+          <span style={toolbarTitleStyles}>{id}</span>
           <div>
             <RemoveButton path={path} />
           </div>
