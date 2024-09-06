@@ -1,222 +1,90 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React from "react";
 
-import {
-  Box,
-  Button,
-  FormControlLabel,
-  Pagination,
-  Switch,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
-import CircularProgress from "@mui/material/CircularProgress";
+import "@blueprintjs/core/lib/css/blueprint.css";
+import "@blueprintjs/icons/lib/css/blueprint-icons.css";
+import Full from "@layoutKit/Full";
+import { Mosaic, MosaicBranch, MosaicWindow } from "react-mosaic-component";
+import "react-mosaic-component/react-mosaic-component.css";
 
-import Center from "@layoutKit/Center";
-import Layout, { Content, Header } from "@layoutKit/Layout";
-import Padding from "@layoutKit/Padding";
-import Scrollable from "@layoutKit/Scrollable";
+// import "./app.css";
 
-import SearchModalButton from "@components/SearchModalButton";
-import TickerDetailList from "@components/TickerDetailList";
-import Transition from "@components/Transition";
-
-import usePageTitleSetter from "@utils/usePageTitleSetter";
-
-import useSearchResultsURLState from "./useSearchResultsURLState";
+// const ELEMENT_MAP: { [viewId: string]: JSX.Element } = {
+//   a: <div>Left Window</div>,
+//   b: <div>Top Right Window</div>,
+//   c: <div>Bottom Right Window</div>,
+// };
 
 export default function SearchResults() {
-  const {
-    searchQuery,
-    searchResults,
-    isLoading,
-    onlyExactMatches,
-    toggleExactMatch,
-    totalSearchResults,
-    page,
-    setPage,
-    pageSize,
-    totalPages,
-    previousPage,
-  } = useSearchResultsURLState();
-
-  usePageTitleSetter(searchQuery ? `Search results for: ${searchQuery}` : null);
-
-  const headerRef = useRef<HTMLDivElement>(null);
-
-  const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
-    // Note: Consider discarding this on large enough viewports
-
-    if (headerRef.current) {
-      const scrollTop = event.currentTarget.scrollTop;
-      const headerHeight = headerRef.current.clientHeight;
-
-      // Calculate the new margin top to slide the header out of view
-      // Stop decreasing marginTop once the header is fully out of view
-      const newMarginTop = Math.max(-headerHeight, -scrollTop);
-
-      // Apply the calculated margin top to the header
-      headerRef.current.style.marginTop = `${newMarginTop}px`;
-    }
-  }, []);
-
-  // Reset header offset on page changes (fixes an issue where when using footer
-  // pagination navigation, the header wouldn't re-appear)
-  useEffect(() => {
-    const header = headerRef.current;
-
-    if (page && header) {
-      header.style.marginTop = "0px";
-    }
-  }, [page]);
-
-  const isHeaderPaginationInline = useMediaQuery("@media (min-width:800px)");
-
-  if (!searchResults.length) {
-    if (isLoading) {
-      return (
-        <Center>
-          <CircularProgress />
-        </Center>
-      );
-    }
-
-    return (
-      <Center>
-        <Typography variant="h6" fontWeight="bold">
-          {!searchQuery.length ? (
-            <>No search query defined.</>
-          ) : (
-            <>
-              No {onlyExactMatches && "exact symbol"} search results for &quot;
-              {searchQuery}&quot;
-            </>
-          )}
-        </Typography>
-
-        <Box mt={4}>
-          <Typography
-            variant="body1"
-            sx={{ display: "inline-block", marginRight: 1 }}
-          >
-            Try another
-          </Typography>
-
-          <SearchModalButton />
-        </Box>
-
-        {onlyExactMatches && (
-          <Box mt={4}>
-            <Typography
-              variant="body1"
-              sx={{ display: "inline-block", marginRight: 1 }}
-            >
-              Or
-            </Typography>
-            <Button variant="contained" onClick={toggleExactMatch}>
-              Disable Exact Matches
-            </Button>
-          </Box>
-        )}
-      </Center>
-    );
-  }
-
   return (
-    <Layout>
-      <Header ref={headerRef}>
-        <Padding>
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent={
-              isHeaderPaginationInline ? "space-between" : "space-between"
-            }
-            flexDirection={isHeaderPaginationInline ? "row" : "column"}
-            sx={{ height: "100%" }}
-          >
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent={
-                isHeaderPaginationInline ? "flex-start" : "space-between"
-              }
-              width={isHeaderPaginationInline ? "auto" : "100%"}
-            >
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={onlyExactMatches}
-                    onChange={toggleExactMatch}
-                  />
-                }
-                label={
-                  <Typography variant="body1" color="textSecondary">
-                    Toggle Exact Match
-                  </Typography>
-                }
-              />
-              <Typography
-                variant="body1"
-                sx={{
-                  marginLeft: isHeaderPaginationInline ? 2 : 0,
-                  textAlign: isHeaderPaginationInline ? "left" : "center",
-                }}
-              >
-                {totalSearchResults} search result
-                {totalSearchResults !== 1 ? "s" : ""} for &quot;{searchQuery}
-                &quot;
-              </Typography>
-            </Box>
-            {totalSearchResults > pageSize && (
-              <Box
-                mt={isHeaderPaginationInline ? 0 : 0.4}
-                textAlign={isHeaderPaginationInline ? "right" : "center"}
-              >
-                <Pagination
-                  disabled={isLoading}
-                  count={totalPages}
-                  page={page}
-                  onChange={(event, nextPage) => setPage(nextPage)}
-                  showFirstButton
-                  showLastButton
-                  sx={{ whiteSpace: "no-wrap" }}
-                  // TODO: Dynamically adjust the following as needed
-                  // boundaryCount={0}
-                  // siblingCount={0}
-                />
-              </Box>
-            )}
-          </Box>
-        </Padding>
-      </Header>
-      <Content>
-        <Transition
-          direction={!previousPage || page > previousPage ? "left" : "right"}
-          trigger={searchResults}
-        >
-          <Scrollable onScroll={handleScroll}>
-            <TickerDetailList
-              tickerIds={searchResults.map(({ ticker_id }) => ticker_id)}
-            />
-
-            {totalSearchResults > pageSize && !isLoading && (
-              <Box style={{ textAlign: "center" }}>
-                <Pagination
-                  count={totalPages}
-                  page={page}
-                  onChange={(event, nextPage) => setPage(nextPage)}
-                  showFirstButton
-                  showLastButton
-                  sx={{ display: "inline-block" }}
-                  // TODO: Dynamically adjust the following as needed
-                  // boundaryCount={0}
-                  // siblingCount={0}
-                />
-              </Box>
-            )}
-          </Scrollable>
-        </Transition>
-      </Content>
-    </Layout>
+    <Full id="app" style={{ backgroundColor: "gray" }}>
+      <div style={{ backgroundColor: "black", width: "100%", height: 500 }}>
+        <Mosaic<string>
+          // renderTile={(id) => ELEMENT_MAP[id]}
+          renderTile={(count, path) => (
+            <ExampleWindow count={count} path={path} totalWindowCount={3} />
+          )}
+          initialValue={{
+            direction: "column",
+            first: "a",
+            second: {
+              direction: "row",
+              first: "b",
+              second: "c",
+            },
+            splitPercentage: 40,
+          }}
+        />
+      </div>
+    </Full>
   );
 }
+
+interface ExampleWindowProps {
+  count: number;
+  path: MosaicBranch[];
+  totalWindowCount: number;
+}
+
+const ExampleWindow = ({
+  count,
+  path,
+  totalWindowCount,
+}: ExampleWindowProps) => {
+  const adContainer = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    if (adContainer.current == null) {
+      return;
+    }
+
+    const script = window.document.createElement("script");
+
+    script.src =
+      "//cdn.carbonads.com/carbon.js?serve=CEAIEK3E&placement=nomcoptergithubio";
+    script.async = true;
+    script.type = "text/javascript";
+    script.id = "_carbonads_js";
+
+    adContainer.current.appendChild(script);
+  }, []);
+
+  return (
+    <MosaicWindow<number>
+      // additionalControls={count === 3 ? additionalControls : EMPTY_ARRAY}
+      title={`Window ${count}`}
+      createNode={() => totalWindowCount + 1}
+      path={path}
+      onDragStart={() => console.log("MosaicWindow.onDragStart")}
+      onDragEnd={(type) => console.log("MosaicWindow.onDragEnd", type)}
+      renderToolbar={
+        count === 2
+          ? () => <div className="toolbar-example">Custom Toolbar</div>
+          : null
+      }
+    >
+      <div className="example-window">
+        <h1>{`Window ${count}`}</h1>
+        {count === 3 && <div className="ad-container" ref={adContainer} />}
+      </div>
+    </MosaicWindow>
+  );
+};

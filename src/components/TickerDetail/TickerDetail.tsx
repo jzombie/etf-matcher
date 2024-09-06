@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import { Box, CircularProgress, Grid, Paper, Typography } from "@mui/material";
+import { Box, CircularProgress, Grid } from "@mui/material";
 
 import Center from "@layoutKit/Center";
 
@@ -93,12 +93,6 @@ export default function TickerDetail({
             formattedSymbolWithExchange={formattedSymbolWithExchange}
           />
         </Grid>
-
-        {/* Optional Second Section (Add any other overview info here if needed) */}
-        <Grid item xs={12} md={6}>
-          {/* Placeholder for additional summary information */}
-          {/* You can add a Paper or other components here */}
-        </Grid>
       </Grid>
 
       {/* Historical Price Chart - Full Width */}
@@ -110,65 +104,68 @@ export default function TickerDetail({
           />
         </Grid>
       </Grid>
+
       {/* Bucket Manager */}
       <Box sx={{ textAlign: "center", margin: "20px 0" }}>
         <TickerDetailBucketManager tickerDetail={tickerDetail} />
       </Box>
 
-      {/* Grid for Side-by-Side or Centered Chart */}
-      <Grid
-        container
-        spacing={2}
-        mt={2}
-        justifyContent={
-          etfAggregateDetail?.major_sector_distribution
-            ? "flex-start"
-            : "center"
-        }
+      {/* Grid layout for side-by-side chart */}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2, 1fr)", // Two equal-width columns
+          gridAutoRows: "minmax(100px, auto)", // Adjust rows dynamically
+          gap: 2, // Gap between the boxes
+        }}
       >
-        <Grid
-          item
-          xs={12}
-          md={etfAggregateDetail?.major_sector_distribution ? 6 : 12}
-        >
+        <Box>
           <LazyRender>
             <PCAScatterPlot tickerDetail={tickerDetail} />
           </LazyRender>
-        </Grid>
+        </Box>
 
         {etfAggregateDetail?.major_sector_distribution && (
-          <Grid item xs={12} md={6}>
+          <Box>
             <SectorsPieChart
               majorSectorDistribution={
                 etfAggregateDetail?.major_sector_distribution
               }
             />
-          </Grid>
+          </Box>
         )}
-      </Grid>
+      </Box>
 
-      {/* Split into two equal columns for data and charts */}
-      <Grid container spacing={2} sx={{ marginTop: 2 }}>
-        <Grid item xs={12} md={6}>
+      {/* Grid layout for the table and financial charts */}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2, 1fr)", // Two equal-width columns
+          gridTemplateRows: "masonry", // Masonry for rows
+          gap: 2, // Gap between columns and rows
+          marginTop: 2,
+        }}
+      >
+        <Box sx={{ border: "1px yellow solid" }}>
           <TickerVectorTable queryMode={"ticker-detail"} query={tickerDetail} />
-        </Grid>
+        </Box>
 
-        <Grid item xs={12} md={6}>
+        <Box sx={{ border: "1px yellow solid" }}>
           <FinancialChartsGrid tickerDetail={tickerDetail} />
-        </Grid>
+        </Box>
 
         {tickerDetail?.is_etf && (
-          <Grid item xs={12} md={6}>
+          <Box sx={{ border: "1px yellow solid" }}>
             <ETFHoldingList etfTickerDetail={tickerDetail} />
-          </Grid>
+          </Box>
         )}
 
         {tickerDetail?.is_held_in_etf && (
-          <Grid item xs={12} md={6}>
+          <Box sx={{ border: "1px yellow solid" }}>
             <ETFHolderList tickerDetail={tickerDetail} />
-          </Grid>
+          </Box>
         )}
-      </Grid>
+      </Box>
     </TickerContainer>
   );
 }
