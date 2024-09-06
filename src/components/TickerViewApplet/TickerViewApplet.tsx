@@ -14,6 +14,7 @@ import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 import ETFHolderList from "./applets/ETFHolderList.applet";
 import ETFHoldingList from "./applets/ETFHoldingList.applet";
 import HistoricalPriceChart from "./applets/HistoricalPriceChart.applet";
+import PCAScatterPlot from "./applets/PCAScatterPlot.applet";
 
 export type TickerViewAppletProps = {
   tickerId: number;
@@ -60,7 +61,14 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
             />
           </AutoScaler>
         ),
-      "Similarity Search": <Center>Similarity Search content</Center>,
+      "Similarity Search":
+        isLoadingTickerDetail || !tickerDetail ? (
+          // TODO: Use spinner
+          // TODO: Handle error condition
+          <Center>Loading</Center>
+        ) : (
+          <PCAScatterPlot tickerDetail={tickerDetail} />
+        ),
     }),
     [isLoadingTickerDetail, tickerDetail],
   );
