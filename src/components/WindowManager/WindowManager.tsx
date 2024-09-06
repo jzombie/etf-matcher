@@ -15,7 +15,6 @@ import {
 } from "react-mosaic-component";
 import "react-mosaic-component/react-mosaic-component.css";
 
-// Keeps MosaicWindow draggable
 import HistoricalPriceChart from "@components/TickerDetail/TickerDetail.HistoricalPriceChart";
 
 // Main window manager component
