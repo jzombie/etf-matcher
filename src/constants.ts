@@ -37,32 +37,17 @@ export const DEFAULT_TICKER_TAPE_TICKERS: ReadonlyArray<{
 ];
 
 export const COLOR_WHEEL_COLORS = [
-  "#00FF7F", // Neon Green
-  "#1E90FF", // Neon Dodger Blue
-  "#FF6347", // Neon Tomato
-  "#FFD700", // Neon Gold
-  "#FF4500", // Neon Orange Red
-  "#FF00FF", // Neon Magenta
-  "#8A2BE2", // Neon Blue Violet
-  "#20B2AA", // Neon Light Sea Green
-  "#ADFF2F", // Neon Green Yellow
-  "#7FFF00", // Neon Chartreuse
-  "#9400D3", // Neon Dark Violet
-  "#00BFFF", // Neon Deep Sky Blue
-  "#2E8B57", // Neon Sea Green
-  "#FF1493", // Neon Deep Pink
-  "#4682B4", // Neon Steel Blue
-  "#8B0000", // Neon Dark Red
-  "#00CED1", // Neon Dark Turquoise
-  "#FF8C00", // Neon Dark Orange
-  "#FF69B4", // Neon Hot Pink
-  "#00FFFF", // Neon Cyan
-  "#40E0D0", // Neon Turquoise
-  "#FF6347", // Neon Tomato
-  "#32CD32", // Neon Lime Green
-  "#39FF14", // Neon Green
-  "#4169E1", // Neon Royal Blue
-  "#FFD700", // Neon Gold
+  "#8884d8",
+  "#82ca9d",
+  "#ffc658",
+  "#ff8042",
+  "#8dd1e1",
+  "#d0ed57",
+  "#a4de6c",
+  "#ffbb28",
+  "#ff6361",
+  "#6a8d92",
+  "#b8860b",
 ] as const;
 
 export const MAX_RECENTLY_VIEWED_ITEMS = 10;
