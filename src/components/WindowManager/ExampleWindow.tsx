@@ -3,8 +3,6 @@ import React, { useContext } from "react";
 import { Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
-import AutoScaler from "@layoutKit/AutoScaler";
-import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
 import {
   MosaicBranch,
   MosaicContext,
@@ -12,19 +10,23 @@ import {
 } from "react-mosaic-component";
 import "react-mosaic-component/react-mosaic-component.css";
 
-import HistoricalPriceChart from "@components/TickerDetail/TickerDetail.HistoricalPriceChart";
-
+// ExampleWindow Props now include dynamic content
 interface ExampleWindowProps {
   id: string;
   path: MosaicBranch[];
   totalWindowCount: number;
+  content: React.ReactNode; // Dynamic content passed in
 }
 
 // The window component
-const ExampleWindow = ({ id, path, totalWindowCount }: ExampleWindowProps) => {
-  const theme = useTheme(); // Access Material-UI theme
+const ExampleWindow = ({
+  id,
+  path,
+  totalWindowCount,
+  content,
+}: ExampleWindowProps) => {
+  const theme = useTheme();
 
-  // Apply styles via classNames or inline using the theme
   const windowStyles = {
     backgroundColor: theme.palette.background.paper,
     border: `1px solid ${theme.palette.divider}`,
@@ -59,38 +61,8 @@ const ExampleWindow = ({ id, path, totalWindowCount }: ExampleWindowProps) => {
       )}
     >
       <div style={windowStyles}>
-        {id === "Historical Prices" ? (
-          <AutoScaler>
-            <HistoricalPriceChart
-              tickerSymbol="AAPL"
-              formattedSymbolWithExchange="NASDAQ:AAPL"
-            />
-          </AutoScaler>
-        ) : (
-          <Layout>
-            <Header
-              style={{
-                backgroundColor: theme.palette.primary.main,
-                color: theme.palette.primary.contrastText,
-              }}
-            >
-              test
-            </Header>
-            <Content>
-              <Box
-                sx={{
-                  backgroundColor: theme.palette.secondary.main,
-                  color: theme.palette.secondary.contrastText,
-                  width: "100%",
-                  height: "100%",
-                }}
-              >
-                test {totalWindowCount}
-              </Box>
-            </Content>
-            <Footer>test</Footer>
-          </Layout>
-        )}
+        {/* Render the dynamic content passed from WindowManager */}
+        {content}
       </div>
     </MosaicWindow>
   );

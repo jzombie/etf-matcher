@@ -6,32 +6,30 @@ import Full from "@layoutKit/Full";
 import { Mosaic, MosaicNode } from "react-mosaic-component";
 import "react-mosaic-component/react-mosaic-component.css";
 
-import ExampleWindow from "./ExampleWindow";
+import ExampleWindow, { ExampleWindowProps } from "./ExampleWindow";
 
 export type WindowManagerProps = {
   initialValue: MosaicNode<string>;
+  contentMap: { [key: string]: React.ReactNode }; // Pass content for windows
 };
 
-// Main window manager component
-export default function WindowManager({ initialValue }: WindowManagerProps) {
+export default function WindowManager({
+  initialValue,
+  contentMap,
+}: WindowManagerProps) {
   return (
     <Full style={{ backgroundColor: "gray" }}>
       <Box sx={{ backgroundColor: "black", width: "100%", height: 500 }}>
         <Mosaic<string>
           renderTile={(id, path) => (
-            <ExampleWindow id={id} path={path} totalWindowCount={3} />
+            <ExampleWindow
+              id={id}
+              path={path}
+              totalWindowCount={3}
+              content={contentMap[id]}
+            />
           )}
           initialValue={initialValue}
-          // initialValue={{
-          //   direction: "column",
-          //   first: "Detail",
-          //   second: {
-          //     direction: "row",
-          //     first: "Historical Prices",
-          //     second: "Similarity Search",
-          //   },
-          //   splitPercentage: 40,
-          // }}
         />
       </Box>
     </Full>
