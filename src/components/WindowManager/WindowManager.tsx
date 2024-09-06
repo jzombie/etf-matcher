@@ -6,14 +6,13 @@ import Full from "@layoutKit/Full";
 import { Mosaic, MosaicNode } from "react-mosaic-component";
 import "react-mosaic-component/react-mosaic-component.css";
 
-import ExampleWindow from "./ExampleWindow";
+import Window from "./WindowManager.Window";
 
 export type WindowManagerProps = {
   initialValue: MosaicNode<string>;
   contentMap: { [key: string]: React.ReactNode };
 };
 
-// Main window manager component
 export default function WindowManager({
   initialValue,
   contentMap,
@@ -56,7 +55,7 @@ export default function WindowManager({
       >
         <Mosaic<string>
           renderTile={(id, path) => (
-            <ExampleWindow
+            <Window
               id={id}
               path={path}
               totalWindowCount={3}
@@ -71,11 +70,11 @@ export default function WindowManager({
   );
 }
 
-const CustomZeroStateView = () => {
+function CustomZeroStateView() {
   return (
     <div style={{ textAlign: "center", padding: "20px", color: "#fff" }}>
       <h2>No windows open</h2>
       <p>Use the controls to open new windows.</p>
     </div>
   );
-};
+}

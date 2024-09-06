@@ -12,21 +12,19 @@ import "react-mosaic-component/react-mosaic-component.css";
 
 import "./mosaic-custom-overrides.css";
 
-// ExampleWindow Props now include dynamic content
-interface ExampleWindowProps {
+export type WindowProps = {
   id: string;
   path: MosaicBranch[];
   totalWindowCount: number;
   content: React.ReactNode; // Dynamic content passed in
-}
+};
 
-// The window component
-const ExampleWindow = ({
+export default function Window({
   id,
   path,
   totalWindowCount,
   content,
-}: ExampleWindowProps) => {
+}: WindowProps) {
   const theme = useTheme();
 
   const windowStyles = {
@@ -67,7 +65,7 @@ const ExampleWindow = ({
       </Full>
     </MosaicWindow>
   );
-};
+}
 
 // RemoveButton to remove the window
 interface RemoveButtonProps {
@@ -92,6 +90,3 @@ function RemoveButton({ path }: RemoveButtonProps) {
     </button>
   );
 }
-
-export default ExampleWindow;
-export type { ExampleWindowProps };
