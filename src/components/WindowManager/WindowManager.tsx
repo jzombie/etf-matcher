@@ -7,6 +7,7 @@ import { Mosaic, MosaicNode } from "react-mosaic-component";
 import "react-mosaic-component/react-mosaic-component.css";
 
 import Window from "./WindowManager.Window";
+import "./mosaic-custom-overrides.css";
 
 export type WindowManagerProps = {
   initialValue: MosaicNode<string>;
