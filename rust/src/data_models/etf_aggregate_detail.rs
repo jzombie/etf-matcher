@@ -44,7 +44,6 @@ impl MajorSectorWeight {
     }
 }
 
-// TODO: Add `major_sector` mapping
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ETFAggregateDetail {
     pub ticker_id: TickerId,
@@ -270,15 +269,6 @@ impl ETFAggregateDetail {
             Some(json_str) => MajorSectorWeight::parse_major_sector_distribution(json_str).await,
             None => None,
         };
-
-        // TODO: Remove
-        // web_sys::console::log_1(
-        //     &format!(
-        //         "major_sector_distribution: {:?}, raw: {:?}",
-        //         major_sector_distribution, etf_aggregate_detail.major_sector_distribution
-        //     )
-        //     .into(),
-        // );
 
         let response = ETFAggregateDetailResponse {
             ticker_id: etf_aggregate_detail.ticker_id,
