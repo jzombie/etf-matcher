@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use crate::types::{IndustryId, SectorId, TickerId};
 use crate::utils::shard::query_shard_for_id;
 use crate::utils::ticker_utils::get_symbol_and_exchange_by_ticker_id;
@@ -18,39 +16,31 @@ pub struct MajorSectorWeight {
 
 impl MajorSectorWeight {
     async fn parse_major_sector_distribution(json_str: &str) -> Option<Vec<MajorSectorWeight>> {
-        // Parse the incoming JSON string
         let parsed_json: Value = serde_json::from_str(json_str).ok()?;
-
-        // Fetch all major sectors from the cache
-        let all_major_sectors = SectorById::get_all_major_sectors().await.ok()?;
-
         let mut result = Vec::new();
 
-        // Create a map from the parsed JSON data to handle the weights
-        let mut sector_weights: HashMap<SectorId, f32> = HashMap::new();
-
-        // Iterate over the JSON object and populate sector_weights map
+        // Iterate over the JSON object and convert keys to integers
         if let Value::Object(map) = parsed_json {
             for (key, value) in map {
                 if let (Ok(major_sector_id), Some(weight)) = (
                     key.parse::<SectorId>(), // Convert key to SectorId
                     value.as_f64(),          // Convert the value to f64
                 ) {
-                    sector_weights.insert(major_sector_id, weight as f32);
+                    // Fetch the major sector name asynchronously
+                    if let Ok(major_sector_name) =
+                        SectorById::get_major_sector_name_with_id(major_sector_id).await
+                    {
+                        result.push(MajorSectorWeight {
+                            major_sector_name,     // Use sector name instead of ID
+                            weight: weight as f32, // Convert f64 to f32 safely
+                        });
+                    }
                 }
             }
+            Some(result)
+        } else {
+            None
         }
-
-        // Iterate over all major sectors and ensure each one is included
-        for (major_sector_id, major_sector_name) in all_major_sectors {
-            let weight = sector_weights.get(&major_sector_id).cloned().unwrap_or(0.0);
-            result.push(MajorSectorWeight {
-                major_sector_name,
-                weight,
-            });
-        }
-
-        Some(result)
     }
 }
 
