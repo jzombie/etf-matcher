@@ -9,6 +9,7 @@ use serde::{Deserialize, Serialize};
 
 // use web_sys::console;
 
+// TODO: Add `major_sector` mapping
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ETFAggregateDetail {
     pub ticker_id: TickerId,

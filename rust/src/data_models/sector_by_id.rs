@@ -9,7 +9,7 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 
 lazy_static! {
-    static ref SECTOR_NAME_BY_ID_CACHE: Mutex<HashMap<SectorId, String>> =
+    static ref SECTOR_NAME_BY_ID_CACHE: Mutex<HashMap<SectorId, SectorById>> =
         Mutex::new(HashMap::new());
 }
 
@@ -17,6 +17,8 @@ lazy_static! {
 pub struct SectorById {
     pub sector_id: SectorId,
     pub sector_name: String,
+    pub major_sector_id: Option<SectorId>,
+    pub major_sector_name: Option<String>,
 }
 
 impl SectorById {
@@ -28,22 +30,49 @@ impl SectorById {
 
         // Check if the result is already in the cache
         let cache = SECTOR_NAME_BY_ID_CACHE.lock().unwrap();
-        if let Some(sector_name) = cache.get(&sector_id) {
-            return Ok(sector_name.clone());
+        if let Some(sector) = cache.get(&sector_id) {
+            return Ok(sector.sector_name.clone());
         }
 
         Err(JsValue::from_str("Sector ID not found"))
     }
 
-    pub async fn get_all_sectors() -> Result<HashMap<SectorId, String>, JsValue> {
+    // TODO: Uncomment?
+    // pub async fn get_all_sectors() -> Result<HashMap<SectorId, String>, JsValue> {
+    //     // Ensure cache is preloaded
+    //     if SECTOR_NAME_BY_ID_CACHE.lock().unwrap().is_empty() {
+    //         Self::preload_sector_name_cache().await?;
+    //     }
+
+    //     // Return all sector names
+    //     let cache = SECTOR_NAME_BY_ID_CACHE.lock().unwrap();
+    //     let sectors = cache
+    //         .iter()
+    //         .map(|(id, sector)| (*id, sector.sector_name.clone()))
+    //         .collect();
+    //     Ok(sectors)
+    // }
+
+    pub async fn get_all_major_sectors() -> Result<HashMap<SectorId, String>, JsValue> {
         // Ensure cache is preloaded
         if SECTOR_NAME_BY_ID_CACHE.lock().unwrap().is_empty() {
             Self::preload_sector_name_cache().await?;
         }
 
-        // Return a clone of the cache
+        // Create a map for major sectors
+        let mut major_sector_cache = HashMap::new();
+
+        // Access the cache to populate the major sector data
         let cache = SECTOR_NAME_BY_ID_CACHE.lock().unwrap();
-        Ok(cache.clone())
+        for (_, sector) in cache.iter() {
+            if let (Some(major_sector_id), Some(major_sector_name)) =
+                (sector.major_sector_id, sector.major_sector_name.as_ref())
+            {
+                major_sector_cache.insert(major_sector_id, major_sector_name.clone());
+            }
+        }
+
+        Ok(major_sector_cache)
     }
 
     async fn preload_sector_name_cache() -> Result<(), JsValue> {
@@ -60,7 +89,7 @@ impl SectorById {
         // Load data into cache
         let mut cache = SECTOR_NAME_BY_ID_CACHE.lock().unwrap();
         for sector in data {
-            cache.insert(sector.sector_id, sector.sector_name);
+            cache.insert(sector.sector_id, sector);
         }
 
         Ok(())

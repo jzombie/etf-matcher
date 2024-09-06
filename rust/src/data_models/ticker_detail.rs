@@ -17,6 +17,7 @@ where
     Ok(num != 0)
 }
 
+// TODO: Add `major_sector` mapping
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TickerDetail {
     pub ticker_id: TickerId,

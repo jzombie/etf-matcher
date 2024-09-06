@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import { getAllSectors } from "@utils/callRustService";
+import { getAllMajorSectors } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
 // TODO: Don't hardcode
@@ -86,7 +86,7 @@ const data = [
 export default function SectorsRadarChart() {
   // TODO: Build out
   useEffect(() => {
-    getAllSectors().then(customLogger.debug);
+    getAllMajorSectors().then(customLogger.debug);
   }, []);
 
   return (

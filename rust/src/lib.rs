@@ -183,9 +183,9 @@ pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<Js
 }
 
 #[wasm_bindgen]
-pub async fn get_all_sectors() -> Result<JsValue, JsValue> {
+pub async fn get_all_major_sectors() -> Result<JsValue, JsValue> {
     // Fetch all sectors by using the get_all_sectors method from the SectorById struct
-    let all_sectors = SectorById::get_all_sectors().await?;
+    let all_sectors = SectorById::get_all_major_sectors().await?;
 
     // Convert the HashMap<SectorId, String> to a JsValue
     to_value(&all_sectors).map_err(|err: serde_wasm_bindgen::Error| {

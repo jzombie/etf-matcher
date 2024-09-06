@@ -19,7 +19,7 @@ import fetchTicker10KDetail from "./lib/fetchTicker10KDetail";
 import fetchTickerDetail from "./lib/fetchTickerDetail";
 import fetchTickerId from "./lib/fetchTickerId";
 import generateQRCode from "./lib/generateQRCode";
-import getAllSectors from "./lib/getAllSectors";
+import getAllMajorSectors from "./lib/getAllMajorSectors";
 import searchTickers from "./lib/searchTickers";
 import {
   fetchCosineByTicker,
@@ -86,5 +86,5 @@ export {
   fetchTicker10KDetail,
   fetchSymbolAndExchangeByTickerId,
   fetchETFAggregateDetailByTickerId,
-  getAllSectors,
+  getAllMajorSectors,
 };
