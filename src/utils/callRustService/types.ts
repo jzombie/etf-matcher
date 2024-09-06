@@ -115,6 +115,11 @@ export type RustServiceETFAggregateDetail = {
   avg_net_cash_used_provided_by_financing_activities_2_yr?: number;
   avg_net_cash_used_provided_by_financing_activities_3_yr?: number;
   avg_net_cash_used_provided_by_financing_activities_4_yr?: number;
+  //
+  major_sector_distribution?: {
+    major_sector_name: string;
+    weight: number;
+  }[];
 };
 
 export type RustServiceTicker10KDetail = {

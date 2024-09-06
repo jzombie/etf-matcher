@@ -78,7 +78,7 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
   }
 
   return (
-    <AutoScaler>
+    <AutoScaler style={{ height: 300 }}>
       <ScatterChart
         margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
         width={400}
