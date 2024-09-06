@@ -90,6 +90,7 @@ pub struct ETFAggregateDetail {
     pub avg_net_cash_used_provided_by_financing_activities_4_yr: Option<f64>,
 }
 
+// TODO: Rename without `Response` suffix. Rename original `ETFAggregateDetail`.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ETFAggregateDetailResponse {
     pub ticker_id: TickerId,

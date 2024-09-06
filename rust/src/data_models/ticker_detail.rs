@@ -36,6 +36,7 @@ pub struct TickerDetail {
     pub logo_filename: Option<String>,
 }
 
+// TODO: Rename without `Response` suffix. Rename original.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TickerDetailResponse {
     pub ticker_id: TickerId,
