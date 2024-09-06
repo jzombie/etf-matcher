@@ -19,7 +19,7 @@ export type WindowManagerProps = unknown;
 
 export default function WindowManager() {
   return (
-    <Full id="app" style={{ backgroundColor: "gray" }}>
+    <Full style={{ backgroundColor: "gray" }}>
       <div style={{ backgroundColor: "black", width: "100%", height: 500 }}>
         <Mosaic<string>
           renderTile={(id, path) => (
