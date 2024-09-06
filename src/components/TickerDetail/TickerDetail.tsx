@@ -91,8 +91,23 @@ export default function TickerDetail({
         formattedSymbolWithExchange={formattedSymbolWithExchange}
       />
 
+      {/* Historical Price Chart - Full Width */}
+      <Grid container spacing={2} sx={{ marginTop: 2 }}>
+        <Grid item xs={12}>
+          <HistoricalPriceChart
+            tickerSymbol={tickerDetail.symbol}
+            formattedSymbolWithExchange={formattedSymbolWithExchange}
+          />
+        </Grid>
+      </Grid>
+
+      {/* Bucket Manager */}
+      <Box sx={{ textAlign: "center", margin: "20px 0" }}>
+        <TickerDetailBucketManager tickerDetail={tickerDetail} />
+      </Box>
+
       {/* Grid for Side-by-Side Charts */}
-      <Grid container spacing={2}>
+      <Grid container spacing={2} mt={2}>
         <Grid item xs={12} md={6}>
           <LazyRender>
             <PCAScatterPlot tickerDetail={tickerDetail} />
@@ -109,21 +124,6 @@ export default function TickerDetail({
           )}
         </Grid>
       </Grid>
-
-      {/* Historical Price Chart - Full Width */}
-      <Grid container spacing={2} sx={{ marginTop: 2 }}>
-        <Grid item xs={12}>
-          <HistoricalPriceChart
-            tickerSymbol={tickerDetail.symbol}
-            formattedSymbolWithExchange={formattedSymbolWithExchange}
-          />
-        </Grid>
-      </Grid>
-
-      {/* Bucket Manager */}
-      <Box sx={{ textAlign: "center", margin: "20px 0" }}>
-        <TickerDetailBucketManager tickerDetail={tickerDetail} />
-      </Box>
 
       {/* Query Table and Financial Information */}
       <TickerVectorTable queryMode={"ticker-detail"} query={tickerDetail} />
