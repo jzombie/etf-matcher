@@ -3,7 +3,6 @@ import React, { useContext } from "react";
 import { Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
-// For accessing MUI theme
 import AutoScaler from "@layoutKit/AutoScaler";
 import Full from "@layoutKit/Full";
 import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
