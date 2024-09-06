@@ -156,17 +156,15 @@ export default function TickerDetail({
         <Grid item xs={12} md={6}>
           <FinancialChartsGrid tickerDetail={tickerDetail} />
         </Grid>
-      </Grid>
 
-      {/* ETF Holding Information */}
-      <Grid container spacing={2} sx={{ marginTop: 2 }}>
         {tickerDetail?.is_etf && (
-          <Grid item xs={12}>
+          <Grid item xs={12} md={6}>
             <ETFHoldingList etfTickerDetail={tickerDetail} />
           </Grid>
         )}
+
         {tickerDetail?.is_held_in_etf && (
-          <Grid item xs={12}>
+          <Grid item xs={12} md={6}>
             <ETFHolderList tickerDetail={tickerDetail} />
           </Grid>
         )}
