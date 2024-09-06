@@ -77,9 +77,9 @@ export default function SectorsPieChart({
           data={data}
           dataKey="value"
           nameKey="name"
-          cx={legendLayout.layout === "horizontal" ? "50%" : "55%"} // Center chart for mobile
+          cx={legendLayout.layout === "horizontal" ? "50%" : "55%"}
           cy="50%"
-          outerRadius={90} // Adjust outer radius for more space
+          outerRadius={90}
           innerRadius={50}
           labelLine={false} // Disable connecting lines for labels
         >
@@ -93,8 +93,8 @@ export default function SectorsPieChart({
         <Tooltip formatter={(value: number) => `${value.toFixed(2)}%`} />
         <Legend
           layout={legendLayout.layout}
-          verticalAlign={legendLayout.verticalAlign} // Corrected typing
-          align={legendLayout.align} // Corrected typing
+          verticalAlign={legendLayout.verticalAlign}
+          align={legendLayout.align}
           wrapperStyle={{
             paddingLeft: legendLayout.layout === "vertical" ? "20px" : "0px",
           }}
