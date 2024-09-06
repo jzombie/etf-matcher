@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { COLOR_WHEEL_COLORS } from "@src/constants";
 import {
@@ -35,6 +35,37 @@ export default function SectorsPieChart({
     customLogger.debug("Pie Chart Data: ", data);
   }, [data]);
 
+  // Define legend layout based on screen size
+  const getLegendLayout = () => {
+    if (window.innerWidth < 768) {
+      return {
+        layout: "horizontal" as const,
+        verticalAlign: "bottom" as const,
+        align: "center" as const,
+      };
+    }
+    return {
+      layout: "vertical" as const,
+      verticalAlign: "middle" as const,
+      align: "right" as const,
+    };
+  };
+
+  const [legendLayout, setLegendLayout] = useState(getLegendLayout());
+
+  // Update the legend layout when the window is resized
+  useEffect(() => {
+    const handleResize = () => {
+      setLegendLayout(getLegendLayout());
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   if (!data.length) {
     return null;
   }
@@ -46,14 +77,11 @@ export default function SectorsPieChart({
           data={data}
           dataKey="value"
           nameKey="name"
-          cx="55%" // Adjusted to give more space for the legend
+          cx={legendLayout.layout === "horizontal" ? "50%" : "55%"} // Center chart for mobile
           cy="50%"
-          outerRadius={100} // Adjust outer radius for more space
+          outerRadius={90} // Adjust outer radius for more space
           innerRadius={50}
-          labelLine={false} // Disable connecting lines
-          // label={({ name, percent }) =>
-          //   percent > 0.03 ? `${name}: ${(percent * 100).toFixed(1)}%` : ""
-          // }
+          labelLine={false} // Disable connecting lines for labels
         >
           {data.map((entry, index) => (
             <Cell
@@ -64,11 +92,11 @@ export default function SectorsPieChart({
         </Pie>
         <Tooltip formatter={(value: number) => `${value.toFixed(2)}%`} />
         <Legend
-          layout="vertical"
-          verticalAlign="middle"
-          align="right"
+          layout={legendLayout.layout}
+          verticalAlign={legendLayout.verticalAlign} // Corrected typing
+          align={legendLayout.align} // Corrected typing
           wrapperStyle={{
-            paddingLeft: "20px", // Add space between the chart and legend
+            paddingLeft: legendLayout.layout === "vertical" ? "20px" : "0px",
           }}
         />
       </PieChart>
