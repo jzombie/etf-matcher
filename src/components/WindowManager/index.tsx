@@ -1,4 +1,3 @@
-import WindowManager, { WindowManagerProps } from "./WindowManager";
+import WindowManager from "./WindowManager";
 
 export default WindowManager;
-export type { WindowManagerProps };
