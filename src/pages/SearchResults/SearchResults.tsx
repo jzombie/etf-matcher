@@ -1,20 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 
-// import { Classes, HTMLSelect } from "@blueprintjs/core";
-// import "@blueprintjs/core/lib/css/blueprint.css";
-// import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 import Full from "@layoutKit/Full";
-// import clsx from "clsx";
-import { Mosaic, MosaicBranch, MosaicWindow } from "react-mosaic-component";
+import {
+  Mosaic,
+  MosaicBranch,
+  MosaicContext,
+  MosaicWindow,
+} from "react-mosaic-component";
 import "react-mosaic-component/react-mosaic-component.css";
-
-// import "./app.css";
-
-// const ELEMENT_MAP: { [viewId: string]: JSX.Element } = {
-//   a: <div>Left Window</div>,
-//   b: <div>Top Right Window</div>,
-//   c: <div>Bottom Right Window</div>,
-// };
 
 export default function SearchResults() {
   return (
@@ -34,7 +27,6 @@ export default function SearchResults() {
             },
             splitPercentage: 40,
           }}
-          // className={clsx("mosaic-blueprint-theme", Classes.DARK)}
         />
       </div>
     </Full>
@@ -51,15 +43,10 @@ const ExampleWindow = ({ id, path, totalWindowCount }: ExampleWindowProps) => {
   return (
     <MosaicWindow<string>
       title={`Window ${id}`}
-      // createNode={() => totalWindowCount + 1}
       path={path}
       onDragStart={() => console.log("MosaicWindow.onDragStart")}
       onDragEnd={(type) => console.log("MosaicWindow.onDragEnd", type)}
-      // renderToolbar={
-      //   id === "b"
-      //     ? () => <div className="toolbar-example">Custom Toolbar</div>
-      //     : null
-      // }
+      toolbarControls={React.Children.toArray([<RemoveButton path={path} />])}
     >
       <div style={{ backgroundColor: "yellow", color: "#000" }}>
         test {totalWindowCount}
@@ -67,3 +54,15 @@ const ExampleWindow = ({ id, path, totalWindowCount }: ExampleWindowProps) => {
     </MosaicWindow>
   );
 };
+
+// Updated RemoveButton to use the correct `path`
+interface RemoveButtonProps {
+  path: MosaicBranch[];
+}
+
+// Based on: https://github.com/nomcopter/react-mosaic/blob/master/src/buttons/RemoveButton.tsx
+function RemoveButton({ path }: RemoveButtonProps) {
+  const { mosaicActions } = useContext(MosaicContext);
+
+  return <button onClick={() => mosaicActions.remove(path)}>X</button>;
+}
