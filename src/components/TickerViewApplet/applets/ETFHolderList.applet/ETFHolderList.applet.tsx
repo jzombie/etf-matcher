@@ -16,7 +16,7 @@ import type {
 } from "@utils/callRustService";
 import { fetchETFHoldersAggregateDetailByTickerId } from "@utils/callRustService";
 
-import ETFHolder from "./TickerDetail.ETFHolder";
+import ETFHolder from "./ETFHolderList.Item";
 
 export type ETFHolderListProps = {
   tickerDetail: RustServiceTickerDetail;
