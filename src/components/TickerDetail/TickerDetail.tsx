@@ -42,7 +42,6 @@ export default function TickerDetail({
     tickerId,
     onLoad,
   );
-
   const [etfAggregateDetail, setETFAggregateDetail] = useState<
     RustServiceETFAggregateDetail | undefined
   >(undefined);
@@ -55,7 +54,6 @@ export default function TickerDetail({
     }
   }, [tickerDetail]);
 
-  // TODO: Remove
   useEffect(() => {
     if (etfAggregateDetail) {
       customLogger.debug({ etfAggregateDetail });
@@ -86,51 +84,60 @@ export default function TickerDetail({
       onIntersectionStateChange={onIntersectionStateChange}
       {...rest}
     >
+      {/* Header Section */}
+      <TickerDetailHeader
+        tickerDetail={tickerDetail}
+        etfAggregateDetail={etfAggregateDetail}
+        formattedSymbolWithExchange={formattedSymbolWithExchange}
+      />
+
+      {/* Grid for Side-by-Side Charts */}
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
-          <TickerDetailHeader
-            tickerDetail={tickerDetail}
-            etfAggregateDetail={etfAggregateDetail}
-            formattedSymbolWithExchange={formattedSymbolWithExchange}
-          />
-        </Grid>
-        <Grid item xs={12} md={6} mb={1}>
           <LazyRender>
             <PCAScatterPlot tickerDetail={tickerDetail} />
           </LazyRender>
         </Grid>
+
+        <Grid item xs={12} md={6}>
+          {etfAggregateDetail?.major_sector_distribution && (
+            <SectorsPieChart
+              majorSectorDistribution={
+                etfAggregateDetail?.major_sector_distribution
+              }
+            />
+          )}
+        </Grid>
       </Grid>
 
-      <LazyRender>
-        {etfAggregateDetail?.major_sector_distribution && (
-          <SectorsPieChart
-            majorSectorDistribution={
-              etfAggregateDetail?.major_sector_distribution
-            }
+      {/* Historical Price Chart - Full Width */}
+      <Grid container spacing={2} sx={{ marginTop: 2 }}>
+        <Grid item xs={12}>
+          <HistoricalPriceChart
+            tickerSymbol={tickerDetail.symbol}
+            formattedSymbolWithExchange={formattedSymbolWithExchange}
           />
-        )}
+        </Grid>
+      </Grid>
 
-        <HistoricalPriceChart
-          tickerSymbol={tickerDetail.symbol}
-          formattedSymbolWithExchange={formattedSymbolWithExchange}
-        />
+      {/* Bucket Manager */}
+      <Box sx={{ textAlign: "center", margin: "20px 0" }}>
+        <TickerDetailBucketManager tickerDetail={tickerDetail} />
+      </Box>
 
-        <Box sx={{ textAlign: "center" }}>
-          <TickerDetailBucketManager tickerDetail={tickerDetail} />
-        </Box>
+      {/* Query Table and Financial Information */}
+      <TickerVectorTable queryMode={"ticker-detail"} query={tickerDetail} />
 
-        <TickerVectorTable queryMode={"ticker-detail"} query={tickerDetail} />
+      {/* Financial Charts Section */}
+      <FinancialChartsGrid tickerDetail={tickerDetail} />
 
-        <FinancialChartsGrid tickerDetail={tickerDetail} />
-
-        {tickerDetail?.is_etf && (
-          <ETFHoldingList etfTickerDetail={tickerDetail} />
-        )}
-
-        {tickerDetail?.is_held_in_etf && (
-          <ETFHolderList tickerDetail={tickerDetail} />
-        )}
-      </LazyRender>
+      {/* Conditional Rendering for ETF Holdings */}
+      {tickerDetail?.is_etf && (
+        <ETFHoldingList etfTickerDetail={tickerDetail} />
+      )}
+      {tickerDetail?.is_held_in_etf && (
+        <ETFHolderList tickerDetail={tickerDetail} />
+      )}
     </TickerContainer>
   );
 }
