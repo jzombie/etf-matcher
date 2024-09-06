@@ -40,5 +40,6 @@ const initialValue: MosaicNode<string> = {
 };
 
 export default function SearchResults() {
+  // TODO: Ensure `WindowManager` gets wrapped with `TickerContainer`
   return <WindowManager initialValue={initialValue} contentMap={contentMap} />;
 }
