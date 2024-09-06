@@ -10,6 +10,8 @@ import {
 } from "react-mosaic-component";
 import "react-mosaic-component/react-mosaic-component.css";
 
+import "./mosaic-custom-overrides.css";
+
 // ExampleWindow Props now include dynamic content
 interface ExampleWindowProps {
   id: string;
