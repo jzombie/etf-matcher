@@ -15,31 +15,53 @@ pub struct MajorSectorWeight {
 }
 
 impl MajorSectorWeight {
-    async fn parse_major_sector_distribution(json_str: &str) -> Option<Vec<MajorSectorWeight>> {
-        let parsed_json: Value = serde_json::from_str(json_str).ok()?;
+    async fn parse_major_sector_distribution(
+        json_str: &str,
+    ) -> Result<Vec<MajorSectorWeight>, String> {
+        // Parse the JSON and handle any errors
+        let parsed_json: Value =
+            serde_json::from_str(json_str).map_err(|e| format!("Failed to parse JSON: {}", e))?;
         let mut result = Vec::new();
 
-        // Iterate over the JSON object and convert keys to integers
+        // Ensure that we are dealing with an object
         if let Value::Object(map) = parsed_json {
             for (key, value) in map {
-                if let (Ok(major_sector_id), Some(weight)) = (
-                    key.parse::<SectorId>(), // Convert key to SectorId
-                    value.as_f64(),          // Convert the value to f64
-                ) {
+                // Attempt to parse the key as SectorId and the value as f64
+                let major_sector_id = key
+                    .parse::<SectorId>()
+                    .map_err(|_| format!("Failed to parse SectorId from key: {}", key))?;
+
+                if let Some(weight) = value.as_f64() {
+                    // Ensure the weight is within valid f32 range
+                    if weight > f32::MAX as f64 || weight < f32::MIN as f64 {
+                        return Err(format!("Weight value {} is out of range for f32", weight));
+                    }
+                    let weight_f32 = weight as f32; // Safe to cast now
+
                     // Fetch the major sector name asynchronously
                     if let Ok(major_sector_name) =
                         SectorById::get_major_sector_name_with_id(major_sector_id).await
                     {
                         result.push(MajorSectorWeight {
-                            major_sector_name,     // Use sector name instead of ID
-                            weight: weight as f32, // Convert f64 to f32 safely
+                            major_sector_name,  // Use sector name instead of ID
+                            weight: weight_f32, // Use the safely cast f32 value
                         });
+                    } else {
+                        return Err(format!(
+                            "Failed to get major sector name for SectorId: {}",
+                            major_sector_id
+                        ));
                     }
+                } else {
+                    return Err(format!(
+                        "Invalid weight value for SectorId: {}",
+                        major_sector_id
+                    ));
                 }
             }
-            Some(result)
+            Ok(result)
         } else {
-            None
+            Err("Expected a JSON object".to_string())
         }
     }
 }
@@ -263,12 +285,24 @@ impl ETFAggregateDetail {
             None => None,
         };
 
-        let major_sector_distribution: Option<Vec<MajorSectorWeight>> = match &etf_aggregate_detail
-            .major_sector_distribution
-        {
-            Some(json_str) => MajorSectorWeight::parse_major_sector_distribution(json_str).await,
-            None => None,
-        };
+        let major_sector_distribution: Option<Vec<MajorSectorWeight>> =
+            match &etf_aggregate_detail.major_sector_distribution {
+                Some(json_str) => {
+                    match MajorSectorWeight::parse_major_sector_distribution(json_str).await {
+                        Ok(sector_weights) => Some(sector_weights),
+                        Err(err) => {
+                            // Handle the error, log if necessary, and return None
+                            let error_message = format!(
+                                "Error parsing sector distribution for ticker_id {}: {}",
+                                etf_aggregate_detail.ticker_id, err
+                            );
+                            web_sys::console::error_1(&error_message.into());
+                            None
+                        }
+                    }
+                }
+                None => None,
+            };
 
         let response = ETFAggregateDetailResponse {
             ticker_id: etf_aggregate_detail.ticker_id,
