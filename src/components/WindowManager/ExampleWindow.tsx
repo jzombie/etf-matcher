@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
 
-import { Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
+import Full from "@layoutKit/Full";
 import {
   MosaicBranch,
   MosaicContext,
@@ -32,7 +32,6 @@ const ExampleWindow = ({
     border: `1px solid ${theme.palette.divider}`,
     borderRadius: theme.shape.borderRadius,
     boxShadow: theme.shadows[3],
-    height: "100%",
   };
 
   const toolbarStyles = {
@@ -60,10 +59,10 @@ const ExampleWindow = ({
         </div>
       )}
     >
-      <div style={windowStyles}>
+      <Full style={windowStyles}>
         {/* Render the dynamic content passed from WindowManager */}
         {content}
-      </div>
+      </Full>
     </MosaicWindow>
   );
 };

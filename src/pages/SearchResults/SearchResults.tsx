@@ -1,6 +1,7 @@
 import React from "react";
 
 import AutoScaler from "@layoutKit/AutoScaler";
+import Center from "@layoutKit/Center";
 import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
 import { MosaicNode } from "react-mosaic-component";
 
@@ -23,7 +24,7 @@ const contentMap = {
       />
     </AutoScaler>
   ),
-  "Similarity Search": <div>Similarity Search content</div>,
+  "Similarity Search": <Center>Similarity Search content</Center>,
 };
 
 // Use 'row' and 'column' instead of generic strings
