@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 
 import Full from "@layoutKit/Full";
+import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
 import {
   Mosaic,
   MosaicBranch,
@@ -48,9 +49,22 @@ const ExampleWindow = ({ id, path, totalWindowCount }: ExampleWindowProps) => {
       onDragEnd={(type) => console.log("MosaicWindow.onDragEnd", type)}
       toolbarControls={React.Children.toArray([<RemoveButton path={path} />])}
     >
-      <div style={{ backgroundColor: "yellow", color: "#000" }}>
-        test {totalWindowCount}
-      </div>
+      <Layout>
+        <Header style={{ backgroundColor: "gray" }}>test</Header>
+        <Content>
+          <div
+            style={{
+              backgroundColor: "yellow",
+              color: "#000",
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            test {totalWindowCount}
+          </div>
+        </Content>
+        <Footer style={{ backgroundColor: "gray" }}>test</Footer>
+      </Layout>
     </MosaicWindow>
   );
 };
