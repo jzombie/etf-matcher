@@ -14,31 +14,33 @@ pub struct MajorSectorWeight {
     pub weight: f32,
 }
 
-async fn parse_major_sector_distribution(json_str: &str) -> Option<Vec<MajorSectorWeight>> {
-    let parsed_json: Value = serde_json::from_str(json_str).ok()?;
-    let mut result = Vec::new();
+impl MajorSectorWeight {
+    async fn parse_major_sector_distribution(json_str: &str) -> Option<Vec<MajorSectorWeight>> {
+        let parsed_json: Value = serde_json::from_str(json_str).ok()?;
+        let mut result = Vec::new();
 
-    // Iterate over the JSON object and convert keys to integers
-    if let Value::Object(map) = parsed_json {
-        for (key, value) in map {
-            if let (Ok(major_sector_id), Some(weight)) = (
-                key.parse::<SectorId>(), // Convert key to SectorId
-                value.as_f64(),          // Convert the value to f64
-            ) {
-                // Fetch the major sector name asynchronously
-                if let Ok(major_sector_name) =
-                    SectorById::get_major_sector_name_with_id(major_sector_id).await
-                {
-                    result.push(MajorSectorWeight {
-                        major_sector_name,     // Use sector name instead of ID
-                        weight: weight as f32, // Convert f64 to f32 safely
-                    });
+        // Iterate over the JSON object and convert keys to integers
+        if let Value::Object(map) = parsed_json {
+            for (key, value) in map {
+                if let (Ok(major_sector_id), Some(weight)) = (
+                    key.parse::<SectorId>(), // Convert key to SectorId
+                    value.as_f64(),          // Convert the value to f64
+                ) {
+                    // Fetch the major sector name asynchronously
+                    if let Ok(major_sector_name) =
+                        SectorById::get_major_sector_name_with_id(major_sector_id).await
+                    {
+                        result.push(MajorSectorWeight {
+                            major_sector_name,     // Use sector name instead of ID
+                            weight: weight as f32, // Convert f64 to f32 safely
+                        });
+                    }
                 }
             }
+            Some(result)
+        } else {
+            None
         }
-        Some(result)
-    } else {
-        None
     }
 }
 
@@ -262,11 +264,12 @@ impl ETFAggregateDetail {
             None => None,
         };
 
-        let major_sector_distribution: Option<Vec<MajorSectorWeight>> =
-            match &etf_aggregate_detail.major_sector_distribution {
-                Some(json_str) => parse_major_sector_distribution(json_str).await,
-                None => None,
-            };
+        let major_sector_distribution: Option<Vec<MajorSectorWeight>> = match &etf_aggregate_detail
+            .major_sector_distribution
+        {
+            Some(json_str) => MajorSectorWeight::parse_major_sector_distribution(json_str).await,
+            None => None,
+        };
 
         // TODO: Remove
         // web_sys::console::log_1(
