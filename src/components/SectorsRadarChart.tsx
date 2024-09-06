@@ -1,45 +1,30 @@
 import React, { useEffect, useMemo } from "react";
 
-import {
-  Legend,
-  PolarAngleAxis,
-  PolarGrid,
-  PolarRadiusAxis,
-  Radar,
-  RadarChart,
-  ResponsiveContainer,
-} from "recharts";
+import { COLOR_WHEEL_COLORS } from "@src/constants";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 import type { RustServiceETFAggregateDetail } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
-export type SectorsRadarChartProps = {
+export type SectorsPieChartProps = {
   majorSectorDistribution: RustServiceETFAggregateDetail["major_sector_distribution"];
 };
 
-type SectorData = {
-  subject: string;
-  A: number; // Weight for sector A
-  fullMark: number; // Max mark, could be static or dynamic
-};
-
-export default function SectorsRadarChart({
+export default function SectorsPieChart({
   majorSectorDistribution,
-}: SectorsRadarChartProps) {
-  // Transform the majorSectorDistribution data into the format the radar chart expects
-  const data: SectorData[] = useMemo(
+}: SectorsPieChartProps) {
+  // Transform the majorSectorDistribution data into the format the pie chart expects
+  const data = useMemo(
     () =>
       majorSectorDistribution?.map((sector) => ({
-        subject: sector.major_sector_name, // Sector name
-        A: sector.weight * 100, // Normalize the weight (as a percentage)
-        fullMark: 100, // Assuming 100 is the full mark for the radar chart
+        name: sector.major_sector_name,
+        value: sector.weight * 100, // Normalize the weight (as a percentage)
       })) || [],
     [majorSectorDistribution],
   );
 
-  // TODO: Remove
   useEffect(() => {
-    customLogger.debug("Radar Chart Data: ", data);
+    customLogger.debug("Pie Chart Data: ", data);
   }, [data]);
 
   if (!data.length) {
@@ -48,19 +33,29 @@ export default function SectorsRadarChart({
 
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data}>
-        <PolarGrid />
-        <PolarAngleAxis dataKey="subject" />
-        <PolarRadiusAxis angle={30} domain={[0, 100]} />
-        <Radar
-          name="Sector Weight"
-          dataKey="A"
-          stroke="#8884d8"
+      <PieChart>
+        <Pie
+          data={data}
+          dataKey="value"
+          nameKey="name"
+          cx="50%"
+          cy="50%"
+          outerRadius={110} // Increase the outer radius for better spacing
+          innerRadius={40} // Optional: Add an inner radius for a doughnut style
           fill="#8884d8"
-          fillOpacity={0.6}
-        />
-        <Legend />
-      </RadarChart>
+          label={({ name, percent }) =>
+            percent > 0.03 ? `${name}: ${(percent * 100).toFixed(1)}%` : ""
+          } // Hide labels for sectors with less than 3%
+        >
+          {data.map((entry, index) => (
+            <Cell
+              key={`cell-${index}`}
+              fill={COLOR_WHEEL_COLORS[index % COLOR_WHEEL_COLORS.length]}
+            />
+          ))}
+        </Pie>
+        <Tooltip formatter={(value: number) => `${value.toFixed(2)}%`} />
+      </PieChart>
     </ResponsiveContainer>
   );
 }
