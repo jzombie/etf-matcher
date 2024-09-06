@@ -106,23 +106,36 @@ export default function TickerDetail({
         <TickerDetailBucketManager tickerDetail={tickerDetail} />
       </Box>
 
-      {/* Grid for Side-by-Side Charts */}
-      <Grid container spacing={2} mt={2}>
-        <Grid item xs={12} md={6}>
+      {/* Grid for Side-by-Side or Centered Chart */}
+      <Grid
+        container
+        spacing={2}
+        mt={2}
+        justifyContent={
+          etfAggregateDetail?.major_sector_distribution
+            ? "flex-start"
+            : "center"
+        }
+      >
+        <Grid
+          item
+          xs={12}
+          md={etfAggregateDetail?.major_sector_distribution ? 6 : 12}
+        >
           <LazyRender>
             <PCAScatterPlot tickerDetail={tickerDetail} />
           </LazyRender>
         </Grid>
 
-        <Grid item xs={12} md={6}>
-          {etfAggregateDetail?.major_sector_distribution && (
+        {etfAggregateDetail?.major_sector_distribution && (
+          <Grid item xs={12} md={6}>
             <SectorsPieChart
               majorSectorDistribution={
                 etfAggregateDetail?.major_sector_distribution
               }
             />
-          )}
-        </Grid>
+          </Grid>
+        )}
       </Grid>
 
       {/* Query Table and Financial Information */}
