@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 
 import { useTheme } from "@mui/material/styles";
 
@@ -10,6 +10,8 @@ import {
   MosaicWindow,
 } from "react-mosaic-component";
 import "react-mosaic-component/react-mosaic-component.css";
+
+import customLogger from "@utils/customLogger";
 
 import "./mosaic-custom-overrides.css";
 
@@ -59,8 +61,8 @@ export default function Window({
     <MosaicWindow<string>
       title={`Window ${id}`}
       path={path}
-      onDragStart={() => console.log("MosaicWindow.onDragStart")}
-      onDragEnd={(type) => console.log("MosaicWindow.onDragEnd", type)}
+      onDragStart={() => customLogger.debug("MosaicWindow.onDragStart")}
+      onDragEnd={(type) => customLogger.debug("MosaicWindow.onDragEnd", type)}
       renderToolbar={() => (
         <div style={toolbarStyles}>
           <span style={toolbarTitleStyles}>{id}</span>
