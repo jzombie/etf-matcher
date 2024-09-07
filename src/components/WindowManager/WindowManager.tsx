@@ -11,6 +11,8 @@ import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import Window from "./WindowManager.Window";
 import "./mosaic-custom-overrides.css";
 
+const DEBOUNCED_RESIZE_TIMEOUT = 100;
+
 export type WindowManagerProps = {
   initialValue: MosaicNode<string>;
   contentMap: { [key: string]: React.ReactNode };
@@ -24,16 +26,19 @@ export default function WindowManager({
   value,
   onChange,
 }: WindowManagerProps) {
-  const onChangeStableRef = useStableCurrentRef(onChange);
+  const onChangeStableCurrentRef = useStableCurrentRef(onChange);
   const [isResizing, setIsResizing] = useState<boolean>(false);
-  const resizeTimeoutRef = useRef<NodeJS.Timeout | null>(null); // Ref to store the timeout ID
+  const resizeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isResizingStableCurrentRef = useStableCurrentRef(isResizing);
 
   const handleChange = useCallback(
     (newLayout: MosaicNode<string> | null) => {
-      const onChange = onChangeStableRef.current;
+      const onChange = onChangeStableCurrentRef.current;
 
-      // Set resizing to true
-      setIsResizing(true);
+      if (!isResizingStableCurrentRef.current) {
+        // Set resizing to true
+        setIsResizing(true);
+      }
 
       // Call the provided onChange if it exists
       if (typeof onChange === "function") {
@@ -48,9 +53,9 @@ export default function WindowManager({
       // Set a new timeout to set `isResizing` to false after 100ms
       resizeTimeoutRef.current = setTimeout(() => {
         setIsResizing(false);
-      }, 100);
+      }, DEBOUNCED_RESIZE_TIMEOUT);
     },
-    [onChangeStableRef],
+    [onChangeStableCurrentRef, isResizingStableCurrentRef],
   );
 
   const containerRef = useRef<HTMLDivElement>(null);
