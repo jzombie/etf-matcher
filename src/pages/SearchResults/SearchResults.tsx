@@ -239,13 +239,13 @@ export default function SearchResults() {
         </Padding>
       </Header>
       <Content>
-        {searchResults.length === 1 && onlyExactMatches ? (
-          <TickerViewWindowManager tickerId={searchResults[0].ticker_id} />
-        ) : (
-          <Transition
-            direction={!previousPage || page > previousPage ? "left" : "right"}
-            trigger={searchResults}
-          >
+        <Transition
+          direction={!previousPage || page > previousPage ? "left" : "right"}
+          trigger={searchResults}
+        >
+          {searchResults.length === 1 && onlyExactMatches ? (
+            <TickerViewWindowManager tickerId={searchResults[0].ticker_id} />
+          ) : (
             <Scrollable onScroll={handleScroll}>
               <Padding>
                 <SelectableGrid
@@ -257,8 +257,8 @@ export default function SearchResults() {
                 />
               </Padding>
             </Scrollable>
-          </Transition>
-        )}
+          )}
+        </Transition>
       </Content>
     </Layout>
   );
