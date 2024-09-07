@@ -1,13 +1,14 @@
 import React, { useCallback, useContext, useEffect, useRef } from "react";
 
+import Full, { FullProps } from "@layoutKit/Full";
+
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 import { TickerContainerContext } from "./TickerContainerProvider";
 
-export type TickerContainerProps = React.HTMLAttributes<HTMLDivElement> & {
+export type TickerContainerProps = FullProps & {
   tickerId: number;
   onIntersectionStateChange?: (isIntersecting: boolean) => void;
-  children: React.ReactNode;
 };
 
 export default function TickerContainer({
@@ -47,8 +48,8 @@ export default function TickerContainer({
   }, [tickerId, observe, unobserve, handleOnIntersectionStateChange]);
 
   return (
-    <div ref={elementRef} {...rest}>
+    <Full ref={elementRef} {...rest}>
       {children}
-    </div>
+    </Full>
   );
 }
