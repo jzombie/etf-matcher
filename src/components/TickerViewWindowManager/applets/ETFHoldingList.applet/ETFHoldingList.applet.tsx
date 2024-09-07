@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 
-import { ButtonBase } from "@mui/material";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Typography } from "@mui/material";
 
-import Center from "@layoutKit/Center";
+import Scrollable from "@layoutKit/Scrollable";
 
 import EncodedImage from "@components/EncodedImage";
+import SelectableGrid, { SelectableGridItem } from "@components/SelectableGrid";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
@@ -25,7 +25,6 @@ export default function ETFHoldingList({
 }: ETFHoldingListProps) {
   const [isLoadingETFHoldings, setIsLoadingETFHoldings] =
     useState<boolean>(false);
-
   const [paginatedHoldings, setPaginatedHoldings] =
     useState<RustServicePaginatedResults<RustServiceETFHoldingTickerResponse> | null>(
       null,
@@ -34,7 +33,6 @@ export default function ETFHoldingList({
   useEffect(() => {
     if (etfTickerDetail.is_etf) {
       setIsLoadingETFHoldings(true);
-
       fetchETFHoldingsByETFTickerId(etfTickerDetail.ticker_id)
         .then(setPaginatedHoldings)
         .finally(() => setIsLoadingETFHoldings(false));
@@ -43,38 +41,51 @@ export default function ETFHoldingList({
 
   const navigateToSymbol = useTickerSymbolNavigation();
 
+  const handleItemSelect = (holding: RustServiceETFHoldingTickerResponse) => {
+    navigateToSymbol(holding.holding_symbol);
+  };
+
   if (!paginatedHoldings && isLoadingETFHoldings) {
-    return (
-      <Center>
-        <CircularProgress />
-      </Center>
-    );
+    return <CircularProgress />;
   }
 
   if (!paginatedHoldings) {
     return null;
   }
 
+  const gridItems: SelectableGridItem<RustServiceETFHoldingTickerResponse>[] =
+    paginatedHoldings.results.map((result) => ({
+      id: result.holding_ticker_id,
+      data: result,
+    }));
+
   return (
-    <div style={{ textAlign: "center" }}>
-      {paginatedHoldings.results.map((result) => (
-        <ButtonBase
-          key={result.holding_ticker_id}
-          sx={{ overflow: "auto", margin: 1 }}
-          onClick={() => navigateToSymbol(result.holding_symbol)}
-        >
-          <div>
+    <Scrollable>
+      <SelectableGrid
+        items={gridItems}
+        columns={3} // Set the number of columns
+        onItemSelect={handleItemSelect}
+        renderItem={(holding, isSelected) => (
+          <div style={{ textAlign: "center" }}>
             <EncodedImage
-              encSrc={result.logo_filename}
-              style={{ width: 50, height: 50 }}
+              encSrc={holding.logo_filename}
+              style={{ width: 50, height: 50, marginBottom: 8 }}
             />
-            <div>Company Name: {result.company_name}</div>
-            <div>Symbol: {result.holding_symbol}</div>
-            <div>Industry: {result.industry_name}</div>
-            <div>Sector: {result.sector_name}</div>
+            <Typography variant="subtitle1" gutterBottom>
+              {holding.company_name}
+            </Typography>
+            <Typography variant="body2">
+              Symbol: {holding.holding_symbol}
+            </Typography>
+            <Typography variant="body2">
+              Industry: {holding.industry_name}
+            </Typography>
+            <Typography variant="body2">
+              Sector: {holding.sector_name}
+            </Typography>
           </div>
-        </ButtonBase>
-      ))}
-    </div>
+        )}
+      />
+    </Scrollable>
   );
 }
