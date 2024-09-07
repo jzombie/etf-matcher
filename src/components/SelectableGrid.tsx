@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-import { Grid, Paper } from "@mui/material";
+import { Box, Grid2, Paper } from "@mui/material";
 
 import { useResizeObserver } from "@hooks/useResizeObserver";
 
@@ -107,15 +107,16 @@ export default function SelectableGrid<T>({
   }, [items, highlightedIndex, handleSelectItem, dynamicColumns]);
 
   return (
-    <div ref={containerRef} style={{ width: "100%" }}>
-      <Grid container spacing={2} sx={{ mt: 2 }}>
+    <Box ref={containerRef}>
+      <Grid2 container spacing={2} sx={{ mt: 2 }}>
         {items.map((item, index) => (
-          <Grid
-            item
+          <Grid2
             key={item.id}
-            xs={12}
-            sm={6}
-            md={Math.floor(12 / dynamicColumns)}
+            size={{
+              xs: 12,
+              sm: 6,
+              md: Math.floor(12 / dynamicColumns),
+            }}
           >
             <Paper
               elevation={3}
@@ -136,9 +137,9 @@ export default function SelectableGrid<T>({
             >
               {renderItem(item.data, highlightedIndex === index)}
             </Paper>
-          </Grid>
+          </Grid2>
         ))}
-      </Grid>
-    </div>
+      </Grid2>
+    </Box>
   );
 }
