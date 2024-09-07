@@ -159,6 +159,7 @@ export default function TickerViewWindowManagerBucketManager({
                   justifyContent: "flex-start", // Left justify the icon
                   textAlign: "center", // Center the text
                 }}
+                size="small"
               >
                 <Box component="span" sx={{ flexGrow: 1, textAlign: "center" }}>
                   {isTickerInBucketType && areMultipleInstancesAllowed
