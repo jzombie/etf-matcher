@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { Grid, Paper } from "@mui/material";
 
@@ -11,18 +11,20 @@ export type SelectableGridItem<T> = {
 // Define the props for the generic grid
 export type SelectableGridProps<T> = {
   items: SelectableGridItem<T>[]; // Array of items to display
-  columns?: number; // Number of columns in the grid
+  maxColumns?: number; // Number of columns in the grid (optional, fallback if container resizing isn't used)
   onItemSelect: (item: T) => void; // Callback when an item is selected
   renderItem: (item: T, isSelected: boolean) => React.ReactNode; // Render function for each item
 };
 
 export default function SelectableGrid<T>({
   items,
-  columns = 3,
+  maxColumns = 3, // Fallback to the passed columns value
   onItemSelect,
   renderItem,
 }: SelectableGridProps<T>) {
   const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
+  const [dynamicColumns, setDynamicColumns] = useState(maxColumns); // This will dynamically adjust based on container size
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleSelectItem = useCallback(
     (index: number) => {
@@ -33,6 +35,36 @@ export default function SelectableGrid<T>({
     [items, onItemSelect],
   );
 
+  // Dynamically calculate the number of columns based on container size
+  const calculateColumns = useCallback(() => {
+    if (containerRef.current) {
+      const containerWidth = containerRef.current.offsetWidth;
+      const calculatedColumns = Math.max(1, Math.floor(containerWidth / 250)); // Assume 250px per item
+      setDynamicColumns(Math.min(maxColumns, calculatedColumns));
+    }
+  }, [maxColumns]);
+
+  // TODO: Refactor into `useResizeObserver` hook
+  useEffect(() => {
+    calculateColumns(); // Initial calculation
+
+    const resizeObserver = new ResizeObserver(() => {
+      calculateColumns(); // Recalculate columns when the container is resized
+    });
+
+    const container = containerRef.current;
+
+    if (container) {
+      resizeObserver.observe(container);
+    }
+
+    return () => {
+      if (container) {
+        resizeObserver.unobserve(container);
+      }
+    };
+  }, [calculateColumns]);
+
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -41,18 +73,18 @@ export default function SelectableGrid<T>({
       switch (event.key) {
         case "ArrowDown":
           setHighlightedIndex((prevIndex) =>
-            prevIndex === null || prevIndex + columns >= items.length
+            prevIndex === null || prevIndex + dynamicColumns >= items.length
               ? prevIndex === null
                 ? 0
                 : prevIndex // Stay on the last row if it's not full
-              : prevIndex + columns,
+              : prevIndex + dynamicColumns,
           );
           break;
         case "ArrowUp":
           setHighlightedIndex((prevIndex) =>
-            prevIndex === null || prevIndex - columns < 0
+            prevIndex === null || prevIndex - dynamicColumns < 0
               ? prevIndex // Stay on the first row
-              : prevIndex - columns,
+              : prevIndex - dynamicColumns,
           );
           break;
         case "ArrowRight":
@@ -81,31 +113,41 @@ export default function SelectableGrid<T>({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [items, highlightedIndex, handleSelectItem, columns]);
+  }, [items, highlightedIndex, handleSelectItem, dynamicColumns]);
 
   return (
-    <Grid container spacing={2} sx={{ mt: 2 }}>
-      {items.map((item, index) => (
-        <Grid item xs={12} sm={6} md={4} key={item.id}>
-          <Paper
-            elevation={3}
-            sx={{
-              padding: 2,
-              cursor: "pointer",
-              "&:hover": {
-                backgroundColor: "rgba(255,255,255,.1)",
-              },
-              width: "100%",
-              height: "100%",
-              backgroundColor:
-                highlightedIndex === index ? "rgba(255,255,255,.2)" : "inherit",
-            }}
-            onClick={() => handleSelectItem(index)}
+    <div ref={containerRef} style={{ width: "100%" }}>
+      <Grid container spacing={2} sx={{ mt: 2 }}>
+        {items.map((item, index) => (
+          <Grid
+            item
+            key={item.id}
+            xs={12}
+            sm={6}
+            md={Math.floor(12 / dynamicColumns)}
           >
-            {renderItem(item.data, highlightedIndex === index)}
-          </Paper>
-        </Grid>
-      ))}
-    </Grid>
+            <Paper
+              elevation={3}
+              sx={{
+                padding: 2,
+                cursor: "pointer",
+                "&:hover": {
+                  backgroundColor: "rgba(255,255,255,.1)",
+                },
+                width: "100%",
+                height: "100%",
+                backgroundColor:
+                  highlightedIndex === index
+                    ? "rgba(255,255,255,.2)"
+                    : "inherit",
+              }}
+              onClick={() => handleSelectItem(index)}
+            >
+              {renderItem(item.data, highlightedIndex === index)}
+            </Paper>
+          </Grid>
+        ))}
+      </Grid>
+    </div>
   );
 }
