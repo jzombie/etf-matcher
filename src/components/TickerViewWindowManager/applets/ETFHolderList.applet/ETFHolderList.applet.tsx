@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 
-import { Box, CircularProgress, Pagination } from "@mui/material";
+import { Box, CircularProgress, Pagination, Typography } from "@mui/material";
 
 import Center from "@layoutKit/Center";
-import Padding from "@layoutKit/Padding";
+import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
+import Scrollable from "@layoutKit/Scrollable";
 
 import Transition from "@components/Transition";
 
@@ -63,51 +64,53 @@ export default function ETFHolderList({ tickerDetail }: ETFHolderListProps) {
   const paginatedResults = paginatedETFHolders.results;
 
   return (
-    <Box>
-      <Padding>
-        <h3>
+    <Layout>
+      <Header>
+        <Typography>
           &quot;{tickerSymbol}&quot; is found in the following{" "}
           {paginatedETFHolders.total_count} ETF
           {paginatedETFHolders.total_count !== 1 ? "s" : ""}:
-        </h3>
+        </Typography>
+      </Header>
+      <Content>
         {
           // TODO: Show the actual symbol weight in each ETFHolder (send `tickerSymbol` to
           // it and make clear distinction between which symbol is what)
         }
-        <Box sx={{ backgroundColor: "rgba(255,255,255,.05)", borderRadius: 4 }}>
-          <Padding>
-            {totalPages > 1 && (
-              <Pagination
-                count={totalPages}
-                page={page}
-                onChange={(event, nextPage) => setPage(nextPage)}
-              />
-            )}
-            <Transition
-              direction={
-                !previousPage || page > previousPage ? "left" : "right"
-              }
-              trigger={paginatedETFHolders}
-            >
-              {isLoadingETFHolders ? (
-                <Center>
-                  <CircularProgress />
-                </Center>
-              ) : (
-                <div>
-                  {paginatedResults.map((etfHolder) => (
-                    <ETFHolder
-                      key={etfHolder.ticker_id}
-                      holdingTickerDetail={tickerDetail}
-                      etfAggregateDetail={etfHolder}
-                    />
-                  ))}
-                </div>
-              )}
-            </Transition>
-          </Padding>
-        </Box>
-      </Padding>
-    </Box>
+
+        <Transition
+          direction={!previousPage || page > previousPage ? "left" : "right"}
+          trigger={paginatedETFHolders}
+        >
+          {isLoadingETFHolders ? (
+            <Center>
+              <CircularProgress />
+            </Center>
+          ) : (
+            <Scrollable>
+              {paginatedResults.map((etfHolder) => (
+                <ETFHolder
+                  key={etfHolder.ticker_id}
+                  holdingTickerDetail={tickerDetail}
+                  etfAggregateDetail={etfHolder}
+                />
+              ))}
+            </Scrollable>
+          )}
+        </Transition>
+      </Content>
+      <Footer>
+        {totalPages > 1 && (
+          <Box sx={{ textAlign: "center" }}>
+            <Pagination
+              sx={{ display: "inline-block" }}
+              count={totalPages}
+              page={page}
+              onChange={(event, nextPage) => setPage(nextPage)}
+            />
+          </Box>
+        )}
+      </Footer>
+    </Layout>
   );
 }

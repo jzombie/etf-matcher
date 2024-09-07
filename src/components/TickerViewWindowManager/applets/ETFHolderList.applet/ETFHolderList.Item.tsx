@@ -73,79 +73,77 @@ export default function ETFHolder({
         }}
         sx={{ display: "block", width: "100%", textAlign: "left" }}
       >
-        <Paper elevation={3} sx={{ padding: 2 }}>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ fontWeight: "bold", marginBottom: 1 }}
-          >
-            {etfAggregateDetail.etf_name} ({etfAggregateDetail.etf_symbol})
-          </Typography>
-          <Divider sx={{ marginBottom: 2 }} />
+        <Typography
+          variant="h6"
+          component="div"
+          sx={{ fontWeight: "bold", marginBottom: 1 }}
+        >
+          {etfAggregateDetail.etf_name} ({etfAggregateDetail.etf_symbol})
+        </Typography>
+        <Divider sx={{ marginBottom: 2 }} />
 
-          <TableContainer component={Paper}>
-            <Table aria-label="etf details">
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ width: "50%" }}>Detail</TableCell>
-                  <TableCell sx={{ width: "50%" }}>Value</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  {renderDetail(
-                    "Expense Ratio",
-                    etfAggregateDetail.expense_ratio
-                      ? `${etfAggregateDetail.expense_ratio.toFixed(2)}%`
-                      : null,
-                  )}
-                </TableRow>
-                <TableRow>
-                  {renderDetail(
-                    "Top Sector Market Value",
-                    etfAggregateDetail.top_sector_market_value
-                      ? formatCurrency(
-                          etfAggregateDetail.currency_code,
-                          etfAggregateDetail.top_sector_market_value,
-                        )
-                      : null,
-                  )}
-                </TableRow>
-                <TableRow>
-                  {renderDetail(
-                    "Top Market Value Industry",
-                    etfAggregateDetail?.top_market_value_industry_name || "N/A",
-                  )}
-                </TableRow>
-                <TableRow>
-                  {renderDetail(
-                    "Top Market Value Sector",
-                    etfAggregateDetail?.top_market_value_sector_name || "N/A",
-                  )}
-                </TableRow>
-                <TableRow>
-                  {renderDetail(
-                    `${holdingTickerDetail.symbol} Holding Percentage`,
-                    holdingPercentage !== null
-                      ? `${holdingPercentage.toFixed(2)}%`
-                      : null,
-                  )}
-                </TableRow>
-                <TableRow>
-                  {renderDetail(
-                    `${holdingTickerDetail.symbol} Holding Market Value`,
-                    holdingMarketValue
-                      ? formatCurrency(
-                          etfAggregateDetail.currency_code, // TODO: Should be set to the currency code of the holding itself
-                          holdingMarketValue,
-                        )
-                      : null,
-                  )}
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
+        <TableContainer component={Paper}>
+          <Table aria-label="etf details">
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ width: "50%" }}>Detail</TableCell>
+                <TableCell sx={{ width: "50%" }}>Value</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                {renderDetail(
+                  "Expense Ratio",
+                  etfAggregateDetail.expense_ratio
+                    ? `${etfAggregateDetail.expense_ratio.toFixed(2)}%`
+                    : null,
+                )}
+              </TableRow>
+              <TableRow>
+                {renderDetail(
+                  "Top Sector Market Value",
+                  etfAggregateDetail.top_sector_market_value
+                    ? formatCurrency(
+                        etfAggregateDetail.currency_code,
+                        etfAggregateDetail.top_sector_market_value,
+                      )
+                    : null,
+                )}
+              </TableRow>
+              <TableRow>
+                {renderDetail(
+                  "Top Market Value Industry",
+                  etfAggregateDetail?.top_market_value_industry_name || "N/A",
+                )}
+              </TableRow>
+              <TableRow>
+                {renderDetail(
+                  "Top Market Value Sector",
+                  etfAggregateDetail?.top_market_value_sector_name || "N/A",
+                )}
+              </TableRow>
+              <TableRow>
+                {renderDetail(
+                  `${holdingTickerDetail.symbol} Holding Percentage`,
+                  holdingPercentage !== null
+                    ? `${holdingPercentage.toFixed(2)}%`
+                    : null,
+                )}
+              </TableRow>
+              <TableRow>
+                {renderDetail(
+                  `${holdingTickerDetail.symbol} Holding Market Value`,
+                  holdingMarketValue
+                    ? formatCurrency(
+                        etfAggregateDetail.currency_code, // TODO: Should be set to the currency code of the holding itself
+                        holdingMarketValue,
+                      )
+                    : null,
+                )}
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
       </ButtonBase>
     </Box>
   );
