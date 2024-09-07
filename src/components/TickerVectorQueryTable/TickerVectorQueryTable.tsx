@@ -23,33 +23,35 @@ import Euclidean from "./TickerVectorQueryTable.Euclidean";
 export type VectorSimiliartyTableProps = {
   queryMode: TickerVectorQueryProps["queryMode"];
   query: TickerVectorQueryProps["query"];
+  alignment: "euclidean" | "cosine";
 };
 
 export default function TickerVectorQueryTable({
   queryMode,
   query,
+  alignment,
 }: VectorSimiliartyTableProps) {
-  const { queryName } = useTickerVectorQuery({
-    queryMode,
-    query,
-  });
+  // const { queryName } = useTickerVectorQuery({
+  //   queryMode,
+  //   query,
+  // });
 
-  const [alignment, setAlignment] = useState<"euclidean" | "cosine">(
-    "euclidean",
-  );
+  // const [alignment, setAlignment] = useState<"euclidean" | "cosine">(
+  //   "euclidean",
+  // );
 
-  const handleAlignment = (
-    event: React.MouseEvent<HTMLElement>,
-    newAlignment: "euclidean" | "cosine" | null,
-  ) => {
-    if (newAlignment !== null) {
-      setAlignment(newAlignment);
-    }
-  };
+  // const handleAlignment = (
+  //   event: React.MouseEvent<HTMLElement>,
+  //   newAlignment: "euclidean" | "cosine" | null,
+  // ) => {
+  //   if (newAlignment !== null) {
+  //     setAlignment(newAlignment);
+  //   }
+  // };
 
   return (
-    <Padding>
-      <Box sx={{ overflow: "auto" }}>
+    <>
+      {/* <Box sx={{ overflow: "auto" }}>
         <Typography variant="h6">
           &quot;{queryName}&quot; Similarity Matches
         </Typography>
@@ -78,7 +80,7 @@ export default function TickerVectorQueryTable({
             Cosine
           </ToggleButton>
         </ToggleButtonGroup>
-      </Box>
+      </Box> */}
 
       <Transition
         trigger={alignment === "euclidean"}
@@ -90,6 +92,6 @@ export default function TickerVectorQueryTable({
           <Cosine queryMode={queryMode} query={query} />
         )}
       </Transition>
-    </Padding>
+    </>
   );
 }

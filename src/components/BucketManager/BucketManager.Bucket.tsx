@@ -14,7 +14,7 @@ import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
 import ScrollTo from "@components/ScrollTo";
 import SearchModalButton from "@components/SearchModalButton";
 import Section from "@components/Section";
-import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
+// import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
 import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
 
 import BucketTicker from "./BucketManager.Bucket.Ticker";
@@ -148,13 +148,15 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                                 </UnstyledLI>
                               ))}
                             </UnstyledUL>
+                            {/*
+                            // TODO: Reimplement
                             [PROTO VECTOR QUERY]
                             <TickerVectorQueryTable
                               queryMode="bucket"
                               query={tickerBucket}
                               // TODO: This could be improved
                               key={JSON.stringify(tickerBucket)}
-                            />
+                            /> */}
                           </>
                         )}
                       </Box>

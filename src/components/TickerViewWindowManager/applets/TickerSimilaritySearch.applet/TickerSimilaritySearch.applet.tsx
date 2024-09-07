@@ -3,8 +3,10 @@ import React from "react";
 import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
 import Layout, { Content, Header } from "@layoutKit/Layout";
+import Scrollable from "@layoutKit/Scrollable";
 
-import PCAScatterPlot from "@components/PCAScatterPlot";
+// import PCAScatterPlot from "@components/PCAScatterPlot";
+import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
 
 import { RustServiceTickerDetail } from "@utils/callRustService";
 
@@ -39,7 +41,17 @@ export default function TickerSimilaritySearchApplet({
         </Box>
       </Header>
       <Content>
-        <PCAScatterPlot tickerDetail={tickerDetail} />;
+        <Scrollable>
+          <TickerVectorQueryTable
+            queryMode="ticker-detail"
+            query={tickerDetail}
+            // TODO: Adapt accordingly
+            alignment="euclidean"
+          />
+        </Scrollable>
+        {
+          // <PCAScatterPlot tickerDetail={tickerDetail} />;
+        }
       </Content>
     </Layout>
   );
