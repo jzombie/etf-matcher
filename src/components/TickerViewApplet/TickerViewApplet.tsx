@@ -77,30 +77,30 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
   // Use 'row' and 'column' instead of generic strings
   const initialValue: MosaicNode<string> = useMemo(
     () => ({
-      direction: "column", // Main direction is 'column' to stack rows vertically
+      direction: "column",
       first: {
-        direction: "row", // Top row with 4 columns
-        first: "Ticker Information", // Left-most column for ticker information
+        direction: "row",
+        first: "Ticker Information",
         second: {
-          direction: "row", // Nested row for the remaining three columns
-          first: "Historical Prices", // Second column
+          direction: "row",
+          first: "Historical Prices",
           second: {
-            direction: "row", // Nested row for the third and fourth columns
-            first: "Similarity Search", // Third column
-            second: "Sector Allocation", // Fourth column
-            splitPercentage: 50, // Split equally between Similarity Search and Sector Allocation
+            direction: "row",
+            first: "Similarity Search",
+            second: "Sector Allocation",
+            splitPercentage: 50,
           },
-          splitPercentage: 50, // Split equally between Historical Prices and the third+fourth columns
+          splitPercentage: 55.603293949158605,
         },
-        splitPercentage: 25, // Ticker Information takes 25% of the total width
+        splitPercentage: 25,
       },
       second: {
-        direction: "row", // Bottom row with 2 columns
-        first: "ETF Holders", // First column in bottom row
-        second: "ETF Holdings", // Second column in bottom row
-        splitPercentage: 50, // Split the bottom row evenly
+        direction: "row",
+        first: "ETF Holders",
+        second: "ETF Holdings",
+        splitPercentage: 50,
       },
-      splitPercentage: 60, // Top row takes 60% of the height, bottom row 40%
+      splitPercentage: 30.312061969752857,
     }),
     [],
   );
