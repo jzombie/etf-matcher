@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Box, Button } from "@mui/material";
 
@@ -50,7 +50,7 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
   const [openWindows, setOpenWindows] = useState<Set<string>>(new Set());
 
   // Function to update open windows based on the current layout
-  const updateOpenWindows = (layout: MosaicNode<string> | null) => {
+  const updateOpenWindows = useCallback((layout: MosaicNode<string> | null) => {
     const findOpenWindows = (node: MosaicNode<string> | null): string[] => {
       if (!node) return [];
       if (typeof node === "string") return [node];
@@ -62,22 +62,25 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
 
     const openWindowSet = new Set(findOpenWindows(layout));
     setOpenWindows(openWindowSet);
-  };
+  }, []);
 
   // Function to toggle the window by adding/removing it from the layout
-  const toggleWindow = (windowId: string) => {
-    if (openWindows.has(windowId)) {
-      // Remove the window from the layout
-      setLayout((prevLayout) => removeWindowFromLayout(prevLayout, windowId));
-    } else {
-      // Add the window back to the layout
-      setLayout((prevLayout) => {
-        const newLayout = addWindowToLayout(prevLayout, windowId);
-        setOpenWindows((prev) => new Set(prev).add(windowId)); // Add to open windows
-        return newLayout;
-      });
-    }
-  };
+  const toggleWindow = useCallback(
+    (windowId: string) => {
+      if (openWindows.has(windowId)) {
+        // Remove the window from the layout
+        setLayout((prevLayout) => removeWindowFromLayout(prevLayout, windowId));
+      } else {
+        // Add the window back to the layout
+        setLayout((prevLayout) => {
+          const newLayout = addWindowToLayout(prevLayout, windowId);
+          setOpenWindows((prev) => new Set(prev).add(windowId)); // Add to open windows
+          return newLayout;
+        });
+      }
+    },
+    [openWindows],
+  );
 
   // Initial layout
   const initialValue: MosaicNode<string> = useMemo(
@@ -175,7 +178,7 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
   useEffect(() => {
     setLayout(initialValue);
     updateOpenWindows(initialValue); // Initialize open windows
-  }, [contentMap, initialValue]);
+  }, [contentMap, initialValue, updateOpenWindows]);
 
   return (
     <Layout>
