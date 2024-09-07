@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { CircularProgress, Typography } from "@mui/material";
 
+import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
 import EncodedImage from "@components/EncodedImage";
@@ -61,31 +62,33 @@ export default function ETFHoldingList({
 
   return (
     <Scrollable>
-      <SelectableGrid
-        items={gridItems}
-        columns={3} // Set the number of columns
-        onItemSelect={handleItemSelect}
-        renderItem={(holding, isSelected) => (
-          <div style={{ textAlign: "center" }}>
-            <EncodedImage
-              encSrc={holding.logo_filename}
-              style={{ width: 50, height: 50, marginBottom: 8 }}
-            />
-            <Typography variant="subtitle1" gutterBottom>
-              {holding.company_name}
-            </Typography>
-            <Typography variant="body2">
-              Symbol: {holding.holding_symbol}
-            </Typography>
-            <Typography variant="body2">
-              Industry: {holding.industry_name}
-            </Typography>
-            <Typography variant="body2">
-              Sector: {holding.sector_name}
-            </Typography>
-          </div>
-        )}
-      />
+      <Padding>
+        <SelectableGrid
+          items={gridItems}
+          columns={3} // Set the number of columns
+          onItemSelect={handleItemSelect}
+          renderItem={(holding, isSelected) => (
+            <div style={{ textAlign: "center" }}>
+              <EncodedImage
+                encSrc={holding.logo_filename}
+                style={{ width: 50, height: 50, marginBottom: 8 }}
+              />
+              <Typography variant="subtitle1" gutterBottom>
+                {holding.company_name}
+              </Typography>
+              <Typography variant="body2">
+                Symbol: {holding.holding_symbol}
+              </Typography>
+              <Typography variant="body2">
+                Industry: {holding.industry_name}
+              </Typography>
+              <Typography variant="body2">
+                Sector: {holding.sector_name}
+              </Typography>
+            </div>
+          )}
+        />
+      </Padding>
     </Scrollable>
   );
 }
