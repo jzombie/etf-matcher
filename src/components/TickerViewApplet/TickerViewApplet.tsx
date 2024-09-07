@@ -1,14 +1,19 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import AutoScaler from "@layoutKit/AutoScaler";
 import Center from "@layoutKit/Center";
 import Scrollable from "@layoutKit/Scrollable";
 import { MosaicNode } from "react-mosaic-component";
 
+import SectorsPieChart from "@components/SectorsPieChart";
 import WindowManager from "@components/WindowManager";
 
 import useTickerDetail from "@hooks/useTickerDetail";
 
+import {
+  RustServiceETFAggregateDetail,
+  fetchETFAggregateDetailByTickerId,
+} from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
@@ -25,6 +30,18 @@ export type TickerViewAppletProps = {
 // TODO: Ensure `WindowManager` gets wrapped with `TickerContainer`
 export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
   const { tickerDetail, isLoadingTickerDetail } = useTickerDetail(tickerId);
+
+  // TODO: Refactor
+  const [etfAggregateDetail, setETFAggregateDetail] = useState<
+    RustServiceETFAggregateDetail | undefined
+  >(undefined);
+  useEffect(() => {
+    if (tickerDetail?.is_etf) {
+      fetchETFAggregateDetailByTickerId(tickerDetail.ticker_id).then(
+        setETFAggregateDetail,
+      );
+    }
+  }, [tickerDetail]);
 
   const contentMap = useMemo(
     () => ({
@@ -77,10 +94,26 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
           // TODO: Handle error condition
           <Center>Loading</Center>
         ) : (
-          <PCAScatterPlot tickerDetail={tickerDetail} />
+          <AutoScaler>
+            <PCAScatterPlot tickerDetail={tickerDetail} />
+          </AutoScaler>
+        ),
+      "Sector Allocation":
+        isLoadingTickerDetail || !etfAggregateDetail ? (
+          // TODO: Use spinner
+          // TODO: Handle error condition
+          <Center>Loading</Center>
+        ) : (
+          etfAggregateDetail?.major_sector_distribution && (
+            <SectorsPieChart
+              majorSectorDistribution={
+                etfAggregateDetail.major_sector_distribution
+              }
+            />
+          )
         ),
     }),
-    [isLoadingTickerDetail, tickerDetail],
+    [etfAggregateDetail, isLoadingTickerDetail, tickerDetail],
   );
 
   // Use 'row' and 'column' instead of generic strings
