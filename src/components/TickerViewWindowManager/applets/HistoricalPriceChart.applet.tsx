@@ -1,22 +1,28 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
-import { Box, Button, ButtonGroup, Typography } from "@mui/material";
+import { Box, Button, ButtonGroup } from "@mui/material";
 
 import { TRADING_VIEW_COPYRIGHT_STYLES } from "@src/constants";
 import { MiniChart } from "react-ts-tradingview-widgets";
 import type { DateRange } from "react-ts-tradingview-widgets";
 
+import { RustServiceTickerDetail } from "@utils/callRustService";
+import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
+
 export type HistoricalPriceChartProps = {
-  tickerSymbol: string;
-  formattedSymbolWithExchange: string;
+  tickerDetail: RustServiceTickerDetail;
 };
 
 const dateRanges: DateRange[] = ["1D", "1M", "3M", "12M", "60M", "ALL"];
 
 export default function HistoricalPriceChart({
-  tickerSymbol,
-  formattedSymbolWithExchange,
+  tickerDetail,
 }: HistoricalPriceChartProps) {
+  const formattedSymbolWithExchange = useMemo(
+    () => formatSymbolWithExchange(tickerDetail),
+    [tickerDetail],
+  );
+
   const [dateRange, setDateRange] = useState<DateRange>("1M");
 
   const handleDateRangeChange = (range: string) => {
@@ -26,9 +32,6 @@ export default function HistoricalPriceChart({
   return (
     <Box>
       <Box sx={{ overflow: "auto" }}>
-        <Typography variant="h6" sx={{ float: "left", paddingLeft: 1.5 }}>
-          &quot;{tickerSymbol}&quot; Historical Prices
-        </Typography>
         <ButtonGroup
           sx={{ float: "right" }}
           variant="outlined"

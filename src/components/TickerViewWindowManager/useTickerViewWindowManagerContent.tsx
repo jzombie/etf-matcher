@@ -13,7 +13,6 @@ import {
   RustServiceETFAggregateDetail,
   fetchETFAggregateDetailByTickerId,
 } from "@utils/callRustService";
-import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
 import ETFHolderList from "./applets/ETFHolderList.applet";
 import ETFHoldingList from "./applets/ETFHoldingList.applet";
@@ -97,12 +96,7 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
           <Center>Loading</Center>
         ) : (
           <AutoScaler>
-            <HistoricalPriceChart
-              tickerSymbol={tickerDetail?.symbol}
-              formattedSymbolWithExchange={formatSymbolWithExchange(
-                tickerDetail,
-              )}
-            />
+            <HistoricalPriceChart tickerDetail={tickerDetail} />
           </AutoScaler>
         ),
       "Similarity Search":
