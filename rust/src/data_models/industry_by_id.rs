@@ -9,7 +9,7 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 
 lazy_static! {
-    static ref INDUSTRY_NAME_BY_ID_CACHE: Mutex<HashMap<IndustryId, String>> =
+    static ref INDUSTRY_NAME_BY_ID_CACHE: Mutex<HashMap<IndustryId, IndustryById>> =
         Mutex::new(HashMap::new());
 }
 
@@ -28,12 +28,28 @@ impl IndustryById {
 
         // Check if the result is already in the cache
         let cache = INDUSTRY_NAME_BY_ID_CACHE.lock().unwrap();
-        if let Some(industry_name) = cache.get(&industry_id) {
-            return Ok(industry_name.clone());
+        if let Some(industry) = cache.get(&industry_id) {
+            return Ok(industry.industry_name.clone());
         }
 
         Err(JsValue::from_str("Industry ID not found"))
     }
+
+    // TODO: Uncomment?
+    // pub async fn get_all_industries() -> Result<HashMap<IndustryId, String>, JsValue> {
+    //     // Ensure cache is preloaded
+    //     if INDUSTRY_NAME_BY_ID_CACHE.lock().unwrap().is_empty() {
+    //         Self::preload_industry_name_cache().await?;
+    //     }
+
+    //     // Return all industry names
+    //     let cache = INDUSTRY_NAME_BY_ID_CACHE.lock().unwrap();
+    //     let industries = cache
+    //         .iter()
+    //         .map(|(id, industry)| (*id, industry.industry_name.clone()))
+    //         .collect();
+    //     Ok(industries)
+    // }
 
     async fn preload_industry_name_cache() -> Result<(), JsValue> {
         // Fetch and decompress the CSV data
@@ -49,7 +65,7 @@ impl IndustryById {
         // Load data into cache
         let mut cache = INDUSTRY_NAME_BY_ID_CACHE.lock().unwrap();
         for industry in data {
-            cache.insert(industry.industry_id, industry.industry_name);
+            cache.insert(industry.industry_id, industry);
         }
 
         Ok(())

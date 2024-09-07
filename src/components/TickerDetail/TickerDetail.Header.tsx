@@ -14,7 +14,6 @@ import type {
   RustServiceETFAggregateDetail,
   RustServiceTickerDetail,
 } from "@utils/callRustService";
-import formatCurrency from "@utils/formatCurrency";
 
 import EncodedImage from "../EncodedImage";
 import TickerDetailStaticHeader from "./TickerDetail.Header.Static";
@@ -49,10 +48,14 @@ export default function TickerDetailHeader({
 
   return (
     <>
+      {/* Static header display when scrolled */}
       {isShowingStaticHeader && (
         <TickerDetailStaticHeader tickerDetail={tickerDetail} />
       )}
+
+      {/* Main header content */}
       <SymbolDetailWrapper ref={elRef}>
+        {/* Logo Section */}
         <LogoContainer
           style={
             logoBackgroundColorOverride
@@ -69,138 +72,45 @@ export default function TickerDetailHeader({
           </ButtonBase>
         </LogoContainer>
 
+        {/* Info Section */}
         <InfoContainer>
           <Padding>
             <Grid container spacing={2}>
+              {/* Left Column: Company, Sector */}
               <Grid item xs={12} md={6}>
-                <Typography variant="h6" component="div">
-                  Company
-                </Typography>
-                <Typography variant="body2">
-                  {tickerDetail?.company_name}
-                  &nbsp;
-                  {`(${formattedSymbolWithExchange})`}
-                </Typography>
+                <InfoItem
+                  label="Company"
+                  value={`${tickerDetail?.company_name} (${formattedSymbolWithExchange})`}
+                />
+                <InfoItem
+                  label="Sector"
+                  value={
+                    etfAggregateDetail?.top_market_value_sector_name ||
+                    tickerDetail?.sector_name ||
+                    "N/A"
+                  }
+                />
               </Grid>
+
+              {/* Right Column: Industry, ETF Status */}
               <Grid item xs={12} md={6}>
-                <Typography variant="h6" component="div">
-                  Durability Rating
-                </Typography>
-                <Typography variant="body2">
-                  {(tickerDetail?.score_avg_dca &&
-                    `${tickerDetail?.score_avg_dca.toFixed(2)} / 5.00`) ||
-                    "N/A"}
-                </Typography>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Typography variant="h6" component="div">
-                  Sector
-                </Typography>
-                <Typography variant="body2">
-                  {tickerDetail?.sector_name || "N/A"}
-                  <>
-                    {etfAggregateDetail?.top_market_value_sector_name &&
-                      tickerDetail?.sector_name !==
-                        etfAggregateDetail?.top_market_value_sector_name && (
-                        <>
-                          {" "}
-                          ({etfAggregateDetail.top_market_value_sector_name})
-                        </>
-                      )}
-                  </>
-                </Typography>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Typography variant="h6" component="div">
-                  Industry
-                </Typography>
-                <Typography variant="body2">
-                  {tickerDetail?.industry_name || "N/A"}
-                  <>
-                    {etfAggregateDetail?.top_market_value_industry_name &&
-                      tickerDetail?.industry_name !==
-                        etfAggregateDetail?.top_market_value_industry_name && (
-                        <>
-                          {" "}
-                          ({etfAggregateDetail.top_market_value_industry_name})
-                        </>
-                      )}
-                  </>
-                </Typography>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Typography variant="h6" component="div">
-                  ETF Status
-                </Typography>
-                {!tickerDetail?.is_etf ? (
-                  <>Not ETF</>
-                ) : (
-                  <>
-                    {etfAggregateDetail ? (
-                      <div
-                        style={{
-                          border: "1px rgba(255,255,255,.1) solid",
-                          borderRadius: 2,
-                          marginTop: 1,
-                          padding: 1,
-                          margin: 4,
-                        }}
-                      >
-                        <Typography
-                          variant="subtitle1"
-                          sx={{ fontWeight: "bold" }}
-                        >
-                          Top Holdings
-                        </Typography>
-                        <Grid container spacing={1}>
-                          <Grid item xs={6}>
-                            <Typography variant="subtitle1">
-                              Market Value
-                            </Typography>
-                            <Typography variant="body2">
-                              Sector:{" "}
-                              {etfAggregateDetail?.top_market_value_sector_name}
-                            </Typography>
-                            <Typography variant="body2">
-                              Industry:{" "}
-                              {
-                                etfAggregateDetail?.top_market_value_industry_name
-                              }
-                            </Typography>
-                            <Typography variant="body2">
-                              Value:{" "}
-                              {etfAggregateDetail?.top_sector_market_value &&
-                                etfAggregateDetail?.currency_code &&
-                                formatCurrency(
-                                  etfAggregateDetail.currency_code,
-                                  etfAggregateDetail.top_sector_market_value,
-                                )}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography variant="subtitle1">
-                              Percentage Weight
-                            </Typography>
-                            <Typography variant="body2">
-                              Sector: {etfAggregateDetail?.top_pct_sector_name}
-                            </Typography>
-                            <Typography variant="body2">
-                              Industry:{" "}
-                              {etfAggregateDetail?.top_pct_industry_name}
-                            </Typography>
-                            <Typography variant="body2">
-                              Weight:{" "}
-                              {etfAggregateDetail?.top_pct_sector_weight?.toFixed(
-                                2,
-                              )}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      </div>
-                    ) : (
-                      <div>ETF</div>
-                    )}
-                  </>
+                <InfoItem
+                  label="Industry"
+                  value={
+                    etfAggregateDetail?.top_market_value_industry_name ||
+                    tickerDetail?.industry_name ||
+                    "N/A"
+                  }
+                />
+                <InfoItem
+                  label="ETF Status"
+                  value={tickerDetail?.is_etf ? "ETF" : "Not ETF"}
+                />
+                {etfAggregateDetail?.expense_ratio && (
+                  <InfoItem
+                    label="Expense Ratio"
+                    value={`${etfAggregateDetail.expense_ratio.toFixed(2)}%`}
+                  />
                 )}
               </Grid>
             </Grid>
@@ -210,6 +120,31 @@ export default function TickerDetailHeader({
     </>
   );
 }
+
+/**
+ * InfoItem is a reusable component that takes in label and value props
+ * and renders them in a styled box.
+ */
+function InfoItem({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | undefined;
+}) {
+  return (
+    <Box mb={1}>
+      <Typography variant="subtitle2" fontWeight="bold" component="div">
+        {label}
+      </Typography>
+      <Typography variant="body2">{value}</Typography>
+    </Box>
+  );
+}
+
+/**
+ * Styled components for layout improvements.
+ */
 
 const LogoContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -236,6 +171,9 @@ const SymbolDetailWrapper = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(4),
 }));
 
+/**
+ * Hook to determine when the header should switch to a static version.
+ */
 function useStaticHeaderDeterminer(
   elRef: React.MutableRefObject<HTMLDivElement | null>,
   tickerDetail: RustServiceTickerDetail,

@@ -17,6 +17,7 @@ where
     Ok(num != 0)
 }
 
+// TODO: Add `major_sector` mapping
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TickerDetail {
     pub ticker_id: TickerId,
@@ -35,6 +36,7 @@ pub struct TickerDetail {
     pub logo_filename: Option<String>,
 }
 
+// TODO: Rename without `Response` suffix. Rename original.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TickerDetailResponse {
     pub ticker_id: TickerId,

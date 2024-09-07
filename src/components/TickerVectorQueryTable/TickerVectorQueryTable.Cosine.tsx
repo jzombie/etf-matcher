@@ -23,6 +23,8 @@ import useTickerVectorQuery, {
 
 import type { RustServiceTickerDetail } from "@utils/callRustService";
 
+import FormattedETFExpenseRatio from "./TickerVectorQueryTable.FormattedETFExpenseRatio";
+
 export type TickerVectorQueryTableCosineProps = {
   queryMode: TickerVectorQueryProps["queryMode"];
   query: TickerVectorQueryProps["query"];
@@ -79,12 +81,15 @@ export default function TickerVectorQueryTableCosine({
               Sector
             </TableCell>
             <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
-              ETF
+              ETF Expense Ratio
             </TableCell>
             <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
               Held in ETF
             </TableCell>
             <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+              {
+                // TODO: Prefix with proper type
+              }
               Cosine Similarity
             </TableCell>
           </TableRow>
@@ -112,7 +117,7 @@ export default function TickerVectorQueryTableCosine({
                   {detail.sector_name || "N/A"}
                 </TableCell>
                 <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
-                  {detail.is_etf ? "Yes" : "No"}
+                  <FormattedETFExpenseRatio tickerDetail={detail} />
                 </TableCell>
                 <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
                   {detail.is_held_in_etf ? "Yes" : "No"}
