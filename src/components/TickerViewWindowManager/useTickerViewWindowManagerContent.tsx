@@ -23,7 +23,7 @@ import TickerInformation from "./applets/TickerInformation.applet";
 export default function useTickerViewWindowManagerContent(tickerId: number) {
   const { tickerDetail, isLoadingTickerDetail } = useTickerDetail(tickerId);
 
-  // Refactor: Save ETF aggregate detail
+  // TODO: Refactor into `useETFAggregateDetail` (see `useTicker10KDetail` for prelim usage)
   const [etfAggregateDetail, setETFAggregateDetail] = useState<
     RustServiceETFAggregateDetail | undefined
   >(undefined);
