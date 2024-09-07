@@ -78,16 +78,23 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
     () => ({
       direction: "column", // Main direction is 'column' to stack rows vertically
       first: {
-        direction: "row", // First row will have two cells side by side
-        first: "Historical Prices", // First cell in the first row
-        second: "Similarity Search", // Second cell in the first row
+        direction: "row", // Top row with 3 columns
+        first: "Historical Prices", // First column
+        second: {
+          direction: "row", // Nested row for the second and third columns
+          first: "Similarity Search", // Second column
+          second: "Sector Allocation", // Third column
+          splitPercentage: 50, // Split equally between Similarity Search and Sector Allocation
+        },
+        splitPercentage: 33.33, // Split for the first column to take 33.33% of the width
       },
       second: {
-        direction: "row", // Second row will also have two cells side by side
-        first: "ETF Holders", // First cell in the second row
-        second: "ETF Holdings", // Second cell in the second row
+        direction: "row", // Bottom row with 2 columns
+        first: "ETF Holders", // First column in bottom row
+        second: "ETF Holdings", // Second column in bottom row
+        splitPercentage: 50, // Split the bottom row evenly
       },
-      splitPercentage: 50, // Adjust the split percentage between the two rows
+      splitPercentage: 60, // Top row takes 60% of the height, bottom row 40%
     }),
     [],
   );
