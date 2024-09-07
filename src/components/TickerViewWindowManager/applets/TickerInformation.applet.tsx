@@ -37,6 +37,10 @@ export default function TickerInformation({
         {
           // TODO: If ETF, add top sector/industry information
         }
+        <InfoItem
+          label="Symbol"
+          value={`${tickerDetail.symbol}${tickerDetail.exchange_short_name ? ` (${tickerDetail.exchange_short_name})` : ""}`}
+        />
         <InfoItem label="Company" value={tickerDetail.company_name || "N/A"} />
         <InfoItem label="Sector" value={tickerDetail.sector_name || "N/A"} />
         <InfoItem
