@@ -54,7 +54,7 @@ export default function Window({
     whiteSpace: "nowrap", // Prevent wrapping
     overflow: "hidden", // Hide overflowed text
     textOverflow: "ellipsis", // Add ellipsis if truncated
-    maxWidth: "150px", // Adjust max-width as needed
+    maxWidth: "300px", // Adjust max-width as needed
   };
 
   return (
