@@ -14,7 +14,7 @@ import {
 import fetchDataBuildInfo from "./lib/fetchDataBuildInfo";
 import fetchETFAggregateDetail from "./lib/fetchETFAggregateDetail";
 import fetchImageInfo from "./lib/fetchImageInfo";
-import fetchSymbolAndExchangeByTickerId from "./lib/fetchSymbolAndExchangeByTickerId";
+import fetchSymbolAndExchange from "./lib/fetchSymbolAndExchange";
 import fetchTicker10KDetail from "./lib/fetchTicker10KDetail";
 import fetchTickerDetail from "./lib/fetchTickerDetail";
 import fetchTickerId from "./lib/fetchTickerId";
@@ -84,7 +84,7 @@ export {
   fetchETFHoldersAggregateDetailByTickerId,
   fetchTickerDetail,
   fetchTicker10KDetail,
-  fetchSymbolAndExchangeByTickerId,
+  fetchSymbolAndExchange,
   fetchETFAggregateDetail,
   getAllMajorSectors,
 };
