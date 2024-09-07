@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 
 import AutoScaler from "@layoutKit/AutoScaler";
 import Center from "@layoutKit/Center";
-import Scrollable from "@layoutKit/Scrollable";
 import { MosaicNode } from "react-mosaic-component";
 
 import SectorsPieChart from "@components/SectorsPieChart";
@@ -14,8 +13,7 @@ import {
   fetchETFAggregateDetailByTickerId,
 } from "@utils/callRustService";
 
-import ETFHolderList from "./applets/ETFHolderList.applet";
-import ETFHoldingList from "./applets/ETFHoldingList.applet";
+import ETFHoldersAndHoldings from "./applets/ETFHoldersAndHoldings.applet";
 import HistoricalPriceChart from "./applets/HistoricalPriceChart.applet";
 import PCAScatterPlot from "./applets/PCAScatterPlot.applet";
 import TickerInformation from "./applets/TickerInformation.applet";
@@ -48,19 +46,15 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
         },
         second: {
           first: "Sector Allocation",
-          second: {
-            first: "Similarity Search",
-            second: "ETF Holdings",
-            direction: "row",
-          },
+          second: "Similarity Search",
           direction: "row",
-          splitPercentage: 24.741115697530518,
+          splitPercentage: 40.13679097684473,
         },
         splitPercentage: 52.089700882585255,
       },
-      second: "ETF Holders",
+      second: "ETF Holders and Holdings",
       direction: "row",
-      splitPercentage: 68.16939890710383,
+      splitPercentage: 60.4332129963899,
     }),
     [],
   );
@@ -74,21 +68,19 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
         ) : (
           <TickerInformation tickerDetail={tickerDetail} />
         ),
-      "ETF Holders":
+      // "ETF Holders":
+      //   isLoadingTickerDetail || !tickerDetail ? (
+      //     <Center>Loading</Center>
+      //   ) : (
+      //     <Scrollable>
+      //       <ETFHolderList tickerDetail={tickerDetail} />
+      //     </Scrollable>
+      //   ),
+      "ETF Holders and Holdings":
         isLoadingTickerDetail || !tickerDetail ? (
           <Center>Loading</Center>
         ) : (
-          <Scrollable>
-            <ETFHolderList tickerDetail={tickerDetail} />
-          </Scrollable>
-        ),
-      "ETF Holdings":
-        isLoadingTickerDetail || !tickerDetail ? (
-          <Center>Loading</Center>
-        ) : (
-          <Scrollable>
-            <ETFHoldingList etfTickerDetail={tickerDetail} />
-          </Scrollable>
+          <ETFHoldersAndHoldings tickerDetail={tickerDetail} />
         ),
       "Historical Prices":
         isLoadingTickerDetail || !tickerDetail ? (
