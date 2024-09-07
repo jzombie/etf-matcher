@@ -33,7 +33,7 @@ export type TickerViewAppletProps = {
 export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
   const { tickerDetail, isLoadingTickerDetail } = useTickerDetail(tickerId);
 
-  // TODO: Refactor into hook (much like `useTickerDetail`; also note usage of `useTicker10KDetail`)
+  // Refactor: Save ETF aggregate detail
   const [etfAggregateDetail, setETFAggregateDetail] = useState<
     RustServiceETFAggregateDetail | undefined
   >(undefined);
@@ -45,11 +45,17 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
     }
   }, [tickerDetail]);
 
-  // State to track layout and open windows
+  // Track layout, open windows, saved layouts, and split percentages
   const [layout, setLayout] = useState<MosaicNode<string> | null>(null);
   const [openWindows, setOpenWindows] = useState<Set<string>>(new Set());
+  const [savedLayouts, setSavedLayouts] = useState<
+    Record<string, MosaicNode<string>>
+  >({});
+  const [splitPercentages, setSplitPercentages] = useState<
+    Record<string, number>
+  >({});
 
-  // Function to update open windows based on the current layout
+  // Update open windows based on the current layout
   const updateOpenWindows = useCallback((layout: MosaicNode<string> | null) => {
     const findOpenWindows = (node: MosaicNode<string> | null): string[] => {
       if (!node) return [];
@@ -64,25 +70,48 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
     setOpenWindows(openWindowSet);
   }, []);
 
-  // Function to toggle the window by adding/removing it from the layout
+  // Toggle window open/close
   const toggleWindow = useCallback(
     (windowId: string) => {
       if (openWindows.has(windowId)) {
-        // Remove the window from the layout
-        setLayout((prevLayout) => removeWindowFromLayout(prevLayout, windowId));
-      } else {
-        // Add the window back to the layout
+        // Save the window's layout and splitPercentage before closing
         setLayout((prevLayout) => {
-          const newLayout = addWindowToLayout(prevLayout, windowId);
-          setOpenWindows((prev) => new Set(prev).add(windowId)); // Add to open windows
+          const newLayout = removeWindowFromLayout(
+            prevLayout,
+            windowId,
+            (splitPercentage) => {
+              if (splitPercentage) {
+                setSplitPercentages((prev) => ({
+                  ...prev,
+                  [windowId]: splitPercentage,
+                }));
+              }
+            },
+          );
+          setSavedLayouts((prev) => ({
+            ...prev,
+            [windowId]: prevLayout!,
+          }));
+          return newLayout;
+        });
+      } else {
+        // Re-open the window at its previous position with its previous splitPercentage
+        setLayout((prevLayout) => {
+          const restoredLayout = savedLayouts[windowId] || windowId;
+          const newLayout = addWindowToLayout(
+            prevLayout,
+            restoredLayout,
+            splitPercentages[windowId],
+          );
+          setOpenWindows((prev) => new Set(prev).add(windowId));
           return newLayout;
         });
       }
     },
-    [openWindows],
+    [openWindows, savedLayouts, splitPercentages],
   );
 
-  // Initial layout
+  // Initial layout definition
   const initialValue: MosaicNode<string> = useMemo(
     () => ({
       direction: "column",
@@ -98,7 +127,7 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
             second: "Sector Allocation",
             splitPercentage: 50,
           },
-          splitPercentage: 55.603293949158605,
+          splitPercentage: 55.6,
         },
         splitPercentage: 25,
       },
@@ -108,12 +137,12 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
         second: "ETF Holdings",
         splitPercentage: 50,
       },
-      splitPercentage: 30.312061969752857,
+      splitPercentage: 30,
     }),
     [],
   );
 
-  // Handle content mapping
+  // Map content to window titles
   const contentMap = useMemo(
     () => ({
       "Ticker Information":
@@ -214,10 +243,11 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
   );
 }
 
-// Utility to remove a window from the layout
+// Utility to remove a window from the layout and get its split percentage
 function removeWindowFromLayout(
   layout: MosaicNode<string> | null,
   windowId: string,
+  saveSplitPercentage?: (splitPercentage: number | undefined) => void,
 ): MosaicNode<string> | null {
   if (!layout) return null;
 
@@ -225,30 +255,41 @@ function removeWindowFromLayout(
     return layout === windowId ? null : layout;
   }
 
-  const { first, second, direction } = layout as MosaicParent<string>;
-  const newFirst = removeWindowFromLayout(first, windowId);
-  const newSecond = removeWindowFromLayout(second, windowId);
+  const { first, second, direction, splitPercentage } =
+    layout as MosaicParent<string>;
+
+  if (saveSplitPercentage) {
+    saveSplitPercentage(splitPercentage);
+  }
+
+  const newFirst = removeWindowFromLayout(first, windowId, saveSplitPercentage);
+  const newSecond = removeWindowFromLayout(
+    second,
+    windowId,
+    saveSplitPercentage,
+  );
 
   if (!newFirst && !newSecond) return null;
   if (!newFirst) return newSecond;
   if (!newSecond) return newFirst;
 
-  return { first: newFirst, second: newSecond, direction };
+  return { first: newFirst, second: newSecond, direction, splitPercentage };
 }
 
-// Utility to add a window to the layout
+// Utility to restore/add a window to its previous layout position
 function addWindowToLayout(
   layout: MosaicNode<string> | null,
-  windowId: string,
+  windowLayout: MosaicNode<string>,
+  splitPercentage?: number,
 ): MosaicNode<string> | null {
   if (!layout) {
-    return windowId; // Add the window if layout is null
+    return windowLayout; // Add the window if layout is null
   }
 
   return {
     direction: "row",
     first: layout,
-    second: windowId,
-    splitPercentage: 50,
+    second: windowLayout,
+    splitPercentage: splitPercentage || 75, // Use saved splitPercentage or default to 50
   };
 }
