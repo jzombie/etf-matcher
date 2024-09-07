@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 
 import { Box, Button, ButtonGroup } from "@mui/material";
 
@@ -6,6 +6,8 @@ import Layout, { Content, Header } from "@layoutKit/Layout";
 import { TRADING_VIEW_COPYRIGHT_STYLES } from "@src/constants";
 import { MiniChart } from "react-ts-tradingview-widgets";
 import type { DateRange } from "react-ts-tradingview-widgets";
+
+import Transition from "@components/Transition";
 
 import { RustServiceTickerDetail } from "@utils/callRustService";
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
@@ -25,10 +27,21 @@ export default function HistoricalPriceChart({
   );
 
   const [dateRange, setDateRange] = useState<DateRange>("1M");
+  const previousRangeRef = useRef<DateRange>("1M");
 
-  const handleDateRangeChange = (range: string) => {
-    setDateRange(range as DateRange);
-  };
+  const handleDateRangeChange = useCallback(
+    (range: string) => {
+      previousRangeRef.current = dateRange; // Store the previous range
+      setDateRange(range as DateRange);
+    },
+    [dateRange],
+  );
+
+  const getDirection = useCallback(() => {
+    const prevIndex = dateRanges.indexOf(previousRangeRef.current);
+    const currentIndex = dateRanges.indexOf(dateRange);
+    return currentIndex > prevIndex ? "left" : "right";
+  }, [dateRange]);
 
   return (
     <Layout>
@@ -48,14 +61,16 @@ export default function HistoricalPriceChart({
         </Box>
       </Header>
       <Content>
-        <MiniChart
-          symbol={formattedSymbolWithExchange}
-          colorTheme="dark"
-          width="100%"
-          height="100%"
-          copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
-          dateRange={dateRange}
-        />
+        <Transition trigger={dateRange} direction={getDirection()}>
+          <MiniChart
+            symbol={formattedSymbolWithExchange}
+            colorTheme="dark"
+            width="100%"
+            height="100%"
+            copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
+            dateRange={dateRange}
+          />
+        </Transition>
       </Content>
     </Layout>
   );
