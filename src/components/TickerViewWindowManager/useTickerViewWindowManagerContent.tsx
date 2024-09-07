@@ -38,30 +38,29 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
   // Initial layout definition
   const initialValue: MosaicNode<string> = useMemo(
     () => ({
-      direction: "column",
       first: {
-        direction: "row",
-        first: "Ticker Information",
-        second: {
+        direction: "column",
+        first: {
           direction: "row",
-          first: "Historical Prices",
-          second: {
-            direction: "row",
-            first: "Similarity Search",
-            second: "Sector Allocation",
-            splitPercentage: 50,
-          },
-          splitPercentage: 55.6,
+          first: "Ticker Information",
+          second: "Historical Prices",
+          splitPercentage: 39.361702127659576,
         },
-        splitPercentage: 25,
+        second: {
+          first: "Sector Allocation",
+          second: {
+            first: "Similarity Search",
+            second: "ETF Holdings",
+            direction: "row",
+          },
+          direction: "row",
+          splitPercentage: 24.741115697530518,
+        },
+        splitPercentage: 52.089700882585255,
       },
-      second: {
-        direction: "row",
-        first: "ETF Holders",
-        second: "ETF Holdings",
-        splitPercentage: 50,
-      },
-      splitPercentage: 30,
+      second: "ETF Holders",
+      direction: "row",
+      splitPercentage: 68.16939890710383,
     }),
     [],
   );
