@@ -93,9 +93,20 @@ export default function SearchResults() {
   // Render each search result item for the grid
   const renderSearchResultItem = useCallback(
     (searchResult: RustServiceTickerSearchResult) => (
-      <Box display="flex" alignItems="center" padding={1}>
+      <Box
+        display="flex"
+        alignItems="center"
+        padding={1}
+        sx={{
+          whiteSpace: "nowrap", // Prevents text from wrapping
+          overflow: "hidden", // Hides overflowing content
+          textOverflow: "ellipsis", // Adds an ellipsis if the text overflows
+        }}
+      >
         <AvatarLogo tickerDetail={searchResult} />
-        <Box ml={2}>
+        <Box ml={2} sx={{ minWidth: 0 }}>
+          {" "}
+          {/* Ensure this box can shrink */}
           <Typography variant="h6" noWrap>
             {searchResult.symbol}
           </Typography>
