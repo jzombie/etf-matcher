@@ -2,7 +2,6 @@ import React, { useState } from "react";
 
 import { Box, Button } from "@mui/material";
 
-import Center from "@layoutKit/Center";
 import Layout, { Content, Header } from "@layoutKit/Layout";
 
 import type { RustServiceTickerDetail } from "@utils/callRustService";
