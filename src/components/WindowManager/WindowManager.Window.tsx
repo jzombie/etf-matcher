@@ -71,6 +71,11 @@ export default function Window({
       )}
     >
       <Full style={windowStyles}>
+        {
+          // The dynamic `Cover clickthrough` helps prevent an issue where
+          // window content that contains pointer listeners from intercepting
+          // pointer events while the user is resizing regions.
+        }
         <Cover clickThrough={!isResizing}>
           {/* Render the dynamic content passed from WindowManager */}
           {content}
