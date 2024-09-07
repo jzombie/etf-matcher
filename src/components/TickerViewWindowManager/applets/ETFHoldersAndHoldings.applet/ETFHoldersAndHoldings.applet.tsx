@@ -1,8 +1,10 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 
 import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
 import Layout, { Content, Header } from "@layoutKit/Layout";
+
+import Transition from "@components/Transition";
 
 import type { RustServiceTickerDetail } from "@utils/callRustService";
 
@@ -13,24 +15,30 @@ export type ETFHoldersAndHoldingsProps = {
   tickerDetail: RustServiceTickerDetail;
 };
 
+const displayModes = ["holders", "holdings"] as const;
+type DisplayMode = (typeof displayModes)[number];
+
 export default function ETFHoldersAndHoldings({
   tickerDetail,
 }: ETFHoldersAndHoldingsProps) {
-  const [displayMode, setDisplayMode] = useState<"holders" | "holdings">(
-    "holders",
-  );
+  const [displayMode, setDisplayMode] = useState<DisplayMode>("holders");
+  const previousModeRef = useRef<DisplayMode>("holders");
 
   const handleDisplayModeChange = useCallback(
-    (
-      event: React.MouseEvent<HTMLElement>,
-      newMode: "holders" | "holdings" | null,
-    ) => {
+    (event: React.MouseEvent<HTMLElement>, newMode: DisplayMode | null) => {
       if (newMode !== null) {
+        previousModeRef.current = displayMode; // Store the previous mode
         setDisplayMode(newMode);
       }
     },
-    [],
+    [displayMode],
   );
+
+  const getDirection = useCallback(() => {
+    const prevIndex = displayModes.indexOf(previousModeRef.current);
+    const currentIndex = displayModes.indexOf(displayMode);
+    return currentIndex > prevIndex ? "left" : "right";
+  }, [displayMode]);
 
   return (
     <Layout>
@@ -53,11 +61,13 @@ export default function ETFHoldersAndHoldings({
         </Box>
       </Header>
       <Content>
-        {displayMode === "holders" ? (
-          <ETFHolderList tickerDetail={tickerDetail} />
-        ) : (
-          <ETFHoldingList etfTickerDetail={tickerDetail} />
-        )}
+        <Transition trigger={displayMode} direction={getDirection()}>
+          {displayMode === "holders" ? (
+            <ETFHolderList tickerDetail={tickerDetail} />
+          ) : (
+            <ETFHoldingList etfTickerDetail={tickerDetail} />
+          )}
+        </Transition>
       </Content>
     </Layout>
   );
