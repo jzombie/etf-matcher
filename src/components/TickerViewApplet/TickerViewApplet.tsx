@@ -4,7 +4,7 @@ import { Box, Button } from "@mui/material";
 
 import AutoScaler from "@layoutKit/AutoScaler";
 import Center from "@layoutKit/Center";
-import Layout, { Content, Header } from "@layoutKit/Layout";
+import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
 import { MosaicNode, MosaicParent } from "react-mosaic-component";
 
@@ -21,6 +21,7 @@ import {
 import customLogger from "@utils/customLogger";
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
+import TickerViewAppletBucketManager from "./TickerViewApplet.BucketManager";
 import ETFHolderList from "./applets/ETFHolderList.applet";
 import ETFHoldingList from "./applets/ETFHoldingList.applet";
 import HistoricalPriceChart from "./applets/HistoricalPriceChart.applet";
@@ -243,6 +244,12 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
             }}
           />
         </Content>
+
+        <Footer>
+          {tickerDetail && (
+            <TickerViewAppletBucketManager tickerDetail={tickerDetail} />
+          )}
+        </Footer>
       </Layout>
     </TickerContainer>
   );
