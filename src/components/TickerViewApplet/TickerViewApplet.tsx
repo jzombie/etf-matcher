@@ -9,6 +9,7 @@ import Scrollable from "@layoutKit/Scrollable";
 import { MosaicNode, MosaicParent } from "react-mosaic-component";
 
 import SectorsPieChart from "@components/SectorsPieChart";
+import TickerContainer from "@components/TickerContainer";
 import WindowManager from "@components/WindowManager";
 
 import useTickerDetail from "@hooks/useTickerDetail";
@@ -210,36 +211,38 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
   }, [contentMap, initialValue, updateOpenWindows]);
 
   return (
-    <Layout>
-      <Header>
-        {/* Dynamically generate buttons based on contentMap */}
-        <Box>
-          {Object.keys(contentMap).map((key) => (
-            <Button
-              key={key}
-              variant="contained"
-              disabled={openWindows.has(key)} // Disable if window is open
-              onClick={() => toggleWindow(key)} // Toggle window on click
-              style={{ margin: "0 8px" }}
-            >
-              {key}
-            </Button>
-          ))}
-        </Box>
-      </Header>
+    <TickerContainer tickerId={tickerId}>
+      <Layout>
+        <Header>
+          {/* Dynamically generate buttons based on contentMap */}
+          <Box>
+            {Object.keys(contentMap).map((key) => (
+              <Button
+                key={key}
+                variant="contained"
+                disabled={openWindows.has(key)} // Disable if window is open
+                onClick={() => toggleWindow(key)} // Toggle window on click
+                style={{ margin: "0 8px" }}
+              >
+                {key}
+              </Button>
+            ))}
+          </Box>
+        </Header>
 
-      <Content>
-        <WindowManager
-          initialValue={layout || initialValue}
-          contentMap={contentMap}
-          onChange={(newLayout) => {
-            setLayout(newLayout);
-            updateOpenWindows(newLayout); // Update open windows when layout changes
-            customLogger.debug({ newLayout });
-          }}
-        />
-      </Content>
-    </Layout>
+        <Content>
+          <WindowManager
+            initialValue={layout || initialValue}
+            contentMap={contentMap}
+            onChange={(newLayout) => {
+              setLayout(newLayout);
+              updateOpenWindows(newLayout); // Update open windows when layout changes
+              customLogger.debug({ newLayout });
+            }}
+          />
+        </Content>
+      </Layout>
+    </TickerContainer>
   );
 }
 
