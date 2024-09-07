@@ -33,11 +33,10 @@ export type TickerViewAppletProps = {
 export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
   const { tickerDetail, isLoadingTickerDetail } = useTickerDetail(tickerId);
 
-  // State to track ETF aggregate details
+  // TODO: Refactor into hook (much like `useTickerDetail`; also note usage of `useTicker10KDetail`)
   const [etfAggregateDetail, setETFAggregateDetail] = useState<
     RustServiceETFAggregateDetail | undefined
   >(undefined);
-
   useEffect(() => {
     if (tickerDetail?.is_etf) {
       fetchETFAggregateDetailByTickerId(tickerDetail.ticker_id).then(
