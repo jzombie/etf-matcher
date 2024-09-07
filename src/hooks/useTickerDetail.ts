@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 
 import type { RustServiceTickerDetail } from "@utils/callRustService";
 import { fetchTickerDetail } from "@utils/callRustService";
+import customLogger from "@utils/customLogger";
 
+import useAppErrorBoundary from "./useAppErrorBoundary";
 import useStableCurrentRef from "./useStableCurrentRef";
 
 export default function useTickerDetail(
@@ -20,6 +22,8 @@ export default function useTickerDetail(
     undefined,
   );
 
+  const { triggerUIError } = useAppErrorBoundary();
+
   useEffect(() => {
     if (tickerId) {
       // Unset ticker error, if exists
@@ -35,12 +39,16 @@ export default function useTickerDetail(
             onLoadStableCurrentRef.current(tickerDetail);
           }
         })
-        .catch((err) => setTickerDetailError(err))
+        .catch((err) => {
+          setTickerDetailError(err);
+          triggerUIError(new Error("Error fetching ticker detail"));
+          customLogger.error(err);
+        })
         .finally(() => {
           setIsLoadingTickerDetail(false);
         });
     }
-  }, [onLoadStableCurrentRef, tickerId]);
+  }, [onLoadStableCurrentRef, tickerId, triggerUIError]);
 
   return { isLoadingTickerDetail, tickerDetail, tickerDetailError };
 }
