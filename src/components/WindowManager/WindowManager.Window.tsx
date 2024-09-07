@@ -76,10 +76,9 @@ export default function Window({
           // window content that contains pointer listeners from intercepting
           // pointer events while the user is resizing regions.
         }
-        <Cover clickThrough={!isResizing}>
-          {/* Render the dynamic content passed from WindowManager */}
-          {content}
-        </Cover>
+        {/* Render the dynamic content passed from WindowManager */}
+        {content}
+        <Cover clickThrough={!isResizing} />
       </Full>
     </MosaicWindow>
   );
