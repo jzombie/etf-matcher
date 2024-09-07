@@ -1,7 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 
+import { Button } from "@mui/material";
+
 import AutoScaler from "@layoutKit/AutoScaler";
 import Center from "@layoutKit/Center";
+import Layout, { Content, Header } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
 import { MosaicNode } from "react-mosaic-component";
 
@@ -148,11 +151,20 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
   );
 
   return (
-    <WindowManager
-      initialValue={initialValue}
-      contentMap={contentMap}
-      // TODO: Handle debug
-      onChange={(newLayout) => customLogger.debug({ newLayout })}
-    />
+    <Layout>
+      <Header>
+        <Button variant="contained">A</Button>
+        <Button variant="contained">B</Button>
+      </Header>
+
+      <Content>
+        <WindowManager
+          initialValue={initialValue}
+          contentMap={contentMap}
+          // TODO: Handle debug
+          onChange={(newLayout) => customLogger.debug({ newLayout })}
+        />
+      </Content>
+    </Layout>
   );
 }
