@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 
 import AutoScaler from "@layoutKit/AutoScaler";
 import Center from "@layoutKit/Center";
 import Layout, { Content, Header } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
-import { MosaicNode } from "react-mosaic-component";
+import { MosaicNode, MosaicParent } from "react-mosaic-component";
 
 import SectorsPieChart from "@components/SectorsPieChart";
 import WindowManager from "@components/WindowManager";
@@ -30,14 +30,14 @@ export type TickerViewAppletProps = {
   tickerId: number;
 };
 
-// TODO: Ensure `WindowManager` gets wrapped with `TickerContainer`
 export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
   const { tickerDetail, isLoadingTickerDetail } = useTickerDetail(tickerId);
 
-  // TODO: Refactor
+  // State to track ETF aggregate details
   const [etfAggregateDetail, setETFAggregateDetail] = useState<
     RustServiceETFAggregateDetail | undefined
   >(undefined);
+
   useEffect(() => {
     if (tickerDetail?.is_etf) {
       fetchETFAggregateDetailByTickerId(tickerDetail.ticker_id).then(
@@ -46,80 +46,41 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
     }
   }, [tickerDetail]);
 
-  const contentMap = useMemo(
-    () => ({
-      "Ticker Information":
-        isLoadingTickerDetail || !tickerDetail ? (
-          // TODO: Use spinner
-          // TODO: Handle error condition
-          <Center>Loading</Center>
-        ) : (
-          <TickerInformation tickerDetail={tickerDetail} />
-        ),
-      "ETF Holders":
-        isLoadingTickerDetail || !tickerDetail ? (
-          // TODO: Use spinner
-          // TODO: Handle error condition
-          <Center>Loading</Center>
-        ) : (
-          <Scrollable>
-            <ETFHolderList tickerDetail={tickerDetail} />
-          </Scrollable>
-        ),
-      "ETF Holdings":
-        isLoadingTickerDetail || !tickerDetail ? (
-          // TODO: Use spinner
-          // TODO: Handle error condition
-          <Center>Loading</Center>
-        ) : (
-          <Scrollable>
-            <ETFHoldingList etfTickerDetail={tickerDetail} />
-          </Scrollable>
-        ),
-      "Historical Prices":
-        isLoadingTickerDetail || !tickerDetail ? (
-          // TODO: Use spinner
-          // TODO: Handle error condition
-          <Center>Loading</Center>
-        ) : (
-          <AutoScaler>
-            <HistoricalPriceChart
-              tickerSymbol={tickerDetail?.symbol}
-              formattedSymbolWithExchange={formatSymbolWithExchange(
-                tickerDetail,
-              )}
-            />
-          </AutoScaler>
-        ),
-      "Similarity Search":
-        isLoadingTickerDetail || !tickerDetail ? (
-          // TODO: Use spinner
-          // TODO: Handle error condition
-          <Center>Loading</Center>
-        ) : (
-          <AutoScaler>
-            <PCAScatterPlot tickerDetail={tickerDetail} />
-          </AutoScaler>
-        ),
-      "Sector Allocation":
-        isLoadingTickerDetail || !etfAggregateDetail ? (
-          // TODO: Use spinner
-          // TODO: Handle error condition
-          <Center>Loading</Center>
-        ) : (
-          etfAggregateDetail?.major_sector_distribution && (
-            <SectorsPieChart
-              majorSectorDistribution={
-                etfAggregateDetail.major_sector_distribution
-              }
-            />
-          )
-        ),
-    }),
-    [etfAggregateDetail, isLoadingTickerDetail, tickerDetail],
-  );
+  // State to track layout and open windows
+  const [layout, setLayout] = useState<MosaicNode<string> | null>(null);
+  const [openWindows, setOpenWindows] = useState<Set<string>>(new Set());
 
-  // Use 'row' and 'column' instead of generic strings
+  // Function to update open windows based on the current layout
+  const updateOpenWindows = (layout: MosaicNode<string> | null) => {
+    const findOpenWindows = (node: MosaicNode<string> | null): string[] => {
+      if (!node) return [];
+      if (typeof node === "string") return [node];
+      return [
+        ...findOpenWindows((node as MosaicParent<string>).first),
+        ...findOpenWindows((node as MosaicParent<string>).second),
+      ];
+    };
+
+    const openWindowSet = new Set(findOpenWindows(layout));
+    setOpenWindows(openWindowSet);
+  };
+
+  // Function to toggle the window by adding/removing it from the layout
+  const toggleWindow = (windowId: string) => {
+    if (openWindows.has(windowId)) {
+      // Remove the window from the layout
+      setLayout((prevLayout) => removeWindowFromLayout(prevLayout, windowId));
+    } else {
+      // Add the window back to the layout
+      setLayout((prevLayout) => {
+        const newLayout = addWindowToLayout(prevLayout, windowId);
+        setOpenWindows((prev) => new Set(prev).add(windowId)); // Add to open windows
+        return newLayout;
+      });
+    }
+  };
+
+  // Initial layout
   const initialValue: MosaicNode<string> = useMemo(
     () => ({
       direction: "column",
@@ -150,21 +111,142 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
     [],
   );
 
+  // Handle content mapping
+  const contentMap = useMemo(
+    () => ({
+      "Ticker Information":
+        isLoadingTickerDetail || !tickerDetail ? (
+          <Center>Loading</Center>
+        ) : (
+          <TickerInformation tickerDetail={tickerDetail} />
+        ),
+      "ETF Holders":
+        isLoadingTickerDetail || !tickerDetail ? (
+          <Center>Loading</Center>
+        ) : (
+          <Scrollable>
+            <ETFHolderList tickerDetail={tickerDetail} />
+          </Scrollable>
+        ),
+      "ETF Holdings":
+        isLoadingTickerDetail || !tickerDetail ? (
+          <Center>Loading</Center>
+        ) : (
+          <Scrollable>
+            <ETFHoldingList etfTickerDetail={tickerDetail} />
+          </Scrollable>
+        ),
+      "Historical Prices":
+        isLoadingTickerDetail || !tickerDetail ? (
+          <Center>Loading</Center>
+        ) : (
+          <AutoScaler>
+            <HistoricalPriceChart
+              tickerSymbol={tickerDetail?.symbol}
+              formattedSymbolWithExchange={formatSymbolWithExchange(
+                tickerDetail,
+              )}
+            />
+          </AutoScaler>
+        ),
+      "Similarity Search":
+        isLoadingTickerDetail || !tickerDetail ? (
+          <Center>Loading</Center>
+        ) : (
+          <AutoScaler>
+            <PCAScatterPlot tickerDetail={tickerDetail} />
+          </AutoScaler>
+        ),
+      "Sector Allocation":
+        isLoadingTickerDetail || !etfAggregateDetail ? (
+          <Center>Loading</Center>
+        ) : (
+          etfAggregateDetail?.major_sector_distribution && (
+            <SectorsPieChart
+              majorSectorDistribution={
+                etfAggregateDetail.major_sector_distribution
+              }
+            />
+          )
+        ),
+    }),
+    [etfAggregateDetail, isLoadingTickerDetail, tickerDetail],
+  );
+
+  useEffect(() => {
+    setLayout(initialValue);
+    updateOpenWindows(initialValue); // Initialize open windows
+  }, [contentMap, initialValue]);
+
   return (
     <Layout>
       <Header>
-        <Button variant="contained">A</Button>
-        <Button variant="contained">B</Button>
+        {/* Dynamically generate buttons based on contentMap */}
+        <Box>
+          {Object.keys(contentMap).map((key) => (
+            <Button
+              key={key}
+              variant="contained"
+              disabled={openWindows.has(key)} // Disable if window is open
+              onClick={() => toggleWindow(key)} // Toggle window on click
+              style={{ margin: "0 8px" }}
+            >
+              {key}
+            </Button>
+          ))}
+        </Box>
       </Header>
 
       <Content>
         <WindowManager
-          initialValue={initialValue}
+          initialValue={layout}
           contentMap={contentMap}
-          // TODO: Handle debug
-          onChange={(newLayout) => customLogger.debug({ newLayout })}
+          onChange={(newLayout) => {
+            setLayout(newLayout);
+            updateOpenWindows(newLayout); // Update open windows when layout changes
+            customLogger.debug({ newLayout });
+          }}
         />
       </Content>
     </Layout>
   );
+}
+
+// Utility to remove a window from the layout
+function removeWindowFromLayout(
+  layout: MosaicNode<string> | null,
+  windowId: string,
+): MosaicNode<string> | null {
+  if (!layout) return null;
+
+  if (typeof layout === "string") {
+    return layout === windowId ? null : layout;
+  }
+
+  const { first, second, direction } = layout as MosaicParent<string>;
+  const newFirst = removeWindowFromLayout(first, windowId);
+  const newSecond = removeWindowFromLayout(second, windowId);
+
+  if (!newFirst && !newSecond) return null;
+  if (!newFirst) return newSecond;
+  if (!newSecond) return newFirst;
+
+  return { first: newFirst, second: newSecond, direction };
+}
+
+// Utility to add a window to the layout
+function addWindowToLayout(
+  layout: MosaicNode<string> | null,
+  windowId: string,
+): MosaicNode<string> | null {
+  if (!layout) {
+    return windowId; // Add the window if layout is null
+  }
+
+  return {
+    direction: "row",
+    first: layout,
+    second: windowId,
+    splitPercentage: 50,
+  };
 }
