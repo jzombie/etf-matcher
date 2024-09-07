@@ -40,6 +40,9 @@ export default function SelectableGrid<T>({
     if (containerRef.current) {
       const containerWidth = containerRef.current.offsetWidth;
       const calculatedColumns = Math.max(1, Math.floor(containerWidth / 250)); // Assume 250px per item
+
+      // Prevent going above `maxColumns`; if `calculatedColumns` is greater
+      // than `maxColumns`, use `maxColumns`.
       setDynamicColumns(Math.min(maxColumns, calculatedColumns));
     }
   }, [maxColumns]);
