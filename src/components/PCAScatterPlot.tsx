@@ -24,6 +24,7 @@ const YELLOW_DOT_RADIUS = 5;
 const MAX_VALUE_MULT_BUFFER = 1.1;
 
 export type PCAScatterPlotProps = {
+  // TODO: Adapt to also work with ticker buckets
   tickerDetail: RustServiceTickerDetail;
 };
 

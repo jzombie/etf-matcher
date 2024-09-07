@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import AutoScaler from "@layoutKit/AutoScaler";
 import Center from "@layoutKit/Center";
 import { MosaicNode } from "react-mosaic-component";
 
@@ -13,10 +12,10 @@ import {
   fetchETFAggregateDetail,
 } from "@utils/callRustService";
 
-import ETFHoldersAndHoldings from "./applets/ETFHoldersAndHoldings.applet";
-import HistoricalPriceChart from "./applets/HistoricalPriceChart.applet";
-import PCAScatterPlot from "./applets/PCAScatterPlot.applet";
-import TickerInformation from "./applets/TickerInformation.applet";
+import ETFHoldersAndHoldingsApplet from "./applets/ETFHoldersAndHoldings.applet";
+import HistoricalPriceChartApplet from "./applets/HistoricalPriceChart.applet";
+import TickerInformationApplet from "./applets/TickerInformation.applet";
+import TickerSimilaritySearchApplet from "./applets/TickerSimilaritySearch.applet";
 
 export default function useTickerViewWindowManagerContent(tickerId: number) {
   const { tickerDetail, isLoadingTickerDetail } = useTickerDetail(tickerId);
@@ -66,7 +65,7 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
         isLoadingTickerDetail || !tickerDetail ? (
           <Center>Loading</Center>
         ) : (
-          <TickerInformation tickerDetail={tickerDetail} />
+          <TickerInformationApplet tickerDetail={tickerDetail} />
         ),
       // "ETF Holders":
       //   isLoadingTickerDetail || !tickerDetail ? (
@@ -80,21 +79,19 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
         isLoadingTickerDetail || !tickerDetail ? (
           <Center>Loading</Center>
         ) : (
-          <ETFHoldersAndHoldings tickerDetail={tickerDetail} />
+          <ETFHoldersAndHoldingsApplet tickerDetail={tickerDetail} />
         ),
       "Historical Prices":
         isLoadingTickerDetail || !tickerDetail ? (
           <Center>Loading</Center>
         ) : (
-          <HistoricalPriceChart tickerDetail={tickerDetail} />
+          <HistoricalPriceChartApplet tickerDetail={tickerDetail} />
         ),
       "Similarity Search":
         isLoadingTickerDetail || !tickerDetail ? (
           <Center>Loading</Center>
         ) : (
-          <AutoScaler>
-            <PCAScatterPlot tickerDetail={tickerDetail} />
-          </AutoScaler>
+          <TickerSimilaritySearchApplet tickerDetail={tickerDetail} />
         ),
       "Sector Allocation":
         isLoadingTickerDetail || !etfAggregateDetail ? (
