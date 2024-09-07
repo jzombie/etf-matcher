@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
-import { Box, Button } from "@mui/material";
+import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
 import Layout, { Content, Header } from "@layoutKit/Layout";
 
@@ -20,26 +20,40 @@ export default function ETFHoldersAndHoldings({
     "holders",
   );
 
+  const handleDisplayModeChange = useCallback(
+    (
+      event: React.MouseEvent<HTMLElement>,
+      newMode: "holders" | "holdings" | null,
+    ) => {
+      if (newMode !== null) {
+        setDisplayMode(newMode);
+      }
+    },
+    [],
+  );
+
   return (
     <Layout>
       <Header>
-        <Box sx={{ textAlign: "center" }}>
-          <Button
-            onClick={() => setDisplayMode("holders")}
-            disabled={displayMode === "holders"}
+        <Box sx={{ textAlign: "center", marginBottom: 2 }}>
+          <ToggleButtonGroup
+            value={displayMode}
+            exclusive
+            onChange={handleDisplayModeChange}
+            aria-label="ETF holders and holdings toggle"
+            size="small"
           >
-            ETF Holders
-          </Button>
-          <Button
-            onClick={() => setDisplayMode("holdings")}
-            disabled={displayMode === "holdings"}
-          >
-            ETF Holdings
-          </Button>
+            <ToggleButton value="holders" aria-label="ETF holders">
+              ETF Holders
+            </ToggleButton>
+            <ToggleButton value="holdings" aria-label="ETF holdings">
+              ETF Holdings
+            </ToggleButton>
+          </ToggleButtonGroup>
         </Box>
       </Header>
       <Content>
-        {displayMode == "holders" ? (
+        {displayMode === "holders" ? (
           <ETFHolderList tickerDetail={tickerDetail} />
         ) : (
           <ETFHoldingList etfTickerDetail={tickerDetail} />
