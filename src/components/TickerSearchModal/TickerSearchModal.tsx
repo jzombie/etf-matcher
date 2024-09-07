@@ -371,7 +371,7 @@ export default function TickerSearchModal({
         </Button>
         <Button
           onClick={handleOk}
-          disabled={!searchResults.length}
+          disabled={!searchQuery.trim().length || !searchResults.length}
           variant={searchResults.length ? "contained" : "text"}
         >
           OK
