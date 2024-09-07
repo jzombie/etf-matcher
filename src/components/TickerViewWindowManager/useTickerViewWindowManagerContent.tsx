@@ -95,9 +95,7 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
         isLoadingTickerDetail || !tickerDetail ? (
           <Center>Loading</Center>
         ) : (
-          <AutoScaler>
-            <HistoricalPriceChart tickerDetail={tickerDetail} />
-          </AutoScaler>
+          <HistoricalPriceChart tickerDetail={tickerDetail} />
         ),
       "Similarity Search":
         isLoadingTickerDetail || !tickerDetail ? (

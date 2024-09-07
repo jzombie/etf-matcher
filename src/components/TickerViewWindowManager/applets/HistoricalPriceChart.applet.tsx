@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 
 import { Box, Button, ButtonGroup } from "@mui/material";
 
+import Layout, { Content, Footer } from "@layoutKit/Layout";
 import { TRADING_VIEW_COPYRIGHT_STYLES } from "@src/constants";
 import { MiniChart } from "react-ts-tradingview-widgets";
 import type { DateRange } from "react-ts-tradingview-widgets";
@@ -30,25 +31,8 @@ export default function HistoricalPriceChart({
   };
 
   return (
-    <Box>
-      <Box sx={{ overflow: "auto" }}>
-        <ButtonGroup
-          sx={{ float: "right" }}
-          variant="outlined"
-          aria-label="outlined button group"
-        >
-          {dateRanges.map((range) => (
-            <Button
-              key={range}
-              onClick={() => handleDateRangeChange(range)}
-              variant={dateRange === range ? "contained" : "outlined"}
-            >
-              {range}
-            </Button>
-          ))}
-        </ButtonGroup>
-      </Box>
-      <Box sx={{ height: 200 }}>
+    <Layout>
+      <Content>
         <MiniChart
           symbol={formattedSymbolWithExchange}
           colorTheme="dark"
@@ -57,7 +41,22 @@ export default function HistoricalPriceChart({
           copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
           dateRange={dateRange}
         />
-      </Box>
-    </Box>
+      </Content>
+      <Footer>
+        <Box sx={{ textAlign: "center" }}>
+          <ButtonGroup variant="outlined" aria-label="outlined button group">
+            {dateRanges.map((range) => (
+              <Button
+                key={range}
+                onClick={() => handleDateRangeChange(range)}
+                variant={dateRange === range ? "contained" : "outlined"}
+              >
+                {range}
+              </Button>
+            ))}
+          </ButtonGroup>
+        </Box>
+      </Footer>
+    </Layout>
   );
 }
