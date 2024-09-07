@@ -1,7 +1,8 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 
 import { useTheme } from "@mui/material/styles";
 
+import Cover from "@layoutKit/Cover";
 import Full from "@layoutKit/Full";
 import {
   MosaicBranch,
@@ -17,6 +18,7 @@ export type WindowProps = {
   path: MosaicBranch[];
   totalWindowCount: number;
   content: React.ReactNode; // Dynamic content passed in
+  isResizing: boolean;
 };
 
 export default function Window({
@@ -24,6 +26,7 @@ export default function Window({
   path,
   totalWindowCount,
   content,
+  isResizing,
 }: WindowProps) {
   const theme = useTheme();
 
@@ -68,8 +71,10 @@ export default function Window({
       )}
     >
       <Full style={windowStyles}>
-        {/* Render the dynamic content passed from WindowManager */}
-        {content}
+        <Cover clickThrough={!isResizing}>
+          {/* Render the dynamic content passed from WindowManager */}
+          {content}
+        </Cover>
       </Full>
     </MosaicWindow>
   );

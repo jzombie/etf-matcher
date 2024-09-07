@@ -1,10 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { Box } from "@mui/material";
 
 import Full from "@layoutKit/Full";
 import { Mosaic, MosaicNode } from "react-mosaic-component";
 import "react-mosaic-component/react-mosaic-component.css";
+
+import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 import Window from "./WindowManager.Window";
 import "./mosaic-custom-overrides.css";
@@ -22,6 +24,35 @@ export default function WindowManager({
   value,
   onChange,
 }: WindowManagerProps) {
+  const onChangeStableRef = useStableCurrentRef(onChange);
+  const [isResizing, setIsResizing] = useState<boolean>(false);
+  const resizeTimeoutRef = useRef<NodeJS.Timeout | null>(null); // Ref to store the timeout ID
+
+  const handleChange = useCallback(
+    (newLayout: MosaicNode<string> | null) => {
+      const onChange = onChangeStableRef.current;
+
+      // Set resizing to true
+      setIsResizing(true);
+
+      // Call the provided onChange if it exists
+      if (typeof onChange === "function") {
+        onChange(newLayout);
+      }
+
+      // Clear any previous timeout
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
+
+      // Set a new timeout to set `isResizing` to false after 100ms
+      resizeTimeoutRef.current = setTimeout(() => {
+        setIsResizing(false);
+      }, 100);
+    },
+    [onChangeStableRef],
+  );
+
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
@@ -65,12 +96,13 @@ export default function WindowManager({
               path={path}
               totalWindowCount={3}
               content={contentMap[id]}
+              isResizing={isResizing}
             />
           )}
           initialValue={initialValue}
           value={value}
           zeroStateView={<CustomZeroStateView />}
-          onChange={onChange}
+          onChange={handleChange}
         />
       </Box>
     </Full>
