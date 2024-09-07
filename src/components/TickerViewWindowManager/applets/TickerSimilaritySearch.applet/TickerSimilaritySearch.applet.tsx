@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 
 import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
 import Layout, { Content, Header } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
 
-// import PCAScatterPlot from "@components/PCAScatterPlot";
+import PCAScatterPlot from "@components/PCAScatterPlot";
 import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
 
 import { RustServiceTickerDetail } from "@utils/callRustService";
@@ -17,14 +17,30 @@ export type TickerSimilaritySearchAppletProps = {
 export default function TickerSimilaritySearchApplet({
   tickerDetail,
 }: TickerSimilaritySearchAppletProps) {
+  const [displayMode, setDisplayMode] = useState<
+    "radial" | "euclidean" | "cosine"
+  >("radial");
+
+  const handleDisplayModeChange = useCallback(
+    (
+      event: React.MouseEvent<HTMLElement>,
+      newMode: "radial" | "euclidean" | "cosine" | null,
+    ) => {
+      if (newMode !== null) {
+        setDisplayMode(newMode);
+      }
+    },
+    [],
+  );
+
   return (
     <Layout>
       <Header>
         <Box sx={{ textAlign: "center", marginBottom: 2 }}>
           <ToggleButtonGroup
-            // value={displayMode}
+            value={displayMode}
             exclusive
-            // onChange={handleDisplayModeChange}
+            onChange={handleDisplayModeChange}
             aria-label="Similarity search toggle"
             size="small"
           >
@@ -41,17 +57,17 @@ export default function TickerSimilaritySearchApplet({
         </Box>
       </Header>
       <Content>
-        <Scrollable>
-          <TickerVectorQueryTable
-            queryMode="ticker-detail"
-            query={tickerDetail}
-            // TODO: Adapt accordingly
-            alignment="euclidean"
-          />
-        </Scrollable>
-        {
-          // <PCAScatterPlot tickerDetail={tickerDetail} />;
-        }
+        {displayMode === "radial" ? (
+          <PCAScatterPlot tickerDetail={tickerDetail} />
+        ) : (
+          <Scrollable>
+            <TickerVectorQueryTable
+              queryMode="ticker-detail"
+              query={tickerDetail}
+              alignment={displayMode}
+            />
+          </Scrollable>
+        )}
       </Content>
     </Layout>
   );
