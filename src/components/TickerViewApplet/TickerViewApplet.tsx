@@ -9,6 +9,7 @@ import WindowManager from "@components/WindowManager";
 
 import useTickerDetail from "@hooks/useTickerDetail";
 
+import customLogger from "@utils/customLogger";
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
 import ETFHolderList from "./applets/ETFHolderList.applet";
@@ -104,5 +105,12 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
     [],
   );
 
-  return <WindowManager initialValue={initialValue} contentMap={contentMap} />;
+  return (
+    <WindowManager
+      initialValue={initialValue}
+      contentMap={contentMap}
+      // TODO: Handle debug
+      onChange={(newLayout) => customLogger.debug({ newLayout })}
+    />
+  );
 }

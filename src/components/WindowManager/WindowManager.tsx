@@ -12,11 +12,15 @@ import "./mosaic-custom-overrides.css";
 export type WindowManagerProps = {
   initialValue: MosaicNode<string>;
   contentMap: { [key: string]: React.ReactNode };
+  value?: MosaicNode<string>;
+  onChange?: (newLayout: MosaicNode<string> | null) => void;
 };
 
 export default function WindowManager({
   initialValue,
   contentMap,
+  value,
+  onChange,
 }: WindowManagerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -64,7 +68,9 @@ export default function WindowManager({
             />
           )}
           initialValue={initialValue}
+          value={value}
           zeroStateView={<CustomZeroStateView />}
+          onChange={onChange}
         />
       </Box>
     </Full>
