@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import type { RustServiceETFAggregateDetail } from "@utils/callRustService";
-import { fetchETFAggregateDetailByTickerId } from "@utils/callRustService";
+import { fetchETFAggregateDetail } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
 import useAppErrorBoundary from "./useAppErrorBoundary";
@@ -29,7 +29,7 @@ export default function useETFAggregateDetail(
       setETFAggregateDetailError(null);
       setIsLoadingETFAggregateDetail(true);
 
-      fetchETFAggregateDetailByTickerId(tickerId)
+      fetchETFAggregateDetail(tickerId)
         .then((tickerDetail) => {
           setETFAggregateDetail(tickerDetail);
 

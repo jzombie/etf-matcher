@@ -10,7 +10,7 @@ import useTickerDetail from "@hooks/useTickerDetail";
 
 import {
   RustServiceETFAggregateDetail,
-  fetchETFAggregateDetailByTickerId,
+  fetchETFAggregateDetail,
 } from "@utils/callRustService";
 
 import ETFHoldersAndHoldings from "./applets/ETFHoldersAndHoldings.applet";
@@ -27,7 +27,7 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
   >(undefined);
   useEffect(() => {
     if (tickerDetail?.is_etf) {
-      fetchETFAggregateDetailByTickerId(tickerDetail.ticker_id).then(
+      fetchETFAggregateDetail(tickerDetail.ticker_id).then(
         setETFAggregateDetail,
       );
     }

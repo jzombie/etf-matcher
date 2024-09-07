@@ -12,7 +12,7 @@ import type {
 import {
   fetchCosineByTicker,
   fetchCosineByTickerBucket,
-  fetchETFAggregateDetailByTickerId,
+  fetchETFAggregateDetail,
   fetchEuclideanByTicker,
   fetchEuclideanByTickerBucket,
   fetchTickerDetail,
@@ -114,8 +114,7 @@ export default function useTickerVectorQuery({
       let etf_expense_ratio = null;
 
       if (tickerDetail.is_etf) {
-        const { expense_ratio } =
-          await fetchETFAggregateDetailByTickerId(tickerId);
+        const { expense_ratio } = await fetchETFAggregateDetail(tickerId);
         etf_expense_ratio = expense_ratio;
       }
 
