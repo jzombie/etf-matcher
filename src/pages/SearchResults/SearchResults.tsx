@@ -25,6 +25,7 @@ import Transition from "@components/Transition";
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
 import type { RustServiceTickerSearchResult } from "@utils/callRustService";
+import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
 import usePageTitleSetter from "@utils/usePageTitleSetter";
 
 import useSearchResultsURLState from "./useSearchResultsURLState";
@@ -210,7 +211,7 @@ export default function SearchResults() {
                   textAlign: isHeaderPaginationInline ? "left" : "center",
                 }}
               >
-                {totalSearchResults} search result
+                {formatNumberWithCommas(totalSearchResults)} search result
                 {totalSearchResults !== 1 ? "s" : ""} for &quot;{searchQuery}
                 &quot;
               </Typography>
