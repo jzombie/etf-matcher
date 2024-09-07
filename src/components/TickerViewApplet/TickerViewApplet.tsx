@@ -199,7 +199,7 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
 
       <Content>
         <WindowManager
-          initialValue={layout}
+          initialValue={layout || initialValue}
           contentMap={contentMap}
           onChange={(newLayout) => {
             setLayout(newLayout);
