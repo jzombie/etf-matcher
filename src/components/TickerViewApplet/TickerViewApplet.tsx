@@ -16,6 +16,7 @@ import ETFHolderList from "./applets/ETFHolderList.applet";
 import ETFHoldingList from "./applets/ETFHoldingList.applet";
 import HistoricalPriceChart from "./applets/HistoricalPriceChart.applet";
 import PCAScatterPlot from "./applets/PCAScatterPlot.applet";
+import TickerInformation from "./applets/TickerInformation.applet";
 
 export type TickerViewAppletProps = {
   tickerId: number;
@@ -27,6 +28,14 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
 
   const contentMap = useMemo(
     () => ({
+      "Ticker Information":
+        isLoadingTickerDetail || !tickerDetail ? (
+          // TODO: Use spinner
+          // TODO: Handle error condition
+          <Center>Loading</Center>
+        ) : (
+          <TickerInformation tickerDetail={tickerDetail} />
+        ),
       "ETF Holders":
         isLoadingTickerDetail || !tickerDetail ? (
           // TODO: Use spinner
