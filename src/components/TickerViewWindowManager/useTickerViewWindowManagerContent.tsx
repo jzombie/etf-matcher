@@ -14,6 +14,7 @@ import {
 
 import ETFHoldersAndHoldingsApplet from "./applets/ETFHoldersAndHoldings.applet";
 import HistoricalPriceChartApplet from "./applets/HistoricalPriceChart.applet";
+import TickerFundamentalsApplet from "./applets/TickerFundamentals.applet";
 import TickerInformationApplet from "./applets/TickerInformation.applet";
 import TickerSimilaritySearchApplet from "./applets/TickerSimilaritySearch.applet";
 
@@ -51,7 +52,12 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
         },
         splitPercentage: 52.089700882585255,
       },
-      second: "ETF Holders and Holdings",
+      second: {
+        first: "ETF Holders and Holdings",
+        second: "Fundamentals",
+        direction: "column",
+        splitPercentage: 51.89061500352696,
+      },
       direction: "row",
       splitPercentage: 60.4332129963899,
     }),
@@ -104,6 +110,12 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
               }
             />
           )
+        ),
+      Fundamentals:
+        isLoadingTickerDetail || !tickerDetail ? (
+          <Center>Loading</Center>
+        ) : (
+          <TickerFundamentalsApplet tickerDetail={tickerDetail} />
         ),
     }),
     [etfAggregateDetail, isLoadingTickerDetail, tickerDetail],
