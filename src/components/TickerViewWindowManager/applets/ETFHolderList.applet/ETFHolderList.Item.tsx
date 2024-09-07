@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 
 import {
   Box,
+  Button,
   ButtonBase,
   Divider,
   Paper,
@@ -13,6 +14,8 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+
+import Padding from "@layoutKit/Padding";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
@@ -66,20 +69,31 @@ export default function ETFHolder({
   const navigateToSymbol = useTickerSymbolNavigation();
 
   return (
-    <Box sx={{ paddingBottom: 2 }}>
+    <Padding>
       <ButtonBase
         onClick={() => {
           navigateToSymbol(etfAggregateDetail.etf_symbol);
         }}
         sx={{ display: "block", width: "100%", textAlign: "left" }}
       >
-        <Typography
-          variant="h6"
-          component="div"
-          sx={{ fontWeight: "bold", marginBottom: 1 }}
-        >
-          {etfAggregateDetail.etf_name} ({etfAggregateDetail.etf_symbol})
-        </Typography>
+        <Box sx={{ overflow: "auto" }}>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ fontWeight: "bold", marginBottom: 1, float: "left" }}
+          >
+            {etfAggregateDetail.etf_name} ({etfAggregateDetail.etf_symbol})
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={() => {
+              navigateToSymbol(etfAggregateDetail.etf_symbol);
+            }}
+            sx={{ float: "right" }}
+          >
+            View
+          </Button>
+        </Box>
         <Divider sx={{ marginBottom: 2 }} />
 
         <TableContainer component={Paper}>
@@ -145,6 +159,6 @@ export default function ETFHolder({
           </Table>
         </TableContainer>
       </ButtonBase>
-    </Box>
+    </Padding>
   );
 }
