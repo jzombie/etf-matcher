@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 
 import { Box, Button, ButtonGroup } from "@mui/material";
 
-import Layout, { Content, Footer } from "@layoutKit/Layout";
+import Layout, { Content, Header } from "@layoutKit/Layout";
 import { TRADING_VIEW_COPYRIGHT_STYLES } from "@src/constants";
 import { MiniChart } from "react-ts-tradingview-widgets";
 import type { DateRange } from "react-ts-tradingview-widgets";
@@ -32,17 +32,7 @@ export default function HistoricalPriceChart({
 
   return (
     <Layout>
-      <Content>
-        <MiniChart
-          symbol={formattedSymbolWithExchange}
-          colorTheme="dark"
-          width="100%"
-          height="100%"
-          copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
-          dateRange={dateRange}
-        />
-      </Content>
-      <Footer>
+      <Header>
         <Box sx={{ textAlign: "center" }}>
           <ButtonGroup variant="outlined" aria-label="outlined button group">
             {dateRanges.map((range) => (
@@ -56,7 +46,17 @@ export default function HistoricalPriceChart({
             ))}
           </ButtonGroup>
         </Box>
-      </Footer>
+      </Header>
+      <Content>
+        <MiniChart
+          symbol={formattedSymbolWithExchange}
+          colorTheme="dark"
+          width="100%"
+          height="100%"
+          copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
+          dateRange={dateRange}
+        />
+      </Content>
     </Layout>
   );
 }
