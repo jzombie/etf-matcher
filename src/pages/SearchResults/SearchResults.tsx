@@ -19,7 +19,7 @@ import Scrollable from "@layoutKit/Scrollable";
 import AvatarLogo from "@components/AvatarLogo";
 import SearchModalButton from "@components/SearchModalButton";
 import SelectableGrid from "@components/SelectableGrid";
-import TickerViewApplet from "@components/TickerViewApplet";
+import TickerViewWindowManager from "@components/TickerViewWindowManager";
 import Transition from "@components/Transition";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
@@ -240,7 +240,7 @@ export default function SearchResults() {
       </Header>
       <Content>
         {searchResults.length === 1 && onlyExactMatches ? (
-          <TickerViewApplet tickerId={searchResults[0].ticker_id} />
+          <TickerViewWindowManager tickerId={searchResults[0].ticker_id} />
         ) : (
           <Transition
             direction={!previousPage || page > previousPage ? "left" : "right"}

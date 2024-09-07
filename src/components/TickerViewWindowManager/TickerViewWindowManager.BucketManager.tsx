@@ -29,13 +29,13 @@ import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
 import type { RustServiceTickerDetail } from "@utils/callRustService";
 
-export type TickerViewAppletBucketManagerProps = {
+export type TickerViewWindowManagerBucketManagerProps = {
   tickerDetail: RustServiceTickerDetail;
 };
 
-export default function TickerViewAppletBucketManager({
+export default function TickerViewWindowManagerBucketManager({
   tickerDetail,
-}: TickerViewAppletBucketManagerProps) {
+}: TickerViewWindowManagerBucketManagerProps) {
   const { tickerBuckets } = useStoreStateReader(["tickerBuckets"]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isBucketDialogOpen, setIsBucketDialogOpen] = useState(false);

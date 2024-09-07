@@ -21,18 +21,20 @@ import {
 import customLogger from "@utils/customLogger";
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
-import TickerViewAppletBucketManager from "./TickerViewApplet.BucketManager";
+import TickerViewWindowManagerBucketManager from "./TickerViewWindowManager.BucketManager";
 import ETFHolderList from "./applets/ETFHolderList.applet";
 import ETFHoldingList from "./applets/ETFHoldingList.applet";
 import HistoricalPriceChart from "./applets/HistoricalPriceChart.applet";
 import PCAScatterPlot from "./applets/PCAScatterPlot.applet";
 import TickerInformation from "./applets/TickerInformation.applet";
 
-export type TickerViewAppletProps = {
+export type TickerViewWindowManagerProps = {
   tickerId: number;
 };
 
-export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
+export default function TickerViewWindowManager({
+  tickerId,
+}: TickerViewWindowManagerProps) {
   const { tickerDetail, isLoadingTickerDetail } = useTickerDetail(tickerId);
 
   // Refactor: Save ETF aggregate detail
@@ -247,7 +249,7 @@ export default function TickerViewApplet({ tickerId }: TickerViewAppletProps) {
 
         <Footer>
           {tickerDetail && (
-            <TickerViewAppletBucketManager tickerDetail={tickerDetail} />
+            <TickerViewWindowManagerBucketManager tickerDetail={tickerDetail} />
           )}
         </Footer>
       </Layout>
