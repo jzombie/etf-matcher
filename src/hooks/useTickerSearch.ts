@@ -25,7 +25,6 @@ const DEFAULT_PROPS: Required<TickerSearchProps> = {
   initialSelectedIndex: -1,
 };
 
-// TODO: Capture error state
 export default function useTickerSearch(
   props: Partial<TickerSearchProps> = DEFAULT_PROPS,
 ) {
@@ -47,6 +46,10 @@ export default function useTickerSearch(
     RustServiceTickerSearchResult[]
   >([]);
   const [totalSearchResults, _setTotalSearchResults] = useState<number>(0);
+
+  const [tickerSearchError, _setTickerSearchError] = useState<Error | unknown>(
+    null,
+  );
 
   const {
     page,
@@ -100,6 +103,7 @@ export default function useTickerSearch(
       }
 
       _setisLoading(true);
+      _setTickerSearchError(null);
 
       // The `debouncedSearch` helps prevent potential infinite loop errors that can be
       // caused by the user rapidly paginating through results. Usage of the AbortController
@@ -161,5 +165,6 @@ export default function useTickerSearch(
     remaining,
     resetSearch,
     isLoading,
+    tickerSearchError,
   };
 }
