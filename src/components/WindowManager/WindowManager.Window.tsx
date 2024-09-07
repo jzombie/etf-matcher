@@ -40,7 +40,7 @@ export default function Window({
   };
 
   const toolbarStyles = {
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: theme.palette.background.default,
     color: theme.palette.primary.contrastText,
     padding: theme.spacing(1),
     display: "flex",
@@ -87,9 +87,9 @@ export default function Window({
 }
 
 // RemoveButton to remove the window
-interface RemoveButtonProps {
+type RemoveButtonProps = {
   path: MosaicBranch[];
-}
+};
 
 function RemoveButton({ path }: RemoveButtonProps) {
   const { mosaicActions } = useContext(MosaicContext);
