@@ -12,6 +12,7 @@ export type SelectableGridItem<T> = {
 export type SelectableGridProps<T> = {
   items: SelectableGridItem<T>[]; // Array of items to display
   maxColumns?: number; // Number of columns in the grid (optional, fallback if container resizing isn't used)
+  minItemWidth?: number; // Minimum width of each item in the grid
   onItemSelect: (item: T) => void; // Callback when an item is selected
   renderItem: (item: T, isSelected: boolean) => React.ReactNode; // Render function for each item
 };
@@ -19,6 +20,7 @@ export type SelectableGridProps<T> = {
 export default function SelectableGrid<T>({
   items,
   maxColumns = 3, // Fallback to the passed columns value
+  minItemWidth = 250, // Fallback to 250px per item if not provided
   onItemSelect,
   renderItem,
 }: SelectableGridProps<T>) {
@@ -39,13 +41,16 @@ export default function SelectableGrid<T>({
   const calculateColumns = useCallback(() => {
     if (containerRef.current) {
       const containerWidth = containerRef.current.offsetWidth;
-      const calculatedColumns = Math.max(1, Math.floor(containerWidth / 250)); // Assume 250px per item
+      const calculatedColumns = Math.max(
+        1,
+        Math.floor(containerWidth / minItemWidth),
+      );
 
       // Prevent going above `maxColumns`; if `calculatedColumns` is greater
       // than `maxColumns`, use `maxColumns`.
       setDynamicColumns(Math.min(maxColumns, calculatedColumns));
     }
-  }, [maxColumns]);
+  }, [maxColumns, minItemWidth]);
 
   // TODO: Refactor into `useResizeObserver` hook
   useEffect(() => {
