@@ -65,7 +65,6 @@ export default function ETFHoldingList({
       <Padding>
         <SelectableGrid
           items={gridItems}
-          columns={3} // Set the number of columns
           onItemSelect={handleItemSelect}
           renderItem={(holding, isSelected) => (
             <div style={{ textAlign: "center" }}>
