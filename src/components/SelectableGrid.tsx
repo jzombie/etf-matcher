@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { Grid, Paper } from "@mui/material";
 
+import { useResizeObserver } from "@hooks/useResizeObserver";
+
 // Define the type for the generic item
 export type SelectableGridItem<T> = {
   data: T;
@@ -52,26 +54,7 @@ export default function SelectableGrid<T>({
     }
   }, [maxColumns, minItemWidth]);
 
-  // TODO: Refactor into `useResizeObserver` hook
-  useEffect(() => {
-    calculateColumns(); // Initial calculation
-
-    const resizeObserver = new ResizeObserver(() => {
-      calculateColumns(); // Recalculate columns when the container is resized
-    });
-
-    const container = containerRef.current;
-
-    if (container) {
-      resizeObserver.observe(container);
-    }
-
-    return () => {
-      if (container) {
-        resizeObserver.unobserve(container);
-      }
-    };
-  }, [calculateColumns]);
+  useResizeObserver(containerRef, calculateColumns);
 
   // Handle keyboard navigation
   useEffect(() => {
