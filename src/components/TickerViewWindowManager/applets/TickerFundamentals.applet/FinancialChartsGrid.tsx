@@ -10,7 +10,7 @@ import type {
   RustServiceTickerDetail,
 } from "@utils/callRustService";
 
-import RenderChart from "./TickerDetail.FinancialChartsGrid.Chart";
+import RenderChart from "./FinancialChartsGrid.Chart";
 
 export type FinancialChartsGridProps = {
   tickerDetail: RustServiceTickerDetail;

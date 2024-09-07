@@ -2,6 +2,8 @@ import React from "react";
 
 import { RustServiceTickerDetail } from "@utils/callRustService";
 
+import FinancialChartsGrid from "./FinancialChartsGrid";
+
 export type TickerFundamentalsAppletProps = {
   tickerDetail: RustServiceTickerDetail;
 };
@@ -9,5 +11,5 @@ export type TickerFundamentalsAppletProps = {
 export default function TickerFundamentalsApplet({
   tickerDetail,
 }: TickerFundamentalsAppletProps) {
-  return <div>[Ticker Fundamentals]</div>;
+  return <FinancialChartsGrid tickerDetail={tickerDetail} />;
 }
