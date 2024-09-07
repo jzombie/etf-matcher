@@ -44,7 +44,19 @@ export default function SearchResults() {
     previousPage,
   } = useSearchResultsURLState();
 
-  usePageTitleSetter(searchQuery ? `Search results for: ${searchQuery}` : null);
+  const pageTitle = useMemo<string | null>(() => {
+    if (!searchQuery) {
+      return null;
+    }
+
+    if (!onlyExactMatches || searchResults.length !== 1) {
+      return `Search results for: ${searchQuery}`;
+    } else {
+      return searchQuery;
+    }
+  }, [searchQuery, searchResults, onlyExactMatches]);
+
+  usePageTitleSetter(pageTitle);
 
   const headerRef = useRef<HTMLDivElement>(null);
   const navigateToSymbol = useTickerSymbolNavigation();
