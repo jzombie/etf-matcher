@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 
 import { Box } from "@mui/material";
 
@@ -6,6 +6,7 @@ import Full from "@layoutKit/Full";
 import { Mosaic, MosaicNode } from "react-mosaic-component";
 import "react-mosaic-component/react-mosaic-component.css";
 
+import { useResizeObserver } from "@hooks/useResizeObserver";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 import Window from "./WindowManager.Window";
@@ -61,30 +62,14 @@ export default function WindowManager({
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
-  // Use ResizeObserver to update dimensions when the container is resized
-  useEffect(() => {
-    const container = containerRef.current;
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      if (!entries || entries.length === 0) return;
-      const { contentRect } = entries[0];
-      setDimensions({
-        width: contentRect.width,
-        height: contentRect.height,
-      });
+  useResizeObserver(containerRef, (entries) => {
+    if (!entries || entries.length === 0) return;
+    const { contentRect } = entries[0];
+    setDimensions({
+      width: contentRect.width,
+      height: contentRect.height,
     });
-
-    if (container) {
-      resizeObserver.observe(container);
-    }
-
-    // Cleanup the observer on unmount
-    return () => {
-      if (container) {
-        resizeObserver.unobserve(container);
-      }
-    };
-  }, []);
+  });
 
   return (
     <Full ref={containerRef}>
