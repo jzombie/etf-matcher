@@ -66,7 +66,7 @@ export default function ETFHolderList({ tickerDetail }: ETFHolderListProps) {
   return (
     <Layout>
       <Header>
-        <Typography>
+        <Typography variant="body2" sx={{ textAlign: "center", opacity: 0.5 }}>
           &quot;{tickerSymbol}&quot; is found in the following{" "}
           {paginatedETFHolders.total_count} ETF
           {paginatedETFHolders.total_count !== 1 ? "s" : ""}:
