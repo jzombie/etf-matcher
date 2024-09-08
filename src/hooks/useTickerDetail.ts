@@ -42,7 +42,10 @@ export default function useTickerDetail(
         .catch((err) => {
           setTickerDetailError(err);
           triggerUIError(new Error("Error fetching ticker detail"));
-          customLogger.error(err);
+          customLogger.error({
+            tickerId,
+            err,
+          });
         })
         .finally(() => {
           setIsLoadingTickerDetail(false);
