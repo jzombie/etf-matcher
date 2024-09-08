@@ -4,9 +4,18 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Box, Button, Typography } from "@mui/material";
+import ShowChartIcon from "@mui/icons-material/ShowChart";
+import StraightenIcon from "@mui/icons-material/Straighten";
+import {
+  Box,
+  Button,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from "@mui/material";
 
 import Padding from "@layoutKit/Padding";
+import { SIMILARITY_MATCHES_NOTICE } from "@src/constants";
 import store, { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucket } from "@src/store";
 
@@ -14,7 +23,7 @@ import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
 import ScrollTo from "@components/ScrollTo";
 import SearchModalButton from "@components/SearchModalButton";
 import Section from "@components/Section";
-// import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
+import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
 import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
 
 import BucketTicker from "./BucketManager.Bucket.Ticker";
@@ -53,6 +62,19 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
 
     setIsCollapsed(false);
   }, []);
+
+  const [alignment, setAlignment] = useState<"euclidean" | "cosine">(
+    "euclidean",
+  );
+
+  const handleAlignment = (
+    event: React.MouseEvent<HTMLElement>,
+    newAlignment: "euclidean" | "cosine" | null,
+  ) => {
+    if (newAlignment !== null) {
+      setAlignment(newAlignment);
+    }
+  };
 
   return (
     <>
@@ -148,15 +170,50 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                                 </UnstyledLI>
                               ))}
                             </UnstyledUL>
-                            {/*
-                            // TODO: Reimplement
-                            [PROTO VECTOR QUERY]
-                            <TickerVectorQueryTable
-                              queryMode="bucket"
-                              query={tickerBucket}
-                              // TODO: This could be improved
-                              key={JSON.stringify(tickerBucket)}
-                            /> */}
+
+                            <Box>
+                              <Typography variant="h6">
+                                &quot;{tickerBucket.name}&quot; Similarity
+                                Matches
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                color="textSecondary"
+                                fontStyle="italic"
+                              >
+                                {SIMILARITY_MATCHES_NOTICE}
+                              </Typography>
+                              <ToggleButtonGroup
+                                value={alignment}
+                                exclusive
+                                onChange={handleAlignment}
+                                aria-label="distance metric"
+                                sx={{ float: "right" }}
+                                size="small"
+                              >
+                                <ToggleButton
+                                  value="euclidean"
+                                  aria-label="euclidean"
+                                >
+                                  <StraightenIcon />
+                                  Euclidean
+                                </ToggleButton>
+                                <ToggleButton
+                                  value="cosine"
+                                  aria-label="cosine"
+                                >
+                                  <ShowChartIcon />
+                                  Cosine
+                                </ToggleButton>
+                              </ToggleButtonGroup>
+                              <TickerVectorQueryTable
+                                queryMode="bucket"
+                                query={tickerBucket}
+                                // FIXME: The key is used to update the bucket as holdings are changed; This could be improved
+                                key={JSON.stringify(tickerBucket)}
+                                alignment={alignment}
+                              />
+                            </Box>
                           </>
                         )}
                       </Box>
