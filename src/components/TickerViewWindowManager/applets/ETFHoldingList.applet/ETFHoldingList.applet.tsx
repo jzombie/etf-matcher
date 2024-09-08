@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { CircularProgress, Typography } from "@mui/material";
 
+import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
@@ -16,14 +17,15 @@ import type {
   RustServicePaginatedResults,
 } from "@utils/callRustService";
 import { RustServiceTickerDetail } from "@utils/callRustService";
+import customLogger from "@utils/customLogger";
 
-export type ETFHoldingListProps = {
+export type ETFHoldingListAppletProps = {
   etfTickerDetail: RustServiceTickerDetail;
 };
 
-export default function ETFHoldingList({
+export default function ETFHoldingListApplet({
   etfTickerDetail,
-}: ETFHoldingListProps) {
+}: ETFHoldingListAppletProps) {
   const [isLoadingETFHoldings, setIsLoadingETFHoldings] =
     useState<boolean>(false);
   const [paginatedHoldings, setPaginatedHoldings] =
@@ -36,6 +38,10 @@ export default function ETFHoldingList({
       setIsLoadingETFHoldings(true);
       fetchETFHoldingsByETFTickerId(etfTickerDetail.ticker_id)
         .then(setPaginatedHoldings)
+        .catch((err) => {
+          // TODO: Normalize error handling
+          customLogger.error(err);
+        })
         .finally(() => setIsLoadingETFHoldings(false));
     }
   }, [etfTickerDetail]);
@@ -47,7 +53,11 @@ export default function ETFHoldingList({
   };
 
   if (!paginatedHoldings && isLoadingETFHoldings) {
-    return <CircularProgress />;
+    return (
+      <Center>
+        <CircularProgress />
+      </Center>
+    );
   }
 
   if (!paginatedHoldings) {

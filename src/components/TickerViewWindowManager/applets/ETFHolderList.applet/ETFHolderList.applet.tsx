@@ -16,14 +16,17 @@ import type {
   RustServiceTickerDetail,
 } from "@utils/callRustService";
 import { fetchETFHoldersAggregateDetailByTickerId } from "@utils/callRustService";
+import customLogger from "@utils/customLogger";
 
 import ETFHolder from "./ETFHolderList.Item";
 
-export type ETFHolderListProps = {
+export type ETFHolderListAppletProps = {
   tickerDetail: RustServiceTickerDetail;
 };
 
-export default function ETFHolderList({ tickerDetail }: ETFHolderListProps) {
+export default function ETFHolderListApplet({
+  tickerDetail,
+}: ETFHolderListAppletProps) {
   const tickerId = tickerDetail.ticker_id;
   const tickerSymbol = tickerDetail.symbol;
 
@@ -45,6 +48,10 @@ export default function ETFHolderList({ tickerDetail }: ETFHolderListProps) {
 
       fetchETFHoldersAggregateDetailByTickerId(tickerId, page)
         .then(setPaginatedETFHolders)
+        .catch((err) => {
+          // TODO: Normalize error handling
+          customLogger.error(err);
+        })
         .finally(() => setIsLoadingETFHolders(false));
     }
   }, [tickerId, page]);

@@ -1,4 +1,6 @@
-import ETFHoldingList, { ETFHoldingListProps } from "./ETFHoldingList.applet";
+import ETFHoldingListApplet, {
+  ETFHoldingListAppletProps,
+} from "./ETFHoldingList.applet";
 
-export default ETFHoldingList;
-export type { ETFHoldingListProps };
+export default ETFHoldingListApplet;
+export type { ETFHoldingListAppletProps };

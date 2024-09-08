@@ -1,6 +1,6 @@
-import ETFHoldersAndHoldings, {
-  ETFHoldersAndHoldingsProps,
+import ETFHoldersAndHoldingsApplet, {
+  ETFHoldersAndHoldingsAppletProps,
 } from "./ETFHoldersAndHoldings.applet";
 
-export default ETFHoldersAndHoldings;
-export type { ETFHoldersAndHoldingsProps };
+export default ETFHoldersAndHoldingsApplet;
+export type { ETFHoldersAndHoldingsAppletProps };
