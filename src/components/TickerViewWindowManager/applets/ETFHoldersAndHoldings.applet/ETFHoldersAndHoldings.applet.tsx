@@ -18,8 +18,8 @@ export type ETFHoldersAndHoldingsAppletProps = {
   tickerDetailError?: Error | unknown;
 };
 
-const displayModes = ["holders", "holdings"] as const;
-type DisplayMode = (typeof displayModes)[number];
+const DISPLAY_MODES = ["holders", "holdings"] as const;
+type DisplayMode = (typeof DISPLAY_MODES)[number];
 
 export default function ETFHoldersAndHoldingsApplet({
   tickerDetail,
@@ -40,8 +40,8 @@ export default function ETFHoldersAndHoldingsApplet({
   );
 
   const getDirection = useCallback(() => {
-    const prevIndex = displayModes.indexOf(previousModeRef.current);
-    const currentIndex = displayModes.indexOf(displayMode);
+    const prevIndex = DISPLAY_MODES.indexOf(previousModeRef.current);
+    const currentIndex = DISPLAY_MODES.indexOf(displayMode);
     return currentIndex > prevIndex ? "left" : "right";
   }, [displayMode]);
 
