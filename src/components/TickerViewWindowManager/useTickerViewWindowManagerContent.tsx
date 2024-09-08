@@ -68,14 +68,6 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
           tickerDetailError={tickerDetailError}
         />
       ),
-      // "ETF Holders":
-      //   isLoadingTickerDetail || !tickerDetail ? (
-      //     <Center>Loading</Center>
-      //   ) : (
-      //     <Scrollable>
-      //       <ETFHolderList tickerDetail={tickerDetail} />
-      //     </Scrollable>
-      //   ),
       "ETF Holders and Holdings":
         isLoadingTickerDetail || !tickerDetail ? (
           <Center>Loading</Center>
