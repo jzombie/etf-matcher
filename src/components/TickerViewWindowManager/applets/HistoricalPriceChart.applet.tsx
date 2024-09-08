@@ -12,19 +12,28 @@ import Transition from "@components/Transition";
 import { RustServiceTickerDetail } from "@utils/callRustService";
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
-export type HistoricalPriceChartProps = {
-  tickerDetail: RustServiceTickerDetail;
+import TickerDetailAppletWrap from "../components/TickerDetailAppletWrap";
+
+const DATE_RANGES: DateRange[] = ["1D", "1M", "3M", "12M", "60M", "ALL"];
+
+export type HistoricalPriceChartAppletProps = {
+  tickerDetail?: RustServiceTickerDetail;
+  isLoadingTickerDetail: boolean;
+  tickerDetailError?: Error | unknown;
 };
 
-const dateRanges: DateRange[] = ["1D", "1M", "3M", "12M", "60M", "ALL"];
-
-export default function HistoricalPriceChart({
+export default function HistoricalPriceChartApplet({
   tickerDetail,
-}: HistoricalPriceChartProps) {
-  const formattedSymbolWithExchange = useMemo(
-    () => formatSymbolWithExchange(tickerDetail),
-    [tickerDetail],
-  );
+  isLoadingTickerDetail,
+  tickerDetailError,
+}: HistoricalPriceChartAppletProps) {
+  const formattedSymbolWithExchange = useMemo(() => {
+    if (tickerDetail) {
+      return formatSymbolWithExchange(tickerDetail);
+    } else {
+      return "";
+    }
+  }, [tickerDetail]);
 
   const [dateRange, setDateRange] = useState<DateRange>("1M");
   const previousRangeRef = useRef<DateRange>("1M");
@@ -38,40 +47,46 @@ export default function HistoricalPriceChart({
   );
 
   const getDirection = useCallback(() => {
-    const prevIndex = dateRanges.indexOf(previousRangeRef.current);
-    const currentIndex = dateRanges.indexOf(dateRange);
+    const prevIndex = DATE_RANGES.indexOf(previousRangeRef.current);
+    const currentIndex = DATE_RANGES.indexOf(dateRange);
     return currentIndex > prevIndex ? "left" : "right";
   }, [dateRange]);
 
   return (
-    <Layout>
-      <Header>
-        <Box sx={{ textAlign: "center" }}>
-          <ButtonGroup variant="outlined" aria-label="outlined button group">
-            {dateRanges.map((range) => (
-              <Button
-                key={range}
-                onClick={() => handleDateRangeChange(range)}
-                variant={dateRange === range ? "contained" : "outlined"}
-              >
-                {range}
-              </Button>
-            ))}
-          </ButtonGroup>
-        </Box>
-      </Header>
-      <Content>
-        <Transition trigger={dateRange} direction={getDirection()}>
-          <MiniChart
-            symbol={formattedSymbolWithExchange}
-            colorTheme="dark"
-            width="100%"
-            height="100%"
-            copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
-            dateRange={dateRange}
-          />
-        </Transition>
-      </Content>
-    </Layout>
+    <TickerDetailAppletWrap
+      tickerDetail={tickerDetail}
+      isLoadingTickerDetail={isLoadingTickerDetail}
+      tickerDetailError={tickerDetailError}
+    >
+      <Layout>
+        <Header>
+          <Box sx={{ textAlign: "center" }}>
+            <ButtonGroup variant="outlined" aria-label="outlined button group">
+              {DATE_RANGES.map((range) => (
+                <Button
+                  key={range}
+                  onClick={() => handleDateRangeChange(range)}
+                  variant={dateRange === range ? "contained" : "outlined"}
+                >
+                  {range}
+                </Button>
+              ))}
+            </ButtonGroup>
+          </Box>
+        </Header>
+        <Content>
+          <Transition trigger={dateRange} direction={getDirection()}>
+            <MiniChart
+              symbol={formattedSymbolWithExchange}
+              colorTheme="dark"
+              width="100%"
+              height="100%"
+              copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
+              dateRange={dateRange}
+            />
+          </Transition>
+        </Content>
+      </Layout>
+    </TickerDetailAppletWrap>
   );
 }

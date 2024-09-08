@@ -75,12 +75,13 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
           tickerDetailError={tickerDetailError}
         />
       ),
-      "Historical Prices":
-        isLoadingTickerDetail || !tickerDetail ? (
-          <Center>Loading</Center>
-        ) : (
-          <HistoricalPriceChartApplet tickerDetail={tickerDetail} />
-        ),
+      "Historical Prices": (
+        <HistoricalPriceChartApplet
+          tickerDetail={tickerDetail}
+          isLoadingTickerDetail={isLoadingTickerDetail}
+          tickerDetailError={tickerDetailError}
+        />
+      ),
       "Similarity Search":
         isLoadingTickerDetail || !tickerDetail ? (
           <Center>Loading</Center>
