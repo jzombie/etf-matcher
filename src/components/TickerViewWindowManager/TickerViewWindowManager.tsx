@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 
-import { Box, Button } from "@mui/material";
+import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
 import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
 import { MosaicNode, MosaicParent } from "react-mosaic-component";
@@ -100,17 +100,21 @@ export default function TickerViewWindowManager({
         <Header>
           {/* Dynamically generate buttons based on contentMap */}
           <Box>
-            {Object.keys(contentMap).map((key) => (
-              <Button
-                key={key}
-                variant="contained"
-                disabled={openWindows.has(key)} // Disable if window is open
-                onClick={() => toggleWindow(key)} // Toggle window on click
-                style={{ margin: "0 8px" }}
-              >
-                {key}
-              </Button>
-            ))}
+            <ToggleButtonGroup
+              value={Array.from(openWindows)} // Convert openWindows to array
+              aria-label="window selection"
+            >
+              {Object.keys(contentMap).map((key) => (
+                <ToggleButton
+                  key={key}
+                  value={key}
+                  disabled={openWindows.has(key)} // Disable button if the window is open
+                  onClick={() => toggleWindow(key)} // Toggle window on click
+                >
+                  {key}
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
           </Box>
         </Header>
 

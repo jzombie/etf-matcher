@@ -45,6 +45,11 @@ const darkTheme = createTheme({
         },
       },
     },
+    MuiToggleButtonGroup: {
+      defaultProps: {
+        size: "small",
+      },
+    },
     MuiIconButton: {
       defaultProps: {
         size: "small",
