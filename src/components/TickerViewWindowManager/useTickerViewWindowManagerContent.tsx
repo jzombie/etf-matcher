@@ -82,12 +82,13 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
           tickerDetailError={tickerDetailError}
         />
       ),
-      "Similarity Search":
-        isLoadingTickerDetail || !tickerDetail ? (
-          <Center>Loading</Center>
-        ) : (
-          <TickerSimilaritySearchApplet tickerDetail={tickerDetail} />
-        ),
+      "Similarity Search": (
+        <TickerSimilaritySearchApplet
+          tickerDetail={tickerDetail}
+          isLoadingTickerDetail={isLoadingTickerDetail}
+          tickerDetailError={tickerDetailError}
+        />
+      ),
       "Sector Allocation":
         isLoadingTickerDetail || !etfAggregateDetail ? (
           <Center>Loading</Center>

@@ -11,15 +11,21 @@ import Transition from "@components/Transition";
 
 import { RustServiceTickerDetail } from "@utils/callRustService";
 
-export type TickerSimilaritySearchAppletProps = {
-  tickerDetail: RustServiceTickerDetail;
-};
+import TickerDetailAppletWrap from "../../components/TickerDetailAppletWrap";
 
-const modes = ["radial", "euclidean", "cosine"] as const;
-type DisplayMode = (typeof modes)[number];
+const DISPLAY_MODES = ["radial", "euclidean", "cosine"] as const;
+type DisplayMode = (typeof DISPLAY_MODES)[number];
+
+export type TickerSimilaritySearchAppletProps = {
+  tickerDetail?: RustServiceTickerDetail;
+  isLoadingTickerDetail: boolean;
+  tickerDetailError?: Error | unknown;
+};
 
 export default function TickerSimilaritySearchApplet({
   tickerDetail,
+  isLoadingTickerDetail,
+  tickerDetailError,
 }: TickerSimilaritySearchAppletProps) {
   const [displayMode, setDisplayMode] = useState<DisplayMode>("radial");
   const previousModeRef = useRef<DisplayMode>("radial");
@@ -35,49 +41,59 @@ export default function TickerSimilaritySearchApplet({
   );
 
   const getDirection = useCallback(() => {
-    const prevIndex = modes.indexOf(previousModeRef.current);
-    const currentIndex = modes.indexOf(displayMode);
+    const prevIndex = DISPLAY_MODES.indexOf(previousModeRef.current);
+    const currentIndex = DISPLAY_MODES.indexOf(displayMode);
     return currentIndex > prevIndex ? "left" : "right";
   }, [displayMode]);
 
   return (
-    <Layout>
-      <Header>
-        <Box sx={{ textAlign: "center", marginBottom: 2 }}>
-          <ToggleButtonGroup
-            value={displayMode}
-            exclusive
-            onChange={handleDisplayModeChange}
-            aria-label="Similarity search toggle"
-            size="small"
-          >
-            <ToggleButton value="radial" aria-label="Radial chart">
-              Radial
-            </ToggleButton>
-            <ToggleButton value="euclidean" aria-label="Euclidean">
-              Euclidean
-            </ToggleButton>
-            <ToggleButton value="cosine" aria-label="Cosine">
-              Cosine
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </Box>
-      </Header>
-      <Content>
-        <Transition trigger={displayMode} direction={getDirection()}>
-          {displayMode === "radial" ? (
-            <PCAScatterPlot tickerDetail={tickerDetail} />
-          ) : (
-            <Scrollable>
-              <TickerVectorQueryTable
-                queryMode="ticker-detail"
-                query={tickerDetail}
-                alignment={displayMode}
-              />
-            </Scrollable>
-          )}
-        </Transition>
-      </Content>
-    </Layout>
+    <TickerDetailAppletWrap
+      tickerDetail={tickerDetail}
+      isLoadingTickerDetail={isLoadingTickerDetail}
+      tickerDetailError={tickerDetailError}
+    >
+      <>
+        {tickerDetail && (
+          <Layout>
+            <Header>
+              <Box sx={{ textAlign: "center", marginBottom: 2 }}>
+                <ToggleButtonGroup
+                  value={displayMode}
+                  exclusive
+                  onChange={handleDisplayModeChange}
+                  aria-label="Similarity search toggle"
+                  size="small"
+                >
+                  <ToggleButton value="radial" aria-label="Radial chart">
+                    Radial
+                  </ToggleButton>
+                  <ToggleButton value="euclidean" aria-label="Euclidean">
+                    Euclidean
+                  </ToggleButton>
+                  <ToggleButton value="cosine" aria-label="Cosine">
+                    Cosine
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </Box>
+            </Header>
+            <Content>
+              <Transition trigger={displayMode} direction={getDirection()}>
+                {displayMode === "radial" ? (
+                  <PCAScatterPlot tickerDetail={tickerDetail} />
+                ) : (
+                  <Scrollable>
+                    <TickerVectorQueryTable
+                      queryMode="ticker-detail"
+                      query={tickerDetail}
+                      alignment={displayMode}
+                    />
+                  </Scrollable>
+                )}
+              </Transition>
+            </Content>
+          </Layout>
+        )}
+      </>
+    </TickerDetailAppletWrap>
   );
 }
