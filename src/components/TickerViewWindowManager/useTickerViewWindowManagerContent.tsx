@@ -105,7 +105,12 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
           <TickerFundamentalsApplet tickerDetail={tickerDetail} />
         ),
     }),
-    [etfAggregateDetail, isLoadingTickerDetail, tickerDetail],
+    [
+      etfAggregateDetail,
+      isLoadingTickerDetail,
+      tickerDetail,
+      tickerDetailError,
+    ],
   );
 
   return {
