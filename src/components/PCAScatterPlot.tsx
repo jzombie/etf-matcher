@@ -48,12 +48,12 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
   useEffect(() => {
     if (tickerDetail) {
       fetchEuclideanByTicker(tickerDetail.ticker_id)
-        .then((data) =>
+        .then((tickerDistances) =>
           Promise.allSettled(
-            data.map(async (item) => {
-              const result = await fetchTickerDetail(item.ticker_id);
+            tickerDistances.map(async (item) => {
+              const tickerDetail = await fetchTickerDetail(item.ticker_id);
               return {
-                tickerDetail: result, // Replace ticker_id with the actual detail
+                tickerDetail,
                 pc1: item.translated_pca_coords[0],
                 pc2: item.translated_pca_coords[1],
               };
