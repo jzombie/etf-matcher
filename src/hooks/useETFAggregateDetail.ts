@@ -10,6 +10,7 @@ import useStableCurrentRef from "./useStableCurrentRef";
 export default function useETFAggregateDetail(
   tickerId?: number,
   onLoad?: (etfAggregateDetail: RustServiceETFAggregateDetail) => void,
+  skipLoad?: boolean,
 ) {
   const onLoadStableCurrentRef = useStableCurrentRef(onLoad);
 
@@ -25,6 +26,12 @@ export default function useETFAggregateDetail(
   const { triggerUIError } = useAppErrorBoundary();
 
   useEffect(() => {
+    if (skipLoad) {
+      setETFAggregateDetailError(null);
+      setIsLoadingETFAggregateDetail(false);
+      return;
+    }
+
     if (tickerId) {
       setETFAggregateDetailError(null);
       setIsLoadingETFAggregateDetail(true);
@@ -46,7 +53,7 @@ export default function useETFAggregateDetail(
           setIsLoadingETFAggregateDetail(false);
         });
     }
-  }, [onLoadStableCurrentRef, tickerId, triggerUIError]);
+  }, [onLoadStableCurrentRef, tickerId, triggerUIError, skipLoad]);
 
   return {
     isLoadingETFAggregateDetail,

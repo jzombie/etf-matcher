@@ -9,49 +9,64 @@ import EncodedImage from "@components/EncodedImage";
 
 import { RustServiceTickerDetail } from "@utils/callRustService";
 
-export type TickerInformationProps = {
-  tickerDetail: RustServiceTickerDetail;
+import TickerDetailAppletWrap from "../components/TickerDetailAppletWrap";
+
+export type TickerInformationAppletProps = {
+  tickerDetail?: RustServiceTickerDetail;
+  isLoadingTickerDetail: boolean;
+  tickerDetailError?: Error | unknown;
 };
 
-export default function TickerInformation({
+export default function TickerInformationApplet({
   tickerDetail,
-}: TickerInformationProps) {
+  isLoadingTickerDetail,
+  tickerDetailError,
+}: TickerInformationAppletProps) {
   return (
-    <Scrollable style={{ textAlign: "center" }}>
-      {/* Logo Section */}
-      <LogoWrapper>
-        <EncodedImage
-          encSrc={tickerDetail.logo_filename}
-          title={`${tickerDetail.symbol} logo`}
-          style={{
-            width: "100%",
-            maxWidth: "80px",
-            objectFit: "contain",
-          }}
-        />
-      </LogoWrapper>
+    <TickerDetailAppletWrap
+      tickerDetail={tickerDetail}
+      isLoadingTickerDetail={isLoadingTickerDetail}
+      tickerDetailError={tickerDetailError}
+    >
+      <Scrollable style={{ textAlign: "center" }}>
+        {/* Logo Section */}
+        <LogoWrapper>
+          <EncodedImage
+            encSrc={tickerDetail?.logo_filename}
+            title={`${tickerDetail?.symbol} logo`}
+            style={{
+              width: "100%",
+              maxWidth: "80px",
+              objectFit: "contain",
+            }}
+          />
+        </LogoWrapper>
 
-      {/* Information Section */}
+        {/* Information Section */}
 
-      <InfoWrapper>
-        {
-          // TODO: If ETF, add top sector/industry information
-        }
-        <InfoItem
-          label="Symbol"
-          value={`${tickerDetail.symbol}${tickerDetail.exchange_short_name ? ` (${tickerDetail.exchange_short_name})` : ""}`}
-        />
-        <InfoItem label="Company" value={tickerDetail.company_name || "N/A"} />
-        <InfoItem label="Sector" value={tickerDetail.sector_name || "N/A"} />
-        <InfoItem
-          label="Industry"
-          value={tickerDetail.industry_name || "N/A"}
-        />
-        {
-          // TODO: If ETF, add expense ratio
-        }
-      </InfoWrapper>
-    </Scrollable>
+        <InfoWrapper>
+          {
+            // TODO: If ETF, add top sector/industry information
+          }
+          <InfoItem
+            label="Symbol"
+            value={`${tickerDetail?.symbol}${tickerDetail?.exchange_short_name ? ` (${tickerDetail.exchange_short_name})` : ""}`}
+          />
+          <InfoItem
+            label="Company"
+            value={tickerDetail?.company_name || "N/A"}
+          />
+          <InfoItem label="Sector" value={tickerDetail?.sector_name || "N/A"} />
+          <InfoItem
+            label="Industry"
+            value={tickerDetail?.industry_name || "N/A"}
+          />
+          {
+            // TODO: If ETF, add expense ratio
+          }
+        </InfoWrapper>
+      </Scrollable>
+    </TickerDetailAppletWrap>
   );
 }
 

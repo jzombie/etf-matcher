@@ -1,16 +1,12 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 
 import Center from "@layoutKit/Center";
 import { MosaicNode } from "react-mosaic-component";
 
 import SectorsPieChart from "@components/SectorsPieChart";
 
+import useETFAggregateDetail from "@hooks/useETFAggregateDetail";
 import useTickerDetail from "@hooks/useTickerDetail";
-
-import {
-  RustServiceETFAggregateDetail,
-  fetchETFAggregateDetail,
-} from "@utils/callRustService";
 
 import ETFHoldersAndHoldingsApplet from "./applets/ETFHoldersAndHoldings.applet";
 import HistoricalPriceChartApplet from "./applets/HistoricalPriceChart.applet";
@@ -19,19 +15,17 @@ import TickerInformationApplet from "./applets/TickerInformation.applet";
 import TickerSimilaritySearchApplet from "./applets/TickerSimilaritySearch.applet";
 
 export default function useTickerViewWindowManagerContent(tickerId: number) {
-  const { tickerDetail, isLoadingTickerDetail } = useTickerDetail(tickerId);
-
-  // TODO: Refactor into `useETFAggregateDetail` (see `useTicker10KDetail` for prelim usage)
-  const [etfAggregateDetail, setETFAggregateDetail] = useState<
-    RustServiceETFAggregateDetail | undefined
-  >(undefined);
-  useEffect(() => {
-    if (tickerDetail?.is_etf) {
-      fetchETFAggregateDetail(tickerDetail.ticker_id).then(
-        setETFAggregateDetail,
-      );
-    }
-  }, [tickerDetail]);
+  const { tickerDetail, isLoadingTickerDetail, tickerDetailError } =
+    useTickerDetail(tickerId);
+  const {
+    etfAggregateDetail,
+    isLoadingETFAggregateDetail,
+    etfAggregateDetailError,
+  } = useETFAggregateDetail(
+    tickerId,
+    () => null,
+    !tickerDetail || !tickerDetail.is_etf,
+  );
 
   // Initial layout definition
   const initialValue: MosaicNode<string> = useMemo(
@@ -67,12 +61,13 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
   // Map content to window titles
   const contentMap = useMemo(
     () => ({
-      "Ticker Information":
-        isLoadingTickerDetail || !tickerDetail ? (
-          <Center>Loading</Center>
-        ) : (
-          <TickerInformationApplet tickerDetail={tickerDetail} />
-        ),
+      "Ticker Information": (
+        <TickerInformationApplet
+          tickerDetail={tickerDetail}
+          isLoadingTickerDetail={isLoadingTickerDetail}
+          tickerDetailError={tickerDetailError}
+        />
+      ),
       // "ETF Holders":
       //   isLoadingTickerDetail || !tickerDetail ? (
       //     <Center>Loading</Center>
