@@ -1,15 +1,13 @@
 import React, { useMemo } from "react";
 
-import Center from "@layoutKit/Center";
 import { MosaicNode } from "react-mosaic-component";
-
-import SectorsPieChart from "@components/SectorsPieChart";
 
 import useETFAggregateDetail from "@hooks/useETFAggregateDetail";
 import useTickerDetail from "@hooks/useTickerDetail";
 
 import ETFHoldersAndHoldingsApplet from "./applets/ETFHoldersAndHoldings.applet";
 import HistoricalPriceChartApplet from "./applets/HistoricalPriceChart.applet";
+import SectorAllocationApplet from "./applets/SectorAllocation.applet";
 import TickerFundamentalsApplet from "./applets/TickerFundamentals.applet";
 import TickerInformationApplet from "./applets/TickerInformation.applet";
 import TickerSimilaritySearchApplet from "./applets/TickerSimilaritySearch.applet";
@@ -89,18 +87,16 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
           tickerDetailError={tickerDetailError}
         />
       ),
-      "Sector Allocation":
-        isLoadingTickerDetail || !etfAggregateDetail ? (
-          <Center>Loading</Center>
-        ) : (
-          etfAggregateDetail?.major_sector_distribution && (
-            <SectorsPieChart
-              majorSectorDistribution={
-                etfAggregateDetail.major_sector_distribution
-              }
-            />
-          )
-        ),
+      "Sector Allocation": (
+        <SectorAllocationApplet
+          tickerDetail={tickerDetail}
+          isLoadingTickerDetail={isLoadingTickerDetail}
+          tickerDetailError={tickerDetailError}
+          etfAggregateDetail={etfAggregateDetail}
+          isLoadingETFAggregateDetail={isLoadingETFAggregateDetail}
+          etfAggregateDetailError={etfAggregateDetailError}
+        />
+      ),
       Fundamentals: (
         <TickerFundamentalsApplet
           tickerDetail={tickerDetail}
@@ -111,6 +107,8 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
     }),
     [
       etfAggregateDetail,
+      etfAggregateDetailError,
+      isLoadingETFAggregateDetail,
       isLoadingTickerDetail,
       tickerDetail,
       tickerDetailError,
