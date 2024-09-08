@@ -11,6 +11,7 @@ import {
   fetchETFHoldingWeight,
   fetchETFHoldingsByETFTickerId,
 } from "./lib/etfHoldings";
+import fetchAllMajorSectors from "./lib/fetchAllMajorSectors";
 import fetchDataBuildInfo from "./lib/fetchDataBuildInfo";
 import fetchETFAggregateDetail from "./lib/fetchETFAggregateDetail";
 import fetchImageInfo from "./lib/fetchImageInfo";
@@ -19,7 +20,6 @@ import fetchTicker10KDetail from "./lib/fetchTicker10KDetail";
 import fetchTickerDetail from "./lib/fetchTickerDetail";
 import fetchTickerId from "./lib/fetchTickerId";
 import generateQRCode from "./lib/generateQRCode";
-import getAllMajorSectors from "./lib/getAllMajorSectors";
 import searchTickers from "./lib/searchTickers";
 import {
   fetchCosineByTicker,
@@ -86,5 +86,5 @@ export {
   fetchTicker10KDetail,
   fetchSymbolAndExchange,
   fetchETFAggregateDetail,
-  getAllMajorSectors,
+  fetchAllMajorSectors,
 };
