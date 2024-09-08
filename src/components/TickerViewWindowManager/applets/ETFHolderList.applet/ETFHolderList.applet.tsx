@@ -15,7 +15,7 @@ import type {
   RustServicePaginatedResults,
   RustServiceTickerDetail,
 } from "@utils/callRustService";
-import { fetchETFHoldersAggregateDetailByTickerId } from "@utils/callRustService";
+import { fetchETFHoldersAggregateDetail } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
 import ETFHolder from "./ETFHolderList.Item";
@@ -46,7 +46,7 @@ export default function ETFHolderListApplet({
     if (tickerId) {
       setIsLoadingETFHolders(true);
 
-      fetchETFHoldersAggregateDetailByTickerId(tickerId, page)
+      fetchETFHoldersAggregateDetail(tickerId, page)
         .then(setPaginatedETFHolders)
         .catch((err) => {
           // TODO: Normalize error handling

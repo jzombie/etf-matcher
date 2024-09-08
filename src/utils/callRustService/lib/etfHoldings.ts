@@ -26,7 +26,7 @@ export async function fetchETFHoldingWeight(
   );
 }
 
-export async function fetchETFHoldersAggregateDetailByTickerId(
+export async function fetchETFHoldersAggregateDetail(
   tickerId: number,
   page: number = 1,
   pageSize: number = 20,
