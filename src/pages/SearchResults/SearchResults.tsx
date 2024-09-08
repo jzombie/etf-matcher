@@ -172,6 +172,10 @@ export default function SearchResults() {
 
   return (
     <Layout>
+      {
+        // TODO: Depending on the amount of available vertical space, consider
+        // hiding header if exact match is enabled and the user is viewing a symbol
+      }
       <Header ref={headerRef}>
         <Padding>
           <Box
