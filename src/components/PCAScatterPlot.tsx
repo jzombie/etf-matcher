@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
+import { Box, Divider, Typography } from "@mui/material";
+
 import AutoScaler from "@layoutKit/AutoScaler";
 import {
   Scatter,
@@ -19,6 +21,8 @@ import {
   fetchTickerDetail,
 } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
+
+import AvatarLogo from "./AvatarLogo";
 
 const RADIAL_STROKE_COLOR = "#999";
 const RADIAL_FILL_COLOR = "none";
@@ -184,23 +188,56 @@ const renderRadialOverlay = () => {
   );
 };
 
-// Custom tooltip content
-const CustomTooltip: React.FC<TooltipProps<number, NameType>> = ({
-  active,
-  payload,
-}) => {
+function CustomTooltip({ active, payload }: TooltipProps<number, NameType>) {
   if (active && payload && payload.length) {
     const { tickerDetail, pc1, pc2 } = payload[0].payload;
+
     return (
-      <div className="custom-tooltip">
-        <p>{tickerDetail?.symbol}</p>
-        <p>{`PC1: ${pc1}`}</p>
-        <p>{`PC2: ${pc2}`}</p>
-      </div>
+      <Box
+        sx={{
+          backgroundColor: "rgba(0, 0, 0, 0.7)",
+          padding: 2,
+          borderRadius: 4,
+          maxWidth: 250,
+        }}
+      >
+        <Box display="flex" alignItems="center" mb={1}>
+          <AvatarLogo tickerDetail={tickerDetail} />
+          <Typography variant="h6" color="primary" ml={1}>
+            {tickerDetail?.symbol}
+          </Typography>
+        </Box>
+
+        <Typography variant="subtitle1" fontWeight="bold" color="textSecondary">
+          {tickerDetail?.company_name}
+        </Typography>
+
+        {tickerDetail?.sector_name && (
+          <Typography variant="subtitle2" color="textSecondary">
+            Sector: {tickerDetail?.sector_name}
+          </Typography>
+        )}
+
+        {tickerDetail?.industry_name && (
+          <Typography variant="subtitle2" color="textSecondary">
+            Industry: {tickerDetail?.industry_name}
+          </Typography>
+        )}
+
+        <Divider sx={{ my: 1, borderColor: "rgba(255, 255, 255, 0.1)" }} />
+
+        <Typography variant="body2" color="textSecondary">
+          PC1: {pc1.toFixed(2)}
+        </Typography>
+        <Typography variant="body2" color="textSecondary">
+          PC2: {pc2.toFixed(2)}
+        </Typography>
+      </Box>
     );
   }
+
   return null;
-};
+}
 
 type CustomPointProps = {
   cx?: number;
