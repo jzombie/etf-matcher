@@ -11,8 +11,13 @@ import {
 } from "recharts";
 import { NameType } from "recharts/types/component/DefaultTooltipContent";
 
-import { fetchEuclideanByTicker } from "@utils/callRustService";
-import { RustServiceTickerDetail } from "@utils/callRustService";
+import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
+
+import {
+  RustServiceTickerDetail,
+  fetchEuclideanByTicker,
+  fetchTickerDetail,
+} from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
 const RADIAL_STROKE_COLOR = "#999";
@@ -24,12 +29,11 @@ const YELLOW_DOT_RADIUS = 5;
 const MAX_VALUE_MULT_BUFFER = 1.1;
 
 export type PCAScatterPlotProps = {
-  // TODO: Adapt to also work with ticker buckets
   tickerDetail: RustServiceTickerDetail;
 };
 
 type ChartVectorDistance = {
-  ticker_id: RustServiceTickerDetail["ticker_id"];
+  tickerDetail: RustServiceTickerDetail;
   pc1: number;
   pc2: number;
 };
@@ -45,21 +49,39 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
     if (tickerDetail) {
       fetchEuclideanByTicker(tickerDetail.ticker_id)
         .then((data) =>
-          data.map((item) => ({
-            ticker_id: item.ticker_id,
-            pc1: item.translated_pca_coords[0],
-            pc2: item.translated_pca_coords[1],
-          })),
+          Promise.allSettled(
+            data.map(async (item) => {
+              const result = await fetchTickerDetail(item.ticker_id);
+              return {
+                tickerDetail: result, // Replace ticker_id with the actual detail
+                pc1: item.translated_pca_coords[0],
+                pc2: item.translated_pca_coords[1],
+              };
+            }),
+          ),
         )
-        .then(setChartData);
+        .then((results) => {
+          // Filter out failed promises
+          const successfulResults = results
+            .filter((result) => result.status === "fulfilled")
+            .map((result) => result.value); // Extract the `value` from the fulfilled promises
+          setChartData(successfulResults);
+        });
     }
   }, [tickerDetail]);
 
-  const handleClick = useCallback((item: ChartVectorDistance) => {
-    customLogger.debug(
-      `Ticker ID: ${item.ticker_id}\nPC1: ${item.pc1}\nPC2: ${item.pc2}`,
-    );
-  }, []);
+  const navigateToSymbol = useTickerSymbolNavigation();
+
+  const handleClick = useCallback(
+    (item: ChartVectorDistance) => {
+      customLogger.debug(
+        `Ticker: ${item.tickerDetail.symbol}\nPC1: ${item.pc1}\nPC2: ${item.pc2}`,
+      );
+
+      navigateToSymbol(item.tickerDetail.symbol);
+    },
+    [navigateToSymbol],
+  );
 
   // Calculate domain for the axes based on the chart data to ensure (0,0) is centered
   const maxValue = useMemo(
@@ -108,8 +130,8 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
           name="10-K Proximity Tickers"
           data={chartData}
           fill="#8884d8"
-          onClick={(data) => handleClick(data)}
-          shape={renderCustomPoint} // Custom point rendering
+          onClick={handleClick}
+          shape={CustomPoint}
         />
       </ScatterChart>
     </AutoScaler>
@@ -117,7 +139,6 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
 }
 
 const renderRadialOverlay = () => {
-  // cx and cy are set to "50%" to align with the center of the chart
   const cx = "50%";
   const cy = "50%";
 
@@ -158,23 +179,21 @@ const renderRadialOverlay = () => {
         stroke={RADIAL_STROKE_COLOR}
         fill={RADIAL_FILL_COLOR}
       />
-      {/* Yellow dot at the center */}
       <circle cx={cx} cy={cy} r={YELLOW_DOT_RADIUS} fill={YELLOW_DOT_COLOR} />
     </g>
   );
 };
 
 // Custom tooltip content
-// https://github.com/recharts/recharts/issues/2796
 const CustomTooltip: React.FC<TooltipProps<number, NameType>> = ({
   active,
   payload,
 }) => {
   if (active && payload && payload.length) {
-    const { ticker_id, pc1, pc2 } = payload[0].payload;
+    const { tickerDetail, pc1, pc2 } = payload[0].payload;
     return (
       <div className="custom-tooltip">
-        <p>{`Ticker ID: ${ticker_id}`}</p>
+        <p>{tickerDetail?.symbol}</p>
         <p>{`PC1: ${pc1}`}</p>
         <p>{`PC2: ${pc2}`}</p>
       </div>
@@ -183,25 +202,19 @@ const CustomTooltip: React.FC<TooltipProps<number, NameType>> = ({
   return null;
 };
 
-// Custom scatter point content
-const renderCustomPoint = (props: {
+type CustomPointProps = {
   cx?: number;
   cy?: number;
   payload?: ChartVectorDistance;
-}): JSX.Element => {
-  // FIXME: Fighting with these types
-  // eslint-disable-next-line react/prop-types
-  const { cx = 0, cy = 0, payload } = props;
+};
+
+function CustomPoint({ cx = 0, cy = 0, payload }: CustomPointProps) {
   return (
-    <g>
+    <g style={{ cursor: "pointer" }}>
       <circle cx={cx} cy={cy} r={6} fill="#8884d8" />
-      <text x={cx} y={cy} dy={-10} textAnchor="middle" fill="#333">
-        {
-          // FIXME: Fighting with these types
-          // eslint-disable-next-line react/prop-types
-          payload?.ticker_id
-        }
+      <text x={cx} y={cy} dy={-10} textAnchor="middle" fill="#ccc">
+        {payload?.tickerDetail?.symbol}
       </text>
     </g>
   );
-};
+}
