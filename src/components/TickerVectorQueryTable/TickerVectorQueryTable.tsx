@@ -1,21 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 
-import ShowChartIcon from "@mui/icons-material/ShowChart";
-import StraightenIcon from "@mui/icons-material/Straighten";
-import {
-  Box,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
-} from "@mui/material";
-
-import Padding from "@layoutKit/Padding";
-
+// import ShowChartIcon from "@mui/icons-material/ShowChart";
+// import StraightenIcon from "@mui/icons-material/Straighten";
+// import {
+//   Box,
+//   ToggleButton,
+//   ToggleButtonGroup,
+//   Typography,
+// } from "@mui/material";
+// import Padding from "@layoutKit/Padding";
 import Transition from "@components/Transition";
 
-import useTickerVectorQuery, {
-  TickerVectorQueryProps,
-} from "@hooks/useTickerVectorQuery";
+import { TickerVectorQueryProps } from "@hooks/useTickerVectorQuery";
 
 import Cosine from "./TickerVectorQueryTable.Cosine";
 import Euclidean from "./TickerVectorQueryTable.Euclidean";
