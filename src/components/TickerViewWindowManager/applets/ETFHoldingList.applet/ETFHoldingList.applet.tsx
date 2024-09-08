@@ -66,7 +66,7 @@ export default function ETFHoldingList({
         <SelectableGrid
           items={gridItems}
           onItemSelect={handleItemSelect}
-          renderItem={(holding, isSelected) => (
+          renderItem={(holding) => (
             <div style={{ textAlign: "center" }}>
               <EncodedImage
                 encSrc={holding.logo_filename}
