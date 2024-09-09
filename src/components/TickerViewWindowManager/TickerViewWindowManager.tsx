@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-import { ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 
-import Center from "@layoutKit/Center";
 import Full from "@layoutKit/Full";
 import Layout, { Content, Footer } from "@layoutKit/Layout";
+import Scrollable from "@layoutKit/Scrollable";
 import { MosaicNode, MosaicParent } from "react-mosaic-component";
 
 import TickerContainer from "@components/TickerContainer";
@@ -170,7 +170,16 @@ export default function TickerViewWindowManager({
                 )}
               </Layout>
             ) : (
-              <Center>Not tiling</Center>
+              <Scrollable>
+                {Object.entries(contentMap).map(([tileName, tileView], idx) => (
+                  <React.Fragment key={idx}>
+                    <Typography variant="h6" sx={{ padding: 1 }}>
+                      {tileName}
+                    </Typography>
+                    {tileView}
+                  </React.Fragment>
+                ))}
+              </Scrollable>
             )}
           </Content>
 

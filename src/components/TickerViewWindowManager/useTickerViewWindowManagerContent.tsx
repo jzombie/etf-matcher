@@ -75,24 +75,8 @@ export default function useTickerViewWindowManagerContent(
           isTiling={isTiling}
         />
       ),
-      "ETF Holders and Holdings": (
-        <ETFHoldersAndHoldingsApplet
-          tickerDetail={tickerDetail}
-          isLoadingTickerDetail={isLoadingTickerDetail}
-          tickerDetailError={tickerDetailError}
-          isTiling={isTiling}
-        />
-      ),
       "Historical Prices": (
         <HistoricalPriceChartApplet
-          tickerDetail={tickerDetail}
-          isLoadingTickerDetail={isLoadingTickerDetail}
-          tickerDetailError={tickerDetailError}
-          isTiling={isTiling}
-        />
-      ),
-      "Similarity Search": (
-        <TickerSimilaritySearchApplet
           tickerDetail={tickerDetail}
           isLoadingTickerDetail={isLoadingTickerDetail}
           tickerDetailError={tickerDetailError}
@@ -110,8 +94,25 @@ export default function useTickerViewWindowManagerContent(
           isTiling={isTiling}
         />
       ),
+      "Similarity Search": (
+        <TickerSimilaritySearchApplet
+          tickerDetail={tickerDetail}
+          isLoadingTickerDetail={isLoadingTickerDetail}
+          tickerDetailError={tickerDetailError}
+          isTiling={isTiling}
+        />
+      ),
+
       Fundamentals: (
         <TickerFundamentalsApplet
+          tickerDetail={tickerDetail}
+          isLoadingTickerDetail={isLoadingTickerDetail}
+          tickerDetailError={tickerDetailError}
+          isTiling={isTiling}
+        />
+      ),
+      "ETF Holders and Holdings": (
+        <ETFHoldersAndHoldingsApplet
           tickerDetail={tickerDetail}
           isLoadingTickerDetail={isLoadingTickerDetail}
           tickerDetailError={tickerDetailError}
