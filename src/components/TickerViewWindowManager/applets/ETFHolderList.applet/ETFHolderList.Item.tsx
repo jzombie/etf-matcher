@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 
 import {
   Box,
-  Button,
   ButtonBase,
   Divider,
   Paper,
@@ -16,6 +15,8 @@ import {
 } from "@mui/material";
 
 import Padding from "@layoutKit/Padding";
+
+import FakeButton from "@components/FakeButton";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
@@ -84,15 +85,17 @@ export default function ETFHolder({
           >
             {etfAggregateDetail.etf_name} ({etfAggregateDetail.etf_symbol})
           </Typography>
-          <Button
-            variant="contained"
+          {
+            // `FakeButton` is used to not nest button within a button
+          }
+          <FakeButton
             onClick={() => {
               navigateToSymbol(etfAggregateDetail.etf_symbol);
             }}
             sx={{ float: "right" }}
           >
             View
-          </Button>
+          </FakeButton>
         </Box>
         <Divider sx={{ marginBottom: 2 }} />
 
