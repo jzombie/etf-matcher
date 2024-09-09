@@ -118,7 +118,7 @@ export default function ETFHolderListApplet({
       </Content>
       <Footer>
         {totalPages > 1 && (
-          <Box sx={{ textAlign: "center" }}>
+          <Box sx={{ textAlign: "center", padding: 1 }}>
             <Pagination
               sx={{ display: "inline-block" }}
               count={totalPages}
