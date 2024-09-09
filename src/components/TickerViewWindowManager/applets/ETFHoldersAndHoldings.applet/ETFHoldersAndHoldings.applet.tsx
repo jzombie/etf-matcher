@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
+import BusinessIcon from "@mui/icons-material/Business";
+import LayersIcon from "@mui/icons-material/Layers";
 import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
 import Layout, { Content, Header } from "@layoutKit/Layout";
@@ -85,9 +87,11 @@ export default function ETFHoldersAndHoldingsApplet({
                   size="small"
                 >
                   <ToggleButton value="holders" aria-label="ETF holders">
+                    <LayersIcon />
                     ETF Holders
                   </ToggleButton>
                   <ToggleButton value="holdings" aria-label="ETF holdings">
+                    <BusinessIcon />
                     ETF Holdings
                   </ToggleButton>
                 </ToggleButtonGroup>
