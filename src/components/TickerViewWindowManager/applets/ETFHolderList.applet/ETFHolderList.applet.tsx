@@ -9,6 +9,7 @@ import Scrollable from "@layoutKit/Scrollable";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import Transition from "@components/Transition";
 
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import usePagination from "@hooks/usePagination";
 
 import type {
@@ -30,6 +31,7 @@ export default function ETFHolderListApplet({
 }: ETFHolderListAppletProps) {
   const tickerId = tickerDetail.ticker_id;
   const tickerSymbol = tickerDetail.symbol;
+  const { triggerUIError } = useAppErrorBoundary();
 
   const [isLoadingETFHolders, setIsLoadingETFHolders] =
     useState<boolean>(false);
@@ -50,12 +52,12 @@ export default function ETFHolderListApplet({
       fetchETFHoldersAggregateDetail(tickerId, page)
         .then(setPaginatedETFHolders)
         .catch((err) => {
-          // TODO: Normalize error handling
           customLogger.error(err);
+          triggerUIError(new Error("Could not fetch paginated ETF holders"));
         })
         .finally(() => setIsLoadingETFHolders(false));
     }
-  }, [tickerId, page]);
+  }, [tickerId, page, triggerUIError]);
 
   if (!paginatedETFHolders && isLoadingETFHolders) {
     return (
