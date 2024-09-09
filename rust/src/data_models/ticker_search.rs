@@ -7,6 +7,7 @@ use crate::{DataURL, ExchangeById, PaginatedResults};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
+// TODO: Rename
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TickerSearch {
     pub ticker_id: TickerId,
