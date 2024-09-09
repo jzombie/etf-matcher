@@ -203,13 +203,13 @@ export default function SearchResults() {
                   />
                 }
                 label={
-                  <Typography variant="body1" color="textSecondary">
+                  <Typography variant="body2" color="textSecondary">
                     Toggle Exact Match
                   </Typography>
                 }
               />
               <Typography
-                variant="body1"
+                variant="body2"
                 sx={{
                   marginLeft: isHeaderPaginationInline ? 2 : 0,
                   textAlign: isHeaderPaginationInline ? "left" : "center",

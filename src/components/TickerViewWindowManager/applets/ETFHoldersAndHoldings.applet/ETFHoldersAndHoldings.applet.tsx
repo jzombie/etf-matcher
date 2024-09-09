@@ -11,8 +11,8 @@ import Transition from "@components/Transition";
 
 import type { RustServiceTickerDetail } from "@utils/callRustService";
 
-import ETFHolderListApplet from "../ETFHolderList.applet";
-import ETFHoldingListApplet from "../ETFHoldingList.applet";
+import ETFHolderSelectableGrid from "./ETFHolderSelectableGrid";
+import ETFHoldingSelectableGrid from "./ETFHoldingSelectableGrid";
 
 const DISPLAY_MODES = ["holders", "holdings"] as const;
 type DisplayMode = (typeof DISPLAY_MODES)[number];
@@ -103,9 +103,9 @@ export default function ETFHoldersAndHoldingsApplet({
             <Content>
               <Transition trigger={displayMode} direction={getDirection()}>
                 {displayMode === "holders" ? (
-                  <ETFHolderListApplet tickerDetail={tickerDetail} />
+                  <ETFHolderSelectableGrid tickerDetail={tickerDetail} />
                 ) : (
-                  <ETFHoldingListApplet etfTickerDetail={tickerDetail} />
+                  <ETFHoldingSelectableGrid etfTickerDetail={tickerDetail} />
                 )}
               </Transition>
             </Content>

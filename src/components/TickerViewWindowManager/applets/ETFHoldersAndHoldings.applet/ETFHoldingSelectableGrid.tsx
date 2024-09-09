@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { Typography } from "@mui/material";
 
@@ -20,13 +20,15 @@ import type {
 import { RustServiceTickerDetail } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
-export type ETFHoldingListAppletProps = {
+import { StyledTitle } from "./common";
+
+export type ETFHoldingSelectableGridProps = {
   etfTickerDetail: RustServiceTickerDetail;
 };
 
-export default function ETFHoldingListApplet({
+export default function ETFHoldingSelectableGrid({
   etfTickerDetail,
-}: ETFHoldingListAppletProps) {
+}: ETFHoldingSelectableGridProps) {
   const [isLoadingETFHoldings, setIsLoadingETFHoldings] =
     useState<boolean>(false);
   const [paginatedHoldings, setPaginatedHoldings] =
@@ -49,9 +51,12 @@ export default function ETFHoldingListApplet({
 
   const navigateToSymbol = useTickerSymbolNavigation();
 
-  const handleItemSelect = (holding: RustServiceETFHoldingTickerResponse) => {
-    navigateToSymbol(holding.holding_symbol);
-  };
+  const handleItemSelect = useCallback(
+    (holding: RustServiceETFHoldingTickerResponse) => {
+      navigateToSymbol(holding.holding_symbol);
+    },
+    [navigateToSymbol],
+  );
 
   if (!etfTickerDetail.is_etf) {
     return (
@@ -108,9 +113,8 @@ export default function ETFHoldingListApplet({
                 encSrc={holding.logo_filename}
                 style={{ width: 50, height: 50, marginBottom: 8 }}
               />
-              <Typography variant="subtitle1" gutterBottom>
-                {holding.company_name}
-              </Typography>
+
+              <StyledTitle>{holding.company_name}</StyledTitle>
               <Typography variant="body2">
                 Symbol: {holding.holding_symbol}
               </Typography>
