@@ -73,6 +73,7 @@ pub struct ETFAggregateDetail {
     pub ticker_id: TickerId,
     pub etf_name: Option<String>,
     pub expense_ratio: f32,
+    // TODO: Add `aum` (assets under management)  and `nav` (net asset value)
     pub top_market_value_sector_id: Option<SectorId>,
     pub top_market_value_industry_id: Option<IndustryId>,
     pub top_sector_market_value: f64,
