@@ -40,7 +40,6 @@ export default function FinancialChartsGrid({
   }
 
   const createChartData = (
-    label: string,
     currentValue: number | undefined,
     year1Value: number | undefined,
     year2Value: number | undefined,
@@ -87,7 +86,6 @@ export default function FinancialChartsGrid({
           <RenderChart
             title="Revenue"
             chartData={createChartData(
-              "Revenue",
               isETFAggregateDetail(financialDetail)
                 ? financialDetail.avg_revenue_current
                 : financialDetail.revenue_current,
@@ -110,7 +108,6 @@ export default function FinancialChartsGrid({
           <RenderChart
             title="Gross Profit"
             chartData={createChartData(
-              "Gross Profit",
               isETFAggregateDetail(financialDetail)
                 ? financialDetail.avg_gross_profit_current
                 : financialDetail.gross_profit_current,
@@ -133,7 +130,6 @@ export default function FinancialChartsGrid({
           <RenderChart
             title="Operating Income"
             chartData={createChartData(
-              "Operating Income",
               isETFAggregateDetail(financialDetail)
                 ? financialDetail.avg_operating_income_current
                 : financialDetail.operating_income_current,
@@ -156,7 +152,6 @@ export default function FinancialChartsGrid({
           <RenderChart
             title="Net Income"
             chartData={createChartData(
-              "Net Income",
               isETFAggregateDetail(financialDetail)
                 ? financialDetail.avg_net_income_current
                 : financialDetail.net_income_current,
@@ -179,7 +174,6 @@ export default function FinancialChartsGrid({
           <RenderChart
             title="Total Assets"
             chartData={createChartData(
-              "Total Assets",
               isETFAggregateDetail(financialDetail)
                 ? financialDetail.avg_total_assets_current
                 : financialDetail.total_assets_current,
@@ -202,7 +196,6 @@ export default function FinancialChartsGrid({
           <RenderChart
             title="Total Liabilities"
             chartData={createChartData(
-              "Total Liabilities",
               isETFAggregateDetail(financialDetail)
                 ? financialDetail.avg_total_liabilities_current
                 : financialDetail.total_liabilities_current,
@@ -225,7 +218,6 @@ export default function FinancialChartsGrid({
           <RenderChart
             title="Operating Cash Flow"
             chartData={createChartData(
-              "Operating Cash Flow",
               isETFAggregateDetail(financialDetail)
                 ? financialDetail.avg_operating_cash_flow_current
                 : financialDetail.operating_cash_flow_current,
