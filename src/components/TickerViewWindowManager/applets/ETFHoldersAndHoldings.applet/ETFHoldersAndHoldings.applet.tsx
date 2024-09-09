@@ -76,7 +76,7 @@ export default function ETFHoldersAndHoldingsApplet({
         {tickerDetail && (
           <Layout>
             <Header>
-              <Box sx={{ textAlign: "center", marginBottom: 2 }}>
+              <Box sx={{ textAlign: "center", marginBottom: 1 }}>
                 <ToggleButtonGroup
                   value={displayMode}
                   exclusive

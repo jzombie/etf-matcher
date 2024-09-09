@@ -82,7 +82,20 @@ export default function ETFHoldingListApplet({
 
   return (
     <Scrollable>
-      <Padding>
+      <Padding style={{ paddingTop: 0 }}>
+        {paginatedHoldings.total_count > 1 && (
+          <Typography
+            variant="body2"
+            sx={{
+              opacity: 0.5,
+              textAlign: "center",
+            }}
+          >
+            These represent the top holdings in the ETF, listed in order from
+            the largest to the smallest allocation.{" "}
+          </Typography>
+        )}
+
         <SelectableGrid
           items={gridItems}
           onItemSelect={handleItemSelect}

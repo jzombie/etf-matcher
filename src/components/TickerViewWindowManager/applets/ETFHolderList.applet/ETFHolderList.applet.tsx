@@ -78,13 +78,6 @@ export default function ETFHolderListApplet({
 
   return (
     <Layout>
-      <Header>
-        <Typography variant="body2" sx={{ textAlign: "center", opacity: 0.5 }}>
-          &quot;{tickerSymbol}&quot; is found in the following{" "}
-          {paginatedETFHolders.total_count} ETF
-          {paginatedETFHolders.total_count !== 1 ? "s" : ""}:
-        </Typography>
-      </Header>
       <Content>
         {
           // TODO: Show the actual symbol weight in each ETFHolder (send `tickerSymbol` to
@@ -101,6 +94,17 @@ export default function ETFHolderListApplet({
             </Center>
           ) : (
             <Scrollable>
+              {page === 1 && (
+                <Typography
+                  variant="body2"
+                  sx={{ textAlign: "center", opacity: 0.5 }}
+                >
+                  &quot;{tickerSymbol}&quot; is found in{" "}
+                  {paginatedETFHolders.total_count} ETF
+                  {paginatedETFHolders.total_count !== 1 ? "s" : ""}:
+                </Typography>
+              )}
+
               {paginatedResults.map((etfHolder) => (
                 <ETFHolder
                   key={etfHolder.ticker_id}
