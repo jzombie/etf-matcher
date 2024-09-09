@@ -11,7 +11,7 @@ import SelectableGrid, { SelectableGridItem } from "@components/SelectableGrid";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
-import { fetchETFHoldingsByETFTickerId } from "@utils/callRustService";
+import { fetchETFHoldings } from "@utils/callRustService";
 import type {
   RustServiceETFHoldingTickerResponse,
   RustServicePaginatedResults,
@@ -36,7 +36,7 @@ export default function ETFHoldingListApplet({
   useEffect(() => {
     if (etfTickerDetail.is_etf) {
       setIsLoadingETFHoldings(true);
-      fetchETFHoldingsByETFTickerId(etfTickerDetail.ticker_id)
+      fetchETFHoldings(etfTickerDetail.ticker_id)
         .then(setPaginatedHoldings)
         .catch((err) => {
           // TODO: Normalize error handling

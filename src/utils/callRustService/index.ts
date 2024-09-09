@@ -9,7 +9,7 @@ import {
 import {
   fetchETFHoldersAggregateDetail,
   fetchETFHoldingWeight,
-  fetchETFHoldingsByETFTickerId,
+  fetchETFHoldings,
 } from "./lib/etfHoldings";
 import fetchAllMajorSectors from "./lib/fetchAllMajorSectors";
 import fetchDataBuildInfo from "./lib/fetchDataBuildInfo";
@@ -79,7 +79,7 @@ export {
   generateQRCode,
   searchTickers,
   fetchImageInfo,
-  fetchETFHoldingsByETFTickerId,
+  fetchETFHoldings,
   fetchETFHoldingWeight,
   fetchETFHoldersAggregateDetail,
   fetchTickerDetail,

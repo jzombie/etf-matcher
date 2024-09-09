@@ -6,7 +6,7 @@ import type {
   RustServicePaginatedResults,
 } from "../types";
 
-export async function fetchETFHoldingsByETFTickerId(
+export async function fetchETFHoldings(
   tickerId: number,
   page: number = 1,
   pageSize: number = 20,
