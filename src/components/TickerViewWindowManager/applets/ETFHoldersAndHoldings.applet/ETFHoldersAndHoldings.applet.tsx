@@ -27,7 +27,9 @@ export default function ETFHoldersAndHoldingsApplet({
   tickerDetailError,
 }: ETFHoldersAndHoldingsAppletProps) {
   const [displayMode, setDisplayMode] = useState<DisplayMode>("holders");
-  const previousModeRef = useRef<DisplayMode>("holders");
+  const previousDisplayModeRef = useRef<DisplayMode>("holders");
+  const [hasProcessedDynamicDisplayMode, setHasProcessedDynamicDisplayMode] =
+    useState<boolean>(false);
 
   // Handle dynamic setting of display mode.
   // Note: This is not predetermined in `useState`'s default because `tickerDetail`
@@ -38,12 +40,14 @@ export default function ETFHoldersAndHoldingsApplet({
     } else {
       setDisplayMode("holders");
     }
+
+    setHasProcessedDynamicDisplayMode(true);
   }, [tickerDetail]);
 
   const handleDisplayModeChange = useCallback(
     (event: React.MouseEvent<HTMLElement>, newMode: DisplayMode | null) => {
       if (newMode !== null) {
-        previousModeRef.current = displayMode; // Store the previous mode
+        previousDisplayModeRef.current = displayMode; // Store the previous mode
         setDisplayMode(newMode);
       }
     },
@@ -51,10 +55,16 @@ export default function ETFHoldersAndHoldingsApplet({
   );
 
   const getDirection = useCallback(() => {
-    const prevIndex = DISPLAY_MODES.indexOf(previousModeRef.current);
+    const prevIndex = DISPLAY_MODES.indexOf(previousDisplayModeRef.current);
     const currentIndex = DISPLAY_MODES.indexOf(displayMode);
     return currentIndex > prevIndex ? "left" : "right";
   }, [displayMode]);
+
+  // Help prevent potential performance issues if intially trying to render the
+  // non-optimal display mode, by helping reduce unecessary network requests
+  if (!hasProcessedDynamicDisplayMode) {
+    return null;
+  }
 
   return (
     <TickerDetailAppletWrap
