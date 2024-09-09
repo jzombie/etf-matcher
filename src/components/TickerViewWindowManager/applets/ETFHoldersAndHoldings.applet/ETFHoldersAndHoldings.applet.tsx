@@ -29,7 +29,9 @@ export default function ETFHoldersAndHoldingsApplet({
   const [displayMode, setDisplayMode] = useState<DisplayMode>("holders");
   const previousModeRef = useRef<DisplayMode>("holders");
 
-  // Switch to `holdings` display mode by default, if this is an ETF
+  // Handle dynamic setting of display mode.
+  // Note: This is not predetermined in `useState`'s default because `tickerDetail`
+  // may not be immediately avaialble when this component is first rendered.
   useEffect(() => {
     if (tickerDetail?.is_etf) {
       setDisplayMode("holdings");
