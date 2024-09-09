@@ -20,13 +20,13 @@ import type {
 import { RustServiceTickerDetail } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
-export type ETFHoldingListAppletProps = {
+export type ETFHoldingSelectableGridProps = {
   etfTickerDetail: RustServiceTickerDetail;
 };
 
-export default function ETFHoldingListApplet({
+export default function ETFHoldingSelectableGrid({
   etfTickerDetail,
-}: ETFHoldingListAppletProps) {
+}: ETFHoldingSelectableGridProps) {
   const [isLoadingETFHoldings, setIsLoadingETFHoldings] =
     useState<boolean>(false);
   const [paginatedHoldings, setPaginatedHoldings] =

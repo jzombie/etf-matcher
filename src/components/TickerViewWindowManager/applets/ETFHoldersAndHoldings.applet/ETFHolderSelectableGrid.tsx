@@ -21,13 +21,13 @@ import type {
 import customLogger from "@utils/customLogger";
 import formatCurrency from "@utils/formatCurrency";
 
-export type ETFHolderListAppletProps = {
+export type ETFHolderSelectableGridProps = {
   tickerDetail: RustServiceTickerDetail;
 };
 
-export default function ETFHolderListApplet({
+export default function ETFHolderSelectableGrid({
   tickerDetail,
-}: ETFHolderListAppletProps) {
+}: ETFHolderSelectableGridProps) {
   const tickerId = tickerDetail.ticker_id;
   const tickerSymbol = tickerDetail.symbol;
 
@@ -87,7 +87,7 @@ export default function ETFHolderListApplet({
 
   return (
     <Scrollable>
-      <Padding>
+      <Padding style={{ paddingTop: 0 }}>
         {paginatedETFHolders.total_count > 1 && (
           <Typography
             variant="body2"
