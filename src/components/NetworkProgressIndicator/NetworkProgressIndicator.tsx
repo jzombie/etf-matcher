@@ -10,7 +10,7 @@ export default function NetworkProgressIndicator() {
       <Box sx={{ textAlign: "center" }}>
         <CircularProgress />
       </Box>
-      <NetworkRequestIndicator />
+      <NetworkRequestIndicator style={{ opacity: 0.5 }} />
     </Box>
   );
 }
