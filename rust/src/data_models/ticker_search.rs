@@ -49,7 +49,8 @@ impl TickerSearch {
         alternatives
     }
 
-    pub async fn get_all_results() -> Result<Vec<TickerSearch>, JsValue> {
+    // Retrieves all `raw` results without any transformations
+    pub async fn get_all_raw_results() -> Result<Vec<TickerSearch>, JsValue> {
         let url: String = DataURL::TickerSearch.value().to_owned();
         let csv_data = fetch_and_decompress_gz(&url, true).await?;
         let csv_string = String::from_utf8(csv_data).map_err(|err| {
@@ -60,10 +61,11 @@ impl TickerSearch {
         Ok(results)
     }
 
-    pub async fn get_result_with_id(ticker_id: TickerId) -> Result<TickerSearch, JsValue> {
-        let all_results = Self::get_all_results().await?;
+    // Retrieves a single `raw` result, using the given `ticker_id`
+    pub async fn get_raw_result_with_id(ticker_id: TickerId) -> Result<TickerSearch, JsValue> {
+        let all_raw_results = Self::get_all_raw_results().await?;
 
-        match all_results
+        match all_raw_results
             .into_iter()
             .find(|result| result.ticker_id == ticker_id)
         {
@@ -91,10 +93,10 @@ impl TickerSearch {
             });
         }
 
-        let mut all_results = Self::get_all_results().await?;
+        let mut all_raw_results = Self::get_all_raw_results().await?;
 
         // Extract the logo filename for each result
-        for result in &mut all_results {
+        for result in &mut all_raw_results {
             result.logo_filename =
                 extract_logo_filename(result.logo_filename.as_deref(), &result.symbol);
         }
@@ -108,7 +110,7 @@ impl TickerSearch {
 
         for alternative in &alternatives {
             let query_lower: String = alternative.to_lowercase();
-            for result in &all_results {
+            for result in &all_raw_results {
                 let symbol_lower = result.symbol.to_lowercase();
                 let company_lower = result
                     .company_name

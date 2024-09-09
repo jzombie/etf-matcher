@@ -290,10 +290,10 @@ impl ETFAggregateDetail {
             None => None,
         };
 
-        let ticker_search_result = TickerSearch::get_result_with_id(ticker_id).await?;
+        let ticker_raw_search_result = TickerSearch::get_raw_result_with_id(ticker_id).await?;
         let logo_filename = extract_logo_filename(
-            ticker_search_result.logo_filename.as_deref(),
-            &ticker_search_result.symbol,
+            ticker_raw_search_result.logo_filename.as_deref(),
+            &ticker_raw_search_result.symbol,
         );
 
         let major_sector_distribution: Option<Vec<MajorSectorWeight>> =
