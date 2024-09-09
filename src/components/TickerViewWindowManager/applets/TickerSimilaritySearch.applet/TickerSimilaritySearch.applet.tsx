@@ -1,5 +1,10 @@
 import React, { useCallback, useRef, useState } from "react";
 
+import DonutLargeIcon from "@mui/icons-material/DonutLarge";
+// Euclidean
+import ShowChartIcon from "@mui/icons-material/ShowChart";
+// New icon for Radial
+import StraightenIcon from "@mui/icons-material/Straighten";
 import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
 import Layout, { Content, Header } from "@layoutKit/Layout";
@@ -64,16 +69,16 @@ export default function TickerSimilaritySearchApplet({
                   aria-label="Similarity search toggle"
                   size="small"
                 >
-                  {
-                    // TODO: Reintroduce icons
-                  }
                   <ToggleButton value="radial" aria-label="Radial chart">
+                    <DonutLargeIcon />
                     Radial
                   </ToggleButton>
                   <ToggleButton value="euclidean" aria-label="Euclidean">
+                    <StraightenIcon />
                     Euclidean
                   </ToggleButton>
                   <ToggleButton value="cosine" aria-label="Cosine">
+                    <ShowChartIcon />
                     Cosine
                   </ToggleButton>
                 </ToggleButtonGroup>
