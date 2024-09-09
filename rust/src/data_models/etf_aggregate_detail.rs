@@ -6,8 +6,65 @@ use crate::IndustryById;
 use crate::JsValue;
 use crate::SectorById;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
-// use web_sys::console;
+#[derive(Serialize, Deserialize, Debug)]
+pub struct MajorSectorWeight {
+    pub major_sector_name: String,
+    pub weight: f32,
+}
+
+impl MajorSectorWeight {
+    async fn parse_major_sector_distribution(
+        json_str: &str,
+    ) -> Result<Vec<MajorSectorWeight>, String> {
+        // Parse the JSON and handle any errors
+        let parsed_json: Value =
+            serde_json::from_str(json_str).map_err(|e| format!("Failed to parse JSON: {}", e))?;
+        let mut result = Vec::new();
+
+        // Ensure that we are dealing with an object
+        if let Value::Object(map) = parsed_json {
+            for (key, value) in map {
+                // Attempt to parse the key as SectorId and the value as f64
+                let major_sector_id = key
+                    .parse::<SectorId>()
+                    .map_err(|_| format!("Failed to parse SectorId from key: {}", key))?;
+
+                if let Some(weight) = value.as_f64() {
+                    // Ensure the weight is within valid f32 range
+                    if weight > f32::MAX as f64 || weight < f32::MIN as f64 {
+                        return Err(format!("Weight value {} is out of range for f32", weight));
+                    }
+                    let weight_f32 = weight as f32; // Safe to cast now
+
+                    // Fetch the major sector name asynchronously
+                    if let Ok(major_sector_name) =
+                        SectorById::get_major_sector_name_with_id(major_sector_id).await
+                    {
+                        result.push(MajorSectorWeight {
+                            major_sector_name,  // Use sector name instead of ID
+                            weight: weight_f32, // Use the safely cast f32 value
+                        });
+                    } else {
+                        return Err(format!(
+                            "Failed to get major sector name for SectorId: {}",
+                            major_sector_id
+                        ));
+                    }
+                } else {
+                    return Err(format!(
+                        "Invalid weight value for SectorId: {}",
+                        major_sector_id
+                    ));
+                }
+            }
+            Ok(result)
+        } else {
+            Err("Expected a JSON object".to_string())
+        }
+    }
+}
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ETFAggregateDetail {
@@ -87,8 +144,11 @@ pub struct ETFAggregateDetail {
     pub avg_net_cash_used_provided_by_financing_activities_2_yr: Option<f64>,
     pub avg_net_cash_used_provided_by_financing_activities_3_yr: Option<f64>,
     pub avg_net_cash_used_provided_by_financing_activities_4_yr: Option<f64>,
+    //
+    pub major_sector_distribution: Option<String>,
 }
 
+// TODO: Rename without `Response` suffix. Rename original `ETFAggregateDetail`.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ETFAggregateDetailResponse {
     pub ticker_id: TickerId,
@@ -169,6 +229,8 @@ pub struct ETFAggregateDetailResponse {
     pub avg_net_cash_used_provided_by_financing_activities_2_yr: Option<f64>,
     pub avg_net_cash_used_provided_by_financing_activities_3_yr: Option<f64>,
     pub avg_net_cash_used_provided_by_financing_activities_4_yr: Option<f64>,
+    //
+    pub major_sector_distribution: Option<Vec<MajorSectorWeight>>,
 }
 
 impl ETFAggregateDetail {
@@ -222,6 +284,25 @@ impl ETFAggregateDetail {
             }
             None => None,
         };
+
+        let major_sector_distribution: Option<Vec<MajorSectorWeight>> =
+            match &etf_aggregate_detail.major_sector_distribution {
+                Some(json_str) => {
+                    match MajorSectorWeight::parse_major_sector_distribution(json_str).await {
+                        Ok(sector_weights) => Some(sector_weights),
+                        Err(err) => {
+                            // Handle the error, log if necessary, and return None
+                            let error_message = format!(
+                                "Error parsing sector distribution for ticker_id {}: {}",
+                                etf_aggregate_detail.ticker_id, err
+                            );
+                            web_sys::console::error_1(&error_message.into());
+                            None
+                        }
+                    }
+                }
+                None => None,
+            };
 
         let response = ETFAggregateDetailResponse {
             ticker_id: etf_aggregate_detail.ticker_id,
@@ -322,6 +403,8 @@ impl ETFAggregateDetail {
                 .avg_net_cash_used_provided_by_financing_activities_3_yr,
             avg_net_cash_used_provided_by_financing_activities_4_yr: etf_aggregate_detail
                 .avg_net_cash_used_provided_by_financing_activities_4_yr,
+            //
+            major_sector_distribution,
         };
 
         Ok(response)

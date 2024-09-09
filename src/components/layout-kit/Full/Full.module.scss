@@ -4,6 +4,8 @@
   position: relative;
   overflow: hidden;
   flex-direction: column;
+  width: 100%;
+  height: 100%;
 }
 
 // TODO: Remove? This breaks `Center` layouts, forcing them to not fill up the

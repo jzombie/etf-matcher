@@ -7,14 +7,15 @@ import {
   removeCacheEntry,
 } from "./lib/cache";
 import {
-  fetchETFHoldersAggregateDetailByTickerId,
+  fetchETFHoldersAggregateDetail,
   fetchETFHoldingWeight,
-  fetchETFHoldingsByETFTickerId,
+  fetchETFHoldings,
 } from "./lib/etfHoldings";
+import fetchAllMajorSectors from "./lib/fetchAllMajorSectors";
 import fetchDataBuildInfo from "./lib/fetchDataBuildInfo";
-import fetchETFAggregateDetailByTickerId from "./lib/fetchETFAggregateDetailByTickerId";
+import fetchETFAggregateDetail from "./lib/fetchETFAggregateDetail";
 import fetchImageInfo from "./lib/fetchImageInfo";
-import fetchSymbolAndExchangeByTickerId from "./lib/fetchSymbolAndExchangeByTickerId";
+import fetchSymbolAndExchange from "./lib/fetchSymbolAndExchange";
 import fetchTicker10KDetail from "./lib/fetchTicker10KDetail";
 import fetchTickerDetail from "./lib/fetchTickerDetail";
 import fetchTickerId from "./lib/fetchTickerId";
@@ -79,12 +80,13 @@ export {
   generateQRCode,
   searchTickers,
   fetchImageInfo,
-  fetchETFHoldingsByETFTickerId,
+  fetchETFHoldings,
   fetchETFHoldingWeight,
-  fetchETFHoldersAggregateDetailByTickerId,
+  fetchETFHoldersAggregateDetail,
   fetchTickerDetail,
   fetchTicker10KDetail,
-  fetchSymbolAndExchangeByTickerId,
-  fetchETFAggregateDetailByTickerId,
+  fetchSymbolAndExchange,
+  fetchETFAggregateDetail,
+  fetchAllMajorSectors,
   tickerBucketsToCSV,
 };

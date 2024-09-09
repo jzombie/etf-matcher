@@ -1,16 +1,19 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import { Box, CircularProgress, Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
+import NetworkProgressIndicator from '@components/NetworkProgressIndicator';
 
 import Center from "@layoutKit/Center";
 
 import LazyRender from "@components/LazyRender";
+import SectorsPieChart from "@components/SectorsPieChart";
 import TickerVectorTable from "@components/TickerVectorQueryTable";
 
 import useTickerDetail from "@hooks/useTickerDetail";
 
 import type { RustServiceETFAggregateDetail } from "@utils/callRustService";
 import { fetchETFAggregateDetailByTickerId } from "@utils/callRustService";
+import customLogger from "@utils/customLogger";
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
 import TickerContainer from "../TickerContainer";
@@ -40,7 +43,6 @@ export default function TickerDetail({
     tickerId,
     onLoad,
   );
-
   const [etfAggregateDetail, setETFAggregateDetail] = useState<
     RustServiceETFAggregateDetail | undefined
   >(undefined);
@@ -53,6 +55,12 @@ export default function TickerDetail({
     }
   }, [tickerDetail]);
 
+  useEffect(() => {
+    if (etfAggregateDetail) {
+      customLogger.debug({ etfAggregateDetail });
+    }
+  }, [etfAggregateDetail]);
+
   const formattedSymbolWithExchange = useMemo(
     () => tickerDetail && formatSymbolWithExchange(tickerDetail),
     [tickerDetail],
@@ -61,7 +69,7 @@ export default function TickerDetail({
   if (isLoadingTickerDetail && !preventLoadingSpinner) {
     return (
       <Center>
-        <CircularProgress />
+        <NetworkProgressIndicator />
       </Center>
     );
   }
@@ -77,6 +85,7 @@ export default function TickerDetail({
       onIntersectionStateChange={onIntersectionStateChange}
       {...rest}
     >
+      {/* Header Section */}
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <TickerDetailHeader
@@ -85,35 +94,79 @@ export default function TickerDetail({
             formattedSymbolWithExchange={formattedSymbolWithExchange}
           />
         </Grid>
-        <Grid item xs={12} md={6} mb={1}>
-          <LazyRender>
-            <PCAScatterPlot tickerDetail={tickerDetail} />
-          </LazyRender>
+      </Grid>
+
+      {/* Historical Price Chart - Full Width */}
+      <Grid container spacing={2} sx={{ marginTop: 2 }}>
+        <Grid item xs={12}>
+          <HistoricalPriceChart
+            tickerSymbol={tickerDetail.symbol}
+            formattedSymbolWithExchange={formattedSymbolWithExchange}
+          />
         </Grid>
       </Grid>
 
-      <LazyRender>
-        <HistoricalPriceChart
-          tickerSymbol={tickerDetail.symbol}
-          formattedSymbolWithExchange={formattedSymbolWithExchange}
-        />
+      {/* Bucket Manager */}
+      <Box sx={{ textAlign: "center", margin: "20px 0" }}>
+        <TickerDetailBucketManager tickerDetail={tickerDetail} />
+      </Box>
 
-        <Box sx={{ textAlign: "center" }}>
-          <TickerDetailBucketManager tickerDetail={tickerDetail} />
+      {/* Grid layout for side-by-side chart */}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2, 1fr)", // Two equal-width columns
+          gridAutoRows: "minmax(100px, auto)", // Adjust rows dynamically
+          gap: 2, // Gap between the boxes
+        }}
+      >
+        <Box>
+          <LazyRender>
+            <PCAScatterPlot tickerDetail={tickerDetail} />
+          </LazyRender>
         </Box>
 
-        <TickerVectorTable queryMode={"ticker-detail"} query={tickerDetail} />
+        {etfAggregateDetail?.major_sector_distribution && (
+          <Box>
+            <SectorsPieChart
+              majorSectorDistribution={
+                etfAggregateDetail?.major_sector_distribution
+              }
+            />
+          </Box>
+        )}
+      </Box>
 
-        <FinancialChartsGrid tickerDetail={tickerDetail} />
+      {/* Grid layout for the table and financial charts */}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2, 1fr)", // Two equal-width columns
+          gridTemplateRows: "masonry", // Masonry for rows
+          gap: 2, // Gap between columns and rows
+          marginTop: 2,
+        }}
+      >
+        <Box sx={{ border: "1px yellow solid" }}>
+          <TickerVectorTable queryMode={"ticker-detail"} query={tickerDetail} />
+        </Box>
+
+        <Box sx={{ border: "1px yellow solid" }}>
+          <FinancialChartsGrid tickerDetail={tickerDetail} />
+        </Box>
 
         {tickerDetail?.is_etf && (
-          <ETFHoldingList etfTickerDetail={tickerDetail} />
+          <Box sx={{ border: "1px yellow solid" }}>
+            <ETFHoldingList etfTickerDetail={tickerDetail} />
+          </Box>
         )}
 
         {tickerDetail?.is_held_in_etf && (
-          <ETFHolderList tickerDetail={tickerDetail} />
+          <Box sx={{ border: "1px yellow solid" }}>
+            <ETFHolderList tickerDetail={tickerDetail} />
+          </Box>
         )}
-      </LazyRender>
+      </Box>
     </TickerContainer>
   );
 }

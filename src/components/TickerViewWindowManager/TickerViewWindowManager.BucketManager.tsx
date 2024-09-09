@@ -29,13 +29,13 @@ import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
 import type { RustServiceTickerDetail } from "@utils/callRustService";
 
-export type TickerDetailBucketManagerProps = {
+export type TickerViewWindowManagerBucketManagerProps = {
   tickerDetail: RustServiceTickerDetail;
 };
 
-export default function TickerDetailBucketManager({
+export default function TickerViewWindowManagerBucketManager({
   tickerDetail,
-}: TickerDetailBucketManagerProps) {
+}: TickerViewWindowManagerBucketManagerProps) {
   const { tickerBuckets } = useStoreStateReader(["tickerBuckets"]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isBucketDialogOpen, setIsBucketDialogOpen] = useState(false);
@@ -159,6 +159,7 @@ export default function TickerDetailBucketManager({
                   justifyContent: "flex-start", // Left justify the icon
                   textAlign: "center", // Center the text
                 }}
+                size="small"
               >
                 <Box component="span" sx={{ flexGrow: 1, textAlign: "center" }}>
                   {isTickerInBucketType && areMultipleInstancesAllowed

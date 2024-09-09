@@ -6,7 +6,7 @@ import Full from "../Full";
 import styles from "./Cover.module.scss";
 
 export type CoverProps = HTMLAttributes<HTMLDivElement> & {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
   clickThrough?: boolean;
 };

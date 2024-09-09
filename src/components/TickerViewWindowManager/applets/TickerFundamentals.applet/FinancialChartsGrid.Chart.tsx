@@ -30,18 +30,17 @@ const TICK_COLOR = "#999";
 export type RenderChartProps = {
   title: string;
   chartData: { year: string; value: number }[];
-  // TODO: Rename `detail`... what type of "detail"?
-  detail: RustServiceTicker10KDetail | RustServiceETFAggregateDetail;
+  financialDetail: RustServiceTicker10KDetail | RustServiceETFAggregateDetail;
   colorIndex: number;
 };
 
 export default function RenderChart({
   title,
   chartData,
-  detail,
+  financialDetail,
   colorIndex,
 }: RenderChartProps) {
-  const [chartType, setChartType] = useState<"line" | "bar">("line");
+  const [chartType, setChartType] = useState<"line" | "bar">("bar");
 
   const handleChartTypeChange = (type: "line" | "bar") => {
     setChartType(type);
@@ -117,8 +116,8 @@ export default function RenderChart({
             <YAxis
               tickFormatter={(value: number) =>
                 formatCurrency(
-                  isETFAggregateDetail(detail)
-                    ? detail.currency_code
+                  isETFAggregateDetail(financialDetail)
+                    ? financialDetail.currency_code
                     : DEFAULT_CURRENCY_CODE,
                   value,
                 )
@@ -129,8 +128,8 @@ export default function RenderChart({
             <Tooltip
               formatter={(value: number) =>
                 formatCurrency(
-                  isETFAggregateDetail(detail)
-                    ? detail.currency_code
+                  isETFAggregateDetail(financialDetail)
+                    ? financialDetail.currency_code
                     : DEFAULT_CURRENCY_CODE,
                   value,
                 )
@@ -154,8 +153,8 @@ export default function RenderChart({
             <YAxis
               tickFormatter={(value: number) =>
                 formatCurrency(
-                  isETFAggregateDetail(detail)
-                    ? detail.currency_code
+                  isETFAggregateDetail(financialDetail)
+                    ? financialDetail.currency_code
                     : DEFAULT_CURRENCY_CODE,
                   value,
                 )
@@ -166,8 +165,8 @@ export default function RenderChart({
             <Tooltip
               formatter={(value: number) =>
                 formatCurrency(
-                  isETFAggregateDetail(detail)
-                    ? detail.currency_code
+                  isETFAggregateDetail(financialDetail)
+                    ? financialDetail.currency_code
                     : DEFAULT_CURRENCY_CODE,
                   value,
                 )
