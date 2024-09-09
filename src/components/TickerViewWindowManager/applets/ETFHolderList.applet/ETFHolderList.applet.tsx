@@ -111,12 +111,17 @@ export default function ETFHolderListApplet({
                 encSrc={holder.logo_filename}
                 style={{ width: 50, height: 50, marginBottom: 8 }}
               />
+
               <Typography
-                variant="h6"
-                component="div"
-                sx={{ fontWeight: "bold", marginBottom: 1 }}
+                variant="subtitle1"
+                sx={{ fontWeight: "bold" }}
+                gutterBottom
               >
-                {holder.etf_name} ({holder.etf_symbol})
+                {holder.etf_name}
+              </Typography>
+
+              <Typography variant="body2">
+                Symbol: {holder.etf_symbol}
               </Typography>
 
               <Typography variant="body2">
@@ -139,13 +144,11 @@ export default function ETFHolderListApplet({
               </Typography>
 
               <Typography variant="body2">
-                Top Market Value Industry:{" "}
-                {holder.top_market_value_industry_name || "N/A"}
+                Top Industry: {holder.top_market_value_industry_name || "N/A"}
               </Typography>
 
               <Typography variant="body2">
-                Top Market Value Sector:{" "}
-                {holder.top_market_value_sector_name || "N/A"}
+                Top Sector: {holder.top_market_value_sector_name || "N/A"}
               </Typography>
             </div>
           )}

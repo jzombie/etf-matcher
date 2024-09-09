@@ -111,7 +111,11 @@ export default function ETFHoldingListApplet({
                 encSrc={holding.logo_filename}
                 style={{ width: 50, height: 50, marginBottom: 8 }}
               />
-              <Typography variant="subtitle1" gutterBottom>
+              <Typography
+                variant="subtitle1"
+                sx={{ fontWeight: "bold" }}
+                gutterBottom
+              >
                 {holding.company_name}
               </Typography>
               <Typography variant="body2">
