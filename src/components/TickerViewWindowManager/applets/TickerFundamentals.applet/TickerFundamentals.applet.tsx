@@ -22,7 +22,7 @@ export default function TickerFundamentalsApplet({
       isLoadingTickerDetail={isLoadingTickerDetail}
       tickerDetailError={tickerDetailError}
     >
-      <>{tickerDetail && <FinancialChartsGrid tickerDetail={tickerDetail} />}</>
+      {tickerDetail && <FinancialChartsGrid tickerDetail={tickerDetail} />}
     </TickerDetailAppletWrap>
   );
 }
