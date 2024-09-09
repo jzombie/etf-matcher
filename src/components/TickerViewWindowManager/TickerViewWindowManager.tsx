@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 
 import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
-import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
+import Layout, { Content, Footer } from "@layoutKit/Layout";
 import { MosaicNode, MosaicParent } from "react-mosaic-component";
 
 import TickerContainer from "@components/TickerContainer";
@@ -94,30 +94,12 @@ export default function TickerViewWindowManager({
     updateOpenWindows(initialValue); // Initialize open windows
   }, [contentMap, initialValue, updateOpenWindows]);
 
+  const areAllWindowsOpen =
+    Array.from(openWindows).length === Object.values(contentMap).length;
+
   return (
     <TickerContainer tickerId={tickerId}>
       <Layout>
-        <Header>
-          {/* Dynamically generate buttons based on contentMap */}
-          <Box>
-            <ToggleButtonGroup
-              value={Array.from(openWindows)} // Convert openWindows to array
-              aria-label="window selection"
-            >
-              {Object.keys(contentMap).map((key) => (
-                <ToggleButton
-                  key={key}
-                  value={key}
-                  disabled={openWindows.has(key)} // Disable button if the window is open
-                  onClick={() => toggleWindow(key)} // Toggle window on click
-                >
-                  {key}
-                </ToggleButton>
-              ))}
-            </ToggleButtonGroup>
-          </Box>
-        </Header>
-
         <Content>
           <WindowManager
             initialValue={layout || initialValue}
@@ -133,6 +115,34 @@ export default function TickerViewWindowManager({
         </Content>
 
         <Footer>
+          {!areAllWindowsOpen && (
+            <Box sx={{ overflow: "auto" }}>
+              {/* Dynamically generate buttons based on contentMap */}
+              <ToggleButtonGroup
+                value={Array.from(openWindows)} // Convert openWindows to array
+                aria-label="window selection"
+                sx={{ float: "right" }}
+              >
+                {Object.keys(contentMap).map((key) => {
+                  if (openWindows.has(key)) {
+                    return null;
+                  }
+
+                  return (
+                    <ToggleButton
+                      key={key}
+                      value={key}
+                      disabled={openWindows.has(key)} // Disable button if the window is open
+                      onClick={() => toggleWindow(key)} // Toggle window on click
+                    >
+                      {key}
+                    </ToggleButton>
+                  );
+                })}
+              </ToggleButtonGroup>
+            </Box>
+          )}
+
           {tickerDetail && (
             <TickerViewWindowManagerBucketManager tickerDetail={tickerDetail} />
           )}
