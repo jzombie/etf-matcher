@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 
 import {
   Box,
@@ -9,17 +9,23 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import CircularProgress from "@mui/material/CircularProgress";
 
 import Center from "@layoutKit/Center";
 import Layout, { Content, Header } from "@layoutKit/Layout";
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
+import AvatarLogo from "@components/AvatarLogo";
+import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import SearchModalButton from "@components/SearchModalButton";
-import TickerDetailList from "@components/TickerDetailList";
+import SelectableGrid from "@components/SelectableGrid";
+import TickerViewWindowManager from "@components/TickerViewWindowManager";
 import Transition from "@components/Transition";
 
+import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
+
+import type { RustServiceTickerSearchResult } from "@utils/callRustService";
+import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
 import usePageTitleSetter from "@utils/usePageTitleSetter";
 
 import useSearchResultsURLState from "./useSearchResultsURLState";
@@ -39,31 +45,35 @@ export default function SearchResults() {
     previousPage,
   } = useSearchResultsURLState();
 
-  usePageTitleSetter(searchQuery ? `Search results for: ${searchQuery}` : null);
+  const pageTitle = useMemo<string | null>(() => {
+    if (!searchQuery) {
+      return null;
+    }
+
+    if (!onlyExactMatches || searchResults.length !== 1) {
+      return `Search results for: ${searchQuery}`;
+    } else {
+      return searchQuery;
+    }
+  }, [searchQuery, searchResults, onlyExactMatches]);
+
+  usePageTitleSetter(pageTitle);
 
   const headerRef = useRef<HTMLDivElement>(null);
+  const navigateToSymbol = useTickerSymbolNavigation();
 
   const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
-    // Note: Consider discarding this on large enough viewports
-
     if (headerRef.current) {
       const scrollTop = event.currentTarget.scrollTop;
       const headerHeight = headerRef.current.clientHeight;
-
-      // Calculate the new margin top to slide the header out of view
-      // Stop decreasing marginTop once the header is fully out of view
       const newMarginTop = Math.max(-headerHeight, -scrollTop);
-
-      // Apply the calculated margin top to the header
       headerRef.current.style.marginTop = `${newMarginTop}px`;
     }
   }, []);
 
-  // Reset header offset on page changes (fixes an issue where when using footer
-  // pagination navigation, the header wouldn't re-appear)
+  // Reset header offset on page changes
   useEffect(() => {
     const header = headerRef.current;
-
     if (page && header) {
       header.style.marginTop = "0px";
     }
@@ -71,11 +81,50 @@ export default function SearchResults() {
 
   const isHeaderPaginationInline = useMediaQuery("@media (min-width:800px)");
 
+  // Map search results to the format needed for SelectableGrid
+  const selectableSearchResults = useMemo(
+    () =>
+      searchResults.map((result) => ({
+        data: result,
+        id: result.ticker_id,
+      })),
+    [searchResults],
+  );
+
+  // Render each search result item for the grid
+  const renderSearchResultItem = useCallback(
+    (searchResult: RustServiceTickerSearchResult) => (
+      <Box
+        display="flex"
+        alignItems="center"
+        padding={1}
+        sx={{
+          whiteSpace: "nowrap", // Prevents text from wrapping
+          overflow: "hidden", // Hides overflowing content
+          textOverflow: "ellipsis", // Adds an ellipsis if the text overflows
+        }}
+      >
+        <AvatarLogo tickerDetail={searchResult} />
+        <Box ml={2} sx={{ minWidth: 0 }}>
+          {" "}
+          {/* Ensure this box can shrink */}
+          <Typography variant="h6" noWrap>
+            {searchResult.symbol}
+          </Typography>
+          <Typography variant="body2" color="textSecondary" noWrap>
+            {searchResult.company_name}
+          </Typography>
+        </Box>
+      </Box>
+    ),
+    [],
+  );
+
   if (!searchResults.length) {
     if (isLoading) {
       return (
         <Center>
-          <CircularProgress />
+          <NetworkProgressIndicator />
         </Center>
       );
     }
@@ -123,6 +172,10 @@ export default function SearchResults() {
 
   return (
     <Layout>
+      {
+        // TODO: Depending on the amount of available vertical space, consider
+        // hiding header if exact match is enabled and the user is viewing a symbol
+      }
       <Header ref={headerRef}>
         <Padding>
           <Box
@@ -162,7 +215,7 @@ export default function SearchResults() {
                   textAlign: isHeaderPaginationInline ? "left" : "center",
                 }}
               >
-                {totalSearchResults} search result
+                {formatNumberWithCommas(totalSearchResults)} search result
                 {totalSearchResults !== 1 ? "s" : ""} for &quot;{searchQuery}
                 &quot;
               </Typography>
@@ -194,27 +247,21 @@ export default function SearchResults() {
           direction={!previousPage || page > previousPage ? "left" : "right"}
           trigger={searchResults}
         >
-          <Scrollable onScroll={handleScroll}>
-            <TickerDetailList
-              tickerIds={searchResults.map(({ ticker_id }) => ticker_id)}
-            />
-
-            {totalSearchResults > pageSize && !isLoading && (
-              <Box style={{ textAlign: "center" }}>
-                <Pagination
-                  count={totalPages}
-                  page={page}
-                  onChange={(event, nextPage) => setPage(nextPage)}
-                  showFirstButton
-                  showLastButton
-                  sx={{ display: "inline-block" }}
-                  // TODO: Dynamically adjust the following as needed
-                  // boundaryCount={0}
-                  // siblingCount={0}
+          {searchResults.length === 1 && onlyExactMatches ? (
+            <TickerViewWindowManager tickerId={searchResults[0].ticker_id} />
+          ) : (
+            <Scrollable onScroll={handleScroll}>
+              <Padding>
+                <SelectableGrid
+                  items={selectableSearchResults}
+                  onItemSelect={(searchResult) =>
+                    navigateToSymbol(searchResult.symbol)
+                  }
+                  renderItem={renderSearchResultItem}
                 />
-              </Box>
-            )}
-          </Scrollable>
+              </Padding>
+            </Scrollable>
+          )}
         </Transition>
       </Content>
     </Layout>

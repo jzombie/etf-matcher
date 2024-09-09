@@ -5,7 +5,7 @@ import type {
   RustServiceTicker10KDetail,
 } from "@utils/callRustService";
 import {
-  fetchETFAggregateDetailByTickerId,
+  fetchETFAggregateDetail,
   fetchTicker10KDetail,
 } from "@utils/callRustService";
 
@@ -33,7 +33,7 @@ export default function useTicker10KDetail(
       const fetchData = async () => {
         try {
           const result = isETF
-            ? await fetchETFAggregateDetailByTickerId(tickerId)
+            ? await fetchETFAggregateDetail(tickerId)
             : await fetchTicker10KDetail(tickerId);
 
           setDetail(result);

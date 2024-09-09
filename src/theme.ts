@@ -40,6 +40,9 @@ const darkTheme = createTheme({
       },
     },
     MuiButton: {
+      defaultProps: {
+        size: "small",
+      },
       styleOverrides: {
         root: {
           textTransform: "none",
@@ -57,6 +60,26 @@ const darkTheme = createTheme({
           fontSize: "0.875rem", // Smaller input text
           padding: "4px 8px", // Smaller padding
         },
+      },
+    },
+    MuiToggleButtonGroup: {
+      defaultProps: {
+        size: "small",
+      },
+    },
+    MuiIconButton: {
+      defaultProps: {
+        size: "small",
+      },
+    },
+    MuiFab: {
+      defaultProps: {
+        size: "small",
+      },
+    },
+    MuiCheckbox: {
+      defaultProps: {
+        size: "small",
       },
     },
     MuiListItem: {
@@ -85,6 +108,9 @@ const darkTheme = createTheme({
       },
     },
     MuiSelect: {
+      defaultProps: {
+        size: "small",
+      },
       styleOverrides: {
         root: {
           "& .MuiOutlinedInput-root": {
@@ -128,6 +154,9 @@ const darkTheme = createTheme({
       },
     },
     MuiTextField: {
+      defaultProps: {
+        size: "small",
+      },
       styleOverrides: {
         root: {
           "& .MuiOutlinedInput-root": {
@@ -170,6 +199,26 @@ const darkTheme = createTheme({
             },
           },
         },
+      },
+    },
+    MuiSwitch: {
+      defaultProps: {
+        size: "small",
+      },
+    },
+    MuiRadio: {
+      defaultProps: {
+        size: "small",
+      },
+    },
+    MuiAutocomplete: {
+      defaultProps: {
+        size: "small",
+      },
+    },
+    MuiPagination: {
+      defaultProps: {
+        size: "small",
       },
     },
   },

@@ -9,7 +9,7 @@ import EncodedImage from "@components/EncodedImage";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
-import { fetchETFHoldingsByETFTickerId } from "@utils/callRustService";
+import { fetchETFHoldings } from "@utils/callRustService";
 import type {
   RustServiceETFHoldingTickerResponse,
   RustServicePaginatedResults,
@@ -35,7 +35,7 @@ export default function ETFHoldingList({
     if (etfTickerDetail.is_etf) {
       setIsLoadingETFHoldings(true);
 
-      fetchETFHoldingsByETFTickerId(etfTickerDetail.ticker_id)
+      fetchETFHoldings(etfTickerDetail.ticker_id)
         .then(setPaginatedHoldings)
         .finally(() => setIsLoadingETFHoldings(false));
     }
