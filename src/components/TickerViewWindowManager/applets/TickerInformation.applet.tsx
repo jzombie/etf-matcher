@@ -75,20 +75,21 @@ const LogoWrapper = styled(Box)(() => ({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  marginBottom: "16px",
 }));
 
+// Flexbox-based wrapper for the information section
 const InfoWrapper = styled(Box)(({ theme }) => ({
-  display: "inline-flex",
-  flexWrap: "wrap", // Enable wrapping
-  justifyContent: "flex-start", // Make sure items align to the left
-  gap: theme.spacing(2), // Add consistent spacing between items
-  "& > div": {
-    flex: "0 1 30%", // Each item takes up 30% of the available width
-    minWidth: "150px", // Ensure items don't shrink too small
-    textAlign: "center", // Keep text centered inside each item
-  },
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  flexWrap: "wrap", // Allow wrapping when the container is too small
+  textAlign: "center",
+  gap: theme.spacing(2), // Consistent spacing between items
+  padding: theme.spacing(2), // Padding around the content
 }));
 
+// InfoItem component for individual pieces of information
 function InfoItem({
   label,
   value,
@@ -97,7 +98,9 @@ function InfoItem({
   value: string | undefined;
 }) {
   return (
-    <Box mb={2}>
+    <Box flex="1 1 150px">
+      {" "}
+      {/* Flex item with a minimum width of 150px */}
       <Typography variant="subtitle2" fontWeight="bold">
         {label}
       </Typography>
