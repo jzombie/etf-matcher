@@ -52,6 +52,16 @@ export default function ETFHoldingListApplet({
     navigateToSymbol(holding.holding_symbol);
   };
 
+  if (!etfTickerDetail.is_etf) {
+    return (
+      <Center>
+        <Typography sx={{ fontWeight: "bold" }}>
+          &quot;{etfTickerDetail.symbol}&quot; is not an ETF.
+        </Typography>
+      </Center>
+    );
+  }
+
   if (!paginatedHoldings && isLoadingETFHoldings) {
     return (
       <Center>

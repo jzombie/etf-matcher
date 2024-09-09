@@ -65,7 +65,13 @@ export default function ETFHolderListApplet({
   }
 
   if (!paginatedETFHolders) {
-    return null;
+    return (
+      <Center>
+        <Typography sx={{ fontWeight: "bold" }}>
+          There are no known ETF holders for &quot;{tickerDetail.symbol}&quot;.
+        </Typography>
+      </Center>
+    );
   }
 
   const paginatedResults = paginatedETFHolders.results;
