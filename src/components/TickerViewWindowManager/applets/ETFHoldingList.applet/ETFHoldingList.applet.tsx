@@ -91,8 +91,10 @@ export default function ETFHoldingListApplet({
               textAlign: "center",
             }}
           >
-            These represent the top holdings in the ETF, listed in order from
-            the largest to the smallest allocation.{" "}
+            These represent the top holdings in the &quot;
+            {etfTickerDetail.symbol}
+            &quot; ETF, listed in order from the largest to the smallest
+            allocation.{" "}
           </Typography>
         )}
 
