@@ -11,7 +11,7 @@ import {
 
 import TickerDetailAppletWrap from "./TickerDetailAppletWrap";
 
-export type ETFAggregateDetailWrapProps = {
+export type ETFAggregateDetailAppletWrapProps = {
   tickerDetail?: RustServiceTickerDetail;
   isLoadingTickerDetail: boolean;
   tickerDetailError?: Error | unknown;
@@ -21,7 +21,7 @@ export type ETFAggregateDetailWrapProps = {
   children: React.ReactNode;
 };
 
-export default function ETFAggregateDetailWrap({
+export default function ETFAggregateDetailAppletWrap({
   tickerDetail,
   isLoadingTickerDetail,
   tickerDetailError,
@@ -29,37 +29,37 @@ export default function ETFAggregateDetailWrap({
   isLoadingETFAggregateDetail,
   etfAggregateDetailError,
   children,
-}: ETFAggregateDetailWrapProps) {
+}: ETFAggregateDetailAppletWrapProps) {
   return (
     <TickerDetailAppletWrap
       tickerDetail={tickerDetail}
       isLoadingTickerDetail={isLoadingTickerDetail}
       tickerDetailError={tickerDetailError}
     >
-      <ETFAggregateWrap
+      <ETFAggregateChildrenWrap
         etfAggregateDetail={etfAggregateDetail}
         isLoadingETFAggregateDetail={isLoadingETFAggregateDetail}
         etfAggregateDetailError={etfAggregateDetailError}
       >
         {children}
-      </ETFAggregateWrap>
+      </ETFAggregateChildrenWrap>
     </TickerDetailAppletWrap>
   );
 }
 
-type ETFAggregateWrapProps = {
-  etfAggregateDetail?: ETFAggregateDetailWrapProps["etfAggregateDetail"];
-  isLoadingETFAggregateDetail: ETFAggregateDetailWrapProps["isLoadingETFAggregateDetail"];
-  etfAggregateDetailError?: ETFAggregateDetailWrapProps["etfAggregateDetailError"];
+type ETFAggregateChildrenWrapProps = {
+  etfAggregateDetail?: ETFAggregateDetailAppletWrapProps["etfAggregateDetail"];
+  isLoadingETFAggregateDetail: ETFAggregateDetailAppletWrapProps["isLoadingETFAggregateDetail"];
+  etfAggregateDetailError?: ETFAggregateDetailAppletWrapProps["etfAggregateDetailError"];
   children: React.ReactNode;
 };
 
-function ETFAggregateWrap({
+function ETFAggregateChildrenWrap({
   etfAggregateDetail,
   isLoadingETFAggregateDetail,
   etfAggregateDetailError,
   children,
-}: ETFAggregateWrapProps) {
+}: ETFAggregateChildrenWrapProps) {
   if (isLoadingETFAggregateDetail) {
     return (
       <Center>
