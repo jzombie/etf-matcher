@@ -71,7 +71,8 @@ function ETFAggregateWrap({
   if (etfAggregateDetailError) {
     return (
       <Alert severity="error">
-        Could not load ticker detail at this time. Please try again later.
+        Could not load ETF aggregate detail at this time. Please try again
+        later.
       </Alert>
     );
   }
