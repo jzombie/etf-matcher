@@ -36,13 +36,21 @@ export default function ETFAggregateDetailAppletWrap({
       isLoadingTickerDetail={isLoadingTickerDetail}
       tickerDetailError={tickerDetailError}
     >
-      <ETFAggregateChildrenWrap
-        etfAggregateDetail={etfAggregateDetail}
-        isLoadingETFAggregateDetail={isLoadingETFAggregateDetail}
-        etfAggregateDetailError={etfAggregateDetailError}
-      >
-        {children}
-      </ETFAggregateChildrenWrap>
+      {tickerDetail && (
+        <>
+          {tickerDetail.is_etf ? (
+            <ETFAggregateChildrenWrap
+              etfAggregateDetail={etfAggregateDetail}
+              isLoadingETFAggregateDetail={isLoadingETFAggregateDetail}
+              etfAggregateDetailError={etfAggregateDetailError}
+            >
+              {children}
+            </ETFAggregateChildrenWrap>
+          ) : (
+            <> {children}</>
+          )}
+        </>
+      )}
     </TickerDetailAppletWrap>
   );
 }

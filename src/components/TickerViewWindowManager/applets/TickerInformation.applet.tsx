@@ -7,26 +7,38 @@ import Scrollable from "@layoutKit/Scrollable";
 
 import EncodedImage from "@components/EncodedImage";
 
-import { RustServiceTickerDetail } from "@utils/callRustService";
+import {
+  RustServiceETFAggregateDetail,
+  RustServiceTickerDetail,
+} from "@utils/callRustService";
 
-import TickerDetailAppletWrap from "../components/TickerDetailAppletWrap";
+import ETFAggregateDetailAppletWrap from "../components/ETFAggregateDetailAppletWrap";
 
 export type TickerInformationAppletProps = {
   tickerDetail?: RustServiceTickerDetail;
   isLoadingTickerDetail: boolean;
   tickerDetailError?: Error | unknown;
+  etfAggregateDetail?: RustServiceETFAggregateDetail;
+  isLoadingETFAggregateDetail: boolean;
+  etfAggregateDetailError?: Error | unknown;
 };
 
 export default function TickerInformationApplet({
   tickerDetail,
   isLoadingTickerDetail,
   tickerDetailError,
+  etfAggregateDetail,
+  isLoadingETFAggregateDetail,
+  etfAggregateDetailError,
 }: TickerInformationAppletProps) {
   return (
-    <TickerDetailAppletWrap
+    <ETFAggregateDetailAppletWrap
       tickerDetail={tickerDetail}
       isLoadingTickerDetail={isLoadingTickerDetail}
       tickerDetailError={tickerDetailError}
+      etfAggregateDetail={etfAggregateDetail}
+      isLoadingETFAggregateDetail={isLoadingETFAggregateDetail}
+      etfAggregateDetailError={etfAggregateDetailError}
     >
       <Scrollable style={{ textAlign: "center" }}>
         {/* Logo Section */}
@@ -61,12 +73,22 @@ export default function TickerInformationApplet({
             label="Industry"
             value={tickerDetail?.industry_name || "N/A"}
           />
+          {tickerDetail?.is_etf && (
+            <InfoItem
+              label="Expense Ratio"
+              value={
+                etfAggregateDetail?.expense_ratio
+                  ? `${etfAggregateDetail.expense_ratio.toFixed(2)}%`
+                  : "N/A"
+              }
+            />
+          )}
           {
-            // TODO: If ETF, add expense ratio
+            // TODO: Add asset class, etc.
           }
         </InfoWrapper>
       </Scrollable>
-    </TickerDetailAppletWrap>
+    </ETFAggregateDetailAppletWrap>
   );
 }
 

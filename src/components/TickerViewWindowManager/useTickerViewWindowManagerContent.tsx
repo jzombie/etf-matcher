@@ -15,15 +15,17 @@ import TickerSimilaritySearchApplet from "./applets/TickerSimilaritySearch.apple
 export default function useTickerViewWindowManagerContent(tickerId: number) {
   const { tickerDetail, isLoadingTickerDetail, tickerDetailError } =
     useTickerDetail(tickerId);
+
+  const isETF = Boolean(tickerDetail && tickerDetail.is_etf);
+
   const {
     etfAggregateDetail,
     isLoadingETFAggregateDetail,
     etfAggregateDetailError,
-  } = useETFAggregateDetail(
+  } = useETFAggregateDetail({
     tickerId,
-    () => null,
-    !tickerDetail || !tickerDetail.is_etf,
-  );
+    shouldLoad: isETF,
+  });
 
   // Initial layout definition
   const initialValue: MosaicNode<string> = useMemo(
@@ -64,6 +66,9 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
           tickerDetail={tickerDetail}
           isLoadingTickerDetail={isLoadingTickerDetail}
           tickerDetailError={tickerDetailError}
+          etfAggregateDetail={etfAggregateDetail}
+          isLoadingETFAggregateDetail={isLoadingETFAggregateDetail}
+          etfAggregateDetailError={etfAggregateDetailError}
         />
       ),
       "ETF Holders and Holdings": (
