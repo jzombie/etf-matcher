@@ -3,6 +3,7 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 
+import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
 import EncodedImage from "@components/EncodedImage";
@@ -41,52 +42,57 @@ export default function TickerInformationApplet({
       etfAggregateDetailError={etfAggregateDetailError}
     >
       <Scrollable style={{ textAlign: "center" }}>
-        {/* Logo Section */}
-        <LogoWrapper>
-          <EncodedImage
-            encSrc={tickerDetail?.logo_filename}
-            title={`${tickerDetail?.symbol} logo`}
-            style={{
-              width: "100%",
-              maxWidth: "80px",
-              objectFit: "contain",
-            }}
-          />
-        </LogoWrapper>
-
-        {/* Information Section */}
-
-        <InfoWrapper>
-          {
-            // TODO: If ETF, add top sector/industry information
-          }
-          <InfoItem
-            label="Symbol"
-            value={`${tickerDetail?.symbol}${tickerDetail?.exchange_short_name ? ` (${tickerDetail.exchange_short_name})` : ""}`}
-          />
-          <InfoItem
-            label="Company"
-            value={tickerDetail?.company_name || "N/A"}
-          />
-          <InfoItem label="Sector" value={tickerDetail?.sector_name || "N/A"} />
-          <InfoItem
-            label="Industry"
-            value={tickerDetail?.industry_name || "N/A"}
-          />
-          {tickerDetail?.is_etf && (
-            <InfoItem
-              label="Expense Ratio"
-              value={
-                etfAggregateDetail?.expense_ratio
-                  ? `${etfAggregateDetail.expense_ratio.toFixed(2)}%`
-                  : "N/A"
-              }
+        <Padding>
+          {/* Logo Section */}
+          <LogoWrapper>
+            <EncodedImage
+              encSrc={tickerDetail?.logo_filename}
+              title={`${tickerDetail?.symbol} logo`}
+              style={{
+                width: "100%",
+                maxWidth: "80px",
+                objectFit: "contain",
+              }}
             />
-          )}
-          {
-            // TODO: Add asset class, etc.
-          }
-        </InfoWrapper>
+          </LogoWrapper>
+
+          {/* Information Section */}
+
+          <InfoWrapper>
+            {
+              // TODO: If ETF, add top sector/industry information
+            }
+            <InfoItem
+              label="Symbol"
+              value={`${tickerDetail?.symbol}${tickerDetail?.exchange_short_name ? ` (${tickerDetail.exchange_short_name})` : ""}`}
+            />
+            <InfoItem
+              label="Company"
+              value={tickerDetail?.company_name || "N/A"}
+            />
+            <InfoItem
+              label="Sector"
+              value={tickerDetail?.sector_name || "N/A"}
+            />
+            <InfoItem
+              label="Industry"
+              value={tickerDetail?.industry_name || "N/A"}
+            />
+            {tickerDetail?.is_etf && (
+              <InfoItem
+                label="Expense Ratio"
+                value={
+                  etfAggregateDetail?.expense_ratio
+                    ? `${etfAggregateDetail.expense_ratio.toFixed(2)}%`
+                    : "N/A"
+                }
+              />
+            )}
+            {
+              // TODO: Add asset class, etc.
+            }
+          </InfoWrapper>
+        </Padding>
       </Scrollable>
     </ETFAggregateDetailAppletWrap>
   );
