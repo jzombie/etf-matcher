@@ -68,15 +68,15 @@ export default function TickerSimilaritySearchApplet({
                   size="small"
                 >
                   <ToggleButton value="radial" aria-label="Radial chart">
-                    <DonutLargeIcon />
+                    <DonutLargeIcon sx={{ mr: 0.5 }} />
                     Radial
                   </ToggleButton>
                   <ToggleButton value="euclidean" aria-label="Euclidean">
-                    <StraightenIcon />
+                    <StraightenIcon sx={{ mr: 0.5 }} />
                     Euclidean
                   </ToggleButton>
                   <ToggleButton value="cosine" aria-label="Cosine">
-                    <ShowChartIcon />
+                    <ShowChartIcon sx={{ mr: 0.5 }} />
                     Cosine
                   </ToggleButton>
                 </ToggleButtonGroup>

@@ -87,11 +87,11 @@ export default function ETFHoldersAndHoldingsApplet({
                   size="small"
                 >
                   <ToggleButton value="holders" aria-label="ETF holders">
-                    <LayersIcon />
+                    <LayersIcon sx={{ mr: 0.5 }} />
                     ETF Holders
                   </ToggleButton>
                   <ToggleButton value="holdings" aria-label="ETF holdings">
-                    <BusinessIcon />
+                    <BusinessIcon sx={{ mr: 0.5 }} />
                     ETF Holdings
                   </ToggleButton>
                 </ToggleButtonGroup>
