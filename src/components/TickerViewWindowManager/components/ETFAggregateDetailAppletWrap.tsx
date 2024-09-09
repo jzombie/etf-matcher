@@ -73,12 +73,11 @@ function ETFAggregateChildrenWrap({
   etfAggregateDetail,
   isLoadingETFAggregateDetail,
   etfAggregateDetailError,
-  isTiling,
   children,
 }: ETFAggregateChildrenWrapProps) {
   if (isLoadingETFAggregateDetail) {
-    // TODO: Don't use `Center` if not tiling
     return (
+      // FIXME: Don't use `Center` if not tiling?
       <Center>
         <NetworkProgressIndicator />
       </Center>

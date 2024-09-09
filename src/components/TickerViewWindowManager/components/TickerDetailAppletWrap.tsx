@@ -20,11 +20,10 @@ export default function TickerDetailAppletWrap({
   tickerDetail,
   isLoadingTickerDetail,
   tickerDetailError,
-  isTiling,
   children,
 }: TickerDetailAppletWrapProps) {
   if (isLoadingTickerDetail) {
-    // TODO: Don't use `Center` if not tiling
+    // FIXME: Don't use `Center` if not tiling?
     return (
       <Center>
         <NetworkProgressIndicator />
