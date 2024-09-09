@@ -12,6 +12,7 @@ export type TickerDetailAppletWrapProps = {
   tickerDetail?: RustServiceTickerDetail;
   isLoadingTickerDetail: boolean;
   tickerDetailError?: Error | unknown;
+  isTiling: boolean;
   children: React.ReactNode;
 };
 
@@ -19,9 +20,11 @@ export default function TickerDetailAppletWrap({
   tickerDetail,
   isLoadingTickerDetail,
   tickerDetailError,
+  isTiling,
   children,
 }: TickerDetailAppletWrapProps) {
   if (isLoadingTickerDetail) {
+    // TODO: Don't use `Center` if not tiling
     return (
       <Center>
         <NetworkProgressIndicator />

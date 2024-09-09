@@ -23,12 +23,14 @@ export type TickerSimilaritySearchAppletProps = {
   tickerDetail?: RustServiceTickerDetail;
   isLoadingTickerDetail: boolean;
   tickerDetailError?: Error | unknown;
+  isTiling: boolean;
 };
 
 export default function TickerSimilaritySearchApplet({
   tickerDetail,
   isLoadingTickerDetail,
   tickerDetailError,
+  isTiling,
 }: TickerSimilaritySearchAppletProps) {
   const [displayMode, setDisplayMode] = useState<DisplayMode>("radial");
   const previousModeRef = useRef<DisplayMode>("radial");
@@ -54,6 +56,7 @@ export default function TickerSimilaritySearchApplet({
       tickerDetail={tickerDetail}
       isLoadingTickerDetail={isLoadingTickerDetail}
       tickerDetailError={tickerDetailError}
+      isTiling={isTiling}
     >
       <>
         {tickerDetail && (

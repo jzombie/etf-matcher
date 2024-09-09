@@ -14,19 +14,21 @@ import type { RustServiceTickerDetail } from "@utils/callRustService";
 import ETFHolderListApplet from "../ETFHolderList.applet";
 import ETFHoldingListApplet from "../ETFHoldingList.applet";
 
+const DISPLAY_MODES = ["holders", "holdings"] as const;
+type DisplayMode = (typeof DISPLAY_MODES)[number];
+
 export type ETFHoldersAndHoldingsAppletProps = {
   tickerDetail?: RustServiceTickerDetail;
   isLoadingTickerDetail: boolean;
   tickerDetailError?: Error | unknown;
+  isTiling: boolean;
 };
-
-const DISPLAY_MODES = ["holders", "holdings"] as const;
-type DisplayMode = (typeof DISPLAY_MODES)[number];
 
 export default function ETFHoldersAndHoldingsApplet({
   tickerDetail,
   isLoadingTickerDetail,
   tickerDetailError,
+  isTiling,
 }: ETFHoldersAndHoldingsAppletProps) {
   const [displayMode, setDisplayMode] = useState<DisplayMode>("holders");
   const previousDisplayModeRef = useRef<DisplayMode>("holders");
@@ -73,6 +75,7 @@ export default function ETFHoldersAndHoldingsApplet({
       tickerDetail={tickerDetail}
       isLoadingTickerDetail={isLoadingTickerDetail}
       tickerDetailError={tickerDetailError}
+      isTiling={isTiling}
     >
       <>
         {tickerDetail && (

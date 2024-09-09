@@ -21,6 +21,7 @@ export type SectorAllocationAppletProps = {
   etfAggregateDetail?: RustServiceETFAggregateDetail;
   isLoadingETFAggregateDetail: boolean;
   etfAggregateDetailError?: Error | unknown;
+  isTiling: boolean;
 };
 
 export default function SectorAllocationApplet({
@@ -30,6 +31,7 @@ export default function SectorAllocationApplet({
   etfAggregateDetail,
   isLoadingETFAggregateDetail,
   etfAggregateDetailError,
+  isTiling,
 }: SectorAllocationAppletProps) {
   const distribution: RustServiceETFAggregateDetail["major_sector_distribution"] =
     useMemo(() => {
@@ -56,6 +58,7 @@ export default function SectorAllocationApplet({
       etfAggregateDetail={etfAggregateDetail}
       isLoadingETFAggregateDetail={isLoadingETFAggregateDetail}
       etfAggregateDetailError={etfAggregateDetailError}
+      isTiling={isTiling}
     >
       <>
         {distribution ? (

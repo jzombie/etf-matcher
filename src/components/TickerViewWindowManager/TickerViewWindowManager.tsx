@@ -45,7 +45,7 @@ export default function TickerViewWindowManager({
   });
 
   const { initialValue, contentMap, tickerDetail } =
-    useTickerViewWindowManagerContent(tickerId);
+    useTickerViewWindowManagerContent(tickerId, isTiling);
 
   // Track layout, open windows, saved layouts, and split percentages
   const [layout, setLayout] = useState<MosaicNode<string> | null>(null);

@@ -22,6 +22,7 @@ export type TickerInformationAppletProps = {
   etfAggregateDetail?: RustServiceETFAggregateDetail;
   isLoadingETFAggregateDetail: boolean;
   etfAggregateDetailError?: Error | unknown;
+  isTiling: boolean;
 };
 
 export default function TickerInformationApplet({
@@ -31,6 +32,7 @@ export default function TickerInformationApplet({
   etfAggregateDetail,
   isLoadingETFAggregateDetail,
   etfAggregateDetailError,
+  isTiling,
 }: TickerInformationAppletProps) {
   return (
     <ETFAggregateDetailAppletWrap
@@ -40,6 +42,7 @@ export default function TickerInformationApplet({
       etfAggregateDetail={etfAggregateDetail}
       isLoadingETFAggregateDetail={isLoadingETFAggregateDetail}
       etfAggregateDetailError={etfAggregateDetailError}
+      isTiling={isTiling}
     >
       <Scrollable style={{ textAlign: "center" }}>
         <Padding>
