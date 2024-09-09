@@ -91,11 +91,10 @@ impl TickerSearch {
             });
         }
 
-        // TODO: Rename to `all_results`
-        let mut results = Self::get_all_results().await?;
+        let mut all_results = Self::get_all_results().await?;
 
         // Extract the logo filename for each result
-        for result in &mut results {
+        for result in &mut all_results {
             result.logo_filename =
                 extract_logo_filename(result.logo_filename.as_deref(), &result.symbol);
         }
@@ -109,7 +108,7 @@ impl TickerSearch {
 
         for alternative in &alternatives {
             let query_lower: String = alternative.to_lowercase();
-            for result in &results {
+            for result in &all_results {
                 let symbol_lower = result.symbol.to_lowercase();
                 let company_lower = result
                     .company_name
