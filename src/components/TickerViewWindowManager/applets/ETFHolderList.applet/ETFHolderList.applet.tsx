@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 
-import { Box, CircularProgress, Pagination, Typography } from "@mui/material";
+import { Box, Pagination, Typography } from "@mui/material";
 
 import Center from "@layoutKit/Center";
-import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
+import Layout, { Content, Footer } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
 
+import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import Transition from "@components/Transition";
 
 import usePagination from "@hooks/usePagination";
@@ -59,7 +60,7 @@ export default function ETFHolderListApplet({
   if (!paginatedETFHolders && isLoadingETFHolders) {
     return (
       <Center>
-        <CircularProgress />
+        <NetworkProgressIndicator />
       </Center>
     );
   }
@@ -90,7 +91,7 @@ export default function ETFHolderListApplet({
         >
           {isLoadingETFHolders ? (
             <Center>
-              <CircularProgress />
+              <NetworkProgressIndicator />
             </Center>
           ) : (
             <Scrollable>

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import { Box, CircularProgress, Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
+import NetworkProgressIndicator from '@components/NetworkProgressIndicator';
 
 import Center from "@layoutKit/Center";
 
@@ -68,7 +69,7 @@ export default function TickerDetail({
   if (isLoadingTickerDetail && !preventLoadingSpinner) {
     return (
       <Center>
-        <CircularProgress />
+        <NetworkProgressIndicator />
       </Center>
     );
   }

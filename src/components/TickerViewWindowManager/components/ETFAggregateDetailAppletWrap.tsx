@@ -1,8 +1,10 @@
 import React from "react";
 
-import { Alert, CircularProgress } from "@mui/material";
+import { Alert } from "@mui/material";
 
 import Center from "@layoutKit/Center";
+
+import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 
 import {
   RustServiceETFAggregateDetail,
@@ -71,7 +73,7 @@ function ETFAggregateChildrenWrap({
   if (isLoadingETFAggregateDetail) {
     return (
       <Center>
-        <CircularProgress />
+        <NetworkProgressIndicator />
       </Center>
     );
   }

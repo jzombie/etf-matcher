@@ -64,6 +64,9 @@ export default function TickerSimilaritySearchApplet({
                   aria-label="Similarity search toggle"
                   size="small"
                 >
+                  {
+                    // TODO: Reintroduce icons
+                  }
                   <ToggleButton value="radial" aria-label="Radial chart">
                     Radial
                   </ToggleButton>

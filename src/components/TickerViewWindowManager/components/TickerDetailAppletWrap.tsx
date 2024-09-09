@@ -1,8 +1,10 @@
 import React from "react";
 
-import { Alert, CircularProgress } from "@mui/material";
+import { Alert } from "@mui/material";
 
 import Center from "@layoutKit/Center";
+
+import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 
 import { RustServiceTickerDetail } from "@utils/callRustService";
 
@@ -22,7 +24,7 @@ export default function TickerDetailAppletWrap({
   if (isLoadingTickerDetail) {
     return (
       <Center>
-        <CircularProgress />
+        <NetworkProgressIndicator />
       </Center>
     );
   }

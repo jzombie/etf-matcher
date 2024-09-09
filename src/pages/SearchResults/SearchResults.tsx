@@ -9,7 +9,6 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import CircularProgress from "@mui/material/CircularProgress";
 
 import Center from "@layoutKit/Center";
 import Layout, { Content, Header } from "@layoutKit/Layout";
@@ -17,6 +16,7 @@ import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
 import AvatarLogo from "@components/AvatarLogo";
+import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import SearchModalButton from "@components/SearchModalButton";
 import SelectableGrid from "@components/SelectableGrid";
 import TickerViewWindowManager from "@components/TickerViewWindowManager";
@@ -124,7 +124,7 @@ export default function SearchResults() {
     if (isLoading) {
       return (
         <Center>
-          <CircularProgress />
+          <NetworkProgressIndicator />
         </Center>
       );
     }

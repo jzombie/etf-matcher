@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 
-import { CircularProgress, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 
 import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
 import EncodedImage from "@components/EncodedImage";
+import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import SelectableGrid, { SelectableGridItem } from "@components/SelectableGrid";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
@@ -65,7 +66,7 @@ export default function ETFHoldingListApplet({
   if (!paginatedHoldings && isLoadingETFHoldings) {
     return (
       <Center>
-        <CircularProgress />
+        <NetworkProgressIndicator />
       </Center>
     );
   }
