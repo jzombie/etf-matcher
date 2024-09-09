@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
@@ -28,6 +28,15 @@ export default function ETFHoldersAndHoldingsApplet({
 }: ETFHoldersAndHoldingsAppletProps) {
   const [displayMode, setDisplayMode] = useState<DisplayMode>("holders");
   const previousModeRef = useRef<DisplayMode>("holders");
+
+  // Switch to `holdings` display mode by default, if this is an ETF
+  useEffect(() => {
+    if (tickerDetail?.is_etf) {
+      setDisplayMode("holdings");
+    } else {
+      setDisplayMode("holders");
+    }
+  }, [tickerDetail]);
 
   const handleDisplayModeChange = useCallback(
     (event: React.MouseEvent<HTMLElement>, newMode: DisplayMode | null) => {
