@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 import useStableCurrentRef from "./useStableCurrentRef";
 
-export function useResizeObserver(
+export default function useResizeObserver(
   ref: React.RefObject<Element>,
   callback: (entries: ResizeObserverEntry[], observer: ResizeObserver) => void,
   shouldObserve = true,

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { Box, Grid2, Paper } from "@mui/material";
 
-import { useResizeObserver } from "@hooks/useResizeObserver";
+import useResizeObserver from "@hooks/useResizeObserver";
 
 // Define the type for the generic item
 export type SelectableGridItem<T> = {

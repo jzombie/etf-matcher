@@ -1,17 +1,23 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
-import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 
+import Center from "@layoutKit/Center";
+import Full from "@layoutKit/Full";
 import Layout, { Content, Footer } from "@layoutKit/Layout";
 import { MosaicNode, MosaicParent } from "react-mosaic-component";
 
 import TickerContainer from "@components/TickerContainer";
 import WindowManager from "@components/WindowManager";
 
+import useResizeObserver from "@hooks/useResizeObserver";
+
 import customLogger from "@utils/customLogger";
 
 import TickerViewWindowManagerBucketManager from "./TickerViewWindowManager.BucketManager";
 import useTickerViewWindowManagerContent from "./useTickerViewWindowManagerContent";
+
+const TILING_MODE_MIN_WIDTH_THRESHOLD = 600;
 
 export type TickerViewWindowManagerProps = {
   tickerId: number;
@@ -20,6 +26,24 @@ export type TickerViewWindowManagerProps = {
 export default function TickerViewWindowManager({
   tickerId,
 }: TickerViewWindowManagerProps) {
+  const [isTiling, setIsTiling] = useState(true);
+  const componentRef = useRef<HTMLDivElement>(null);
+
+  useResizeObserver(componentRef, () => {
+    const container = componentRef.current;
+    if (!container) {
+      return;
+    }
+
+    const containerWidth = container.clientWidth;
+
+    const shouldTile = containerWidth >= TILING_MODE_MIN_WIDTH_THRESHOLD;
+
+    if (shouldTile !== isTiling) {
+      setIsTiling(shouldTile);
+    }
+  });
+
   const { initialValue, contentMap, tickerDetail } =
     useTickerViewWindowManagerContent(tickerId);
 
@@ -98,57 +122,68 @@ export default function TickerViewWindowManager({
     Array.from(openWindows).length === Object.values(contentMap).length;
 
   return (
-    <TickerContainer tickerId={tickerId}>
-      <Layout>
-        <Content>
-          <WindowManager
-            initialValue={layout || initialValue}
-            contentMap={contentMap}
-            onChange={(newLayout) => {
-              setLayout(newLayout);
-              updateOpenWindows(newLayout); // Update open windows when layout changes
+    <Full ref={componentRef}>
+      <TickerContainer tickerId={tickerId}>
+        <Layout>
+          <Content>
+            {isTiling ? (
+              <Layout>
+                <Content>
+                  <WindowManager
+                    initialValue={layout || initialValue}
+                    contentMap={contentMap}
+                    onChange={(newLayout) => {
+                      setLayout(newLayout);
+                      updateOpenWindows(newLayout); // Update open windows when layout changes
 
-              // TODO: Remove
-              customLogger.debug({ newLayout });
-            }}
-          />
-        </Content>
-
-        <Footer>
-          {!areAllWindowsOpen && (
-            <Box sx={{ overflow: "auto" }}>
-              {/* Dynamically generate buttons based on contentMap */}
-              <ToggleButtonGroup
-                value={Array.from(openWindows)} // Convert openWindows to array
-                aria-label="window selection"
-                sx={{ float: "right" }}
-              >
-                {Object.keys(contentMap).map((key) => {
-                  if (openWindows.has(key)) {
-                    return null;
-                  }
-
-                  return (
-                    <ToggleButton
-                      key={key}
-                      value={key}
-                      disabled={openWindows.has(key)} // Disable button if the window is open
-                      onClick={() => toggleWindow(key)} // Toggle window on click
+                      // TODO: Remove
+                      customLogger.debug({ newLayout });
+                    }}
+                  />
+                </Content>
+                {!areAllWindowsOpen && (
+                  <Footer>
+                    {/* Dynamically generate buttons based on contentMap */}
+                    <ToggleButtonGroup
+                      value={Array.from(openWindows)} // Convert openWindows to array
+                      aria-label="window selection"
+                      sx={{ float: "right" }}
                     >
-                      {key}
-                    </ToggleButton>
-                  );
-                })}
-              </ToggleButtonGroup>
-            </Box>
-          )}
+                      {Object.keys(contentMap).map((key) => {
+                        if (openWindows.has(key)) {
+                          return null;
+                        }
 
-          {tickerDetail && (
-            <TickerViewWindowManagerBucketManager tickerDetail={tickerDetail} />
-          )}
-        </Footer>
-      </Layout>
-    </TickerContainer>
+                        return (
+                          <ToggleButton
+                            key={key}
+                            value={key}
+                            disabled={openWindows.has(key)} // Disable button if the window is open
+                            onClick={() => toggleWindow(key)} // Toggle window on click
+                          >
+                            {key}
+                          </ToggleButton>
+                        );
+                      })}
+                    </ToggleButtonGroup>
+                  </Footer>
+                )}
+              </Layout>
+            ) : (
+              <Center>Not tiling</Center>
+            )}
+          </Content>
+
+          <Footer>
+            {tickerDetail && (
+              <TickerViewWindowManagerBucketManager
+                tickerDetail={tickerDetail}
+              />
+            )}
+          </Footer>
+        </Layout>
+      </TickerContainer>
+    </Full>
   );
 }
 
