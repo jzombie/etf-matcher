@@ -1,6 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-import { ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import {
+  Box,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from "@mui/material";
 
 import Full from "@layoutKit/Full";
 import Layout, { Content, Footer } from "@layoutKit/Layout";
@@ -143,30 +148,37 @@ export default function TickerViewWindowManager({
                 </Content>
                 {!areAllWindowsOpen && (
                   <Footer>
-                    {/* Dynamically generate buttons based on contentMap */}
-                    <ToggleButtonGroup
-                      value={Array.from(openWindows)} // Convert openWindows to array
-                      aria-label="window selection"
-                      sx={{ float: "right" }}
-                    >
-                      {Object.keys(contentMap).map((key) => {
-                        if (openWindows.has(key)) {
-                          return null;
-                        }
+                    <Box sx={{ overflow: "auto" }}>
+                      {/* Dynamically generate buttons based on contentMap */}
+                      <ToggleButtonGroup
+                        value={Array.from(openWindows)} // Convert openWindows to array
+                        aria-label="window selection"
+                        sx={{ float: "right" }}
+                      >
+                        {Object.keys(contentMap).map((key) => {
+                          if (openWindows.has(key)) {
+                            return null;
+                          }
 
-                        return (
-                          <ToggleButton
-                            key={key}
-                            value={key}
-                            disabled={openWindows.has(key)} // Disable button if the window is open
-                            onClick={() => toggleWindow(key)} // Toggle window on click
-                          >
-                            {key}
-                          </ToggleButton>
-                        );
-                      })}
-                    </ToggleButtonGroup>
+                          return (
+                            <ToggleButton
+                              key={key}
+                              value={key}
+                              disabled={openWindows.has(key)} // Disable button if the window is open
+                              onClick={() => toggleWindow(key)} // Toggle window on click
+                            >
+                              {key}
+                            </ToggleButton>
+                          );
+                        })}
+                      </ToggleButtonGroup>
+                    </Box>
                   </Footer>
+                )}
+                {tickerDetail && (
+                  <TickerViewWindowManagerBucketManager
+                    tickerDetail={tickerDetail}
+                  />
                 )}
               </Layout>
             ) : (
@@ -179,17 +191,14 @@ export default function TickerViewWindowManager({
                     {tileView}
                   </React.Fragment>
                 ))}
+                {tickerDetail && (
+                  <TickerViewWindowManagerBucketManager
+                    tickerDetail={tickerDetail}
+                  />
+                )}
               </Scrollable>
             )}
           </Content>
-
-          <Footer>
-            {tickerDetail && (
-              <TickerViewWindowManagerBucketManager
-                tickerDetail={tickerDetail}
-              />
-            )}
-          </Footer>
         </Layout>
       </TickerContainer>
     </Full>

@@ -13,6 +13,7 @@ import {
   RustServiceTickerDetail,
 } from "@utils/callRustService";
 
+import TickerViewWindowManagerBucketManager from "../TickerViewWindowManager.BucketManager";
 import ETFAggregateDetailAppletWrap from "../components/ETFAggregateDetailAppletWrap";
 
 export type TickerInformationAppletProps = {
@@ -97,6 +98,9 @@ export default function TickerInformationApplet({
           </InfoWrapper>
         </Padding>
       </Scrollable>
+      {!isTiling && tickerDetail && (
+        <TickerViewWindowManagerBucketManager tickerDetail={tickerDetail} />
+      )}
     </ETFAggregateDetailAppletWrap>
   );
 }
