@@ -88,14 +88,7 @@ export default function ETFHolder({
           {
             // `FakeButton` is used to not nest button within a button
           }
-          <FakeButton
-            onClick={() => {
-              navigateToSymbol(etfAggregateDetail.etf_symbol);
-            }}
-            sx={{ float: "right" }}
-          >
-            View
-          </FakeButton>
+          <FakeButton sx={{ float: "right" }}>View</FakeButton>
         </Box>
         <Divider sx={{ marginBottom: 2 }} />
 
