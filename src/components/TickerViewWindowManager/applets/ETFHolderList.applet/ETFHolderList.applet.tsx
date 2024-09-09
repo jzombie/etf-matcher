@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { Box, Pagination, Typography } from "@mui/material";
 
 import Center from "@layoutKit/Center";
+import Cover from "@layoutKit/Cover";
+import Full from "@layoutKit/Full";
 import Layout, { Content, Footer } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
 
@@ -91,33 +93,36 @@ export default function ETFHolderListApplet({
           direction={!previousPage || page > previousPage ? "left" : "right"}
           trigger={paginatedETFHolders}
         >
-          {isLoadingETFHolders ? (
-            <Center>
-              <NetworkProgressIndicator />
-            </Center>
-          ) : (
-            <Scrollable>
-              {page === 1 && (
-                <Typography
-                  variant="body2"
-                  sx={{ textAlign: "center", opacity: 0.5 }}
-                >
-                  &quot;{tickerSymbol}&quot; is found in{" "}
-                  {paginatedETFHolders.total_count} ETF
-                  {paginatedETFHolders.total_count !== 1 ? "s" : ""}:
-                </Typography>
-              )}
+          <Scrollable>
+            {page === 1 && (
+              <Typography
+                variant="body2"
+                sx={{ textAlign: "center", opacity: 0.5 }}
+              >
+                &quot;{tickerSymbol}&quot; is found in{" "}
+                {paginatedETFHolders.total_count} ETF
+                {paginatedETFHolders.total_count !== 1 ? "s" : ""}:
+              </Typography>
+            )}
 
-              {paginatedResults.map((etfHolder) => (
-                <ETFHolder
-                  key={etfHolder.ticker_id}
-                  holdingTickerDetail={tickerDetail}
-                  etfAggregateDetail={etfHolder}
-                />
-              ))}
-            </Scrollable>
-          )}
+            {paginatedResults.map((etfHolder) => (
+              <ETFHolder
+                key={etfHolder.ticker_id}
+                holdingTickerDetail={tickerDetail}
+                etfAggregateDetail={etfHolder}
+              />
+            ))}
+          </Scrollable>
         </Transition>
+        <Cover clickThrough={!isLoadingETFHolders}>
+          {isLoadingETFHolders && (
+            <Full style={{ backgroundColor: "rgba(0,0,0,.7)" }}>
+              <Center>
+                <NetworkProgressIndicator />
+              </Center>
+            </Full>
+          )}
+        </Cover>
       </Content>
       <Footer>
         {totalPages > 1 && (
