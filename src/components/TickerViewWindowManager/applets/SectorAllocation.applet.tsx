@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useMemo } from "react";
 
+import { Box, Typography } from "@mui/material";
+
+import AutoScaler from "@layoutKit/AutoScaler";
 import Center from "@layoutKit/Center";
 
 import SectorsPieChart from "@components/SectorsPieChart";
@@ -28,6 +31,23 @@ export default function SectorAllocationApplet({
   isLoadingETFAggregateDetail,
   etfAggregateDetailError,
 }: SectorAllocationAppletProps) {
+  const distribution: RustServiceETFAggregateDetail["major_sector_distribution"] =
+    useMemo(() => {
+      if (etfAggregateDetail?.major_sector_distribution) {
+        return etfAggregateDetail?.major_sector_distribution;
+      } else if (tickerDetail?.sector_name) {
+        return [
+          {
+            major_sector_name: tickerDetail.sector_name,
+            weight: 1,
+          },
+        ];
+      }
+    }, [
+      etfAggregateDetail?.major_sector_distribution,
+      tickerDetail?.sector_name,
+    ]);
+
   return (
     <ETFAggregateDetailAppletWrap
       tickerDetail={tickerDetail}
@@ -38,13 +58,18 @@ export default function SectorAllocationApplet({
       etfAggregateDetailError={etfAggregateDetailError}
     >
       <>
-        {etfAggregateDetail?.major_sector_distribution && (
+        {distribution ? (
+          <AutoScaler>
+            <Box sx={{ width: 500, height: 320 }}>
+              <SectorsPieChart majorSectorDistribution={distribution} />
+            </Box>
+          </AutoScaler>
+        ) : (
           <Center>
-            <SectorsPieChart
-              majorSectorDistribution={
-                etfAggregateDetail.major_sector_distribution
-              }
-            />
+            <Typography sx={{ fontWeight: "bold" }}>
+              No sector allocation information is available for &quot;
+              {tickerDetail?.symbol}&quot;.
+            </Typography>
           </Center>
         )}
       </>
