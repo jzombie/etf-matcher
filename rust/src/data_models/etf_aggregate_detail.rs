@@ -1,10 +1,12 @@
 use crate::types::{IndustryId, SectorId, TickerId};
+use crate::utils::extract_logo_filename;
 use crate::utils::shard::query_shard_for_id;
 use crate::utils::ticker_utils::get_symbol_and_exchange_by_ticker_id;
 use crate::DataURL;
 use crate::IndustryById;
 use crate::JsValue;
 use crate::SectorById;
+use crate::TickerSearch;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -231,6 +233,8 @@ pub struct ETFAggregateDetailResponse {
     pub avg_net_cash_used_provided_by_financing_activities_4_yr: Option<f64>,
     //
     pub major_sector_distribution: Option<Vec<MajorSectorWeight>>,
+    //
+    pub logo_filename: Option<String>,
 }
 
 impl ETFAggregateDetail {
@@ -284,6 +288,12 @@ impl ETFAggregateDetail {
             }
             None => None,
         };
+
+        let ticker_search_result = TickerSearch::get_result_with_id(ticker_id).await?;
+        let logo_filename = extract_logo_filename(
+            ticker_search_result.logo_filename.as_deref(),
+            &ticker_search_result.symbol,
+        );
 
         let major_sector_distribution: Option<Vec<MajorSectorWeight>> =
             match &etf_aggregate_detail.major_sector_distribution {
@@ -405,6 +415,8 @@ impl ETFAggregateDetail {
                 .avg_net_cash_used_provided_by_financing_activities_4_yr,
             //
             major_sector_distribution,
+            //
+            logo_filename,
         };
 
         Ok(response)

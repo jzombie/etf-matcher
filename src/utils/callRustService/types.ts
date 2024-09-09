@@ -120,6 +120,8 @@ export type RustServiceETFAggregateDetail = {
     major_sector_name: string;
     weight: number;
   }[];
+  //
+  logo_filename?: string;
 };
 
 export type RustServiceTicker10KDetail = {

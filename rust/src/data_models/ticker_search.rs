@@ -48,6 +48,32 @@ impl TickerSearch {
         alternatives
     }
 
+    pub async fn get_all_results() -> Result<Vec<TickerSearch>, JsValue> {
+        let url: String = DataURL::TickerSearch.value().to_owned();
+        let csv_data = fetch_and_decompress_gz(&url, true).await?;
+        let csv_string = String::from_utf8(csv_data).map_err(|err| {
+            JsValue::from_str(&format!("Failed to convert data to String: {}", err))
+        })?;
+        let results: Vec<TickerSearch> = parse_csv_data(csv_string.as_bytes())?;
+
+        Ok(results)
+    }
+
+    pub async fn get_result_with_id(ticker_id: TickerId) -> Result<TickerSearch, JsValue> {
+        let all_results = Self::get_all_results().await?;
+
+        match all_results
+            .into_iter()
+            .find(|result| result.ticker_id == ticker_id)
+        {
+            Some(result) => Ok(result),
+            None => Err(JsValue::from_str(&format!(
+                "Ticker ID {} not found",
+                ticker_id
+            ))),
+        }
+    }
+
     pub async fn search_tickers(
         query: &str,
         page: usize,
@@ -64,12 +90,8 @@ impl TickerSearch {
             });
         }
 
-        let url: String = DataURL::TickerSearch.value().to_owned();
-        let csv_data = fetch_and_decompress_gz(&url, true).await?;
-        let csv_string = String::from_utf8(csv_data).map_err(|err| {
-            JsValue::from_str(&format!("Failed to convert data to String: {}", err))
-        })?;
-        let mut results: Vec<TickerSearch> = parse_csv_data(csv_string.as_bytes())?;
+        // TODO: Rename to `all_results`
+        let mut results = Self::get_all_results().await?;
 
         // Extract the logo filename for each result
         for result in &mut results {

@@ -107,13 +107,10 @@ export default function ETFHolderListApplet({
           onItemSelect={handleItemSelect}
           renderItem={(holder) => (
             <div style={{ textAlign: "center" }}>
-              {
-                // TODO: Add ticker image here
-              }
-              {/* <EncodedImage
-                encSrc={tickerDetail.logo_filename}
+              <EncodedImage
+                encSrc={holder.logo_filename}
                 style={{ width: 50, height: 50, marginBottom: 8 }}
-              /> */}
+              />
               <Typography
                 variant="h6"
                 component="div"
