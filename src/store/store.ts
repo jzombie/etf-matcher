@@ -19,7 +19,7 @@ import {
   fetchCacheDetails,
   fetchCacheSize,
   fetchDataBuildInfo,
-  fetchSymbolAndExchangeByTickerId,
+  fetchSymbolAndExchange,
   fetchTickerDetail,
   fetchTickerId,
   subscribe as libRustServiceSubscribe,
@@ -577,7 +577,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     quantity: number,
     tickerBucket: TickerBucket,
   ) {
-    const tickerAndExchange = await fetchSymbolAndExchangeByTickerId(tickerId);
+    const tickerAndExchange = await fetchSymbolAndExchange(tickerId);
 
     const symbol = tickerAndExchange[0];
     const exchange_short_name = tickerAndExchange[1];

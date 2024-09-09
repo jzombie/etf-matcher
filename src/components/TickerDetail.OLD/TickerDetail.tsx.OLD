@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import { Box, CircularProgress, Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
+import NetworkProgressIndicator from '@components/NetworkProgressIndicator';
 
 import Center from "@layoutKit/Center";
 
@@ -68,7 +69,7 @@ export default function TickerDetail({
   if (isLoadingTickerDetail && !preventLoadingSpinner) {
     return (
       <Center>
-        <CircularProgress />
+        <NetworkProgressIndicator />
       </Center>
     );
   }
@@ -85,11 +86,15 @@ export default function TickerDetail({
       {...rest}
     >
       {/* Header Section */}
-      <TickerDetailHeader
-        tickerDetail={tickerDetail}
-        etfAggregateDetail={etfAggregateDetail}
-        formattedSymbolWithExchange={formattedSymbolWithExchange}
-      />
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={6}>
+          <TickerDetailHeader
+            tickerDetail={tickerDetail}
+            etfAggregateDetail={etfAggregateDetail}
+            formattedSymbolWithExchange={formattedSymbolWithExchange}
+          />
+        </Grid>
+      </Grid>
 
       {/* Historical Price Chart - Full Width */}
       <Grid container spacing={2} sx={{ marginTop: 2 }}>
@@ -106,51 +111,62 @@ export default function TickerDetail({
         <TickerDetailBucketManager tickerDetail={tickerDetail} />
       </Box>
 
-      {/* Grid for Side-by-Side or Centered Chart */}
-      <Grid
-        container
-        spacing={2}
-        mt={2}
-        justifyContent={
-          etfAggregateDetail?.major_sector_distribution
-            ? "flex-start"
-            : "center"
-        }
+      {/* Grid layout for side-by-side chart */}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2, 1fr)", // Two equal-width columns
+          gridAutoRows: "minmax(100px, auto)", // Adjust rows dynamically
+          gap: 2, // Gap between the boxes
+        }}
       >
-        <Grid
-          item
-          xs={12}
-          md={etfAggregateDetail?.major_sector_distribution ? 6 : 12}
-        >
+        <Box>
           <LazyRender>
             <PCAScatterPlot tickerDetail={tickerDetail} />
           </LazyRender>
-        </Grid>
+        </Box>
 
         {etfAggregateDetail?.major_sector_distribution && (
-          <Grid item xs={12} md={6}>
+          <Box>
             <SectorsPieChart
               majorSectorDistribution={
                 etfAggregateDetail?.major_sector_distribution
               }
             />
-          </Grid>
+          </Box>
         )}
-      </Grid>
+      </Box>
 
-      {/* Query Table and Financial Information */}
-      <TickerVectorTable queryMode={"ticker-detail"} query={tickerDetail} />
+      {/* Grid layout for the table and financial charts */}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2, 1fr)", // Two equal-width columns
+          gridTemplateRows: "masonry", // Masonry for rows
+          gap: 2, // Gap between columns and rows
+          marginTop: 2,
+        }}
+      >
+        <Box sx={{ border: "1px yellow solid" }}>
+          <TickerVectorTable queryMode={"ticker-detail"} query={tickerDetail} />
+        </Box>
 
-      {/* Financial Charts Section */}
-      <FinancialChartsGrid tickerDetail={tickerDetail} />
+        <Box sx={{ border: "1px yellow solid" }}>
+          <FinancialChartsGrid tickerDetail={tickerDetail} />
+        </Box>
 
-      {/* Conditional Rendering for ETF Holdings */}
-      {tickerDetail?.is_etf && (
-        <ETFHoldingList etfTickerDetail={tickerDetail} />
-      )}
-      {tickerDetail?.is_held_in_etf && (
-        <ETFHolderList tickerDetail={tickerDetail} />
-      )}
+        {tickerDetail?.is_etf && (
+          <Box sx={{ border: "1px yellow solid" }}>
+            <ETFHoldingList etfTickerDetail={tickerDetail} />
+          </Box>
+        )}
+
+        {tickerDetail?.is_held_in_etf && (
+          <Box sx={{ border: "1px yellow solid" }}>
+            <ETFHolderList tickerDetail={tickerDetail} />
+          </Box>
+        )}
+      </Box>
     </TickerContainer>
   );
 }

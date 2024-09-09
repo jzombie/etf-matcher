@@ -66,3 +66,13 @@ export const INDEXED_DB_PERSISTENCE_KEYS: readonly (keyof StoreStateProps)[] = [
   "tickerBuckets",
   "subscribedMQTTRoomNames",
 ] as const;
+
+export const SIMILARITY_MATCHES_NOTICE = `
+  Note: Similarity matches are based on 10 years
+  of financial data from 10-K statements. For
+  ETFs, we use weighted averages of these
+  statements. The data is analyzed and compared
+  using machine learning and linear algebra
+  techniques to help you find the most similar
+  investments.
+  `;

@@ -31,10 +31,10 @@ export default (() => {
   };
 
   const formatNumberWithCommas = (
-    value: string,
+    value: number | string,
     locale: string = DEFAULT_LOCALE,
   ) => {
-    const numericValue = parseFloat(value);
+    const numericValue = typeof value === "number" ? value : parseFloat(value);
     if (isNaN(numericValue)) {
       return value; // Return the original string if it's not a valid number
     }

@@ -8,6 +8,8 @@ type IntersectionObserverCallback = (
   observer: IntersectionObserver,
 ) => void;
 
+// FIXME: This implementation may be a bit too complex. See `useResizeObserver`
+// for a potential alternative implementation.
 export default function useIntersectionObserver(
   callback: IntersectionObserverCallback,
   threshold = 0.5,

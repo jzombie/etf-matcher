@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect } from "react";
 
 import {
-  CircularProgress,
   Paper,
   Table,
   TableBody,
@@ -15,6 +14,7 @@ import {
 import Center from "@layoutKit/Center";
 
 import AvatarLogo from "@components/AvatarLogo";
+import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 import useTickerVectorQuery, {
@@ -62,7 +62,7 @@ export default function TickerVectorQueryTableCosine({
   if (isLoading) {
     return (
       <Center>
-        <CircularProgress />
+        <NetworkProgressIndicator />
       </Center>
     );
   }
