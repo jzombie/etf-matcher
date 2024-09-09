@@ -1,9 +1,7 @@
 import React, { useCallback, useRef, useState } from "react";
 
 import DonutLargeIcon from "@mui/icons-material/DonutLarge";
-// Euclidean
 import ShowChartIcon from "@mui/icons-material/ShowChart";
-// New icon for Radial
 import StraightenIcon from "@mui/icons-material/Straighten";
 import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
