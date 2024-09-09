@@ -22,7 +22,7 @@ import customLogger from "@utils/customLogger";
 import TickerViewWindowManagerBucketManager from "./TickerViewWindowManager.BucketManager";
 import useTickerViewWindowManagerContent from "./useTickerViewWindowManagerContent";
 
-const TILING_MODE_MIN_WIDTH_THRESHOLD = 600;
+const TILING_MODE_MIN_WIDTH_THRESHOLD = 956;
 
 export type TickerViewWindowManagerProps = {
   tickerId: number;
