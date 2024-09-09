@@ -1,5 +1,7 @@
 import React from "react";
 
+import Center from "@layoutKit/Center";
+
 import SectorsPieChart from "@components/SectorsPieChart";
 
 import type {
@@ -37,11 +39,13 @@ export default function SectorAllocationApplet({
     >
       <>
         {etfAggregateDetail?.major_sector_distribution && (
-          <SectorsPieChart
-            majorSectorDistribution={
-              etfAggregateDetail.major_sector_distribution
-            }
-          />
+          <Center>
+            <SectorsPieChart
+              majorSectorDistribution={
+                etfAggregateDetail.major_sector_distribution
+              }
+            />
+          </Center>
         )}
       </>
     </ETFAggregateDetailAppletWrap>
