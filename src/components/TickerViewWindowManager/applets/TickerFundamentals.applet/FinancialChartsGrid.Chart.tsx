@@ -41,7 +41,7 @@ export default function RenderChart({
   detail,
   colorIndex,
 }: RenderChartProps) {
-  const [chartType, setChartType] = useState<"line" | "bar">("line");
+  const [chartType, setChartType] = useState<"line" | "bar">("bar");
 
   const handleChartTypeChange = (type: "line" | "bar") => {
     setChartType(type);
