@@ -20,6 +20,8 @@ import type {
 import { RustServiceTickerDetail } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
+import { StyledTitle } from "./common";
+
 export type ETFHoldingSelectableGridProps = {
   etfTickerDetail: RustServiceTickerDetail;
 };
@@ -111,13 +113,8 @@ export default function ETFHoldingSelectableGrid({
                 encSrc={holding.logo_filename}
                 style={{ width: 50, height: 50, marginBottom: 8 }}
               />
-              <Typography
-                variant="subtitle1"
-                sx={{ fontWeight: "bold" }}
-                gutterBottom
-              >
-                {holding.company_name}
-              </Typography>
+
+              <StyledTitle>{holding.company_name}</StyledTitle>
               <Typography variant="body2">
                 Symbol: {holding.holding_symbol}
               </Typography>

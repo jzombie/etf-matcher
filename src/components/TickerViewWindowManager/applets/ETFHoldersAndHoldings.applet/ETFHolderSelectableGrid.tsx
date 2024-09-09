@@ -21,6 +21,8 @@ import type {
 import customLogger from "@utils/customLogger";
 import formatCurrency from "@utils/formatCurrency";
 
+import { StyledTitle } from "./common";
+
 export type ETFHolderSelectableGridProps = {
   tickerDetail: RustServiceTickerDetail;
 };
@@ -112,13 +114,13 @@ export default function ETFHolderSelectableGrid({
                 style={{ width: 50, height: 50, marginBottom: 8 }}
               />
 
-              <Typography
+              <StyledTitle
                 variant="subtitle1"
-                sx={{ fontWeight: "bold" }}
+                sx={{ fontWeight: "bold", lineHeight: "1.4em" }}
                 gutterBottom
               >
                 {holder.etf_name}
-              </Typography>
+              </StyledTitle>
 
               <Typography variant="body2">
                 Symbol: {holder.etf_symbol}
