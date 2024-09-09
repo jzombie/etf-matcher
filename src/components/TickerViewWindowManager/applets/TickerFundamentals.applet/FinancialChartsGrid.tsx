@@ -66,7 +66,7 @@ export default function FinancialChartsGrid({
               fontStyle="italic"
             >
               Note: The following metrics are based on a weighted average of the
-              holdings in this ETF.
+              holdings in the &quot;{tickerDetail.symbol}&quot; ETF.
             </Typography>
           </Box>
         )}
