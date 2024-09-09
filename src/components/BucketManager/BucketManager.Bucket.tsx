@@ -67,14 +67,17 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
     "euclidean",
   );
 
-  const handleAlignment = (
-    event: React.MouseEvent<HTMLElement>,
-    newAlignment: "euclidean" | "cosine" | null,
-  ) => {
-    if (newAlignment !== null) {
-      setAlignment(newAlignment);
-    }
-  };
+  const handleAlignment = useCallback(
+    (
+      event: React.MouseEvent<HTMLElement>,
+      newAlignment: "euclidean" | "cosine" | null,
+    ) => {
+      if (newAlignment !== null) {
+        setAlignment(newAlignment);
+      }
+    },
+    [],
+  );
 
   return (
     <>

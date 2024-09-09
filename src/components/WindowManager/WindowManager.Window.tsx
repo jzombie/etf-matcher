@@ -23,13 +23,7 @@ export type WindowProps = {
   isResizing: boolean;
 };
 
-export default function Window({
-  id,
-  path,
-  totalWindowCount,
-  content,
-  isResizing,
-}: WindowProps) {
+export default function Window({ id, path, content, isResizing }: WindowProps) {
   const theme = useTheme();
 
   const windowStyles = {

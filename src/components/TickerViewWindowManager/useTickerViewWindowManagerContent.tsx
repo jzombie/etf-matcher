@@ -12,7 +12,10 @@ import TickerFundamentalsApplet from "./applets/TickerFundamentals.applet";
 import TickerInformationApplet from "./applets/TickerInformation.applet";
 import TickerSimilaritySearchApplet from "./applets/TickerSimilaritySearch.applet";
 
-export default function useTickerViewWindowManagerContent(tickerId: number) {
+export default function useTickerViewWindowManagerContent(
+  tickerId: number,
+  isTiling: boolean,
+) {
   const { tickerDetail, isLoadingTickerDetail, tickerDetailError } =
     useTickerDetail(tickerId);
 
@@ -69,13 +72,7 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
           etfAggregateDetail={etfAggregateDetail}
           isLoadingETFAggregateDetail={isLoadingETFAggregateDetail}
           etfAggregateDetailError={etfAggregateDetailError}
-        />
-      ),
-      "ETF Holders and Holdings": (
-        <ETFHoldersAndHoldingsApplet
-          tickerDetail={tickerDetail}
-          isLoadingTickerDetail={isLoadingTickerDetail}
-          tickerDetailError={tickerDetailError}
+          isTiling={isTiling}
         />
       ),
       "Historical Prices": (
@@ -83,13 +80,7 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
           tickerDetail={tickerDetail}
           isLoadingTickerDetail={isLoadingTickerDetail}
           tickerDetailError={tickerDetailError}
-        />
-      ),
-      "Similarity Search": (
-        <TickerSimilaritySearchApplet
-          tickerDetail={tickerDetail}
-          isLoadingTickerDetail={isLoadingTickerDetail}
-          tickerDetailError={tickerDetailError}
+          isTiling={isTiling}
         />
       ),
       "Sector Allocation": (
@@ -100,13 +91,32 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
           etfAggregateDetail={etfAggregateDetail}
           isLoadingETFAggregateDetail={isLoadingETFAggregateDetail}
           etfAggregateDetailError={etfAggregateDetailError}
+          isTiling={isTiling}
         />
       ),
+      "Similarity Search": (
+        <TickerSimilaritySearchApplet
+          tickerDetail={tickerDetail}
+          isLoadingTickerDetail={isLoadingTickerDetail}
+          tickerDetailError={tickerDetailError}
+          isTiling={isTiling}
+        />
+      ),
+
       Fundamentals: (
         <TickerFundamentalsApplet
           tickerDetail={tickerDetail}
           isLoadingTickerDetail={isLoadingTickerDetail}
           tickerDetailError={tickerDetailError}
+          isTiling={isTiling}
+        />
+      ),
+      "ETF Holders and Holdings": (
+        <ETFHoldersAndHoldingsApplet
+          tickerDetail={tickerDetail}
+          isLoadingTickerDetail={isLoadingTickerDetail}
+          tickerDetailError={tickerDetailError}
+          isTiling={isTiling}
         />
       ),
     }),
@@ -115,6 +125,7 @@ export default function useTickerViewWindowManagerContent(tickerId: number) {
       etfAggregateDetailError,
       isLoadingETFAggregateDetail,
       isLoadingTickerDetail,
+      isTiling,
       tickerDetail,
       tickerDetailError,
     ],

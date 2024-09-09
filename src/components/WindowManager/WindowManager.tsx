@@ -6,7 +6,7 @@ import Full from "@layoutKit/Full";
 import { Mosaic, MosaicNode } from "react-mosaic-component";
 import "react-mosaic-component/react-mosaic-component.css";
 
-import { useResizeObserver } from "@hooks/useResizeObserver";
+import useResizeObserver from "@hooks/useResizeObserver";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 import Window from "./WindowManager.Window";

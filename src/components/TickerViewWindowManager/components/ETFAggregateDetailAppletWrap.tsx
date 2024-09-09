@@ -20,6 +20,7 @@ export type ETFAggregateDetailAppletWrapProps = {
   etfAggregateDetail?: RustServiceETFAggregateDetail;
   isLoadingETFAggregateDetail: boolean;
   etfAggregateDetailError?: Error | unknown;
+  isTiling: boolean;
   children: React.ReactNode;
 };
 
@@ -30,6 +31,7 @@ export default function ETFAggregateDetailAppletWrap({
   etfAggregateDetail,
   isLoadingETFAggregateDetail,
   etfAggregateDetailError,
+  isTiling,
   children,
 }: ETFAggregateDetailAppletWrapProps) {
   return (
@@ -37,6 +39,7 @@ export default function ETFAggregateDetailAppletWrap({
       tickerDetail={tickerDetail}
       isLoadingTickerDetail={isLoadingTickerDetail}
       tickerDetailError={tickerDetailError}
+      isTiling={isTiling}
     >
       {tickerDetail && (
         <>
@@ -45,6 +48,7 @@ export default function ETFAggregateDetailAppletWrap({
               etfAggregateDetail={etfAggregateDetail}
               isLoadingETFAggregateDetail={isLoadingETFAggregateDetail}
               etfAggregateDetailError={etfAggregateDetailError}
+              isTiling={isTiling}
             >
               {children}
             </ETFAggregateChildrenWrap>
@@ -61,6 +65,7 @@ type ETFAggregateChildrenWrapProps = {
   etfAggregateDetail?: ETFAggregateDetailAppletWrapProps["etfAggregateDetail"];
   isLoadingETFAggregateDetail: ETFAggregateDetailAppletWrapProps["isLoadingETFAggregateDetail"];
   etfAggregateDetailError?: ETFAggregateDetailAppletWrapProps["etfAggregateDetailError"];
+  isTiling: ETFAggregateDetailAppletWrapProps["isTiling"];
   children: React.ReactNode;
 };
 
@@ -72,6 +77,7 @@ function ETFAggregateChildrenWrap({
 }: ETFAggregateChildrenWrapProps) {
   if (isLoadingETFAggregateDetail) {
     return (
+      // FIXME: Don't use `Center` if not tiling?
       <Center>
         <NetworkProgressIndicator />
       </Center>

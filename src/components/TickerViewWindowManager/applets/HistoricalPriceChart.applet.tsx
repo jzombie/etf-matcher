@@ -20,12 +20,14 @@ export type HistoricalPriceChartAppletProps = {
   tickerDetail?: RustServiceTickerDetail;
   isLoadingTickerDetail: boolean;
   tickerDetailError?: Error | unknown;
+  isTiling: boolean;
 };
 
 export default function HistoricalPriceChartApplet({
   tickerDetail,
   isLoadingTickerDetail,
   tickerDetailError,
+  isTiling,
 }: HistoricalPriceChartAppletProps) {
   const formattedSymbolWithExchange = useMemo(() => {
     if (tickerDetail) {
@@ -57,6 +59,7 @@ export default function HistoricalPriceChartApplet({
       tickerDetail={tickerDetail}
       isLoadingTickerDetail={isLoadingTickerDetail}
       tickerDetailError={tickerDetailError}
+      isTiling={isTiling}
     >
       <Layout>
         <Header>

@@ -13,6 +13,7 @@ import {
   RustServiceTickerDetail,
 } from "@utils/callRustService";
 
+import TickerViewWindowManagerBucketManager from "../TickerViewWindowManager.BucketManager";
 import ETFAggregateDetailAppletWrap from "../components/ETFAggregateDetailAppletWrap";
 
 export type TickerInformationAppletProps = {
@@ -22,6 +23,7 @@ export type TickerInformationAppletProps = {
   etfAggregateDetail?: RustServiceETFAggregateDetail;
   isLoadingETFAggregateDetail: boolean;
   etfAggregateDetailError?: Error | unknown;
+  isTiling: boolean;
 };
 
 export default function TickerInformationApplet({
@@ -31,6 +33,7 @@ export default function TickerInformationApplet({
   etfAggregateDetail,
   isLoadingETFAggregateDetail,
   etfAggregateDetailError,
+  isTiling,
 }: TickerInformationAppletProps) {
   return (
     <ETFAggregateDetailAppletWrap
@@ -40,6 +43,7 @@ export default function TickerInformationApplet({
       etfAggregateDetail={etfAggregateDetail}
       isLoadingETFAggregateDetail={isLoadingETFAggregateDetail}
       etfAggregateDetailError={etfAggregateDetailError}
+      isTiling={isTiling}
     >
       <Scrollable style={{ textAlign: "center" }}>
         <Padding>
@@ -94,6 +98,9 @@ export default function TickerInformationApplet({
           </InfoWrapper>
         </Padding>
       </Scrollable>
+      {!isTiling && tickerDetail && (
+        <TickerViewWindowManagerBucketManager tickerDetail={tickerDetail} />
+      )}
     </ETFAggregateDetailAppletWrap>
   );
 }
