@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { Typography } from "@mui/material";
 
@@ -49,9 +49,12 @@ export default function ETFHoldingListApplet({
 
   const navigateToSymbol = useTickerSymbolNavigation();
 
-  const handleItemSelect = (holding: RustServiceETFHoldingTickerResponse) => {
-    navigateToSymbol(holding.holding_symbol);
-  };
+  const handleItemSelect = useCallback(
+    (holding: RustServiceETFHoldingTickerResponse) => {
+      navigateToSymbol(holding.holding_symbol);
+    },
+    [navigateToSymbol],
+  );
 
   if (!etfTickerDetail.is_etf) {
     return (
