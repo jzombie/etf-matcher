@@ -146,7 +146,7 @@ const LogoWrapper = styled(Box)(() => ({
 const InfoWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
-  alignItems: "center",
+  alignItems: "stretch",
   flexWrap: "wrap", // Allow wrapping when the container is too small
   textAlign: "center",
   gap: theme.spacing(2), // Consistent spacing between items
