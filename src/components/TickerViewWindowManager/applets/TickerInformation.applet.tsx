@@ -146,29 +146,29 @@ function useFormattedSectorAndIndustry(
   etfAggregateDetail?: RustServiceETFAggregateDetail,
 ) {
   const formatDetail = useCallback(
-    (baseDetail?: string, aggregateDetail?: string) => {
+    (baseEntity?: string, topEntity?: string): JSX.Element => {
       // If both are missing, return "N/A"
-      if (!baseDetail && !aggregateDetail) {
+      if (!baseEntity && !topEntity) {
         return <>N/A</>;
       }
 
       // If baseDetail is missing, but aggregateDetail is present, use aggregateDetail
-      if (!baseDetail) {
-        return <>{aggregateDetail}</>;
+      if (!baseEntity) {
+        return <>{topEntity}</>;
       }
 
       // If both are present, format them together
-      if (aggregateDetail) {
+      if (topEntity) {
         return (
           <>
-            {baseDetail}
-            <br />({aggregateDetail})
+            {baseEntity}
+            <br />({topEntity})
           </>
         );
       }
 
-      // Otherwise, just return baseDetail
-      return <>{baseDetail}</>;
+      // Otherwise, just return baseEntity
+      return <>{baseEntity}</>;
     },
     [],
   );
