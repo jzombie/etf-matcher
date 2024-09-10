@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 
-import { Alert, Box, Typography } from "@mui/material";
+import { Alert, Box } from "@mui/material";
 
 import AutoScaler from "@layoutKit/AutoScaler";
 import Center from "@layoutKit/Center";
