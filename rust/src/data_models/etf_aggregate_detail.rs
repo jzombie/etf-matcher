@@ -31,7 +31,7 @@ impl MajorSectorWeight {
                 // Attempt to parse the key as SectorId and the value as f64
                 let major_sector_id = key
                     .parse::<SectorId>()
-                    .map_err(|_| format!("Failed to parse SectorId from key: {}", key))?;
+                    .map_err(|_| format!("Failed to parse sector ID from key: {}", key))?;
 
                 if let Some(weight) = value.as_f64() {
                     // Ensure the weight is within valid f32 range
@@ -50,13 +50,13 @@ impl MajorSectorWeight {
                         });
                     } else {
                         return Err(format!(
-                            "Failed to get major sector name for SectorId: {}",
+                            "Failed to get major sector name for sector ID: {}",
                             major_sector_id
                         ));
                     }
                 } else {
                     return Err(format!(
-                        "Invalid weight value for SectorId: {}",
+                        "Invalid weight value for sector ID: {}",
                         major_sector_id
                     ));
                 }
