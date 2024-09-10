@@ -70,7 +70,7 @@ export default function SectorAllocationApplet({
         ) : (
           <Center>
             {
-              // TODO: Potentially move all `no information available` notices into a common component.
+              // TODO: Unify all `no information available` into a common component
             }
             <Alert severity="warning">
               No sector allocation information is available for &quot;

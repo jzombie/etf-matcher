@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 
-import { Divider, Typography } from "@mui/material";
+import { Alert, Divider, Typography } from "@mui/material";
 
 import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
@@ -74,9 +74,12 @@ export default function ETFHolderSelectableGrid({
   if (!paginatedETFHolders) {
     return (
       <Center>
-        <Typography sx={{ fontWeight: "bold" }}>
+        {
+          // TODO: Unify all `no information available` into a common component
+        }
+        <Alert severity="warning">
           There are no known ETF holders for &quot;{tickerSymbol}&quot;.
-        </Typography>
+        </Alert>
       </Center>
     );
   }
