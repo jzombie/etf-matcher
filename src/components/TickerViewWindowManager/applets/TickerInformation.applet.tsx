@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 
 import { Box, Typography } from "@mui/material";
 import { styled } from "@mui/system";
@@ -35,43 +35,10 @@ export default function TickerInformationApplet({
   etfAggregateDetailError,
   isTiling,
 }: TickerInformationAppletProps) {
-  const formattedSector = useMemo(() => {
-    const base = tickerDetail?.sector_name;
-
-    if (!base) {
-      return <>N/A</>;
-    }
-
-    if (etfAggregateDetail?.top_pct_sector_name) {
-      return (
-        <>
-          {base}
-          <br />({etfAggregateDetail?.top_pct_sector_name})
-        </>
-      );
-    }
-
-    return <>{base}</>;
-  }, [tickerDetail, etfAggregateDetail]);
-
-  const formattedIndustry = useMemo(() => {
-    const base = tickerDetail?.industry_name;
-
-    if (!base) {
-      return <>N/A</>;
-    }
-
-    if (etfAggregateDetail?.top_pct_industry_name) {
-      return (
-        <>
-          {base}
-          <br />({etfAggregateDetail?.top_pct_industry_name})
-        </>
-      );
-    }
-
-    return <>{base}</>;
-  }, [tickerDetail, etfAggregateDetail]);
+  const { formattedSector, formattedIndustry } = useFormattedSectorAndIndustry(
+    tickerDetail,
+    etfAggregateDetail,
+  );
 
   return (
     <ETFAggregateDetailAppletWrap
@@ -172,4 +139,61 @@ function InfoItem({
       </Typography>
     </Box>
   );
+}
+
+function useFormattedSectorAndIndustry(
+  tickerDetail?: RustServiceTickerDetail,
+  etfAggregateDetail?: RustServiceETFAggregateDetail,
+) {
+  const formatDetail = useCallback(
+    (baseDetail?: string, aggregateDetail?: string) => {
+      // If both are missing, return "N/A"
+      if (!baseDetail && !aggregateDetail) {
+        return <>N/A</>;
+      }
+
+      // If baseDetail is missing, but aggregateDetail is present, use aggregateDetail
+      if (!baseDetail) {
+        return <>{aggregateDetail}</>;
+      }
+
+      // If both are present, format them together
+      if (aggregateDetail) {
+        return (
+          <>
+            {baseDetail}
+            <br />({aggregateDetail})
+          </>
+        );
+      }
+
+      // Otherwise, just return baseDetail
+      return <>{baseDetail}</>;
+    },
+    [],
+  );
+
+  const formattedSector = useMemo(() => {
+    return formatDetail(
+      tickerDetail?.sector_name,
+      etfAggregateDetail?.top_pct_sector_name,
+    );
+  }, [
+    formatDetail,
+    tickerDetail?.sector_name,
+    etfAggregateDetail?.top_pct_sector_name,
+  ]);
+
+  const formattedIndustry = useMemo(() => {
+    return formatDetail(
+      tickerDetail?.industry_name,
+      etfAggregateDetail?.top_pct_industry_name,
+    );
+  }, [
+    formatDetail,
+    tickerDetail?.industry_name,
+    etfAggregateDetail?.top_pct_industry_name,
+  ]);
+
+  return { formattedSector, formattedIndustry };
 }
