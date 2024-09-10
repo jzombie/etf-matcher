@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import { Box, Typography } from "@mui/material";
 import { styled } from "@mui/system";
@@ -35,6 +35,44 @@ export default function TickerInformationApplet({
   etfAggregateDetailError,
   isTiling,
 }: TickerInformationAppletProps) {
+  const formattedSector = useMemo(() => {
+    const base = tickerDetail?.sector_name;
+
+    if (!base) {
+      return <>N/A</>;
+    }
+
+    if (etfAggregateDetail?.top_pct_sector_name) {
+      return (
+        <>
+          {base}
+          <br />({etfAggregateDetail?.top_pct_sector_name})
+        </>
+      );
+    }
+
+    return <>base</>;
+  }, [tickerDetail, etfAggregateDetail]);
+
+  const formattedIndustry = useMemo(() => {
+    const base = tickerDetail?.industry_name;
+
+    if (!base) {
+      return <>N/A</>;
+    }
+
+    if (etfAggregateDetail?.top_pct_industry_name) {
+      return (
+        <>
+          {base}
+          <br />({etfAggregateDetail?.top_pct_industry_name})
+        </>
+      );
+    }
+
+    return <>{base}</>;
+  }, [tickerDetail, etfAggregateDetail]);
+
   return (
     <ETFAggregateDetailAppletWrap
       tickerDetail={tickerDetail}
@@ -74,14 +112,8 @@ export default function TickerInformationApplet({
               label="Company"
               value={tickerDetail?.company_name || "N/A"}
             />
-            <InfoItem
-              label="Sector"
-              value={tickerDetail?.sector_name || "N/A"}
-            />
-            <InfoItem
-              label="Industry"
-              value={tickerDetail?.industry_name || "N/A"}
-            />
+            <InfoItem label="Sector" value={formattedSector} />
+            <InfoItem label="Industry" value={formattedIndustry} />
             {tickerDetail?.is_etf && (
               <InfoItem
                 label="Expense Ratio"
@@ -130,7 +162,7 @@ function InfoItem({
   value,
 }: {
   label: string;
-  value: string | undefined;
+  value: string | JSX.Element | React.ReactNode | undefined;
 }) {
   return (
     <Box flex="1 1 150px">
