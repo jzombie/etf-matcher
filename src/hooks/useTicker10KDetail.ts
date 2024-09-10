@@ -50,5 +50,6 @@ export default function useTicker10KDetail(
     }
   }, [tickerId, isETF, onLoadStableCurrentRef]);
 
+  // TODO: Rename to `financialDetail` or `tenKDetail`
   return { isLoading, detail };
 }
