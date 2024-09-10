@@ -422,6 +422,7 @@ impl ETFAggregateDetail {
             //
             logo_filename,
             //
+            // FIXME: This boolean check could be improved
             are_financials_empty: etf_aggregate_detail.avg_revenue_current.is_none(),
         };
 
