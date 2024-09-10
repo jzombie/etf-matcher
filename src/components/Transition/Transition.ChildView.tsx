@@ -43,6 +43,9 @@ const TransitionChildView = forwardRef<
         style={{ animationDuration: animationDurationCSS }}
         {...rest}
       >
+        {
+          // Note: The nested `Full` is intentional and is necessary for proper operation.
+        }
         <Full>{children}</Full>
       </Full>
     );
