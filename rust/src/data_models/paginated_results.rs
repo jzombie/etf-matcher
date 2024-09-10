@@ -22,7 +22,7 @@ impl<T> PaginatedResults<T> {
             .collect();
 
         if paginated_results.is_empty() && total_count > 0 {
-            Err(JsValue::from_str("Page out of range"))
+            Err(JsValue::from_str(&format!("Page {} out of range", page)))
         } else {
             Ok(PaginatedResults {
                 total_count,

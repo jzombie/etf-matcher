@@ -13,6 +13,7 @@ pub struct TickerETFHolder {
 
 impl TickerETFHolder {
     pub async fn get_etf_holders_aggregate_detail_by_ticker_id(
+        // TODO: Rename to `etf_ticker_id`
         ticker_id: TickerId,
         page: usize,
         page_size: usize,
@@ -29,7 +30,7 @@ impl TickerETFHolder {
                 Err(e) => {
                     web_sys::console::warn_2(
                         &format!(
-                            "Failed to fetch ETF aggregate detail (ticker_id: {}): {:?}",
+                            "Failed to fetch ETF aggregate detail for ticker ID: {}: {:?}",
                             etf_ticker_id, e
                         )
                         .into(),
@@ -49,6 +50,7 @@ impl TickerETFHolder {
     }
 
     async fn get_ticker_etf_holder_ids_by_ticker_id(
+        // TODO: Rename to `etf_ticker_id`
         ticker_id: TickerId,
         page: usize,
         page_size: usize,

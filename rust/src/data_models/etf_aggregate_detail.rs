@@ -236,10 +236,13 @@ pub struct ETFAggregateDetailResponse {
     pub major_sector_distribution: Option<Vec<MajorSectorWeight>>,
     //
     pub logo_filename: Option<String>,
+    //
+    pub are_financials_empty: bool,
 }
 
 impl ETFAggregateDetail {
     pub async fn get_etf_aggregate_detail_by_ticker_id(
+        // TODO: Rename to `etf_ticker_id`
         ticker_id: TickerId,
     ) -> Result<ETFAggregateDetailResponse, JsValue> {
         let url: &str = DataURL::ETFAggregateDetailShardIndex.value();
@@ -249,7 +252,7 @@ impl ETFAggregateDetail {
             |etf_aggregate_detail: &ETFAggregateDetail| Some(&etf_aggregate_detail.ticker_id),
         )
         .await?
-        .ok_or_else(|| JsValue::from_str("ETF ticker not found"))?;
+        .ok_or_else(|| JsValue::from_str(&format!("ETF ticker ID {} not found", ticker_id)))?;
 
         // Fetch the symbol and exchange short name
         let (etf_symbol, exchange_short_name) =
@@ -304,7 +307,7 @@ impl ETFAggregateDetail {
                         Err(err) => {
                             // Handle the error, log if necessary, and return None
                             let error_message = format!(
-                                "Error parsing sector distribution for ticker_id {}: {}",
+                                "Error parsing ETF sector distribution for ticker ID {}: {}",
                                 etf_aggregate_detail.ticker_id, err
                             );
                             web_sys::console::error_1(&error_message.into());
@@ -418,6 +421,8 @@ impl ETFAggregateDetail {
             major_sector_distribution,
             //
             logo_filename,
+            //
+            are_financials_empty: etf_aggregate_detail.avg_revenue_current.is_none(),
         };
 
         Ok(response)

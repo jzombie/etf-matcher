@@ -122,6 +122,8 @@ export type RustServiceETFAggregateDetail = {
   }[];
   //
   logo_filename?: string;
+  //
+  are_financials_empty: boolean;
 };
 
 export type RustServiceTicker10KDetail = {

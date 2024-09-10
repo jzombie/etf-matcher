@@ -98,6 +98,8 @@ pub struct Ticker10KDetail {
 }
 
 impl Ticker10KDetail {
+    // TODO: In the data source, it should always return the same amount of
+    // rows as the search data, regardless if there is `10-K` detail or not.
     pub async fn get_ticker_10k_detail_by_ticker_id(
         ticker_id: TickerId,
     ) -> Result<Ticker10KDetail, JsValue> {
@@ -107,7 +109,7 @@ impl Ticker10KDetail {
                 Some(&ticker_10k_detail.ticker_id)
             })
             .await?
-            .ok_or_else(|| JsValue::from_str("Ticker ID not found"))?;
+            .ok_or_else(|| JsValue::from_str(&format!("Ticker ID {} not found", ticker_id)))?;
 
         Ok(ticker_10k_detail)
     }

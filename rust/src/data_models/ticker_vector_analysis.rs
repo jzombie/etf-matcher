@@ -118,7 +118,12 @@ impl TickerDistance {
         let (target_vector, target_pca_coords) =
             match find_target_vector_and_pca(&ticker_vectors, ticker_id) {
                 Some(result) => result,
-                None => return Err("Ticker ID or PCA coordinates not found.".to_string()),
+                None => {
+                    return Err(
+                        format!("Ticker ID {} or PCA coordinates not found.", ticker_id)
+                            .to_string(),
+                    );
+                }
             };
 
         Self::find_closest_tickers_by_vector(
@@ -247,7 +252,13 @@ impl CosineSimilarityResult {
         let (target_vector, _target_pca_coords) =
             match find_target_vector_and_pca(&ticker_vectors, ticker_id) {
                 Some(result) => result,
-                None => return Err("Ticker ID or PCA coordinates not found.".to_string()),
+                None => {
+                    return Err(format!(
+                        "Ticker ID {ticker_id} or PCA coordinates not found.",
+                        ticker_id
+                    )
+                    .to_string())
+                }
             };
 
         let mut results: Vec<CosineSimilarityResult> = ticker_vectors
@@ -400,14 +411,16 @@ async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> {
                     let vector: Vec<f32> = vector_data.iter().collect();
                     return Ok(vector);
                 } else {
-                    return Err("No vector data found for the given Ticker ID".to_string());
+                    return Err(
+                        format!("No vector data found for ticker ID {}", ticker_id).to_string()
+                    );
                 }
             }
         }
     }
 
     // If the ticker_id was not found, return an error
-    Err("Ticker ID not found".to_string())
+    Err(format!("Ticker ID {} not found", ticker_id).to_string())
 }
 
 fn find_target_vector_and_pca<'a>(
