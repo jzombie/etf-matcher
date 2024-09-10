@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useCallback } from "react";
 
-import { Box, Typography } from "@mui/material";
+import { Alert, Box, Typography } from "@mui/material";
 
+import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
+
+import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 
 import useTicker10KDetail from "@hooks/useTicker10KDetail";
 
@@ -35,23 +38,46 @@ export default function FinancialChartsGrid({
     tickerDetail.is_etf,
   );
 
-  if (isLoading || !financialDetail) {
-    return <div>Loading...</div>;
+  // TODO: Move out of `FinancialChartsGrid` scope?
+  const createChartData = useCallback(
+    (
+      currentValue: number | undefined,
+      year1Value: number | undefined,
+      year2Value: number | undefined,
+      year3Value: number | undefined,
+      year4Value: number | undefined,
+    ) => [
+      { year: "4 Years Ago", value: year4Value || 0 },
+      { year: "3 Years Ago", value: year3Value || 0 },
+      { year: "2 Years Ago", value: year2Value || 0 },
+      { year: "1 Year Ago", value: year1Value || 0 },
+      { year: "Current", value: currentValue || 0 },
+    ],
+    [],
+  );
+
+  if (isLoading) {
+    return (
+      <Center>
+        <NetworkProgressIndicator />
+      </Center>
+    );
   }
 
-  const createChartData = (
-    currentValue: number | undefined,
-    year1Value: number | undefined,
-    year2Value: number | undefined,
-    year3Value: number | undefined,
-    year4Value: number | undefined,
-  ) => [
-    { year: "4 Years Ago", value: year4Value || 0 },
-    { year: "3 Years Ago", value: year3Value || 0 },
-    { year: "2 Years Ago", value: year2Value || 0 },
-    { year: "1 Year Ago", value: year1Value || 0 },
-    { year: "Current", value: currentValue || 0 },
-  ];
+  // TODO: Update acrodingly
+  if (!financialDetail) {
+    return (
+      <Center>
+        <Alert severity="warning">
+          {
+            // TODO: Unify all `no information available` into a common component
+          }
+          No 10-K financial data available for &quot;{tickerDetail.symbol}
+          &quot;.
+        </Alert>
+      </Center>
+    );
+  }
 
   return (
     <Scrollable>
