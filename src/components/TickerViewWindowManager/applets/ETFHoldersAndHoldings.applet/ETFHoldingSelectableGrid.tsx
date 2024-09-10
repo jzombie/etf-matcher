@@ -95,8 +95,8 @@ export default function ETFHoldingSelectableGrid({
         {paginatedHoldings.total_count > 1 && (
           <Typography
             variant="body2"
+            color="textSecondary"
             sx={{
-              opacity: 0.5,
               textAlign: "center",
             }}
           >

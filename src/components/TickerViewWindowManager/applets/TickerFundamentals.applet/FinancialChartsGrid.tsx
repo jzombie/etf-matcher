@@ -88,9 +88,9 @@ export default function FinancialChartsGrid({
             <Typography
               variant="body2"
               color="textSecondary"
-              fontStyle="italic"
+              sx={{ textAlign: "center" }}
             >
-              Note: The following metrics are based on a weighted average of the
+              The following metrics are based on a weighted average of the
               holdings in the &quot;{tickerDetail.symbol}&quot; ETF.
             </Typography>
           </Box>
