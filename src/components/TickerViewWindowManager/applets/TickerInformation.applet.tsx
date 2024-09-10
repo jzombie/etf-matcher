@@ -51,7 +51,7 @@ export default function TickerInformationApplet({
       );
     }
 
-    return <>base</>;
+    return <>{base}</>;
   }, [tickerDetail, etfAggregateDetail]);
 
   const formattedIndustry = useMemo(() => {
