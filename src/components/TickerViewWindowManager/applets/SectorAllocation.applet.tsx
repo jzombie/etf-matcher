@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 
-import { Box, Typography } from "@mui/material";
+import { Alert, Box, Typography } from "@mui/material";
 
 import AutoScaler from "@layoutKit/AutoScaler";
 import Center from "@layoutKit/Center";
@@ -69,10 +69,13 @@ export default function SectorAllocationApplet({
           </AutoScaler>
         ) : (
           <Center>
-            <Typography sx={{ fontWeight: "bold" }}>
+            {
+              // TODO: Potentially move all `no information available` notices into a common component.
+            }
+            <Alert severity="warning">
               No sector allocation information is available for &quot;
               {tickerDetail?.symbol}&quot;.
-            </Typography>
+            </Alert>
           </Center>
         )}
       </>
