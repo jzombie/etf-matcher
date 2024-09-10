@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TickerETFHolder {
+    // TODO: Rename to `etf_ticker_id`
     pub ticker_id: TickerId,
     pub etf_ticker_ids_json: String,
 }
