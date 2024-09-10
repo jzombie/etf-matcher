@@ -145,10 +145,9 @@ const LogoWrapper = styled(Box)(() => ({
 // Flexbox-based wrapper for the information section
 const InfoWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
-  justifyContent: "space-between",
-  alignItems: "stretch",
-  flexWrap: "wrap", // Allow wrapping when the container is too small
-  textAlign: "center",
+  justifyContent: "flex-start", // Align all items to the start
+  alignItems: "stretch", // Ensure equal height
+  flexWrap: "wrap", // Allow wrapping when necessary
   gap: theme.spacing(2), // Consistent spacing between items
   padding: theme.spacing(2), // Padding around the content
 }));
