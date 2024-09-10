@@ -101,9 +101,6 @@ export default function TickerInformationApplet({
           {/* Information Section */}
 
           <InfoWrapper>
-            {
-              // TODO: If ETF, add top sector/industry information
-            }
             <InfoItem
               label="Symbol"
               value={`${tickerDetail?.symbol}${tickerDetail?.exchange_short_name ? ` (${tickerDetail.exchange_short_name})` : ""}`}
