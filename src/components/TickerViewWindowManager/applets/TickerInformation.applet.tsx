@@ -168,7 +168,9 @@ function InfoItem({
       <Typography variant="subtitle2" fontWeight="bold">
         {label}
       </Typography>
-      <Typography variant="body2">{value}</Typography>
+      <Typography variant="body2" color="textSecondary">
+        {value}
+      </Typography>
     </Box>
   );
 }
