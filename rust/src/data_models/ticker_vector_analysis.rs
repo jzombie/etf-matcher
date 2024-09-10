@@ -253,11 +253,10 @@ impl CosineSimilarityResult {
             match find_target_vector_and_pca(&ticker_vectors, ticker_id) {
                 Some(result) => result,
                 None => {
-                    return Err(format!(
-                        "Ticker ID {ticker_id} or PCA coordinates not found.",
-                        ticker_id
+                    return Err(
+                        format!("Ticker ID {} or PCA coordinates not found.", ticker_id)
+                            .to_string(),
                     )
-                    .to_string())
                 }
             };
 
