@@ -42,6 +42,10 @@ jobs:
     needs: create-mock-files
 
     steps:
+      # TODO: Remove
+      - name: Debug - test
+        run: ls -lsa
+
       - name: Checkout repository
         uses: actions/checkout@v2
 
