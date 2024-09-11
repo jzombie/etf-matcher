@@ -53,8 +53,13 @@ jobs:
       - name: Set up environment
         run: sudo apt-get update && sudo apt-get install -y make
 
+      # TODO: Remove
       - name: Debug - List files for troubleshooting
         run: ls -la
+
+      # TODO: Remove
+      - name: Debug - List workspace files
+        run: cd ${{ github.workspace }} && ls
 
       - name: Run lint
         run: make lint
