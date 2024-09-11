@@ -50,8 +50,14 @@ jobs:
         with:
           name: mock-data
 
+      - name: Move .env to the project root
+        run: mv data/.env .env
+
       - name: Set up environment
         run: sudo apt-get update && sudo apt-get install -y make
+
+      - name: Debug: List files for troubleshooting
+        run: ls -la
 
       - name: Run lint
         run: make lint
