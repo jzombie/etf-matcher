@@ -84,9 +84,6 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
     );
   }
 
-  // TODO: Remove
-  console.log({ financialDetail });
-
   if (!financialDetail?.are_financials_current) {
     {
       // TODO: Unify all `no information available` into a common component
