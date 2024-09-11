@@ -30,7 +30,7 @@ jobs:
           echo "IV=\"98,251,10,46,191,221,86,242,97,104,157,105,73,15,173,223\"" >> ${{ github.workspace }}/.env
 
       - name: Upload mock data artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: mock-data
           path: |
@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Download mock data artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: mock-data
 
