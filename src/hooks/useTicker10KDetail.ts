@@ -9,18 +9,8 @@ import {
   fetchTicker10KDetail,
 } from "@utils/callRustService";
 
-import useStableCurrentRef from "./useStableCurrentRef";
-
 // TODO: Handle error state (and rename variables; see `useTickerDetail`)
-export default function useTicker10KDetail(
-  tickerId: number,
-  isETF: boolean,
-  onLoad?: (
-    detail: RustServiceTicker10KDetail | RustServiceETFAggregateDetail,
-  ) => void,
-) {
-  const onLoadStableCurrentRef = useStableCurrentRef(onLoad);
-
+export default function useTicker10KDetail(tickerId: number, isETF: boolean) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [detail, setDetail] = useState<
     RustServiceTicker10KDetail | RustServiceETFAggregateDetail | null
@@ -37,10 +27,6 @@ export default function useTicker10KDetail(
             : await fetchTicker10KDetail(tickerId);
 
           setDetail(result);
-
-          if (typeof onLoadStableCurrentRef.current === "function") {
-            onLoadStableCurrentRef.current(result);
-          }
         } finally {
           setIsLoading(false);
         }
@@ -48,7 +34,7 @@ export default function useTicker10KDetail(
 
       fetchData();
     }
-  }, [tickerId, isETF, onLoadStableCurrentRef]);
+  }, [tickerId, isETF]);
 
   // TODO: Rename to `financialDetail` or `tenKDetail`
   return { isLoading, detail };
