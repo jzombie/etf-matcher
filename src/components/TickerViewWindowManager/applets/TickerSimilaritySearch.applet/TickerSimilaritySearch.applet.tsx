@@ -3,14 +3,18 @@ import React, { useCallback, useRef, useState } from "react";
 import DonutLargeIcon from "@mui/icons-material/DonutLarge";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 import StraightenIcon from "@mui/icons-material/Straighten";
-import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { Alert, Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
+import Center from "@layoutKit/Center";
 import Layout, { Content, Header } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
 
+import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import PCAScatterPlot from "@components/PCAScatterPlot";
 import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
 import Transition from "@components/Transition";
+
+import useTicker10KDetail from "@hooks/useTicker10KDetail";
 
 import { RustServiceTickerDetail } from "@utils/callRustService";
 
@@ -32,6 +36,23 @@ export default function TickerSimilaritySearchApplet({
   tickerDetailError,
   isTiling,
 }: TickerSimilaritySearchAppletProps) {
+  return (
+    <TickerDetailAppletWrap
+      tickerDetail={tickerDetail}
+      isLoadingTickerDetail={isLoadingTickerDetail}
+      tickerDetailError={tickerDetailError}
+      isTiling={isTiling}
+    >
+      {tickerDetail && <ComponentWrap tickerDetail={tickerDetail} />}
+    </TickerDetailAppletWrap>
+  );
+}
+
+type ComponentWrapProps = {
+  tickerDetail: RustServiceTickerDetail;
+};
+
+function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
   const [displayMode, setDisplayMode] = useState<DisplayMode>("radial");
   const previousModeRef = useRef<DisplayMode>("radial");
 
@@ -51,58 +72,75 @@ export default function TickerSimilaritySearchApplet({
     return currentIndex > prevIndex ? "left" : "right";
   }, [displayMode]);
 
+  // TODO: Handle error state
+  const { isLoading: isLoadingFinancialDetail, detail: financialDetail } =
+    useTicker10KDetail(tickerDetail.ticker_id, tickerDetail.is_etf);
+
+  if (isLoadingFinancialDetail) {
+    return (
+      <Center>
+        <NetworkProgressIndicator />
+      </Center>
+    );
+  }
+
+  // TODO: Remove
+  console.log({ financialDetail });
+
+  if (!financialDetail?.are_financials_current) {
+    {
+      // TODO: Unify all `no information available` into a common component
+    }
+    return (
+      <Center>
+        <Alert severity="warning">
+          No current financial information for &quot;{tickerDetail.symbol}&quot;
+        </Alert>
+      </Center>
+    );
+  }
+
   return (
-    <TickerDetailAppletWrap
-      tickerDetail={tickerDetail}
-      isLoadingTickerDetail={isLoadingTickerDetail}
-      tickerDetailError={tickerDetailError}
-      isTiling={isTiling}
-    >
-      <>
-        {tickerDetail && (
-          <Layout>
-            <Header>
-              <Box sx={{ textAlign: "center", marginBottom: 1 }}>
-                <ToggleButtonGroup
-                  value={displayMode}
-                  exclusive
-                  onChange={handleDisplayModeChange}
-                  aria-label="Similarity search toggle"
-                  size="small"
-                >
-                  <ToggleButton value="radial" aria-label="Radial chart">
-                    <DonutLargeIcon sx={{ mr: 0.5 }} />
-                    Radial
-                  </ToggleButton>
-                  <ToggleButton value="euclidean" aria-label="Euclidean">
-                    <StraightenIcon sx={{ mr: 0.5 }} />
-                    Euclidean
-                  </ToggleButton>
-                  <ToggleButton value="cosine" aria-label="Cosine">
-                    <ShowChartIcon sx={{ mr: 0.5 }} />
-                    Cosine
-                  </ToggleButton>
-                </ToggleButtonGroup>
-              </Box>
-            </Header>
-            <Content>
-              <Transition trigger={displayMode} direction={getDirection()}>
-                {displayMode === "radial" ? (
-                  <PCAScatterPlot tickerDetail={tickerDetail} />
-                ) : (
-                  <Scrollable>
-                    <TickerVectorQueryTable
-                      queryMode="ticker-detail"
-                      query={tickerDetail}
-                      alignment={displayMode}
-                    />
-                  </Scrollable>
-                )}
-              </Transition>
-            </Content>
-          </Layout>
-        )}
-      </>
-    </TickerDetailAppletWrap>
+    <Layout>
+      <Header>
+        <Box sx={{ textAlign: "center", marginBottom: 1 }}>
+          <ToggleButtonGroup
+            value={displayMode}
+            exclusive
+            onChange={handleDisplayModeChange}
+            aria-label="Similarity search toggle"
+            size="small"
+          >
+            <ToggleButton value="radial" aria-label="Radial chart">
+              <DonutLargeIcon sx={{ mr: 0.5 }} />
+              Radial
+            </ToggleButton>
+            <ToggleButton value="euclidean" aria-label="Euclidean">
+              <StraightenIcon sx={{ mr: 0.5 }} />
+              Euclidean
+            </ToggleButton>
+            <ToggleButton value="cosine" aria-label="Cosine">
+              <ShowChartIcon sx={{ mr: 0.5 }} />
+              Cosine
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
+      </Header>
+      <Content>
+        <Transition trigger={displayMode} direction={getDirection()}>
+          {displayMode === "radial" ? (
+            <PCAScatterPlot tickerDetail={tickerDetail} />
+          ) : (
+            <Scrollable>
+              <TickerVectorQueryTable
+                queryMode="ticker-detail"
+                query={tickerDetail}
+                alignment={displayMode}
+              />
+            </Scrollable>
+          )}
+        </Transition>
+      </Content>
+    </Layout>
   );
 }
