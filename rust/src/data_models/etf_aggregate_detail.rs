@@ -237,7 +237,7 @@ pub struct ETFAggregateDetailResponse {
     //
     pub logo_filename: Option<String>,
     //
-    pub are_financials_empty: bool,
+    pub are_financials_current: bool,
 }
 
 impl ETFAggregateDetail {
@@ -422,8 +422,8 @@ impl ETFAggregateDetail {
             //
             logo_filename,
             //
-            // FIXME: This boolean check could be improved
-            are_financials_empty: etf_aggregate_detail.avg_revenue_current.is_none(),
+            // FIXME: This boolean check could be improved (see also in `Ticker10KDetail`)
+            are_financials_current: etf_aggregate_detail.avg_revenue_current.is_some(),
         };
 
         Ok(response)

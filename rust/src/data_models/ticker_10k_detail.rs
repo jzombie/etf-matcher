@@ -95,6 +95,8 @@ pub struct Ticker10KDetail {
     pub net_cash_used_provided_by_financing_activities_2_yr: Option<f64>,
     pub net_cash_used_provided_by_financing_activities_3_yr: Option<f64>,
     pub net_cash_used_provided_by_financing_activities_4_yr: Option<f64>,
+    //
+    pub are_financials_current: bool,
 }
 
 impl Ticker10KDetail {
@@ -104,12 +106,15 @@ impl Ticker10KDetail {
         ticker_id: TickerId,
     ) -> Result<Ticker10KDetail, JsValue> {
         let url: &str = DataURL::Ticker10KDetailShardIndex.value();
-        let ticker_10k_detail: Ticker10KDetail =
+        let mut ticker_10k_detail: Ticker10KDetail =
             query_shard_for_id(url, &ticker_id, |ticker_10k_detail: &Ticker10KDetail| {
                 Some(&ticker_10k_detail.ticker_id)
             })
             .await?
             .ok_or_else(|| JsValue::from_str(&format!("Ticker ID {} not found", ticker_id)))?;
+
+        // FIXME: This boolean check could be improved (see also in `ETFAggregateDetail`)
+        ticker_10k_detail.are_financials_current = ticker_10k_detail.revenue_current.is_some();
 
         Ok(ticker_10k_detail)
     }

@@ -64,8 +64,7 @@ export default function FinancialChartsGrid({
     );
   }
 
-  // TODO: Update acrodingly
-  if (!financialDetail) {
+  if (!financialDetail || !financialDetail?.are_financials_current) {
     return (
       <Center>
         <Alert severity="warning">

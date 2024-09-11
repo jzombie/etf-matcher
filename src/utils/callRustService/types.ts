@@ -123,7 +123,7 @@ export type RustServiceETFAggregateDetail = {
   //
   logo_filename?: string;
   //
-  are_financials_empty: boolean;
+  are_financials_current: boolean;
 };
 
 export type RustServiceTicker10KDetail = {
@@ -202,6 +202,8 @@ export type RustServiceTicker10KDetail = {
   net_cash_used_provided_by_financing_activities_2_yr?: number;
   net_cash_used_provided_by_financing_activities_3_yr?: number;
   net_cash_used_provided_by_financing_activities_4_yr?: number;
+  //
+  are_financials_current: boolean;
 };
 
 export type RustServiceETFHoldingWeightResponse = {
