@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
-import { Grid, IconButton, TextField } from "@mui/material";
+import { Grid2, IconButton, TextField } from "@mui/material";
 
 import type { TickerBucketTicker } from "@src/store";
 
@@ -156,11 +156,11 @@ export default function TickerQuantityFieldsItem({
 
   return (
     <>
-      <Grid container spacing={2} mb={1}>
-        <Grid item xs={2} sm={1}>
+      <Grid2 container spacing={2} mb={1}>
+        <Grid2 size={{ xs: 2, sm: 1 }}>
           {tickerDetail && <AvatarLogo tickerDetail={tickerDetail} />}
-        </Grid>
-        <Grid item xs={12} sm={5}>
+        </Grid2>
+        <Grid2 size={{ xs: 12, sm: 5 }}>
           <TextField
             name="symbol_or_company_name"
             label="Symbol"
@@ -175,9 +175,9 @@ export default function TickerQuantityFieldsItem({
             helperText={tickerError}
             size="small"
           />
-        </Grid>
+        </Grid2>
         {!omitShares && (
-          <Grid item xs={12} sm={4}>
+          <Grid2 size={{ xs: 12, sm: 4 }}>
             <TextField
               name="shares"
               label="Shares"
@@ -190,14 +190,15 @@ export default function TickerQuantityFieldsItem({
               disabled={!bucketTicker}
               size="small"
             />
-          </Grid>
+          </Grid2>
         )}
 
         {existingBucketTickers.length > 0 && (
-          <Grid
-            item
-            xs={12}
-            sm={2}
+          <Grid2
+            size={{
+              xs: 12,
+              sm: 2,
+            }}
             sx={{
               display: "flex",
               alignItems: "center",
@@ -217,9 +218,9 @@ export default function TickerQuantityFieldsItem({
                 color={isDeleteButtonDisabled ? "disabled" : "error"}
               />
             </IconButton>
-          </Grid>
+          </Grid2>
         )}
-      </Grid>
+      </Grid2>
 
       <TickerSearchModal
         open={isSearchModalOpen}
