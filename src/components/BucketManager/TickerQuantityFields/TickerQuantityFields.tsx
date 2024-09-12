@@ -29,13 +29,13 @@ export default function TickerQuantityFields({
   omitShares = false,
 }: TickerQuantityFieldsProps) {
   const [newTicker, setNewTicker] = useState<TickerBucketTicker | null>(null);
-  const [errorFields, setErrorFields] = useState<Set<number | string>>(
+  const [errorFields, setErrorFields] = useState<Set<number | "new">>(
     new Set(),
   );
 
   // Handle error state changes by adding/removing field IDs to/from the Set
   const handleErrorStateChange = useCallback(
-    (fieldId: number | string, hasError: boolean) => {
+    (fieldId: number | "new", hasError: boolean) => {
       setErrorFields((prevErrors) => {
         const updatedErrors = new Set(prevErrors);
         if (hasError) {
@@ -55,6 +55,12 @@ export default function TickerQuantityFields({
 
   const handleRemoveNewTickerFields = useCallback(() => {
     setNewTicker(null);
+
+    // Renove `new` from error fields
+    setErrorFields((prev) => {
+      prev.delete("new");
+      return prev;
+    });
   }, []);
 
   const [existingTickers, setExistingTickers] = useState<TickerBucketTicker[]>(
