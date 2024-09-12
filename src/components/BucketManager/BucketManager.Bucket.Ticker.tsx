@@ -7,7 +7,6 @@ import {
   Button,
   CircularProgress,
   Grid2,
-  Paper,
   Typography,
 } from "@mui/material";
 
@@ -17,6 +16,7 @@ import store, { tickerBucketDefaultNames } from "@src/store";
 
 import AvatarLogo from "@components/AvatarLogo";
 import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
+import Section from "@components/Section";
 
 import useTickerDetail from "@hooks/useTickerDetail";
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
@@ -94,14 +94,7 @@ export default function BucketTicker({
   }
 
   return (
-    <Paper
-      sx={{
-        padding: 2,
-        margin: 2,
-        backgroundColor: "#2b2b2b",
-        borderRadius: 2,
-      }}
-    >
+    <Section>
       <Grid2
         container
         spacing={2}
@@ -196,6 +189,6 @@ export default function BucketTicker({
           </>
         }
       />
-    </Paper>
+    </Section>
   );
 }
