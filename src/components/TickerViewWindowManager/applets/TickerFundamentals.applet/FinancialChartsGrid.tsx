@@ -1,12 +1,13 @@
 import React, { useCallback } from "react";
 
-import { Alert, Box, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
+import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
 
 import useTicker10KDetail from "@hooks/useTicker10KDetail";
 
@@ -67,13 +68,10 @@ export default function FinancialChartsGrid({
   if (!financialDetail || !financialDetail?.are_financials_current) {
     return (
       <Center>
-        <Alert severity="warning">
-          {
-            // TODO: Unify all `no information available` into a common component
-          }
+        <NoInformationAvailableAlert>
           No 10-K financial data available for &quot;{tickerDetail.symbol}
           &quot;.
-        </Alert>
+        </NoInformationAvailableAlert>
       </Center>
     );
   }

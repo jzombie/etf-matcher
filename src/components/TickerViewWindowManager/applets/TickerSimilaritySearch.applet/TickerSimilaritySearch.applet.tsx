@@ -3,13 +3,14 @@ import React, { useCallback, useRef, useState } from "react";
 import DonutLargeIcon from "@mui/icons-material/DonutLarge";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 import StraightenIcon from "@mui/icons-material/Straighten";
-import { Alert, Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
 import Center from "@layoutKit/Center";
 import Layout, { Content, Header } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
 
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
+import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
 import PCAScatterPlot from "@components/PCAScatterPlot";
 import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
 import Transition from "@components/Transition";
@@ -85,14 +86,11 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
   }
 
   if (!financialDetail?.are_financials_current) {
-    {
-      // TODO: Unify all `no information available` into a common component
-    }
     return (
       <Center>
-        <Alert severity="warning">
+        <NoInformationAvailableAlert>
           No current financial information for &quot;{tickerDetail.symbol}&quot;
-        </Alert>
+        </NoInformationAvailableAlert>
       </Center>
     );
   }

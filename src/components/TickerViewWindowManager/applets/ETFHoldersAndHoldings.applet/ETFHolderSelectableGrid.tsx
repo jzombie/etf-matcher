@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 
-import { Alert, Box, Divider, Pagination, Typography } from "@mui/material";
+import { Box, Divider, Pagination, Typography } from "@mui/material";
 
 import Center from "@layoutKit/Center";
 import Cover from "@layoutKit/Cover";
@@ -11,6 +11,7 @@ import Scrollable from "@layoutKit/Scrollable";
 
 import EncodedImage from "@components/EncodedImage";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
+import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
 import SelectableGrid, { SelectableGridItem } from "@components/SelectableGrid";
 import Transition from "@components/Transition";
 
@@ -83,12 +84,9 @@ export default function ETFHolderSelectableGrid({
   if (!paginatedETFHolders) {
     return (
       <Center>
-        {
-          // TODO: Unify all `no information available` into a common component
-        }
-        <Alert severity="warning">
+        <NoInformationAvailableAlert>
           There are no known ETF holders for &quot;{tickerSymbol}&quot;.
-        </Alert>
+        </NoInformationAvailableAlert>
       </Center>
     );
   }

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 
-import { Alert, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 
 import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
@@ -8,6 +8,7 @@ import Scrollable from "@layoutKit/Scrollable";
 
 import EncodedImage from "@components/EncodedImage";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
+import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
 import SelectableGrid, { SelectableGridItem } from "@components/SelectableGrid";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
@@ -61,12 +62,9 @@ export default function ETFHoldingSelectableGrid({
   if (!etfTickerDetail.is_etf) {
     return (
       <Center>
-        {
-          // TODO: Unify all `no information available` into a common component
-        }
-        <Alert severity="warning">
+        <NoInformationAvailableAlert>
           &quot;{etfTickerDetail.symbol}&quot; is not an ETF.
-        </Alert>
+        </NoInformationAvailableAlert>
       </Center>
     );
   }
