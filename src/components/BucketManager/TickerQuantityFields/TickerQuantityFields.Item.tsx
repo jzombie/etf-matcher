@@ -157,8 +157,16 @@ export default function TickerQuantityFieldsItem({
   }, [bucketTicker, onDeleteStableRef, onCancelStableRef]);
 
   const handleDelete = useCallback(() => {
-    setIsDeleteConfirmOpen(true); // Open the delete confirmation dialog
-  }, []);
+    if (bucketTicker) {
+      setIsDeleteConfirmOpen(true); // Open the delete confirmation dialog
+    } else {
+      // If no bucket ticker, proceed directly to delete
+      //
+      // This condition would be invoked if the user initially wants to add a new
+      // ticker field but then decides to cancel it
+      handleDeleteConfirm();
+    }
+  }, [bucketTicker, handleDeleteConfirm]);
 
   const isDeleteButtonDisabled = !bucketTicker && !existingBucketTickers.length;
 
