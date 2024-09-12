@@ -140,54 +140,49 @@ export default function TickerQuantityFields({
   return (
     <Container maxWidth="md">
       <Box sx={{ my: 4 }}>
-        <Grid container spacing={3}>
-          {
-            // Render existing form fields from the tickerBucket or newly added ones
-            existingTickers.map((bucketTicker, idx) => (
-              <TickerQuantityFieldsItem
-                key={bucketTicker?.tickerId || idx}
-                initialBucketTicker={bucketTicker}
-                existingBucketTickers={existingTickers}
-                onUpdate={(updatedTicker: TickerBucketTicker | null) =>
-                  handleUpdateField(updatedTicker)
-                }
-                onDelete={() => handleRemoveField(bucketTicker.tickerId)}
-                onErrorStateChange={(hasError) =>
-                  handleErrorStateChange(
-                    bucketTicker?.tickerId || idx,
-                    hasError,
-                  )
-                }
-                omitShares={omitShares}
-              />
-            ))
-          }
-          {
-            // Render the new form field if a new ticker is being added
-            newTicker && (
-              <TickerQuantityFieldsItem
-                existingBucketTickers={existingTickers}
-                onUpdate={handleUpdateField}
-                onCancel={handleRemoveNewTickerFields}
-                onErrorStateChange={(hasError) =>
-                  handleErrorStateChange(newTicker.tickerId || "new", hasError)
-                }
-                omitShares={omitShares}
-              />
-            )
-          }
-          <Grid item xs={12}>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddCircleOutlineIcon />}
-              onClick={handleAddNewTickerFields}
-              disabled={!!newTicker}
-            >
-              Add Additional Symbol
-            </Button>
-          </Grid>
-        </Grid>
+        {
+          // Render existing form fields from the tickerBucket or newly added ones
+          existingTickers.map((bucketTicker, idx) => (
+            <TickerQuantityFieldsItem
+              key={bucketTicker?.tickerId || idx}
+              initialBucketTicker={bucketTicker}
+              existingBucketTickers={existingTickers}
+              onUpdate={(updatedTicker: TickerBucketTicker | null) =>
+                handleUpdateField(updatedTicker)
+              }
+              onDelete={() => handleRemoveField(bucketTicker.tickerId)}
+              onErrorStateChange={(hasError) =>
+                handleErrorStateChange(bucketTicker?.tickerId || idx, hasError)
+              }
+              omitShares={omitShares}
+            />
+          ))
+        }
+        {
+          // Render the new form field if a new ticker is being added
+          newTicker && (
+            <TickerQuantityFieldsItem
+              existingBucketTickers={existingTickers}
+              onUpdate={handleUpdateField}
+              onCancel={handleRemoveNewTickerFields}
+              onErrorStateChange={(hasError) =>
+                handleErrorStateChange(newTicker.tickerId || "new", hasError)
+              }
+              omitShares={omitShares}
+            />
+          )
+        }
+        <Box>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<AddCircleOutlineIcon />}
+            onClick={handleAddNewTickerFields}
+            disabled={!!newTicker}
+          >
+            Add Additional Symbol
+          </Button>
+        </Box>
       </Box>
     </Container>
   );

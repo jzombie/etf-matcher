@@ -164,7 +164,7 @@ export default function TickerQuantityFieldsItem({
             sm: 1,
           }}
         >
-          {tickerDetail && <AvatarLogo tickerDetail={tickerDetail} />}
+          <AvatarLogo tickerDetail={tickerDetail} />
         </Grid2>
 
         {/* Symbol Input */}
