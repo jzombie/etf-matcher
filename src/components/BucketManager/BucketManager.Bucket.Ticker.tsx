@@ -6,8 +6,7 @@ import {
   Box,
   Button,
   CircularProgress,
-  Grid,
-  Paper,
+  Grid2,
   Typography,
 } from "@mui/material";
 
@@ -17,6 +16,7 @@ import store, { tickerBucketDefaultNames } from "@src/store";
 
 import AvatarLogo from "@components/AvatarLogo";
 import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
+import Section from "@components/Section";
 
 import useTickerDetail from "@hooks/useTickerDetail";
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
@@ -94,22 +94,15 @@ export default function BucketTicker({
   }
 
   return (
-    <Paper
-      sx={{
-        padding: 2,
-        margin: 2,
-        backgroundColor: "#2b2b2b",
-        borderRadius: 2,
-      }}
-    >
-      <Grid
+    <Section>
+      <Grid2
         container
         spacing={2}
         alignItems="center"
         sx={{ cursor: "pointer" }}
         onClick={() => navigateToSymbol(bucketTicker.symbol)}
       >
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
           <Box display="flex" alignItems="center">
             <AvatarLogo tickerDetail={tickerDetail} />
             <Typography
@@ -119,49 +112,49 @@ export default function BucketTicker({
               {tickerDetail.symbol}
             </Typography>
           </Box>
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        </Grid2>
+        <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
           <InfoItem label="Exchange">
             {tickerDetail.exchange_short_name || "N/A"}
           </InfoItem>
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        </Grid2>
+        <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
           <InfoItem label="Company Name">{tickerDetail.company_name}</InfoItem>
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        </Grid2>
+        <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
           <InfoItem label="CIK">{tickerDetail.cik}</InfoItem>
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        </Grid2>
+        <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
           <InfoItem label="Country Code">
             {tickerDetail.country_code || DEFAULT_COUNTRY_CODE}
           </InfoItem>
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        </Grid2>
+        <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
           <InfoItem label="Industry">
             {tickerDetail.industry_name || "N/A"}
           </InfoItem>
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        </Grid2>
+        <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
           <InfoItem label="Sector">
             {tickerDetail.sector_name || "N/A"}
           </InfoItem>
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        </Grid2>
+        <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
           <InfoItem label="Is ETF">
             {tickerDetail.is_etf ? "Yes" : "No"}
           </InfoItem>
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        </Grid2>
+        <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
           <InfoItem label="Is Held in ETF">
             {tickerDetail.is_held_in_etf ? "Yes" : "No"}
           </InfoItem>
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        </Grid2>
+        <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
           <InfoItem label="Score Avg DCA">
             {tickerDetail.score_avg_dca?.toFixed(2) || "N/A"}
           </InfoItem>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
 
       {/* Delete Button */}
       <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
@@ -196,6 +189,6 @@ export default function BucketTicker({
           </>
         }
       />
-    </Paper>
+    </Section>
   );
 }

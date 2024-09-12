@@ -41,16 +41,24 @@ export default function AvatarLogo({
     ? { ...style, borderColor: logoBgColor, borderStyle: "solid" }
     : style;
 
-  if (!tickerDetail) {
-    return null;
-  }
-
   if (isLoading) {
     return <CircularProgress style={style} className={className} />;
   }
 
   if (hasError) {
     return <ErrorIcon color="error" />;
+  }
+
+  if (!tickerDetail) {
+    // Render a gray circle without any icon or content
+    return (
+      <Avatar
+        {...rest}
+        className={clsx(styles.avatar_logo, className)}
+        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAgEBAYQ7hTQAAAAASUVORK5CYII=" // 1x1 pixel image to prevent default background
+        style={{ backgroundColor: "#b0b0b0", ...style }} // Gray circle
+      />
+    );
   }
 
   return (

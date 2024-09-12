@@ -25,6 +25,17 @@ const renderComponent = (
   return render(<TickerQuantityFieldsItem {...defaultProps} {...props} />);
 };
 
+vi.mock("@components/DeleteEntityDialogModal", () => ({
+  __esModule: true,
+  default: ({ open, onCancel, onDelete }: any) =>
+    open ? (
+      <div>
+        <button onClick={onCancel}>Cancel</button>
+        <button onClick={onDelete}>Delete</button>
+      </div>
+    ) : null,
+}));
+
 describe("TickerQuantityFieldsItem", () => {
   it("should render the component", () => {
     renderComponent();
@@ -41,7 +52,7 @@ describe("TickerQuantityFieldsItem", () => {
     expect(screen.getByText(/invalid number format/i)).toBeInTheDocument();
   });
 
-  it("should call onDelete when the delete button is clicked if modifying existing item", () => {
+  it("should call onDelete after confirming in delete confirmation dialog", () => {
     const onDelete = vi.fn();
 
     renderComponent({
@@ -65,6 +76,10 @@ describe("TickerQuantityFieldsItem", () => {
     // Click the delete button
     const deleteButton = screen.getByTestId("delete-button--AAPL");
     fireEvent.click(deleteButton);
+
+    // Confirm the deletion in the modal
+    const confirmDeleteButton = screen.getByText("Delete");
+    fireEvent.click(confirmDeleteButton);
 
     // Assert that onDelete was called with the correct values
     expect(onDelete).toHaveBeenCalledWith({
