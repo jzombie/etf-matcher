@@ -572,6 +572,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     // TODO: Emit custom event for this to route to UI notification
   }
+
   async addTickerToBucket(
     tickerId: number,
     quantity: number,

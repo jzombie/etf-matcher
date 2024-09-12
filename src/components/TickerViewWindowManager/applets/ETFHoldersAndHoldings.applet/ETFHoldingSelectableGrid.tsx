@@ -8,6 +8,7 @@ import Scrollable from "@layoutKit/Scrollable";
 
 import EncodedImage from "@components/EncodedImage";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
+import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
 import SelectableGrid, { SelectableGridItem } from "@components/SelectableGrid";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
@@ -61,9 +62,9 @@ export default function ETFHoldingSelectableGrid({
   if (!etfTickerDetail.is_etf) {
     return (
       <Center>
-        <Typography sx={{ fontWeight: "bold" }}>
+        <NoInformationAvailableAlert>
           &quot;{etfTickerDetail.symbol}&quot; is not an ETF.
-        </Typography>
+        </NoInformationAvailableAlert>
       </Center>
     );
   }
@@ -92,8 +93,8 @@ export default function ETFHoldingSelectableGrid({
         {paginatedHoldings.total_count > 1 && (
           <Typography
             variant="body2"
+            color="textSecondary"
             sx={{
-              opacity: 0.5,
               textAlign: "center",
             }}
           >

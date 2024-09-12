@@ -7,12 +7,14 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TickerETFHolder {
+    // TODO: Rename to `etf_ticker_id`
     pub ticker_id: TickerId,
     pub etf_ticker_ids_json: String,
 }
 
 impl TickerETFHolder {
     pub async fn get_etf_holders_aggregate_detail_by_ticker_id(
+        // TODO: Rename to `etf_ticker_id`
         ticker_id: TickerId,
         page: usize,
         page_size: usize,
@@ -29,7 +31,7 @@ impl TickerETFHolder {
                 Err(e) => {
                     web_sys::console::warn_2(
                         &format!(
-                            "Failed to fetch ETF aggregate detail (ticker_id: {}): {:?}",
+                            "Failed to fetch ETF aggregate detail for ticker ID: {}: {:?}",
                             etf_ticker_id, e
                         )
                         .into(),
@@ -49,6 +51,7 @@ impl TickerETFHolder {
     }
 
     async fn get_ticker_etf_holder_ids_by_ticker_id(
+        // TODO: Rename to `etf_ticker_id`
         ticker_id: TickerId,
         page: usize,
         page_size: usize,
@@ -66,7 +69,7 @@ impl TickerETFHolder {
         .await?
         .ok_or_else(|| {
             // web_sys::console::debug_1(&format!("Ticker not found in shard for ticker_id: {}", ticker_id).into());
-            JsValue::from_str("Ticker not found")
+            JsValue::from_str(&format!("Ticker ID {} not found", ticker_id))
         })?;
 
         // web_sys::console::debug_1(&format!("Found holder for ticker_id: {}", ticker_id).into());

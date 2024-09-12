@@ -15,6 +15,7 @@ import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 import TickerDetailAppletWrap from "../components/TickerDetailAppletWrap";
 
 const DATE_RANGES: DateRange[] = ["1D", "1M", "3M", "12M", "60M", "ALL"];
+const DEFAULT_DATE_RANGE: DateRange = "12M";
 
 export type HistoricalPriceChartAppletProps = {
   tickerDetail?: RustServiceTickerDetail;
@@ -37,8 +38,8 @@ export default function HistoricalPriceChartApplet({
     }
   }, [tickerDetail]);
 
-  const [dateRange, setDateRange] = useState<DateRange>("1M");
-  const previousRangeRef = useRef<DateRange>("1M");
+  const [dateRange, setDateRange] = useState<DateRange>(DEFAULT_DATE_RANGE);
+  const previousRangeRef = useRef<DateRange>(DEFAULT_DATE_RANGE);
 
   const handleDateRangeChange = useCallback(
     (range: string) => {

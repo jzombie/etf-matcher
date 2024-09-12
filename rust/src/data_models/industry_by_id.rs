@@ -32,7 +32,10 @@ impl IndustryById {
             return Ok(industry.industry_name.clone());
         }
 
-        Err(JsValue::from_str("Industry ID not found"))
+        Err(JsValue::from_str(&format!(
+            "Industry ID {} not found",
+            industry_id
+        )))
     }
 
     // TODO: Uncomment?

@@ -1,10 +1,11 @@
 import React, { useMemo } from "react";
 
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 
 import AutoScaler from "@layoutKit/AutoScaler";
 import Center from "@layoutKit/Center";
 
+import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
 import SectorsPieChart from "@components/SectorsPieChart";
 
 import type {
@@ -69,10 +70,10 @@ export default function SectorAllocationApplet({
           </AutoScaler>
         ) : (
           <Center>
-            <Typography sx={{ fontWeight: "bold" }}>
+            <NoInformationAvailableAlert>
               No sector allocation information is available for &quot;
               {tickerDetail?.symbol}&quot;.
-            </Typography>
+            </NoInformationAvailableAlert>
           </Center>
         )}
       </>
