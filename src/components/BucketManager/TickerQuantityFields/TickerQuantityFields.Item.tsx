@@ -179,7 +179,7 @@ export default function TickerQuantityFieldsItem({
         </Grid2>
 
         {/** Symbol Input */}
-        <Grid2 size={{ xs: 12, sm: !omitShares ? 3 : 8 }}>
+        <Grid2 size={{ xs: 12, sm: !omitShares ? 3 : 10 }}>
           <TextField
             name="symbol_or_company_name"
             label="Symbol"
@@ -198,7 +198,7 @@ export default function TickerQuantityFieldsItem({
 
         {/** Quantity Input */}
         {!omitShares && (
-          <Grid2 size={{ xs: 12, sm: 5 }}>
+          <Grid2 size={{ xs: 12, sm: 7 }}>
             <TextField
               name="shares"
               label="Shares"
@@ -219,7 +219,7 @@ export default function TickerQuantityFieldsItem({
           <Grid2
             size={{
               xs: 12,
-              sm: 3,
+              sm: 1,
             }}
             sx={{
               display: "flex",
