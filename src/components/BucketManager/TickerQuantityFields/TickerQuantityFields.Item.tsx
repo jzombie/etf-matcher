@@ -171,7 +171,7 @@ export default function TickerQuantityFieldsItem({
         <Grid2
           size={{
             xs: 12,
-            sm: 3,
+            sm: !omitShares ? 3 : 8,
           }}
         >
           <TextField
@@ -218,7 +218,7 @@ export default function TickerQuantityFieldsItem({
           <Grid2
             size={{
               xs: 12,
-              sm: 1,
+              sm: 3,
             }}
             sx={{
               display: "flex",
