@@ -157,10 +157,23 @@ export default function TickerQuantityFieldsItem({
   return (
     <>
       <Grid2 container spacing={2} mb={1}>
-        <Grid2 size={{ xs: 2, sm: 1 }}>
+        {/* Avatar Section */}
+        <Grid2
+          size={{
+            xs: 12,
+            sm: 1,
+          }}
+        >
           {tickerDetail && <AvatarLogo tickerDetail={tickerDetail} />}
         </Grid2>
-        <Grid2 size={{ xs: 12, sm: 5 }}>
+
+        {/* Symbol Input */}
+        <Grid2
+          size={{
+            xs: 12,
+            sm: 3,
+          }}
+        >
           <TextField
             name="symbol_or_company_name"
             label="Symbol"
@@ -176,15 +189,22 @@ export default function TickerQuantityFieldsItem({
             size="small"
           />
         </Grid2>
+
+        {/* Shares Input */}
         {!omitShares && (
-          <Grid2 size={{ xs: 12, sm: 4 }}>
+          <Grid2
+            size={{
+              xs: 12,
+              sm: 5,
+            }}
+          >
             <TextField
               name="shares"
               label="Shares"
               variant="outlined"
               fullWidth
               required
-              type="text" // `text` is used so the number can be numerically formatted
+              type="text"
               value={formattedQuantityInputValue}
               onChange={handleQuantityInputChange}
               disabled={!bucketTicker}
@@ -193,19 +213,17 @@ export default function TickerQuantityFieldsItem({
           </Grid2>
         )}
 
+        {/* Delete Button */}
         {existingBucketTickers.length > 0 && (
           <Grid2
             size={{
               xs: 12,
-              sm: 2,
+              sm: 1,
             }}
             sx={{
               display: "flex",
               alignItems: "center",
-              justifyContent: {
-                xs: "flex-end", // Align the button to the right on mobile
-                sm: "flex-start", // Align as before on larger screens
-              },
+              justifyContent: { xs: "flex-end", sm: "flex-start" },
             }}
           >
             <IconButton
@@ -222,6 +240,7 @@ export default function TickerQuantityFieldsItem({
         )}
       </Grid2>
 
+      {/* Search Modal */}
       <TickerSearchModal
         open={isSearchModalOpen}
         onSelectTicker={handleSelectTicker}
