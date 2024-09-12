@@ -6,6 +6,7 @@ import { Grid2, IconButton, TextField } from "@mui/material";
 import type { TickerBucketTicker } from "@src/store";
 
 import AvatarLogo from "@components/AvatarLogo";
+import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
 import TickerSearchModal from "@components/TickerSearchModal";
 
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
@@ -66,6 +67,8 @@ export default function TickerQuantityFieldsItem({
 
   const { tickerDetail } = useTickerDetail(bucketTicker?.tickerId);
   const [tickerError, setTickerError] = useState<string | null>(null);
+
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
   // Handle `onErrorStateChange` callback
   useEffect(() => {
@@ -141,7 +144,7 @@ export default function TickerQuantityFieldsItem({
     [handleSetBucketTicker],
   );
 
-  const handleDelete = useCallback(() => {
+  const handleDeleteConfirm = useCallback(() => {
     const onDelete = onDeleteStableRef.current;
     const onCancel = onCancelStableRef.current;
 
@@ -150,30 +153,25 @@ export default function TickerQuantityFieldsItem({
     } else if (typeof onCancel === "function") {
       onCancel();
     }
+    setIsDeleteConfirmOpen(false);
   }, [bucketTicker, onDeleteStableRef, onCancelStableRef]);
+
+  const handleDelete = useCallback(() => {
+    setIsDeleteConfirmOpen(true); // Open the delete confirmation dialog
+  }, []);
 
   const isDeleteButtonDisabled = !bucketTicker && !existingBucketTickers.length;
 
   return (
     <>
+      {/** Company Logo */}
       <Grid2 container spacing={2} mb={1}>
-        {/* Avatar Section */}
-        <Grid2
-          size={{
-            xs: 12,
-            sm: 1,
-          }}
-        >
+        <Grid2 size={{ xs: 12, sm: 1 }}>
           <AvatarLogo tickerDetail={tickerDetail} />
         </Grid2>
 
-        {/* Symbol Input */}
-        <Grid2
-          size={{
-            xs: 12,
-            sm: !omitShares ? 3 : 8,
-          }}
-        >
+        {/** Symbol Input */}
+        <Grid2 size={{ xs: 12, sm: !omitShares ? 3 : 8 }}>
           <TextField
             name="symbol_or_company_name"
             label="Symbol"
@@ -190,14 +188,9 @@ export default function TickerQuantityFieldsItem({
           />
         </Grid2>
 
-        {/* Shares Input */}
+        {/** Quantity Input */}
         {!omitShares && (
-          <Grid2
-            size={{
-              xs: 12,
-              sm: 5,
-            }}
-          >
+          <Grid2 size={{ xs: 12, sm: 5 }}>
             <TextField
               name="shares"
               label="Shares"
@@ -245,6 +238,20 @@ export default function TickerQuantityFieldsItem({
         open={isSearchModalOpen}
         onSelectTicker={handleSelectTicker}
         onCancel={() => setIsSearchModalOpen(false)}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteEntityDialogModal
+        open={isDeleteConfirmOpen}
+        onCancel={() => setIsDeleteConfirmOpen(false)}
+        onDelete={handleDeleteConfirm}
+        title="Confirm Delete"
+        // FIXME: Ideally, it should relay the bucket name and type as well
+        content={
+          !bucketTicker
+            ? "Are you sure you want to remove this ticker?"
+            : `Are you sure you want to remove "${bucketTicker.symbol}"?`
+        }
       />
     </>
   );
