@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 
 import Padding from "@layoutKit/Padding";
-import Scrollable from "@layoutKit/Scrollable";
 
 import LazyRender from "@components/LazyRender";
 import Section from "@components/Section";
@@ -61,7 +60,7 @@ export default function SettingsManager() {
   ]);
 
   return (
-    <Scrollable>
+    <>
       <Padding>
         <Section>
           <h2>Session Syncing (Beta)</h2>
@@ -203,6 +202,6 @@ export default function SettingsManager() {
           {visibleTickerIds?.toString()}
         </Typography>
       </Padding>
-    </Scrollable>
+    </>
   );
 }

@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-import { Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 
 import Center from "@layoutKit/Center";
 import Cover from "@layoutKit/Cover";
 import Full from "@layoutKit/Full";
 import FullViewport from "@layoutKit/FullViewport";
 import Layout, { Content, Header } from "@layoutKit/Layout";
+import Padding from "@layoutKit/Padding";
 import { Outlet } from "react-router-dom";
 
 import LockScreen from "@components/LockScreen";
@@ -18,12 +19,62 @@ import HeaderMenu from "./HeaderMenu";
 import ImportExportDialogModal from "./MainLayout.ImportExportDialogModal";
 
 export default function MainLayout() {
-  const { isAppUnlocked, isRustInit, isProfilingCacheOverlayOpen } =
-    useStoreStateReader([
-      "isAppUnlocked",
-      "isRustInit",
-      "isProfilingCacheOverlayOpen",
-    ]);
+  const {
+    isAppUnlocked,
+    isRustInit,
+    isProfilingCacheOverlayOpen,
+    isIndexedDBReady,
+  } = useStoreStateReader([
+    "isAppUnlocked",
+    "isRustInit",
+    "isProfilingCacheOverlayOpen",
+    "isIndexedDBReady",
+  ]);
+
+  // TODO: Remove after https://linear.app/zenosmosis/issue/ZEN-86/implement-auto-reindex-strategy is implemented
+  const [shouldShowRefreshInterstitial, setShouldShowRefreshInterstitial] =
+    useState<boolean>(false);
+  useEffect(() => {
+    if (isIndexedDBReady && !store.isFreshSession) {
+      setShouldShowRefreshInterstitial(true);
+    }
+  }, [isIndexedDBReady]);
+
+  if (shouldShowRefreshInterstitial) {
+    return (
+      <FullViewport>
+        <Center>
+          <Padding style={{ textAlign: "center" }}>
+            <Typography variant="h6">
+              Recent changes may require you to clear your cache in order to
+              prevent data loading errors.
+            </Typography>
+            <Typography sx={{ fontStyle: "italic" }}>
+              (This is a temporary measure while still in &quot;Preview&quot;
+              mode.)
+            </Typography>
+            <Box>
+              <Button
+                color="error"
+                variant="contained"
+                onClick={() => store.reset()}
+                sx={{ margin: 1 }}
+              >
+                Clear Cache
+              </Button>
+              <Button
+                color="primary"
+                onClick={() => setShouldShowRefreshInterstitial(false)}
+                sx={{ margin: 1 }}
+              >
+                Don&apos;t clear cache
+              </Button>
+            </Box>
+          </Padding>
+        </Center>
+      </FullViewport>
+    );
+  }
 
   if (!isAppUnlocked) {
     return (

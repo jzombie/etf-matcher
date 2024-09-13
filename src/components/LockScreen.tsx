@@ -15,6 +15,7 @@ import Full from "@layoutKit/Full";
 import FullViewport from "@layoutKit/FullViewport";
 import Layout, { Content, Footer } from "@layoutKit/Layout";
 import Padding from "@layoutKit/Padding";
+import { PROJECT_DESCRIPTION } from "@src/constants";
 
 import formatLocalTime from "@utils/formatLocalTime";
 
@@ -76,8 +77,7 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
             <Center>
               <Padding>
                 <Typography variant="h5" sx={{ textAlign: "center" }}>
-                  Customize a virtual portfolio with potential fractional shares
-                  and find ETFs that closely match your investment goals.
+                  {PROJECT_DESCRIPTION}
                 </Typography>
 
                 <Typography
