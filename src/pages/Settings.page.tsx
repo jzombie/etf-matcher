@@ -4,7 +4,7 @@ import SettingsManager from "@components/SettingsManager";
 
 import usePageTitleSetter from "@utils/usePageTitleSetter";
 
-export default function Settings() {
+export default function SettingsPage() {
   usePageTitleSetter("Settings");
 
   return <SettingsManager />;
