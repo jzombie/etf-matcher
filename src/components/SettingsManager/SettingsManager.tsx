@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 
 import Padding from "@layoutKit/Padding";
-import Scrollable from "@layoutKit/Scrollable";
 
 import LazyRender from "@components/LazyRender";
 import Section from "@components/Section";
