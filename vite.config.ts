@@ -57,7 +57,7 @@ const HTML_REPLACEMENTS = {
 const MANIFEST_VARS = {
   name: PROJECT_NAME,
   short_name: PROJECT_NAME,
-  descripition: PROJECT_DESCRIPTION,
+  description: PROJECT_DESCRIPTION,
   background_color: process.env.VITE_BACKGROUND_COLOR || "#000000",
   theme_color: process.env.VITE_BACKGROUND_COLOR || "#000000",
 };
