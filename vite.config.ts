@@ -121,7 +121,7 @@ export default defineConfig(({ mode }) => {
         },
       }),
       sitemap({
-        hostname: "https://etfmatcher.com",
+        hostname: PROJECT_URL,
         // TODO: Ideally these would seed automatically from `router.ts`
         dynamicRoutes: [
           "/",
