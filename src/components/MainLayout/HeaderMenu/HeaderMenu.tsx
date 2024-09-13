@@ -7,6 +7,7 @@ import {
   Menu as MenuIcon,
   Search as SearchIcon,
   Settings as SettingsIcon,
+  ContactMail as ContactMailIcon
 } from "@mui/icons-material";
 import {
   AppBar,
@@ -90,7 +91,7 @@ export default function HeaderMenu() {
         key: "/contact",
         link: "/contact",
         label: "Contact",
-        icon: <AssessmentIcon fontSize="small" />,
+        icon: <ContactMailIcon fontSize="small" />,
         badgeContent: totalPortfolioBuckets,
       },
     ],
