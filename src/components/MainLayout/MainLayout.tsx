@@ -45,7 +45,7 @@ export default function MainLayout() {
         <Center>
           <Padding style={{ textAlign: "center" }}>
             <Typography variant="h6">
-              Recent changes may require you to wipe your cache in order to
+              Recent changes may require you to clear your cache in order to
               prevent data loading errors.
             </Typography>
             <Typography sx={{ fontStyle: "italic" }}>
