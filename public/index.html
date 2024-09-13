@@ -59,6 +59,18 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
+        "@type": "<%= PROJECT_AUTHOR_TYPE %>",
+        "name": "<%= PROJECT_AUTHOR_NAME %>",
+        "url": "<%= PROJECT_URL %>",
+        "sameAs": [
+          "<%= PROJECT_AUTHOR_LINKEDIN_URL %>",
+          "<%= PROJECT_GITHUB_REPOSITORY %>"
+        ]
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
         "@type": "WebSite",
         "name": "<%= SITE_DEFAULT_TITLE %>",
         "url": "<%= PROJECT_URL %>",
@@ -69,14 +81,6 @@
           "target": "<%= PROJECT_URL %>/search?query={search_term_string}",
           "query-input": "required name=search_term_string"
         }
-      }
-    </script>
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "url": "<%= PROJECT_URL %>",
-        "logo": "<%= PROJECT_URL %>/static/etf-matcher-logo-bw-250x250.png"
       }
     </script>
 

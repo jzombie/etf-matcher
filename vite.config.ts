@@ -13,6 +13,9 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 import {
   PROJECT_AUTHOR,
+  PROJECT_AUTHOR_LINKEDIN_URL,
+  PROJECT_AUTHOR_NAME,
+  PROJECT_AUTHOR_TYPE,
   PROJECT_DESCRIPTION,
   PROJECT_GITHUB_REPOSITORY,
   PROJECT_NAME,
@@ -43,6 +46,9 @@ const HTML_REPLACEMENTS = {
   PROJECT_AUTHOR,
   PROJECT_GITHUB_REPOSITORY,
   PROJECT_URL,
+  PROJECT_AUTHOR_NAME,
+  PROJECT_AUTHOR_TYPE,
+  PROJECT_AUTHOR_LINKEDIN_URL,
 };
 
 // Note: These are *intentionally* lower-case keys, and are injected directly

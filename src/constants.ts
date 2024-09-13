@@ -8,7 +8,11 @@ export const PROJECT_DESCRIPTION =
   "Customize a virtual portfolio to find ETFs matching your strategy using machine learning analysis of financial disclosures.";
 export const PROJECT_GITHUB_REPOSITORY =
   "https://github.com/jzombie/etf-matcher/";
-export const PROJECT_AUTHOR = `Jeremy Harris, GitHub: ${PROJECT_GITHUB_REPOSITORY}/`;
+export const PROJECT_AUTHOR_NAME = "Jeremy Harris";
+export const PROJECT_AUTHOR_TYPE = "Person";
+export const PROJECT_AUTHOR = `${PROJECT_AUTHOR_NAME}, GitHub: ${PROJECT_GITHUB_REPOSITORY}/`;
+export const PROJECT_AUTHOR_LINKEDIN_URL =
+  "https://www.linkedin.com/in/jeremyharrisconsultant/";
 
 export const INVESTMENT_DISCLAIMER =
   "Disclaimer: The information provided on this platform is for informational purposes only and does not constitute financial, investment, or other professional advice. You should not rely on this information to make any investment decisions. Always consult with a qualified financial advisor before making any investment decisions. We do not guarantee the accuracy, completeness, or timeliness of any information provided and shall not be held liable for any errors or omissions, or for any loss or damage incurred as a result of using this information.";
