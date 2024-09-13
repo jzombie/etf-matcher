@@ -11,10 +11,15 @@ import { viteStaticCopy } from "vite-plugin-static-copy";
 import svgr from "vite-plugin-svgr";
 import tsconfigPaths from "vite-tsconfig-paths";
 
+import {
+  PROJECT_DESCRIPTION,
+  PROJECT_NAME,
+  PROJECT_SHORT_NAME,
+  SITE_DEFAULT_TITLE,
+} from "./src/constants";
+
 // This is needed to get the .env variables to populate here
 dotenv.config();
-
-const DESTINATION_DIR = path.resolve(__dirname, "dist");
 
 // Function to get the current build time and write it to a file
 export function writeBuildTime() {
@@ -27,8 +32,32 @@ export function writeBuildTime() {
   return buildTime;
 }
 
+// Note: These replace `<%= MY_VAR %>` usage inside of `index.html`.
+const HTML_REPLACEMENTS = {
+  BUILD_TIME: writeBuildTime(),
+  SITE_DEFAULT_TITLE,
+  PROJECT_DESCRIPTION,
+};
+
+// Note: These are *intentionally* lower-case keys, and are injected directly
+// into the sitemap.json in the `dist` directory during a production build.
+const MANIFEST_VARS = {
+  name: PROJECT_NAME,
+  short_name: PROJECT_SHORT_NAME,
+  descripition: PROJECT_DESCRIPTION,
+  background_color: process.env.VITE_BACKGROUND_COLOR || "#000000",
+  theme_color: process.env.VITE_BACKGROUND_COLOR || "#000000",
+};
+
 export default defineConfig(({ mode }) => {
-  const isProduction = mode === "production";
+  const DESTINATION_DIR = path.resolve(__dirname, "dist");
+  const IS_PROD = mode === "production";
+
+  const MANIFEST_TEMPLATE_PATH = path.resolve(
+    __dirname,
+    "src",
+    "manifest.template.json",
+  );
 
   return {
     root: "./public",
@@ -75,9 +104,7 @@ export default defineConfig(({ mode }) => {
       svgr(),
       createHtmlPlugin({
         inject: {
-          data: {
-            buildTime: writeBuildTime(), // Write build time to a file and inject it into HTML
-          },
+          data: HTML_REPLACEMENTS,
         },
         minify: {
           collapseWhitespace: true,
@@ -98,7 +125,7 @@ export default defineConfig(({ mode }) => {
           "/settings",
         ],
       }),
-      ...(isProduction
+      ...(IS_PROD
         ? [
             viteStaticCopy({
               targets: [
@@ -114,10 +141,10 @@ export default defineConfig(({ mode }) => {
                   src: "buildTime.json",
                   dest: path.resolve(DESTINATION_DIR),
                 },
-                {
-                  src: "manifest.json",
-                  dest: path.resolve(DESTINATION_DIR),
-                },
+                // {
+                //   src: "manifest.json",
+                //   dest: path.resolve(DESTINATION_DIR),
+                // },
                 {
                   src: "./static/*",
                   dest: path.resolve(DESTINATION_DIR, "static"),
@@ -136,6 +163,35 @@ export default defineConfig(({ mode }) => {
                 },
               ],
             }),
+            {
+              name: "inject-manifest-variables",
+              generateBundle() {
+                // Check if the manifest template exists
+                if (fs.existsSync(MANIFEST_TEMPLATE_PATH)) {
+                  const manifestContent = JSON.parse(
+                    fs.readFileSync(MANIFEST_TEMPLATE_PATH, "utf-8"),
+                  );
+
+                  // Write the updated manifest to the output folder
+                  const filePath = path.resolve(
+                    DESTINATION_DIR,
+                    "manifest.json",
+                  );
+                  fs.writeFileSync(
+                    filePath,
+                    JSON.stringify(
+                      { ...MANIFEST_VARS, ...manifestContent },
+                      null,
+                      2,
+                    ),
+                  );
+                } else {
+                  throw new Error(
+                    `Manifest template not found at ${MANIFEST_TEMPLATE_PATH}`,
+                  );
+                }
+              },
+            },
           ]
         : []),
     ],

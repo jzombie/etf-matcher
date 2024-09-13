@@ -3,13 +3,10 @@
   <head>
     <meta charset="utf-8" />
 
-    <meta name="html_build_time" content="<%= buildTime %>" />
+    <meta name="html_build_time" content="<%= BUILD_TIME %>" />
 
-    <title>ETF Matcher - Find the Best ETFs for Your Investment Goals</title>
-    <meta
-      name="description"
-      content="Customize a virual portfolio and find ETFs that match your strategy, leveraging machine learning to analyze 10-K statements and financial disclosures for stocks and ETFs."
-    />
+    <title><%= SITE_DEFAULT_TITLE %></title>
+    <meta name="description" content="<%= PROJECT_DESCRIPTION %>" />
     <meta
       name="keywords"
       content="ETF Matcher, exchange-traded funds, ETF search, virtual portfolio, fractional shares, investment goals, ETFs, portfolio customization, ETF comparison, online trading, investment management, ETF selection, investment tool, customize portfolio, find ETFs, machine learning"
@@ -47,14 +44,8 @@
     <link rel="manifest" href="/manifest.json" />
 
     <!-- Open Graph Meta Tags -->
-    <meta
-      property="og:title"
-      content="ETF Matcher - Find the Best ETFs for Your Investment Goals"
-    />
-    <meta
-      property="og:description"
-      content="Customize a virual portfolio and find ETFs that match your strategy, leveraging machine learning to analyze 10-K statements and financial disclosures for stocks and ETFs."
-    />
+    <meta property="og:title" content="<%= SITE_DEFAULT_TITLE %>" />
+    <meta property="og:description" content="<%= PROJECT_DESCRIPTION %>" />
     <meta
       property="og:image"
       content="https://etfmatcher.com/static/etf-matcher-logo-bw-1200x630.png"
@@ -64,14 +55,8 @@
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta
-      name="twitter:title"
-      content="ETF Matcher - Find the Best ETFs for Your Investment Goals"
-    />
-    <meta
-      name="twitter:description"
-      content="Customize a virual portfolio and find ETFs that match your strategy, leveraging machine learning to analyze 10-K statements and financial disclosures for stocks and ETFs."
-    />
+    <meta name="twitter:title" content="<%= SITE_DEFAULT_TITLE %>" />
+    <meta name="twitter:description" content="<%= PROJECT_DESCRIPTION %>" />
     <meta
       name="twitter:image"
       content="https://etfmatcher.com/static/etf-matcher-logo-bw-1200x628.png"
