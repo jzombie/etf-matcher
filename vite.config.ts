@@ -154,6 +154,35 @@ export default defineConfig(({ mode }) => {
                 },
               ],
             }),
+            {
+              name: "inject-manifest-variables",
+              closeBundle() {
+                // Check if the manifest template exists
+                if (fs.existsSync(MANIFEST_TEMPLATE_PATH)) {
+                  const manifestContent = JSON.parse(
+                    fs.readFileSync(MANIFEST_TEMPLATE_PATH, "utf-8"),
+                  );
+
+                  // Write the updated manifest to the output folder
+                  const filePath = path.resolve(
+                    DESTINATION_DIR,
+                    "manifest.json",
+                  );
+                  fs.writeFileSync(
+                    filePath,
+                    JSON.stringify(
+                      { ...MANIFEST_VARS, ...manifestContent },
+                      null,
+                      2,
+                    ),
+                  );
+                } else {
+                  throw new Error(
+                    `Manifest template not found at ${MANIFEST_TEMPLATE_PATH}`,
+                  );
+                }
+              },
+            },
           ]
         : []),
       sitemap({
