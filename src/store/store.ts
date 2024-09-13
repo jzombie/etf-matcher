@@ -7,7 +7,7 @@ import {
 
 import IndexedDBInterface from "@utils/IndexedDBInterface";
 import MQTTRoom from "@utils/MQTTRoom";
-import detectHTMLJSVersionSync from "@utils/PROTO_detectHTMLJSVersionSync";
+import detectHTMLJSVersionSync from "@utils/detectHTMLJSVersionSync";
 import {
   ReactStateEmitter,
   StateEmitterDefaultEvents,
