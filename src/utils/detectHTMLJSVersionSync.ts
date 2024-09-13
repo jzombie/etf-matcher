@@ -1,6 +1,7 @@
 import { buildTime } from "../../public/buildTime.json";
 import customLogger from "./customLogger";
 
+// Simple utility to determine if HTML and JS are on the same version
 export default function detectHTMLJSVersionSync(): boolean {
   const jsBuildTime = buildTime;
   const htmlBuildTime = window.document
