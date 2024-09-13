@@ -17,6 +17,7 @@ import Section from "@components/Section";
 
 // TODO: Finish implementing
 // TODO: Include contact information on lockscreen?
+// TODO: Include contact information in `console.log`?
 export default function ContactUsPage() {
   return (
     <Container maxWidth="md" sx={{ py: 5 }}>
