@@ -100,6 +100,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                   color="error"
                   startIcon={<DeleteIcon />}
                   onClick={handleDeleteClick}
+                  sx={{ marginRight: 2 }}
                 >
                   Delete
                 </Button>

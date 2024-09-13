@@ -1,7 +1,7 @@
 import React from "react";
 
+import ContactUsPage from "@pages/ContactUs.page";
 import HomePage from "@pages/Home.page";
-import ContactUsPage from '@pages/ContactUs.page';
 import NotFoundPage from "@pages/NotFound.page";
 import PortfoliosPage from "@pages/Portfolios.page";
 import SearchResultsPage from "@pages/SearchResults.page";

@@ -2,12 +2,12 @@ import React, { useMemo, useRef, useState } from "react";
 
 import {
   Assessment as AssessmentIcon,
+  ContactMail as ContactMailIcon,
   Home,
   ListAlt as ListAltIcon,
   Menu as MenuIcon,
   Search as SearchIcon,
   Settings as SettingsIcon,
-  ContactMail as ContactMailIcon
 } from "@mui/icons-material";
 import {
   AppBar,
@@ -42,7 +42,9 @@ export default function HeaderMenu() {
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
-  const isDesktop = useMediaQuery(`@media (min-width:${MIN_HORIZONTAL_WIDTH}px)`);
+  const isDesktop = useMediaQuery(
+    `@media (min-width:${MIN_HORIZONTAL_WIDTH}px)`,
+  );
 
   const { tickerBuckets } = useStoreStateReader("tickerBuckets");
 
