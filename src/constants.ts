@@ -2,7 +2,6 @@ import type { StoreStateProps } from "@src/store";
 
 export const PROJECT_URL = "https://etfmatcher.com";
 export const PROJECT_NAME = "ETF Matcher";
-export const PROJECT_SHORT_NAME = PROJECT_NAME;
 export const PROJECT_DEFAULT_TITLE = `${PROJECT_NAME}: Find ETFs Aligned with Your Investment Goals`;
 export const PROJECT_DESCRIPTION =
   "Customize a virtual portfolio to find ETFs matching your strategy using machine learning analysis of financial disclosures.";

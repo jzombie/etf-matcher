@@ -21,6 +21,7 @@ import {
   PROJECT_NAME,
   PROJECT_URL,
   PROJECT_DEFAULT_TITLE,
+  INVESTMENT_DISCLAIMER
 } from "./src/constants";
 
 // This is needed to get the .env variables to populate here
@@ -48,6 +49,7 @@ const HTML_REPLACEMENTS = {
   PROJECT_AUTHOR_NAME,
   PROJECT_AUTHOR_TYPE,
   PROJECT_AUTHOR_LINKEDIN_URL,
+  INVESTMENT_DISCLAIMER
 };
 
 // Note: These are *intentionally* lower-case keys, and are injected directly
