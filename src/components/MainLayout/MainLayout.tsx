@@ -7,6 +7,7 @@ import Cover from "@layoutKit/Cover";
 import Full from "@layoutKit/Full";
 import FullViewport from "@layoutKit/FullViewport";
 import Layout, { Content, Header } from "@layoutKit/Layout";
+import Padding from "@layoutKit/Padding";
 import { Outlet } from "react-router-dom";
 
 import LockScreen from "@components/LockScreen";
@@ -42,31 +43,33 @@ export default function MainLayout() {
     return (
       <FullViewport>
         <Center>
-          <Typography variant="h6">
-            Recent changes may require you to wipe your cache in order to
-            prevent data loading errors.
-          </Typography>
-          <Typography sx={{ fontStyle: "italic" }}>
-            (This is a temporary measure while still in &quot;Preview&quot;
-            mode.)
-          </Typography>
-          <Box>
-            <Button
-              color="error"
-              variant="contained"
-              onClick={() => store.reset()}
-              sx={{ margin: 1 }}
-            >
-              Clear Cache
-            </Button>
-            <Button
-              color="primary"
-              onClick={() => setShouldShowRefreshInterstitial(false)}
-              sx={{ margin: 1 }}
-            >
-              Don&apos;t clear cache
-            </Button>
-          </Box>
+          <Padding style={{ textAlign: "center" }}>
+            <Typography variant="h6">
+              Recent changes may require you to wipe your cache in order to
+              prevent data loading errors.
+            </Typography>
+            <Typography sx={{ fontStyle: "italic" }}>
+              (This is a temporary measure while still in &quot;Preview&quot;
+              mode.)
+            </Typography>
+            <Box>
+              <Button
+                color="error"
+                variant="contained"
+                onClick={() => store.reset()}
+                sx={{ margin: 1 }}
+              >
+                Clear Cache
+              </Button>
+              <Button
+                color="primary"
+                onClick={() => setShouldShowRefreshInterstitial(false)}
+                sx={{ margin: 1 }}
+              >
+                Don&apos;t clear cache
+              </Button>
+            </Box>
+          </Padding>
         </Center>
       </FullViewport>
     );
