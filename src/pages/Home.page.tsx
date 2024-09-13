@@ -1,7 +1,7 @@
 import React from "react";
 
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import { Button } from "@mui/material";
+import { Button, Container, Typography } from "@mui/material";
 
 import heroImg from "@assets/hero.webp";
 import Scrollable from "@layoutKit/Scrollable";
@@ -42,11 +42,15 @@ export default function HomePage() {
         <img style={heroImageStyle} src={heroImg} alt="ETF Matcher" />
       </section>
       <section style={infoSectionStyle}>
-        <p style={{ fontWeight: "bold" }}>
-          After you find the ETFs that most closely match your investment goals,
-          trade them on your platform of choice!
-        </p>
-        <p>{INVESTMENT_DISCLAIMER}</p>
+        <Container maxWidth="lg">
+          <Typography sx={{ fontWeight: "bold" }}>
+            After you find the ETFs that most closely match your investment
+            goals, trade them on your platform of choice!
+          </Typography>
+          <Typography mt={2} sx={{ textAlign: "justify" }}>
+            {INVESTMENT_DISCLAIMER}
+          </Typography>
+        </Container>
       </section>
     </Scrollable>
   );
