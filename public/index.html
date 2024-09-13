@@ -5,13 +5,15 @@
 
     <meta name="html_build_time" content="<%= BUILD_TIME %>" />
 
-    <title><%= SITE_DEFAULT_TITLE %></title>
+    <!-- Title and Meta Descriptions for SEO -->
+    <title><%= PROJECT_DEFAULT_TITLE %></title>
     <meta name="description" content="<%= PROJECT_DESCRIPTION %>" />
     <meta name="author" content="<%= PROJECT_AUTHOR %>" />
     <meta name="repository" content="<%= PROJECT_GITHUB_REPOSITORY %>" />
     <link rel="repository" href="<%= PROJECT_GITHUB_REPOSITORY %>" />
     <meta property="og:see_also" content="<%= PROJECT_GITHUB_REPOSITORY %>" />
 
+    <!-- Favicon and Icons -->
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <link
       rel="apple-touch-icon"
@@ -32,9 +34,9 @@
     />
     <link rel="manifest" href="/manifest.json" />
 
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:site_name" content="<%= SITE_DEFAULT_TITLE %>" />
-    <meta property="og:title" content="<%= SITE_DEFAULT_TITLE %>" />
+    <!-- Open Graph Meta Tags for Social Sharing -->
+    <meta property="og:site_name" content="<%= PROJECT_DEFAULT_TITLE %>" />
+    <meta property="og:title" content="<%= PROJECT_DEFAULT_TITLE %>" />
     <meta property="og:description" content="<%= PROJECT_DESCRIPTION %>" />
     <meta
       property="og:image"
@@ -43,9 +45,9 @@
     <meta property="og:url" content="<%= PROJECT_URL %>" />
     <meta property="og:type" content="website" />
 
-    <!-- Twitter Card Meta Tags -->
+    <!-- Twitter Card Meta Tags for Twitter Sharing -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="<%= SITE_DEFAULT_TITLE %>" />
+    <meta name="twitter:title" content="<%= PROJECT_DEFAULT_TITLE %>" />
     <meta name="twitter:description" content="<%= PROJECT_DESCRIPTION %>" />
     <meta
       name="twitter:image"
@@ -55,7 +57,7 @@
       <meta name="twitter:site" content="@your_twitter_handle" />
     -->
 
-    <!-- Structured Data -->
+    <!-- Structured Data for SEO -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -72,7 +74,7 @@
       {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "name": "<%= SITE_DEFAULT_TITLE %>",
+        "name": "<%= PROJECT_DEFAULT_TITLE %>",
         "url": "<%= PROJECT_URL %>",
         "description": "<%= PROJECT_DESCRIPTION %>",
         "repository": "<%= PROJECT_GITHUB_REPOSITORY %>",
@@ -84,7 +86,7 @@
       }
     </script>
 
-    <!-- Very simple no-cache mechanism. This may need to be improved if making the app a PWA. -->
+    <!-- Simple no-cache mechanism, can be improved for PWA -->
     <script>
       (function () {
         const NO_CACHE_KEY = "no_cache";
@@ -113,19 +115,19 @@
           const timestamp = parseInt(noCacheParam, 10);
           if (isNaN(timestamp) || now - timestamp > 10) {
             setQueryParam(NO_CACHE_KEY, now);
-            window.location.reload(true); // Force reload with new parameter
+            window.location.reload(true);
           } else {
             removeQueryParam(NO_CACHE_KEY);
             console.debug("Loaded with skip-cache");
           }
         } else {
           setQueryParam(NO_CACHE_KEY, now);
-          window.location.reload(true); // Force reload with new parameter
+          window.location.reload(true);
         }
       })();
     </script>
 
-    <!-- Conditionally include Google Analytics script -->
+    <!-- Google Analytics Integration -->
     <script type="module">
       if (!import.meta.env.DEV) {
         if (import.meta.env.VITE_GOOGLE_ANALYTICS_ID) {
@@ -150,6 +152,7 @@
       }
     </script>
 
+    <!-- Mobile Web App Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
       name="apple-mobile-web-app-status-bar-style"
@@ -170,7 +173,6 @@
         color-scheme: dark;
       }
 
-      /* styles.css or a similar global stylesheet */
       html,
       body,
       #app {
@@ -179,10 +181,9 @@
         padding: 0;
         background-color: #121212;
         overflow: hidden;
-        /* box-sizing: border-box; */
       }
 
-      /* Render noscript front and center */
+      /* Noscript modal styles */
       noscript.modal {
         display: flex;
         justify-content: center;
@@ -213,9 +214,7 @@
   <body>
     <div id="app">
       <noscript>
-        Customize a virual portfolio and find ETFs that match your strategy,
-        leveraging machine learning to analyze 10-K statements and financial
-        disclosures for stocks and ETFs.
+        <%= PROJECT_DESCRIPTION %>
 
         <div>
           Disclaimer: The information provided on this platform is for
@@ -235,10 +234,8 @@
         JavaScript must be enabled to use this application.
 
         <p class="small">
-          ETF Matcher leverages advanced machine learning algorithms and linear
-          algebra, processed through Rust compiled to WebAssembly (WASM),
-          executed via a Web Worker thread for optimal performance. Please
-          enable JavaScript to experience the full functionality.
+          ETF Matcher uses machine learning algorithms, executed via WebAssembly
+          (WASM), for optimal performance. Please enable JavaScript.
         </p>
 
         <p class="small">

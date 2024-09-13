@@ -21,7 +21,7 @@ import {
   PROJECT_NAME,
   PROJECT_SHORT_NAME,
   PROJECT_URL,
-  SITE_DEFAULT_TITLE,
+  PROJECT_DEFAULT_TITLE,
 } from "./src/constants";
 
 // This is needed to get the .env variables to populate here
@@ -41,7 +41,7 @@ export function writeBuildTime() {
 // Note: These replace `<%= MY_VAR %>` usage inside of `index.html`.
 const HTML_REPLACEMENTS = {
   BUILD_TIME: writeBuildTime(),
-  SITE_DEFAULT_TITLE,
+  PROJECT_DEFAULT_TITLE,
   PROJECT_DESCRIPTION,
   PROJECT_AUTHOR,
   PROJECT_GITHUB_REPOSITORY,

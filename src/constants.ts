@@ -3,13 +3,13 @@ import type { StoreStateProps } from "@src/store";
 export const PROJECT_URL = "https://etfmatcher.com";
 export const PROJECT_NAME = "ETF Matcher";
 export const PROJECT_SHORT_NAME = PROJECT_NAME;
-export const SITE_DEFAULT_TITLE = `${PROJECT_NAME}: Find ETFs Aligned with Your Investment Goals`;
+export const PROJECT_DEFAULT_TITLE = `${PROJECT_NAME}: Find ETFs Aligned with Your Investment Goals`;
 export const PROJECT_DESCRIPTION =
   "Customize a virtual portfolio to find ETFs matching your strategy using machine learning analysis of financial disclosures.";
 export const PROJECT_GITHUB_REPOSITORY =
   "https://github.com/jzombie/etf-matcher/";
 export const PROJECT_AUTHOR_NAME = "Jeremy Harris";
-export const PROJECT_AUTHOR_TYPE = "Person";
+export const PROJECT_AUTHOR_TYPE: "Person" | "Organization" = "Person";
 export const PROJECT_AUTHOR = `${PROJECT_AUTHOR_NAME}, GitHub: ${PROJECT_GITHUB_REPOSITORY}/`;
 export const PROJECT_AUTHOR_LINKEDIN_URL =
   "https://www.linkedin.com/in/jeremyharrisconsultant/";
