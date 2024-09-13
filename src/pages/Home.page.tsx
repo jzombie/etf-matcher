@@ -5,7 +5,7 @@ import { Button } from "@mui/material";
 
 import heroImg from "@assets/hero.webp";
 import Scrollable from "@layoutKit/Scrollable";
-import { INVESTMENT_DISCLAIMER } from "@src/constants";
+import { INVESTMENT_DISCLAIMER, PROJECT_DESCRIPTION } from "@src/constants";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
@@ -27,10 +27,7 @@ export default function HomePage() {
         <div style={overlayStyle}>
           <div style={heroContentStyle}>
             <h1 style={heroTitleStyle}>Welcome to ETF Matcher</h1>
-            <p style={heroSubtitleStyle}>
-              Customize a virtual portfolio with potential fractional shares and
-              find ETFs that closely match your investment goals.
-            </p>
+            <p style={heroSubtitleStyle}>{PROJECT_DESCRIPTION}</p>
             <Button
               variant="contained"
               style={heroButtonStyle}
