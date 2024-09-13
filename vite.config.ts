@@ -12,9 +12,12 @@ import svgr from "vite-plugin-svgr";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 import {
+  PROJECT_AUTHOR,
   PROJECT_DESCRIPTION,
+  PROJECT_GITHUB_REPOSITORY,
   PROJECT_NAME,
   PROJECT_SHORT_NAME,
+  PROJECT_URL,
   SITE_DEFAULT_TITLE,
 } from "./src/constants";
 
@@ -37,6 +40,9 @@ const HTML_REPLACEMENTS = {
   BUILD_TIME: writeBuildTime(),
   SITE_DEFAULT_TITLE,
   PROJECT_DESCRIPTION,
+  PROJECT_AUTHOR,
+  PROJECT_GITHUB_REPOSITORY,
+  PROJECT_URL,
 };
 
 // Note: These are *intentionally* lower-case keys, and are injected directly
