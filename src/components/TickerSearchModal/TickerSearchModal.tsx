@@ -267,7 +267,8 @@ export default function TickerSearchModal({
         {searchResults.length > 0 && (
           <Typography
             variant="body2"
-            sx={{ fontStyle: "italic", opacity: 0.5 }}
+            color="textSecondary"
+            sx={{ fontStyle: "italic" }}
           >
             {resultsMode == "recently_viewed" &&
               `Recently viewed result${searchResults.length !== 1 ? "s" : ""}`}
@@ -318,7 +319,7 @@ export default function TickerSearchModal({
                     </div>
                   }
                   secondary={
-                    <Typography variant="body2" style={{ opacity: 0.5 }}>
+                    <Typography variant="body2" color="textSecondary">
                       {searchResult.company_name}
                     </Typography>
                   }

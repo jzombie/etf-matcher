@@ -61,7 +61,9 @@ impl TickerDetail {
                 Some(&detail.ticker_id)
             })
             .await?
-            .ok_or_else(|| JsValue::from_str("Symbol not found"))?;
+            .ok_or_else(|| {
+                JsValue::from_str(&format!("Symbol not found for ticker ID {}", ticker_id))
+            })?;
 
         // Extract the logo filename
         detail.logo_filename =

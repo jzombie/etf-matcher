@@ -1,31 +1,21 @@
+<!-- Note: HTML comments are automatically stripped during production builds -->
 <!doctype html>
 <html lang="en-US">
   <head>
     <meta charset="utf-8" />
 
-    <meta name="html_build_time" content="<%= buildTime %>" />
+    <!-- Used internally for version sync checks-->
+    <meta name="html_build_time" content="<%= BUILD_TIME %>" />
 
-    <title>ETF Matcher - Find the Best ETFs for Your Investment Goals</title>
-    <meta
-      name="description"
-      content="Customize a virual portfolio and find ETFs that match your strategy, leveraging machine learning to analyze 10-K statements and financial disclosures for stocks and ETFs."
-    />
-    <meta
-      name="keywords"
-      content="ETF Matcher, exchange-traded funds, ETF search, virtual portfolio, fractional shares, investment goals, ETFs, portfolio customization, ETF comparison, online trading, investment management, ETF selection, investment tool, customize portfolio, find ETFs, machine learning"
-    />
-    <meta
-      name="author"
-      content="Jeremy Harris, jeremy.harris@zenosmosis.com, GitHub: https://github.com/jzombie/etf-matcher/"
-    />
-    <meta name="repository" content="https://github.com/jzombie/etf-matcher/" />
-    <link rel="repository" href="https://github.com/jzombie/etf-matcher/" />
-    <meta
-      property="og:see_also"
-      content="https://github.com/jzombie/etf-matcher/"
-    />
+    <!-- Title and Meta Descriptions for SEO -->
+    <title><%= PROJECT_DEFAULT_TITLE %></title>
+    <meta name="description" content="<%= PROJECT_DESCRIPTION %>" />
+    <meta name="author" content="<%= PROJECT_AUTHOR %>" />
+    <meta name="repository" content="<%= PROJECT_GITHUB_REPOSITORY %>" />
+    <link rel="repository" href="<%= PROJECT_GITHUB_REPOSITORY %>" />
+    <meta property="og:see_also" content="<%= PROJECT_GITHUB_REPOSITORY %>" />
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Favicon and Icons -->
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <link
       rel="apple-touch-icon"
@@ -46,32 +36,21 @@
     />
     <link rel="manifest" href="/manifest.json" />
 
-    <!-- Open Graph Meta Tags -->
-    <meta
-      property="og:title"
-      content="ETF Matcher - Find the Best ETFs for Your Investment Goals"
-    />
-    <meta
-      property="og:description"
-      content="Customize a virual portfolio and find ETFs that match your strategy, leveraging machine learning to analyze 10-K statements and financial disclosures for stocks and ETFs."
-    />
+    <!-- Open Graph Meta Tags for Social Sharing -->
+    <meta property="og:site_name" content="<%= PROJECT_DEFAULT_TITLE %>" />
+    <meta property="og:title" content="<%= PROJECT_DEFAULT_TITLE %>" />
+    <meta property="og:description" content="<%= PROJECT_DESCRIPTION %>" />
     <meta
       property="og:image"
       content="https://etfmatcher.com/static/etf-matcher-logo-bw-1200x630.png"
     />
-    <meta property="og:url" content="https://etfmatcher.com" />
+    <meta property="og:url" content="<%= PROJECT_URL %>" />
     <meta property="og:type" content="website" />
 
-    <!-- Twitter Card Meta Tags -->
+    <!-- Twitter Card Meta Tags for Twitter Sharing -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta
-      name="twitter:title"
-      content="ETF Matcher - Find the Best ETFs for Your Investment Goals"
-    />
-    <meta
-      name="twitter:description"
-      content="Customize a virual portfolio and find ETFs that match your strategy, leveraging machine learning to analyze 10-K statements and financial disclosures for stocks and ETFs."
-    />
+    <meta name="twitter:title" content="<%= PROJECT_DEFAULT_TITLE %>" />
+    <meta name="twitter:description" content="<%= PROJECT_DESCRIPTION %>" />
     <meta
       name="twitter:image"
       content="https://etfmatcher.com/static/etf-matcher-logo-bw-1200x628.png"
@@ -80,31 +59,36 @@
       <meta name="twitter:site" content="@your_twitter_handle" />
     -->
 
-    <!-- Structured Data -->
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "<%= PROJECT_AUTHOR_TYPE %>",
+        "name": "<%= PROJECT_AUTHOR_NAME %>",
+        "url": "<%= PROJECT_URL %>",
+        "sameAs": [
+          "<%= PROJECT_AUTHOR_LINKEDIN_URL %>",
+          "<%= PROJECT_GITHUB_REPOSITORY %>"
+        ]
+      }
+    </script>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "name": "ETF Matcher",
-        "url": "https://etfmatcher.com",
-        "repository": "https://github.com/jzombie/etf-matcher/",
+        "name": "<%= PROJECT_DEFAULT_TITLE %>",
+        "url": "<%= PROJECT_URL %>",
+        "description": "<%= PROJECT_DESCRIPTION %>",
+        "repository": "<%= PROJECT_GITHUB_REPOSITORY %>",
         "potentialAction": {
           "@type": "SearchAction",
-          "target": "https://etfmatcher.com/search?query={search_term_string}",
+          "target": "<%= PROJECT_URL %>/search?query={search_term_string}",
           "query-input": "required name=search_term_string"
         }
       }
     </script>
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "url": "https://etfmatcher.com",
-        "logo": "https://etfmatcher.com/static/etf-matcher-logo-bw-250x250.png"
-      }
-    </script>
 
-    <!-- Very simple no-cache mechanism. This may need to be improved if making the app a PWA. -->
+    <!-- Simple no-cache mechanism, can be improved for PWA -->
     <script>
       (function () {
         const NO_CACHE_KEY = "no_cache";
@@ -133,19 +117,19 @@
           const timestamp = parseInt(noCacheParam, 10);
           if (isNaN(timestamp) || now - timestamp > 10) {
             setQueryParam(NO_CACHE_KEY, now);
-            window.location.reload(true); // Force reload with new parameter
+            window.location.reload(true);
           } else {
             removeQueryParam(NO_CACHE_KEY);
             console.debug("Loaded with skip-cache");
           }
         } else {
           setQueryParam(NO_CACHE_KEY, now);
-          window.location.reload(true); // Force reload with new parameter
+          window.location.reload(true);
         }
       })();
     </script>
 
-    <!-- Conditionally include Google Analytics script -->
+    <!-- Google Analytics Integration -->
     <script type="module">
       if (!import.meta.env.DEV) {
         if (import.meta.env.VITE_GOOGLE_ANALYTICS_ID) {
@@ -170,6 +154,7 @@
       }
     </script>
 
+    <!-- Mobile Web App Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
       name="apple-mobile-web-app-status-bar-style"
@@ -190,7 +175,6 @@
         color-scheme: dark;
       }
 
-      /* styles.css or a similar global stylesheet */
       html,
       body,
       #app {
@@ -199,10 +183,9 @@
         padding: 0;
         background-color: #121212;
         overflow: hidden;
-        /* box-sizing: border-box; */
       }
 
-      /* Render noscript front and center */
+      /* Noscript modal styles */
       noscript.modal {
         display: flex;
         justify-content: center;
@@ -233,21 +216,13 @@
   <body>
     <div id="app">
       <noscript>
-        Customize a virual portfolio and find ETFs that match your strategy,
-        leveraging machine learning to analyze 10-K statements and financial
-        disclosures for stocks and ETFs.
+        <p>
+        <%= PROJECT_DESCRIPTION %>
+        </p>
 
-        <div>
-          Disclaimer: The information provided on this platform is for
-          informational purposes only and does not constitute financial,
-          investment, or other professional advice. You should not rely on this
-          information to make any investment decisions. Always consult with a
-          qualified financial advisor before making any investment decisions. We
-          do not guarantee the accuracy, completeness, or timeliness of any
-          information provided and shall not be held liable for any errors or
-          omissions, or for any loss or damage incurred as a result of using
-          this information.
-        </div>
+        <p>
+          <%= INVESTMENT_DISCLAIMER %>
+        </p>
       </noscript>
     </div>
     <noscript class="modal"
@@ -255,15 +230,13 @@
         JavaScript must be enabled to use this application.
 
         <p class="small">
-          ETF Matcher leverages advanced machine learning algorithms and linear
-          algebra, processed through Rust compiled to WebAssembly (WASM),
-          executed via a Web Worker thread for optimal performance. Please
-          enable JavaScript to experience the full functionality.
+          ETF Matcher uses machine learning algorithms, executed via WebAssembly
+          (WASM), for optimal performance. Please enable JavaScript.
         </p>
 
         <p class="small">
           View the source code on
-          <a href="https://github.com/jzombie/etf-matcher/">GitHub</a>.
+          <a href="<%= PROJECT_GITHUB_REPOSITORY %>">GitHub</a>.
         </p>
       </div>
     </noscript>

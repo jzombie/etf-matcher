@@ -21,7 +21,11 @@ export default function FormattedETFExpenseRatio({
       {tickerDetail.etf_expense_ratio ? (
         `${tickerDetail.etf_expense_ratio.toFixed(2)}%`
       ) : (
-        <Typography variant="body2" sx={{ fontStyle: "italic", opacity: 0.5 }}>
+        <Typography
+          variant="body2"
+          color="textSecondary"
+          sx={{ fontStyle: "italic" }}
+        >
           Not ETF
         </Typography>
       )}

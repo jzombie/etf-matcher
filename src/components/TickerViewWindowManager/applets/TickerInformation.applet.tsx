@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 
 import { Box, Typography } from "@mui/material";
 import { styled } from "@mui/system";
@@ -35,6 +35,11 @@ export default function TickerInformationApplet({
   etfAggregateDetailError,
   isTiling,
 }: TickerInformationAppletProps) {
+  const { formattedSector, formattedIndustry } = useFormattedSectorAndIndustry(
+    tickerDetail,
+    etfAggregateDetail,
+  );
+
   return (
     <ETFAggregateDetailAppletWrap
       tickerDetail={tickerDetail}
@@ -63,9 +68,6 @@ export default function TickerInformationApplet({
           {/* Information Section */}
 
           <InfoWrapper>
-            {
-              // TODO: If ETF, add top sector/industry information
-            }
             <InfoItem
               label="Symbol"
               value={`${tickerDetail?.symbol}${tickerDetail?.exchange_short_name ? ` (${tickerDetail.exchange_short_name})` : ""}`}
@@ -74,14 +76,8 @@ export default function TickerInformationApplet({
               label="Company"
               value={tickerDetail?.company_name || "N/A"}
             />
-            <InfoItem
-              label="Sector"
-              value={tickerDetail?.sector_name || "N/A"}
-            />
-            <InfoItem
-              label="Industry"
-              value={tickerDetail?.industry_name || "N/A"}
-            />
+            <InfoItem label="Sector" value={formattedSector} />
+            <InfoItem label="Industry" value={formattedIndustry} />
             {tickerDetail?.is_etf && (
               <InfoItem
                 label="Expense Ratio"
@@ -116,10 +112,9 @@ const LogoWrapper = styled(Box)(() => ({
 // Flexbox-based wrapper for the information section
 const InfoWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  flexWrap: "wrap", // Allow wrapping when the container is too small
-  textAlign: "center",
+  justifyContent: "flex-start", // Align all items to the start
+  alignItems: "stretch", // Ensure equal height
+  flexWrap: "wrap", // Allow wrapping when necessary
   gap: theme.spacing(2), // Consistent spacing between items
   padding: theme.spacing(2), // Padding around the content
 }));
@@ -130,7 +125,7 @@ function InfoItem({
   value,
 }: {
   label: string;
-  value: string | undefined;
+  value: string | JSX.Element | React.ReactNode | undefined;
 }) {
   return (
     <Box flex="1 1 150px">
@@ -139,7 +134,66 @@ function InfoItem({
       <Typography variant="subtitle2" fontWeight="bold">
         {label}
       </Typography>
-      <Typography variant="body2">{value}</Typography>
+      <Typography variant="body2" color="textSecondary">
+        {value}
+      </Typography>
     </Box>
   );
+}
+
+function useFormattedSectorAndIndustry(
+  tickerDetail?: RustServiceTickerDetail,
+  etfAggregateDetail?: RustServiceETFAggregateDetail,
+) {
+  const formatDetail = useCallback(
+    (baseEntity?: string, topEntity?: string): JSX.Element => {
+      // If both are missing, return "N/A"
+      if (!baseEntity && !topEntity) {
+        return <>N/A</>;
+      }
+
+      // If baseDetail is missing, but aggregateDetail is present, use aggregateDetail
+      if (!baseEntity) {
+        return <>{topEntity}</>;
+      }
+
+      // If both are present, format them together
+      if (topEntity) {
+        return (
+          <>
+            {baseEntity}
+            <br />({topEntity})
+          </>
+        );
+      }
+
+      // Otherwise, just return baseEntity
+      return <>{baseEntity}</>;
+    },
+    [],
+  );
+
+  const formattedSector = useMemo(() => {
+    return formatDetail(
+      tickerDetail?.sector_name,
+      etfAggregateDetail?.top_pct_sector_name,
+    );
+  }, [
+    formatDetail,
+    tickerDetail?.sector_name,
+    etfAggregateDetail?.top_pct_sector_name,
+  ]);
+
+  const formattedIndustry = useMemo(() => {
+    return formatDetail(
+      tickerDetail?.industry_name,
+      etfAggregateDetail?.top_pct_industry_name,
+    );
+  }, [
+    formatDetail,
+    tickerDetail?.industry_name,
+    etfAggregateDetail?.top_pct_industry_name,
+  ]);
+
+  return { formattedSector, formattedIndustry };
 }

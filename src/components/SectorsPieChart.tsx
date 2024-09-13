@@ -71,6 +71,7 @@ export default function SectorsPieChart({
   }
 
   return (
+    // TODO: Don't hardcode `320`.  It's just here for now.
     <ResponsiveContainer width="100%" height={320}>
       <PieChart>
         <Pie

@@ -33,7 +33,10 @@ impl ExchangeById {
             return Ok(short_name.clone());
         }
 
-        Err(JsValue::from_str("Exchange ID not found"))
+        Err(JsValue::from_str(&format!(
+            "Exchange ID {} not found",
+            exchange_id
+        )))
     }
 
     async fn preload_exchange_short_name_cache() -> Result<(), JsValue> {

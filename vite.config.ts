@@ -11,10 +11,21 @@ import { viteStaticCopy } from "vite-plugin-static-copy";
 import svgr from "vite-plugin-svgr";
 import tsconfigPaths from "vite-tsconfig-paths";
 
+import {
+  PROJECT_AUTHOR,
+  PROJECT_AUTHOR_LINKEDIN_URL,
+  PROJECT_AUTHOR_NAME,
+  PROJECT_AUTHOR_TYPE,
+  PROJECT_DESCRIPTION,
+  PROJECT_GITHUB_REPOSITORY,
+  PROJECT_NAME,
+  PROJECT_URL,
+  PROJECT_DEFAULT_TITLE,
+  INVESTMENT_DISCLAIMER
+} from "./src/constants";
+
 // This is needed to get the .env variables to populate here
 dotenv.config();
-
-const DESTINATION_DIR = path.resolve(__dirname, "dist");
 
 // Function to get the current build time and write it to a file
 export function writeBuildTime() {
@@ -27,8 +38,39 @@ export function writeBuildTime() {
   return buildTime;
 }
 
+// Note: These replace `<%= MY_VAR %>` usage inside of `index.html`.
+const HTML_REPLACEMENTS = {
+  BUILD_TIME: writeBuildTime(),
+  PROJECT_DEFAULT_TITLE,
+  PROJECT_DESCRIPTION,
+  PROJECT_AUTHOR,
+  PROJECT_GITHUB_REPOSITORY,
+  PROJECT_URL,
+  PROJECT_AUTHOR_NAME,
+  PROJECT_AUTHOR_TYPE,
+  PROJECT_AUTHOR_LINKEDIN_URL,
+  INVESTMENT_DISCLAIMER
+};
+
+// Note: These are *intentionally* lower-case keys, and are injected directly
+// into the sitemap.json in the `dist` directory during a production build.
+const MANIFEST_VARS = {
+  name: PROJECT_NAME,
+  short_name: PROJECT_NAME,
+  description: PROJECT_DESCRIPTION,
+  background_color: process.env.VITE_BACKGROUND_COLOR || "#000000",
+  theme_color: process.env.VITE_BACKGROUND_COLOR || "#000000",
+};
+
 export default defineConfig(({ mode }) => {
-  const isProduction = mode === "production";
+  const DESTINATION_DIR = path.resolve(__dirname, "dist");
+  const IS_PROD = mode === "production";
+
+  const MANIFEST_TEMPLATE_PATH = path.resolve(
+    __dirname,
+    "src",
+    "manifest.template.json",
+  );
 
   return {
     root: "./public",
@@ -75,9 +117,7 @@ export default defineConfig(({ mode }) => {
       svgr(),
       createHtmlPlugin({
         inject: {
-          data: {
-            buildTime: writeBuildTime(), // Write build time to a file and inject it into HTML
-          },
+          data: HTML_REPLACEMENTS,
         },
         minify: {
           collapseWhitespace: true,
@@ -87,18 +127,7 @@ export default defineConfig(({ mode }) => {
           minifyURLs: true,
         },
       }),
-      sitemap({
-        hostname: "https://etfmatcher.com",
-        // TODO: Ideally these would seed automatically from `router.ts`
-        dynamicRoutes: [
-          "/",
-          "/search",
-          "/portfolios",
-          "/watchlists",
-          "/settings",
-        ],
-      }),
-      ...(isProduction
+      ...(IS_PROD
         ? [
             viteStaticCopy({
               targets: [
@@ -112,10 +141,6 @@ export default defineConfig(({ mode }) => {
                 },
                 {
                   src: "buildTime.json",
-                  dest: path.resolve(DESTINATION_DIR),
-                },
-                {
-                  src: "manifest.json",
                   dest: path.resolve(DESTINATION_DIR),
                 },
                 {
@@ -134,6 +159,53 @@ export default defineConfig(({ mode }) => {
                   src: "README.md",
                   dest: path.resolve(DESTINATION_DIR),
                 },
+              ],
+            }),
+            {
+              name: "inject-manifest-variables",
+              // Using `closeBundle` to ensure the manifest.json file is written at the end
+              // of the build process. This avoids potential conflicts with other plugins
+              // (such as `sitemap`) that also modify files in the output directory during the
+              // build. The `closeBundle` hook is triggered after all the build steps are
+              // completed, ensuring the manifest is generated and written to the `dist`
+              // folder after everything else is finalized.
+
+              closeBundle() {
+                // Check if the manifest template exists
+                if (fs.existsSync(MANIFEST_TEMPLATE_PATH)) {
+                  const manifestContent = JSON.parse(
+                    fs.readFileSync(MANIFEST_TEMPLATE_PATH, "utf-8"),
+                  );
+
+                  // Write the updated manifest to the output folder
+                  const filePath = path.resolve(
+                    DESTINATION_DIR,
+                    "manifest.json",
+                  );
+                  fs.writeFileSync(
+                    filePath,
+                    JSON.stringify(
+                      { ...MANIFEST_VARS, ...manifestContent },
+                      null,
+                      2,
+                    ),
+                  );
+                } else {
+                  throw new Error(
+                    `Manifest template not found at ${MANIFEST_TEMPLATE_PATH}`,
+                  );
+                }
+              },
+            },
+            sitemap({
+              hostname: PROJECT_URL,
+              // TODO: Ideally these would seed automatically from `router.ts`
+              dynamicRoutes: [
+                "/",
+                "/search",
+                "/portfolios",
+                "/watchlists",
+                "/settings",
               ],
             }),
           ]

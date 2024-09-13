@@ -10,7 +10,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Grid,
+  Grid2,
   Typography,
 } from "@mui/material";
 
@@ -117,7 +117,7 @@ export default function TickerViewWindowManagerBucketManager({
 
   return (
     <Box sx={{ padding: 2 }}>
-      <Grid container spacing={2}>
+      <Grid2 container spacing={2}>
         {userConfigurableBucketTypes.map((bucketType) => {
           const bucket = tickerBuckets.find(
             (bucket) => bucket.type === bucketType && bucket.isUserConfigurable,
@@ -134,7 +134,7 @@ export default function TickerViewWindowManagerBucketManager({
             multiBucketInstancesAllowed.includes(bucketType);
 
           return (
-            <Grid item xs={12} sm={6} md={4} key={bucketType}>
+            <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={bucketType}>
               <Button
                 onClick={() => handleToggleBucket(bucket)}
                 variant="contained"
@@ -169,10 +169,10 @@ export default function TickerViewWindowManagerBucketManager({
                       : `Add "${tickerDetail.symbol}" to ${tickerBucketDefaultNames[bucketType]}`}
                 </Box>
               </Button>
-            </Grid>
+            </Grid2>
           );
         })}
-      </Grid>
+      </Grid2>
 
       <DeleteEntityDialogModal
         open={isDeleteDialogOpen}

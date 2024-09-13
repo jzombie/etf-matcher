@@ -202,7 +202,7 @@ export default function BucketForm({
             />
           )}
 
-          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+          <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
             <Button color="error" onClick={handleCancel}>
               Cancel
             </Button>
