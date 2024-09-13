@@ -30,7 +30,7 @@ import usePageTitleSetter from "@utils/usePageTitleSetter";
 
 import useSearchResultsURLState from "./useSearchResultsURLState";
 
-export default function SearchResults() {
+export default function SearchResultsPage() {
   const {
     searchQuery,
     searchResults,

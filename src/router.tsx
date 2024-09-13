@@ -1,11 +1,11 @@
 import React from "react";
 
-import Home from "@pages/Home";
-import NotFound from "@pages/NotFound";
-import Portfolios from "@pages/Portfolios";
-import SearchResults from "@pages/SearchResults";
-import Settings from "@pages/Settings";
-import Watchlists from "@pages/Watchlists";
+import HomePage from "@pages/Home.page";
+import NotFoundPage from "@pages/NotFound.page";
+import PortfoliosPage from "@pages/Portfolios.page";
+import SearchResultsPage from "@pages/SearchResults.page";
+import SettingsPage from "@pages/Settings.page";
+import WatchlistsPage from "@pages/Watchlists.page";
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 
 import MainLayout from "@components/MainLayout";
@@ -24,27 +24,27 @@ export const routes: RouteObject[] = [
     children: [
       {
         path: "",
-        element: <Home />,
+        element: <HomePage />,
       },
       {
         path: "search",
-        element: <SearchResults />,
+        element: <SearchResultsPage />,
       },
       {
         path: "portfolios",
-        element: <Portfolios />,
+        element: <PortfoliosPage />,
       },
       {
         path: "watchlists",
-        element: <Watchlists />,
+        element: <WatchlistsPage />,
       },
       {
         path: "settings",
-        element: <Settings />,
+        element: <SettingsPage />,
       },
       {
         path: "*",
-        element: <NotFound />, // This is the catch-all route
+        element: <NotFoundPage />, // This is the catch-all route
       },
     ],
   },

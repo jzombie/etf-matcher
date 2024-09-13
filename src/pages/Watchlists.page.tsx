@@ -3,15 +3,18 @@ import React from "react";
 import Scrollable from "@layoutKit/Scrollable";
 
 import BucketManager from "@components/BucketManager";
+import FullContainer from "@components/FullContainer";
 
 import usePageTitleSetter from "@utils/usePageTitleSetter";
 
-export default function Watchlists() {
+export default function WatchlistsPage() {
   usePageTitleSetter("Watchlists");
 
   return (
     <Scrollable>
-      <BucketManager bucketType="watchlist" />
+      <FullContainer>
+        <BucketManager bucketType="watchlist" />
+      </FullContainer>
     </Scrollable>
   );
 }
