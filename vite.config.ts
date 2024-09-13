@@ -156,6 +156,13 @@ export default defineConfig(({ mode }) => {
             }),
             {
               name: "inject-manifest-variables",
+              // Using `closeBundle` to ensure the manifest.json file is written at the end
+              // of the build process. This avoids potential conflicts with other plugins
+              // (such as `sitemap`) that also modify files in the output directory during the
+              // build. The `closeBundle` hook is triggered after all the build steps are
+              // completed, ensuring the manifest is generated and written to the `dist`
+              // folder after everything else is finalized.
+
               closeBundle() {
                 // Check if the manifest template exists
                 if (fs.existsSync(MANIFEST_TEMPLATE_PATH)) {
