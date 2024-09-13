@@ -12,10 +12,12 @@ export default function detectHTMLJSVersionSync(): boolean {
 
     return true;
   } else {
-    customLogger.warn("HTML and JS versions are not in sync!", {
-      jsBuildTime,
-      htmlBuildTime,
-    });
+    if (import.meta.env.PROD) {
+      customLogger.warn("HTML and JS versions are not in sync!", {
+        jsBuildTime,
+        htmlBuildTime,
+      });
+    }
 
     return false;
   }
