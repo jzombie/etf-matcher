@@ -7,6 +7,7 @@ use crate::{DataURL, ExchangeById, PaginatedResults};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
+// TODO: Rename
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TickerSearch {
     pub ticker_id: TickerId,
@@ -48,6 +49,34 @@ impl TickerSearch {
         alternatives
     }
 
+    // Retrieves all `raw` results without any transformations
+    pub async fn get_all_raw_results() -> Result<Vec<TickerSearch>, JsValue> {
+        let url: String = DataURL::TickerSearch.value().to_owned();
+        let csv_data = fetch_and_decompress_gz(&url, true).await?;
+        let csv_string = String::from_utf8(csv_data).map_err(|err| {
+            JsValue::from_str(&format!("Failed to convert data to String: {}", err))
+        })?;
+        let results: Vec<TickerSearch> = parse_csv_data(csv_string.as_bytes())?;
+
+        Ok(results)
+    }
+
+    // Retrieves a single `raw` result, using the given `ticker_id`
+    pub async fn get_raw_result_with_id(ticker_id: TickerId) -> Result<TickerSearch, JsValue> {
+        let all_raw_results = Self::get_all_raw_results().await?;
+
+        match all_raw_results
+            .into_iter()
+            .find(|result| result.ticker_id == ticker_id)
+        {
+            Some(result) => Ok(result),
+            None => Err(JsValue::from_str(&format!(
+                "Ticker ID {} not found",
+                ticker_id
+            ))),
+        }
+    }
+
     pub async fn search_tickers(
         query: &str,
         page: usize,
@@ -64,15 +93,10 @@ impl TickerSearch {
             });
         }
 
-        let url: String = DataURL::TickerSearch.value().to_owned();
-        let csv_data = fetch_and_decompress_gz(&url, true).await?;
-        let csv_string = String::from_utf8(csv_data).map_err(|err| {
-            JsValue::from_str(&format!("Failed to convert data to String: {}", err))
-        })?;
-        let mut results: Vec<TickerSearch> = parse_csv_data(csv_string.as_bytes())?;
+        let mut all_raw_results = Self::get_all_raw_results().await?;
 
         // Extract the logo filename for each result
-        for result in &mut results {
+        for result in &mut all_raw_results {
             result.logo_filename =
                 extract_logo_filename(result.logo_filename.as_deref(), &result.symbol);
         }
@@ -86,7 +110,7 @@ impl TickerSearch {
 
         for alternative in &alternatives {
             let query_lower: String = alternative.to_lowercase();
-            for result in &results {
+            for result in &all_raw_results {
                 let symbol_lower = result.symbol.to_lowercase();
                 let company_lower = result
                     .company_name

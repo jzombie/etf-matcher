@@ -34,7 +34,10 @@ impl SectorById {
             return Ok(sector.sector_name.clone());
         }
 
-        Err(JsValue::from_str("Sector ID not found"))
+        Err(JsValue::from_str(&format!(
+            "Sector ID {} not found",
+            sector_id
+        )))
     }
 
     pub async fn get_major_sector_name_with_id(
@@ -57,7 +60,10 @@ impl SectorById {
             }
         }
 
-        Err(JsValue::from_str("Major Sector ID not found"))
+        Err(JsValue::from_str(&format!(
+            "Major Sector ID, {} not found",
+            major_sector_id
+        )))
     }
 
     // TODO: Uncomment?

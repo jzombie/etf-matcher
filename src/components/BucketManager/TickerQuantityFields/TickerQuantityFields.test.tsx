@@ -57,21 +57,32 @@ describe("TickerQuantityFields", () => {
     ]);
   });
 
-  it("should remove ticker when delete button is clicked", () => {
+  it("should remove ticker when delete button is clicked and confirmed in the dialog", () => {
+    const onDataChange = vi.fn(); // Mock the onDataChange function to simulate data change
     const existingTickers: TickerBucketTicker[] = [
       { tickerId: 1, symbol: "AAPL", quantity: 10 },
     ];
-    const { queryByDisplayValue } = renderComponent({
+
+    const { queryByDisplayValue, getByRole } = renderComponent({
       tickerBucket: { tickers: existingTickers } as TickerBucket,
+      onDataChange,
     });
 
     // Ensure the ticker with value "AAPL" is in the document
     expect(queryByDisplayValue("AAPL")).toBeInTheDocument();
 
-    // Click the delete button
-    fireEvent.click(screen.getByTestId("delete-button--AAPL"));
+    // Click the delete button to open the modal
+    const deleteButton = screen.getByTestId("delete-button--AAPL");
+    fireEvent.click(deleteButton);
 
-    // Ensure the ticker with value "AAPL" is no longer in the document
+    // Simulate the modal opening and confirm the deletion by clicking "Delete"
+    const confirmButton = getByRole("button", { name: /delete/i });
+    fireEvent.click(confirmButton);
+
+    // Check if onDataChange was called with the updated list (empty array)
+    expect(onDataChange).toHaveBeenCalledWith([]);
+
+    // After deletion, ensure the ticker with value "AAPL" is no longer in the document
     expect(queryByDisplayValue("AAPL")).not.toBeInTheDocument();
   });
 

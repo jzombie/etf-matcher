@@ -1,10 +1,12 @@
 use crate::types::{IndustryId, SectorId, TickerId};
+use crate::utils::extract_logo_filename;
 use crate::utils::shard::query_shard_for_id;
 use crate::utils::ticker_utils::get_symbol_and_exchange_by_ticker_id;
 use crate::DataURL;
 use crate::IndustryById;
 use crate::JsValue;
 use crate::SectorById;
+use crate::TickerSearch;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -29,7 +31,7 @@ impl MajorSectorWeight {
                 // Attempt to parse the key as SectorId and the value as f64
                 let major_sector_id = key
                     .parse::<SectorId>()
-                    .map_err(|_| format!("Failed to parse SectorId from key: {}", key))?;
+                    .map_err(|_| format!("Failed to parse sector ID from key: {}", key))?;
 
                 if let Some(weight) = value.as_f64() {
                     // Ensure the weight is within valid f32 range
@@ -48,13 +50,13 @@ impl MajorSectorWeight {
                         });
                     } else {
                         return Err(format!(
-                            "Failed to get major sector name for SectorId: {}",
+                            "Failed to get major sector name for sector ID: {}",
                             major_sector_id
                         ));
                     }
                 } else {
                     return Err(format!(
-                        "Invalid weight value for SectorId: {}",
+                        "Invalid weight value for sector ID: {}",
                         major_sector_id
                     ));
                 }
@@ -71,6 +73,7 @@ pub struct ETFAggregateDetail {
     pub ticker_id: TickerId,
     pub etf_name: Option<String>,
     pub expense_ratio: f32,
+    // TODO: Add `aum` (assets under management)  and `nav` (net asset value)
     pub top_market_value_sector_id: Option<SectorId>,
     pub top_market_value_industry_id: Option<IndustryId>,
     pub top_sector_market_value: f64,
@@ -231,10 +234,15 @@ pub struct ETFAggregateDetailResponse {
     pub avg_net_cash_used_provided_by_financing_activities_4_yr: Option<f64>,
     //
     pub major_sector_distribution: Option<Vec<MajorSectorWeight>>,
+    //
+    pub logo_filename: Option<String>,
+    //
+    pub are_financials_current: bool,
 }
 
 impl ETFAggregateDetail {
     pub async fn get_etf_aggregate_detail_by_ticker_id(
+        // TODO: Rename to `etf_ticker_id`
         ticker_id: TickerId,
     ) -> Result<ETFAggregateDetailResponse, JsValue> {
         let url: &str = DataURL::ETFAggregateDetailShardIndex.value();
@@ -244,7 +252,7 @@ impl ETFAggregateDetail {
             |etf_aggregate_detail: &ETFAggregateDetail| Some(&etf_aggregate_detail.ticker_id),
         )
         .await?
-        .ok_or_else(|| JsValue::from_str("ETF ticker not found"))?;
+        .ok_or_else(|| JsValue::from_str(&format!("ETF ticker ID {} not found", ticker_id)))?;
 
         // Fetch the symbol and exchange short name
         let (etf_symbol, exchange_short_name) =
@@ -285,6 +293,12 @@ impl ETFAggregateDetail {
             None => None,
         };
 
+        let ticker_raw_search_result = TickerSearch::get_raw_result_with_id(ticker_id).await?;
+        let logo_filename = extract_logo_filename(
+            ticker_raw_search_result.logo_filename.as_deref(),
+            &ticker_raw_search_result.symbol,
+        );
+
         let major_sector_distribution: Option<Vec<MajorSectorWeight>> =
             match &etf_aggregate_detail.major_sector_distribution {
                 Some(json_str) => {
@@ -293,7 +307,7 @@ impl ETFAggregateDetail {
                         Err(err) => {
                             // Handle the error, log if necessary, and return None
                             let error_message = format!(
-                                "Error parsing sector distribution for ticker_id {}: {}",
+                                "Error parsing ETF sector distribution for ticker ID {}: {}",
                                 etf_aggregate_detail.ticker_id, err
                             );
                             web_sys::console::error_1(&error_message.into());
@@ -405,6 +419,11 @@ impl ETFAggregateDetail {
                 .avg_net_cash_used_provided_by_financing_activities_4_yr,
             //
             major_sector_distribution,
+            //
+            logo_filename,
+            //
+            // FIXME: This boolean check could be improved (see also in `Ticker10KDetail`)
+            are_financials_current: etf_aggregate_detail.avg_revenue_current.is_some(),
         };
 
         Ok(response)

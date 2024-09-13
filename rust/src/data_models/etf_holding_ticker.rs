@@ -54,11 +54,16 @@ impl ETFHoldingTicker {
             Some(&detail.etf_ticker_id)
         })
         .await?
-        .ok_or_else(|| JsValue::from_str("ETF ticker not found"))?;
+        .ok_or_else(|| JsValue::from_str(&format!("ETF ticker ID {} not found", etf_ticker_id)))?;
 
         // Parse the ETF holdings JSON
         let etf_holdings: Vec<ETFHoldingTickerJSON> = serde_json::from_str(&holdings.holdings_json)
-            .map_err(|e| JsValue::from_str(&format!("Failed to parse holdings JSON: {}", e)))?;
+            .map_err(|e| {
+                JsValue::from_str(&format!(
+                    "Failed to parse holdings JSON for ETF ticker ID {}: {}",
+                    etf_ticker_id, e
+                ))
+            })?;
 
         // Retrieve additional information for each holding
         let mut detailed_holdings = Vec::with_capacity(etf_holdings.len());
@@ -105,7 +110,7 @@ impl ETFHoldingTicker {
             Some(&detail.etf_ticker_id)
         })
         .await?
-        .ok_or_else(|| JsValue::from_str("ETF ticker not found"))?;
+        .ok_or_else(|| JsValue::from_str(&format!("ETF ticker ID {} not found", etf_ticker_id)))?;
 
         // Parse the ETF holdings JSON
         let etf_holdings: Vec<ETFHoldingTickerJSON> = serde_json::from_str(&holdings.holdings_json)
@@ -115,7 +120,12 @@ impl ETFHoldingTicker {
         let holding = etf_holdings
             .into_iter()
             .find(|h| h.holding_ticker_id == holding_ticker_id)
-            .ok_or_else(|| JsValue::from_str("Holding ticker not found in ETF"))?;
+            .ok_or_else(|| {
+                JsValue::from_str(&format!(
+                    "Holding ticker ID {} not found in ETF",
+                    holding_ticker_id
+                ))
+            })?;
 
         Ok(ETFHoldingWeightResponse {
             etf_ticker_id,

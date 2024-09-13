@@ -6,7 +6,7 @@ import {
   Button,
   Card,
   CardContent,
-  Grid,
+  Grid2,
   Typography,
 } from "@mui/material";
 
@@ -94,24 +94,24 @@ export default function Room({ room }: RoomProps) {
             </AutoScaler>
           </div>
         )}
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
+        <Grid2 container spacing={2}>
+          <Grid2 size={{ xs: 12, sm: 6 }}>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Devices sx={{ mr: 1 }} />
               <Typography variant="body2">
                 Currently connected devices: {room.peers.length + 1}
               </Typography>
             </Box>
-          </Grid>
-          <Grid item xs={12} sm={6}>
+          </Grid2>
+          <Grid2 size={{ xs: 12, sm: 6 }}>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Sync sx={{ mr: 1 }} />
               <Typography variant="body2">
                 In sync: {room.isInSync ? "yes" : "no"}
               </Typography>
             </Box>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </CardContent>
     </Card>
   );

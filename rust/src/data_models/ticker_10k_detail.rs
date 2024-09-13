@@ -95,19 +95,30 @@ pub struct Ticker10KDetail {
     pub net_cash_used_provided_by_financing_activities_2_yr: Option<f64>,
     pub net_cash_used_provided_by_financing_activities_3_yr: Option<f64>,
     pub net_cash_used_provided_by_financing_activities_4_yr: Option<f64>,
+    //
+    // FIXME: This property is dynamically added in; rather than creating a
+    // new struct specifically to add `are_financials_current`, I just made
+    // it an optional property for now
+    pub are_financials_current: Option<bool>,
 }
 
 impl Ticker10KDetail {
+    // TODO: In the data source, it should always return the same amount of
+    // rows as the search data, regardless if there is `10-K` detail or not.
     pub async fn get_ticker_10k_detail_by_ticker_id(
         ticker_id: TickerId,
     ) -> Result<Ticker10KDetail, JsValue> {
         let url: &str = DataURL::Ticker10KDetailShardIndex.value();
-        let ticker_10k_detail: Ticker10KDetail =
+        let mut ticker_10k_detail: Ticker10KDetail =
             query_shard_for_id(url, &ticker_id, |ticker_10k_detail: &Ticker10KDetail| {
                 Some(&ticker_10k_detail.ticker_id)
             })
             .await?
-            .ok_or_else(|| JsValue::from_str("Ticker ID not found"))?;
+            .ok_or_else(|| JsValue::from_str(&format!("Ticker ID {} not found", ticker_id)))?;
+
+        // FIXME: This boolean check could be improved (see also in `ETFAggregateDetail`)
+        ticker_10k_detail.are_financials_current =
+            Some(ticker_10k_detail.revenue_current.is_some());
 
         Ok(ticker_10k_detail)
     }

@@ -7,7 +7,7 @@ import {
 
 import IndexedDBInterface from "@utils/IndexedDBInterface";
 import MQTTRoom from "@utils/MQTTRoom";
-import detectHTMLJSVersionSync from "@utils/PROTO_detectHTMLJSVersionSync";
+import detectHTMLJSVersionSync from "@utils/detectHTMLJSVersionSync";
 import {
   ReactStateEmitter,
   StateEmitterDefaultEvents,
@@ -572,6 +572,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     // TODO: Emit custom event for this to route to UI notification
   }
+
   async addTickerToBucket(
     tickerId: number,
     quantity: number,
