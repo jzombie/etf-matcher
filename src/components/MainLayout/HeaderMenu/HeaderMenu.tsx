@@ -7,7 +7,6 @@ import {
   Menu as MenuIcon,
   Search as SearchIcon,
   Settings as SettingsIcon,
-  ContactMail as ContactMailIcon
 } from "@mui/icons-material";
 import {
   AppBar,
@@ -42,7 +41,9 @@ export default function HeaderMenu() {
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
-  const isDesktop = useMediaQuery(`@media (min-width:${MIN_HORIZONTAL_WIDTH}px)`);
+  const isDesktop = useMediaQuery(
+    `@media (min-width:${MIN_HORIZONTAL_WIDTH}px)`,
+  );
 
   const { tickerBuckets } = useStoreStateReader("tickerBuckets");
 
@@ -86,13 +87,6 @@ export default function HeaderMenu() {
         label: "Settings",
         icon: <SettingsIcon fontSize="small" />,
         link: "/settings",
-      },
-      {
-        key: "/contact",
-        link: "/contact",
-        label: "Contact",
-        icon: <ContactMailIcon fontSize="small" />,
-        badgeContent: totalPortfolioBuckets,
       },
     ],
     [totalPortfolioBuckets, totalWatchlistBuckets],

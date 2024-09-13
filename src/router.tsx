@@ -1,7 +1,6 @@
 import React from "react";
 
 import HomePage from "@pages/Home.page";
-import ContactUsPage from '@pages/ContactUs.page';
 import NotFoundPage from "@pages/NotFound.page";
 import PortfoliosPage from "@pages/Portfolios.page";
 import SearchResultsPage from "@pages/SearchResults.page";
@@ -26,10 +25,6 @@ export const routes: RouteObject[] = [
       {
         path: "",
         element: <HomePage />,
-      },
-      {
-        path: "contact",
-        element: <ContactUsPage />,
       },
       {
         path: "search",
