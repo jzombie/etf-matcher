@@ -7,7 +7,6 @@ import {
 
 import IndexedDBInterface from "@utils/IndexedDBInterface";
 import MQTTRoom from "@utils/MQTTRoom";
-import detectHTMLJSVersionSync from "@utils/detectHTMLJSVersionSync";
 import {
   ReactStateEmitter,
   StateEmitterDefaultEvents,
@@ -28,6 +27,7 @@ import {
 } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 import debounceWithKey from "@utils/debounceWithKey";
+import detectHTMLJSVersionSync from "@utils/detectHTMLJSVersionSync";
 
 import {
   CacheAccessedRequests,
@@ -375,9 +375,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   private async _initIndexedDBPersistence() {
     try {
       await this._indexedDBInterface.ready();
-      this.setState({ isIndexedDBReady: true });
-
       await this._restorePersistentSession();
+
+      // Signal it is `ready` *after* restoring the persistent session
+      this.setState({ isIndexedDBReady: true });
     } finally {
       this._initInitialTickerTapeTickers();
     }
@@ -716,6 +717,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     }));
   }
 
+  // FIXME: Rename to `wipe`?
   reset() {
     const clearPromises = [];
 

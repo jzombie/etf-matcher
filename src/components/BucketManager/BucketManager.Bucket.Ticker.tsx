@@ -162,13 +162,15 @@ export default function BucketTicker({
           color="error"
           onClick={handleOpen}
           startIcon={<DeleteIcon />} // Add the Delete icon here
+          sx={{ margin: 1 }}
         >
-          Delete from Bucket
+          Delete
         </Button>
 
         <Button
           variant="contained"
           onClick={() => navigateToSymbol(bucketTicker.symbol)}
+          sx={{ margin: 1 }}
         >
           View
         </Button>

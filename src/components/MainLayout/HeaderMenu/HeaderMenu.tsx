@@ -35,11 +35,15 @@ import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
 import SlidingBackground from "./HeaderMenu.SlidingBackground";
 
+const MIN_HORIZONTAL_WIDTH: number = 860;
+
 export default function HeaderMenu() {
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
-  const isDesktop = useMediaQuery("@media (min-width:800px)");
+  const isDesktop = useMediaQuery(
+    `@media (min-width:${MIN_HORIZONTAL_WIDTH}px)`,
+  );
 
   const { tickerBuckets } = useStoreStateReader("tickerBuckets");
 
@@ -66,16 +70,16 @@ export default function HeaderMenu() {
       { key: "/", label: "Home", icon: <Home fontSize="small" />, link: "/" },
       {
         key: "/portfolios",
+        link: "/portfolios",
         label: "Portfolios",
         icon: <AssessmentIcon fontSize="small" />,
-        link: "/portfolios",
         badgeContent: totalPortfolioBuckets,
       },
       {
         key: "/watchlists",
+        link: "/watchlists",
         label: "Watchlists",
         icon: <ListAltIcon fontSize="small" />,
-        link: "/watchlists",
         badgeContent: totalWatchlistBuckets,
       },
       {

@@ -3,15 +3,18 @@ import React from "react";
 import Scrollable from "@layoutKit/Scrollable";
 
 import BucketManager from "@components/BucketManager";
+import FullContainer from "@components/FullContainer";
 
 import usePageTitleSetter from "@utils/usePageTitleSetter";
 
-export default function Portfolios() {
+export default function PortfoliosPage() {
   usePageTitleSetter("Portfolios");
 
   return (
     <Scrollable>
-      <BucketManager bucketType="portfolio" />
+      <FullContainer>
+        <BucketManager bucketType="portfolio" />
+      </FullContainer>
     </Scrollable>
   );
 }
