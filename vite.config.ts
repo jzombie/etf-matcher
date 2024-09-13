@@ -19,7 +19,6 @@ import {
   PROJECT_DESCRIPTION,
   PROJECT_GITHUB_REPOSITORY,
   PROJECT_NAME,
-  PROJECT_SHORT_NAME,
   PROJECT_URL,
   PROJECT_DEFAULT_TITLE,
 } from "./src/constants";
@@ -55,7 +54,7 @@ const HTML_REPLACEMENTS = {
 // into the sitemap.json in the `dist` directory during a production build.
 const MANIFEST_VARS = {
   name: PROJECT_NAME,
-  short_name: PROJECT_SHORT_NAME,
+  short_name: PROJECT_NAME,
   descripition: PROJECT_DESCRIPTION,
   background_color: process.env.VITE_BACKGROUND_COLOR || "#000000",
   theme_color: process.env.VITE_BACKGROUND_COLOR || "#000000",
