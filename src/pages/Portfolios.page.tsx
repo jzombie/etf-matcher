@@ -6,7 +6,7 @@ import BucketManager from "@components/BucketManager";
 
 import usePageTitleSetter from "@utils/usePageTitleSetter";
 
-export default function Portfolios() {
+export default function PortfoliosPage() {
   usePageTitleSetter("Portfolios");
 
   return (

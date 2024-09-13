@@ -11,7 +11,7 @@ import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
 import usePageTitleSetter from "@utils/usePageTitleSetter";
 
-export default function Home() {
+export default function HomePage() {
   // Home page; no title override
   usePageTitleSetter(null);
 

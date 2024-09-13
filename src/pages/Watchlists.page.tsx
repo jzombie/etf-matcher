@@ -6,7 +6,7 @@ import BucketManager from "@components/BucketManager";
 
 import usePageTitleSetter from "@utils/usePageTitleSetter";
 
-export default function Watchlists() {
+export default function WatchlistsPage() {
   usePageTitleSetter("Watchlists");
 
   return (
