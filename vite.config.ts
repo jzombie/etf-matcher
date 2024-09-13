@@ -190,19 +190,19 @@ export default defineConfig(({ mode }) => {
                 }
               },
             },
+            sitemap({
+              hostname: PROJECT_URL,
+              // TODO: Ideally these would seed automatically from `router.ts`
+              dynamicRoutes: [
+                "/",
+                "/search",
+                "/portfolios",
+                "/watchlists",
+                "/settings",
+              ],
+            }),
           ]
         : []),
-      sitemap({
-        hostname: PROJECT_URL,
-        // TODO: Ideally these would seed automatically from `router.ts`
-        dynamicRoutes: [
-          "/",
-          "/search",
-          "/portfolios",
-          "/watchlists",
-          "/settings",
-        ],
-      }),
     ],
     // Resolve warnings with checker plugin (even though this is not a Vue project)
     define: {
