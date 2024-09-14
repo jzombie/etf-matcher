@@ -29,6 +29,9 @@ export default function App() {
           <CssBaseline />
           <NotificationProvider>
             <TickerContainerProvider>
+              {
+                // Note: Additional providers are located in `router.ts`
+              }
               <RouterProvider router={router} />
             </TickerContainerProvider>
           </NotificationProvider>

@@ -7,6 +7,7 @@ import PortfoliosPage from "@pages/Portfolios.page";
 import SearchResultsPage from "@pages/SearchResults.page";
 import SettingsPage from "@pages/Settings.page";
 import WatchlistsPage from "@pages/Watchlists.page";
+import BucketImportExportProvider from "@providers/BucketImportExportProvider";
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 
 import MainLayout from "@components/MainLayout";
@@ -19,7 +20,9 @@ export const routes: RouteObject[] = [
       // Note: `SharedSessionManagerProvider` is placed here instead of in `App`
       // due to being dependent on `React Router`.
       <SharedSessionManagerProvider>
-        <MainLayout />
+        <BucketImportExportProvider>
+          <MainLayout />
+        </BucketImportExportProvider>
       </SharedSessionManagerProvider>
     ),
     children: [

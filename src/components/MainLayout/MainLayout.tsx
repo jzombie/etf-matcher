@@ -16,7 +16,6 @@ import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
 import MainLayoutFooter from "./Footer";
 import HeaderMenu from "./HeaderMenu";
-import ImportExportDialogModal from "./MainLayout.ImportExportDialogModal";
 
 export default function MainLayout() {
   const {
@@ -110,11 +109,6 @@ export default function MainLayout() {
           <Center>Profiling Cache</Center>
         </Cover>
       )}
-
-      {
-        // This renders dyanamically depending on store state
-      }
-      <ImportExportDialogModal />
     </FullViewport>
   );
 }

@@ -8,22 +8,22 @@ import {
   DialogTitle,
 } from "@mui/material";
 
-import DialogModal from "@components/DialogModal";
+import store from "@src/store";
 
-import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
+import DialogModal, { DialogModalProps } from "@components/DialogModal";
 
 import { tickerBucketsToCSV } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
-export default function ImportExportDialogModal() {
-  const { isImportExportModalOpen } = useStoreStateReader(
-    "isImportExportModalOpen",
-  );
+export type BucketImportExportDialogModalProps = Omit<
+  DialogModalProps,
+  "children"
+>;
 
-  const handleClose = useCallback(() => {
-    store.setState({ isImportExportModalOpen: false });
-  }, []);
-
+export default function BucketImportExportDialogModal({
+  onClose,
+  ...rest
+}: BucketImportExportDialogModalProps) {
   const titleId = useId();
   const descriptionId = useId();
 
@@ -55,8 +55,8 @@ export default function ImportExportDialogModal() {
 
   return (
     <DialogModal
-      open={isImportExportModalOpen}
-      onClose={handleClose}
+      {...rest}
+      onClose={onClose}
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
     >
@@ -67,7 +67,7 @@ export default function ImportExportDialogModal() {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="error" variant="contained">
+        <Button onClick={onClose} color="error" variant="contained">
           Close
         </Button>
       </DialogActions>

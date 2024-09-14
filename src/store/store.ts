@@ -87,7 +87,6 @@ export type StoreStateProps = {
   isDirtyState: boolean;
   visibleTickerIds: number[];
   isSearchModalOpen: boolean;
-  isImportExportModalOpen: boolean;
   tickerBuckets: TickerBucket[];
   isProfilingCacheOverlayOpen: boolean;
   cacheProfilerWaitTime: number;
@@ -126,7 +125,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       isDirtyState: false,
       visibleTickerIds: [],
       isSearchModalOpen: false,
-      isImportExportModalOpen: false,
       tickerBuckets: [
         {
           name: "My Portfolio",
