@@ -64,6 +64,8 @@ export default function BucketImportExportProvider({
     };
 
     const handleDragLeave = (event: DragEvent) => {
+      console.log("dragleave", event);
+
       setIsDragOver(false);
 
       event.preventDefault();
