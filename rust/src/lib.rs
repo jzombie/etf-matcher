@@ -1,8 +1,7 @@
 extern crate flatbuffers as fb;
 use data_models::ticker_vector_analysis::TickerWithQuantity;
 use qrcode_generator::QrCodeEcc;
-use serde::{Deserialize, Serialize};
-use serde_wasm_bindgen::{from_value, to_value};
+use serde_wasm_bindgen::to_value;
 use std::panic;
 use wasm_bindgen::prelude::*;
 
