@@ -6,21 +6,22 @@ import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 import customLogger from "@utils/customLogger";
 
-// Define the context types
-interface BucketImportExportContextType {
+type BucketImportExportContextType = {
   openImportExportModal: () => void;
   closeImportExportModal: () => void;
-}
+};
 
-// Create the context
 export const BucketImportExportContext = createContext<
   BucketImportExportContextType | undefined
 >(undefined);
 
-// Provider component
-const BucketImportExportProvider: React.FC<{ children: React.ReactNode }> = ({
+export type BucketImportExportProviderProps = {
+  children: React.ReactNode;
+};
+
+export default function BucketImportExportProvider({
   children,
-}) => {
+}: BucketImportExportProviderProps) {
   const [isImportExportModalOpen, setImportExportModalOpen] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -95,6 +96,8 @@ const BucketImportExportProvider: React.FC<{ children: React.ReactNode }> = ({
     customLogger.debug({ isDragOver });
   }, [isDragOver]);
 
+  // TODO: Render "drop zone" when dragging a file in
+
   return (
     <BucketImportExportContext.Provider
       value={{ openImportExportModal, closeImportExportModal }}
@@ -108,6 +111,4 @@ const BucketImportExportProvider: React.FC<{ children: React.ReactNode }> = ({
       />
     </BucketImportExportContext.Provider>
   );
-};
-
-export default BucketImportExportProvider;
+}
