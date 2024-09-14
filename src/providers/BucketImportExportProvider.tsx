@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
 
 import BucketImportExportDialogModal from "@components/BucketImportExportDialogModal";
+import TransparentModal from "@components/TransparentModal";
 
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
@@ -104,11 +105,14 @@ export default function BucketImportExportProvider({
     >
       {children}
 
-      {/* Conditionally render the modal */}
       <BucketImportExportDialogModal
         open={isImportExportModalOpen}
         onClose={closeImportExportModal}
       />
+
+      <TransparentModal open={isDragOver}>
+        <div>HELLO</div>
+      </TransparentModal>
     </BucketImportExportContext.Provider>
   );
 }
