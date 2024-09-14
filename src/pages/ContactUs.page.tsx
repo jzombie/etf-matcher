@@ -33,7 +33,9 @@ export default function ContactUsPage() {
             <Grid2 size={{ xs: 12, sm: 6 }}>
               <Box display="flex" alignItems="center" mb={2}>
                 <EmailIcon color="primary" sx={{ mr: 1 }} />
-                <Typography variant="body1">{PROJECT_AUTHOR_EMAIL}</Typography>
+                <Link href={`mailto:${PROJECT_AUTHOR_EMAIL}`}>
+                  {PROJECT_AUTHOR_EMAIL}
+                </Link>
               </Box>
               <Box display="flex" alignItems="center" mb={2}>
                 <GitHubIcon color="primary" sx={{ mr: 1 }} />
