@@ -94,7 +94,6 @@ export default function HeaderMenu() {
         link: "/contact",
         label: "Contact",
         icon: <ContactMailIcon fontSize="small" />,
-        badgeContent: totalPortfolioBuckets,
       },
     ],
     [totalPortfolioBuckets, totalWatchlistBuckets],
