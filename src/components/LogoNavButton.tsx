@@ -7,8 +7,6 @@ import Logo from "@assets/etf-matcher.logo.white.svg?react";
 import { Link } from "react-router-dom";
 
 const StyledNavButton = styled(Link)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
   textDecoration: "none",
   color: "white",
   fontFamily: "'Roboto', sans-serif",
