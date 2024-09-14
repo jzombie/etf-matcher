@@ -2,7 +2,7 @@ import { useContext } from "react";
 
 import { BucketImportExportContext } from "@providers/BucketImportExportProvider";
 
-export const useBucketImportExportContext = () => {
+export default function useBucketImportExportContext() {
   const context = useContext(BucketImportExportContext);
   if (!context) {
     throw new Error(
@@ -10,4 +10,4 @@ export const useBucketImportExportContext = () => {
     );
   }
   return context;
-};
+}

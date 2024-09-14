@@ -33,6 +33,7 @@ import { Link, matchPath, useLocation } from "react-router-dom";
 import LogoNavButton from "@components/LogoNavButton";
 import SearchModalButton from "@components/SearchModalButton";
 
+import useBucketImportExportContext from "@hooks/useBucketImportExportContext";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
 import SlidingBackground from "./HeaderMenu.SlidingBackground";
@@ -46,6 +47,8 @@ export default function HeaderMenu() {
   const isDesktop = useMediaQuery(
     `@media (min-width:${MIN_HORIZONTAL_WIDTH}px)`,
   );
+
+  const { openImportExportModal } = useBucketImportExportContext();
 
   const { tickerBuckets } = useStoreStateReader("tickerBuckets");
 
@@ -90,12 +93,12 @@ export default function HeaderMenu() {
         icon: <ImportExportIcon fontSize="small" />, // You can replace this with <ImportExportIcon fontSize="small" /> if preferred
         link: "#",
         onClick: () => {
-          // FIXME: The `setTimeout` is used to allow the initial location to change before
+          // FIXME: The `setTimeout` is used to allow the initial location key to change *before*
           // opening the modal, and prevents it from auto-closing immediately upon opening.
           // This could be improved.
-          setTimeout(() => {
-            store.setState({ isImportExportModalOpen: true });
-          });
+          setTimeout(openImportExportModal);
+
+          return false;
         },
       },
       {
@@ -111,7 +114,7 @@ export default function HeaderMenu() {
         icon: <ContactMailIcon fontSize="small" />,
       },
     ],
-    [totalPortfolioBuckets, totalWatchlistBuckets],
+    [totalPortfolioBuckets, totalWatchlistBuckets, openImportExportModal],
   );
 
   const selectedKey = useMemo(
