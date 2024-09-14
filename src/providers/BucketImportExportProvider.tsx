@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
 
 import BucketImportExportDialogModal from "@components/BucketImportExportDialogModal";
-import TransparentModal from "@components/TransparentModal";
+import BucketImportFileDropModal from "@components/BucketImportFileDropModal";
 
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
@@ -110,9 +110,7 @@ export default function BucketImportExportProvider({
         onClose={closeImportExportModal}
       />
 
-      <TransparentModal open={isDragOver}>
-        <div>HELLO</div>
-      </TransparentModal>
+      <BucketImportFileDropModal open={isDragOver} />
     </BucketImportExportContext.Provider>
   );
 }
