@@ -1,4 +1,10 @@
-import React, { createContext, useCallback, useContext, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 import BucketImportExportDialogModal from "@components/BucketImportExportDialogModal";
 
@@ -17,15 +23,10 @@ export const BucketImportExportContext = createContext<
 >(undefined);
 
 // Provider component
-const BucketImportExportProvider: React.FC<{
-  children: React.ReactNode;
-}> = ({ children }) => {
+const BucketImportExportProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [isImportExportModalOpen, setImportExportModalOpen] = useState(false);
-
-  const handleModalClose = useCallback(
-    () => setImportExportModalOpen(false),
-    [],
-  );
 
   // Function to open modal
   const openImportExportModal = useCallback(() => {
@@ -43,13 +44,38 @@ const BucketImportExportProvider: React.FC<{
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        // TODO: Handle
+        // TODO: Handle file content
         customLogger.debug(`File content: ${event.target?.result}`);
         // Handle the file content, e.g., parse CSV and update state
       };
       reader.readAsText(file);
     }
   }, []);
+
+  // Effect to handle drag-and-drop events
+  useEffect(() => {
+    const handleDragOver = (event: DragEvent) => {
+      event.preventDefault(); // Prevent default to allow drop
+    };
+
+    const handleDrop = (event: DragEvent) => {
+      event.preventDefault();
+      if (event.dataTransfer && event.dataTransfer.files.length > 0) {
+        handleFileDrop(event.dataTransfer.files); // Call the file drop handler
+        openImportExportModal(); // Open the modal upon file drop
+      }
+    };
+
+    // Add event listeners for drag and drop
+    window.addEventListener("dragover", handleDragOver);
+    window.addEventListener("drop", handleDrop);
+
+    // Cleanup event listeners on unmount
+    return () => {
+      window.removeEventListener("dragover", handleDragOver);
+      window.removeEventListener("drop", handleDrop);
+    };
+  }, [handleFileDrop, openImportExportModal]);
 
   return (
     <BucketImportExportContext.Provider
@@ -60,7 +86,7 @@ const BucketImportExportProvider: React.FC<{
       {/* Conditionally render the modal */}
       <BucketImportExportDialogModal
         open={isImportExportModalOpen}
-        onClose={handleModalClose}
+        onClose={closeImportExportModal}
       />
     </BucketImportExportContext.Provider>
   );
