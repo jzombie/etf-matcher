@@ -1,23 +1,19 @@
 import React from "react";
 
-import ContactMailIcon from "@mui/icons-material/ContactMail";
 import EmailIcon from "@mui/icons-material/Email";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import PhoneIcon from "@mui/icons-material/Phone";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import { Box, Container, Grid2, Link, Typography } from "@mui/material";
+
 import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  TextField,
-  Typography,
-} from "@mui/material";
+  PROJECT_AUTHOR_EMAIL,
+  PROJECT_AUTHOR_LINKEDIN_URL,
+  PROJECT_GITHUB_REPOSITORY,
+  PROJECT_NAME,
+} from "@src/constants";
 
 import Section from "@components/Section";
 
-// TODO: Finish implementing
-// TODO: Include contact information on lockscreen?
-// TODO: Include contact information in `console.log`?
 export default function ContactUsPage() {
   return (
     <Container maxWidth="md" sx={{ py: 5 }}>
@@ -25,70 +21,46 @@ export default function ContactUsPage() {
         <Typography variant="h4" align="center" gutterBottom>
           Contact Us
         </Typography>
-        <Typography variant="body1" align="center" paragraph>
-          We&apos;d love to hear from you! Whether you have a question about
-          features, pricing, or anything else, our team is ready to answer all
-          your questions.
+        <Typography variant="body1" align="center">
+          Thank you for using {PROJECT_NAME}, a free and open-source tool
+          designed to help you find the best ETFs. Please use the contact
+          information to provide feedback, suggestions, or report any issues.
         </Typography>
 
         <Box sx={{ my: 5 }}>
-          <Grid container spacing={3}>
+          <Grid2 container spacing={3}>
             {/* Contact Info */}
-            <Grid item xs={12} sm={6}>
-              <Box display="flex" alignItems="center" mb={2}>
-                <LocationOnIcon color="primary" sx={{ mr: 1 }} />
-                <Typography variant="body1">
-                  1234 Elm St, Springfield, USA
-                </Typography>
-              </Box>
-              <Box display="flex" alignItems="center" mb={2}>
-                <PhoneIcon color="primary" sx={{ mr: 1 }} />
-                <Typography variant="body1">(123) 456-7890</Typography>
-              </Box>
+            <Grid2 size={{ xs: 12, sm: 6 }}>
               <Box display="flex" alignItems="center" mb={2}>
                 <EmailIcon color="primary" sx={{ mr: 1 }} />
-                <Typography variant="body1">contact@etfmatcher.com</Typography>
+                <Typography variant="body1">{PROJECT_AUTHOR_EMAIL}</Typography>
               </Box>
-            </Grid>
-
-            {/* Contact Form */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Your Name"
-                variant="outlined"
-                margin="normal"
-                required
-              />
-              <TextField
-                fullWidth
-                label="Your Email"
-                variant="outlined"
-                type="email"
-                margin="normal"
-                required
-              />
-              <TextField
-                fullWidth
-                label="Your Message"
-                variant="outlined"
-                multiline
-                rows={4}
-                margin="normal"
-                required
-              />
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                fullWidth
-                startIcon={<ContactMailIcon />}
-                sx={{ mt: 2 }}
-              >
-                Send Message
-              </Button>
-            </Grid>
-          </Grid>
+              <Box display="flex" alignItems="center" mb={2}>
+                <GitHubIcon color="primary" sx={{ mr: 1 }} />
+                <Link
+                  href={PROJECT_GITHUB_REPOSITORY}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <Typography variant="body1">
+                    {PROJECT_GITHUB_REPOSITORY}
+                  </Typography>
+                </Link>
+              </Box>
+              <Box display="flex" alignItems="center" mb={2}>
+                <LinkedInIcon color="primary" sx={{ mr: 1 }} />
+                <Link
+                  href={PROJECT_AUTHOR_LINKEDIN_URL}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <Typography variant="body1">
+                    {PROJECT_AUTHOR_LINKEDIN_URL}
+                  </Typography>
+                </Link>
+              </Box>
+            </Grid2>
+          </Grid2>
         </Box>
       </Section>
     </Container>
