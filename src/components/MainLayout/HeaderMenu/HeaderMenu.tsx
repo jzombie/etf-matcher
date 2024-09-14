@@ -37,7 +37,7 @@ import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
 import SlidingBackground from "./HeaderMenu.SlidingBackground";
 
-const MIN_HORIZONTAL_WIDTH: number = 860;
+const MIN_HORIZONTAL_WIDTH: number = 1000;
 
 export default function HeaderMenu() {
   const location = useLocation();
