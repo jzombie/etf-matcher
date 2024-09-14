@@ -1,12 +1,8 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { createContext, useCallback, useEffect, useState } from "react";
 
 import BucketImportExportDialogModal from "@components/BucketImportExportDialogModal";
+
+import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 import customLogger from "@utils/customLogger";
 
@@ -14,7 +10,6 @@ import customLogger from "@utils/customLogger";
 interface BucketImportExportContextType {
   openImportExportModal: () => void;
   closeImportExportModal: () => void;
-  handleFileDrop: (files: FileList) => void;
 }
 
 // Create the context
@@ -27,6 +22,9 @@ const BucketImportExportProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [isImportExportModalOpen, setImportExportModalOpen] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  const isDragOverCurrentRef = useStableCurrentRef(isDragOver);
 
   // Function to open modal
   const openImportExportModal = useCallback(() => {
@@ -55,7 +53,18 @@ const BucketImportExportProvider: React.FC<{ children: React.ReactNode }> = ({
   // Effect to handle drag-and-drop events
   useEffect(() => {
     const handleDragOver = (event: DragEvent) => {
+      const prevIsDragOver = isDragOverCurrentRef.current;
+      if (!prevIsDragOver) {
+        setIsDragOver(true);
+      }
+
       event.preventDefault(); // Prevent default to allow drop
+    };
+
+    const handleDragLeave = (event: DragEvent) => {
+      setIsDragOver(false);
+
+      event.preventDefault();
     };
 
     const handleDrop = (event: DragEvent) => {
@@ -64,22 +73,31 @@ const BucketImportExportProvider: React.FC<{ children: React.ReactNode }> = ({
         handleFileDrop(event.dataTransfer.files); // Call the file drop handler
         openImportExportModal(); // Open the modal upon file drop
       }
+
+      setIsDragOver(false);
     };
 
     // Add event listeners for drag and drop
     window.addEventListener("dragover", handleDragOver);
+    window.addEventListener("dragleave", handleDragLeave);
     window.addEventListener("drop", handleDrop);
 
     // Cleanup event listeners on unmount
     return () => {
       window.removeEventListener("dragover", handleDragOver);
+      window.removeEventListener("dragleave", handleDragLeave);
       window.removeEventListener("drop", handleDrop);
     };
-  }, [handleFileDrop, openImportExportModal]);
+  }, [handleFileDrop, openImportExportModal, isDragOverCurrentRef]);
+
+  // TODO: Remove
+  useEffect(() => {
+    customLogger.debug({ isDragOver });
+  }, [isDragOver]);
 
   return (
     <BucketImportExportContext.Provider
-      value={{ openImportExportModal, closeImportExportModal, handleFileDrop }}
+      value={{ openImportExportModal, closeImportExportModal }}
     >
       {children}
 
