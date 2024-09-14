@@ -96,9 +96,9 @@ pub struct Ticker10KDetail {
     pub net_cash_used_provided_by_financing_activities_3_yr: Option<f64>,
     pub net_cash_used_provided_by_financing_activities_4_yr: Option<f64>,
     //
-    // FIXME: This property is dynamically added in; rather than creating a
-    // new struct specifically to add `are_financials_current`, I just made
-    // it an optional property for now
+    // FIXME: This is just a temporary alias for the time being and should be
+    // addressed to prevent duplication.
+    // It is used to satisfy a common union type with `ETFAggregateDetail`.
     pub are_financials_current: Option<bool>,
 }
 
@@ -116,9 +116,7 @@ impl Ticker10KDetail {
             .await?
             .ok_or_else(|| JsValue::from_str(&format!("Ticker ID {} not found", ticker_id)))?;
 
-        // FIXME: This boolean check could be improved (see also in `ETFAggregateDetail`)
-        ticker_10k_detail.are_financials_current =
-            Some(ticker_10k_detail.revenue_current.is_some());
+        ticker_10k_detail.are_financials_current = ticker_10k_detail.is_current;
 
         Ok(ticker_10k_detail)
     }
