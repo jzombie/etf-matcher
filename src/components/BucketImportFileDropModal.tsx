@@ -6,6 +6,8 @@ import { Box, Typography } from "@mui/material";
 import Center from "@layoutKit/Center";
 import Full from "@layoutKit/Full";
 
+import Section from "@components/Section";
+
 import TransparentModal, { TransparentModalProps } from "./TransparentModal";
 
 export type BucketImportFileDropModalProps = Omit<
@@ -28,26 +30,28 @@ export default function BucketImportFileDropModal({
           }}
         >
           <Center>
-            <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <CloudUploadIcon style={{ fontSize: 60, color: "#666" }} />
-
-              <Typography
-                variant="h6"
-                color="textSecondary"
-                style={{ marginTop: 8 }}
+            <Section>
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
               >
-                Drop CSV to Import Buckets
-              </Typography>
+                <CloudUploadIcon style={{ fontSize: 60, color: "#666" }} />
 
-              <Typography variant="body2" color="textSecondary">
-                This file should contain portfolios, watchlists, or both
-              </Typography>
-            </Box>
+                <Typography
+                  variant="h6"
+                  color="textSecondary"
+                  style={{ marginTop: 8 }}
+                >
+                  Drop CSV to Import Buckets
+                </Typography>
+
+                <Typography variant="body2" color="textSecondary">
+                  This file should contain portfolios, watchlists, or both
+                </Typography>
+              </Box>
+            </Section>
           </Center>
         </Full>
       </Full>
