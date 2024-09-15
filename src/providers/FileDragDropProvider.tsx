@@ -11,10 +11,11 @@ export const FileDragDropContext = createContext<FileDragDropContextType>(
 );
 
 export type FileDragDropProviderProps = {
-  onDragOverStateChange: (isDragOver: boolean) => void;
+  onDragOverStateChange?: (isDragOver: boolean) => void;
   onDragOver?: (evt: DragEvent) => void;
   onDragLeave?: (evt: DragEvent) => void;
   onDrop?: (evt: DragEvent) => void;
+  target?: HTMLElement | Window;
   children: React.ReactNode;
 };
 
@@ -23,6 +24,7 @@ export default function FileDragDropProvider({
   onDragOver,
   onDragLeave,
   onDrop,
+  target = window, // Default target to window
   children,
 }: FileDragDropProviderProps) {
   const onDragOverStateChangeStableRef = useStableCurrentRef(
@@ -83,22 +85,28 @@ export default function FileDragDropProvider({
 
   // Handle the drag-over state when the file is dragged within the app bounds
   useEffect(() => {
-    // Add event listeners for drag and drop
-    window.addEventListener("dragover", handleDragOver);
-    window.addEventListener("dragleave", handleDragLeave);
-    window.addEventListener("drop", handleDrop);
+    const dragTarget = target || window; // Fallback to window if target is not provided
+
+    const handleDragOverEventListener = (evt: Event) =>
+      handleDragOver(evt as DragEvent);
+    const handleDragLeaveEventListener = (evt: Event) =>
+      handleDragLeave(evt as DragEvent);
+    const handleDropEventListener = (evt: Event) =>
+      handleDrop(evt as DragEvent);
+
+    dragTarget.addEventListener("dragover", handleDragOverEventListener);
+    dragTarget.addEventListener("dragleave", handleDragLeaveEventListener);
+    dragTarget.addEventListener("drop", handleDropEventListener);
 
     // Cleanup event listeners on unmount
     return () => {
-      window.removeEventListener("dragover", handleDragOver);
-      window.removeEventListener("dragleave", handleDragLeave);
-      window.removeEventListener("drop", handleDrop);
+      dragTarget.removeEventListener("dragover", handleDragOverEventListener);
+      dragTarget.removeEventListener("dragleave", handleDragLeaveEventListener);
+      dragTarget.removeEventListener("drop", handleDropEventListener);
     };
-  }, [handleDragOver, handleDragLeave, handleDrop]);
+  }, [handleDragOver, handleDragLeave, handleDrop, target]);
 
-  // FIXME: This is a workaround for Chrome 128 where when dragging a file over an iframe,
-  // regardless if a div was covering the iframe, the iframe would cause the `dragleave` event
-  // to emit on the parent. I didn't experience this issue when testing with Firefox or Safari.
+  // Workaround for Chrome's iframe dragleave issue
   useEffect(() => {
     const iframes = Array.from(window.document.querySelectorAll("iframe")); // Convert NodeList to Array
 

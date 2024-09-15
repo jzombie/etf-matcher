@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import Full from "@layoutKit/Full";
+import FileDragDropProvider from "@providers/FileDragDropProvider";
+
+import customLogger from "@utils/customLogger";
 
 import TransparentModal, { TransparentModalProps } from "./TransparentModal";
 
@@ -17,50 +20,28 @@ export default function BucketImportFileDropModal({
     undefined,
   );
 
-  useEffect(() => {
-    if (component) {
-      const handleDragOver = (event: DragEvent) => {
-        console.log("drag over", event);
-
-        event.preventDefault(); // Prevent default to allow drop
-      };
-
-      const handleDragLeave = (event: DragEvent) => {
-        console.log("drag leave", event);
-
-        event.preventDefault();
-      };
-
-      const handleDrop = (event: DragEvent) => {
-        console.log("drop");
-
-        event.preventDefault();
-        // if (event.dataTransfer && event.dataTransfer.files.length > 0) {
-        //   handleFileDrop(event.dataTransfer.files); // Call the file drop handler
-        //   openImportExportModal(); // Open the modal upon file drop
-        // }
-      };
-
-      // Add event listeners for drag and drop
-      component.addEventListener("dragover", handleDragOver);
-      component.addEventListener("dragleave", handleDragLeave);
-      component.addEventListener("drop", handleDrop);
-
-      // Cleanup event listeners on unmount
-      return () => {
-        component.removeEventListener("dragover", handleDragOver);
-        component.removeEventListener("dragleave", handleDragLeave);
-        component.removeEventListener("drop", handleDrop);
-      };
-    }
-  }, [component]);
-
   return (
-    <TransparentModal {...rest}>
-      {
-        // TODO: Fix types
-      }
-      <Full ref={(component) => setComponent(component)}>test</Full>
-    </TransparentModal>
+    <FileDragDropProvider
+      target={component || window}
+      // TODO: Handle
+      onDragOver={(evt) => {
+        customLogger.debug("drag over", evt);
+      }}
+      // TODO: Handle
+      onDragLeave={(evt) => {
+        customLogger.debug("drag leave", evt);
+      }}
+      // TODO: Handle
+      onDrop={(evt) => {
+        customLogger.debug("drop", evt);
+      }}
+    >
+      <TransparentModal {...rest}>
+        {
+          // TODO: Fix types
+        }
+        <Full ref={(component) => setComponent(component)}>test</Full>
+      </TransparentModal>
+    </FileDragDropProvider>
   );
 }
