@@ -24,9 +24,9 @@ export default function BucketImportFileDropModal({
     <FileDragDropProvider
       target={component || window}
       // TODO: Handle
-      onDragOver={(evt) => {
-        customLogger.debug("drag over", evt);
-      }}
+      // onDragOver={(evt) => {
+      //   customLogger.debug("drag over", evt);
+      // }}
       // TODO: Handle
       onDragLeave={(evt) => {
         customLogger.debug("drag leave", evt);
