@@ -46,7 +46,7 @@ export default function FileDragDropProvider({
       const prevIsDragOver = isDragOverCurrentRef.current;
 
       if (!prevIsDragOver) {
-        setIsDragOver(true); // Drag is within bounds, show drop zone
+        setIsDragOver(true);
       }
 
       const onDragOver = onDragOverStableRef.current;
@@ -62,6 +62,8 @@ export default function FileDragDropProvider({
       evt.preventDefault();
       evt.stopPropagation();
 
+      // TODO: setIsDragOver(false)
+
       const onDragLeave = onDragLeaveStableRef.current;
       if (typeof onDragLeave === "function") {
         onDragLeave(evt);
@@ -74,6 +76,8 @@ export default function FileDragDropProvider({
     (evt: DragEvent) => {
       evt.preventDefault();
       evt.stopPropagation();
+
+      // TODO: setIsDragOver(false)
 
       const onDrop = onDropStableRef.current;
       if (typeof onDrop === "function") {
