@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useEffect, useState } from "react";
 
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
@@ -11,56 +11,90 @@ export const FileDragDropContext = createContext<FileDragDropContextType>(
 );
 
 export type FileDragDropProviderProps = {
+  onDragOverStateChange: (isDragOver: boolean) => void;
+  onDragOver?: (evt: DragEvent) => void;
+  onDragLeave?: (evt: DragEvent) => void;
+  onDrop?: (evt: DragEvent) => void;
   children: React.ReactNode;
 };
 
 export default function FileDragDropProvider({
+  onDragOverStateChange,
+  onDragOver,
+  onDragLeave,
+  onDrop,
   children,
 }: FileDragDropProviderProps) {
+  const onDragOverStateChangeStableRef = useStableCurrentRef(
+    onDragOverStateChange,
+  );
+  const onDragOverStableRef = useStableCurrentRef(onDragOver);
+  const onDragLeaveStableRef = useStableCurrentRef(onDragLeave);
+  const onDropStableRef = useStableCurrentRef(onDrop);
+
   const [isDragOver, setIsDragOver] = useState(false);
 
   const isDragOverCurrentRef = useStableCurrentRef(isDragOver);
 
-  // Handle the drag-over state when the file is dragged within the app bounds
-  useEffect(() => {
-    const handleDragOver = (event: DragEvent) => {
+  const handleDragOver = useCallback(
+    (evt: DragEvent) => {
+      evt.preventDefault();
+      evt.stopPropagation();
+
       const prevIsDragOver = isDragOverCurrentRef.current;
 
       if (!prevIsDragOver) {
         setIsDragOver(true); // Drag is within bounds, show drop zone
       }
 
-      event.preventDefault(); // Prevent default to allow the drag behavior
-    };
-
-    const handleDragLeave = (event: DragEvent) => {
-      const { clientX, clientY } = event;
-
-      // Determine if the drag has truly left the viewport
-      const isOutsideBounds =
-        clientX <= 0 ||
-        clientY <= 0 ||
-        clientX >= window.innerWidth ||
-        clientY >= window.innerHeight;
-
-      if (isOutsideBounds) {
-        setIsDragOver(false); // Drag is out of bounds, hide drop zone
+      const onDragOver = onDragOverStableRef.current;
+      if (typeof onDragOver === "function") {
+        onDragOver(evt);
       }
+    },
+    [isDragOverCurrentRef, onDragOverStableRef],
+  );
 
-      event.preventDefault();
-      event.stopPropagation();
-    };
+  const handleDragLeave = useCallback(
+    (evt: DragEvent) => {
+      evt.preventDefault();
+      evt.stopPropagation();
 
+      const onDragLeave = onDragLeaveStableRef.current;
+      if (typeof onDragLeave === "function") {
+        onDragLeave(evt);
+      }
+    },
+    [onDragLeaveStableRef],
+  );
+
+  const handleDrop = useCallback(
+    (evt: DragEvent) => {
+      evt.preventDefault();
+      evt.stopPropagation();
+
+      const onDrop = onDropStableRef.current;
+      if (typeof onDrop === "function") {
+        onDrop(evt);
+      }
+    },
+    [onDropStableRef],
+  );
+
+  // Handle the drag-over state when the file is dragged within the app bounds
+  useEffect(() => {
     // Add event listeners for drag and drop
     window.addEventListener("dragover", handleDragOver);
     window.addEventListener("dragleave", handleDragLeave);
+    window.addEventListener("drop", handleDrop);
 
     // Cleanup event listeners on unmount
     return () => {
       window.removeEventListener("dragover", handleDragOver);
       window.removeEventListener("dragleave", handleDragLeave);
+      window.removeEventListener("drop", handleDrop);
     };
-  }, [isDragOverCurrentRef]);
+  }, [handleDragOver, handleDragLeave, handleDrop]);
 
   // FIXME: This is a workaround for Chrome 128 where when dragging a file over an iframe,
   // regardless if a div was covering the iframe, the iframe would cause the `dragleave` event
@@ -79,6 +113,14 @@ export default function FileDragDropProvider({
       }
     };
   }, [isDragOver]);
+
+  useEffect(() => {
+    const onDragOverStateChange = onDragOverStateChangeStableRef.current;
+
+    if (typeof onDragOverStateChange === "function") {
+      onDragOverStateChange(isDragOver);
+    }
+  }, [isDragOver, onDragOverStateChangeStableRef]);
 
   return (
     <FileDragDropContext.Provider value={{ isDragOver }}>

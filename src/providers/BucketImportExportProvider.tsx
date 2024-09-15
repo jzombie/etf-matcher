@@ -1,19 +1,9 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { createContext, useCallback, useState } from "react";
 
 import BucketImportExportDialogModal from "@components/BucketImportExportDialogModal";
 import BucketImportFileDropModal from "@components/BucketImportFileDropModal";
 
-import useStableCurrentRef from "@hooks/useStableCurrentRef";
-
-import FileDragDropProvider, {
-  FileDragDropContext,
-} from "./FileDragDropProvider";
+import FileDragDropProvider from "./FileDragDropProvider";
 
 type BucketImportExportContextType = {
   openImportExportModal: () => void;
@@ -45,12 +35,10 @@ export default function BucketImportExportProvider({
   }, []);
 
   return (
-    <FileDragDropProvider>
+    <FileDragDropProvider onDragOverStateChange={setIsDragOver}>
       <BucketImportExportContext.Provider
         value={{ openImportExportModal, closeImportExportModal }}
       >
-        <FileDragDropStatusListener onDragOverStateChange={setIsDragOver} />
-
         {children}
 
         <BucketImportExportDialogModal
@@ -62,25 +50,4 @@ export default function BucketImportExportProvider({
       </BucketImportExportContext.Provider>
     </FileDragDropProvider>
   );
-}
-
-type FileDragDropStatusListenerProps = {
-  onDragOverStateChange: (isDragOver: boolean) => void;
-};
-
-function FileDragDropStatusListener({
-  onDragOverStateChange,
-}: FileDragDropStatusListenerProps) {
-  const { isDragOver } = useContext(FileDragDropContext);
-
-  const onDragOverStateChangeStableRef = useStableCurrentRef(
-    onDragOverStateChange,
-  );
-
-  useEffect(() => {
-    const onDragOverStateChange = onDragOverStateChangeStableRef.current;
-    onDragOverStateChange(isDragOver);
-  }, [isDragOver, onDragOverStateChange, onDragOverStateChangeStableRef]);
-
-  return null;
 }
