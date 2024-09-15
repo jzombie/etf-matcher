@@ -89,9 +89,9 @@ export default function HeaderMenu() {
       },
       {
         key: "/import-export",
+        link: "#",
         label: "Import/Export",
         icon: <ImportExportIcon fontSize="small" />, // You can replace this with <ImportExportIcon fontSize="small" /> if preferred
-        link: "#",
         onClick: () => {
           // FIXME: The `setTimeout` is used to allow the initial location key to change *before*
           // opening the modal, and prevents it from auto-closing immediately upon opening.
@@ -103,9 +103,9 @@ export default function HeaderMenu() {
       },
       {
         key: "/settings",
+        link: "/settings",
         label: "Settings",
         icon: <SettingsIcon fontSize="small" />,
-        link: "/settings",
       },
       {
         key: "/contact",
