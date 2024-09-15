@@ -62,7 +62,7 @@ export default function FileDragDropProvider({
       evt.preventDefault();
       evt.stopPropagation();
 
-      // TODO: setIsDragOver(false)
+      setIsDragOver(false);
 
       const onDragLeave = onDragLeaveStableRef.current;
       if (typeof onDragLeave === "function") {
@@ -77,7 +77,7 @@ export default function FileDragDropProvider({
       evt.preventDefault();
       evt.stopPropagation();
 
-      // TODO: setIsDragOver(false)
+      setIsDragOver(false);
 
       const onDrop = onDropStableRef.current;
       if (typeof onDrop === "function") {

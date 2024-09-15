@@ -3,6 +3,8 @@ import React, { createContext, useCallback, useState } from "react";
 import BucketImportExportDialogModal from "@components/BucketImportExportDialogModal";
 import BucketImportFileDropModal from "@components/BucketImportFileDropModal";
 
+import customLogger from "@utils/customLogger";
+
 import FileDragDropProvider from "./FileDragDropProvider";
 
 type BucketImportExportContextType = {
@@ -35,7 +37,13 @@ export default function BucketImportExportProvider({
   }, []);
 
   return (
-    <FileDragDropProvider onDragOverStateChange={setIsDragOver}>
+    <FileDragDropProvider
+      onDragOverStateChange={setIsDragOver}
+      onDrop={(evt) => {
+        // TODO: Implement
+        customLogger.debug("drop", evt);
+      }}
+    >
       <BucketImportExportContext.Provider
         value={{ openImportExportModal, closeImportExportModal }}
       >
