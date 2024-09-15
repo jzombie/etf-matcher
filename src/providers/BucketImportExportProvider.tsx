@@ -38,68 +38,64 @@ export default function BucketImportExportProvider({
     setImportExportModalOpen(false);
   }, []);
 
-  // Handle file drop
-  const handleFileDrop = useCallback((files: FileList) => {
-    const file = files[0]; // Assumes single file drop for simplicity
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        // TODO: Handle file content
-        customLogger.debug(`File content: ${event.target?.result}`);
-        // Handle the file content, e.g., parse CSV and update state
-      };
-      reader.readAsText(file);
-    }
-  }, []);
-
-  // Effect to handle drag-and-drop events
+  // Handle the drag-over state when the file is dragged within the app bounds
   useEffect(() => {
     const handleDragOver = (event: DragEvent) => {
       const prevIsDragOver = isDragOverCurrentRef.current;
+
       if (!prevIsDragOver) {
-        setIsDragOver(true);
+        setIsDragOver(true); // Drag is within bounds, show drop zone
       }
 
-      event.preventDefault(); // Prevent default to allow drop
+      event.preventDefault(); // Prevent default to allow the drag behavior
     };
 
     const handleDragLeave = (event: DragEvent) => {
-      console.log("dragleave", event);
+      const { clientX, clientY } = event;
 
-      setIsDragOver(false);
+      // Determine if the drag has truly left the viewport
+      const isOutsideBounds =
+        clientX <= 0 ||
+        clientY <= 0 ||
+        clientX >= window.innerWidth ||
+        clientY >= window.innerHeight;
 
-      event.preventDefault();
-    };
-
-    const handleDrop = (event: DragEvent) => {
-      event.preventDefault();
-      if (event.dataTransfer && event.dataTransfer.files.length > 0) {
-        handleFileDrop(event.dataTransfer.files); // Call the file drop handler
-        openImportExportModal(); // Open the modal upon file drop
+      if (isOutsideBounds) {
+        setIsDragOver(false); // Drag is out of bounds, hide drop zone
       }
 
-      setIsDragOver(false);
+      event.preventDefault();
+      event.stopPropagation();
     };
 
     // Add event listeners for drag and drop
     window.addEventListener("dragover", handleDragOver);
     window.addEventListener("dragleave", handleDragLeave);
-    window.addEventListener("drop", handleDrop);
 
     // Cleanup event listeners on unmount
     return () => {
       window.removeEventListener("dragover", handleDragOver);
       window.removeEventListener("dragleave", handleDragLeave);
-      window.removeEventListener("drop", handleDrop);
     };
-  }, [handleFileDrop, openImportExportModal, isDragOverCurrentRef]);
+  }, [isDragOverCurrentRef]);
 
-  // TODO: Remove
+  // FIXME: This is a workaround for Chrome 128 where when dragging a file over an iframe,
+  // regardless if a div was covering the iframe, the iframe would cause the `dragleave` event
+  // to emit on the parent. I didn't experience this issue when testing with Firefox or Safari.
   useEffect(() => {
-    customLogger.debug({ isDragOver });
-  }, [isDragOver]);
+    const iframes = Array.from(window.document.querySelectorAll("iframe")); // Convert NodeList to Array
 
-  // TODO: Render "drop zone" when dragging a file in
+    for (const iframe of iframes) {
+      iframe.style.pointerEvents = isDragOver ? "none" : "auto"; // Disable or enable pointer events
+    }
+
+    return () => {
+      // Cleanup: Re-enable pointer events when drag is over or component unmounts
+      for (const iframe of iframes) {
+        iframe.style.pointerEvents = "auto";
+      }
+    };
+  }, [isDragOver]);
 
   return (
     <BucketImportExportContext.Provider

@@ -19,22 +19,22 @@ export default function BucketImportFileDropModal({
 
   useEffect(() => {
     if (component) {
-      console.log("yes, component");
-
       const handleDragOver = (event: DragEvent) => {
-        console.log("drag over");
+        console.log("drag over", event);
 
-        // event.preventDefault(); // Prevent default to allow drop
+        event.preventDefault(); // Prevent default to allow drop
       };
 
       const handleDragLeave = (event: DragEvent) => {
-        console.log("drag leave");
+        console.log("drag leave", event);
+
+        event.preventDefault();
       };
 
       const handleDrop = (event: DragEvent) => {
         console.log("drop");
 
-        // event.preventDefault();
+        event.preventDefault();
         // if (event.dataTransfer && event.dataTransfer.files.length > 0) {
         //   handleFileDrop(event.dataTransfer.files); // Call the file drop handler
         //   openImportExportModal(); // Open the modal upon file drop
@@ -52,8 +52,6 @@ export default function BucketImportFileDropModal({
         component.removeEventListener("dragleave", handleDragLeave);
         component.removeEventListener("drop", handleDrop);
       };
-    } else {
-      console.log("no...");
     }
   }, [component]);
 
