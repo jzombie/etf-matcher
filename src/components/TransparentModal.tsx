@@ -12,12 +12,9 @@ const TransparentModalStyled = styled(Dialog)(() => ({
     height: "100vh",
     minWidth: "100vw",
     minHeight: "100vh",
-    // maxWidth: "100vw",
-    // maxHeight: "100vh",
-    // borderRadius: 0,
+    border: 0,
     backgroundColor: "transparent",
     backgroundImage: "none",
-    // boxShadow: "none"
   },
   "& .MuiBackdrop-root": {
     backgroundColor: "transparent",
