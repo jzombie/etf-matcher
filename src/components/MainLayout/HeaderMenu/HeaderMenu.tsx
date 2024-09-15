@@ -2,6 +2,7 @@ import React, { useMemo, useRef, useState } from "react";
 
 import {
   Assessment as AssessmentIcon,
+  ContactMail as ContactMailIcon,
   Home,
   ListAlt as ListAltIcon,
   Menu as MenuIcon,
@@ -87,6 +88,12 @@ export default function HeaderMenu() {
         label: "Settings",
         icon: <SettingsIcon fontSize="small" />,
         link: "/settings",
+      },
+      {
+        key: "/contact",
+        link: "/contact",
+        label: "Contact",
+        icon: <ContactMailIcon fontSize="small" />,
       },
     ],
     [totalPortfolioBuckets, totalWatchlistBuckets],

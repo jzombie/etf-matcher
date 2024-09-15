@@ -1,5 +1,6 @@
 import React from "react";
 
+import ContactUsPage from "@pages/ContactUs.page";
 import HomePage from "@pages/Home.page";
 import NotFoundPage from "@pages/NotFound.page";
 import PortfoliosPage from "@pages/Portfolios.page";
@@ -25,6 +26,10 @@ export const routes: RouteObject[] = [
       {
         path: "",
         element: <HomePage />,
+      },
+      {
+        path: "contact",
+        element: <ContactUsPage />,
       },
       {
         path: "search",
