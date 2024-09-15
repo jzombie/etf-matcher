@@ -36,18 +36,16 @@ export default function BucketImportFileDropModal({
             >
               <CloudUploadIcon style={{ fontSize: 60, color: "#666" }} />
 
-              {/* Typography for 'Drag & Drop Files Here' text */}
               <Typography
                 variant="h6"
                 color="textSecondary"
                 style={{ marginTop: 8 }}
               >
-                Drag & Drop Files Here
+                Drop CSV to Import Buckets
               </Typography>
 
-              {/* Secondary text */}
               <Typography variant="body2" color="textSecondary">
-                or click to browse files
+                This file should contain portfolios, watchlists, or both
               </Typography>
             </Box>
           </Center>
