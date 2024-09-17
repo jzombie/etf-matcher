@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  TextField,
   Typography,
 } from "@mui/material";
 
@@ -28,18 +29,23 @@ export default function BucketImportExportDialogModal({
 }: BucketImportExportDialogModalProps) {
   const { importFiles, exportFile } = useBucketImportExportContext();
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const [fileName, setFileName] = useState<string>(getDefaultFileName());
 
   const titleId = useId();
   const descriptionId = useId();
   const fileInputId = useId();
 
-  const handleExport = useCallback(() => {
-    // TODO: Enable filtered selection
-    const tickerBuckets = store.state.tickerBuckets;
+  // Helper function to get default filename based on current date & time
+  function getDefaultFileName(): string {
+    const now = new Date();
+    const timestamp = now.toISOString().slice(0, 19).replace(/:/g, "-"); // Format: YYYY-MM-DDTHH-MM-SS
+    return `export-${timestamp}.csv`;
+  }
 
-    // TODO: Dont' hardcode file name
-    exportFile(tickerBuckets, "proto-export.csv");
-  }, [exportFile]);
+  const handleExport = useCallback(() => {
+    const tickerBuckets = store.state.tickerBuckets;
+    exportFile(tickerBuckets, fileName || getDefaultFileName());
+  }, [exportFile, fileName]);
 
   const handleFileSelect = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,6 +74,15 @@ export default function BucketImportExportDialogModal({
           Choose a file to import or export your data.
         </DialogContentText>
 
+        {/* Filename input */}
+        <TextField
+          label="Filename"
+          value={fileName}
+          onChange={(e) => setFileName(e.target.value)}
+          fullWidth
+          sx={{ mb: 2 }}
+        />
+
         {/* Export Button */}
         <Button
           onClick={handleExport}
@@ -75,7 +90,7 @@ export default function BucketImportExportDialogModal({
           color="primary"
           sx={{ mb: 2 }}
         >
-          Export Data as CSV
+          Export Data
         </Button>
 
         {/* Custom File Upload Button */}
