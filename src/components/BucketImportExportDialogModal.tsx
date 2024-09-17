@@ -1,14 +1,16 @@
-import React, { useCallback, useId } from "react";
+import React, { useCallback, useId, useState } from "react";
 
 import {
+  Box,
   Button,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Input,
+  Typography,
 } from "@mui/material";
 
+import { FILE_IMPORT_ACCEPT_TYPES } from "@src/constants";
 import store from "@src/store";
 
 import DialogModal, { DialogModalProps } from "@components/DialogModal";
@@ -25,9 +27,11 @@ export default function BucketImportExportDialogModal({
   ...rest
 }: BucketImportExportDialogModalProps) {
   const { importFiles, exportFile } = useBucketImportExportContext();
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
 
   const titleId = useId();
   const descriptionId = useId();
+  const fileInputId = useId();
 
   const handleExport = useCallback(() => {
     // TODO: Enable filtered selection
@@ -40,6 +44,7 @@ export default function BucketImportExportDialogModal({
   const handleFileSelect = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const files = event.target.files;
+      setSelectedFiles(files);
       importFiles(files);
     },
     [importFiles],
@@ -55,15 +60,54 @@ export default function BucketImportExportDialogModal({
       <DialogTitle id={titleId}>Import/Export</DialogTitle>
       <DialogContent>
         <DialogContentText id={descriptionId}>
-          <Button onClick={handleExport}>Proto::export()</Button>
+          Choose a file to import or export your data.
         </DialogContentText>
 
-        {/* File input for selecting a file */}
-        <Input
+        {/* Export Button */}
+        <Button
+          onClick={handleExport}
+          variant="contained"
+          color="primary"
+          sx={{ mb: 2 }}
+        >
+          Export Data as CSV
+        </Button>
+
+        {/* Custom File Upload Button */}
+        <Box
+          sx={{
+            border: "2px dashed #ccc",
+            borderRadius: "4px",
+            padding: "16px",
+            textAlign: "center",
+            cursor: "pointer",
+            mb: 2,
+            "&:hover": {
+              backgroundColor: "rgba(255,255,255,.2)",
+            },
+          }}
+          onClick={
+            () =>
+              window.document
+                .getElementById(fileInputId)
+                ?.click() /* Trigger file input click */
+          }
+        >
+          <Typography variant="body2">
+            {selectedFiles
+              ? `${selectedFiles.length} file(s) selected`
+              : "Drag and drop files here or click to select"}
+          </Typography>
+        </Box>
+
+        {/* Hidden File Input */}
+        <input
+          id={fileInputId}
           type="file"
-          inputProps={{ accept: ".csv", multiple: true }} // Accept only .csv files
+          accept={FILE_IMPORT_ACCEPT_TYPES.join(", ")}
+          multiple
           onChange={handleFileSelect}
-          fullWidth
+          style={{ display: "none" }}
         />
       </DialogContent>
       <DialogActions>

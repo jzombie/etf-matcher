@@ -90,3 +90,5 @@ export const SIMILARITY_MATCHES_NOTICE = `
   techniques to help you find the most similar
   investments.
   `;
+
+export const FILE_IMPORT_ACCEPT_TYPES: string[] = [".csv"];
