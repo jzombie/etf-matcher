@@ -70,11 +70,13 @@ export default function BucketImportExportProvider({
                 customLogger.debug({ resp });
               })
               .catch((err) => {
-                triggerUIError(
-                  new Error(
-                    "Could not import an uploaded file. Perhaps the fields do not match the expected type?",
-                  ),
-                );
+                // The Rust worker service contains validation errors here, so
+                // propagating them directly to the UI
+                if (typeof err === "string") {
+                  err = new Error(err);
+                }
+
+                triggerUIError(err);
 
                 customLogger.error(err);
               });
