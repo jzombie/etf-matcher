@@ -91,4 +91,10 @@ export const SIMILARITY_MATCHES_NOTICE = `
   investments.
   `;
 
-export const FILE_IMPORT_ACCEPT_TYPES: string[] = [".csv"];
+interface FileAcceptType {
+  extensions: string[]; // List of file extensions
+  mimeTypes: string[]; // List of MIME types
+}
+
+export const FILE_IMPORT_ACCEPT_MAP: ReadonlyMap<string, FileAcceptType> =
+  new Map([["csv", { extensions: [".csv"], mimeTypes: ["text/csv"] }]]);

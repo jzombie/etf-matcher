@@ -1,4 +1,4 @@
-import React, { useCallback, useId, useState } from "react";
+import React, { useCallback, useId, useMemo, useState } from "react";
 
 import {
   Box,
@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 
-import { FILE_IMPORT_ACCEPT_TYPES } from "@src/constants";
+import { FILE_IMPORT_ACCEPT_MAP } from "@src/constants";
 import store from "@src/store";
 
 import DialogModal, { DialogModalProps } from "@components/DialogModal";
@@ -48,6 +48,11 @@ export default function BucketImportExportDialogModal({
       importFiles(files);
     },
     [importFiles],
+  );
+
+  const extensionTypes = useMemo(
+    () => FILE_IMPORT_ACCEPT_MAP.get("csv")?.mimeTypes.join(", "),
+    [],
   );
 
   return (
@@ -104,7 +109,7 @@ export default function BucketImportExportDialogModal({
         <input
           id={fileInputId}
           type="file"
-          accept={FILE_IMPORT_ACCEPT_TYPES.join(", ")}
+          accept={extensionTypes}
           multiple
           onChange={handleFileSelect}
           style={{ display: "none" }}
