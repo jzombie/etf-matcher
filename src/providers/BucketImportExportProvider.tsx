@@ -43,61 +43,64 @@ export default function BucketImportExportProvider({
     setImportExportModalOpen(false);
   }, []);
 
-  const importFiles = useCallback((fileList: FileList | null) => {
-    if (fileList) {
-      customLogger.debug("import files...");
+  const importFiles = useCallback(
+    (fileList: FileList | null) => {
+      if (fileList) {
+        customLogger.debug("import files...");
 
-      // Iterate through the files in the FileList
-      Array.from(fileList).forEach((file) => {
-        const reader = new FileReader();
+        // Iterate through the files in the FileList
+        Array.from(fileList).forEach((file) => {
+          const reader = new FileReader();
 
-        // TODO: Prevent reading of large files, etc. Handle errors accordingly
+          // TODO: Prevent reading of large files, etc. Handle errors accordingly
 
-        // Log file metadata (name, size, type)
-        customLogger.debug(`File Name: ${file.name}`);
-        customLogger.debug(`File Size: ${file.size} bytes`);
-        customLogger.debug(`File Type: ${file.type}`);
-        customLogger.debug(
-          `Last Modified: ${new Date(file.lastModified).toLocaleString()}`,
-        );
-
-        // Set up the FileReader to read the file as text
-        reader.onload = (event) => {
-          if (event.target && event.target.result) {
-            csvToTickerBuckets(event.target.result as string)
-              .then((resp) => {
-                // TODO: Handle
-                customLogger.debug({ resp });
-              })
-              .catch((err) => {
-                // The Rust worker service contains validation errors here, so
-                // propagating them directly to the UI
-                if (typeof err === "string") {
-                  err = new Error(err);
-                }
-
-                triggerUIError(err);
-
-                customLogger.error(err);
-              });
-          }
-        };
-
-        // Handle any error during file reading
-        reader.onerror = (event) => {
-          customLogger.error(
-            `Error reading file ${file.name}:`,
-            event.target?.error,
+          // Log file metadata (name, size, type)
+          customLogger.debug(`File Name: ${file.name}`);
+          customLogger.debug(`File Size: ${file.size} bytes`);
+          customLogger.debug(`File Type: ${file.type}`);
+          customLogger.debug(
+            `Last Modified: ${new Date(file.lastModified).toLocaleString()}`,
           );
-        };
 
-        // Read the file as text (for CSV, text, etc.)
-        reader.readAsText(file);
-      });
-    } else {
-      customLogger.error("No files selected.");
-    }
-  }, []);
+          // Set up the FileReader to read the file as text
+          reader.onload = (event) => {
+            if (event.target && event.target.result) {
+              csvToTickerBuckets(event.target.result as string)
+                .then((resp) => {
+                  // TODO: Handle
+                  customLogger.debug({ resp });
+                })
+                .catch((err) => {
+                  // The Rust worker service contains validation errors here, so
+                  // propagating them directly to the UI
+                  if (typeof err === "string") {
+                    err = new Error(err);
+                  }
+
+                  triggerUIError(err);
+
+                  customLogger.error(err);
+                });
+            }
+          };
+
+          // Handle any error during file reading
+          reader.onerror = (event) => {
+            customLogger.error(
+              `Error reading file ${file.name}:`,
+              event.target?.error,
+            );
+          };
+
+          // Read the file as text (for CSV, text, etc.)
+          reader.readAsText(file);
+        });
+      } else {
+        customLogger.error("No files selected.");
+      }
+    },
+    [triggerUIError],
+  );
 
   const exportFile = useCallback(
     (tickerBuckets: TickerBucket[], filename: string) => {
