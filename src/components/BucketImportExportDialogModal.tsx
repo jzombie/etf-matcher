@@ -43,7 +43,11 @@ export default function BucketImportExportDialogModal({
   }
 
   const handleExport = useCallback(() => {
-    const tickerBuckets = store.state.tickerBuckets;
+    // Only export user-configurable buckets
+    const tickerBuckets = store.state.tickerBuckets.filter(
+      (tickerBucket) => tickerBucket.isUserConfigurable,
+    );
+
     exportFile(tickerBuckets, fileName || getDefaultFileName());
   }, [exportFile, fileName]);
 
