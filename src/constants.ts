@@ -98,3 +98,5 @@ interface FileAcceptType {
 
 export const FILE_IMPORT_ACCEPT_MAP: ReadonlyMap<string, FileAcceptType> =
   new Map([["csv", { extensions: [".csv"], mimeTypes: ["text/csv"] }]]);
+
+export const TICKER_BUCKET_TEMP_UUID_MASK = "[PLACEHOLDER-UUID]";

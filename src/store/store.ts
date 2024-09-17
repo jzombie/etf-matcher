@@ -3,7 +3,9 @@ import {
   INDEXED_DB_PERSISTENCE_KEYS,
   MAX_RECENTLY_VIEWED_ITEMS,
   MIN_TICKER_BUCKET_NAME_LENGTH,
+  TICKER_BUCKET_TEMP_UUID_MASK,
 } from "@src/constants";
+import { v4 as uuidv4 } from "uuid";
 
 import IndexedDBInterface from "@utils/IndexedDBInterface";
 import MQTTRoom from "@utils/MQTTRoom";
@@ -44,12 +46,12 @@ export type TickerBucketTicker = {
 };
 
 export type TickerBucket = {
+  uuid: string;
   name: string;
   tickers: TickerBucketTicker[];
   type: "watchlist" | "portfolio" | "ticker_tape" | "recently_viewed";
   description: string;
   isUserConfigurable: boolean;
-  // TODO: Add `uuid` field
   // TODO: Track bucket last update time
 };
 
@@ -127,6 +129,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       isSearchModalOpen: false,
       tickerBuckets: [
         {
+          uuid: TICKER_BUCKET_TEMP_UUID_MASK,
           name: "My Portfolio",
           tickers: [],
           type: "portfolio",
@@ -134,6 +137,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           isUserConfigurable: true,
         },
         {
+          uuid: TICKER_BUCKET_TEMP_UUID_MASK,
           name: "My Watchlist",
           tickers: [],
           type: "watchlist",
@@ -141,6 +145,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           isUserConfigurable: true,
         },
         {
+          uuid: TICKER_BUCKET_TEMP_UUID_MASK,
           name: "My Ticker Tape",
           tickers: [],
           type: "ticker_tape",
@@ -148,6 +153,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           isUserConfigurable: true,
         },
         {
+          uuid: TICKER_BUCKET_TEMP_UUID_MASK,
           name: "My Recently Viewed",
           tickers: [],
           type: "recently_viewed",
@@ -165,6 +171,17 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       subscribedMQTTRoomNames: [],
       uiErrors: [],
     });
+
+    // Replace `uuid` masks with actual uuids (these will be overridden yet
+    // again if pulling from any persistent state (i.e. IndexedDB, MQTT, etc.))
+    (() => {
+      this.setState((prev) => ({
+        tickerBuckets: prev.tickerBuckets.map((tickerBucket) => ({
+          ...tickerBucket,
+          uuid: uuidv4(),
+        })),
+      }));
+    })();
 
     // Only deepfreeze in development
     this.shouldDeepfreeze = !IS_PROD;
@@ -427,6 +444,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   get isFreshSession() {
+    // TODO: Use `TICKER_BUCKET_TEMP_UUID_MASK` detection instead
+
     const recentlyViewedBucket =
       this.getFirstTickerBucketOfType("recently_viewed");
 
@@ -522,8 +541,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     description,
     isUserConfigurable,
     tickers = [],
-  }: TickerBucket) {
+  }: Omit<TickerBucket, "uuid">) {
     const nextBucket: TickerBucket = {
+      uuid: uuidv4(),
       name,
       tickers,
       type,
