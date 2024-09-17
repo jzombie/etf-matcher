@@ -1,4 +1,4 @@
-import React, { useCallback, useId, useState } from "react";
+import React, { useCallback, useId } from "react";
 
 import {
   Button,
@@ -15,9 +15,6 @@ import DialogModal, { DialogModalProps } from "@components/DialogModal";
 
 import useBucketImportExportContext from "@hooks/useBucketImportExportContext";
 
-import { tickerBucketsToCSV } from "@utils/callRustService";
-import customLogger from "@utils/customLogger";
-
 export type BucketImportExportDialogModalProps = Omit<
   DialogModalProps,
   "children"
@@ -29,7 +26,6 @@ export default function BucketImportExportDialogModal({
 }: BucketImportExportDialogModalProps) {
   const { importFiles, exportFile } = useBucketImportExportContext();
 
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const titleId = useId();
   const descriptionId = useId();
 
@@ -41,7 +37,6 @@ export default function BucketImportExportDialogModal({
     exportFile(tickerBuckets, "proto-export.csv");
   }, [exportFile]);
 
-  // TODO: Refactor
   const handleFileSelect = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const files = event.target.files;
@@ -49,19 +44,6 @@ export default function BucketImportExportDialogModal({
     },
     [importFiles],
   );
-
-  // TODO: Remove
-  const handleFileUpload = useCallback(() => {
-    if (selectedFile) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const content = e.target?.result;
-        customLogger.debug("File content:", content);
-        // Process the file content here...
-      };
-      reader.readAsText(selectedFile);
-    }
-  }, [selectedFile]);
 
   return (
     <DialogModal
@@ -83,22 +65,10 @@ export default function BucketImportExportDialogModal({
           onChange={handleFileSelect}
           fullWidth
         />
-
-        {/* Show the selected file name */}
-        {selectedFile && <p>Selected File: {selectedFile.name}</p>}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="error" variant="contained">
           Close
-        </Button>
-        {/* Button to trigger file upload processing */}
-        <Button
-          onClick={handleFileUpload}
-          variant="contained"
-          color="primary"
-          disabled={!selectedFile}
-        >
-          Upload File
         </Button>
       </DialogActions>
     </DialogModal>
