@@ -40,9 +40,43 @@ export default function BucketImportExportProvider({
   }, []);
 
   const importFiles = useCallback((fileList: FileList | null) => {
-    // TODO: Handle
-    customLogger.debug("import files...");
-    customLogger.debug(fileList);
+    if (fileList) {
+      customLogger.debug("import files...");
+
+      // Iterate through the files in the FileList
+      Array.from(fileList).forEach((file) => {
+        const reader = new FileReader();
+
+        // Log file metadata (name, size, type)
+        customLogger.debug(`File Name: ${file.name}`);
+        customLogger.debug(`File Size: ${file.size} bytes`);
+        customLogger.debug(`File Type: ${file.type}`);
+        customLogger.debug(
+          `Last Modified: ${new Date(file.lastModified).toLocaleString()}`,
+        );
+
+        // Set up the FileReader to read the file as text
+        reader.onload = (event) => {
+          if (event.target && event.target.result) {
+            customLogger.debug(`File content of ${file.name}:`);
+            customLogger.log(event.target.result); // Log the file content to the console
+          }
+        };
+
+        // Handle any error during file reading
+        reader.onerror = (event) => {
+          customLogger.error(
+            `Error reading file ${file.name}:`,
+            event.target?.error,
+          );
+        };
+
+        // Read the file as text (for CSV, text, etc.)
+        reader.readAsText(file);
+      });
+    } else {
+      customLogger.error("No files selected.");
+    }
   }, []);
 
   const exportFile = useCallback(
