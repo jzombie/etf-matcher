@@ -27,20 +27,16 @@ export default function BucketImportExportDialogModal({
   onClose,
   ...rest
 }: BucketImportExportDialogModalProps) {
-  const { importFiles, exportFile } = useBucketImportExportContext();
-  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
-  const [fileName, setFileName] = useState<string>(getDefaultFileName());
-
-  const titleId = useId();
-  const descriptionId = useId();
-  const fileInputId = useId();
-
   // Helper function to get default filename based on current date & time
-  function getDefaultFileName(): string {
+  const getDefaultFileName = useCallback(() => {
     const now = new Date();
     const timestamp = now.toISOString().slice(0, 19).replace(/:/g, "-"); // Format: YYYY-MM-DDTHH-MM-SS
     return `export-${timestamp}.csv`;
-  }
+  }, []);
+
+  const { importFiles, exportFile } = useBucketImportExportContext();
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const [fileName, setFileName] = useState<string>(getDefaultFileName());
 
   const handleExport = useCallback(() => {
     // Only export user-configurable buckets
@@ -49,7 +45,7 @@ export default function BucketImportExportDialogModal({
     );
 
     exportFile(tickerBuckets, fileName || getDefaultFileName());
-  }, [exportFile, fileName]);
+  }, [exportFile, fileName, getDefaultFileName]);
 
   const handleFileSelect = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,6 +60,10 @@ export default function BucketImportExportDialogModal({
     () => FILE_IMPORT_ACCEPT_MAP.get("csv")?.mimeTypes.join(", "),
     [],
   );
+
+  const titleId = useId();
+  const descriptionId = useId();
+  const fileInputId = useId();
 
   return (
     <DialogModal
