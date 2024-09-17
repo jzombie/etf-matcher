@@ -1,7 +1,9 @@
 use crate::types::TickerId;
 use csv::{Reader, Writer};
 use serde::{Deserialize, Serialize};
-use std::error::Error;
+use std::collections::HashMap;
+use std::error::Error as StdError;
+use std::io::{self, ErrorKind}; // Import std::io::Error and ErrorKind // Import std::error::Error trait
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -62,13 +64,26 @@ impl TickerBucket {
             .expect("Failed to convert CSV data to UTF-8")
     }
 
-    pub fn csv_to_ticker_buckets(csv_data: &str) -> Result<Vec<TickerBucket>, Box<dyn Error>> {
+    pub fn csv_to_ticker_buckets(csv_data: &str) -> Result<Vec<TickerBucket>, Box<dyn StdError>> {
         let mut rdr = Reader::from_reader(csv_data.as_bytes());
-        let mut buckets_map: std::collections::HashMap<String, TickerBucket> =
-            std::collections::HashMap::new();
+        let mut buckets_map: HashMap<String, TickerBucket> = HashMap::new();
+
+        let expected_fields = 8;
 
         for result in rdr.records() {
             let record = result?;
+
+            // Ensure the record has the expected number of fields (8 in this case)
+            if record.len() != expected_fields {
+                return Err(Box::new(io::Error::new(
+                    ErrorKind::InvalidData,
+                    format!(
+                        "Expected {} fields but found {}",
+                        expected_fields,
+                        record.len()
+                    ),
+                )));
+            }
 
             let name = record[0].to_string();
             let bucket_type = record[1].to_string();

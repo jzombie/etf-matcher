@@ -5,6 +5,8 @@ import type { TickerBucket } from "@src/store";
 import BucketImportExportDialogModal from "@components/BucketImportExportDialogModal";
 import BucketImportFileDropModal from "@components/BucketImportFileDropModal";
 
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
+
 import { csvToTickerBuckets, tickerBucketsToCSV } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
@@ -28,6 +30,8 @@ export type BucketImportExportProviderProps = {
 export default function BucketImportExportProvider({
   children,
 }: BucketImportExportProviderProps) {
+  const { triggerUIError } = useAppErrorBoundary();
+
   const [isImportExportModalOpen, setImportExportModalOpen] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -60,15 +64,20 @@ export default function BucketImportExportProvider({
         // Set up the FileReader to read the file as text
         reader.onload = (event) => {
           if (event.target && event.target.result) {
-            // customLogger.debug(`File content of ${file.name}:`);
-            // customLogger.log(event.target.result); // Log the file content to the console
-
-            // TODO: Handle
             csvToTickerBuckets(event.target.result as string)
               .then((resp) => {
+                // TODO: Handle
                 customLogger.debug({ resp });
               })
-              .catch((err) => customLogger.error(err));
+              .catch((err) => {
+                triggerUIError(
+                  new Error(
+                    "Could not import an uploaded file. Perhaps the fields do not match the expected type?",
+                  ),
+                );
+
+                customLogger.error(err);
+              });
           }
         };
 
