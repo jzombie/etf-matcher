@@ -112,6 +112,9 @@ export default function BucketImportExportProvider({
         } catch (err) {
           customLogger.error(`Failed to process file: ${file.name}`, err);
 
+          // FIXME: These errors may contain validation errors from the Rust service
+          // and are currently echoing up verbatim to the UI, which isn't typical
+          // of other implementations of this.
           if (err instanceof Error) {
             triggerUIError(err);
           } else {
