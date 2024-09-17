@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useState } from "react";
+import React, { createContext, useCallback, useEffect, useState } from "react";
 
 import type { TickerBucket } from "@src/store";
 
@@ -17,6 +17,7 @@ type BucketImportExportContextType = {
   closeImportExportModal: () => void;
   importFiles: (fileList: FileList | null) => void;
   exportFile: (tickerBuckets: TickerBucket[], filename: string) => void;
+  isProcessingImport: boolean;
 };
 
 export const BucketImportExportContext = createContext<
@@ -34,6 +35,7 @@ export default function BucketImportExportProvider({
 
   const [isImportExportModalOpen, setImportExportModalOpen] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [isProcessingImport, setIsProcessingImport] = useState(false);
 
   const openImportExportModal = useCallback(() => {
     setImportExportModalOpen(true);
@@ -44,17 +46,26 @@ export default function BucketImportExportProvider({
   }, []);
 
   const importFiles = useCallback(
-    (fileList: FileList | null) => {
-      if (fileList) {
-        customLogger.debug("import files...");
+    async (fileList: FileList | null) => {
+      if (!fileList) {
+        const errMessage = "No files selected";
+        customLogger.error(errMessage);
+        triggerUIError(new Error(errMessage));
+        return;
+      }
 
-        // Iterate through the files in the FileList
-        Array.from(fileList).forEach((file) => {
+      customLogger.debug("import files...");
+      customLogger.debug(`${fileList.length} total files`);
+
+      // A 2-dimensional array of ticker buckets
+      const fileResults: TickerBucket[][] = [];
+
+      // Helper function to process a file and return a promise
+      const processFile = (file: File) => {
+        return new Promise<TickerBucket[]>((resolve, reject) => {
           const reader = new FileReader();
 
-          // TODO: Prevent reading of large files, etc. Handle errors accordingly
-
-          // Log file metadata (name, size, type)
+          // Log file metadata
           customLogger.debug(`File Name: ${file.name}`);
           customLogger.debug(`File Size: ${file.size} bytes`);
           customLogger.debug(`File Type: ${file.type}`);
@@ -67,20 +78,18 @@ export default function BucketImportExportProvider({
             if (event.target && event.target.result) {
               csvToTickerBuckets(event.target.result as string)
                 .then((resp) => {
-                  // TODO: Handle
-                  customLogger.debug({ resp });
+                  resolve(resp); // Resolve with the result of csvToTickerBuckets
                 })
                 .catch((err) => {
-                  // The Rust worker service contains validation errors here, so
-                  // propagating them directly to the UI
                   if (typeof err === "string") {
                     err = new Error(err);
                   }
-
                   triggerUIError(err);
-
                   customLogger.error(err);
+                  reject(err); // Reject the promise if there was an error
                 });
+            } else {
+              reject(new Error("Error reading file"));
             }
           };
 
@@ -90,14 +99,33 @@ export default function BucketImportExportProvider({
               `Error reading file ${file.name}:`,
               event.target?.error,
             );
+            reject(event.target?.error || new Error("Error reading file"));
           };
 
           // Read the file as text (for CSV, text, etc.)
           reader.readAsText(file);
         });
-      } else {
-        customLogger.error("No files selected.");
+      };
+
+      setIsProcessingImport(true);
+
+      // Process files one by one and await the results
+      for (const file of Array.from(fileList)) {
+        try {
+          const result = await processFile(file);
+          fileResults.push(result); // Store each result
+        } catch (error) {
+          customLogger.error(`Failed to process file: ${file.name}`, error);
+        }
       }
+
+      setIsProcessingImport(false);
+
+      // After all files are processed
+      customLogger.debug("All files processed:", fileResults);
+
+      // Return the file results as an array
+      return fileResults;
     },
     [triggerUIError],
   );
@@ -136,6 +164,11 @@ export default function BucketImportExportProvider({
     [importFiles],
   );
 
+  // TODO: Remove
+  useEffect(() => {
+    customLogger.debug({ isProcessingImport });
+  }, [isProcessingImport]);
+
   return (
     <BucketImportExportContext.Provider
       value={{
@@ -143,6 +176,7 @@ export default function BucketImportExportProvider({
         closeImportExportModal,
         importFiles,
         exportFile,
+        isProcessingImport,
       }}
     >
       <FileDragDropProvider
