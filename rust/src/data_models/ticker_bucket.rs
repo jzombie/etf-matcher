@@ -3,7 +3,7 @@ use csv::{Reader, Writer};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::error::Error as StdError;
-use std::io::{self, ErrorKind}; // Import std::io::Error and ErrorKind // Import std::error::Error trait
+use std::io::{self, ErrorKind};
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -68,35 +68,66 @@ impl TickerBucket {
         let mut rdr = Reader::from_reader(csv_data.as_bytes());
         let mut buckets_map: HashMap<String, TickerBucket> = HashMap::new();
 
-        let expected_fields = 8;
-
         for result in rdr.records() {
             let record = result?;
 
-            // Ensure the record has the expected number of fields (8 in this case)
-            if record.len() != expected_fields {
-                return Err(Box::new(io::Error::new(
-                    ErrorKind::InvalidData,
-                    format!(
-                        "Expected {} fields but found {}",
-                        expected_fields,
-                        record.len()
-                    ),
-                )));
-            }
+            // Dynamically retrieve each field and return error if missing
+            let name = record
+                .get(0)
+                .ok_or_else(|| {
+                    io::Error::new(ErrorKind::InvalidData, "Missing 'Name' field in CSV")
+                })?
+                .to_string();
 
-            let name = record[0].to_string();
-            let bucket_type = record[1].to_string();
-            let description = record[2].to_string();
-            let is_user_configurable: bool = record[3].parse()?;
-            let ticker_id: TickerId = record[4].parse()?; // Assuming TickerId implements FromStr or similar
-            let symbol = record[5].to_string();
-            let exchange_short_name = if record[6].is_empty() {
-                None
-            } else {
-                Some(record[6].to_string())
-            };
-            let quantity: f32 = record[7].parse()?;
+            let bucket_type = record
+                .get(1)
+                .ok_or_else(|| {
+                    io::Error::new(ErrorKind::InvalidData, "Missing 'Type' field in CSV")
+                })?
+                .to_string();
+
+            let description = record
+                .get(2)
+                .ok_or_else(|| {
+                    io::Error::new(ErrorKind::InvalidData, "Missing 'Description' field in CSV")
+                })?
+                .to_string();
+
+            let is_user_configurable: bool = record
+                .get(3)
+                .ok_or_else(|| {
+                    io::Error::new(
+                        ErrorKind::InvalidData,
+                        "Missing 'Configurable' field in CSV",
+                    )
+                })?
+                .parse()?;
+
+            let ticker_id: TickerId = record
+                .get(4)
+                .ok_or_else(|| {
+                    io::Error::new(ErrorKind::InvalidData, "Missing 'TickerId' field in CSV")
+                })?
+                .parse()?; // Assuming TickerId implements FromStr or similar
+
+            let symbol = record
+                .get(5)
+                .ok_or_else(|| {
+                    io::Error::new(ErrorKind::InvalidData, "Missing 'Symbol' field in CSV")
+                })?
+                .to_string();
+
+            let exchange_short_name = record
+                .get(6)
+                .map(|s| s.to_string())
+                .filter(|s| !s.is_empty());
+
+            let quantity: f32 = record
+                .get(7)
+                .ok_or_else(|| {
+                    io::Error::new(ErrorKind::InvalidData, "Missing 'Quantity' field in CSV")
+                })?
+                .parse()?;
 
             let ticker = TickerBucketTicker {
                 ticker_id,
