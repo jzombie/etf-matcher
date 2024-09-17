@@ -81,11 +81,6 @@ export default function BucketImportExportProvider({
                   resolve(resp); // Resolve with the result of csvToTickerBuckets
                 })
                 .catch((err) => {
-                  if (typeof err === "string") {
-                    err = new Error(err);
-                  }
-                  triggerUIError(err);
-                  customLogger.error(err);
                   reject(err); // Reject the promise if there was an error
                 });
             } else {
@@ -114,8 +109,14 @@ export default function BucketImportExportProvider({
         try {
           const result = await processFile(file);
           fileResults.push(result); // Store each result
-        } catch (error) {
-          customLogger.error(`Failed to process file: ${file.name}`, error);
+        } catch (err) {
+          customLogger.error(`Failed to process file: ${file.name}`, err);
+
+          if (err instanceof Error) {
+            triggerUIError(err);
+          } else {
+            triggerUIError(new Error(err as string));
+          }
         }
       }
 
