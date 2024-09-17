@@ -125,11 +125,13 @@ self.onmessage = async (event) => {
         [PostMessageStructKey.MessageId]: messageId,
       });
     })
-    .catch((error) => {
+    .catch((error: Error | string | unknown) => {
+      const errorMessage = error instanceof Error ? error.message : error;
+
       self.postMessage({
         [PostMessageStructKey.EnvelopeType]: EnvelopeType.Function,
         [PostMessageStructKey.Success]: false,
-        [PostMessageStructKey.Error]: error.message,
+        [PostMessageStructKey.Error]: errorMessage,
         [PostMessageStructKey.MessageId]: messageId,
       });
     });
