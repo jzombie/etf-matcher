@@ -351,6 +351,22 @@ pub async fn ticker_buckets_to_csv(json_ticker_buckets: JsValue) -> Result<JsVal
     Ok(JsValue::from_str(&csv_data))
 }
 
+// TODO: Finish implementing
+#[wasm_bindgen]
+pub async fn csv_to_ticker_buckets(csv_data: &str) -> Result<JsValue, JsValue> {
+    // Call the existing Rust function that parses CSV into TickerBucket
+    match TickerBucket::csv_to_ticker_buckets(csv_data) {
+        Ok(ticker_buckets) => {
+            // Serialize the TickerBucket data into JsValue for use in JavaScript
+            to_value(&ticker_buckets).map_err(|err| JsValue::from_str(&err.to_string()))
+        }
+        Err(err) => {
+            // Return the error as a JsValue
+            Err(JsValue::from_str(&err.to_string()))
+        }
+    }
+}
+
 #[wasm_bindgen]
 pub fn get_cache_size() -> usize {
     lib_get_cache_size()

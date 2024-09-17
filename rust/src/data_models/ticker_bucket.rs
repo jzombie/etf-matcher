@@ -1,6 +1,7 @@
 use crate::types::TickerId;
-use csv::Writer;
+use csv::{Reader, Writer};
 use serde::{Deserialize, Serialize};
+use std::error::Error;
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -59,5 +60,49 @@ impl TickerBucket {
         // Convert the written data to a string and return it
         String::from_utf8(wtr.into_inner().expect("Failed to extract CSV data"))
             .expect("Failed to convert CSV data to UTF-8")
+    }
+
+    pub fn csv_to_ticker_buckets(csv_data: &str) -> Result<Vec<TickerBucket>, Box<dyn Error>> {
+        let mut rdr = Reader::from_reader(csv_data.as_bytes());
+        let mut buckets_map: std::collections::HashMap<String, TickerBucket> =
+            std::collections::HashMap::new();
+
+        for result in rdr.records() {
+            let record = result?;
+
+            let name = record[0].to_string();
+            let bucket_type = record[1].to_string();
+            let description = record[2].to_string();
+            let is_user_configurable: bool = record[3].parse()?;
+            let ticker_id: TickerId = record[4].parse()?; // Assuming TickerId implements FromStr or similar
+            let symbol = record[5].to_string();
+            let exchange_short_name = if record[6].is_empty() {
+                None
+            } else {
+                Some(record[6].to_string())
+            };
+            let quantity: f32 = record[7].parse()?;
+
+            let ticker = TickerBucketTicker {
+                ticker_id,
+                symbol,
+                exchange_short_name,
+                quantity,
+            };
+
+            // Group tickers by their bucket
+            let bucket = buckets_map.entry(name.clone()).or_insert(TickerBucket {
+                name,
+                bucket_type,
+                description,
+                is_user_configurable,
+                tickers: Vec::new(),
+            });
+
+            bucket.tickers.push(ticker);
+        }
+
+        // Collect the buckets into a vector
+        Ok(buckets_map.into_values().collect())
     }
 }

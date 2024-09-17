@@ -5,7 +5,7 @@ import type { TickerBucket } from "@src/store";
 import BucketImportExportDialogModal from "@components/BucketImportExportDialogModal";
 import BucketImportFileDropModal from "@components/BucketImportFileDropModal";
 
-import { tickerBucketsToCSV } from "@utils/callRustService";
+import { csvToTickerBuckets, tickerBucketsToCSV } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
 import FileDragDropProvider from "./FileDragDropProvider";
@@ -47,6 +47,8 @@ export default function BucketImportExportProvider({
       Array.from(fileList).forEach((file) => {
         const reader = new FileReader();
 
+        // TODO: Prevent reading of large files, etc. Handle errors accordingly
+
         // Log file metadata (name, size, type)
         customLogger.debug(`File Name: ${file.name}`);
         customLogger.debug(`File Size: ${file.size} bytes`);
@@ -58,8 +60,15 @@ export default function BucketImportExportProvider({
         // Set up the FileReader to read the file as text
         reader.onload = (event) => {
           if (event.target && event.target.result) {
-            customLogger.debug(`File content of ${file.name}:`);
-            customLogger.log(event.target.result); // Log the file content to the console
+            // customLogger.debug(`File content of ${file.name}:`);
+            // customLogger.log(event.target.result); // Log the file content to the console
+
+            // TODO: Handle
+            csvToTickerBuckets(event.target.result as string)
+              .then((resp) => {
+                customLogger.debug({ resp });
+              })
+              .catch((err) => customLogger.error(err));
           }
         };
 
