@@ -10,7 +10,6 @@ export async function tickerBucketsToCSV(
   return callRustService<string>("ticker_buckets_to_csv", [jsonTickerBuckets]);
 }
 
-export async function csvToTickerBuckets(csv: string) {
-  // TODO: Handle proper return type
-  return callRustService("csv_to_ticker_buckets", [csv]);
+export async function csvToTickerBuckets(csv: string): Promise<TickerBucket[]> {
+  return callRustService<TickerBucket[]>("csv_to_ticker_buckets", [csv]);
 }
