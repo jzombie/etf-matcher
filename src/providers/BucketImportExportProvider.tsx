@@ -10,6 +10,7 @@ import FileDragDropProvider from "./FileDragDropProvider";
 type BucketImportExportContextType = {
   openImportExportModal: () => void;
   closeImportExportModal: () => void;
+  importFiles: (fileList: FileList | null) => void;
 };
 
 export const BucketImportExportContext = createContext<
@@ -34,33 +35,29 @@ export default function BucketImportExportProvider({
     setImportExportModalOpen(false);
   }, []);
 
-  const handleDrop = useCallback((evt: DragEvent) => {
-    evt.preventDefault(); // Prevent default browser behavior (e.g., opening the file)
-
-    const { files } = evt.dataTransfer as DataTransfer;
-
-    // TODO: Unify file handling to work consistently with drag and manual file selection
-    if (files && files.length > 0) {
-      // Iterate through the files and log their metadata
-      Array.from(files).forEach((file) => {
-        customLogger.debug("-----");
-        customLogger.debug("File Name:", file.name);
-        customLogger.debug("File Size:", file.size);
-        customLogger.debug("File Type:", file.type);
-        customLogger.debug("Last Modified:", file.lastModified);
-      });
-    } else {
-      customLogger.warn("No files detected in the drop event");
-    }
+  const importFiles = useCallback((fileList: FileList | null) => {
+    // TODO: Handle
+    customLogger.debug("import files...");
+    customLogger.debug(fileList);
   }, []);
 
+  const handleDrop = useCallback(
+    (evt: DragEvent) => {
+      evt.preventDefault();
+
+      const files = (evt.dataTransfer as DataTransfer).files;
+      importFiles(files);
+    },
+    [importFiles],
+  );
+
   return (
-    <FileDragDropProvider
-      onDragOverStateChange={setIsDragOver}
-      onDrop={handleDrop}
+    <BucketImportExportContext.Provider
+      value={{ openImportExportModal, closeImportExportModal, importFiles }}
     >
-      <BucketImportExportContext.Provider
-        value={{ openImportExportModal, closeImportExportModal }}
+      <FileDragDropProvider
+        onDragOverStateChange={setIsDragOver}
+        onDrop={handleDrop}
       >
         {children}
 
@@ -70,7 +67,7 @@ export default function BucketImportExportProvider({
         />
 
         <BucketImportFileDropModal open={isDragOver} />
-      </BucketImportExportContext.Provider>
-    </FileDragDropProvider>
+      </FileDragDropProvider>
+    </BucketImportExportContext.Provider>
   );
 }

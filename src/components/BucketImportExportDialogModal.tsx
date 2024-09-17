@@ -13,6 +13,8 @@ import store from "@src/store";
 
 import DialogModal, { DialogModalProps } from "@components/DialogModal";
 
+import useBucketImportExportContext from "@hooks/useBucketImportExportContext";
+
 import { tickerBucketsToCSV } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
@@ -25,6 +27,8 @@ export default function BucketImportExportDialogModal({
   onClose,
   ...rest
 }: BucketImportExportDialogModalProps) {
+  const { importFiles } = useBucketImportExportContext();
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const titleId = useId();
   const descriptionId = useId();
@@ -55,13 +59,14 @@ export default function BucketImportExportDialogModal({
     });
   }, []);
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length > 0) {
-      const file = event.target.files[0];
-      setSelectedFile(file);
-      customLogger.debug("Selected file:", file.name);
-    }
-  };
+  // TODO: Refactor
+  const handleFileSelect = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const files = event.target.files;
+      importFiles(files);
+    },
+    [importFiles],
+  );
 
   const handleFileUpload = useCallback(() => {
     if (selectedFile) {
@@ -91,7 +96,7 @@ export default function BucketImportExportDialogModal({
         {/* File input for selecting a file */}
         <Input
           type="file"
-          inputProps={{ accept: ".csv" }} // Accept only .csv files
+          inputProps={{ accept: ".csv", multiple: true }} // Accept only .csv files
           onChange={handleFileSelect}
           fullWidth
         />
