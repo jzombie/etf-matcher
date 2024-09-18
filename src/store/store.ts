@@ -671,6 +671,12 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       );
   }
 
+  getUserConfigurableTickerBuckets() {
+    return this.state.tickerBuckets.filter(({ isUserConfigurable }) =>
+      Boolean(isUserConfigurable),
+    );
+  }
+
   getTickerBucketsOfType(
     tickerBucketType: TickerBucket["type"],
   ): TickerBucket[] {

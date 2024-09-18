@@ -16,7 +16,7 @@ type BucketImportExportContextType = {
   openImportExportModal: () => void;
   closeImportExportModal: () => void;
   importFiles: (fileList: FileList | null) => void;
-  exportFile: (tickerBuckets: TickerBucket[], filename: string) => void;
+  exportFile: (filename: string, tickerBuckets: TickerBucket[]) => void;
   isProcessingImport: boolean;
 };
 
@@ -135,7 +135,7 @@ export default function BucketImportExportProvider({
   );
 
   const exportFile = useCallback(
-    (tickerBuckets: TickerBucket[], filename: string) => {
+    (filename: string, tickerBuckets: TickerBucket[]) => {
       tickerBucketsToCSV(tickerBuckets).then((resp: string) => {
         customLogger.debug(resp);
 
