@@ -568,8 +568,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.map((bucket) =>
-        // TODO: Match on UUID instead
-        bucket.name === prevBucket.name && bucket.type === prevBucket.type
+        bucket.uuid === prevBucket.uuid
           ? { ...bucket, ...updatedBucket }
           : bucket,
       );
@@ -583,14 +582,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   deleteTickerBucket(tickerBucket: TickerBucket) {
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.filter(
-        (cachedBucket) =>
-          !(
-            // TODO: Match on UUID instead
-            (
-              cachedBucket.name === tickerBucket.name &&
-              cachedBucket.type === tickerBucket.type
-            )
-          ),
+        (cachedBucket) => cachedBucket.uuid !== tickerBucket.uuid,
       );
       return { tickerBuckets };
     });
@@ -610,8 +602,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.map((bucket) => {
-        // TODO: Match on UUID instead
-        if (bucket.name === tickerBucket.name) {
+        if (bucket.uuid === tickerBucket.uuid) {
           return {
             ...bucket,
             tickers: Array.from(
@@ -639,8 +630,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   removeTickerFromBucket(tickerId: number, tickerBucket: TickerBucket) {
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.map((bucket) => {
-        // TODO: Match on UUID instead
-        if (bucket.name === tickerBucket.name) {
+        if (bucket.uuid === tickerBucket.uuid) {
           return {
             ...bucket,
             tickers: bucket.tickers.filter(
