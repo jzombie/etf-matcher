@@ -1,6 +1,7 @@
 import React, { useCallback, useId, useMemo, useState } from "react";
 
 import {
+  Alert,
   Box,
   Button,
   DialogActions,
@@ -71,66 +72,72 @@ export default function BucketImportExportDialogModal({
       aria-describedby={descriptionId}
     >
       <DialogTitle id={titleId}>Import/Export</DialogTitle>
+      <Alert severity="warning">
+        This feature is currently being worked on and is not fully wired up.
+      </Alert>
+
       <DialogContent>
-        <DialogContentText id={descriptionId}>
+        <DialogContentText id={descriptionId} gutterBottom>
           Choose a file to import or export your data.
         </DialogContentText>
 
-        {/* Filename input */}
-        <TextField
-          label="Filename"
-          value={fileName}
-          onChange={(e) => setFileName(e.target.value)}
-          fullWidth
-          sx={{ mb: 2 }}
-        />
+        <Box mt={1}>
+          {/* Filename input */}
+          <TextField
+            label="Filename"
+            value={fileName}
+            onChange={(e) => setFileName(e.target.value)}
+            fullWidth
+            sx={{ mb: 2 }}
+          />
 
-        {/* Export Button */}
-        <Button
-          onClick={handleExport}
-          variant="contained"
-          color="primary"
-          sx={{ mb: 2 }}
-        >
-          Export Data
-        </Button>
+          {/* Export Button */}
+          <Button
+            onClick={handleExport}
+            variant="contained"
+            color="primary"
+            sx={{ mb: 2 }}
+          >
+            Export Data
+          </Button>
 
-        {/* Custom File Upload Button */}
-        <Box
-          sx={{
-            border: "2px dashed #ccc",
-            borderRadius: "4px",
-            padding: "16px",
-            textAlign: "center",
-            cursor: "pointer",
-            mb: 2,
-            "&:hover": {
-              backgroundColor: "rgba(255,255,255,.2)",
-            },
-          }}
-          onClick={
-            () =>
-              window.document
-                .getElementById(fileInputId)
-                ?.click() /* Trigger file input click */
-          }
-        >
-          <Typography variant="body2">
-            {selectedFiles
-              ? `${selectedFiles.length} file(s) selected`
-              : "Drag and drop files here or click to select"}
-          </Typography>
+          {/* Custom File Upload Button */}
+          <Box
+            sx={{
+              border: "2px dashed #ccc",
+              borderRadius: "4px",
+              padding: "16px",
+              textAlign: "center",
+              cursor: "pointer",
+              mb: 2,
+              "&:hover": {
+                backgroundColor: "rgba(255,255,255,.2)",
+              },
+            }}
+            onClick={
+              () =>
+                window.document
+                  .getElementById(fileInputId)
+                  ?.click() /* Trigger file input click */
+            }
+          >
+            <Typography variant="body2">
+              {selectedFiles
+                ? `${selectedFiles.length} file(s) selected`
+                : "Drag and drop files here or click to select"}
+            </Typography>
+          </Box>
+
+          {/* Hidden File Input */}
+          <input
+            id={fileInputId}
+            type="file"
+            accept={extensionTypes}
+            multiple
+            onChange={handleFileSelect}
+            style={{ display: "none" }}
+          />
         </Box>
-
-        {/* Hidden File Input */}
-        <input
-          id={fileInputId}
-          type="file"
-          accept={extensionTypes}
-          multiple
-          onChange={handleFileSelect}
-          style={{ display: "none" }}
-        />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="error" variant="contained">
