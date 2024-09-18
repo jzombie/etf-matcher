@@ -18,6 +18,7 @@ type BucketImportExportContextType = {
   importFiles: (fileList: FileList | null) => void;
   exportFile: (filename: string, tickerBuckets: TickerBucket[]) => void;
   isProcessingImport: boolean;
+  mergeableSets: TickerBucket[][] | null;
 };
 
 export const BucketImportExportContext = createContext<
@@ -37,12 +38,27 @@ export default function BucketImportExportProvider({
   const [isDragOver, setIsDragOver] = useState(false);
   const [isProcessingImport, setIsProcessingImport] = useState(false);
 
+  // TODO: Rename to `pendingImports` or `loadedImports` or equiv.
+  const [mergeableSets, setMergeableSets] = useState<TickerBucket[][] | null>(
+    null,
+  );
+
+  // Open `import/export` modal if there are mergeable sets
+  useEffect(() => {
+    if (mergeableSets) {
+      setImportExportModalOpen(true);
+    }
+  }, [mergeableSets]);
+
   const openImportExportModal = useCallback(() => {
     setImportExportModalOpen(true);
   }, []);
 
   const closeImportExportModal = useCallback(() => {
     setImportExportModalOpen(false);
+
+    // Clear out mergeable sets
+    setMergeableSets(null);
   }, []);
 
   const importFiles = useCallback(
@@ -128,6 +144,8 @@ export default function BucketImportExportProvider({
       // After all files are processed
       customLogger.debug("All files processed:", fileResults);
 
+      setMergeableSets(fileResults);
+
       // Return the file results as an array
       return fileResults;
     },
@@ -181,6 +199,7 @@ export default function BucketImportExportProvider({
         importFiles,
         exportFile,
         isProcessingImport,
+        mergeableSets,
       }}
     >
       <FileDragDropProvider

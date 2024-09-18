@@ -35,7 +35,8 @@ export default function BucketImportExportDialogModal({
     return `export-${timestamp}.csv`;
   }, []);
 
-  const { importFiles, exportFile } = useBucketImportExportContext();
+  const { importFiles, exportFile, mergeableSets } =
+    useBucketImportExportContext();
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [fileName, setFileName] = useState<string>(getDefaultFileName());
 
@@ -76,69 +77,74 @@ export default function BucketImportExportDialogModal({
         This feature is currently being worked on and is not fully wired up.
       </Alert>
 
-      <DialogContent>
-        <DialogContentText id={descriptionId} gutterBottom>
-          Choose a file to import or export your data.
-        </DialogContentText>
+      {!mergeableSets ? (
+        <DialogContent>
+          <DialogContentText id={descriptionId} gutterBottom>
+            Choose a file to import or export your data.
+          </DialogContentText>
 
-        <Box mt={1}>
-          {/* Filename input */}
-          <TextField
-            label="Filename"
-            value={fileName}
-            onChange={(e) => setFileName(e.target.value)}
-            fullWidth
-            sx={{ mb: 2 }}
-          />
+          <Box mt={1}>
+            {/* Filename input */}
+            <TextField
+              label="Filename"
+              value={fileName}
+              onChange={(e) => setFileName(e.target.value)}
+              fullWidth
+              sx={{ mb: 2 }}
+            />
 
-          {/* Export Button */}
-          <Button
-            onClick={handleExport}
-            variant="contained"
-            color="primary"
-            sx={{ mb: 2 }}
-          >
-            Export Data
-          </Button>
+            {/* Export Button */}
+            <Button
+              onClick={handleExport}
+              variant="contained"
+              color="primary"
+              sx={{ mb: 2 }}
+            >
+              Export Data
+            </Button>
 
-          {/* Custom File Upload Button */}
-          <Box
-            sx={{
-              border: "2px dashed #ccc",
-              borderRadius: "4px",
-              padding: "16px",
-              textAlign: "center",
-              cursor: "pointer",
-              mb: 2,
-              "&:hover": {
-                backgroundColor: "rgba(255,255,255,.2)",
-              },
-            }}
-            onClick={
-              () =>
-                window.document
-                  .getElementById(fileInputId)
-                  ?.click() /* Trigger file input click */
-            }
-          >
-            <Typography variant="body2">
-              {selectedFiles
-                ? `${selectedFiles.length} file(s) selected`
-                : "Drag and drop files here or click to select"}
-            </Typography>
+            {/* Custom File Upload Button */}
+            <Box
+              sx={{
+                border: "2px dashed #ccc",
+                borderRadius: "4px",
+                padding: "16px",
+                textAlign: "center",
+                cursor: "pointer",
+                mb: 2,
+                "&:hover": {
+                  backgroundColor: "rgba(255,255,255,.2)",
+                },
+              }}
+              onClick={
+                () =>
+                  window.document
+                    .getElementById(fileInputId)
+                    ?.click() /* Trigger file input click */
+              }
+            >
+              <Typography variant="body2">
+                {selectedFiles
+                  ? `${selectedFiles.length} file(s) selected`
+                  : "Drag and drop files here or click to select"}
+              </Typography>
+            </Box>
+
+            {/* Hidden File Input */}
+            <input
+              id={fileInputId}
+              type="file"
+              accept={extensionTypes}
+              multiple
+              onChange={handleFileSelect}
+              style={{ display: "none" }}
+            />
           </Box>
+        </DialogContent>
+      ) : (
+        <Alert severity="warning">TODO: Handle mergeable sets</Alert>
+      )}
 
-          {/* Hidden File Input */}
-          <input
-            id={fileInputId}
-            type="file"
-            accept={extensionTypes}
-            multiple
-            onChange={handleFileSelect}
-            style={{ display: "none" }}
-          />
-        </Box>
-      </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="error" variant="contained">
           Close
