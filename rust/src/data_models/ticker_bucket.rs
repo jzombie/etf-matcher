@@ -8,6 +8,7 @@ use std::io::{self, ErrorKind};
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct TickerBucket {
+    pub uuid: String,
     pub name: String,
     pub tickers: Vec<TickerBucketTicker>,
     #[serde(rename = "type")]
@@ -25,20 +26,31 @@ pub struct TickerBucketTicker {
     pub quantity: f32,
 }
 
+const CSV_HEADER_BUCKET_UUID: &str = "bucket_uuid";
+const CSV_HEADER_BUCKET_NAME: &str = "bucket_name";
+const CSV_HEADER_BUCKET_TYPE: &str = "bucket_type";
+const CSV_HEADER_BUCKET_DESCRIPTION: &str = "bucket_description";
+const CSV_HEADER_BUCKET_CONFIGURABLE: &str = "bucket_configurable";
+const CSV_HEADER_TICKER_ID: &str = "ticker_id";
+const CSV_HEADER_TICKER_SYMBOL: &str = "ticker_symbol";
+const CSV_HEADER_TICKER_EXCHANGE: &str = "ticker_exchange";
+const CSV_HEADER_TICKER_QUANTITY: &str = "ticker_quantity";
+
 impl TickerBucket {
     pub fn ticker_buckets_to_csv(buckets: Vec<TickerBucket>) -> String {
         let mut wtr = Writer::from_writer(vec![]);
 
         // Write the header row
         wtr.write_record(&[
-            "Name",
-            "Type",
-            "Description",
-            "Configurable",
-            "TickerId",
-            "Symbol",
-            "Exchange",
-            "Quantity",
+            CSV_HEADER_BUCKET_UUID,
+            CSV_HEADER_BUCKET_NAME,
+            CSV_HEADER_BUCKET_TYPE,
+            CSV_HEADER_BUCKET_DESCRIPTION,
+            CSV_HEADER_BUCKET_CONFIGURABLE,
+            CSV_HEADER_TICKER_ID,
+            CSV_HEADER_TICKER_SYMBOL,
+            CSV_HEADER_TICKER_EXCHANGE,
+            CSV_HEADER_TICKER_QUANTITY,
         ])
         .expect("Failed to write header");
 
@@ -46,6 +58,7 @@ impl TickerBucket {
         for bucket in buckets {
             for ticker in &bucket.tickers {
                 wtr.write_record(&[
+                    &bucket.uuid,
                     &bucket.name,
                     &bucket.bucket_type,
                     &bucket.description,
@@ -71,61 +84,89 @@ impl TickerBucket {
         for result in rdr.records() {
             let record = result?;
 
-            // Dynamically retrieve each field and return error if missing
-            let name = record
+            // Use constants to reference the fields
+            let uuid = record
                 .get(0)
                 .ok_or_else(|| {
-                    io::Error::new(ErrorKind::InvalidData, "Missing 'Name' field in CSV")
+                    io::Error::new(
+                        ErrorKind::InvalidData,
+                        format!("Missing field: {}", CSV_HEADER_BUCKET_UUID),
+                    )
+                })?
+                .to_string();
+
+            let name = record
+                .get(1)
+                .ok_or_else(|| {
+                    io::Error::new(
+                        ErrorKind::InvalidData,
+                        format!("Missing field: {}", CSV_HEADER_BUCKET_NAME),
+                    )
                 })?
                 .to_string();
 
             let bucket_type = record
-                .get(1)
+                .get(2)
                 .ok_or_else(|| {
-                    io::Error::new(ErrorKind::InvalidData, "Missing 'Type' field in CSV")
+                    io::Error::new(
+                        ErrorKind::InvalidData,
+                        format!("Missing field: {}", CSV_HEADER_BUCKET_TYPE),
+                    )
                 })?
                 .to_string();
 
             let description = record
-                .get(2)
-                .ok_or_else(|| {
-                    io::Error::new(ErrorKind::InvalidData, "Missing 'Description' field in CSV")
-                })?
-                .to_string();
-
-            let is_user_configurable: bool = record
                 .get(3)
                 .ok_or_else(|| {
                     io::Error::new(
                         ErrorKind::InvalidData,
-                        "Missing 'Configurable' field in CSV",
+                        format!("Missing field: {}", CSV_HEADER_BUCKET_DESCRIPTION),
+                    )
+                })?
+                .to_string();
+
+            let is_user_configurable: bool = record
+                .get(4)
+                .ok_or_else(|| {
+                    io::Error::new(
+                        ErrorKind::InvalidData,
+                        format!("Missing field: {}", CSV_HEADER_BUCKET_CONFIGURABLE),
                     )
                 })?
                 .parse()?;
 
             let ticker_id: TickerId = record
-                .get(4)
-                .ok_or_else(|| {
-                    io::Error::new(ErrorKind::InvalidData, "Missing 'TickerId' field in CSV")
-                })?
-                .parse()?; // Assuming TickerId implements FromStr or similar
-
-            let symbol = record
                 .get(5)
                 .ok_or_else(|| {
-                    io::Error::new(ErrorKind::InvalidData, "Missing 'Symbol' field in CSV")
+                    io::Error::new(
+                        ErrorKind::InvalidData,
+                        format!("Missing field: {}", CSV_HEADER_TICKER_ID),
+                    )
+                })?
+                .parse()?;
+
+            let symbol = record
+                .get(6)
+                .ok_or_else(|| {
+                    io::Error::new(
+                        ErrorKind::InvalidData,
+                        format!("Missing field: {}", CSV_HEADER_TICKER_SYMBOL),
+                    )
                 })?
                 .to_string();
 
             let exchange_short_name = record
-                .get(6)
+                .get(7)
                 .map(|s| s.to_string())
                 .filter(|s| !s.is_empty());
 
             let quantity: f32 = record
-                .get(7)
+                .get(8)
                 .ok_or_else(|| {
-                    io::Error::new(ErrorKind::InvalidData, "Missing 'Quantity' field in CSV")
+                    io::Error::new(
+                        ErrorKind::InvalidData,
+                        format!("Missing field: {}", CSV_HEADER_TICKER_QUANTITY),
+                    )
                 })?
                 .parse()?;
 
@@ -138,6 +179,7 @@ impl TickerBucket {
 
             // Group tickers by their bucket
             let bucket = buckets_map.entry(name.clone()).or_insert(TickerBucket {
+                uuid,
                 name,
                 bucket_type,
                 description,
