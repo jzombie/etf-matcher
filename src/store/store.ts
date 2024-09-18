@@ -3,7 +3,6 @@ import {
   INDEXED_DB_PERSISTENCE_KEYS,
   MAX_RECENTLY_VIEWED_ITEMS,
   MIN_TICKER_BUCKET_NAME_LENGTH,
-  TICKER_BUCKET_TEMP_UUID_MASK,
 } from "@src/constants";
 import { v4 as uuidv4 } from "uuid";
 
@@ -129,7 +128,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       isSearchModalOpen: false,
       tickerBuckets: [
         {
-          uuid: TICKER_BUCKET_TEMP_UUID_MASK,
+          uuid: uuidv4(),
           name: "My Portfolio",
           tickers: [],
           type: "portfolio",
@@ -137,7 +136,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           isUserConfigurable: true,
         },
         {
-          uuid: TICKER_BUCKET_TEMP_UUID_MASK,
+          uuid: uuidv4(),
           name: "My Watchlist",
           tickers: [],
           type: "watchlist",
@@ -145,7 +144,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           isUserConfigurable: true,
         },
         {
-          uuid: TICKER_BUCKET_TEMP_UUID_MASK,
+          uuid: uuidv4(),
           name: "My Ticker Tape",
           tickers: [],
           type: "ticker_tape",
@@ -153,7 +152,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           isUserConfigurable: true,
         },
         {
-          uuid: TICKER_BUCKET_TEMP_UUID_MASK,
+          uuid: uuidv4(),
           name: "My Recently Viewed",
           tickers: [],
           type: "recently_viewed",
@@ -444,7 +443,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   get isFreshSession() {
-    // TODO: Use `TICKER_BUCKET_TEMP_UUID_MASK` detection instead
+    // TODO: Update detection method
 
     const recentlyViewedBucket =
       this.getFirstTickerBucketOfType("recently_viewed");
