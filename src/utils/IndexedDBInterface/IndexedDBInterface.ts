@@ -1,7 +1,8 @@
+import Dexie, { Table } from "dexie";
 import { EventEmitter } from "events";
-import { DBSchema, IDBPDatabase, openDB } from "idb";
 
-interface MyDB extends DBSchema {
+// Define the database schema
+export interface MyDBSchema {
   keyval: {
     key: string;
     value: unknown;
@@ -16,64 +17,62 @@ export interface UpdateEvent<T> {
 
 export const UPDATE_EVENT = "update";
 
+// Create a Dexie database class
 export default class IndexedDBInterface<
   T extends Record<string, unknown>,
 > extends EventEmitter {
   private _databaseName: string;
-  private _dbPromise: Promise<IDBPDatabase<MyDB>>;
+  private _db: Dexie & {
+    keyval: Table<{ key: string; value: T[keyof T] }, string>;
+  };
 
-  constructor(databaseName: string = "my-database") {
+  constructor(databaseName: string = "my-database2") {
     super();
-
     this._databaseName = databaseName;
 
-    this._dbPromise = openDB<MyDB>(databaseName, 1, {
-      upgrade(db) {
-        db.createObjectStore("keyval");
-      },
+    // Initialize Dexie and define the schema
+    this._db = new Dexie(databaseName) as Dexie & {
+      keyval: Table<{ key: string; value: T[keyof T] }, string>;
+    };
+
+    this._db.version(1).stores({
+      keyval: "key", // 'key' is the primary key
     });
   }
 
-  public async ready(): Promise<IDBPDatabase<MyDB>> {
-    return this._dbPromise;
-  }
-
-  private async getDB(): Promise<IDBPDatabase<MyDB>> {
-    return this._dbPromise;
+  // Ensure that the database is ready (Dexie is always ready after initialization)
+  public async ready(): Promise<Dexie> {
+    return this._db;
   }
 
   async setItem<K extends keyof T>(key: K, value: T[K]): Promise<void> {
-    const db = await this.getDB();
-    await db.put("keyval", value, key as string);
+    await this._db.keyval.put({ key: key as string, value });
     this.emit(UPDATE_EVENT, { type: "setItem", key, value } as UpdateEvent<T>);
   }
 
   async getItem<K extends keyof T>(key: K): Promise<T[K] | undefined> {
-    const db = await this.getDB();
-    return (await db.get("keyval", key as string)) as T[K];
+    const entry = await this._db.keyval.get(key as string);
+    return entry ? (entry.value as T[K]) : undefined;
   }
 
   async removeItem<K extends keyof T>(key: K): Promise<void> {
-    const db = await this.getDB();
-    await db.delete("keyval", key as string);
+    await this._db.keyval.delete(key as string);
     this.emit(UPDATE_EVENT, { type: "removeItem", key } as UpdateEvent<T>);
   }
 
   async clear(): Promise<void> {
-    const db = await this.getDB();
-    await db.clear("keyval");
+    await this._db.keyval.clear();
     this.emit(UPDATE_EVENT, { type: "clear" } as UpdateEvent<T>);
   }
 
   async getAllKeys<K extends keyof T>(): Promise<K[]> {
-    const db = await this.getDB();
-    const keys = await db.getAllKeys("keyval");
+    const keys = await this._db.keyval.toCollection().keys();
     return keys as K[];
   }
 
   async getAllValues<K extends keyof T>(): Promise<Array<T[K]>> {
-    const db = await this.getDB();
-    const values = await db.getAll("keyval");
-    return values as Array<T[K]>;
+    const values = await this._db.keyval.toArray();
+    // TODO: Use proper types instead of `unknown` if possible
+    return values.map((item: { value: unknown }) => item.value) as Array<T[K]>;
   }
 }

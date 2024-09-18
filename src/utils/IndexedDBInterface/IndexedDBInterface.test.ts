@@ -1,15 +1,5 @@
-import {
-  IDBCursor,
-  IDBDatabase,
-  IDBFactory,
-  IDBIndex,
-  IDBKeyRange,
-  IDBObjectStore,
-  IDBOpenDBRequest,
-  IDBRequest,
-  IDBTransaction,
-  IDBVersionChangeEvent,
-} from "fake-indexeddb";
+import Dexie from "dexie";
+// Import fake-indexeddb
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import IndexedDBInterface, {
@@ -23,19 +13,12 @@ type TestSchema = Record<string, string>;
 describe("IndexedDBInterface", () => {
   let dbInterface: IndexedDBInterface<TestSchema>;
 
-  // Set up the fake IndexedDB
   beforeEach(() => {
+    // Assign the fake-indexeddb to the global scope
     global.indexedDB = new IDBFactory();
     global.IDBKeyRange = IDBKeyRange;
-    global.IDBDatabase = IDBDatabase;
-    global.IDBTransaction = IDBTransaction;
-    global.IDBRequest = IDBRequest;
-    global.IDBCursor = IDBCursor;
-    global.IDBIndex = IDBIndex;
-    global.IDBObjectStore = IDBObjectStore;
-    global.IDBOpenDBRequest = IDBOpenDBRequest;
-    global.IDBVersionChangeEvent = IDBVersionChangeEvent;
 
+    // Initialize the Dexie-based interface
     dbInterface = new IndexedDBInterface<TestSchema>("test-database");
   });
 
