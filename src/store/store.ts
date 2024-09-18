@@ -12,6 +12,7 @@ import {
   ReactStateEmitter,
   StateEmitterDefaultEvents,
 } from "@utils/StateEmitter";
+import arraysEqual from "@utils/arraysEqual";
 import type { RustServiceCacheDetail } from "@utils/callRustService";
 import {
   NotifierEvent,
@@ -170,17 +171,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       subscribedMQTTRoomNames: [],
       uiErrors: [],
     });
-
-    // Replace `uuid` masks with actual uuids (these will be overridden yet
-    // again if pulling from any persistent state (i.e. IndexedDB, MQTT, etc.))
-    (() => {
-      this.setState((prev) => ({
-        tickerBuckets: prev.tickerBuckets.map((tickerBucket) => ({
-          ...tickerBucket,
-          uuid: uuidv4(),
-        })),
-      }));
-    })();
 
     // Only deepfreeze in development
     this.shouldDeepfreeze = !IS_PROD;
@@ -443,22 +433,15 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   get isFreshSession() {
-    // TODO: Update detection method
+    const initialTickerBucketUUIDs = this.initialState.tickerBuckets.map(
+      ({ uuid }) => uuid,
+    );
 
-    const recentlyViewedBucket =
-      this.getFirstTickerBucketOfType("recently_viewed");
+    const currentTickerBucketUUIDs = this.state.tickerBuckets.map(
+      ({ uuid }) => uuid,
+    );
 
-    if (!recentlyViewedBucket) {
-      // Somehow the user deleted this bucket, so assume not a fresh session
-      return false;
-    }
-
-    if (!recentlyViewedBucket.tickers.length) {
-      // Has not viewed any tickers
-      return true;
-    }
-
-    return false;
+    return arraysEqual(initialTickerBucketUUIDs, currentTickerBucketUUIDs);
   }
 
   /**
@@ -751,9 +734,15 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     clearPromises.push(this.clearCache());
 
     Promise.all(clearPromises).finally(() => {
+      // IMPORTANT: `dispose` should be called *before* `reset` or the fresh
+      // store state will be synced to IndexedDB, and break `isFreshSession`
+      // determination making it always think the session is an existing
+      // session.
+      this.dispose();
+
       super.reset();
 
-      // This prevents an issue where the UI might be in a non-recoverable state after resetting the store
+      // Finally, refresh the page, as we're now in a non-recoverable state
       window.location.reload();
     });
   }
