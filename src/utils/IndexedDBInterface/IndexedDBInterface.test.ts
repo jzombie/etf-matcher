@@ -1,5 +1,3 @@
-import Dexie from "dexie";
-// Import fake-indexeddb
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import IndexedDBInterface, {
