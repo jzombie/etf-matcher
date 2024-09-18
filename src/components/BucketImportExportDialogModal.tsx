@@ -8,6 +8,8 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  MenuItem,
+  Select,
   TextField,
   Typography,
 } from "@mui/material";
@@ -18,6 +20,8 @@ import store from "@src/store";
 import DialogModal, { DialogModalProps } from "@components/DialogModal";
 
 import useBucketImportExportContext from "@hooks/useBucketImportExportContext";
+
+import customLogger from "@utils/customLogger";
 
 export type BucketImportExportDialogModalProps = Omit<
   DialogModalProps,
@@ -39,7 +43,9 @@ export default function BucketImportExportDialogModal({
     useBucketImportExportContext();
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [fileName, setFileName] = useState<string>(getDefaultFileName());
+  const [selectedSetId, setSelectedSetId] = useState<string | null>(null); // Track the selected set
 
+  // Handle export
   const handleExport = useCallback(() => {
     const userConfigurableTickerBuckets =
       store.getUserConfigurableTickerBuckets();
@@ -47,6 +53,7 @@ export default function BucketImportExportDialogModal({
     exportFile(fileName || getDefaultFileName(), userConfigurableTickerBuckets);
   }, [exportFile, fileName, getDefaultFileName]);
 
+  // Handle file selection for import
   const handleFileSelect = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const files = event.target.files;
@@ -56,6 +63,43 @@ export default function BucketImportExportDialogModal({
     [importFiles],
   );
 
+  // Handle merging the selected set
+  const handleMerge = useCallback(() => {
+    if (selectedSetId && mergeableSets) {
+      const selectedSet = mergeableSets.find((set) => set.id === selectedSetId);
+      if (selectedSet) {
+        // Logic to merge the selected set with userConfigurableTickerBuckets
+        const currentBuckets = store.getUserConfigurableTickerBuckets();
+        const mergedBuckets = [...currentBuckets, ...selectedSet.buckets];
+
+        // TODO: Handle
+        // store.updateUserConfigurableTickerBuckets(mergedBuckets);
+        customLogger.log({
+          mergedBuckets,
+        });
+      }
+    }
+  }, [selectedSetId, mergeableSets]);
+
+  // Handle overwriting with the selected set
+  const handleOverwrite = useCallback(() => {
+    if (selectedSetId && mergeableSets) {
+      const selectedSet = mergeableSets.find((set) => set.id === selectedSetId);
+      if (selectedSet) {
+        // Logic to overwrite the current userConfigurableTickerBuckets
+
+        // TODO: Handle
+        // store.updateUserConfigurableTickerBuckets(selectedSet.buckets);
+        // console.log("Overwritten data successfully");
+
+        // TODO: Remove
+        customLogger.log({
+          selectedSet,
+        });
+      }
+    }
+  }, [selectedSetId, mergeableSets]);
+
   const extensionTypes = useMemo(
     () => FILE_IMPORT_ACCEPT_MAP.get("csv")?.mimeTypes.join(", "),
     [],
@@ -64,6 +108,8 @@ export default function BucketImportExportDialogModal({
   const titleId = useId();
   const descriptionId = useId();
   const fileInputId = useId();
+
+  console.log({ mergeableSets });
 
   return (
     <DialogModal
@@ -77,6 +123,7 @@ export default function BucketImportExportDialogModal({
         This feature is currently being worked on and is not fully wired up.
       </Alert>
 
+      {/* If there are no mergeable sets, show import/export options */}
       {!mergeableSets ? (
         <DialogContent>
           <DialogContentText id={descriptionId} gutterBottom>
@@ -142,7 +189,51 @@ export default function BucketImportExportDialogModal({
           </Box>
         </DialogContent>
       ) : (
-        <Alert severity="warning">TODO: Handle mergeable sets</Alert>
+        <>
+          {/* If mergeable sets are available, allow merging or overwriting */}
+          <DialogContent>
+            <Typography variant="h6" gutterBottom>
+              Select a Set to Merge or Overwrite
+            </Typography>
+            <Select
+              fullWidth
+              value={selectedSetId || ""}
+              onChange={(e) => setSelectedSetId(e.target.value as string)}
+              displayEmpty
+            >
+              <MenuItem value="" disabled>
+                Select a set
+              </MenuItem>
+              {mergeableSets.map((set) => (
+                <MenuItem key={set.id} value={set.id}>
+                  Set ID: {set.id} ({set.buckets.length} Ticker Buckets)
+                </MenuItem>
+              ))}
+            </Select>
+
+            <Box mt={2} display="flex" justifyContent="space-between">
+              {/* Merge Button */}
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleMerge}
+                disabled={!selectedSetId}
+              >
+                Merge Selected Set
+              </Button>
+
+              {/* Overwrite Button */}
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleOverwrite}
+                disabled={!selectedSetId}
+              >
+                Overwrite with Selected Set
+              </Button>
+            </Box>
+          </DialogContent>
+        </>
       )}
 
       <DialogActions>
