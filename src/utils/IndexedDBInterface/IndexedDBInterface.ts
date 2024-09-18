@@ -72,15 +72,13 @@ export default class IndexedDBInterface<
 
     await db.clear("keyval");
 
-    await Promise.race([
-      // FIXME: This seems to incorrectly identify itself as a promise, yet never
-      // resolves. It may actually just be a synchronous method.
-      //
-      // See this comment: https://github.com/jakearchibald/idb/issues/309#issuecomment-2329777429
-      deleteDB(db.name),
-
-      new Promise((resolve) => setTimeout(resolve, 1000)),
-    ]);
+    // FIXME: This seems to incorrectly identify itself as a promise, yet never
+    // resolves. It may actually just be a synchronous method.
+    //
+    // I think this may justify replacing with `localForage`
+    //
+    // See this comment: https://github.com/jakearchibald/idb/issues/309#issuecomment-2329777429
+    deleteDB(db.name);
 
     this.emit(UPDATE_EVENT, { type: "delete" } as UpdateEvent<T>);
   }
