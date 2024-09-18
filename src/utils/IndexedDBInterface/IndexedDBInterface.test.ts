@@ -52,10 +52,10 @@ describe("IndexedDBInterface", () => {
     expect(value).toBeUndefined();
   });
 
-  it("should clear all items", async () => {
+  it("should delete the database", async () => {
     await dbInterface.setItem("testKey1", "testValue1");
     await dbInterface.setItem("testKey2", "testValue2");
-    await dbInterface.clear();
+    await dbInterface.delete();
     const keys = await dbInterface.getAllKeys();
     expect(keys.length).toBe(0);
   });
@@ -98,12 +98,12 @@ describe("IndexedDBInterface", () => {
     } as UpdateEvent<TestSchema>);
   });
 
-  it("should emit update event on clear", async () => {
+  it("should emit update event on delete", async () => {
     const spy = vi.fn();
     dbInterface.on(UPDATE_EVENT, spy);
-    await dbInterface.clear();
+    await dbInterface.delete();
     expect(spy).toHaveBeenCalledWith({
-      type: "clear",
+      type: "delete",
     } as UpdateEvent<TestSchema>);
   });
 });

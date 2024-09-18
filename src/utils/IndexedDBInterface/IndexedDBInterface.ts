@@ -1,5 +1,7 @@
 import { EventEmitter } from "events";
-import { DBSchema, IDBPDatabase, openDB } from "idb";
+import { DBSchema, IDBPDatabase, deleteDB, openDB } from "idb";
+
+// TODO: Replace with `localForage`?
 
 interface MyDB extends DBSchema {
   keyval: {
@@ -9,7 +11,7 @@ interface MyDB extends DBSchema {
 }
 
 export interface UpdateEvent<T> {
-  type: "setItem" | "removeItem" | "clear";
+  type: "setItem" | "removeItem" | "delete";
   key?: keyof T;
   value?: T[keyof T];
 }
@@ -19,13 +21,10 @@ export const UPDATE_EVENT = "update";
 export default class IndexedDBInterface<
   T extends Record<string, unknown>,
 > extends EventEmitter {
-  private _databaseName: string;
   private _dbPromise: Promise<IDBPDatabase<MyDB>>;
 
   constructor(databaseName: string = "my-database") {
     super();
-
-    this._databaseName = databaseName;
 
     this._dbPromise = openDB<MyDB>(databaseName, 1, {
       upgrade(db) {
@@ -59,10 +58,31 @@ export default class IndexedDBInterface<
     this.emit(UPDATE_EVENT, { type: "removeItem", key } as UpdateEvent<T>);
   }
 
-  async clear(): Promise<void> {
+  clear() {
+    throw new Error("`clear` is not implemnted here. Call `delete` instead.");
+  }
+
+  // FIXME: There has been some inconsistent handling between the tests and the
+  // actual handling in Chrome.
+  //
+  // Calling `clear` seems to not clear the values in Chrome, so a combination
+  // of `clear` and `delete` is currently used as a workaround.
+  async delete(): Promise<void> {
     const db = await this.getDB();
+
     await db.clear("keyval");
-    this.emit(UPDATE_EVENT, { type: "clear" } as UpdateEvent<T>);
+
+    await Promise.race([
+      // FIXME: This seems to incorrectly identify itself as a promise, yet never
+      // resolves. It may actually just be a synchronous method.
+      //
+      // See this comment: https://github.com/jakearchibald/idb/issues/309#issuecomment-2329777429
+      deleteDB(db.name),
+
+      new Promise((resolve) => setTimeout(resolve, 1000)),
+    ]);
+
+    this.emit(UPDATE_EVENT, { type: "delete" } as UpdateEvent<T>);
   }
 
   async getAllKeys<K extends keyof T>(): Promise<K[]> {
