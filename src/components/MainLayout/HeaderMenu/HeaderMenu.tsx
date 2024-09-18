@@ -93,7 +93,7 @@ export default function HeaderMenu() {
         label: "Import/Export",
         icon: <ImportExportIcon fontSize="small" />, // You can replace this with <ImportExportIcon fontSize="small" /> if preferred
         onClick: () => {
-          // FIXME: The `setTimeout` is used to allow the initial location key to change *before*
+          // FIXME: This `setTimeout` is used to allow the initial location key to change *before*
           // opening the modal, and prevents it from auto-closing immediately upon opening.
           // This could be improved.
           setTimeout(openImportExportModal);
