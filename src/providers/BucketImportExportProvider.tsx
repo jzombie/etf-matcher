@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
 
 import type { TickerBucket } from "@src/store";
+import { v4 as uuidv4 } from "uuid";
 
 import BucketImportExportDialogModal from "@components/BucketImportExportDialogModal";
 import BucketImportFileDropModal from "@components/BucketImportFileDropModal";
@@ -12,13 +13,18 @@ import customLogger from "@utils/customLogger";
 
 import FileDragDropProvider from "./FileDragDropProvider";
 
+type TickerBucketSet = {
+  id: string;
+  buckets: TickerBucket[];
+};
+
 type BucketImportExportContextType = {
   openImportExportModal: () => void;
   closeImportExportModal: () => void;
   importFiles: (fileList: FileList | null) => void;
   exportFile: (filename: string, tickerBuckets: TickerBucket[]) => void;
   isProcessingImport: boolean;
-  mergeableSets: TickerBucket[][] | null;
+  mergeableSets: TickerBucketSet[] | null;
 };
 
 export const BucketImportExportContext = createContext<
@@ -38,8 +44,7 @@ export default function BucketImportExportProvider({
   const [isDragOver, setIsDragOver] = useState(false);
   const [isProcessingImport, setIsProcessingImport] = useState(false);
 
-  // TODO: Rename to `pendingImports` or `loadedImports` or equiv.
-  const [mergeableSets, setMergeableSets] = useState<TickerBucket[][] | null>(
+  const [mergeableSets, setMergeableSets] = useState<TickerBucketSet[] | null>(
     null,
   );
 
@@ -73,8 +78,8 @@ export default function BucketImportExportProvider({
       customLogger.debug("import files...");
       customLogger.debug(`${fileList.length} total files`);
 
-      // A 2-dimensional array of ticker buckets
-      const fileResults: TickerBucket[][] = [];
+      // An array to store the processed file results with unique IDs
+      const fileResults: TickerBucketSet[] = [];
 
       // Helper function to process a file and return a promise
       const processFile = (file: File) => {
@@ -124,7 +129,11 @@ export default function BucketImportExportProvider({
       for (const file of Array.from(fileList)) {
         try {
           const result = await processFile(file);
-          fileResults.push(result); // Store each result
+          // Add an id to each result and push it into the fileResults array
+          fileResults.push({
+            id: uuidv4(), // Generate a unique ID for each imported set
+            buckets: result, // Store the result as the set of ticker buckets
+          });
         } catch (err) {
           customLogger.error(`Failed to process file: ${file.name}`, err);
 
@@ -144,6 +153,7 @@ export default function BucketImportExportProvider({
       // After all files are processed
       customLogger.debug("All files processed:", fileResults);
 
+      // Set the mergeable sets to include an ID
       setMergeableSets(fileResults);
 
       // Return the file results as an array
