@@ -541,7 +541,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     isUserConfigurable,
     tickers = [],
   }: Omit<TickerBucket, "uuid">) {
-    const nextBucket: TickerBucket = {
+    const newBucket: TickerBucket = {
       uuid: uuidv4(),
       name,
       tickers,
@@ -553,7 +553,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     this.validateTickerBucketName(name, type);
 
     this.setState((prev) => ({
-      tickerBuckets: [nextBucket, ...prev.tickerBuckets],
+      tickerBuckets: [newBucket, ...prev.tickerBuckets],
     }));
   }
 
