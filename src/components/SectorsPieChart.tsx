@@ -22,14 +22,15 @@ export type SectorsPieChartProps = {
 export default function SectorsPieChart({
   majorSectorDistribution,
 }: SectorsPieChartProps) {
-  const data = useMemo(
-    () =>
+  const data = useMemo(() => {
+    const data =
       majorSectorDistribution?.map((sector) => ({
         name: sector.major_sector_name,
         value: sector.weight * 100, // Normalize the weight (as a percentage)
-      })) || [],
-    [majorSectorDistribution],
-  );
+      })) || [];
+
+    return data.sort((a, b) => b.value - a.value);
+  }, [majorSectorDistribution]);
 
   useEffect(() => {
     customLogger.debug("Pie Chart Data: ", data);
