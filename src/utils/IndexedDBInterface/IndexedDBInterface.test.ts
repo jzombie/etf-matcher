@@ -1,15 +1,3 @@
-import {
-  IDBCursor,
-  IDBDatabase,
-  IDBFactory,
-  IDBIndex,
-  IDBKeyRange,
-  IDBObjectStore,
-  IDBOpenDBRequest,
-  IDBRequest,
-  IDBTransaction,
-  IDBVersionChangeEvent,
-} from "fake-indexeddb";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import IndexedDBInterface, {
@@ -23,19 +11,12 @@ type TestSchema = Record<string, string>;
 describe("IndexedDBInterface", () => {
   let dbInterface: IndexedDBInterface<TestSchema>;
 
-  // Set up the fake IndexedDB
   beforeEach(() => {
+    // Assign the fake-indexeddb to the global scope
     global.indexedDB = new IDBFactory();
     global.IDBKeyRange = IDBKeyRange;
-    global.IDBDatabase = IDBDatabase;
-    global.IDBTransaction = IDBTransaction;
-    global.IDBRequest = IDBRequest;
-    global.IDBCursor = IDBCursor;
-    global.IDBIndex = IDBIndex;
-    global.IDBObjectStore = IDBObjectStore;
-    global.IDBOpenDBRequest = IDBOpenDBRequest;
-    global.IDBVersionChangeEvent = IDBVersionChangeEvent;
 
+    // Initialize the Dexie-based interface
     dbInterface = new IndexedDBInterface<TestSchema>("test-database");
   });
 
@@ -52,10 +33,10 @@ describe("IndexedDBInterface", () => {
     expect(value).toBeUndefined();
   });
 
-  it("should delete the database", async () => {
+  it("should clear all items", async () => {
     await dbInterface.setItem("testKey1", "testValue1");
     await dbInterface.setItem("testKey2", "testValue2");
-    await dbInterface.delete();
+    await dbInterface.clear();
     const keys = await dbInterface.getAllKeys();
     expect(keys.length).toBe(0);
   });
@@ -98,12 +79,12 @@ describe("IndexedDBInterface", () => {
     } as UpdateEvent<TestSchema>);
   });
 
-  it("should emit update event on delete", async () => {
+  it("should emit update event on clear", async () => {
     const spy = vi.fn();
     dbInterface.on(UPDATE_EVENT, spy);
-    await dbInterface.delete();
+    await dbInterface.clear();
     expect(spy).toHaveBeenCalledWith({
-      type: "delete",
+      type: "clear",
     } as UpdateEvent<TestSchema>);
   });
 });

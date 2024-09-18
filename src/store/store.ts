@@ -745,7 +745,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     // Wipe IndexedDB store
     if (this._indexedDBInterface) {
-      clearPromises.push(this._indexedDBInterface.delete());
+      clearPromises.push(this._indexedDBInterface.clear());
     }
 
     // Clear the cache
