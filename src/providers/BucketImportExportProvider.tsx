@@ -1,7 +1,6 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
 
 import type { TickerBucket } from "@src/store";
-import { v4 as uuidv4 } from "uuid";
 
 import BucketImportExportDialogModal from "@components/BucketImportExportDialogModal";
 import BucketImportFileDropModal from "@components/BucketImportFileDropModal";
