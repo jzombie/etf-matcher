@@ -54,11 +54,6 @@ export default function BucketImportExportDialogModal({
     );
   }, [selectedSetFilename, mergeableSets]);
 
-  // TODO: Remove
-  useEffect(() => {
-    customLogger.debug({ selectedSet });
-  }, [selectedSet]);
-
   // Handle export
   const handleExport = useCallback(() => {
     const userConfigurableTickerBuckets =
@@ -91,7 +86,7 @@ export default function BucketImportExportDialogModal({
 
         // TODO: Handle
         // store.updateUserConfigurableTickerBuckets(mergedBuckets);
-        customLogger.log({
+        customLogger.warn("TODO: Handle merge", {
           mergedBuckets,
         });
       }
@@ -112,7 +107,7 @@ export default function BucketImportExportDialogModal({
         // console.log("Overwritten data successfully");
 
         // TODO: Remove
-        customLogger.log({
+        customLogger.warn("TODO: Handle overwrite", {
           selectedSet,
         });
       }
@@ -127,9 +122,6 @@ export default function BucketImportExportDialogModal({
   const titleId = useId();
   const descriptionId = useId();
   const fileInputId = useId();
-
-  // TODO: Remove
-  customLogger.log({ mergeableSets });
 
   return (
     <DialogModal
