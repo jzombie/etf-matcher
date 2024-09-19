@@ -55,10 +55,7 @@ export default function TickerBucketMergeDiff({
     <Box>
       <Typography variant="h6" gutterBottom>
         {currentBucket ? (
-          <>
-            Merge diff &quot;{incomingBucket.name}&quot; into &quot;
-            {currentBucket?.name}&quot;
-          </>
+          <>Merge diff &quot;{incomingBucket.name}&quot;</>
         ) : (
           <>Add &quot;{incomingBucket.name}&quot;</>
         )}
