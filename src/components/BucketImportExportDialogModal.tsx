@@ -226,7 +226,8 @@ export default function BucketImportExportDialogModal({
               </MenuItem>
               {mergeableSets.map((set) => (
                 <MenuItem key={set.filename} value={set.filename}>
-                  {set.filename} ({set.buckets.length} Ticker Buckets)
+                  {set.filename} ({set.buckets.length} Bucket
+                  {set.buckets.length !== 1 ? "s" : ""})
                 </MenuItem>
               ))}
             </Select>
