@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useId, useMemo, useState } from "react";
+import React, { useCallback, useId, useMemo, useState } from "react";
 
 import {
   Alert,
@@ -223,39 +223,12 @@ export default function BucketImportExportDialogModal({
                 </MenuItem>
               ))}
             </Select>
-
-            {selectedSet && (
-              <>
-                {selectedSet.buckets.map((bucket) => (
-                  <TickerBucketMergeDiff
-                    key={bucket.uuid}
-                    incomingBucket={bucket}
-                  />
-                ))}
-
-                <Box mt={2} display="flex" justifyContent="space-between">
-                  {/* Merge Button */}
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleMerge}
-                    disabled={!selectedSetFilename}
-                  >
-                    Merge Selected Set
-                  </Button>
-
-                  {/* Overwrite Button */}
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={handleOverwrite}
-                    disabled={!selectedSetFilename}
-                  >
-                    Overwrite with Selected Set
-                  </Button>
-                </Box>
-              </>
-            )}
+            {selectedSet?.buckets.map((bucket) => (
+              <TickerBucketMergeDiff
+                key={bucket.uuid}
+                incomingBucket={bucket}
+              />
+            ))}
           </DialogContent>
         </>
       )}

@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 
 import {
   Box,
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -102,32 +103,57 @@ type MergeTableProps = {
 
 function MergeTable({ tickers, actionType }: MergeTableProps) {
   return (
-    <Table size="small">
-      <TableHead>
-        <TableRow>
-          {
-            // TODO: Remove?
-            // <TableCell>Ticker ID</TableCell>
-          }
-          <TableCell>Symbol</TableCell>
-          <TableCell>Exchange</TableCell>
-          <TableCell>Quantity</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {tickers.map((ticker) => (
-          <TableRow key={ticker.tickerId} style={getRowStyle(actionType)}>
+    <>
+      <Table size="small">
+        <TableHead>
+          <TableRow>
             {
               // TODO: Remove?
-              // <TableCell>{ticker.tickerId}</TableCell>
+              // <TableCell>Ticker ID</TableCell>
             }
-            <TableCell>{ticker.symbol}</TableCell>
-            <TableCell>{ticker.exchangeShortName || "N/A"}</TableCell>
-            <TableCell>{ticker.quantity}</TableCell>
+            <TableCell>Symbol</TableCell>
+            <TableCell>Exchange</TableCell>
+            <TableCell>Quantity</TableCell>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHead>
+        <TableBody>
+          {tickers.map((ticker) => (
+            <TableRow key={ticker.tickerId} style={getRowStyle(actionType)}>
+              {
+                // TODO: Remove?
+                // <TableCell>{ticker.tickerId}</TableCell>
+              }
+              <TableCell>{ticker.symbol}</TableCell>
+              <TableCell>{ticker.exchangeShortName || "N/A"}</TableCell>
+              <TableCell>{ticker.quantity}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      {actionType !== "unchanged" && (
+        <Box mt={2} display="flex" justifyContent="space-between">
+          {/* Merge Button */}
+          <Button
+            variant="contained"
+            color="primary"
+            // onClick={handleMerge}
+            // disabled={!selectedSetFilename}
+          >
+            Merge Selected Set
+          </Button>
+
+          {/* Overwrite Button */}
+          <Button
+            variant="contained"
+            color="secondary"
+            // onClick={handleOverwrite}
+            // disabled={!selectedSetFilename}
+          >
+            Overwrite with Selected Set
+          </Button>
+        </Box>
+      )}
+    </>
   );
 }
 
