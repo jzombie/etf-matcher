@@ -43,7 +43,9 @@ export default function BucketImportExportDialogModal({
     useBucketImportExportContext();
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [fileName, setFileName] = useState<string>(getDefaultFileName());
-  const [selectedSetId, setSelectedSetId] = useState<string | null>(null); // Track the selected set
+  const [selectedSetFilename, setSelectedSetFilename] = useState<string | null>(
+    null,
+  ); // Track the selected set
 
   // Handle export
   const handleExport = useCallback(() => {
@@ -65,8 +67,10 @@ export default function BucketImportExportDialogModal({
 
   // Handle merging the selected set
   const handleMerge = useCallback(() => {
-    if (selectedSetId && mergeableSets) {
-      const selectedSet = mergeableSets.find((set) => set.id === selectedSetId);
+    if (selectedSetFilename && mergeableSets) {
+      const selectedSet = mergeableSets.find(
+        (set) => set.filename === selectedSetFilename,
+      );
       if (selectedSet) {
         // Logic to merge the selected set with userConfigurableTickerBuckets
         const currentBuckets = store.getUserConfigurableTickerBuckets();
@@ -79,12 +83,14 @@ export default function BucketImportExportDialogModal({
         });
       }
     }
-  }, [selectedSetId, mergeableSets]);
+  }, [selectedSetFilename, mergeableSets]);
 
   // Handle overwriting with the selected set
   const handleOverwrite = useCallback(() => {
-    if (selectedSetId && mergeableSets) {
-      const selectedSet = mergeableSets.find((set) => set.id === selectedSetId);
+    if (selectedSetFilename && mergeableSets) {
+      const selectedSet = mergeableSets.find(
+        (set) => set.filename === selectedSetFilename,
+      );
       if (selectedSet) {
         // Logic to overwrite the current userConfigurableTickerBuckets
 
@@ -98,7 +104,7 @@ export default function BucketImportExportDialogModal({
         });
       }
     }
-  }, [selectedSetId, mergeableSets]);
+  }, [selectedSetFilename, mergeableSets]);
 
   const extensionTypes = useMemo(
     () => FILE_IMPORT_ACCEPT_MAP.get("csv")?.mimeTypes.join(", "),
@@ -109,7 +115,8 @@ export default function BucketImportExportDialogModal({
   const descriptionId = useId();
   const fileInputId = useId();
 
-  console.log({ mergeableSets });
+  // TODO: Remove
+  customLogger.log({ mergeableSets });
 
   return (
     <DialogModal
@@ -197,16 +204,16 @@ export default function BucketImportExportDialogModal({
             </Typography>
             <Select
               fullWidth
-              value={selectedSetId || ""}
-              onChange={(e) => setSelectedSetId(e.target.value as string)}
+              value={selectedSetFilename || ""}
+              onChange={(e) => setSelectedSetFilename(e.target.value as string)}
               displayEmpty
             >
               <MenuItem value="" disabled>
                 Select a set
               </MenuItem>
               {mergeableSets.map((set) => (
-                <MenuItem key={set.id} value={set.id}>
-                  Set ID: {set.id} ({set.buckets.length} Ticker Buckets)
+                <MenuItem key={set.filename} value={set.filename}>
+                  Set ID: {set.filename} ({set.buckets.length} Ticker Buckets)
                 </MenuItem>
               ))}
             </Select>
@@ -217,7 +224,7 @@ export default function BucketImportExportDialogModal({
                 variant="contained"
                 color="primary"
                 onClick={handleMerge}
-                disabled={!selectedSetId}
+                disabled={!selectedSetFilename}
               >
                 Merge Selected Set
               </Button>
@@ -227,7 +234,7 @@ export default function BucketImportExportDialogModal({
                 variant="contained"
                 color="secondary"
                 onClick={handleOverwrite}
-                disabled={!selectedSetId}
+                disabled={!selectedSetFilename}
               >
                 Overwrite with Selected Set
               </Button>

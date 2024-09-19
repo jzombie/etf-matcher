@@ -14,7 +14,7 @@ import customLogger from "@utils/customLogger";
 import FileDragDropProvider from "./FileDragDropProvider";
 
 type TickerBucketSet = {
-  id: string;
+  filename: string;
   buckets: TickerBucket[];
 };
 
@@ -129,10 +129,10 @@ export default function BucketImportExportProvider({
       for (const file of Array.from(fileList)) {
         try {
           const result = await processFile(file);
-          // Add an id to each result and push it into the fileResults array
+          // Associate the filename with the buckets
           fileResults.push({
-            id: uuidv4(), // Generate a unique ID for each imported set
-            buckets: result, // Store the result as the set of ticker buckets
+            filename: file.name,
+            buckets: result,
           });
         } catch (err) {
           customLogger.error(`Failed to process file: ${file.name}`, err);
