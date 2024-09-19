@@ -72,47 +72,51 @@ export default function BucketImportExportDialogModal({
     [importFiles],
   );
 
+  // TODO: When importing, match using a combination of ticker ID, symbol, and exchange.
+  // Handle cases where the ticker ID has changed from its current value.
+  // This relates to the ticket: https://linear.app/zenosmosis/issue/ZEN-86/implement-auto-reindex-strategy
+  //
   // TODO: Refactor
   // Handle merging the selected set
-  const handleMerge = useCallback(() => {
-    if (selectedSetFilename && mergeableSets) {
-      const selectedSet = mergeableSets.find(
-        (set) => set.filename === selectedSetFilename,
-      );
-      if (selectedSet) {
-        // Logic to merge the selected set with userConfigurableTickerBuckets
-        const currentBuckets = store.getUserConfigurableTickerBuckets();
-        const mergedBuckets = [...currentBuckets, ...selectedSet.buckets];
+  // const handleMerge = useCallback(() => {
+  //   if (selectedSetFilename && mergeableSets) {
+  //     const selectedSet = mergeableSets.find(
+  //       (set) => set.filename === selectedSetFilename,
+  //     );
+  //     if (selectedSet) {
+  //       // Logic to merge the selected set with userConfigurableTickerBuckets
+  //       const currentBuckets = store.getUserConfigurableTickerBuckets();
+  //       const mergedBuckets = [...currentBuckets, ...selectedSet.buckets];
 
-        // TODO: Handle
-        // store.updateUserConfigurableTickerBuckets(mergedBuckets);
-        customLogger.warn("TODO: Handle merge", {
-          mergedBuckets,
-        });
-      }
-    }
-  }, [selectedSetFilename, mergeableSets]);
+  //       // TODO: Handle
+  //       // store.updateUserConfigurableTickerBuckets(mergedBuckets);
+  //       customLogger.warn("TODO: Handle merge", {
+  //         mergedBuckets,
+  //       });
+  //     }
+  //   }
+  // }, [selectedSetFilename, mergeableSets]);
 
-  // Handle overwriting with the selected set
-  const handleOverwrite = useCallback(() => {
-    if (selectedSetFilename && mergeableSets) {
-      const selectedSet = mergeableSets.find(
-        (set) => set.filename === selectedSetFilename,
-      );
-      if (selectedSet) {
-        // Logic to overwrite the current userConfigurableTickerBuckets
+  // // Handle overwriting with the selected set
+  // const handleOverwrite = useCallback(() => {
+  //   if (selectedSetFilename && mergeableSets) {
+  //     const selectedSet = mergeableSets.find(
+  //       (set) => set.filename === selectedSetFilename,
+  //     );
+  //     if (selectedSet) {
+  //       // Logic to overwrite the current userConfigurableTickerBuckets
 
-        // TODO: Handle
-        // store.updateUserConfigurableTickerBuckets(selectedSet.buckets);
-        // console.log("Overwritten data successfully");
+  //       // TODO: Handle
+  //       // store.updateUserConfigurableTickerBuckets(selectedSet.buckets);
+  //       // console.log("Overwritten data successfully");
 
-        // TODO: Remove
-        customLogger.warn("TODO: Handle overwrite", {
-          selectedSet,
-        });
-      }
-    }
-  }, [selectedSetFilename, mergeableSets]);
+  //       // TODO: Remove
+  //       customLogger.warn("TODO: Handle overwrite", {
+  //         selectedSet,
+  //       });
+  //     }
+  //   }
+  // }, [selectedSetFilename, mergeableSets]);
 
   const extensionTypes = useMemo(
     () => FILE_IMPORT_ACCEPT_MAP.get("csv")?.mimeTypes.join(", "),
