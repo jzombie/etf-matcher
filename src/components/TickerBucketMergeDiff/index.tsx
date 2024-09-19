@@ -1,6 +1,6 @@
-import TickerBucketMergeDiff, {
-  TickerBucketMergeDiffProps,
-} from "./TickerBucketMergeDiff";
+import TickerBucketMergeDiffContainer, {
+  TickerBucketMergeDiffContainerProps,
+} from "./TickerBucketMergeDiffContainer";
 
-export default TickerBucketMergeDiff;
-export type { TickerBucketMergeDiffProps };
+export default TickerBucketMergeDiffContainer;
+export type { TickerBucketMergeDiffContainerProps };

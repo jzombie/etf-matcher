@@ -237,7 +237,6 @@ export default function BucketImportExportDialogModal({
                 {selectedSet.buckets.map((bucket) => (
                   <TickerBucketMergeDiff
                     key={bucket.uuid}
-                    currentBucket={undefined} // TODO: Don't hardcode
                     incomingBucket={bucket}
                   />
                 ))}
