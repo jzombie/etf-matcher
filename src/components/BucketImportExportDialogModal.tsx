@@ -1,4 +1,4 @@
-import React, { useCallback, useId, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useId, useMemo, useState } from "react";
 
 import {
   Alert,
@@ -23,6 +23,8 @@ import useBucketImportExportContext from "@hooks/useBucketImportExportContext";
 
 import customLogger from "@utils/customLogger";
 
+import TickerBucketMergeDiff from "./TickerBucketMergeDiff";
+
 export type BucketImportExportDialogModalProps = Omit<
   DialogModalProps,
   "children"
@@ -46,6 +48,16 @@ export default function BucketImportExportDialogModal({
   const [selectedSetFilename, setSelectedSetFilename] = useState<string | null>(
     null,
   ); // Track the selected set
+  const selectedSet = useMemo(() => {
+    return mergeableSets?.find(
+      ({ filename }) => filename === selectedSetFilename,
+    );
+  }, [selectedSetFilename, mergeableSets]);
+
+  // TODO: Remove
+  useEffect(() => {
+    customLogger.debug({ selectedSet });
+  }, [selectedSet]);
 
   // Handle export
   const handleExport = useCallback(() => {
@@ -65,6 +77,7 @@ export default function BucketImportExportDialogModal({
     [importFiles],
   );
 
+  // TODO: Refactor
   // Handle merging the selected set
   const handleMerge = useCallback(() => {
     if (selectedSetFilename && mergeableSets) {
@@ -213,32 +226,44 @@ export default function BucketImportExportDialogModal({
               </MenuItem>
               {mergeableSets.map((set) => (
                 <MenuItem key={set.filename} value={set.filename}>
-                  Set ID: {set.filename} ({set.buckets.length} Ticker Buckets)
+                  {set.filename} ({set.buckets.length} Ticker Buckets)
                 </MenuItem>
               ))}
             </Select>
 
-            <Box mt={2} display="flex" justifyContent="space-between">
-              {/* Merge Button */}
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleMerge}
-                disabled={!selectedSetFilename}
-              >
-                Merge Selected Set
-              </Button>
+            {selectedSet && (
+              <>
+                {selectedSet.buckets.map((bucket) => (
+                  <TickerBucketMergeDiff
+                    key={bucket.uuid}
+                    currentBucket={undefined} // TODO: Don't hardcode
+                    incomingBucket={bucket}
+                  />
+                ))}
 
-              {/* Overwrite Button */}
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={handleOverwrite}
-                disabled={!selectedSetFilename}
-              >
-                Overwrite with Selected Set
-              </Button>
-            </Box>
+                <Box mt={2} display="flex" justifyContent="space-between">
+                  {/* Merge Button */}
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleMerge}
+                    disabled={!selectedSetFilename}
+                  >
+                    Merge Selected Set
+                  </Button>
+
+                  {/* Overwrite Button */}
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={handleOverwrite}
+                    disabled={!selectedSetFilename}
+                  >
+                    Overwrite with Selected Set
+                  </Button>
+                </Box>
+              </>
+            )}
           </DialogContent>
         </>
       )}
