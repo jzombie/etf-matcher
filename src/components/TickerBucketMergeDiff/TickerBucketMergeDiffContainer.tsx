@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useMemo } from "react";
+
+import store from "@src/store";
 
 import TickerBucketMergeDiff, {
   TickerBucketMergeDiffProps,
@@ -12,9 +14,15 @@ export type TickerBucketMergeDiffContainerProps = Omit<
 export default function TickerBucketMergeDiffContainer({
   incomingBucket,
 }: TickerBucketMergeDiffContainerProps) {
+  const currentBucket = useMemo(() => {
+    if (incomingBucket) {
+      return store.getTickerBucketWithUUID(incomingBucket.uuid);
+    }
+  }, [incomingBucket]);
+
   return (
     <TickerBucketMergeDiff
-      // TODO: Route `currentBucket`
+      currentBucket={currentBucket}
       incomingBucket={incomingBucket}
     ></TickerBucketMergeDiff>
   );

@@ -649,7 +649,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
-  getTickerBucketWithUUID(uuid: string): TickerBucket | void {
+  getTickerBucketWithUUID(uuid: string): TickerBucket | undefined {
     return this.state.tickerBuckets.find(
       ({ uuid: predicateUUID }) => uuid === predicateUUID,
     );
