@@ -56,10 +56,11 @@ export default function MergeDiff({
       <Typography variant="h6" gutterBottom>
         {currentBucket ? (
           <>
-            Merge Diff: {incomingBucket.name} into {currentBucket?.name}
+            Merge diff &quot;{incomingBucket.name}&quot; into &quot;
+            {currentBucket?.name}&quot;
           </>
         ) : (
-          <>Add {incomingBucket.name}</>
+          <>Add &quot;{incomingBucket.name}&quot;</>
         )}
       </Typography>
 
