@@ -13,15 +13,15 @@ import {
 import type { TickerBucket, TickerBucketTicker } from "@src/store";
 
 // Merge diff component to show what will be added, updated, or unchanged
-export type MergeDiffProps = {
+export type TickerBucketMergeDiffProps = {
   currentBucket?: TickerBucket;
   incomingBucket: TickerBucket;
 };
 
-export default function MergeDiff({
+export default function TickerBucketMergeDiff({
   currentBucket,
   incomingBucket,
-}: MergeDiffProps) {
+}: TickerBucketMergeDiffProps) {
   // Hardcoded merge algorithm inside this component for simplicity
   const mergeResult = useMemo(() => {
     const currentTickersMap = new Map<number, TickerBucketTicker>(
