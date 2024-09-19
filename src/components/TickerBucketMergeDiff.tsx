@@ -54,10 +54,13 @@ export default function MergeDiff({
   return (
     <Box>
       <Typography variant="h6" gutterBottom>
-        {
-          // TODO: Handle case where no existing bucket
-        }
-        Merge Diff: {incomingBucket.name} into {currentBucket?.name}
+        {currentBucket ? (
+          <>
+            Merge Diff: {incomingBucket.name} into {currentBucket?.name}
+          </>
+        ) : (
+          <>Add {incomingBucket.name}</>
+        )}
       </Typography>
 
       {/* Added tickers */}
