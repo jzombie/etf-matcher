@@ -10,8 +10,6 @@ import {
   TableRow,
 } from "@mui/material";
 
-import type { TickerBucketTicker } from "@src/store";
-
 import MergeTableRow from "./MergeTable.Row";
 import type { TickerDiff } from "./TickerBucketMergeDiff";
 
