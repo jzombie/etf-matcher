@@ -49,8 +49,11 @@ export default function BucketImportExportDialogModal({
     return mergeableSets?.find(({ filename }) => filename === selectedFilename);
   }, [selectedFilename, mergeableSets]);
 
-  // Auto-select filename if only one imported file
   useEffect(() => {
+    // Reset selected files when `mergeableSets` changes
+    setSelectedFiles(null);
+
+    // Auto-select filename if only one imported file
     if (mergeableSets?.length === 1) {
       setSelectedFilename(mergeableSets[0].filename);
     }
