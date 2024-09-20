@@ -173,25 +173,32 @@ export default function BucketImportExportDialogModal({
             </DialogContent>
           ) : (
             <DialogContent>
-              <Typography variant="h6" gutterBottom>
-                Select a File to Merge or Overwrite
-              </Typography>
-              <Select
-                fullWidth
-                value={selectedFilename || ""}
-                onChange={(e) => setSelectedFilename(e.target.value as string)}
-                displayEmpty
-              >
-                <MenuItem value="" disabled>
-                  Select a file
-                </MenuItem>
-                {mergeableSets.map((set) => (
-                  <MenuItem key={set.filename} value={set.filename}>
-                    {set.filename} ({set.buckets.length} Bucket
-                    {set.buckets.length !== 1 ? "s" : ""})
-                  </MenuItem>
-                ))}
-              </Select>
+              {mergeableSets.length > 1 && (
+                <Box>
+                  <Typography variant="h6" gutterBottom>
+                    Select a File to Merge or Overwrite
+                  </Typography>
+                  <Select
+                    fullWidth
+                    value={selectedFilename || ""}
+                    onChange={(e) =>
+                      setSelectedFilename(e.target.value as string)
+                    }
+                    displayEmpty
+                  >
+                    <MenuItem value="" disabled>
+                      Select a file
+                    </MenuItem>
+                    {mergeableSets.map((set) => (
+                      <MenuItem key={set.filename} value={set.filename}>
+                        {set.filename} ({set.buckets.length} Bucket
+                        {set.buckets.length !== 1 ? "s" : ""})
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Box>
+              )}
+
               {selectedSet?.buckets.map((bucket) => (
                 <TickerBucketMergeDiff
                   key={bucket.uuid}
