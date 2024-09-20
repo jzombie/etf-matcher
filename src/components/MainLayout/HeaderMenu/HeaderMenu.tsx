@@ -91,18 +91,12 @@ export default function HeaderMenu() {
         key: "/import-export",
         link: "#",
         label: "Import/Export",
-        icon: <ImportExportIcon fontSize="small" />, // You can replace this with <ImportExportIcon fontSize="small" /> if preferred
-        onClick: () => {
-          // TODO: Fix issue where if on a symbol URL (such as `/search?query=MSFT&exact=true`),
-          // and clicking this button, the search query will be removed. It's not immediately
-          // obvious, but if refreshing the page it will lead to a "no search query defined".
+        icon: <ImportExportIcon fontSize="small" />,
+        onClick: (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+          // Prevent the default anchor link behavior
+          event.preventDefault();
 
-          // FIXME: This `setTimeout` is used to allow the initial location key to change *before*
-          // opening the modal, and prevents it from auto-closing immediately upon opening.
-          // This could be improved.
-          setTimeout(openImportExportModal);
-
-          return false;
+          openImportExportModal();
         },
       },
       {
@@ -244,11 +238,11 @@ export default function HeaderMenu() {
                     key={item.key}
                     component={Link}
                     to={item.link}
-                    onClick={() => {
+                    onClick={(evt) => {
                       toggleDrawer();
 
                       if (typeof item.onClick === "function") {
-                        item.onClick();
+                        item.onClick(evt);
                       }
                     }}
                     className={clsx({
