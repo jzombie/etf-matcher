@@ -12,7 +12,7 @@ import {
 
 import type { TickerBucketTicker } from "@src/store";
 
-import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
+import MergeTableRow from "./MergeTable.Row";
 
 // Component to display the ticker table, color-coded by action type (added, updated, unchanged)
 export type MergeTableProps = {
@@ -33,11 +33,11 @@ export default function MergeTable({ tickers, actionType }: MergeTableProps) {
         </TableHead>
         <TableBody>
           {tickers.map((ticker) => (
-            <TableRow key={ticker.tickerId} style={getRowStyle(actionType)}>
-              <TableCell>{ticker.symbol}</TableCell>
-              <TableCell>{ticker.exchangeShortName || "N/A"}</TableCell>
-              <TableCell>{formatNumberWithCommas(ticker.quantity)}</TableCell>
-            </TableRow>
+            <MergeTableRow
+              key={ticker.tickerId}
+              ticker={ticker}
+              actionType={actionType}
+            />
           ))}
         </TableBody>
       </Table>
@@ -68,18 +68,4 @@ export default function MergeTable({ tickers, actionType }: MergeTableProps) {
       )}
     </>
   );
-}
-
-// Helper function to return different styles based on the action type (added/updated/unchanged)
-function getRowStyle(actionType: "added" | "updated" | "unchanged") {
-  switch (actionType) {
-    case "added":
-      return { backgroundColor: "rgba(0, 255, 0, 0.2)" }; // Light green for added
-    case "updated":
-      return { backgroundColor: "rgba(255, 255, 0, 0.2)" }; // Light yellow for updated
-    case "unchanged":
-      return { backgroundColor: "rgba(200, 200, 200, 0.2)" }; // Light gray for unchanged
-    default:
-      return {};
-  }
 }
