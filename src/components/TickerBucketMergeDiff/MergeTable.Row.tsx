@@ -1,8 +1,6 @@
 import React from "react";
 
-import { TableCell, TableRow } from "@mui/material";
-
-import type { TickerBucketTicker } from "@src/store";
+import { TableCell, TableRow, Typography } from "@mui/material";
 
 import AvatarLogo from "@components/AvatarLogo";
 
@@ -11,29 +9,54 @@ import useTickerDetail from "@hooks/useTickerDetail";
 import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
 
 import type { MergeTableProps } from "./MergeTable";
+import type { TickerDiff } from "./TickerBucketMergeDiff";
 
 export type MergeTableRowProps = {
-  ticker: TickerBucketTicker;
+  tickerDiff: TickerDiff;
   actionType: MergeTableProps["actionType"];
 };
 
 export default function MergeTableRow({
-  ticker,
+  tickerDiff,
   actionType,
 }: MergeTableRowProps) {
-  const { tickerDetail } = useTickerDetail(ticker.tickerId);
+  const { tickerDetail } = useTickerDetail(tickerDiff.ticker.tickerId);
+
+  // Calculate the change in quantity
+  const quantityChange =
+    tickerDiff.previousQuantity !== undefined
+      ? tickerDiff.ticker.quantity - tickerDiff.previousQuantity
+      : null; // No change for new tickers
 
   return (
-    <TableRow key={ticker.tickerId} style={getRowStyle(actionType)}>
+    <TableRow key={tickerDiff.ticker.tickerId} style={getRowStyle(actionType)}>
       <TableCell>
         <AvatarLogo tickerDetail={tickerDetail} />
       </TableCell>
       <TableCell>
-        {ticker.symbol}
-        {ticker.exchangeShortName ? ` (${ticker.exchangeShortName})` : ""}
+        {tickerDiff.ticker.symbol}
+        {tickerDiff.ticker.exchangeShortName
+          ? ` (${tickerDiff.ticker.exchangeShortName})`
+          : ""}
       </TableCell>
       <TableCell>{tickerDetail?.company_name || "N/A"}</TableCell>
-      <TableCell>{formatNumberWithCommas(ticker.quantity)}</TableCell>
+      <TableCell>
+        {formatNumberWithCommas(tickerDiff.ticker.quantity)}
+        {quantityChange !== null && (
+          <>
+            <br />
+            <Typography
+              component="span"
+              color={quantityChange > 0 ? "green" : "red"}
+              sx={{ marginLeft: 1 }}
+            >
+              {quantityChange > 0
+                ? `(+${formatNumberWithCommas(quantityChange)})`
+                : `(${formatNumberWithCommas(quantityChange)})`}
+            </Typography>
+          </>
+        )}
+      </TableCell>
     </TableRow>
   );
 }

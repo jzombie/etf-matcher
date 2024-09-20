@@ -38,7 +38,7 @@ export default function MergeTable({
           {tickerDiffs.map((tickerDiff) => (
             <MergeTableRow
               key={tickerDiff.ticker.tickerId}
-              ticker={tickerDiff.ticker}
+              tickerDiff={tickerDiff}
               actionType={actionType}
               // TODO: Add changed quantity
             />
