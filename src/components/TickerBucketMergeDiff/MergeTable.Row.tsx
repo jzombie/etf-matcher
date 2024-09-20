@@ -1,14 +1,6 @@
 import React from "react";
 
-import {
-  Box,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-} from "@mui/material";
+import { TableCell, TableRow } from "@mui/material";
 
 import type { TickerBucketTicker } from "@src/store";
 
