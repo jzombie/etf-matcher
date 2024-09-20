@@ -137,7 +137,7 @@ function MergeTable({ tickers, actionType }: MergeTableProps) {
             variant="contained"
             color="primary"
             // onClick={handleMerge}
-            // disabled={!selectedSetFilename}
+            // disabled={!selectedFilename}
           >
             Merge Selected Set
           </Button>
@@ -147,7 +147,7 @@ function MergeTable({ tickers, actionType }: MergeTableProps) {
             variant="contained"
             color="secondary"
             // onClick={handleOverwrite}
-            // disabled={!selectedSetFilename}
+            // disabled={!selectedFilename}
           >
             Overwrite with Selected Set
           </Button>

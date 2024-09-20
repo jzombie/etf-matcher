@@ -43,14 +43,10 @@ export default function BucketImportExportDialogModal({
     useBucketImportExportContext();
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [fileName, setFileName] = useState<string>(getDefaultFileName());
-  const [selectedSetFilename, setSelectedSetFilename] = useState<string | null>(
-    null,
-  ); // Track the selected set
+  const [selectedFilename, setSelectedFilename] = useState<string | null>(null); // Track the selected set
   const selectedSet = useMemo(() => {
-    return mergeableSets?.find(
-      ({ filename }) => filename === selectedSetFilename,
-    );
-  }, [selectedSetFilename, mergeableSets]);
+    return mergeableSets?.find(({ filename }) => filename === selectedFilename);
+  }, [selectedFilename, mergeableSets]);
 
   // Handle export
   const handleExport = useCallback(() => {
@@ -77,9 +73,9 @@ export default function BucketImportExportDialogModal({
   // TODO: Refactor
   // Handle merging the selected set
   // const handleMerge = useCallback(() => {
-  //   if (selectedSetFilename && mergeableSets) {
+  //   if (selectedFilename && mergeableSets) {
   //     const selectedSet = mergeableSets.find(
-  //       (set) => set.filename === selectedSetFilename,
+  //       (set) => set.filename === selectedFilename,
   //     );
   //     if (selectedSet) {
   //       // Logic to merge the selected set with userConfigurableTickerBuckets
@@ -93,13 +89,13 @@ export default function BucketImportExportDialogModal({
   //       });
   //     }
   //   }
-  // }, [selectedSetFilename, mergeableSets]);
+  // }, [selectedFilename, mergeableSets]);
 
   // // Handle overwriting with the selected set
   // const handleOverwrite = useCallback(() => {
-  //   if (selectedSetFilename && mergeableSets) {
+  //   if (selectedFilename && mergeableSets) {
   //     const selectedSet = mergeableSets.find(
-  //       (set) => set.filename === selectedSetFilename,
+  //       (set) => set.filename === selectedFilename,
   //     );
   //     if (selectedSet) {
   //       // Logic to overwrite the current userConfigurableTickerBuckets
@@ -114,7 +110,7 @@ export default function BucketImportExportDialogModal({
   //       });
   //     }
   //   }
-  // }, [selectedSetFilename, mergeableSets]);
+  // }, [selectedFilename, mergeableSets]);
 
   const extensionTypes = useMemo(
     () => FILE_IMPORT_ACCEPT_MAP.get("csv")?.mimeTypes.join(", "),
@@ -207,16 +203,16 @@ export default function BucketImportExportDialogModal({
           {/* If mergeable sets are available, allow merging or overwriting */}
           <DialogContent>
             <Typography variant="h6" gutterBottom>
-              Select a Set to Merge or Overwrite
+              Select a File to Merge or Overwrite
             </Typography>
             <Select
               fullWidth
-              value={selectedSetFilename || ""}
-              onChange={(e) => setSelectedSetFilename(e.target.value as string)}
+              value={selectedFilename || ""}
+              onChange={(e) => setSelectedFilename(e.target.value as string)}
               displayEmpty
             >
               <MenuItem value="" disabled>
-                Select a set
+                Select a file
               </MenuItem>
               {mergeableSets.map((set) => (
                 <MenuItem key={set.filename} value={set.filename}>
