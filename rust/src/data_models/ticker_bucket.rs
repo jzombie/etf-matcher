@@ -177,13 +177,10 @@ impl TickerBucket {
             let (ticker_id, exchange_short_name) = match ticker_map.get(&symbol) {
                 Some((id, exchange)) => (*id, exchange.clone()), // Ticker exists in the system
                 None => {
-                    // FIXME: Improve this handling
-                    // Ticker not found, log a warning
-                    web_sys::console::warn_1(
-                        &format!("Warning: Ticker symbol {} not found in the system", symbol,)
-                            .into(),
-                    );
-                    continue; // Skip processing this ticker
+                    return Err(JsValue::from_str(&format!(
+                        "Error: Ticker symbol {} not found in the system",
+                        symbol
+                    )));
                 }
             };
 
