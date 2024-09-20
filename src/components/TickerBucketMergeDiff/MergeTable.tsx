@@ -13,14 +13,18 @@ import {
 import type { TickerBucketTicker } from "@src/store";
 
 import MergeTableRow from "./MergeTable.Row";
+import type { TickerDiff } from "./TickerBucketMergeDiff";
 
 // Component to display the ticker table, color-coded by action type (added, updated, unchanged)
 export type MergeTableProps = {
-  tickers: TickerBucketTicker[];
+  tickerDiffs: TickerDiff[];
   actionType: "added" | "updated" | "unchanged";
 };
 
-export default function MergeTable({ tickers, actionType }: MergeTableProps) {
+export default function MergeTable({
+  tickerDiffs,
+  actionType,
+}: MergeTableProps) {
   return (
     <>
       <Table size="small">
@@ -33,11 +37,12 @@ export default function MergeTable({ tickers, actionType }: MergeTableProps) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {tickers.map((ticker) => (
+          {tickerDiffs.map((tickerDiff) => (
             <MergeTableRow
-              key={ticker.tickerId}
-              ticker={ticker}
+              key={tickerDiff.ticker.tickerId}
+              ticker={tickerDiff.ticker}
               actionType={actionType}
+              // TODO: Add changed quantity
             />
           ))}
         </TableBody>

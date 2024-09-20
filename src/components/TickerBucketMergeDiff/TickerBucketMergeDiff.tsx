@@ -6,6 +6,12 @@ import type { TickerBucket, TickerBucketTicker } from "@src/store";
 
 import MergeTable from "./MergeTable";
 
+export type TickerDiff = {
+  quantity: number;
+  previousQuantity?: number;
+  ticker: TickerBucketTicker;
+};
+
 // Merge diff component to show what will be added, updated, or unchanged
 export type TickerBucketMergeDiffProps = {
   currentBucket?: TickerBucket;
@@ -25,22 +31,32 @@ export default function TickerBucketMergeDiff({
     );
 
     const result = {
-      added: [] as TickerBucketTicker[],
-      updated: [] as TickerBucketTicker[],
-      unchanged: [] as TickerBucketTicker[],
+      added: [] as TickerDiff[],
+      updated: [] as TickerDiff[],
+      unchanged: [] as TickerDiff[],
     };
 
     for (const incomingTicker of incomingBucket.tickers) {
       const existingTicker = currentTickersMap.get(incomingTicker.tickerId);
       if (!existingTicker) {
         // Ticker is new, will be added
-        result.added.push(incomingTicker);
+        result.added.push({
+          quantity: incomingTicker.quantity,
+          ticker: incomingTicker,
+        });
       } else if (existingTicker.quantity !== incomingTicker.quantity) {
         // Ticker exists but quantity is different, will be updated
-        result.updated.push(incomingTicker);
+        result.updated.push({
+          quantity: incomingTicker.quantity,
+          previousQuantity: existingTicker.quantity,
+          ticker: incomingTicker,
+        });
       } else {
         // Ticker exists and quantity is unchanged
-        result.unchanged.push(incomingTicker);
+        result.unchanged.push({
+          quantity: incomingTicker.quantity,
+          ticker: incomingTicker,
+        });
       }
     }
 
@@ -63,7 +79,7 @@ export default function TickerBucketMergeDiff({
           <Typography variant="subtitle1" color="primary">
             Added Tickers:
           </Typography>
-          <MergeTable tickers={mergeResult.added} actionType="added" />
+          <MergeTable tickerDiffs={mergeResult.added} actionType="added" />
         </Box>
       )}
 
@@ -73,7 +89,7 @@ export default function TickerBucketMergeDiff({
           <Typography variant="subtitle1" color="secondary">
             Updated Tickers:
           </Typography>
-          <MergeTable tickers={mergeResult.updated} actionType="updated" />
+          <MergeTable tickerDiffs={mergeResult.updated} actionType="updated" />
         </Box>
       )}
 
@@ -83,7 +99,10 @@ export default function TickerBucketMergeDiff({
           <Typography variant="subtitle1" color="textSecondary">
             Unchanged Tickers:
           </Typography>
-          <MergeTable tickers={mergeResult.unchanged} actionType="unchanged" />
+          <MergeTable
+            tickerDiffs={mergeResult.unchanged}
+            actionType="unchanged"
+          />
         </Box>
       )}
     </Box>
