@@ -13,6 +13,8 @@ import {
 
 import type { TickerBucket, TickerBucketTicker } from "@src/store";
 
+import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
+
 // Merge diff component to show what will be added, updated, or unchanged
 export type TickerBucketMergeDiffProps = {
   currentBucket?: TickerBucket;
@@ -125,7 +127,7 @@ function MergeTable({ tickers, actionType }: MergeTableProps) {
               }
               <TableCell>{ticker.symbol}</TableCell>
               <TableCell>{ticker.exchangeShortName || "N/A"}</TableCell>
-              <TableCell>{ticker.quantity}</TableCell>
+              <TableCell>{formatNumberWithCommas(ticker.quantity)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
