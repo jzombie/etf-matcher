@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 
 import MergeTableRow from "./MergeTable.Row";
-import type { TickerDiff } from "./TickerBucketMergeDiff";
+import type { TickerDiff } from "./useBucketChangeOverview";
 
 // Component to display the ticker table, color-coded by action type (added, updated, unchanged)
 export type MergeTableProps = {

@@ -1,66 +1,26 @@
-import React, { useMemo } from "react";
+import React from "react";
 
 import { Box, Typography } from "@mui/material";
 
-import type { TickerBucket, TickerBucketTicker } from "@src/store";
+import type { TickerBucket } from "@src/store";
 
 import MergeTable from "./MergeTable";
+import useBucketChangeOverview from "./useBucketChangeOverview";
 
-export type TickerDiff = {
-  quantity: number;
-  previousQuantity?: number;
-  ticker: TickerBucketTicker;
-};
-
-// Merge diff component to show what will be added, updated, or unchanged
 export type TickerBucketMergeDiffProps = {
   currentBucket?: TickerBucket;
   incomingBucket: TickerBucket;
 };
 
+// Merge diff component to show what will be added, updated, or unchanged
 export default function TickerBucketMergeDiff({
   currentBucket,
   incomingBucket,
 }: TickerBucketMergeDiffProps) {
-  // TODO: Refactor
-  // Hardcoded merge algorithm inside this component for simplicity
-  const bucketChangeOverview = useMemo(() => {
-    const currentTickersMap = new Map<number, TickerBucketTicker>(
-      currentBucket?.tickers.map((ticker) => [ticker.tickerId, ticker]) || [],
-    );
-
-    const result = {
-      added: [] as TickerDiff[],
-      updated: [] as TickerDiff[],
-      unchanged: [] as TickerDiff[],
-    };
-
-    for (const incomingTicker of incomingBucket.tickers) {
-      const existingTicker = currentTickersMap.get(incomingTicker.tickerId);
-      if (!existingTicker) {
-        // Ticker is new, will be added
-        result.added.push({
-          quantity: incomingTicker.quantity,
-          ticker: incomingTicker,
-        });
-      } else if (existingTicker.quantity !== incomingTicker.quantity) {
-        // Ticker exists but quantity is different, will be updated
-        result.updated.push({
-          quantity: incomingTicker.quantity,
-          previousQuantity: existingTicker.quantity,
-          ticker: incomingTicker,
-        });
-      } else {
-        // Ticker exists and quantity is unchanged
-        result.unchanged.push({
-          quantity: incomingTicker.quantity,
-          ticker: incomingTicker,
-        });
-      }
-    }
-
-    return result;
-  }, [currentBucket, incomingBucket]);
+  const bucketChangeOverview = useBucketChangeOverview({
+    currentBucket,
+    incomingBucket,
+  });
 
   return (
     <Box>

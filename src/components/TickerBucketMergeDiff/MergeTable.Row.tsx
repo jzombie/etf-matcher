@@ -9,7 +9,7 @@ import useTickerDetail from "@hooks/useTickerDetail";
 import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
 
 import type { MergeTableProps } from "./MergeTable";
-import type { TickerDiff } from "./TickerBucketMergeDiff";
+import type { TickerDiff } from "./useBucketChangeOverview";
 
 export type MergeTableRowProps = {
   tickerDiff: TickerDiff;
