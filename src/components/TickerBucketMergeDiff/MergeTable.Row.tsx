@@ -67,7 +67,7 @@ function getRowStyle(actionType: "added" | "updated" | "unchanged") {
     case "added":
       return { backgroundColor: "rgba(0, 255, 0, 0.2)" }; // Light green for added
     case "updated":
-      return { backgroundColor: "rgba(255, 255, 0, 0.2)" }; // Light yellow for updated
+      return { backgroundColor: "rgba(255, 255, 0, 0.05)" }; // Light yellow for updated
     case "unchanged":
       return { backgroundColor: "rgba(200, 200, 200, 0.2)" }; // Light gray for unchanged
     default:
