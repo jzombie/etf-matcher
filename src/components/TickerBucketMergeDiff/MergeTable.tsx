@@ -38,7 +38,6 @@ export default function MergeTable({
               key={tickerDiff.ticker.tickerId}
               tickerDiff={tickerDiff}
               actionType={actionType}
-              // TODO: Add changed quantity
             />
           ))}
         </TableBody>
