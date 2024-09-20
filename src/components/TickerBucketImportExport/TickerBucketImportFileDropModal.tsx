@@ -10,16 +10,16 @@ import Section from "@components/Section";
 
 import TransparentModal, { TransparentModalProps } from "../TransparentModal";
 
-export type BucketImportFileDropModalProps = Omit<
+export type TickerBucketImportFileDropModalProps = Omit<
   TransparentModalProps,
   "children"
 >;
 
 const BORDER_INSET: number = 16;
 
-export default function BucketImportFileDropModal({
+export default function TickerBucketImportFileDropModal({
   ...rest
-}: BucketImportFileDropModalProps) {
+}: TickerBucketImportFileDropModalProps) {
   return (
     <TransparentModal {...rest}>
       <Full style={{ padding: BORDER_INSET }}>

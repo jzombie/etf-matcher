@@ -3,8 +3,8 @@ import React, { createContext, useCallback, useEffect, useState } from "react";
 import { PROJECT_NAME } from "@src/constants";
 import type { TickerBucket } from "@src/store";
 
-import BucketImportExportDialogModal from "@components/TickerBucketImportExport/BucketImportExportDialogModal";
-import BucketImportFileDropModal from "@components/TickerBucketImportExport/BucketImportFileDropModal";
+import TickerBucketImportExportDialogModal from "@components/TickerBucketImportExport/TickerBucketImportExportDialogModal";
+import TickerBucketImportFileDropModal from "@components/TickerBucketImportExport/TickerBucketImportFileDropModal";
 
 import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 
@@ -249,12 +249,12 @@ export default function BucketImportExportProvider({
       >
         {children}
 
-        <BucketImportExportDialogModal
+        <TickerBucketImportExportDialogModal
           open={isImportExportModalOpen}
           onClose={closeImportExportModal}
         />
 
-        <BucketImportFileDropModal open={isDragOver} />
+        <TickerBucketImportFileDropModal open={isDragOver} />
       </FileDragDropProvider>
     </BucketImportExportContext.Provider>
   );

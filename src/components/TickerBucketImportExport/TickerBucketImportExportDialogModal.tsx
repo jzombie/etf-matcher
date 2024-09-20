@@ -24,16 +24,16 @@ import useBucketImportExportContext from "@hooks/useBucketImportExportContext";
 
 import TickerBucketMergeDiff from "./TickerBucketMergeDiff";
 
-export type BucketImportExportDialogModalProps = Omit<
+export type TickerBucketImportExportDialogModalProps = Omit<
   DialogModalProps,
   "children"
 >;
 
-export default function BucketImportExportDialogModal({
+export default function TickerBucketImportExportDialogModal({
   open: isOpen,
   onClose,
   ...rest
-}: BucketImportExportDialogModalProps) {
+}: TickerBucketImportExportDialogModalProps) {
   const {
     importFiles,
     exportFile,
