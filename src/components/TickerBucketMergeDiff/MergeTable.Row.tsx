@@ -13,6 +13,9 @@ export type MergeTableRowProps = {
   actionType: MergeTableProps["actionType"];
 };
 
+// TODO: Handle these scenarios
+//  - Ticker is no longer available
+//  - Ticker is avaiable, but it no longer points to the same ID and/or exchange
 export default function MergeTableRow({
   ticker,
   actionType,
