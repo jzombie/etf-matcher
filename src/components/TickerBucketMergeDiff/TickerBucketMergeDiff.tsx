@@ -109,10 +109,6 @@ function MergeTable({ tickers, actionType }: MergeTableProps) {
       <Table size="small">
         <TableHead>
           <TableRow>
-            {
-              // TODO: Remove?
-              // <TableCell>Ticker ID</TableCell>
-            }
             <TableCell>Symbol</TableCell>
             <TableCell>Exchange</TableCell>
             <TableCell>Quantity</TableCell>
@@ -121,10 +117,6 @@ function MergeTable({ tickers, actionType }: MergeTableProps) {
         <TableBody>
           {tickers.map((ticker) => (
             <TableRow key={ticker.tickerId} style={getRowStyle(actionType)}>
-              {
-                // TODO: Remove?
-                // <TableCell>{ticker.tickerId}</TableCell>
-              }
               <TableCell>{ticker.symbol}</TableCell>
               <TableCell>{ticker.exchangeShortName || "N/A"}</TableCell>
               <TableCell>{formatNumberWithCommas(ticker.quantity)}</TableCell>
@@ -138,6 +130,7 @@ function MergeTable({ tickers, actionType }: MergeTableProps) {
           <Button
             variant="contained"
             color="primary"
+            // TODO: Handle
             // onClick={handleMerge}
             // disabled={!selectedFilename}
           >
@@ -148,6 +141,7 @@ function MergeTable({ tickers, actionType }: MergeTableProps) {
           <Button
             variant="contained"
             color="secondary"
+            // TODO: Handle
             // onClick={handleOverwrite}
             // disabled={!selectedFilename}
           >
