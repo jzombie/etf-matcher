@@ -8,7 +8,7 @@ import Full from "@layoutKit/Full";
 
 import Section from "@components/Section";
 
-import TransparentModal, { TransparentModalProps } from "./TransparentModal";
+import TransparentModal, { TransparentModalProps } from "../TransparentModal";
 
 export type BucketImportFileDropModalProps = Omit<
   TransparentModalProps,
