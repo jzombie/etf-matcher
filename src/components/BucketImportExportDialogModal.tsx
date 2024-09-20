@@ -1,4 +1,4 @@
-import React, { useCallback, useId, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useId, useMemo, useState } from "react";
 
 import {
   Alert,
@@ -48,6 +48,13 @@ export default function BucketImportExportDialogModal({
   const selectedSet = useMemo(() => {
     return mergeableSets?.find(({ filename }) => filename === selectedFilename);
   }, [selectedFilename, mergeableSets]);
+
+  // Auto-select filename if only one imported file
+  useEffect(() => {
+    if (mergeableSets?.length === 1) {
+      setSelectedFilename(mergeableSets[0].filename);
+    }
+  }, [mergeableSets]);
 
   // Handle export
   const handleExport = useCallback(() => {
