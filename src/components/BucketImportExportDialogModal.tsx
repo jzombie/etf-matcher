@@ -108,113 +108,116 @@ export default function BucketImportExportDialogModal({
         This feature is currently being worked on and is not fully wired up.
       </Alert>
 
-      {/* Wrap content in form to handle form-level behavior */}
-      <form onSubmit={handleSubmit}>
-        <FormControl fullWidth>
-          {/* If there are no mergeable sets, show import/export options */}
-          {!mergeableSets ? (
-            <DialogContent>
-              <Box mt={1}>
-                {/* Filename input */}
-                <TextField
-                  label="Filename"
-                  value={fileName}
-                  onChange={(e) => setFileName(e.target.value)}
-                  fullWidth
-                  sx={{ mb: 2 }}
-                />
+      <DialogContent>
+        <form onSubmit={handleSubmit}>
+          {/* Wrap content in form to handle form-level behavior */}
 
-                {/* Export Button */}
-                <Button
-                  onClick={handleExport}
-                  variant="contained"
-                  color="primary"
-                  sx={{ mb: 2 }}
-                >
-                  Export Data
-                </Button>
-
-                <Divider sx={{ margin: 2 }} />
-
-                {/* Custom File Upload Button */}
-                <Box
-                  sx={{
-                    border: "2px dashed #ccc",
-                    borderRadius: "4px",
-                    padding: "16px",
-                    textAlign: "center",
-                    cursor: "pointer",
-                    mb: 2,
-                    "&:hover": {
-                      backgroundColor: "rgba(255,255,255,.2)",
-                    },
-                  }}
-                  onClick={() =>
-                    window.document.getElementById(fileInputId)?.click()
-                  }
-                >
-                  <Typography variant="body2">
-                    {selectedFiles
-                      ? `${selectedFiles.length} file(s) selected`
-                      : "Drag and drop files here or click to select"}
-                  </Typography>
-                </Box>
-
-                {/* Hidden File Input */}
-                <input
-                  id={fileInputId}
-                  type="file"
-                  accept={extensionTypes}
-                  multiple
-                  onChange={handleFileSelect}
-                  style={{ display: "none" }}
-                />
-              </Box>
-            </DialogContent>
-          ) : (
-            <DialogContent>
-              {mergeableSets.length > 1 && (
-                <Box>
-                  <Typography variant="h6" gutterBottom>
-                    Select a File to Merge or Overwrite
-                  </Typography>
-                  <Select
+          <FormControl fullWidth>
+            {/* If there are no mergeable sets, show import/export options */}
+            {!mergeableSets ? (
+              <>
+                <Box mt={1}>
+                  {/* Filename input */}
+                  <TextField
+                    label="Filename"
+                    value={fileName}
+                    onChange={(e) => setFileName(e.target.value)}
                     fullWidth
-                    value={selectedFilename || ""}
-                    onChange={(e) =>
-                      setSelectedFilename(e.target.value as string)
-                    }
-                    displayEmpty
+                    sx={{ mb: 2 }}
+                  />
+
+                  {/* Export Button */}
+                  <Button
+                    onClick={handleExport}
+                    variant="contained"
+                    color="primary"
+                    sx={{ mb: 2 }}
                   >
-                    <MenuItem value="" disabled>
-                      Select a file
-                    </MenuItem>
-                    {mergeableSets.map((set) => (
-                      <MenuItem key={set.filename} value={set.filename}>
-                        {set.filename} ({set.buckets.length} Bucket
-                        {set.buckets.length !== 1 ? "s" : ""})
-                      </MenuItem>
-                    ))}
-                  </Select>
+                    Export Data
+                  </Button>
+
+                  <Divider sx={{ margin: 2 }} />
+
+                  {/* Custom File Upload Button */}
+                  <Box
+                    sx={{
+                      border: "2px dashed #ccc",
+                      borderRadius: "4px",
+                      padding: "16px",
+                      textAlign: "center",
+                      cursor: "pointer",
+                      mb: 2,
+                      "&:hover": {
+                        backgroundColor: "rgba(255,255,255,.2)",
+                      },
+                    }}
+                    onClick={() =>
+                      window.document.getElementById(fileInputId)?.click()
+                    }
+                  >
+                    <Typography variant="body2">
+                      {selectedFiles
+                        ? `${selectedFiles.length} file(s) selected`
+                        : "Drag and drop files here or click to select"}
+                    </Typography>
+                  </Box>
+
+                  {/* Hidden File Input */}
+                  <input
+                    id={fileInputId}
+                    type="file"
+                    accept={extensionTypes}
+                    multiple
+                    onChange={handleFileSelect}
+                    style={{ display: "none" }}
+                  />
                 </Box>
-              )}
+              </>
+            ) : (
+              <>
+                {mergeableSets.length > 1 && (
+                  <Box>
+                    <Typography variant="h6" gutterBottom>
+                      Select a File to Merge or Overwrite
+                    </Typography>
+                    <Select
+                      fullWidth
+                      value={selectedFilename || ""}
+                      onChange={(e) =>
+                        setSelectedFilename(e.target.value as string)
+                      }
+                      displayEmpty
+                    >
+                      <MenuItem value="" disabled>
+                        Select a file
+                      </MenuItem>
+                      {mergeableSets.map((set) => (
+                        <MenuItem key={set.filename} value={set.filename}>
+                          {set.filename} ({set.buckets.length} Bucket
+                          {set.buckets.length !== 1 ? "s" : ""})
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </Box>
+                )}
 
-              {selectedSet?.buckets.map((bucket) => (
-                <TickerBucketMergeDiff
-                  key={bucket.uuid}
-                  incomingBucket={bucket}
-                />
-              ))}
-            </DialogContent>
-          )}
-        </FormControl>
+                {selectedSet?.buckets.map((bucket) => (
+                  <TickerBucketMergeDiff
+                    key={bucket.uuid}
+                    incomingBucket={bucket}
+                  />
+                ))}
+              </>
+            )}
+          </FormControl>
+        </form>
+      </DialogContent>
 
-        <DialogActions>
-          <Button onClick={onClose} color="error" variant="contained">
-            Close
-          </Button>
-        </DialogActions>
-      </form>
+      <DialogActions>
+        <Button onClick={onClose} color="error" variant="contained">
+          Close
+        </Button>
+      </DialogActions>
     </DialogModal>
   );
 }
