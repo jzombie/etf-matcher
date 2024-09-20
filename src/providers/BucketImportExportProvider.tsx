@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
 
+import { PROJECT_NAME } from "@src/constants";
 import type { TickerBucket } from "@src/store";
 
 import BucketImportExportDialogModal from "@components/BucketImportExportDialogModal";
@@ -225,7 +226,7 @@ export default function BucketImportExportProvider({
   const getDefaultExportFilename = useCallback(() => {
     const now = new Date();
     const timestamp = now.toISOString().slice(0, 19).replace(/:/g, "-"); // Format: YYYY-MM-DDTHH-MM-SS
-    return `export-${timestamp}.csv`;
+    return `${PROJECT_NAME.toLowerCase().replaceAll(" ", "-")}-${timestamp}.csv`;
   }, []);
 
   return (
