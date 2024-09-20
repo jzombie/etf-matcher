@@ -42,6 +42,7 @@ export default function BucketImportExportDialogModal({
     mergeableSets,
     getDefaultExportFilename,
     importErrorMessage,
+    onImportFilename,
   } = useBucketImportExportContext();
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [exportFilename, setExportFilename] = useState<string>(
@@ -232,12 +233,13 @@ export default function BucketImportExportDialogModal({
                 {selectedSet?.buckets.map((bucket, idx) => {
                   return (
                     <React.Fragment key={bucket.uuid}>
-                      {idx > 0 && <Divider />}
+                      {
+                        // Show `Divider` if not the first element
+                        idx > 0 && <Divider sx={{ margin: 1 }} />
+                      }
                       <TickerBucketMergeDiff
                         incomingBucket={bucket}
-                        onMerge={() =>
-                          customLogger.warn("TODO: Handle merge callback")
-                        }
+                        onMerge={() => onImportFilename(selectedSet.filename)}
                       />
                     </React.Fragment>
                   );

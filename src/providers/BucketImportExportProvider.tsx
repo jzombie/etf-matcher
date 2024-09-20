@@ -26,6 +26,7 @@ type BucketImportExportContextType = {
   mergeableSets: TickerBucketSet[] | null;
   getDefaultExportFilename: () => string;
   importErrorMessage: string | null;
+  onImportFilename: (filename: string) => void;
 };
 
 export const BucketImportExportContext = createContext<
@@ -211,6 +212,10 @@ export default function BucketImportExportProvider({
     [importFiles],
   );
 
+  const handleImportFilename = useCallback(() => {
+    customLogger.debug("TODO: Handle import filename callback!");
+  }, []);
+
   // TODO: Remove
   useEffect(() => {
     customLogger.debug({ isProcessingImport });
@@ -234,6 +239,7 @@ export default function BucketImportExportProvider({
         mergeableSets,
         getDefaultExportFilename,
         importErrorMessage,
+        onImportFilename: handleImportFilename,
       }}
     >
       <FileDragDropProvider
