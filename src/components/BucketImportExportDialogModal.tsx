@@ -30,11 +30,12 @@ export type BucketImportExportDialogModalProps = Omit<
 >;
 
 export default function BucketImportExportDialogModal({
+  open: isOpen,
   onClose,
   ...rest
 }: BucketImportExportDialogModalProps) {
   // Helper function to get default filename based on current date & time
-  const getDefaultFileName = useCallback(() => {
+  const getDefaultFilename = useCallback(() => {
     const now = new Date();
     const timestamp = now.toISOString().slice(0, 19).replace(/:/g, "-"); // Format: YYYY-MM-DDTHH-MM-SS
     return `export-${timestamp}.csv`;
@@ -43,11 +44,25 @@ export default function BucketImportExportDialogModal({
   const { importFiles, exportFile, mergeableSets } =
     useBucketImportExportContext();
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
-  const [fileName, setFileName] = useState<string>(getDefaultFileName());
+  const [exportFilename, setExportFilename] =
+    useState<string>(getDefaultFilename());
   const [selectedFilename, setSelectedFilename] = useState<string | null>(null); // Track the selected set
   const selectedSet = useMemo(() => {
     return mergeableSets?.find(({ filename }) => filename === selectedFilename);
   }, [selectedFilename, mergeableSets]);
+
+  const reset = useCallback(() => {
+    setSelectedFiles(null);
+    setSelectedFilename(null);
+    // setExportFilename(getDefaultFileName()); // Leave this alone for now
+  }, []);
+
+  // Reset fields when modal is closed
+  useEffect(() => {
+    if (!isOpen) {
+      reset();
+    }
+  }, [isOpen, reset]);
 
   useEffect(() => {
     // Reset selected files when `mergeableSets` changes
@@ -64,8 +79,11 @@ export default function BucketImportExportDialogModal({
     const userConfigurableTickerBuckets =
       store.getUserConfigurableTickerBuckets();
 
-    exportFile(fileName || getDefaultFileName(), userConfigurableTickerBuckets);
-  }, [exportFile, fileName, getDefaultFileName]);
+    exportFile(
+      exportFilename || getDefaultFilename(),
+      userConfigurableTickerBuckets,
+    );
+  }, [exportFile, exportFilename, getDefaultFilename]);
 
   // Handle file selection for import
   const handleFileSelect = useCallback(
@@ -99,6 +117,7 @@ export default function BucketImportExportDialogModal({
   return (
     <DialogModal
       {...rest}
+      open={isOpen}
       onClose={onClose}
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
@@ -117,11 +136,11 @@ export default function BucketImportExportDialogModal({
             {!mergeableSets ? (
               <>
                 <Box mt={1}>
-                  {/* Filename input */}
+                  {/* Export filename input */}
                   <TextField
                     label="Filename"
-                    value={fileName}
-                    onChange={(e) => setFileName(e.target.value)}
+                    value={exportFilename}
+                    onChange={(e) => setExportFilename(e.target.value)}
                     fullWidth
                     sx={{ mb: 2 }}
                   />
