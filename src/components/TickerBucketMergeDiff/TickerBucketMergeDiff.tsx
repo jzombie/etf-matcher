@@ -16,6 +16,8 @@ export default function TickerBucketMergeDiff({
   currentBucket,
   incomingBucket,
 }: TickerBucketMergeDiffProps) {
+  // TODO: Refactor
+  // TODO: Rename to something besides `mergeResult`
   // Hardcoded merge algorithm inside this component for simplicity
   const mergeResult = useMemo(() => {
     const currentTickersMap = new Map<number, TickerBucketTicker>(
