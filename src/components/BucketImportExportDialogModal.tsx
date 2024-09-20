@@ -22,8 +22,9 @@ import DialogModal, { DialogModalProps } from "@components/DialogModal";
 
 import useBucketImportExportContext from "@hooks/useBucketImportExportContext";
 
+import customLogger from "@utils/customLogger";
+
 import TickerBucketMergeDiff from "./TickerBucketMergeDiff";
-import { UnstyledLI, UnstyledUL } from "./Unstyled";
 
 export type BucketImportExportDialogModalProps = Omit<
   DialogModalProps,
@@ -228,16 +229,19 @@ export default function BucketImportExportDialogModal({
                   </Box>
                 )}
 
-                {selectedSet && (
-                  <UnstyledUL>
-                    {selectedSet.buckets.map((bucket, idx) => (
-                      // TODO: If `idx > 0`, show divider
-                      <UnstyledLI key={bucket.uuid}>
-                        <TickerBucketMergeDiff incomingBucket={bucket} />
-                      </UnstyledLI>
-                    ))}
-                  </UnstyledUL>
-                )}
+                {selectedSet?.buckets.map((bucket, idx) => {
+                  return (
+                    <React.Fragment key={bucket.uuid}>
+                      {idx > 0 && <Divider />}
+                      <TickerBucketMergeDiff
+                        incomingBucket={bucket}
+                        onMerge={() =>
+                          customLogger.warn("TODO: Handle merge callback")
+                        }
+                      />
+                    </React.Fragment>
+                  );
+                })}
               </>
             )}
           </FormControl>

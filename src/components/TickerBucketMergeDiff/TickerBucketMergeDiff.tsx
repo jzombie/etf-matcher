@@ -10,12 +10,14 @@ import useBucketChangeOverview from "./useBucketChangeOverview";
 export type TickerBucketMergeDiffProps = {
   currentBucket?: TickerBucket;
   incomingBucket: TickerBucket;
+  onMerge?: () => void;
 };
 
 // Merge diff component to show what will be added, updated, or unchanged
 export default function TickerBucketMergeDiff({
   currentBucket,
   incomingBucket,
+  onMerge,
 }: TickerBucketMergeDiffProps) {
   const bucketChangeOverview = useBucketChangeOverview({
     currentBucket,
@@ -76,13 +78,7 @@ export default function TickerBucketMergeDiff({
           bucketChangeOverview.updated.length,
       ) && (
         <Box mt={2} display="flex" justifyContent="center">
-          <Button
-            variant="contained"
-            color="primary"
-            // TODO: Handle
-            // onClick={handleMerge}
-            // disabled={!selectedFilename}
-          >
+          <Button variant="contained" color="primary" onClick={onMerge}>
             Merge &quot;{incomingBucket.name || "Selected Set"}&quot;
           </Button>
         </Box>
