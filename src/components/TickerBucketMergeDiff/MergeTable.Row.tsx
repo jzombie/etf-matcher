@@ -20,6 +20,8 @@ export default function MergeTableRow({
   ticker,
   actionType,
 }: MergeTableRowProps) {
+  // TODO: Query ticker details
+
   return (
     <TableRow key={ticker.tickerId} style={getRowStyle(actionType)}>
       <TableCell>{ticker.symbol}</TableCell>
