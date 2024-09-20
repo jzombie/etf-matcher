@@ -34,8 +34,13 @@ export default function BucketImportExportDialogModal({
   onClose,
   ...rest
 }: BucketImportExportDialogModalProps) {
-  const { importFiles, exportFile, mergeableSets, getDefaultExportFilename } =
-    useBucketImportExportContext();
+  const {
+    importFiles,
+    exportFile,
+    mergeableSets,
+    getDefaultExportFilename,
+    importErrorMessage,
+  } = useBucketImportExportContext();
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [exportFilename, setExportFilename] = useState<string>(
     getDefaultExportFilename(),
@@ -120,6 +125,14 @@ export default function BucketImportExportDialogModal({
       <Alert severity="warning">
         This feature is currently being worked on and is not fully wired up.
       </Alert>
+
+      {importErrorMessage && (
+        <Alert severity="error">
+          An error occurred when importing a CSV:
+          <br />
+          {importErrorMessage}
+        </Alert>
+      )}
 
       <DialogContent>
         <form onSubmit={handleSubmit}>

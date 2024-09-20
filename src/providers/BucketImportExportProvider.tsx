@@ -25,6 +25,7 @@ type BucketImportExportContextType = {
   isProcessingImport: boolean;
   mergeableSets: TickerBucketSet[] | null;
   getDefaultExportFilename: () => string;
+  importErrorMessage: string | null;
 };
 
 export const BucketImportExportContext = createContext<
@@ -48,6 +49,10 @@ export default function BucketImportExportProvider({
     null,
   );
 
+  const [importErrorMessage, setImportErrorMessage] = useState<string | null>(
+    null,
+  );
+
   // Open `import/export` modal if there are mergeable sets
   useEffect(() => {
     if (mergeableSets) {
@@ -64,10 +69,15 @@ export default function BucketImportExportProvider({
 
     // Clear out mergeable sets
     setMergeableSets(null);
+
+    // Reset import error message
+    setImportErrorMessage(null);
   }, []);
 
   const importFiles = useCallback(
     async (fileList: FileList | null) => {
+      setImportErrorMessage(null);
+
       if (!fileList) {
         const errMessage = "No files selected";
         customLogger.error(errMessage);
@@ -142,9 +152,14 @@ export default function BucketImportExportProvider({
           // of other implementations of this.
           if (err instanceof Error) {
             triggerUIError(err);
+            setImportErrorMessage(err.message);
           } else {
             triggerUIError(new Error(err as string));
+            setImportErrorMessage(err as string);
           }
+
+          // Exit out of processing loop
+          break;
         }
       }
 
@@ -218,6 +233,7 @@ export default function BucketImportExportProvider({
         isProcessingImport,
         mergeableSets,
         getDefaultExportFilename,
+        importErrorMessage,
       }}
     >
       <FileDragDropProvider
