@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useEffect, useState } from "react";
 
 import { PROJECT_NAME } from "@src/constants";
 import type { TickerBucket } from "@src/store";
+import store from "@src/store";
 
 import TickerBucketImportExportDialogModal from "@components/TickerBucketImportExport/TickerBucketImportExportDialogModal";
 import TickerBucketImportFileDropModal from "@components/TickerBucketImportExport/TickerBucketImportFileDropModal";
@@ -213,14 +214,50 @@ export default function BucketImportExportProvider({
     [importFiles],
   );
 
-  const handleImportFilename = useCallback(() => {
-    customLogger.debug("TODO: Handle import filename callback!");
-  }, []);
-
   // TODO: Remove
   useEffect(() => {
     customLogger.debug({ isProcessingImport });
   }, [isProcessingImport]);
+
+  const handleImportFilename = useCallback(
+    (filename: string) => {
+      // TODO: Handle errors
+
+      const mergeableSet = mergeableSets?.find(
+        ({ filename: predicateFilename }) => filename === predicateFilename,
+      );
+
+      // TODO: Route to UI error
+      if (!mergeableSet) {
+        throw new Error("Could not locate mergeable set.");
+      }
+
+      const incomingTickerBuckets = mergeableSet.buckets;
+
+      for (const incomingBucket of incomingTickerBuckets) {
+        const currentBucket = store.getTickerBucketWithUUID(
+          incomingBucket.uuid,
+        );
+
+        if (currentBucket) {
+          store.updateTickerBucket(currentBucket, incomingBucket);
+        } else {
+          store.createTickerBucket(incomingBucket);
+        }
+      }
+
+      // Remove the filename from the mergeable sets
+      setMergeableSets(
+        (prev) =>
+          prev?.filter(
+            ({ filename: predicateFilename }) => filename !== predicateFilename,
+          ) || null,
+      );
+
+      // TODO: Show UI notification that the import was successful
+    },
+    [mergeableSets],
+  );
 
   // Helper function to get default filename based on current date & time
   const getDefaultExportFilename = useCallback(() => {
