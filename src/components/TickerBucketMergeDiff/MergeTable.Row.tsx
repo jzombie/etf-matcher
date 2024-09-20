@@ -4,6 +4,10 @@ import { TableCell, TableRow } from "@mui/material";
 
 import type { TickerBucketTicker } from "@src/store";
 
+import AvatarLogo from "@components/AvatarLogo";
+
+import useTickerDetail from "@hooks/useTickerDetail";
+
 import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
 
 import type { MergeTableProps } from "./MergeTable";
@@ -13,19 +17,22 @@ export type MergeTableRowProps = {
   actionType: MergeTableProps["actionType"];
 };
 
-// TODO: Handle these scenarios
-//  - Ticker is no longer available
-//  - Ticker is avaiable, but it no longer points to the same ID and/or exchange
 export default function MergeTableRow({
   ticker,
   actionType,
 }: MergeTableRowProps) {
-  // TODO: Query ticker details
+  const { tickerDetail } = useTickerDetail(ticker.tickerId);
 
   return (
     <TableRow key={ticker.tickerId} style={getRowStyle(actionType)}>
-      <TableCell>{ticker.symbol}</TableCell>
-      <TableCell>{ticker.exchangeShortName || "N/A"}</TableCell>
+      <TableCell>
+        <AvatarLogo tickerDetail={tickerDetail} />
+      </TableCell>
+      <TableCell>
+        {ticker.symbol}
+        {ticker.exchangeShortName ? ` (${ticker.exchangeShortName})` : ""}
+      </TableCell>
+      <TableCell>{tickerDetail?.company_name || "N/A"}</TableCell>
       <TableCell>{formatNumberWithCommas(ticker.quantity)}</TableCell>
     </TableRow>
   );

@@ -26,8 +26,9 @@ export default function MergeTable({ tickers, actionType }: MergeTableProps) {
       <Table size="small">
         <TableHead>
           <TableRow>
+            <TableCell>{/* Logo */}</TableCell>
             <TableCell>Symbol</TableCell>
-            <TableCell>Exchange</TableCell>
+            <TableCell>Company</TableCell>
             <TableCell>Quantity</TableCell>
           </TableRow>
         </TableHead>
