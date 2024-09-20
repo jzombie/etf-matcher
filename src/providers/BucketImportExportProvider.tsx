@@ -24,6 +24,7 @@ type BucketImportExportContextType = {
   exportFile: (filename: string, tickerBuckets: TickerBucket[]) => void;
   isProcessingImport: boolean;
   mergeableSets: TickerBucketSet[] | null;
+  getDefaultExportFilename: () => string;
 };
 
 export const BucketImportExportContext = createContext<
@@ -200,6 +201,13 @@ export default function BucketImportExportProvider({
     customLogger.debug({ isProcessingImport });
   }, [isProcessingImport]);
 
+  // Helper function to get default filename based on current date & time
+  const getDefaultExportFilename = useCallback(() => {
+    const now = new Date();
+    const timestamp = now.toISOString().slice(0, 19).replace(/:/g, "-"); // Format: YYYY-MM-DDTHH-MM-SS
+    return `export-${timestamp}.csv`;
+  }, []);
+
   return (
     <BucketImportExportContext.Provider
       value={{
@@ -209,6 +217,7 @@ export default function BucketImportExportProvider({
         exportFile,
         isProcessingImport,
         mergeableSets,
+        getDefaultExportFilename,
       }}
     >
       <FileDragDropProvider

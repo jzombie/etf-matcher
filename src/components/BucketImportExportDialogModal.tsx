@@ -34,18 +34,12 @@ export default function BucketImportExportDialogModal({
   onClose,
   ...rest
 }: BucketImportExportDialogModalProps) {
-  // Helper function to get default filename based on current date & time
-  const getDefaultFilename = useCallback(() => {
-    const now = new Date();
-    const timestamp = now.toISOString().slice(0, 19).replace(/:/g, "-"); // Format: YYYY-MM-DDTHH-MM-SS
-    return `export-${timestamp}.csv`;
-  }, []);
-
-  const { importFiles, exportFile, mergeableSets } =
+  const { importFiles, exportFile, mergeableSets, getDefaultExportFilename } =
     useBucketImportExportContext();
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
-  const [exportFilename, setExportFilename] =
-    useState<string>(getDefaultFilename());
+  const [exportFilename, setExportFilename] = useState<string>(
+    getDefaultExportFilename(),
+  );
   const [selectedFilename, setSelectedFilename] = useState<string | null>(null); // Track the selected set
   const selectedSet = useMemo(() => {
     return mergeableSets?.find(({ filename }) => filename === selectedFilename);
@@ -54,7 +48,7 @@ export default function BucketImportExportDialogModal({
   const reset = useCallback(() => {
     setSelectedFiles(null);
     setSelectedFilename(null);
-    // setExportFilename(getDefaultFileName()); // Leave this alone for now
+    // setExportFilename(getDefaultExportFilename()); // Leave this alone for now
   }, []);
 
   // Reset fields when modal is closed
@@ -80,10 +74,10 @@ export default function BucketImportExportDialogModal({
       store.getUserConfigurableTickerBuckets();
 
     exportFile(
-      exportFilename || getDefaultFilename(),
+      exportFilename || getDefaultExportFilename(),
       userConfigurableTickerBuckets,
     );
-  }, [exportFile, exportFilename, getDefaultFilename]);
+  }, [exportFile, exportFilename, getDefaultExportFilename]);
 
   // Handle file selection for import
   const handleFileSelect = useCallback(
