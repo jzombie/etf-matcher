@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Box, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 
 import type { TickerBucket } from "@src/store";
 
@@ -68,6 +68,23 @@ export default function TickerBucketMergeDiff({
             tickerDiffs={bucketChangeOverview.unchanged}
             actionType="unchanged"
           />
+        </Box>
+      )}
+
+      {Boolean(
+        bucketChangeOverview.added.length ||
+          bucketChangeOverview.updated.length,
+      ) && (
+        <Box mt={2} display="flex" justifyContent="center">
+          <Button
+            variant="contained"
+            color="primary"
+            // TODO: Handle
+            // onClick={handleMerge}
+            // disabled={!selectedFilename}
+          >
+            Merge &quot;{incomingBucket.name || "Selected Set"}&quot;
+          </Button>
         </Box>
       )}
     </Box>

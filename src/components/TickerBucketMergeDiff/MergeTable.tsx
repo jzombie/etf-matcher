@@ -1,8 +1,6 @@
 import React from "react";
 
 import {
-  Box,
-  Button,
   Table,
   TableBody,
   TableCell,
@@ -45,31 +43,6 @@ export default function MergeTable({
           ))}
         </TableBody>
       </Table>
-      {actionType !== "unchanged" && (
-        <Box mt={2} display="flex" justifyContent="space-between">
-          {/* Merge Button */}
-          <Button
-            variant="contained"
-            color="primary"
-            // TODO: Handle
-            // onClick={handleMerge}
-            // disabled={!selectedFilename}
-          >
-            Merge Selected Set
-          </Button>
-
-          {/* Overwrite Button */}
-          <Button
-            variant="contained"
-            color="secondary"
-            // TODO: Handle
-            // onClick={handleOverwrite}
-            // disabled={!selectedFilename}
-          >
-            Overwrite with Selected Set
-          </Button>
-        </Box>
-      )}
     </>
   );
 }
