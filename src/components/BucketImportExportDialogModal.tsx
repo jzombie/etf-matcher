@@ -96,6 +96,15 @@ export default function BucketImportExportDialogModal({
     [importFiles],
   );
 
+  // Form submission handler to prevent default behavior
+  const handleSubmit = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
+      // This is a no-op
+      event.preventDefault();
+    },
+    [],
+  );
+
   // Formatted for `input[type="file"]` element
   const extensionTypes = useMemo(
     () => FILE_IMPORT_ACCEPT_MAP.get("csv")?.mimeTypes.join(", "),
@@ -105,15 +114,6 @@ export default function BucketImportExportDialogModal({
   const titleId = useId();
   const descriptionId = useId();
   const fileInputId = useId();
-
-  // Form submission handler to prevent default behavior
-  const handleSubmit = useCallback(
-    (event: React.FormEvent<HTMLFormElement>) => {
-      // This is a no-op
-      event.preventDefault();
-    },
-    [],
-  );
 
   return (
     <DialogModal
