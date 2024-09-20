@@ -23,9 +23,8 @@ export default function TickerBucketMergeDiff({
   incomingBucket,
 }: TickerBucketMergeDiffProps) {
   // TODO: Refactor
-  // TODO: Rename to something besides `mergeResult`
   // Hardcoded merge algorithm inside this component for simplicity
-  const mergeResult = useMemo(() => {
+  const bucketChangeOverview = useMemo(() => {
     const currentTickersMap = new Map<number, TickerBucketTicker>(
       currentBucket?.tickers.map((ticker) => [ticker.tickerId, ticker]) || [],
     );
@@ -74,33 +73,39 @@ export default function TickerBucketMergeDiff({
       </Typography>
 
       {/* Added tickers */}
-      {mergeResult.added.length > 0 && (
+      {bucketChangeOverview.added.length > 0 && (
         <Box mb={2}>
           <Typography variant="subtitle1" color="primary">
             Added Tickers:
           </Typography>
-          <MergeTable tickerDiffs={mergeResult.added} actionType="added" />
+          <MergeTable
+            tickerDiffs={bucketChangeOverview.added}
+            actionType="added"
+          />
         </Box>
       )}
 
       {/* Updated tickers */}
-      {mergeResult.updated.length > 0 && (
+      {bucketChangeOverview.updated.length > 0 && (
         <Box mb={2}>
           <Typography variant="subtitle1" color="secondary">
             Updated Tickers:
           </Typography>
-          <MergeTable tickerDiffs={mergeResult.updated} actionType="updated" />
+          <MergeTable
+            tickerDiffs={bucketChangeOverview.updated}
+            actionType="updated"
+          />
         </Box>
       )}
 
       {/* Unchanged tickers */}
-      {mergeResult.unchanged.length > 0 && (
+      {bucketChangeOverview.unchanged.length > 0 && (
         <Box mb={2}>
           <Typography variant="subtitle1" color="textSecondary">
             Unchanged Tickers:
           </Typography>
           <MergeTable
-            tickerDiffs={mergeResult.unchanged}
+            tickerDiffs={bucketChangeOverview.unchanged}
             actionType="unchanged"
           />
         </Box>
