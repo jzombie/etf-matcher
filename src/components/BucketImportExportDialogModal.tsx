@@ -23,6 +23,7 @@ import DialogModal, { DialogModalProps } from "@components/DialogModal";
 import useBucketImportExportContext from "@hooks/useBucketImportExportContext";
 
 import TickerBucketMergeDiff from "./TickerBucketMergeDiff";
+import { UnstyledLI, UnstyledUL } from "./Unstyled";
 
 export type BucketImportExportDialogModalProps = Omit<
   DialogModalProps,
@@ -227,12 +228,16 @@ export default function BucketImportExportDialogModal({
                   </Box>
                 )}
 
-                {selectedSet?.buckets.map((bucket) => (
-                  <TickerBucketMergeDiff
-                    key={bucket.uuid}
-                    incomingBucket={bucket}
-                  />
-                ))}
+                {selectedSet && (
+                  <UnstyledUL>
+                    {selectedSet.buckets.map((bucket, idx) => (
+                      // TODO: If `idx > 0`, show divider
+                      <UnstyledLI key={bucket.uuid}>
+                        <TickerBucketMergeDiff incomingBucket={bucket} />
+                      </UnstyledLI>
+                    ))}
+                  </UnstyledUL>
+                )}
               </>
             )}
           </FormControl>
