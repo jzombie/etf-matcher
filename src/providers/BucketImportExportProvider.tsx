@@ -214,11 +214,7 @@ export default function BucketImportExportProvider({
     [importFiles],
   );
 
-  // TODO: Remove
-  useEffect(() => {
-    customLogger.debug({ isProcessingImport });
-  }, [isProcessingImport]);
-
+  // This performs the "final merge", writing the new data to the store
   const handleImportFilename = useCallback(
     (filename: string) => {
       // TODO: Handle errors
