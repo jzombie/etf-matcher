@@ -143,7 +143,9 @@ export default function FileDragDropProvider({
     };
   }, [handleDragOver, handleDragLeave, handleDrop, target]);
 
-  // Workaround for Chrome's iframe dragleave issue
+  // Workaround for issue in Chrome 128 issue where dragging over iframe emits
+  // `dragleave` and no longer captures (regardless if a div overlays it). This
+  // issue was not reproducable in Firefox or Safari.
   useEffect(() => {
     const iframes = Array.from(window.document.querySelectorAll("iframe")); // Convert NodeList to Array
 
