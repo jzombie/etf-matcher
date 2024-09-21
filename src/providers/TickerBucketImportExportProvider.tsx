@@ -19,7 +19,7 @@ export type TickerBucketSet = {
   buckets: TickerBucket[];
 };
 
-type BucketImportExportContextType = {
+type TickerBucketImportExportContextType = {
   openImportExportModal: () => void;
   closeImportExportModal: () => void;
   importFiles: (fileList: FileList | null) => void;
@@ -32,17 +32,16 @@ type BucketImportExportContextType = {
 };
 
 export const BucketImportExportContext = createContext<
-  BucketImportExportContextType | undefined
+  TickerBucketImportExportContextType | undefined
 >(undefined);
 
-// TODO: Rename to `TickerBucket...`
-export type BucketImportExportProviderProps = {
+export type TickerBucketImportExportProviderProps = {
   children: React.ReactNode;
 };
 
-export default function BucketImportExportProvider({
+export default function TickerBucketImportExportProvider({
   children,
-}: BucketImportExportProviderProps) {
+}: TickerBucketImportExportProviderProps) {
   const { triggerUIError } = useAppErrorBoundary();
 
   const [isImportExportModalOpen, setImportExportModalOpen] = useState(false);

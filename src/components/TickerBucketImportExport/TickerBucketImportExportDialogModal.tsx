@@ -25,7 +25,7 @@ import {
 
 import Center from "@layoutKit/Center";
 import { FILE_IMPORT_ACCEPT_MAP } from "@src/constants";
-import type { TickerBucketSet } from "@src/providers/BucketImportExportProvider";
+import type { TickerBucketSet } from "@src/providers/TickerBucketImportExportProvider";
 import store from "@src/store";
 
 import DialogModal, { DialogModalProps } from "@components/DialogModal";
