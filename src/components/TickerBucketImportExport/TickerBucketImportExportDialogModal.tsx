@@ -182,6 +182,8 @@ export default function TickerBucketImportExportDialogModal({
                           }
                           <TickerBucketMergeDiff
                             incomingBucket={bucket}
+                            // TODO: `onMerge` should be based per bucket, instead of per file.
+                            // `onImportFilename` needs to be updated to accept the given bucket instead.
                             onMerge={() =>
                               onImportFilename(selectedSet.filename)
                             }
