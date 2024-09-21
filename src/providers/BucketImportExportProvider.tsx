@@ -91,9 +91,6 @@ export default function BucketImportExportProvider({
       customLogger.debug("import files...");
       customLogger.debug(`${fileList.length} total files`);
 
-      // An array to store the processed file results with unique IDs
-      const fileResults: TickerBucketSet[] = [];
-
       // Helper function to process a file and return a promise
       const processFile = (file: File) => {
         return new Promise<TickerBucket[]>((resolve, reject) => {
@@ -138,33 +135,31 @@ export default function BucketImportExportProvider({
 
       setIsProcessingImport(true);
 
-      // Process files one by one and await the results
-      for (const file of Array.from(fileList)) {
-        try {
-          const result = await processFile(file);
-          // Associate the filename with the buckets
-          fileResults.push({
-            filename: file.name,
-            buckets: result,
-          });
-        } catch (err) {
-          customLogger.error(`Failed to process file: ${file.name}`, err);
+      const fileResults: TickerBucketSet[] = await Promise.all(
+        Array.from(fileList).map(async (file) => {
+          try {
+            const result = await processFile(file);
+            // Associate the filename with the buckets
+            return {
+              filename: file.name,
+              buckets: result,
+            };
+          } catch (err) {
+            // FIXME: These errors may contain validation errors from the Rust service
+            // and are currently echoing up verbatim to the UI, which isn't typical
+            // of other implementations of this.
+            if (err instanceof Error) {
+              triggerUIError(err);
+              setImportErrorMessage(err.message);
+            } else {
+              triggerUIError(new Error(err as string));
+              setImportErrorMessage(err as string);
+            }
 
-          // FIXME: These errors may contain validation errors from the Rust service
-          // and are currently echoing up verbatim to the UI, which isn't typical
-          // of other implementations of this.
-          if (err instanceof Error) {
-            triggerUIError(err);
-            setImportErrorMessage(err.message);
-          } else {
-            triggerUIError(new Error(err as string));
-            setImportErrorMessage(err as string);
+            throw err;
           }
-
-          // Exit out of processing loop
-          break;
-        }
-      }
+        }),
+      );
 
       setIsProcessingImport(false);
 
