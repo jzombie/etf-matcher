@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useId, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import {
   Alert,
@@ -43,6 +50,8 @@ export default function TickerBucketImportExportDialogModal({
     importErrorMessage,
     onImportFilename,
   } = useBucketImportExportContext();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [exportFilename, setExportFilename] = useState<string>(
     getDefaultExportFilename(),
@@ -113,7 +122,6 @@ export default function TickerBucketImportExportDialogModal({
 
   const titleId = useId();
   const descriptionId = useId();
-  const fileInputId = useId();
 
   return (
     <DialogModal
@@ -176,9 +184,7 @@ export default function TickerBucketImportExportDialogModal({
                         backgroundColor: "rgba(255,255,255,.2)",
                       },
                     }}
-                    onClick={() =>
-                      window.document.getElementById(fileInputId)?.click()
-                    }
+                    onClick={() => fileInputRef.current?.click()}
                   >
                     <Typography variant="body2">
                       {selectedFiles
@@ -189,7 +195,7 @@ export default function TickerBucketImportExportDialogModal({
 
                   {/* Hidden File Input */}
                   <input
-                    id={fileInputId}
+                    ref={fileInputRef}
                     type="file"
                     accept={extensionTypes}
                     multiple
