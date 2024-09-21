@@ -76,13 +76,13 @@ export default function TickerBucketImportExportDialogModal({
 
   useEffect(() => {
     // Reset selected files when `mergeableSets` changes
-    setSelectedFiles(null);
+    reset();
 
     // Auto-select filename if only one imported file
     if (mergeableSets?.length === 1) {
       setSelectedFilename(mergeableSets[0].filename);
     }
-  }, [mergeableSets]);
+  }, [mergeableSets, reset]);
 
   // Handle export
   const handleExport = useCallback(() => {
