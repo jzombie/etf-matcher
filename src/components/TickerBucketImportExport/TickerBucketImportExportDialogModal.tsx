@@ -25,6 +25,7 @@ import {
 
 import Center from "@layoutKit/Center";
 import { FILE_IMPORT_ACCEPT_MAP } from "@src/constants";
+import type { TickerBucketSet } from "@src/providers/BucketImportExportProvider";
 import store from "@src/store";
 
 import DialogModal, { DialogModalProps } from "@components/DialogModal";
@@ -45,8 +46,6 @@ export default function TickerBucketImportExportDialogModal({
   onClose,
   ...rest
 }: TickerBucketImportExportDialogModalProps) {
-  const theme = useTheme();
-
   const {
     importFiles,
     exportFile,
@@ -167,29 +166,11 @@ export default function TickerBucketImportExportDialogModal({
                 ) : (
                   <>
                     {mergeableSets.length > 1 && (
-                      <Box>
-                        <Typography variant="h6" gutterBottom>
-                          Select a File to Merge or Overwrite
-                        </Typography>
-                        <Select
-                          fullWidth
-                          value={selectedFilename || ""}
-                          onChange={(e) =>
-                            setSelectedFilename(e.target.value as string)
-                          }
-                          displayEmpty
-                        >
-                          <MenuItem value="" disabled>
-                            Select a file
-                          </MenuItem>
-                          {mergeableSets.map((set) => (
-                            <MenuItem key={set.filename} value={set.filename}>
-                              {set.filename} ({set.buckets.length} Bucket
-                              {set.buckets.length !== 1 ? "s" : ""})
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </Box>
+                      <MergeableSetsSelector
+                        selectedFilename={selectedFilename}
+                        onSetSelectedFilename={setSelectedFilename}
+                        mergeableSets={mergeableSets}
+                      />
                     )}
 
                     {selectedSet?.buckets.map((bucket, idx) => {
@@ -306,5 +287,41 @@ const FileUploadArea = ({
         />
       </Box>
     </>
+  );
+};
+
+type MergeableSetsSelectorProps = {
+  selectedFilename: string | null;
+  onSetSelectedFilename: (filename: string) => void;
+  mergeableSets: TickerBucketSet[];
+};
+
+const MergeableSetsSelector = ({
+  selectedFilename,
+  onSetSelectedFilename,
+  mergeableSets,
+}: MergeableSetsSelectorProps) => {
+  return (
+    <Box>
+      <Typography variant="h6" gutterBottom>
+        Select a File to Merge or Overwrite
+      </Typography>
+      <Select
+        fullWidth
+        value={selectedFilename || ""}
+        onChange={(e) => onSetSelectedFilename(e.target.value as string)}
+        displayEmpty
+      >
+        <MenuItem value="" disabled>
+          Select a file
+        </MenuItem>
+        {mergeableSets.map((set) => (
+          <MenuItem key={set.filename} value={set.filename}>
+            {set.filename} ({set.buckets.length} Bucket
+            {set.buckets.length !== 1 ? "s" : ""})
+          </MenuItem>
+        ))}
+      </Select>
+    </Box>
   );
 };

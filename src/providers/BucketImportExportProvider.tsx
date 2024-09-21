@@ -14,7 +14,7 @@ import customLogger from "@utils/customLogger";
 
 import FileDragDropProvider from "./FileDragDropProvider";
 
-type TickerBucketSet = {
+export type TickerBucketSet = {
   filename: string;
   buckets: TickerBucket[];
 };
@@ -35,6 +35,7 @@ export const BucketImportExportContext = createContext<
   BucketImportExportContextType | undefined
 >(undefined);
 
+// TODO: Rename to `TickerBucket...`
 export type BucketImportExportProviderProps = {
   children: React.ReactNode;
 };
