@@ -161,7 +161,7 @@ impl TickerBucket {
             };
 
             // Group tickers by their bucket
-            let bucket = buckets_map.entry(name.clone()).or_insert(TickerBucket {
+            let bucket = buckets_map.entry(uuid.clone()).or_insert(TickerBucket {
                 uuid,
                 name,
                 bucket_type,
