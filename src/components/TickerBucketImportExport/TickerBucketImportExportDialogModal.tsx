@@ -20,6 +20,7 @@ import {
   Select,
   TextField,
   Typography,
+  useTheme,
 } from "@mui/material";
 
 import Center from "@layoutKit/Center";
@@ -44,6 +45,8 @@ export default function TickerBucketImportExportDialogModal({
   onClose,
   ...rest
 }: TickerBucketImportExportDialogModalProps) {
+  const theme = useTheme();
+
   const {
     importFiles,
     exportFile,
@@ -180,14 +183,14 @@ export default function TickerBucketImportExportDialogModal({
                   {/* Custom File Upload Button */}
                   <Box
                     sx={{
-                      border: "2px dashed #ccc",
-                      borderRadius: "4px",
-                      padding: "16px",
+                      border: `2px dashed ${theme.palette.divider}`,
+                      borderRadius: theme.shape.borderRadius,
+                      padding: theme.spacing(2),
                       textAlign: "center",
                       cursor: "pointer",
                       mb: 2,
                       "&:hover": {
-                        backgroundColor: "rgba(255,255,255,.2)",
+                        backgroundColor: theme.palette.action.hover, // Use theme's action hover color
                       },
                     }}
                     onClick={() => fileInputRef.current?.click()}

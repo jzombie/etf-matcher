@@ -1,7 +1,7 @@
 import React from "react";
 
 import { CloudUpload as CloudUploadIcon } from "@mui/icons-material";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 
 import Center from "@layoutKit/Center";
 import Full from "@layoutKit/Full";
@@ -20,12 +20,15 @@ const BORDER_INSET: number = 16;
 export default function TickerBucketImportFileDropModal({
   ...rest
 }: TickerBucketImportFileDropModalProps) {
+  const theme = useTheme();
+
   return (
     <TransparentModal {...rest}>
       <Full style={{ padding: BORDER_INSET }}>
         <Full
           style={{
-            border: "8px dashed #cccccc",
+            border: `8px dashed ${theme.palette.divider}`,
+            borderRadius: theme.shape.borderRadius,
             textAlign: "center",
           }}
         >
