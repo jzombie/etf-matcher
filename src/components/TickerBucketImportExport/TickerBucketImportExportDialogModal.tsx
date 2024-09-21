@@ -124,9 +124,6 @@ export default function TickerBucketImportExportDialogModal({
       aria-describedby={descriptionId}
     >
       <DialogTitle id={titleId}>Import/Export</DialogTitle>
-      <Alert severity="warning">
-        This feature is currently being worked on and is not fully wired up.
-      </Alert>
 
       {importErrorMessage && (
         <Alert severity="error">
