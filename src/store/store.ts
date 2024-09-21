@@ -404,6 +404,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       if (storeStateKeys.includes(idbKey as keyof StoreStateProps)) {
         const item = await this._indexedDBInterface.getItem(idbKey);
         if (item !== undefined) {
+          // TODO: Performance could be improved here by not setting state for
+          // each key, and using a single batch update instead
           this.setState({ [idbKey]: item });
         }
       }
