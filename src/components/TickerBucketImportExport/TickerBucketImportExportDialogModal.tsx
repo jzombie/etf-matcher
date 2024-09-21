@@ -116,7 +116,7 @@ export default function TickerBucketImportExportDialogModal({
 
   // Formatted for `input[type="file"]` element
   const extensionTypes = useMemo(
-    () => FILE_IMPORT_ACCEPT_MAP.get("csv")?.mimeTypes.join(", "),
+    () => FILE_IMPORT_ACCEPT_MAP.get("csv")?.mimeTypes?.join(", ") || "",
     [],
   );
 
