@@ -15,6 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 
+import Center from "@layoutKit/Center";
 import { FILE_IMPORT_ACCEPT_MAP } from "@src/constants";
 import store from "@src/store";
 
@@ -141,7 +142,7 @@ export default function TickerBucketImportExportDialogModal({
 
           <FormControl fullWidth>
             {/* If there are no mergeable sets, show import/export options */}
-            {!mergeableSets ? (
+            {mergeableSets === null ? (
               <>
                 <Box mt={1}>
                   {/* Export filename input */}
@@ -202,46 +203,56 @@ export default function TickerBucketImportExportDialogModal({
               </>
             ) : (
               <>
-                {mergeableSets.length > 1 && (
-                  <Box>
-                    <Typography variant="h6" gutterBottom>
-                      Select a File to Merge or Overwrite
-                    </Typography>
-                    <Select
-                      fullWidth
-                      value={selectedFilename || ""}
-                      onChange={(e) =>
-                        setSelectedFilename(e.target.value as string)
-                      }
-                      displayEmpty
-                    >
-                      <MenuItem value="" disabled>
-                        Select a file
-                      </MenuItem>
-                      {mergeableSets.map((set) => (
-                        <MenuItem key={set.filename} value={set.filename}>
-                          {set.filename} ({set.buckets.length} Bucket
-                          {set.buckets.length !== 1 ? "s" : ""})
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </Box>
-                )}
+                {mergeableSets.length === 0 ? (
+                  <Center>
+                    <Alert severity="success">Import complete</Alert>
+                  </Center>
+                ) : (
+                  <>
+                    {mergeableSets.length > 1 && (
+                      <Box>
+                        <Typography variant="h6" gutterBottom>
+                          Select a File to Merge or Overwrite
+                        </Typography>
+                        <Select
+                          fullWidth
+                          value={selectedFilename || ""}
+                          onChange={(e) =>
+                            setSelectedFilename(e.target.value as string)
+                          }
+                          displayEmpty
+                        >
+                          <MenuItem value="" disabled>
+                            Select a file
+                          </MenuItem>
+                          {mergeableSets.map((set) => (
+                            <MenuItem key={set.filename} value={set.filename}>
+                              {set.filename} ({set.buckets.length} Bucket
+                              {set.buckets.length !== 1 ? "s" : ""})
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </Box>
+                    )}
 
-                {selectedSet?.buckets.map((bucket, idx) => {
-                  return (
-                    <React.Fragment key={bucket.uuid}>
-                      {
-                        // Show `Divider` if not the first element
-                        idx > 0 && <Divider sx={{ margin: 1 }} />
-                      }
-                      <TickerBucketMergeDiff
-                        incomingBucket={bucket}
-                        onMerge={() => onImportFilename(selectedSet.filename)}
-                      />
-                    </React.Fragment>
-                  );
-                })}
+                    {selectedSet?.buckets.map((bucket, idx) => {
+                      return (
+                        <React.Fragment key={bucket.uuid}>
+                          {
+                            // Show `Divider` if not the first element
+                            idx > 0 && <Divider sx={{ margin: 1 }} />
+                          }
+                          <TickerBucketMergeDiff
+                            incomingBucket={bucket}
+                            onMerge={() =>
+                              onImportFilename(selectedSet.filename)
+                            }
+                          />
+                        </React.Fragment>
+                      );
+                    })}
+                  </>
+                )}
               </>
             )}
           </FormControl>
