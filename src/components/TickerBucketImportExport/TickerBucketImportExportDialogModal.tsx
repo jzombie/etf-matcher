@@ -55,8 +55,8 @@ export default function TickerBucketImportExportDialogModal({
     importErrorMessage,
     onImportFilename,
   } = useBucketImportExportContext();
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // TODO: Rename `selectedFiles`; it's confusing with `selectedFilename` as well
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [exportFilename, setExportFilename] = useState<string>(
     getDefaultExportFilename(),
@@ -123,12 +123,6 @@ export default function TickerBucketImportExportDialogModal({
     [],
   );
 
-  // Formatted for `input[type="file"]` element
-  const extensionTypes = useMemo(
-    () => FILE_IMPORT_ACCEPT_MAP.get("csv")?.mimeTypes?.join(", ") || "",
-    [],
-  );
-
   const titleId = useId();
   const descriptionId = useId();
 
@@ -157,62 +151,13 @@ export default function TickerBucketImportExportDialogModal({
           <FormControl fullWidth>
             {/* If there are no mergeable sets, show import/export options */}
             {mergeableSets === null ? (
-              <>
-                <Box mt={1}>
-                  {/* Export filename input */}
-                  <TextField
-                    label="Filename"
-                    value={exportFilename}
-                    onChange={(e) => setExportFilename(e.target.value)}
-                    fullWidth
-                    sx={{ mb: 2 }}
-                  />
-
-                  {/* Export Button */}
-                  <Button
-                    onClick={handleExport}
-                    variant="contained"
-                    color="primary"
-                    sx={{ mb: 2 }}
-                  >
-                    Export Data
-                  </Button>
-
-                  <Divider sx={{ margin: 2 }} />
-
-                  {/* Custom File Upload Button */}
-                  <Box
-                    sx={{
-                      border: `2px dashed ${theme.palette.divider}`,
-                      borderRadius: theme.shape.borderRadius,
-                      padding: theme.spacing(2),
-                      textAlign: "center",
-                      cursor: "pointer",
-                      mb: 2,
-                      "&:hover": {
-                        backgroundColor: theme.palette.action.hover, // Use theme's action hover color
-                      },
-                    }}
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <Typography variant="body2">
-                      {selectedFiles
-                        ? `${selectedFiles.length} file(s) selected`
-                        : "Drag and drop files here or click to select"}
-                    </Typography>
-                  </Box>
-
-                  {/* Hidden File Input */}
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept={extensionTypes}
-                    multiple
-                    onChange={handleFileSelect}
-                    style={{ display: "none" }}
-                  />
-                </Box>
-              </>
+              <FileUploadArea
+                onSetExportFilename={setExportFilename}
+                exportFilename={exportFilename}
+                onExport={handleExport}
+                selectedFiles={selectedFiles}
+                onFileSelect={handleFileSelect}
+              />
             ) : (
               <>
                 {mergeableSets.length === 0 ? (
@@ -279,3 +224,87 @@ export default function TickerBucketImportExportDialogModal({
     </DialogModal>
   );
 }
+
+type FileUploadAreaProps = {
+  onSetExportFilename: (filename: string) => void;
+  exportFilename: string;
+  onExport: () => void;
+  selectedFiles: FileList | null;
+  onFileSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
+};
+
+const FileUploadArea = ({
+  onSetExportFilename,
+  exportFilename,
+  onExport,
+  selectedFiles,
+  onFileSelect,
+}: FileUploadAreaProps) => {
+  const theme = useTheme();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Formatted for `input[type="file"]` element
+  const extensionTypes = useMemo(
+    () => FILE_IMPORT_ACCEPT_MAP.get("csv")?.mimeTypes?.join(", ") || "",
+    [],
+  );
+
+  return (
+    <>
+      <Box mt={1}>
+        {/* Export filename input */}
+        <TextField
+          label="Filename"
+          value={exportFilename}
+          onChange={(e) => onSetExportFilename(e.target.value)}
+          fullWidth
+          sx={{ mb: 2 }}
+        />
+
+        {/* Export Button */}
+        <Button
+          onClick={onExport}
+          variant="contained"
+          color="primary"
+          sx={{ mb: 2 }}
+        >
+          Export Data
+        </Button>
+
+        <Divider sx={{ margin: 2 }} />
+
+        {/* Custom File Upload Button */}
+        <Box
+          sx={{
+            border: `2px dashed ${theme.palette.divider}`,
+            borderRadius: theme.shape.borderRadius,
+            padding: theme.spacing(2),
+            textAlign: "center",
+            cursor: "pointer",
+            mb: 2,
+            "&:hover": {
+              backgroundColor: theme.palette.action.hover,
+            },
+          }}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <Typography variant="body2">
+            {selectedFiles
+              ? `${selectedFiles.length} file(s) selected`
+              : "Drag and drop files here or click to select"}
+          </Typography>
+        </Box>
+
+        {/* Hidden File Input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept={extensionTypes}
+          multiple
+          onChange={onFileSelect}
+          style={{ display: "none" }}
+        />
+      </Box>
+    </>
+  );
+};
