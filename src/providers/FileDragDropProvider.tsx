@@ -38,19 +38,24 @@ export default function FileDragDropProvider({
 
   const isDragOverCurrentRef = useStableCurrentRef(isDragOver);
 
+  // FIXME: `isFileDrag` monitoring is used to not conflict with with the
+  // window manager tile dragging, however the caveat is that Safari 17.5
+  // does not register this property as expected until the drop event.
+  const getIsFileDragEvent: (evt: DragEvent) => boolean = useCallback(
+    (evt: DragEvent) => {
+      return Array.from(evt.dataTransfer?.items || []).some(
+        (item) => item.kind === "file",
+      );
+    },
+    [],
+  );
+
   const handleDragOver = useCallback(
     (evt: DragEvent) => {
       evt.preventDefault();
       evt.stopPropagation();
 
-      // FIXME: `isFileDrag` monitoring is used to not conflict with with the
-      // window manager tile dragging, however the caveat is that Safari 17.5
-      // does not register this property as expected until the drop event.
-      //
-      // Check if the dragged item is a file
-      const isFileDrag = Array.from(evt.dataTransfer?.items || []).some(
-        (item) => item.kind === "file",
-      );
+      const isFileDrag = getIsFileDragEvent(evt);
 
       if (isFileDrag) {
         const prevIsDragOver = isDragOverCurrentRef.current;
@@ -65,7 +70,7 @@ export default function FileDragDropProvider({
         }
       }
     },
-    [isDragOverCurrentRef, onDragOverStableRef],
+    [getIsFileDragEvent, isDragOverCurrentRef, onDragOverStableRef],
   );
 
   const handleDragLeave = useCallback(
@@ -73,14 +78,7 @@ export default function FileDragDropProvider({
       evt.preventDefault();
       evt.stopPropagation();
 
-      // FIXME: `isFileDrag` monitoring is used to not conflict with with the
-      // window manager tile dragging, however the caveat is that Safari 17.5
-      // does not register this property as expected until the drop event.
-      //
-      // Check if the dragged item is a file
-      const isFileDrag = Array.from(evt.dataTransfer?.items || []).some(
-        (item) => item.kind === "file",
-      );
+      const isFileDrag = getIsFileDragEvent(evt);
 
       if (isFileDrag) {
         setIsDragOver(false);
@@ -91,7 +89,7 @@ export default function FileDragDropProvider({
         }
       }
     },
-    [onDragLeaveStableRef],
+    [getIsFileDragEvent, onDragLeaveStableRef],
   );
 
   const handleDrop = useCallback(
@@ -99,16 +97,9 @@ export default function FileDragDropProvider({
       evt.preventDefault();
       evt.stopPropagation();
 
-      // FIXME: `isFileDrag` monitoring is used to not conflict with with the
-      // window manager tile dragging, however the caveat is that Safari 17.5
-      // does not register this property as expected until the drop event.
-      //
-      // Check if the dragged item is a file
-      const isFileDrop = Array.from(evt.dataTransfer?.items || []).some(
-        (item) => item.kind === "file",
-      );
+      const isFileDrag = getIsFileDragEvent(evt);
 
-      if (isFileDrop) {
+      if (isFileDrag) {
         setIsDragOver(false);
 
         const onDrop = onDropStableRef.current;
@@ -117,7 +108,7 @@ export default function FileDragDropProvider({
         }
       }
     },
-    [onDropStableRef],
+    [getIsFileDragEvent, onDropStableRef],
   );
 
   // Handle the drag-over state when the file is dragged within the app bounds
