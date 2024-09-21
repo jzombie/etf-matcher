@@ -30,6 +30,8 @@ import DialogModal, { DialogModalProps } from "@components/DialogModal";
 
 import useBucketImportExportContext from "@hooks/useBucketImportExportContext";
 
+import customLogger from "@utils/customLogger";
+
 import TickerBucketMergeDiff from "./TickerBucketMergeDiff";
 
 export type TickerBucketImportExportDialogModalProps = Omit<
@@ -99,8 +101,12 @@ export default function TickerBucketImportExportDialogModal({
   const handleFileSelect = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const files = event.target.files;
-      setSelectedFiles(files);
-      importFiles(files);
+      if (files) {
+        setSelectedFiles(files);
+        importFiles(files);
+      } else {
+        customLogger.warn("No files selected");
+      }
     },
     [importFiles],
   );
