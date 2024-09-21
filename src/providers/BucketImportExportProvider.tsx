@@ -217,42 +217,47 @@ export default function BucketImportExportProvider({
   // This performs the "final merge", writing the new data to the store
   const handleImportFilename = useCallback(
     (filename: string) => {
-      // TODO: Handle errors
-
-      const mergeableSet = mergeableSets?.find(
-        ({ filename: predicateFilename }) => filename === predicateFilename,
-      );
-
-      // TODO: Route to UI error
-      if (!mergeableSet) {
-        throw new Error("Could not locate mergeable set.");
-      }
-
-      const incomingTickerBuckets = mergeableSet.buckets;
-
-      for (const incomingBucket of incomingTickerBuckets) {
-        const currentBucket = store.getTickerBucketWithUUID(
-          incomingBucket.uuid,
+      try {
+        const mergeableSet = mergeableSets?.find(
+          ({ filename: predicateFilename }) => filename === predicateFilename,
         );
 
-        if (currentBucket) {
-          store.updateTickerBucket(currentBucket, incomingBucket);
+        if (!mergeableSet) {
+          throw new Error("Could not locate mergeable set.");
+        }
+
+        const incomingTickerBuckets = mergeableSet.buckets;
+
+        for (const incomingBucket of incomingTickerBuckets) {
+          const currentBucket = store.getTickerBucketWithUUID(
+            incomingBucket.uuid,
+          );
+
+          if (currentBucket) {
+            store.updateTickerBucket(currentBucket, incomingBucket);
+          } else {
+            store.createTickerBucket(incomingBucket);
+          }
+        }
+
+        // Remove the filename from the mergeable sets
+        setMergeableSets(
+          (prev) =>
+            prev?.filter(
+              ({ filename: predicateFilename }) =>
+                filename !== predicateFilename,
+            ) || null,
+        );
+      } catch (err) {
+        customLogger.error(err);
+        if (err instanceof Error) {
+          triggerUIError(err);
         } else {
-          store.createTickerBucket(incomingBucket);
+          triggerUIError(new Error(err as string));
         }
       }
-
-      // Remove the filename from the mergeable sets
-      setMergeableSets(
-        (prev) =>
-          prev?.filter(
-            ({ filename: predicateFilename }) => filename !== predicateFilename,
-          ) || null,
-      );
-
-      // TODO: Show UI notification that the import was successful
     },
-    [mergeableSets],
+    [mergeableSets, triggerUIError],
   );
 
   // Helper function to get default filename based on current date & time
