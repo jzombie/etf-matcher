@@ -106,7 +106,7 @@ export default function BucketImportExportProvider({
 
           // Set up the FileReader to read the file as text
           reader.onload = (event) => {
-            if (event.target && event.target.result) {
+            if (event.target?.result) {
               csvToTickerBuckets(event.target.result as string)
                 .then((resp) => {
                   resolve(resp); // Resolve with the result of csvToTickerBuckets
