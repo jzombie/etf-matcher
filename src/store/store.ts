@@ -128,6 +128,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       visibleTickerIds: [],
       isSearchModalOpen: false,
       tickerBuckets: [
+        // Note: The following `UUID`s are created at each store initialization,
+        // but are replaced if an existing session has loaded via IndexedDB.
+        // See: `_restorePersistentSession` in this class.
         {
           uuid: uuidv4(),
           name: "My Portfolio",
