@@ -411,8 +411,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       }
     }
 
+    // Emit to listeners that the session has been restored
     this.emit("persistent-session-restore");
 
+    // Capture future store updates in the IndexedDB database
     this._subscribeToStateUpdatesForPersistence();
   }
 
