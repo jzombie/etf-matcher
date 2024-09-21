@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
 
-import { PROJECT_NAME } from "@src/constants";
+import { MAX_CSV_IMPORT_SIZE, PROJECT_NAME } from "@src/constants";
 import type { TickerBucket } from "@src/store";
 import store from "@src/store";
 
@@ -11,6 +11,7 @@ import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 
 import { csvToTickerBuckets, tickerBucketsToCSV } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
+import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
 
 import FileDragDropProvider from "./FileDragDropProvider";
 
@@ -113,7 +114,6 @@ export default function TickerBucketImportExportProvider({
         return new Promise<TickerBucket[]>((resolve, reject) => {
           const reader = new FileReader();
 
-          // TODO: Error if file size is beyond a certain size
           // Log file metadata
           customLogger.debug(`File Name: ${file.name}`);
           customLogger.debug(`File Size: ${file.size} bytes`);
@@ -121,6 +121,12 @@ export default function TickerBucketImportExportProvider({
           customLogger.debug(
             `Last Modified: ${new Date(file.lastModified).toLocaleString()}`,
           );
+
+          if (file.size > MAX_CSV_IMPORT_SIZE) {
+            throw new Error(
+              `Uploaded file larger than than ${formatNumberWithCommas(MAX_CSV_IMPORT_SIZE)} bytes`,
+            );
+          }
 
           // Set up the FileReader to read the file as text
           reader.onload = (event) => {
