@@ -332,7 +332,6 @@ pub async fn get_cosine_by_ticker_bucket(
         .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
 }
 
-// TODO: Finish implementing
 #[wasm_bindgen]
 pub async fn ticker_buckets_to_csv(json_ticker_buckets: JsValue) -> Result<JsValue, JsValue> {
     // Convert JsValue (JSON string) to a Rust String
@@ -351,7 +350,6 @@ pub async fn ticker_buckets_to_csv(json_ticker_buckets: JsValue) -> Result<JsVal
     Ok(JsValue::from_str(&csv_data))
 }
 
-// TODO: Finish implementing
 #[wasm_bindgen]
 pub async fn csv_to_ticker_buckets(csv_data: &str) -> Result<JsValue, JsValue> {
     // Call the existing Rust function that parses CSV into TickerBucket
