@@ -6,9 +6,9 @@ type FileDragDropContextType = {
   isDragOver: boolean;
 };
 
-export const FileDragDropContext = createContext<FileDragDropContextType>(
-  {} as FileDragDropContextType,
-);
+export const FileDragDropContext = createContext<FileDragDropContextType>({
+  isDragOver: false,
+});
 
 export type FileDragDropProviderProps = {
   onDragOverStateChange?: (isDragOver: boolean) => void;
