@@ -77,6 +77,23 @@ export default function BucketImportExportProvider({
     setImportErrorMessage(null);
   }, []);
 
+  // Note: These errors may contain validation errors from the Rust service
+  // and are currently echoing up verbatim to the UI, which isn't typical
+  // of other implementations of this.
+  const handleVerbatimImportError = useCallback(
+    (err: Error | string | unknown) => {
+      customLogger.error(err);
+      if (err instanceof Error) {
+        triggerUIError(err);
+        setImportErrorMessage(err.message);
+      } else {
+        triggerUIError(new Error(err as string));
+        setImportErrorMessage(err as string);
+      }
+    },
+    [triggerUIError],
+  );
+
   const importFiles = useCallback(
     async (fileList: FileList | null) => {
       setImportErrorMessage(null);
@@ -96,6 +113,7 @@ export default function BucketImportExportProvider({
         return new Promise<TickerBucket[]>((resolve, reject) => {
           const reader = new FileReader();
 
+          // TODO: Error if file size is beyond a certain size
           // Log file metadata
           customLogger.debug(`File Name: ${file.name}`);
           customLogger.debug(`File Size: ${file.size} bytes`);
@@ -145,16 +163,7 @@ export default function BucketImportExportProvider({
               buckets: result,
             };
           } catch (err) {
-            // FIXME: These errors may contain validation errors from the Rust service
-            // and are currently echoing up verbatim to the UI, which isn't typical
-            // of other implementations of this.
-            if (err instanceof Error) {
-              triggerUIError(err);
-              setImportErrorMessage(err.message);
-            } else {
-              triggerUIError(new Error(err as string));
-              setImportErrorMessage(err as string);
-            }
+            handleVerbatimImportError(err);
 
             throw err;
           }
@@ -172,7 +181,7 @@ export default function BucketImportExportProvider({
       // Return the file results as an array
       return fileResults;
     },
-    [triggerUIError],
+    [handleVerbatimImportError, triggerUIError],
   );
 
   const exportFile = useCallback(
@@ -244,15 +253,11 @@ export default function BucketImportExportProvider({
             ) || null,
         );
       } catch (err) {
-        customLogger.error(err);
-        if (err instanceof Error) {
-          triggerUIError(err);
-        } else {
-          triggerUIError(new Error(err as string));
-        }
+        handleVerbatimImportError(err);
+        throw err;
       }
     },
-    [mergeableSets, triggerUIError],
+    [mergeableSets, handleVerbatimImportError],
   );
 
   // Helper function to get default filename based on current date & time
