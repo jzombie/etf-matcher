@@ -175,6 +175,8 @@ export default function TickerBucketImportExportProvider({
           } catch (err) {
             handleVerbatimImportError(err);
 
+            // Abruptly stop if there is an error when processing any file.
+            // This is the expected behavior for this operation.
             throw err;
           }
         }),
