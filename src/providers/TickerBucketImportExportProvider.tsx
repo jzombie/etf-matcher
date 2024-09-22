@@ -91,9 +91,14 @@ export default function TickerBucketImportExportProvider({
       if (err instanceof Error) {
         triggerUIError(err);
         setImportErrorMessage(err.message);
+      } else if (typeof err === "string") {
+        triggerUIError(new Error(err));
+        setImportErrorMessage(err);
       } else {
-        triggerUIError(new Error(err as string));
-        setImportErrorMessage(err as string);
+        const genericError = "An unexpected error occurred.";
+        customLogger.error("Unknown error type:", err);
+        triggerUIError(new Error(genericError));
+        setImportErrorMessage(genericError);
       }
     },
     [triggerUIError],
