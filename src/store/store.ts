@@ -4,6 +4,7 @@ import {
   MAX_RECENTLY_VIEWED_ITEMS,
   MIN_TICKER_BUCKET_NAME_LENGTH,
 } from "@src/constants";
+import { v4 as uuidv4 } from "uuid";
 
 import IndexedDBInterface from "@utils/IndexedDBInterface";
 import MQTTRoom from "@utils/MQTTRoom";
@@ -11,6 +12,7 @@ import {
   ReactStateEmitter,
   StateEmitterDefaultEvents,
 } from "@utils/StateEmitter";
+import arraysEqual from "@utils/arraysEqual";
 import type { RustServiceCacheDetail } from "@utils/callRustService";
 import {
   NotifierEvent,
@@ -44,12 +46,12 @@ export type TickerBucketTicker = {
 };
 
 export type TickerBucket = {
+  uuid: string;
   name: string;
   tickers: TickerBucketTicker[];
   type: "watchlist" | "portfolio" | "ticker_tape" | "recently_viewed";
   description: string;
   isUserConfigurable: boolean;
-  // TODO: Add `uuid` field
   // TODO: Track bucket last update time
 };
 
@@ -126,7 +128,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       visibleTickerIds: [],
       isSearchModalOpen: false,
       tickerBuckets: [
+        // Note: The following `UUID`s are created at each store initialization,
+        // but are replaced if an existing session has loaded via IndexedDB.
+        // See: `_restorePersistentSession` in this class.
         {
+          uuid: uuidv4(),
           name: "My Portfolio",
           tickers: [],
           type: "portfolio",
@@ -134,6 +140,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           isUserConfigurable: true,
         },
         {
+          uuid: uuidv4(),
           name: "My Watchlist",
           tickers: [],
           type: "watchlist",
@@ -141,6 +148,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           isUserConfigurable: true,
         },
         {
+          uuid: uuidv4(),
           name: "My Ticker Tape",
           tickers: [],
           type: "ticker_tape",
@@ -148,6 +156,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
           isUserConfigurable: true,
         },
         {
+          uuid: uuidv4(),
           name: "My Recently Viewed",
           tickers: [],
           type: "recently_viewed",
@@ -212,7 +221,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         return {
           tickerId: fulfilledResult.value,
           symbol: DEFAULT_TICKER_TAPE_TICKERS[index].symbol,
-          exchange_short_name:
+          exchangeShortName:
             DEFAULT_TICKER_TAPE_TICKERS[index].exchangeShortName,
           quantity: 1,
         };
@@ -395,13 +404,17 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       if (storeStateKeys.includes(idbKey as keyof StoreStateProps)) {
         const item = await this._indexedDBInterface.getItem(idbKey);
         if (item !== undefined) {
+          // TODO: Performance could be improved here by not setting state for
+          // each key, and using a single batch update instead
           this.setState({ [idbKey]: item });
         }
       }
     }
 
+    // Emit to listeners that the session has been restored
     this.emit("persistent-session-restore");
 
+    // Capture future store updates in the IndexedDB database
     this._subscribeToStateUpdatesForPersistence();
   }
 
@@ -427,20 +440,15 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   get isFreshSession() {
-    const recentlyViewedBucket =
-      this.getFirstTickerBucketOfType("recently_viewed");
+    const initialTickerBucketUUIDs = this.initialState.tickerBuckets.map(
+      ({ uuid }) => uuid,
+    );
 
-    if (!recentlyViewedBucket) {
-      // Somehow the user deleted this bucket, so assume not a fresh session
-      return false;
-    }
+    const currentTickerBucketUUIDs = this.state.tickerBuckets.map(
+      ({ uuid }) => uuid,
+    );
 
-    if (!recentlyViewedBucket.tickers.length) {
-      // Has not viewed any tickers
-      return true;
-    }
-
-    return false;
+    return arraysEqual(initialTickerBucketUUIDs, currentTickerBucketUUIDs);
   }
 
   /**
@@ -522,8 +530,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     description,
     isUserConfigurable,
     tickers = [],
-  }: TickerBucket) {
-    const nextBucket: TickerBucket = {
+  }: Omit<TickerBucket, "uuid">) {
+    this.validateTickerBucketName(name, type);
+
+    const newBucket: TickerBucket = {
+      uuid: uuidv4(),
       name,
       tickers,
       type,
@@ -531,10 +542,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       isUserConfigurable,
     };
 
-    this.validateTickerBucketName(name, type);
-
     this.setState((prev) => ({
-      tickerBuckets: [nextBucket, ...prev.tickerBuckets],
+      tickerBuckets: [newBucket, ...prev.tickerBuckets],
     }));
   }
 
@@ -548,7 +557,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.map((bucket) =>
-        bucket.name === prevBucket.name && bucket.type === prevBucket.type
+        bucket.uuid === prevBucket.uuid
           ? { ...bucket, ...updatedBucket }
           : bucket,
       );
@@ -562,11 +571,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   deleteTickerBucket(tickerBucket: TickerBucket) {
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.filter(
-        (cachedBucket) =>
-          !(
-            cachedBucket.name === tickerBucket.name &&
-            cachedBucket.type === tickerBucket.type
-          ),
+        (cachedBucket) => cachedBucket.uuid !== tickerBucket.uuid,
       );
       return { tickerBuckets };
     });
@@ -582,11 +587,11 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     const tickerAndExchange = await fetchSymbolAndExchange(tickerId);
 
     const symbol = tickerAndExchange[0];
-    const exchange_short_name = tickerAndExchange[1];
+    const exchangeShortName = tickerAndExchange[1];
 
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.map((bucket) => {
-        if (bucket.name === tickerBucket.name) {
+        if (bucket.uuid === tickerBucket.uuid) {
           return {
             ...bucket,
             tickers: Array.from(
@@ -595,7 +600,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
                 {
                   tickerId,
                   symbol,
-                  exchange_short_name,
+                  exchangeShortName,
                   quantity,
                 },
                 ...bucket.tickers,
@@ -614,7 +619,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   removeTickerFromBucket(tickerId: number, tickerBucket: TickerBucket) {
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.map((bucket) => {
-        if (bucket.name === tickerBucket.name) {
+        if (bucket.uuid === tickerBucket.uuid) {
           return {
             ...bucket,
             tickers: bucket.tickers.filter(
@@ -643,6 +648,28 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       .some((bucket) =>
         bucket.tickers.some((ticker) => ticker.tickerId === tickerId),
       );
+  }
+
+  getUserConfigurableTickerBuckets(): TickerBucket[] {
+    return this.state.tickerBuckets.filter(({ isUserConfigurable }) =>
+      Boolean(isUserConfigurable),
+    );
+  }
+
+  getTickerBucketWithUUID(uuid: string): TickerBucket | undefined {
+    return this.state.tickerBuckets.find(
+      ({ uuid: predicateUUID }) => uuid === predicateUUID,
+    );
+  }
+
+  getTickerBucketWithTypeAndName(
+    type: TickerBucket["type"],
+    name: TickerBucket["name"],
+  ): TickerBucket | undefined {
+    return this.state.tickerBuckets.find(
+      ({ type: predicateType, name: predicateName }) =>
+        type === predicateType && name === predicateName,
+    );
   }
 
   getTickerBucketsOfType(
@@ -729,10 +756,16 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // Clear the cache
     clearPromises.push(this.clearCache());
 
-    super.reset();
-
     Promise.all(clearPromises).finally(() => {
-      // This prevents an issue where the UI might be in a non-recoverable state after resetting the store
+      // IMPORTANT: `dispose` should be called *before* `reset` or the fresh
+      // store state will be synced to IndexedDB, and break `isFreshSession`
+      // determination making it always think the session is an existing
+      // session.
+      this.dispose();
+
+      super.reset();
+
+      // Finally, refresh the page, as we're now in a non-recoverable state
       window.location.reload();
     });
   }
