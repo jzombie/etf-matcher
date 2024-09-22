@@ -2,6 +2,8 @@ import React, { useMemo } from "react";
 
 import store from "@src/store";
 
+import useTickerBucketImportExportContext from "@hooks/useTickerBucketImportExportContext";
+
 import TickerBucketMergeDiff, {
   TickerBucketMergeDiffProps,
 } from "./TickerBucketMergeDiff";
@@ -15,11 +17,13 @@ export default function TickerBucketMergeDiffContainer({
   incomingBucket,
   onMerge,
 }: TickerBucketMergeDiffContainerProps) {
+  const { getSameLocalBucket } = useTickerBucketImportExportContext();
+
   const currentBucket = useMemo(() => {
     if (incomingBucket) {
-      return store.getTickerBucketWithUUID(incomingBucket.uuid);
+      return getSameLocalBucket(incomingBucket.type, incomingBucket.name);
     }
-  }, [incomingBucket]);
+  }, [getSameLocalBucket, incomingBucket]);
 
   return (
     <TickerBucketMergeDiff

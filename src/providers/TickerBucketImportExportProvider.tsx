@@ -30,9 +30,13 @@ type TickerBucketImportExportContextType = {
   getDefaultExportFilename: () => string;
   importErrorMessage: string | null;
   onImportFilename: (filename: string) => void;
+  getSameLocalBucket: (
+    tickerBucketType: TickerBucket["type"],
+    tickerBucketName: TickerBucket["name"],
+  ) => TickerBucket | undefined;
 };
 
-export const BucketImportExportContext = createContext<
+export const TickerBucketImportExportContext = createContext<
   TickerBucketImportExportContextType | undefined
 >(undefined);
 
@@ -224,6 +228,22 @@ export default function TickerBucketImportExportProvider({
     [readFiles],
   );
 
+  const getSameLocalBucket = useCallback(
+    (
+      tickerBucketType: TickerBucket["type"],
+      tickerBucketName: TickerBucket["name"],
+    ) => {
+      // Use `type` and `name` instead of `uuid` to enable buckets to be
+      // imported across sessions without raising validation errors for
+      // non-unique UUIDs
+      return store.getTickerBucketWithTypeAndName(
+        tickerBucketType,
+        tickerBucketName,
+      );
+    },
+    [],
+  );
+
   // This performs the "final merge", writing the new data to the store
   const handleImportFilename = useCallback(
     (filename: string) => {
@@ -239,10 +259,7 @@ export default function TickerBucketImportExportProvider({
         const incomingTickerBuckets = mergeableSet.buckets;
 
         for (const incomingBucket of incomingTickerBuckets) {
-          // Use `type` and `name` instead of `uuid` to enable buckets to be
-          // imported across sessions without raising validation errors for
-          // non-unique UUIDs
-          const currentBucket = store.getTickerBucketWithTypeAndName(
+          const currentBucket = getSameLocalBucket(
             incomingBucket.type,
             incomingBucket.name,
           );
@@ -267,7 +284,7 @@ export default function TickerBucketImportExportProvider({
         throw err;
       }
     },
-    [mergeableSets, handleVerbatimImportError],
+    [mergeableSets, getSameLocalBucket, handleVerbatimImportError],
   );
 
   // Helper function to get default filename based on current date & time
@@ -278,7 +295,7 @@ export default function TickerBucketImportExportProvider({
   }, []);
 
   return (
-    <BucketImportExportContext.Provider
+    <TickerBucketImportExportContext.Provider
       value={{
         openImportExportModal,
         closeImportExportModal,
@@ -289,6 +306,7 @@ export default function TickerBucketImportExportProvider({
         getDefaultExportFilename,
         importErrorMessage,
         onImportFilename: handleImportFilename,
+        getSameLocalBucket: getSameLocalBucket,
       }}
     >
       <FileDragDropProvider
@@ -304,6 +322,6 @@ export default function TickerBucketImportExportProvider({
 
         <TickerBucketImportFileDropModal open={isDragOver} />
       </FileDragDropProvider>
-    </BucketImportExportContext.Provider>
+    </TickerBucketImportExportContext.Provider>
   );
 }

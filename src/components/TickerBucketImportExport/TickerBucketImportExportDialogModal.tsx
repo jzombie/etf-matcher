@@ -30,7 +30,7 @@ import store from "@src/store";
 
 import DialogModal, { DialogModalProps } from "@components/DialogModal";
 
-import useBucketImportExportContext from "@hooks/useBucketImportExportContext";
+import useTickerBucketImportExportContext from "@hooks/useTickerBucketImportExportContext";
 
 import customLogger from "@utils/customLogger";
 
@@ -53,7 +53,7 @@ export default function TickerBucketImportExportDialogModal({
     getDefaultExportFilename,
     importErrorMessage,
     onImportFilename,
-  } = useBucketImportExportContext();
+  } = useTickerBucketImportExportContext();
 
   // TODO: Rename `selectedFiles`; it's confusing with `selectedFilename` as well
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);

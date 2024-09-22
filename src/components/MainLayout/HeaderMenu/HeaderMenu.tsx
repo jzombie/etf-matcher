@@ -33,8 +33,8 @@ import { Link, matchPath, useLocation } from "react-router-dom";
 import LogoNavButton from "@components/LogoNavButton";
 import SearchModalButton from "@components/SearchModalButton";
 
-import useBucketImportExportContext from "@hooks/useBucketImportExportContext";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
+import useTickerBucketImportExportContext from "@hooks/useTickerBucketImportExportContext";
 
 import SlidingBackground from "./HeaderMenu.SlidingBackground";
 
@@ -48,7 +48,7 @@ export default function HeaderMenu() {
     `@media (min-width:${MIN_HORIZONTAL_WIDTH}px)`,
   );
 
-  const { openImportExportModal } = useBucketImportExportContext();
+  const { openImportExportModal } = useTickerBucketImportExportContext();
 
   const { tickerBuckets } = useStoreStateReader("tickerBuckets");
 
