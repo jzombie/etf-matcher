@@ -26,6 +26,7 @@ export default function useBucketChangeOverview({
       added: [] as TickerDiff[],
       updated: [] as TickerDiff[],
       unchanged: [] as TickerDiff[],
+      removed: [] as TickerDiff[],
     };
 
     for (const incomingTicker of incomingBucket.tickers) {
@@ -49,6 +50,23 @@ export default function useBucketChangeOverview({
           quantity: incomingTicker.quantity,
           ticker: incomingTicker,
         });
+      }
+    }
+
+    // Check for removed tickers
+    if (currentBucket) {
+      for (const existingTicker of currentBucket.tickers) {
+        if (
+          !incomingBucket.tickers.some(
+            (t) => t.tickerId === existingTicker.tickerId,
+          )
+        ) {
+          result.removed.push({
+            quantity: 0,
+            previousQuantity: existingTicker.quantity,
+            ticker: existingTicker,
+          });
+        }
       }
     }
 

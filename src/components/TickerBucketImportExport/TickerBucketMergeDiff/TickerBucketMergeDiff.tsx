@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 import type { TickerBucket } from "@src/store";
 
@@ -67,6 +67,19 @@ export default function TickerBucketMergeDiff({
           <MergeTable
             tickerDiffs={bucketChangeOverview.unchanged}
             actionType="unchanged"
+          />
+        </Box>
+      )}
+
+      {/* Removed tickers */}
+      {bucketChangeOverview.removed.length > 0 && (
+        <Box mb={2}>
+          <Typography variant="subtitle1" color="textSecondary">
+            Removed Tickers:
+          </Typography>
+          <MergeTable
+            tickerDiffs={bucketChangeOverview.removed}
+            actionType="removed"
           />
         </Box>
       )}

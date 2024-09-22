@@ -62,7 +62,7 @@ export default function MergeTableRow({
 }
 
 // Helper function to return different styles based on the action type (added/updated/unchanged)
-function getRowStyle(actionType: "added" | "updated" | "unchanged") {
+function getRowStyle(actionType: MergeTableProps["actionType"]) {
   switch (actionType) {
     case "added":
       return { backgroundColor: "rgba(0, 255, 0, 0.2)" }; // Light green for added
@@ -70,6 +70,7 @@ function getRowStyle(actionType: "added" | "updated" | "unchanged") {
       return { backgroundColor: "rgba(255, 255, 0, 0.05)" }; // Light yellow for updated
     case "unchanged":
       return { backgroundColor: "rgba(200, 200, 200, 0.2)" }; // Light gray for unchanged
+    // TODO: Handle `removed`
     default:
       return {};
   }

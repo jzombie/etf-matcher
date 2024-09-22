@@ -14,7 +14,8 @@ import type { TickerDiff } from "./useBucketChangeOverview";
 // Component to display the ticker table, color-coded by action type (added, updated, unchanged)
 export type MergeTableProps = {
   tickerDiffs: TickerDiff[];
-  actionType: "added" | "updated" | "unchanged";
+  // TODO: These keys should be btained from `useBucketChangeOverview`
+  actionType: "added" | "updated" | "unchanged" | "removed";
 };
 
 export default function MergeTable({
