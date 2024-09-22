@@ -3,7 +3,6 @@ import { useMemo } from "react";
 import type { TickerBucket, TickerBucketTicker } from "@src/store";
 
 export type TickerDiff = {
-  quantity: number;
   previousQuantity?: number;
   ticker: TickerBucketTicker;
 };
@@ -34,20 +33,17 @@ export default function useBucketChangeOverview({
       if (!existingTicker) {
         // Ticker is new, will be added
         result.added.push({
-          quantity: incomingTicker.quantity,
           ticker: incomingTicker,
         });
       } else if (existingTicker.quantity !== incomingTicker.quantity) {
         // Ticker exists but quantity is different, will be updated
         result.updated.push({
-          quantity: incomingTicker.quantity,
           previousQuantity: existingTicker.quantity,
           ticker: incomingTicker,
         });
       } else {
         // Ticker exists and quantity is unchanged
         result.unchanged.push({
-          quantity: incomingTicker.quantity,
           ticker: incomingTicker,
         });
       }
@@ -62,7 +58,6 @@ export default function useBucketChangeOverview({
           )
         ) {
           result.removed.push({
-            quantity: 0,
             previousQuantity: existingTicker.quantity,
             ticker: existingTicker,
           });
