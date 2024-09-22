@@ -1,7 +1,5 @@
 import React, { useMemo } from "react";
 
-import store from "@src/store";
-
 import useTickerBucketImportExportContext from "@hooks/useTickerBucketImportExportContext";
 
 import TickerBucketMergeDiff, {
