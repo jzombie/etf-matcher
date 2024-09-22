@@ -358,10 +358,7 @@ pub async fn csv_to_ticker_buckets(csv_data: &str) -> Result<JsValue, JsValue> {
             // Serialize the TickerBucket data into JsValue for use in JavaScript
             to_value(&ticker_buckets).map_err(|err| JsValue::from_str(&err.to_string()))
         }
-        Err(err) => {
-            // Return the error as a JsValue
-            Err(err)
-        }
+        Err(err) => Err(err),
     }
 }
 
