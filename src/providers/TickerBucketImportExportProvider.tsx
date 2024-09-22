@@ -260,7 +260,9 @@ export default function TickerBucketImportExportProvider({
         );
 
         if (!mergeableSet) {
-          throw new Error("Could not locate mergeable set.");
+          throw new Error(
+            `Could not locate mergeable set for filename: ${filename}`,
+          );
         }
 
         const incomingTickerBuckets = mergeableSet.buckets;
