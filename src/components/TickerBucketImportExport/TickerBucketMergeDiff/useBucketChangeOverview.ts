@@ -31,6 +31,10 @@ export default function useBucketChangeOverview({
       currentBucket?.tickers.map((ticker) => [ticker.tickerId, ticker]) || [],
     );
 
+    const incomingTickerIds = new Set<number>(
+      incomingBucket.tickers.map((t) => t.tickerId),
+    );
+
     const result: TickerBucketChangeOverviewResult = {
       added: [] as TickerDiff[],
       updated: [] as TickerDiff[],
@@ -62,11 +66,7 @@ export default function useBucketChangeOverview({
     // Check for removed tickers
     if (currentBucket) {
       for (const existingTicker of currentBucket.tickers) {
-        if (
-          !incomingBucket.tickers.some(
-            (t) => t.tickerId === existingTicker.tickerId,
-          )
-        ) {
+        if (!incomingTickerIds.has(existingTicker.tickerId)) {
           result.removed.push({
             previousQuantity: existingTicker.quantity,
             ticker: existingTicker,
