@@ -70,7 +70,8 @@ function getRowStyle(actionType: MergeTableProps["actionType"]) {
       return { backgroundColor: "rgba(255, 255, 0, 0.05)" }; // Light yellow for updated
     case "unchanged":
       return { backgroundColor: "rgba(200, 200, 200, 0.2)" }; // Light gray for unchanged
-    // TODO: Handle `removed`
+    case "removed":
+      return { backgroundColor: "rgba(255, 0, 0, 0.05)" }; // Light red for removed
     default:
       return {};
   }
