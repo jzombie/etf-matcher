@@ -5,7 +5,7 @@ import { Typography, useMediaQuery, useTheme } from "@mui/material";
 import TradingViewLogo from "@assets/vendor/trading-view-logo.svg?react";
 import { Footer } from "@layoutKit/Layout";
 
-import NetworkRequestIndicator from "./NetworkRequestIndicator";
+import NetworkRequestIndicator from "../../NetworkRequestIndicator";
 import TickerTape from "./TickerTape";
 
 export default function MainLayoutFooter() {

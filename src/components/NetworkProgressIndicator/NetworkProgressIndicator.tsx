@@ -1,8 +1,10 @@
 import React from "react";
 
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 
-import NetworkRequestIndicator from "@components/MainLayout/Footer/NetworkRequestIndicator";
+import NetworkRequestIndicator from "@components/NetworkRequestIndicator";
+
+import styles from "./NetworkProgressIndicator.module.scss";
 
 export default function NetworkProgressIndicator() {
   return (
@@ -11,6 +13,15 @@ export default function NetworkProgressIndicator() {
         <CircularProgress />
       </Box>
       <NetworkRequestIndicator style={{ opacity: 0.5 }} />
+      <Box sx={{ textAlign: "center" }}>
+        <Typography
+          variant="body2"
+          color="secondary"
+          className={styles.fadeInOut}
+        >
+          Building cache...
+        </Typography>
+      </Box>
     </Box>
   );
 }
