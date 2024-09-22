@@ -662,6 +662,16 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
+  getTickerBucketWithTypeAndName(
+    type: TickerBucket["type"],
+    name: TickerBucket["name"],
+  ): TickerBucket | undefined {
+    return this.state.tickerBuckets.find(
+      ({ type: predicateType, name: predicateName }) =>
+        type === predicateType && name === predicateName,
+    );
+  }
+
   getTickerBucketsOfType(
     tickerBucketType: TickerBucket["type"],
   ): TickerBucket[] {

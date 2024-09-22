@@ -239,8 +239,12 @@ export default function TickerBucketImportExportProvider({
         const incomingTickerBuckets = mergeableSet.buckets;
 
         for (const incomingBucket of incomingTickerBuckets) {
-          const currentBucket = store.getTickerBucketWithUUID(
-            incomingBucket.uuid,
+          // Use `type` and `name` instead of `uuid` to enable buckets to be
+          // imported across sessions without raising validation errors for
+          // non-unique UUIDs
+          const currentBucket = store.getTickerBucketWithTypeAndName(
+            incomingBucket.type,
+            incomingBucket.name,
           );
 
           if (currentBucket) {
