@@ -23,8 +23,8 @@ export type TickerBucketSet = {
 type TickerBucketImportExportContextType = {
   openImportExportModal: () => void;
   closeImportExportModal: () => void;
-  importFiles: (fileList: FileList | null) => void;
-  exportFile: (filename: string, tickerBuckets: TickerBucket[]) => void;
+  readFiles: (fileList: FileList | null) => void;
+  writeFile: (filename: string, tickerBuckets: TickerBucket[]) => void;
   isProcessingImport: boolean;
   mergeableSets: TickerBucketSet[] | null;
   getDefaultExportFilename: () => string;
@@ -95,7 +95,7 @@ export default function TickerBucketImportExportProvider({
     [triggerUIError],
   );
 
-  const importFiles = useCallback(
+  const readFiles = useCallback(
     async (fileList: FileList | null) => {
       setImportErrorMessage(null);
 
@@ -190,7 +190,7 @@ export default function TickerBucketImportExportProvider({
     [handleVerbatimImportError, triggerUIError],
   );
 
-  const exportFile = useCallback(
+  const writeFile = useCallback(
     (filename: string, tickerBuckets: TickerBucket[]) => {
       tickerBucketsToCSV(tickerBuckets).then((resp: string) => {
         customLogger.debug(resp);
@@ -219,9 +219,9 @@ export default function TickerBucketImportExportProvider({
       evt.preventDefault();
 
       const files = (evt.dataTransfer as DataTransfer).files;
-      importFiles(files);
+      readFiles(files);
     },
-    [importFiles],
+    [readFiles],
   );
 
   // This performs the "final merge", writing the new data to the store
@@ -282,8 +282,8 @@ export default function TickerBucketImportExportProvider({
       value={{
         openImportExportModal,
         closeImportExportModal,
-        importFiles,
-        exportFile,
+        readFiles,
+        writeFile,
         isProcessingImport,
         mergeableSets,
         getDefaultExportFilename,

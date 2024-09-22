@@ -47,8 +47,8 @@ export default function TickerBucketImportExportDialogModal({
   ...rest
 }: TickerBucketImportExportDialogModalProps) {
   const {
-    importFiles,
-    exportFile,
+    readFiles,
+    writeFile,
     mergeableSets,
     getDefaultExportFilename,
     importErrorMessage,
@@ -93,11 +93,11 @@ export default function TickerBucketImportExportDialogModal({
     const userConfigurableTickerBuckets =
       store.getUserConfigurableTickerBuckets();
 
-    exportFile(
+    writeFile(
       exportFilename || getDefaultExportFilename(),
       userConfigurableTickerBuckets,
     );
-  }, [exportFile, exportFilename, getDefaultExportFilename]);
+  }, [writeFile, exportFilename, getDefaultExportFilename]);
 
   // Handle file selection for import
   const handleFileSelect = useCallback(
@@ -105,12 +105,12 @@ export default function TickerBucketImportExportDialogModal({
       const files = event.target.files;
       if (files) {
         setSelectedFiles(files);
-        importFiles(files);
+        readFiles(files);
       } else {
         customLogger.warn("No files selected");
       }
     },
-    [importFiles],
+    [readFiles],
   );
 
   // Form submission handler to prevent default behavior
