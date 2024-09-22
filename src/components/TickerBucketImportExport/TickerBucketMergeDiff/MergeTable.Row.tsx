@@ -22,10 +22,13 @@ export default function MergeTableRow({
 }: MergeTableRowProps) {
   const { tickerDetail } = useTickerDetail(tickerDiff.ticker.tickerId);
 
+  const nextQuantity =
+    actionType === "removed" ? 0 : tickerDiff.ticker.quantity;
+
   // Calculate the change in quantity
   const quantityChange =
     tickerDiff.previousQuantity !== undefined
-      ? tickerDiff.ticker.quantity - tickerDiff.previousQuantity
+      ? nextQuantity - tickerDiff.previousQuantity
       : null; // No change for new tickers
 
   return (
@@ -41,7 +44,7 @@ export default function MergeTableRow({
       </TableCell>
       <TableCell>{tickerDetail?.company_name || "N/A"}</TableCell>
       <TableCell>
-        {formatNumberWithCommas(tickerDiff.ticker.quantity)}
+        {formatNumberWithCommas(nextQuantity)}
         {quantityChange !== null && (
           <>
             <br />
