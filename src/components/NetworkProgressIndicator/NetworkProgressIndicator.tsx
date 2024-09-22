@@ -2,7 +2,7 @@ import React from "react";
 
 import { Box, CircularProgress, Typography } from "@mui/material";
 
-import NetworkRequestIndicator from "@components/MainLayout/Footer/NetworkRequestIndicator";
+import NetworkRequestIndicator from "@components/NetworkRequestIndicator";
 
 import styles from "./NetworkProgressIndicator.module.scss";
 
