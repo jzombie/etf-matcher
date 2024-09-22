@@ -128,7 +128,7 @@ export default function TickerBucketImportExportProvider({
 
           if (file.size > MAX_CSV_IMPORT_SIZE) {
             throw new Error(
-              `Uploaded file larger than than ${formatNumberWithCommas(MAX_CSV_IMPORT_SIZE)} bytes`,
+              `Uploaded file larger than ${formatNumberWithCommas(MAX_CSV_IMPORT_SIZE)} bytes`,
             );
           }
 
