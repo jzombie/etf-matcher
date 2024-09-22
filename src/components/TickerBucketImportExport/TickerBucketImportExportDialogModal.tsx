@@ -60,7 +60,7 @@ export default function TickerBucketImportExportDialogModal({
   const [exportFilename, setExportFilename] = useState<string>(
     getDefaultExportFilename(),
   );
-  const [selectedFilename, setSelectedFilename] = useState<string | null>(null); // Track the selected set
+  const [selectedFilename, setSelectedFilename] = useState<string | null>(null);
   const selectedSet = useMemo(() => {
     return mergeableSets?.find(({ filename }) => filename === selectedFilename);
   }, [selectedFilename, mergeableSets]);
