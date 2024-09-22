@@ -47,7 +47,6 @@ export default function TickerBucketImportExportDialogModal({
   ...rest
 }: TickerBucketImportExportDialogModalProps) {
   const {
-    readFiles,
     writeFile,
     mergeableSets,
     getDefaultExportFilename,
@@ -55,8 +54,6 @@ export default function TickerBucketImportExportDialogModal({
     onImportFilename,
   } = useTickerBucketImportExportContext();
 
-  // TODO: Rename `selectedFiles`; it's confusing with `selectedFilename` as well
-  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [exportFilename, setExportFilename] = useState<string>(
     getDefaultExportFilename(),
   );
@@ -66,7 +63,6 @@ export default function TickerBucketImportExportDialogModal({
   }, [selectedFilename, mergeableSets]);
 
   const reset = useCallback(() => {
-    setSelectedFiles(null);
     setSelectedFilename(null);
     // setExportFilename(getDefaultExportFilename()); // Leave this alone for now
   }, []);
@@ -98,20 +94,6 @@ export default function TickerBucketImportExportDialogModal({
       userConfigurableTickerBuckets,
     );
   }, [writeFile, exportFilename, getDefaultExportFilename]);
-
-  // Handle file selection for import
-  const handleFileSelect = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const files = event.target.files;
-      if (files) {
-        setSelectedFiles(files);
-        readFiles(files);
-      } else {
-        customLogger.warn("No files selected");
-      }
-    },
-    [readFiles],
-  );
 
   // Form submission handler to prevent default behavior
   const handleSubmit = useCallback(
@@ -154,8 +136,6 @@ export default function TickerBucketImportExportDialogModal({
                 onSetExportFilename={setExportFilename}
                 exportFilename={exportFilename}
                 onExport={handleExport}
-                selectedFiles={selectedFiles}
-                onFileSelect={handleFileSelect}
               />
             ) : (
               <>
@@ -214,17 +194,28 @@ type FileUploadAreaProps = {
   onSetExportFilename: (filename: string) => void;
   exportFilename: string;
   onExport: () => void;
-  selectedFiles: FileList | null;
-  onFileSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 const FileUploadArea = ({
   onSetExportFilename,
   exportFilename,
   onExport,
-  selectedFiles,
-  onFileSelect,
 }: FileUploadAreaProps) => {
+  const { readFiles } = useTickerBucketImportExportContext();
+
+  // Handle file selection for import
+  const handleFileSelect = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const files = event.target.files;
+      if (files) {
+        readFiles(files);
+      } else {
+        customLogger.warn("No files selected");
+      }
+    },
+    [readFiles],
+  );
+
   const theme = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -274,9 +265,7 @@ const FileUploadArea = ({
           onClick={() => fileInputRef.current?.click()}
         >
           <Typography variant="body2">
-            {selectedFiles
-              ? `${selectedFiles.length} file(s) selected`
-              : "Drag and drop files here or click to select"}
+            Drag and drop files here or click to select
           </Typography>
         </Box>
 
@@ -286,7 +275,7 @@ const FileUploadArea = ({
           type="file"
           accept={extensionTypes}
           multiple
-          onChange={onFileSelect}
+          onChange={handleFileSelect}
           style={{ display: "none" }}
         />
       </Box>
