@@ -7,21 +7,31 @@ export type TickerDiff = {
   ticker: TickerBucketTicker;
 };
 
-export type BucketChangeOverviewProps = {
+export type TickerBucketChangeOverviewProps = {
   currentBucket?: TickerBucket;
   incomingBucket: TickerBucket;
 };
 
+export type TickerBucketChangeOverviewResult = {
+  [key in TickerBucketChangeActionTypes]: TickerDiff[];
+};
+
+export type TickerBucketChangeActionTypes =
+  | "added"
+  | "updated"
+  | "unchanged"
+  | "removed";
+
 export default function useBucketChangeOverview({
   currentBucket,
   incomingBucket,
-}: BucketChangeOverviewProps) {
+}: TickerBucketChangeOverviewProps) {
   const bucketChangeOverview = useMemo(() => {
     const currentTickersMap = new Map<number, TickerBucketTicker>(
       currentBucket?.tickers.map((ticker) => [ticker.tickerId, ticker]) || [],
     );
 
-    const result = {
+    const result: TickerBucketChangeOverviewResult = {
       added: [] as TickerDiff[],
       updated: [] as TickerDiff[],
       unchanged: [] as TickerDiff[],

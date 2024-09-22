@@ -9,13 +9,15 @@ import {
 } from "@mui/material";
 
 import MergeTableRow from "./MergeTable.Row";
-import type { TickerDiff } from "./useBucketChangeOverview";
+import type {
+  TickerBucketChangeActionTypes,
+  TickerDiff,
+} from "./useBucketChangeOverview";
 
 // Component to display the ticker table, color-coded by action type (added, updated, unchanged)
 export type MergeTableProps = {
   tickerDiffs: TickerDiff[];
-  // TODO: These keys should be btained from `useBucketChangeOverview`
-  actionType: "added" | "updated" | "unchanged" | "removed";
+  actionType: TickerBucketChangeActionTypes;
 };
 
 export default function MergeTable({
