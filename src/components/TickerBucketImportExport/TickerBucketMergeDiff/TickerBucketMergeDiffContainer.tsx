@@ -15,7 +15,6 @@ export type TickerBucketMergeDiffContainerProps = Omit<
 
 export default function TickerBucketMergeDiffContainer({
   incomingBucket,
-  onMerge,
 }: TickerBucketMergeDiffContainerProps) {
   const { getSameLocalBucket } = useTickerBucketImportExportContext();
 
@@ -29,7 +28,6 @@ export default function TickerBucketMergeDiffContainer({
     <TickerBucketMergeDiff
       currentBucket={currentBucket}
       incomingBucket={incomingBucket}
-      onMerge={onMerge}
     ></TickerBucketMergeDiff>
   );
 }

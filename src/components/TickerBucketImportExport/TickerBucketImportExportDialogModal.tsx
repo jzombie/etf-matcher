@@ -180,17 +180,19 @@ export default function TickerBucketImportExportDialogModal({
                             // Show `Divider` if not the first element
                             idx > 0 && <Divider sx={{ margin: 1 }} />
                           }
-                          <TickerBucketMergeDiff
-                            incomingBucket={bucket}
-                            // TODO: `onMerge` should be based per bucket, instead of per file.
-                            // `onImportFilename` needs to be updated to accept the given bucket instead.
-                            onMerge={() =>
-                              onImportFilename(selectedSet.filename)
-                            }
-                          />
+                          <TickerBucketMergeDiff incomingBucket={bucket} />
                         </React.Fragment>
                       );
                     })}
+
+                    {selectedSet && (
+                      <Button
+                        onClick={() => onImportFilename(selectedSet.filename)}
+                        variant="contained"
+                      >
+                        Merge &quot;{selectedSet.filename}&quot;
+                      </Button>
+                    )}
                   </>
                 )}
               </>
