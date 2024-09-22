@@ -74,7 +74,7 @@ export default function TickerBucketMergeDiff({
       {/* Removed tickers */}
       {bucketChangeOverview.removed.length > 0 && (
         <Box mb={2}>
-          <Typography variant="subtitle1" color="textSecondary">
+          <Typography variant="subtitle1" color="error">
             Removed Tickers:
           </Typography>
           <MergeTable
