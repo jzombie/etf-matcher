@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { SyntheticEvent } from "react";
 
-import useStableCurrentRef from "./useStableCurrentRef";
+import useStableCurrentRef from "../useStableCurrentRef";
 
 type KeyEventCallbacks = {
   keydown?: { [key: string]: (event: KeyboardEvent) => void };
