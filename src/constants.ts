@@ -51,17 +51,17 @@ export const DEFAULT_TICKER_TAPE_TICKERS: ReadonlyArray<{
 ];
 
 export const COLOR_WHEEL_COLORS = [
-  "#8884d8",
-  "#82ca9d",
-  "#ffc658",
-  "#ff8042",
-  "#8dd1e1",
-  "#d0ed57",
-  "#a4de6c",
-  "#ffbb28",
-  "#ff6361",
-  "#6a8d92",
-  "#b8860b",
+  "#8884d8", // Light purple
+  "#82ca9d", // Soft green
+  "#ffc658", // Soft yellow
+  "#ff8042", // Orange
+  "#8dd1e1", // Light blue
+  "#d0ed57", // Lighter green
+  "#a4de6c", // Greenish-yellow
+  "#ffbb28", // Bright yellow
+  "#ff6361", // Red
+  "#6a8d92", // Teal blue
+  "#b8860b", // Brownish-yellow
 ] as const;
 
 export const MAX_RECENTLY_VIEWED_ITEMS = 10;
@@ -90,3 +90,13 @@ export const SIMILARITY_MATCHES_NOTICE = `
   techniques to help you find the most similar
   investments.
   `;
+
+interface FileAcceptType {
+  extensions: string[]; // List of file extensions
+  mimeTypes: string[]; // List of MIME types
+}
+
+export const FILE_IMPORT_ACCEPT_MAP: ReadonlyMap<string, FileAcceptType> =
+  new Map([["csv", { extensions: [".csv"], mimeTypes: ["text/csv"] }]]);
+
+export const MAX_CSV_IMPORT_SIZE: number = 1024 * 2;

@@ -4,6 +4,7 @@ import {
   Assessment as AssessmentIcon,
   ContactMail as ContactMailIcon,
   Home,
+  ImportExport as ImportExportIcon,
   ListAlt as ListAltIcon,
   Menu as MenuIcon,
   Search as SearchIcon,
@@ -33,10 +34,11 @@ import LogoNavButton from "@components/LogoNavButton";
 import SearchModalButton from "@components/SearchModalButton";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
+import useTickerBucketImportExportContext from "@hooks/useTickerBucketImportExportContext";
 
 import SlidingBackground from "./HeaderMenu.SlidingBackground";
 
-const MIN_HORIZONTAL_WIDTH: number = 860;
+const MIN_HORIZONTAL_WIDTH: number = 1000;
 
 export default function HeaderMenu() {
   const location = useLocation();
@@ -45,6 +47,8 @@ export default function HeaderMenu() {
   const isDesktop = useMediaQuery(
     `@media (min-width:${MIN_HORIZONTAL_WIDTH}px)`,
   );
+
+  const { openImportExportModal } = useTickerBucketImportExportContext();
 
   const { tickerBuckets } = useStoreStateReader("tickerBuckets");
 
@@ -84,10 +88,22 @@ export default function HeaderMenu() {
         badgeContent: totalWatchlistBuckets,
       },
       {
+        key: "/import-export",
+        link: "#",
+        label: "Import/Export",
+        icon: <ImportExportIcon fontSize="small" />,
+        onClick: (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+          // Prevent the default anchor link behavior
+          event.preventDefault();
+
+          openImportExportModal();
+        },
+      },
+      {
         key: "/settings",
+        link: "/settings",
         label: "Settings",
         icon: <SettingsIcon fontSize="small" />,
-        link: "/settings",
       },
       {
         key: "/contact",
@@ -96,7 +112,7 @@ export default function HeaderMenu() {
         icon: <ContactMailIcon fontSize="small" />,
       },
     ],
-    [totalPortfolioBuckets, totalWatchlistBuckets],
+    [totalPortfolioBuckets, totalWatchlistBuckets, openImportExportModal],
   );
 
   const selectedKey = useMemo(
@@ -153,6 +169,7 @@ export default function HeaderMenu() {
                 className={clsx({
                   active: item.key === selectedKey,
                 })}
+                onClick={item.onClick}
                 sx={{
                   color: item.key === selectedKey ? "white" : "inherit",
                   position: "relative",
@@ -221,7 +238,13 @@ export default function HeaderMenu() {
                     key={item.key}
                     component={Link}
                     to={item.link}
-                    onClick={toggleDrawer}
+                    onClick={(evt) => {
+                      toggleDrawer();
+
+                      if (typeof item.onClick === "function") {
+                        item.onClick(evt);
+                      }
+                    }}
                     className={clsx({
                       active: item.key === selectedKey,
                     })}

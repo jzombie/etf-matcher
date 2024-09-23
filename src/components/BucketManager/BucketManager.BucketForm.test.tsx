@@ -3,6 +3,7 @@ import React from "react";
 import { fireEvent, screen } from "@testing-library/react";
 
 import { TickerBucket } from "@src/store";
+import { v4 as uuidv4 } from "uuid";
 
 import BucketForm from "@components/BucketManager/BucketManager.BucketForm";
 
@@ -10,6 +11,7 @@ import { render } from "../../../test/customRender";
 
 describe("BucketForm", () => {
   const mockExistingBucket: TickerBucket = {
+    uuid: uuidv4(),
     name: "Test Bucket",
     description: "Test Description",
     tickers: [],

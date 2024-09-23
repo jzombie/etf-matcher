@@ -15,7 +15,7 @@ use crate::types::TickerId;
 use crate::data_models::{
     ticker_vector_analysis, DataBuildInfo, DataURL, ETFAggregateDetail, ETFAggregateDetailResponse,
     ETFHoldingTicker, ETFHoldingTickerResponse, ETFHoldingWeightResponse, ExchangeById,
-    IndustryById, PaginatedResults, SectorById, Ticker10KDetail, TickerDetail,
+    IndustryById, PaginatedResults, SectorById, Ticker10KDetail, TickerBucket, TickerDetail,
     TickerDetailResponse, TickerETFHolder, TickerSearch, TickerSearchResult,
 };
 
@@ -330,6 +330,36 @@ pub async fn get_cosine_by_ticker_bucket(
     // Serialize the result back to JsValue
     serde_wasm_bindgen::to_value(&ranked_tickers)
         .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
+}
+
+#[wasm_bindgen]
+pub async fn ticker_buckets_to_csv(json_ticker_buckets: JsValue) -> Result<JsValue, JsValue> {
+    // Convert JsValue (JSON string) to a Rust String
+    let json_string = json_ticker_buckets
+        .as_string()
+        .ok_or_else(|| JsValue::from_str("Failed to convert JsValue to string"))?;
+
+    // Deserialize the JSON string into a vector of TickerBucket structs
+    let ticker_buckets: Vec<TickerBucket> = serde_json::from_str(&json_string)
+        .map_err(|err| JsValue::from_str(&format!("Deserialization error: {}", err)))?;
+
+    // Convert the deserialized data to CSV
+    let csv_data = TickerBucket::ticker_buckets_to_csv(ticker_buckets);
+
+    // Return the CSV string
+    Ok(JsValue::from_str(&csv_data))
+}
+
+#[wasm_bindgen]
+pub async fn csv_to_ticker_buckets(csv_data: &str) -> Result<JsValue, JsValue> {
+    // Call the existing Rust function that parses CSV into TickerBucket
+    match TickerBucket::csv_to_ticker_buckets(csv_data).await {
+        Ok(ticker_buckets) => {
+            // Serialize the TickerBucket data into JsValue for use in JavaScript
+            to_value(&ticker_buckets).map_err(|err| JsValue::from_str(&err.to_string()))
+        }
+        Err(err) => Err(err),
+    }
 }
 
 #[wasm_bindgen]

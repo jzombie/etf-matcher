@@ -30,6 +30,40 @@ async function initializeWasm() {
   }
 }
 
+// const IS_PROD = import.meta.env.PROD;
+
+// Used to help prevent console spam for long args
+function truncateArg(arg: unknown, maxLength = 50) {
+  // FIXME: Ignore in prod?
+  // if (IS_PROD) {
+  //   return arg;
+  // }
+
+  const truncationSuffix = "... (truncated)";
+
+  // If the argument is a string, truncate it if it's too long
+  if (typeof arg === "string") {
+    return arg.length > maxLength
+      ? `${arg.slice(0, maxLength)}${truncationSuffix}`
+      : arg;
+  }
+
+  // If it's an array or object, JSON.stringify it and then truncate
+  if (typeof arg === "object") {
+    try {
+      const argString = JSON.stringify(arg);
+      return argString.length > maxLength
+        ? `${argString.slice(0, maxLength)}${truncationSuffix}`
+        : argString;
+    } catch (e) {
+      return "[Unserializable Object]";
+    }
+  }
+
+  // Otherwise, return the argument as is
+  return arg;
+}
+
 async function processQueue() {
   while (callQueue.length > 0) {
     const queueItem = callQueue.shift();
@@ -50,9 +84,11 @@ async function processQueue() {
         )[functionName](...args);
         resolve(result);
       } catch (error) {
+        // Argument truncation is extremely useful if the args could be long strings
+        const truncatedArgs = args.map((arg) => truncateArg(arg));
         customLogger.error(
-          `Worker encountered an error @ function "${functionName}" [${args.join(
-            ",",
+          `Worker encountered an error @ function "${functionName}" [${truncatedArgs.join(
+            ", ",
           )}]:`,
           error,
         );
@@ -64,11 +100,13 @@ async function processQueue() {
 
 self.onmessage = async (event) => {
   const { functionName, args, messageId } = event.data;
+
+  // FIXME: If enabled, use log truncation?
   // customLogger.debug(
   //   "Worker received message with functionName:",
   //   functionName,
   //   "and args:",
-  //   args
+  //   args,
   // );
 
   const promise = new Promise((resolve, reject) => {
@@ -87,11 +125,13 @@ self.onmessage = async (event) => {
         [PostMessageStructKey.MessageId]: messageId,
       });
     })
-    .catch((error) => {
+    .catch((error: Error | string | unknown) => {
+      const errorMessage = error instanceof Error ? error.message : error;
+
       self.postMessage({
         [PostMessageStructKey.EnvelopeType]: EnvelopeType.Function,
         [PostMessageStructKey.Success]: false,
-        [PostMessageStructKey.Error]: error.message,
+        [PostMessageStructKey.Error]: errorMessage,
         [PostMessageStructKey.MessageId]: messageId,
       });
     });
