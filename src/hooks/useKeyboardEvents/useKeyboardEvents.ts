@@ -29,7 +29,7 @@ export default function useKeyboardEvents({
 
   const handleKeyDown = useCallback(
     (evt: KeyboardEvent) => {
-      const callback = keydownCallbacksStableRef.current[evt.key];
+      const callback = keydownCallbacksStableRef.current[evt.code];
       handleUnifiedCallback(evt, callback);
     },
     [handleUnifiedCallback, keydownCallbacksStableRef],
@@ -37,7 +37,7 @@ export default function useKeyboardEvents({
 
   const handleKeyUp = useCallback(
     (evt: KeyboardEvent) => {
-      const callback = keyupCallbacksStableRef.current[evt.key];
+      const callback = keyupCallbacksStableRef.current[evt.code];
       handleUnifiedCallback(evt, callback);
     },
     [handleUnifiedCallback, keyupCallbacksStableRef],
