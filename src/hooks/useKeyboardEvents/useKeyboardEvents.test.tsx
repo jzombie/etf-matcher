@@ -1,6 +1,6 @@
 import React from "react";
 
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
@@ -16,12 +16,10 @@ type TestComponentProps = {
 
 // Directly use `useKeyboardEvents` with native events
 const TestComponent: React.FC<TestComponentProps> = ({ callbacks }) => {
-  const { onKeyDown, onKeyUp } = useKeyboardEvents(callbacks, true); // attach to window
+  const { onKeyDown, onKeyUp } = useKeyboardEvents(callbacks, true); // attach to window by default
 
-  return <div onKeyDown={onKeyDown} onKeyUp={onKeyUp} />;
+  return <div onKeyDown={onKeyDown} onKeyUp={onKeyUp} data-testid="test-div" />;
 };
-
-// Assuming this is your TestComponent
 
 describe("useKeyboardEvents", () => {
   let keydownCallback: ReturnType<typeof vi.fn>;
@@ -32,54 +30,86 @@ describe("useKeyboardEvents", () => {
     keyupCallback = vi.fn();
   });
 
-  test("calls keydown callback on Enter key", () => {
-    render(
-      <TestComponent callbacks={{ keydown: { Enter: keydownCallback } }} />,
-    );
+  describe("when attached to the window", () => {
+    test("calls keydown callback on Enter key", () => {
+      render(
+        <TestComponent callbacks={{ keydown: { Enter: keydownCallback } }} />,
+      );
 
-    const event = new KeyboardEvent("keydown", { key: "Enter" });
-    window.dispatchEvent(event);
+      const event = new KeyboardEvent("keydown", { key: "Enter" });
+      window.dispatchEvent(event);
 
-    expect(keydownCallback).toHaveBeenCalledTimes(1);
-  });
+      expect(keydownCallback).toHaveBeenCalledTimes(1);
+    });
 
-  test("calls keyup callback on Enter key", () => {
-    render(<TestComponent callbacks={{ keyup: { Enter: keyupCallback } }} />);
+    test("calls keyup callback on Enter key", () => {
+      render(<TestComponent callbacks={{ keyup: { Enter: keyupCallback } }} />);
 
-    const event = new KeyboardEvent("keyup", { key: "Enter" });
-    window.dispatchEvent(event);
+      const event = new KeyboardEvent("keyup", { key: "Enter" });
+      window.dispatchEvent(event);
 
-    expect(keyupCallback).toHaveBeenCalledTimes(1);
-  });
+      expect(keyupCallback).toHaveBeenCalledTimes(1);
+    });
 
-  test("does not call callback for unregistered key", () => {
-    render(<TestComponent callbacks={{ keydown: {} }} />);
+    test("does not call callback for unregistered key", () => {
+      render(<TestComponent callbacks={{ keydown: {} }} />);
 
-    const event = new KeyboardEvent("keydown", { key: "Enter" });
-    window.dispatchEvent(event);
+      const event = new KeyboardEvent("keydown", { key: "Enter" });
+      window.dispatchEvent(event);
 
-    expect(keydownCallback).not.toHaveBeenCalled();
-  });
+      expect(keydownCallback).not.toHaveBeenCalled();
+    });
 
-  test("stops propagation of keydown event", () => {
-    const stopPropagation = vi.fn();
-    render(
-      <TestComponent
-        callbacks={{
-          keydown: {
-            Enter: () => {
-              // no-op
+    test("stops propagation of keydown event", () => {
+      const stopPropagation = vi.fn();
+      render(
+        <TestComponent
+          callbacks={{
+            keydown: {
+              Enter: () => {
+                // no-op
+              },
             },
-          },
-        }}
-      />,
-    );
+          }}
+        />,
+      );
 
-    const event = new KeyboardEvent("keydown", { key: "Enter" });
-    Object.defineProperty(event, "stopPropagation", { value: stopPropagation });
+      const event = new KeyboardEvent("keydown", { key: "Enter" });
+      Object.defineProperty(event, "stopPropagation", {
+        value: stopPropagation,
+      });
 
-    window.dispatchEvent(event);
+      window.dispatchEvent(event);
 
-    expect(stopPropagation).toHaveBeenCalled();
+      expect(stopPropagation).toHaveBeenCalled();
+    });
+  });
+
+  describe("when not attached to the window", () => {
+    test("calls event handler via element keydown", () => {
+      const { getByTestId } = render(
+        <TestComponent callbacks={{ keydown: { Enter: keydownCallback } }} />,
+      );
+
+      const div = getByTestId("test-div");
+
+      // Use `fireEvent` to simulate the keydown event on the `div`
+      fireEvent.keyDown(div, { key: "Enter" });
+
+      expect(keydownCallback).toHaveBeenCalledTimes(1);
+    });
+
+    test("calls event handler via element keyup", () => {
+      const { getByTestId } = render(
+        <TestComponent callbacks={{ keyup: { Enter: keyupCallback } }} />,
+      );
+
+      const div = getByTestId("test-div");
+
+      // Use `fireEvent` to simulate the keyup event on the `div`
+      fireEvent.keyUp(div, { key: "Enter" });
+
+      expect(keyupCallback).toHaveBeenCalledTimes(1);
+    });
   });
 });
