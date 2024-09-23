@@ -12,11 +12,15 @@ type TestComponentProps = {
     keydown?: { [key: string]: (event: KeyboardEvent) => void };
     keyup?: { [key: string]: (event: KeyboardEvent) => void };
   };
+  attachToWindow: boolean;
 };
 
 // Directly use `useKeyboardEvents` with native events
-const TestComponent: React.FC<TestComponentProps> = ({ callbacks }) => {
-  const { onKeyDown, onKeyUp } = useKeyboardEvents(callbacks, true); // attach to window by default
+const TestComponent: React.FC<TestComponentProps> = ({
+  callbacks,
+  attachToWindow,
+}) => {
+  const { onKeyDown, onKeyUp } = useKeyboardEvents(callbacks, attachToWindow);
 
   return <div onKeyDown={onKeyDown} onKeyUp={onKeyUp} data-testid="test-div" />;
 };
@@ -33,7 +37,10 @@ describe("useKeyboardEvents", () => {
   describe("when attached to the window", () => {
     test("calls keydown callback on Enter key", () => {
       render(
-        <TestComponent callbacks={{ keydown: { Enter: keydownCallback } }} />,
+        <TestComponent
+          callbacks={{ keydown: { Enter: keydownCallback } }}
+          attachToWindow={true}
+        />,
       );
 
       const event = new KeyboardEvent("keydown", { key: "Enter" });
@@ -43,7 +50,12 @@ describe("useKeyboardEvents", () => {
     });
 
     test("calls keyup callback on Enter key", () => {
-      render(<TestComponent callbacks={{ keyup: { Enter: keyupCallback } }} />);
+      render(
+        <TestComponent
+          callbacks={{ keyup: { Enter: keyupCallback } }}
+          attachToWindow={true}
+        />,
+      );
 
       const event = new KeyboardEvent("keyup", { key: "Enter" });
       window.dispatchEvent(event);
@@ -52,7 +64,9 @@ describe("useKeyboardEvents", () => {
     });
 
     test("does not call callback for unregistered key", () => {
-      render(<TestComponent callbacks={{ keydown: {} }} />);
+      render(
+        <TestComponent callbacks={{ keydown: {} }} attachToWindow={true} />,
+      );
 
       const event = new KeyboardEvent("keydown", { key: "Enter" });
       window.dispatchEvent(event);
@@ -71,6 +85,7 @@ describe("useKeyboardEvents", () => {
               },
             },
           }}
+          attachToWindow={true}
         />,
       );
 
@@ -86,9 +101,17 @@ describe("useKeyboardEvents", () => {
   });
 
   describe("when not attached to the window", () => {
-    test("calls event handler via element keydown", () => {
+    // FIXME: Additionally, ensuring these aren't bound directly to the window
+    // would be good, but I've currently been unsuccessful with my attempts to
+    // make spies that work for this use case. The best that I've done is ensure
+    // the `useEffect` `attachToWindow` condition is being invoked properly.
+
+    test("calls event handler via element keydown, and not on window", () => {
       const { getByTestId } = render(
-        <TestComponent callbacks={{ keydown: { Enter: keydownCallback } }} />,
+        <TestComponent
+          callbacks={{ keydown: { Enter: keydownCallback } }}
+          attachToWindow={false}
+        />,
       );
 
       const div = getByTestId("test-div");
@@ -99,9 +122,12 @@ describe("useKeyboardEvents", () => {
       expect(keydownCallback).toHaveBeenCalledTimes(1);
     });
 
-    test("calls event handler via element keyup", () => {
+    test("calls event handler via element keyup, and not on window", () => {
       const { getByTestId } = render(
-        <TestComponent callbacks={{ keyup: { Enter: keyupCallback } }} />,
+        <TestComponent
+          callbacks={{ keyup: { Enter: keyupCallback } }}
+          attachToWindow={false}
+        />,
       );
 
       const div = getByTestId("test-div");
