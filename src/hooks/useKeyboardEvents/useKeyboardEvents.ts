@@ -38,7 +38,7 @@ export default function useKeyboardEvents({
 
   const handleKeyDown = useCallback(
     (evt: KeyboardEvent) => {
-      // FIXME: Using `evt.code` may be the *preferred* solution but it  breaks
+      // FIXME: Using `evt.code` may be the *preferred* solution but it breaks
       // `Enter` key navigation on Android. Leaving as `evt.key` for now.
       // Perhaps this should be configurable.
       const callback = keydownCallbacksStableRef.current[evt.key];
@@ -49,7 +49,7 @@ export default function useKeyboardEvents({
 
   const handleKeyUp = useCallback(
     (evt: KeyboardEvent) => {
-      // FIXME: Using `evt.code` may be the *preferred* solution but it  breaks
+      // FIXME: Using `evt.code` may be the *preferred* solution but it breaks
       // `Enter` key navigation on Android. Leaving as `evt.key` for now.
       // Perhaps this should be configurable.
       const callback = keyupCallbacksStableRef.current[evt.key];
