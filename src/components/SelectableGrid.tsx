@@ -59,10 +59,12 @@ export default function SelectableGrid<T>({
   // Handle keyboard navigation
   useEffect(() => {
     // TODO: Unify this handling along with the `TickerSearchModal`
-    const handleKeyDown = (event: KeyboardEvent) => {
+    const handleKeyDown = (evt: KeyboardEvent) => {
+      evt.stopPropagation();
+
       if (items.length === 0) return;
 
-      switch (event.key) {
+      switch (evt.key) {
         case "ArrowDown":
           setHighlightedIndex((prevIndex) =>
             prevIndex === null || prevIndex + dynamicColumns >= items.length
