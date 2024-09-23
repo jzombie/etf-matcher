@@ -245,47 +245,6 @@ export default function TickerSearchModal({
     false,
   );
 
-  // const handleInputKeyDown = useCallback(
-  //   // TODO: Unify this handling along with the `SelectableGrid`
-  //   (evt: React.KeyboardEvent) => {
-  //     evt.stopPropagation();
-
-  //     if (evt.code === "Enter" || evt.key === "Enter") {
-  //       if (selectedIndex === -1) {
-  //         handleOk(evt);
-  //       } else if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
-  //         const selectedSearchResult = searchResults[selectedIndex];
-  //         handleOk(evt, selectedSearchResult.symbol, selectedSearchResult);
-  //       }
-  //     } else if (evt.code === "ArrowDown") {
-  //       setSelectedIndex((prevIndex) => {
-  //         const newIndex = Math.min(prevIndex + 1, searchResults.length - 1);
-  //         const selectedListItem = window.document.getElementById(
-  //           `search-result-${newIndex}`,
-  //         );
-  //         selectedListItem?.scrollIntoView({
-  //           block: "nearest",
-  //           behavior: "smooth",
-  //         });
-  //         return newIndex;
-  //       });
-  //     } else if (evt.code === "ArrowUp") {
-  //       setSelectedIndex((prevIndex) => {
-  //         const newIndex = Math.max(prevIndex - 1, 0);
-  //         const selectedListItem = window.document.getElementById(
-  //           `search-result-${newIndex}`,
-  //         );
-  //         selectedListItem?.scrollIntoView({
-  //           block: "nearest",
-  //           behavior: "smooth",
-  //         });
-  //         return newIndex;
-  //       });
-  //     }
-  //   },
-  //   [handleOk, searchResults, selectedIndex, setSelectedIndex],
-  // );
-
   return (
     <DialogModal open={isOpen} onClose={handleClose} staticHeight>
       <DialogTitle>
