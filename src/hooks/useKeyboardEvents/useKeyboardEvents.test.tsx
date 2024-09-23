@@ -1,3 +1,5 @@
+import React from "react";
+
 import { render } from "@testing-library/react";
 
 import { beforeEach, describe, expect, test, vi } from "vitest";
@@ -65,8 +67,8 @@ describe("useKeyboardEvents", () => {
       <TestComponent
         callbacks={{
           keydown: {
-            Enter: (evt) => {
-              evt.stopPropagation();
+            Enter: () => {
+              // no-op
             },
           },
         }}
