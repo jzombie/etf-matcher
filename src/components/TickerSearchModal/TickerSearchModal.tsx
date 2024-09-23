@@ -200,50 +200,45 @@ export default function TickerSearchModal({
     [setSearchQuery, setSelectedIndex],
   );
 
-  const { onKeyDown } = useKeyboardEvents(
-    {
-      keydown: {
-        Enter: (evt) => {
-          if (selectedIndex === -1) {
-            handleOk(evt);
-          } else if (
-            selectedIndex >= 0 &&
-            selectedIndex < searchResults.length
-          ) {
-            const selectedSearchResult = searchResults[selectedIndex];
-            handleOk(evt, selectedSearchResult.symbol, selectedSearchResult);
-          }
-        },
-        ArrowDown: () => {
-          setSelectedIndex((prevIndex) => {
-            const newIndex = Math.min(prevIndex + 1, searchResults.length - 1);
-            const selectedListItem = window.document.getElementById(
-              `search-result-${newIndex}`,
-            );
-            selectedListItem?.scrollIntoView({
-              block: "nearest",
-              behavior: "smooth",
-            });
-            return newIndex;
+  const { onKeyDown } = useKeyboardEvents({
+    attachToWindow: false,
+    keydown: {
+      Enter: (evt) => {
+        if (selectedIndex === -1) {
+          handleOk(evt);
+        } else if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
+          const selectedSearchResult = searchResults[selectedIndex];
+          handleOk(evt, selectedSearchResult.symbol, selectedSearchResult);
+        }
+      },
+      ArrowDown: () => {
+        setSelectedIndex((prevIndex) => {
+          const newIndex = Math.min(prevIndex + 1, searchResults.length - 1);
+          const selectedListItem = window.document.getElementById(
+            `search-result-${newIndex}`,
+          );
+          selectedListItem?.scrollIntoView({
+            block: "nearest",
+            behavior: "smooth",
           });
-        },
-        ArrowUp: () => {
-          setSelectedIndex((prevIndex) => {
-            const newIndex = Math.max(prevIndex - 1, 0);
-            const selectedListItem = window.document.getElementById(
-              `search-result-${newIndex}`,
-            );
-            selectedListItem?.scrollIntoView({
-              block: "nearest",
-              behavior: "smooth",
-            });
-            return newIndex;
+          return newIndex;
+        });
+      },
+      ArrowUp: () => {
+        setSelectedIndex((prevIndex) => {
+          const newIndex = Math.max(prevIndex - 1, 0);
+          const selectedListItem = window.document.getElementById(
+            `search-result-${newIndex}`,
+          );
+          selectedListItem?.scrollIntoView({
+            block: "nearest",
+            behavior: "smooth",
           });
-        },
+          return newIndex;
+        });
       },
     },
-    false,
-  );
+  });
 
   return (
     <DialogModal open={isOpen} onClose={handleClose} staticHeight>

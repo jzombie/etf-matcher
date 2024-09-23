@@ -3,19 +3,18 @@ import { SyntheticEvent } from "react";
 
 import useStableCurrentRef from "../useStableCurrentRef";
 
-type KeyEventCallbacks = {
+export type KeyboardEventsProps = {
   keydown?: { [key: string]: (event: KeyboardEvent) => void };
   keyup?: { [key: string]: (event: KeyboardEvent) => void };
+  attachToWindow?: boolean;
 };
 
-export default function useKeyboardEvents(
-  callbacks: KeyEventCallbacks,
-  attachToWindow: boolean = true,
-) {
-  const keydownCallbacksStableRef = useStableCurrentRef(
-    callbacks.keydown || {},
-  );
-  const keyupCallbacksStableRef = useStableCurrentRef(callbacks.keyup || {});
+export default function useKeyboardEvents({
+  attachToWindow = true,
+  ...rest
+}: KeyboardEventsProps) {
+  const keydownCallbacksStableRef = useStableCurrentRef(rest.keydown || {});
+  const keyupCallbacksStableRef = useStableCurrentRef(rest.keyup || {});
 
   const handleUnifiedCallback = useCallback(
     (evt: KeyboardEvent, callback?: (event: KeyboardEvent) => void) => {

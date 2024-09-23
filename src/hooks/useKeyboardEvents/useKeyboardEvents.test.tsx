@@ -4,23 +4,11 @@ import { fireEvent, render } from "@testing-library/react";
 
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-import useKeyboardEvents from "./useKeyboardEvents";
-
-// Define the types for the callbacks prop
-type TestComponentProps = {
-  callbacks: {
-    keydown?: { [key: string]: (event: KeyboardEvent) => void };
-    keyup?: { [key: string]: (event: KeyboardEvent) => void };
-  };
-  attachToWindow: boolean;
-};
+import useKeyboardEvents, { KeyboardEventsProps } from "./useKeyboardEvents";
 
 // Directly use `useKeyboardEvents` with native events
-const TestComponent: React.FC<TestComponentProps> = ({
-  callbacks,
-  attachToWindow,
-}) => {
-  const { onKeyDown, onKeyUp } = useKeyboardEvents(callbacks, attachToWindow);
+const TestComponent: React.FC<KeyboardEventsProps> = ({ ...rest }) => {
+  const { onKeyDown, onKeyUp } = useKeyboardEvents({ ...rest });
 
   return <div onKeyDown={onKeyDown} onKeyUp={onKeyUp} data-testid="test-div" />;
 };
@@ -38,7 +26,7 @@ describe("useKeyboardEvents", () => {
     test("calls keydown callback on Enter key", () => {
       render(
         <TestComponent
-          callbacks={{ keydown: { Enter: keydownCallback } }}
+          keydown={{ Enter: keydownCallback }}
           attachToWindow={true}
         />,
       );
@@ -52,7 +40,7 @@ describe("useKeyboardEvents", () => {
     test("calls keyup callback on Enter key", () => {
       render(
         <TestComponent
-          callbacks={{ keyup: { Enter: keyupCallback } }}
+          keyup={{ Enter: keyupCallback }}
           attachToWindow={true}
         />,
       );
@@ -64,9 +52,7 @@ describe("useKeyboardEvents", () => {
     });
 
     test("does not call callback for unregistered key", () => {
-      render(
-        <TestComponent callbacks={{ keydown: {} }} attachToWindow={true} />,
-      );
+      render(<TestComponent keydown={{}} attachToWindow={true} />);
 
       const event = new KeyboardEvent("keydown", { key: "Enter" });
       window.dispatchEvent(event);
@@ -78,11 +64,9 @@ describe("useKeyboardEvents", () => {
       const stopPropagation = vi.fn();
       render(
         <TestComponent
-          callbacks={{
-            keydown: {
-              Enter: () => {
-                // no-op
-              },
+          keydown={{
+            Enter: () => {
+              // no-op
             },
           }}
           attachToWindow={true}
@@ -109,7 +93,7 @@ describe("useKeyboardEvents", () => {
     test("calls event handler via element keydown, and not on window", () => {
       const { getByTestId } = render(
         <TestComponent
-          callbacks={{ keydown: { Enter: keydownCallback } }}
+          keydown={{ Enter: keydownCallback }}
           attachToWindow={false}
         />,
       );
@@ -125,7 +109,7 @@ describe("useKeyboardEvents", () => {
     test("calls event handler via element keyup, and not on window", () => {
       const { getByTestId } = render(
         <TestComponent
-          callbacks={{ keyup: { Enter: keyupCallback } }}
+          keyup={{ Enter: keyupCallback }}
           attachToWindow={false}
         />,
       );
