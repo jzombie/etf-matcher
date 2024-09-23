@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { Box, Grid2, Paper } from "@mui/material";
 
+import useKeyboardEvents from "@hooks/useKeyboardEvents";
 import useResizeObserver from "@hooks/useResizeObserver";
 
 // Define the type for the generic item
@@ -56,58 +57,46 @@ export default function SelectableGrid<T>({
 
   useResizeObserver(containerRef, calculateColumns);
 
-  // Handle keyboard navigation
-  useEffect(() => {
-    // TODO: Unify this handling along with the `TickerSearchModal`
-    const handleKeyDown = (evt: KeyboardEvent) => {
-      evt.stopPropagation();
-
-      if (items.length === 0) return;
-
-      switch (evt.key) {
-        case "ArrowDown":
-          setHighlightedIndex((prevIndex) =>
-            prevIndex === null || prevIndex + dynamicColumns >= items.length
-              ? prevIndex === null
-                ? 0
-                : prevIndex // Stay on the last row if it's not full
-              : prevIndex + dynamicColumns,
-          );
-          break;
-        case "ArrowUp":
-          setHighlightedIndex((prevIndex) =>
-            prevIndex === null || prevIndex - dynamicColumns < 0
-              ? prevIndex // Stay on the first row
-              : prevIndex - dynamicColumns,
-          );
-          break;
-        case "ArrowRight":
-          setHighlightedIndex((prevIndex) =>
-            prevIndex === null || prevIndex === items.length - 1
-              ? 0 // Loop around to the first item
-              : prevIndex + 1,
-          );
-          break;
-        case "ArrowLeft":
-          setHighlightedIndex((prevIndex) =>
-            prevIndex === null || prevIndex === 0
-              ? items.length - 1 // Loop around to the last item
-              : prevIndex - 1,
-          );
-          break;
-        case "Enter":
-          if (highlightedIndex !== null && items[highlightedIndex]) {
-            handleSelectItem(highlightedIndex);
-          }
-          break;
-        default:
-          break;
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [items, highlightedIndex, handleSelectItem, dynamicColumns]);
+  // Enable keyboard navigation
+  useKeyboardEvents({
+    keydown: {
+      ArrowDown: () => {
+        setHighlightedIndex((prevIndex) =>
+          prevIndex === null || prevIndex + dynamicColumns >= items.length
+            ? prevIndex === null
+              ? 0
+              : prevIndex // Stay on the last row if it's not full
+            : prevIndex + dynamicColumns,
+        );
+      },
+      ArrowUp: () => {
+        setHighlightedIndex((prevIndex) =>
+          prevIndex === null || prevIndex - dynamicColumns < 0
+            ? prevIndex // Stay on the first row
+            : prevIndex - dynamicColumns,
+        );
+      },
+      ArrowRight: () => {
+        setHighlightedIndex((prevIndex) =>
+          prevIndex === null || prevIndex === items.length - 1
+            ? 0 // Loop around to the first item
+            : prevIndex + 1,
+        );
+      },
+      ArrowLeft: () => {
+        setHighlightedIndex((prevIndex) =>
+          prevIndex === null || prevIndex === 0
+            ? items.length - 1 // Loop around to the last item
+            : prevIndex - 1,
+        );
+      },
+      Enter: () => {
+        if (highlightedIndex !== null && items[highlightedIndex]) {
+          handleSelectItem(highlightedIndex);
+        }
+      },
+    },
+  });
 
   return (
     <Box ref={containerRef}>
