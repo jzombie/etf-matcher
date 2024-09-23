@@ -7,10 +7,14 @@ export type KeyboardEventsProps = {
   keydown?: { [key: string]: (event: KeyboardEvent) => void };
   keyup?: { [key: string]: (event: KeyboardEvent) => void };
   attachToWindow?: boolean;
+  stopPropagation?: boolean;
+  preventDefault?: boolean;
 };
 
 export default function useKeyboardEvents({
   attachToWindow = true,
+  stopPropagation = true,
+  preventDefault = true,
   ...rest
 }: KeyboardEventsProps) {
   const keydownCallbacksStableRef = useStableCurrentRef(rest.keydown || {});
@@ -19,12 +23,17 @@ export default function useKeyboardEvents({
   const handleUnifiedCallback = useCallback(
     (evt: KeyboardEvent, callback?: (event: KeyboardEvent) => void) => {
       if (callback) {
-        evt.stopPropagation();
-        evt.preventDefault();
+        if (stopPropagation) {
+          evt.stopPropagation();
+        }
+        if (preventDefault) {
+          evt.preventDefault();
+        }
+
         callback(evt);
       }
     },
-    [],
+    [stopPropagation, preventDefault],
   );
 
   const handleKeyDown = useCallback(

@@ -82,6 +82,99 @@ describe("useKeyboardEvents", () => {
 
       expect(stopPropagation).toHaveBeenCalled();
     });
+
+    describe("useKeyboardEvents - preventDefault and stopPropagation flags", () => {
+      let keydownCallback: ReturnType<typeof vi.fn>;
+
+      beforeEach(() => {
+        keydownCallback = vi.fn();
+        keyupCallback = vi.fn();
+      });
+
+      test("calls preventDefault when preventDefault is true", () => {
+        const preventDefault = vi.fn();
+        render(
+          <TestComponent
+            keydown={{
+              Enter: keydownCallback,
+            }}
+            preventDefault={true}
+          />,
+        );
+
+        const event = new KeyboardEvent("keydown", { key: "Enter" });
+        Object.defineProperty(event, "preventDefault", {
+          value: preventDefault,
+        });
+
+        window.dispatchEvent(event);
+
+        expect(preventDefault).toHaveBeenCalledTimes(1);
+      });
+
+      test("does not call preventDefault when preventDefault is false", () => {
+        const preventDefault = vi.fn();
+        render(
+          <TestComponent
+            keydown={{
+              Enter: keydownCallback,
+            }}
+            preventDefault={false}
+          />,
+        );
+
+        const event = new KeyboardEvent("keydown", { key: "Enter" });
+        Object.defineProperty(event, "preventDefault", {
+          value: preventDefault,
+        });
+
+        window.dispatchEvent(event);
+
+        expect(preventDefault).not.toHaveBeenCalled();
+      });
+
+      test("calls stopPropagation when stopPropagation is true", () => {
+        const stopPropagation = vi.fn();
+        render(
+          <TestComponent
+            keydown={{
+              Enter: keydownCallback,
+            }}
+            stopPropagation={true}
+          />,
+        );
+
+        const event = new KeyboardEvent("keydown", { key: "Enter" });
+        Object.defineProperty(event, "stopPropagation", {
+          value: stopPropagation,
+        });
+
+        window.dispatchEvent(event);
+
+        expect(stopPropagation).toHaveBeenCalledTimes(1);
+      });
+
+      test("does not call stopPropagation when stopPropagation is false", () => {
+        const stopPropagation = vi.fn();
+        render(
+          <TestComponent
+            keydown={{
+              Enter: keydownCallback,
+            }}
+            stopPropagation={false}
+          />,
+        );
+
+        const event = new KeyboardEvent("keydown", { key: "Enter" });
+        Object.defineProperty(event, "stopPropagation", {
+          value: stopPropagation,
+        });
+
+        window.dispatchEvent(event);
+
+        expect(stopPropagation).not.toHaveBeenCalled();
+      });
+    });
   });
 
   describe("when not attached to the window", () => {
