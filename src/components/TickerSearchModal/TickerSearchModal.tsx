@@ -200,6 +200,7 @@ export default function TickerSearchModal({
   );
 
   const handleInputKeyDown = useCallback(
+    // TODO: Unify this handling along with the `SelectableGrid`
     (evt: React.KeyboardEvent) => {
       if (evt.code === "Enter" || evt.key === "Enter") {
         if (selectedIndex === -1) {

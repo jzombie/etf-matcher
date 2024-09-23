@@ -58,6 +58,7 @@ export default function SelectableGrid<T>({
 
   // Handle keyboard navigation
   useEffect(() => {
+    // TODO: Unify this handling along with the `TickerSearchModal`
     const handleKeyDown = (event: KeyboardEvent) => {
       if (items.length === 0) return;
 
