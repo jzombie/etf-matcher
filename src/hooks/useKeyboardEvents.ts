@@ -1,4 +1,5 @@
 import { useCallback, useEffect } from "react";
+import { SyntheticEvent } from "react";
 
 import useStableCurrentRef from "./useStableCurrentRef";
 
@@ -16,36 +17,37 @@ export default function useKeyboardEvents(
   );
   const keyupCallbacksStableRef = useStableCurrentRef(callbacks.keyup || {});
 
-  // Create the keydown handler
+  const handleUnifiedCallback = useCallback(
+    (evt: KeyboardEvent, callback?: (event: KeyboardEvent) => void) => {
+      if (callback) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        callback(evt);
+      }
+    },
+    [],
+  );
+
   const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      const callback = keydownCallbacksStableRef.current[event.key];
-      if (callback) {
-        event.preventDefault();
-        callback(event);
-      }
+    (evt: KeyboardEvent) => {
+      const callback = keydownCallbacksStableRef.current[evt.key];
+      handleUnifiedCallback(evt, callback);
     },
-    [keydownCallbacksStableRef],
+    [handleUnifiedCallback, keydownCallbacksStableRef],
   );
 
-  // Create the keyup handler
   const handleKeyUp = useCallback(
-    (event: KeyboardEvent) => {
-      const callback = keyupCallbacksStableRef.current[event.key];
-      if (callback) {
-        event.preventDefault();
-        callback(event);
-      }
+    (evt: KeyboardEvent) => {
+      const callback = keyupCallbacksStableRef.current[evt.key];
+      handleUnifiedCallback(evt, callback);
     },
-    [keyupCallbacksStableRef],
+    [handleUnifiedCallback, keyupCallbacksStableRef],
   );
 
-  // Conditionally bind window events
   useEffect(() => {
     if (attachToWindow) {
       window.addEventListener("keydown", handleKeyDown);
       window.addEventListener("keyup", handleKeyUp);
-
       return () => {
         window.removeEventListener("keydown", handleKeyDown);
         window.removeEventListener("keyup", handleKeyUp);
@@ -53,9 +55,11 @@ export default function useKeyboardEvents(
     }
   }, [attachToWindow, handleKeyDown, handleKeyUp]);
 
-  // Return the handlers for keydown and keyup
+  // Return handlers for keydown and keyup, adapting for SyntheticEvent
   return {
-    onKeyDown: handleKeyDown,
-    onKeyUp: handleKeyUp,
+    onKeyDown: (event: SyntheticEvent) =>
+      handleKeyDown(event.nativeEvent as KeyboardEvent),
+    onKeyUp: (event: SyntheticEvent) =>
+      handleKeyUp(event.nativeEvent as KeyboardEvent),
   };
 }

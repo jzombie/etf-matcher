@@ -28,6 +28,7 @@ import DialogModal, { DialogModalProps } from "@components/DialogModal";
 import EncodedImage from "@components/EncodedImage";
 
 import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
+import useKeyboardEvents from "@hooks/useKeyboardEvents";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 import { RustServiceTickerSearchResult } from "@utils/callRustService";
@@ -144,7 +145,7 @@ export default function TickerSearchModal({
 
   const handleOk = useCallback(
     (
-      _?: SyntheticEvent,
+      _?: SyntheticEvent | KeyboardEvent,
       exactSearchValue?: string,
       selectedTicker?: RustServiceTickerSearchResult,
     ) => {
@@ -199,46 +200,91 @@ export default function TickerSearchModal({
     [setSearchQuery, setSelectedIndex],
   );
 
-  const handleInputKeyDown = useCallback(
-    // TODO: Unify this handling along with the `SelectableGrid`
-    (evt: React.KeyboardEvent) => {
-      evt.stopPropagation();
-
-      if (evt.code === "Enter" || evt.key === "Enter") {
-        if (selectedIndex === -1) {
-          handleOk(evt);
-        } else if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
-          const selectedSearchResult = searchResults[selectedIndex];
-          handleOk(evt, selectedSearchResult.symbol, selectedSearchResult);
-        }
-      } else if (evt.code === "ArrowDown") {
-        setSelectedIndex((prevIndex) => {
-          const newIndex = Math.min(prevIndex + 1, searchResults.length - 1);
-          const selectedListItem = window.document.getElementById(
-            `search-result-${newIndex}`,
-          );
-          selectedListItem?.scrollIntoView({
-            block: "nearest",
-            behavior: "smooth",
+  const { onKeyDown } = useKeyboardEvents(
+    {
+      keydown: {
+        Enter: (evt) => {
+          if (selectedIndex === -1) {
+            handleOk(evt);
+          } else if (
+            selectedIndex >= 0 &&
+            selectedIndex < searchResults.length
+          ) {
+            const selectedSearchResult = searchResults[selectedIndex];
+            handleOk(evt, selectedSearchResult.symbol, selectedSearchResult);
+          }
+        },
+        ArrowDown: () => {
+          setSelectedIndex((prevIndex) => {
+            const newIndex = Math.min(prevIndex + 1, searchResults.length - 1);
+            const selectedListItem = window.document.getElementById(
+              `search-result-${newIndex}`,
+            );
+            selectedListItem?.scrollIntoView({
+              block: "nearest",
+              behavior: "smooth",
+            });
+            return newIndex;
           });
-          return newIndex;
-        });
-      } else if (evt.code === "ArrowUp") {
-        setSelectedIndex((prevIndex) => {
-          const newIndex = Math.max(prevIndex - 1, 0);
-          const selectedListItem = window.document.getElementById(
-            `search-result-${newIndex}`,
-          );
-          selectedListItem?.scrollIntoView({
-            block: "nearest",
-            behavior: "smooth",
+        },
+        ArrowUp: () => {
+          setSelectedIndex((prevIndex) => {
+            const newIndex = Math.max(prevIndex - 1, 0);
+            const selectedListItem = window.document.getElementById(
+              `search-result-${newIndex}`,
+            );
+            selectedListItem?.scrollIntoView({
+              block: "nearest",
+              behavior: "smooth",
+            });
+            return newIndex;
           });
-          return newIndex;
-        });
-      }
+        },
+      },
     },
-    [handleOk, searchResults, selectedIndex, setSelectedIndex],
+    false,
   );
+
+  // const handleInputKeyDown = useCallback(
+  //   // TODO: Unify this handling along with the `SelectableGrid`
+  //   (evt: React.KeyboardEvent) => {
+  //     evt.stopPropagation();
+
+  //     if (evt.code === "Enter" || evt.key === "Enter") {
+  //       if (selectedIndex === -1) {
+  //         handleOk(evt);
+  //       } else if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
+  //         const selectedSearchResult = searchResults[selectedIndex];
+  //         handleOk(evt, selectedSearchResult.symbol, selectedSearchResult);
+  //       }
+  //     } else if (evt.code === "ArrowDown") {
+  //       setSelectedIndex((prevIndex) => {
+  //         const newIndex = Math.min(prevIndex + 1, searchResults.length - 1);
+  //         const selectedListItem = window.document.getElementById(
+  //           `search-result-${newIndex}`,
+  //         );
+  //         selectedListItem?.scrollIntoView({
+  //           block: "nearest",
+  //           behavior: "smooth",
+  //         });
+  //         return newIndex;
+  //       });
+  //     } else if (evt.code === "ArrowUp") {
+  //       setSelectedIndex((prevIndex) => {
+  //         const newIndex = Math.max(prevIndex - 1, 0);
+  //         const selectedListItem = window.document.getElementById(
+  //           `search-result-${newIndex}`,
+  //         );
+  //         selectedListItem?.scrollIntoView({
+  //           block: "nearest",
+  //           behavior: "smooth",
+  //         });
+  //         return newIndex;
+  //       });
+  //     }
+  //   },
+  //   [handleOk, searchResults, selectedIndex, setSelectedIndex],
+  // );
 
   return (
     <DialogModal open={isOpen} onClose={handleClose} staticHeight>
@@ -248,7 +294,7 @@ export default function TickerSearchModal({
           inputRef={inputRef}
           placeholder='Search for Symbol (e.g. "AAPL" or "Apple")'
           onChange={handleInputChange}
-          onKeyDown={handleInputKeyDown}
+          onKeyDown={onKeyDown}
           value={searchQuery}
           error={Boolean(error)}
           helperText={error}
