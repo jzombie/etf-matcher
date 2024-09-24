@@ -234,7 +234,7 @@ export default function TickerSearchModal({
         // This is used to prevent default `ArrowRight` handling from propagating
       },
       ArrowLeft: () => {
-        // No-op
+        // no-op
         // This is used to prevent default `ArrowLeft` handling from propagating
       },
       Enter: (evt) => {
