@@ -203,14 +203,6 @@ export default function TickerSearchModal({
   const { onKeyDown } = useKeyboardEvents({
     attachToWindow: false,
     keydown: {
-      Enter: (evt) => {
-        if (selectedIndex === -1) {
-          handleOk(evt);
-        } else if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
-          const selectedSearchResult = searchResults[selectedIndex];
-          handleOk(evt, selectedSearchResult.symbol, selectedSearchResult);
-        }
-      },
       ArrowDown: () => {
         setSelectedIndex((prevIndex) => {
           const newIndex = Math.min(prevIndex + 1, searchResults.length - 1);
@@ -236,6 +228,22 @@ export default function TickerSearchModal({
           });
           return newIndex;
         });
+      },
+      ArrowRight: () => {
+        // no-op
+        // This is used to prevent default `ArrowRight` handling from propagating
+      },
+      ArrowLeft: () => {
+        // No-op
+        // This is used to prevent default `ArrowLeft` handling from propagating
+      },
+      Enter: (evt) => {
+        if (selectedIndex === -1) {
+          handleOk(evt);
+        } else if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
+          const selectedSearchResult = searchResults[selectedIndex];
+          handleOk(evt, selectedSearchResult.symbol, selectedSearchResult);
+        }
       },
     },
   });
