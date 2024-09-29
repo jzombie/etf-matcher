@@ -23,6 +23,7 @@ import {
   PROJECT_NAME,
   PROJECT_URL,
 } from "./src/constants";
+import logger from "./vite.logger";
 
 // This is needed to get the .env variables to populate here
 dotenv.config();
@@ -73,6 +74,7 @@ export default defineConfig(({ mode }) => {
   );
 
   return {
+    customLogger: logger,
     root: "./public",
     publicDir: false, // Disable the default publicDir handling
     build: {
