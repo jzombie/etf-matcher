@@ -1,3 +1,4 @@
+import StatePersistenceAdapter from "./StatePersistenceAdapter";
 import store, {
   StateEmitterDefaultEvents,
   StoreStateProps,
@@ -15,4 +16,9 @@ export {
   multiBucketInstancesAllowed,
   TickerBucketNameError,
 };
-export type { TickerBucket, TickerBucketTicker, StoreStateProps };
+export type {
+  TickerBucket,
+  TickerBucketTicker,
+  StoreStateProps,
+  StatePersistenceAdapter,
+};

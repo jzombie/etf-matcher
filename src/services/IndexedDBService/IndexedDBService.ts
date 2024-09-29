@@ -1,3 +1,4 @@
+import { StatePersistenceAdapter } from "@src/store";
 import { EventEmitter } from "events";
 import { DBSchema, IDBPDatabase, openDB } from "idb";
 
@@ -18,9 +19,10 @@ interface MyDB<T extends Record<string, unknown>> extends DBSchema {
   };
 }
 
-export default class IndexedDBService<
-  T extends Record<string, unknown>,
-> extends EventEmitter {
+export default class IndexedDBService<T extends Record<string, unknown>>
+  extends EventEmitter
+  implements StatePersistenceAdapter<T>
+{
   private _dbPromise: Promise<IDBPDatabase<MyDB<T>>>;
 
   constructor(databaseName: string = "my-database") {
@@ -36,8 +38,8 @@ export default class IndexedDBService<
   }
 
   // Ensure that the database is ready
-  public async ready(): Promise<IDBPDatabase<MyDB<T>>> {
-    return this._dbPromise;
+  public async ready(): Promise<void> {
+    await this._dbPromise;
   }
 
   async setItem<K extends keyof T>(key: K, value: T[K]): Promise<void> {
