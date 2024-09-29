@@ -1,3 +1,4 @@
+import IndexedDBService from "@services/IndexedDBService";
 import {
   DEFAULT_TICKER_TAPE_TICKERS,
   INDEXED_DB_PERSISTENCE_KEYS,
@@ -6,7 +7,6 @@ import {
 } from "@src/constants";
 import { v4 as uuidv4 } from "uuid";
 
-import IndexedDBInterface from "@utils/IndexedDBInterface";
 import MQTTRoom from "@utils/MQTTRoom";
 import {
   ReactStateEmitter,
@@ -111,7 +111,7 @@ export type IndexedDBPersistenceProps = {
 };
 
 class _Store extends ReactStateEmitter<StoreStateProps> {
-  private _indexedDBInterface: IndexedDBInterface<IndexedDBPersistenceProps>;
+  private _indexedDBService: IndexedDBService<IndexedDBPersistenceProps>;
 
   constructor() {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
@@ -184,7 +184,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // Make initial searches faster
     preloadSearchCache();
 
-    this._indexedDBInterface = new IndexedDBInterface();
+    this._indexedDBService = new IndexedDBService();
 
     // Note: This returns an unsubscribe callback which could be handed if the store
     // were to be torn down
@@ -383,7 +383,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   // Handles IndexedDB persistence and session restore
   private async _initIndexedDBPersistence() {
     try {
-      await this._indexedDBInterface.ready();
+      await this._indexedDBService.ready();
       await this._restorePersistentSession();
 
       // Signal it is `ready` *after* restoring the persistent session
@@ -395,14 +395,14 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
   // Restores the persistent session from IndexedDB
   private async _restorePersistentSession() {
-    const indexedDBKeys = await this._indexedDBInterface.getAllKeys();
+    const indexedDBKeys = await this._indexedDBService.getAllKeys();
     const storeStateKeys = Object.keys(this.state) as Array<
       keyof StoreStateProps
     >;
 
     for (const idbKey of indexedDBKeys) {
       if (storeStateKeys.includes(idbKey as keyof StoreStateProps)) {
-        const item = await this._indexedDBInterface.getItem(idbKey);
+        const item = await this._indexedDBService.getItem(idbKey);
         if (item !== undefined) {
           // TODO: Performance could be improved here by not setting state for
           // each key, and using a single batch update instead
@@ -428,7 +428,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       for (const persistenceKey of INDEXED_DB_PERSISTENCE_KEYS) {
         if (storeStateUpdateKeys.includes(persistenceKey)) {
           const valueToPersist = state[persistenceKey];
-          this._indexedDBInterface.setItem(persistenceKey, valueToPersist);
+          this._indexedDBService.setItem(persistenceKey, valueToPersist);
         }
       }
     };
@@ -749,8 +749,8 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     const clearPromises = [];
 
     // Wipe IndexedDB store
-    if (this._indexedDBInterface) {
-      clearPromises.push(this._indexedDBInterface.clear());
+    if (this._indexedDBService) {
+      clearPromises.push(this._indexedDBService.clear());
     }
 
     // Clear the cache

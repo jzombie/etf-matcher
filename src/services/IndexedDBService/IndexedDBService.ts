@@ -18,7 +18,7 @@ interface MyDB<T extends Record<string, unknown>> extends DBSchema {
   };
 }
 
-export default class IndexedDBInterface<
+export default class IndexedDBService<
   T extends Record<string, unknown>,
 > extends EventEmitter {
   private _dbPromise: Promise<IDBPDatabase<MyDB<T>>>;
