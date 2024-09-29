@@ -3,6 +3,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
 
 import { writeBuildTime } from "./vite.config";
+import logger from "./vite.logger";
 
 // Fixes an async issue where TypeScript complains about `public/buildTime.json`
 // not being present.
@@ -12,6 +13,7 @@ import { writeBuildTime } from "./vite.config";
 writeBuildTime();
 
 export default defineConfig({
+  customLogger: logger,
   test: {
     globals: true,
     environment: "jsdom",
