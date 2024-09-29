@@ -1,12 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+// Define TestSchema as a Record<string, string>
+import { IndexedDBPersistenceProps } from "../../store/";
 import IndexedDBService, {
   UPDATE_EVENT,
   UpdateEvent,
 } from "../IndexedDBService";
 
-// Define TestSchema as a Record<string, string>
-type TestSchema = Record<string, string>;
+type TestSchema = IndexedDBPersistenceProps & Record<string, string>;
 
 describe("IndexedDBService", () => {
   let dbInterface: IndexedDBService<TestSchema>;

@@ -1,5 +1,6 @@
-import StatePersistenceAdapter from "./StatePersistenceAdapter";
+import BaseStatePersistenceAdapter from "./BaseStatePersistenceAdapter";
 import store, {
+  IndexedDBPersistenceProps,
   StateEmitterDefaultEvents,
   StoreStateProps,
   TickerBucket,
@@ -15,10 +16,11 @@ export {
   StateEmitterDefaultEvents,
   multiBucketInstancesAllowed,
   TickerBucketNameError,
+  BaseStatePersistenceAdapter,
 };
 export type {
   TickerBucket,
   TickerBucketTicker,
   StoreStateProps,
-  StatePersistenceAdapter,
+  IndexedDBPersistenceProps,
 };
