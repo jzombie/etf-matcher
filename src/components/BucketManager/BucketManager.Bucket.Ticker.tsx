@@ -152,11 +152,11 @@ export default function BucketTicker({
               {tickerDetail.is_held_in_etf ? "Yes" : "No"}
             </InfoItem>
           </Grid2>
-          <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
+          {/* <Grid2 size={{ xs: 12, sm: 6, md: 4 }}>
             <InfoItem label="Score Avg DCA">
               {tickerDetail.score_avg_dca?.toFixed(2) || "N/A"}
             </InfoItem>
-          </Grid2>
+          </Grid2> */}
         </Grid2>
 
         {/* Delete Button */}
