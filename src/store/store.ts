@@ -1,4 +1,5 @@
 import IndexedDBService from "@services/IndexedDBService";
+import { MQTTRoom } from "@services/MQTTRoomService";
 import {
   DEFAULT_TICKER_TAPE_TICKERS,
   INDEXED_DB_PERSISTENCE_KEYS,
@@ -7,7 +8,6 @@ import {
 } from "@src/constants";
 import { v4 as uuidv4 } from "uuid";
 
-import MQTTRoom from "@utils/MQTTRoom";
 import {
   ReactStateEmitter,
   StateEmitterDefaultEvents,

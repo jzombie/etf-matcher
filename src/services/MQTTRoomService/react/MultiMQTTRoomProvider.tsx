@@ -6,13 +6,13 @@ import React, {
   useState,
 } from "react";
 
+import { MQTTRoom, validateTopic } from "@services/MQTTRoomService";
 import store from "@src/store";
 
 import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import useOnlyOnce from "@hooks/useOnlyOnce";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
-import MQTTRoom, { validateTopic } from "@utils/MQTTRoom";
 import customLogger from "@utils/customLogger";
 
 const BROKER_URL = import.meta.env.VITE_MQTT_BROKER_URL;

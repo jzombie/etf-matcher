@@ -6,12 +6,11 @@ import React, {
   useState,
 } from "react";
 
+import { MQTTRoom, MQTTRoomEvents } from "@services/MQTTRoomService";
+import { useMultiMQTTRoomContext } from "@services/MQTTRoomService/react";
 import { MQTT_SYNC_KEYS } from "@src/constants";
 import store, { StateEmitterDefaultEvents, StoreStateProps } from "@src/store";
 import { useLocation } from "react-router-dom";
-
-import MQTTRoom, { MQTTRoomEvents } from "@utils/MQTTRoom";
-import { useMultiMQTTRoomContext } from "@utils/MQTTRoom/react";
 
 interface SharedSessionManagerContextProps {
   getRoomShareURL: (room: MQTTRoom) => string;

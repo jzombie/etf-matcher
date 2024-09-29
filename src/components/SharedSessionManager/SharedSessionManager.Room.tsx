@@ -11,11 +11,11 @@ import {
 } from "@mui/material";
 
 import AutoScaler from "@layoutKit/AutoScaler";
+import { MQTTRoom, MQTTRoomEvents } from "@services/MQTTRoomService";
+import { useMultiMQTTRoomContext } from "@services/MQTTRoomService/react";
 
 import useEventRefresh from "@hooks/useEventRefresh";
 
-import MQTTRoom, { MQTTRoomEvents } from "@utils/MQTTRoom";
-import { useMultiMQTTRoomContext } from "@utils/MQTTRoom/react";
 import { generateQRCode as libGenerateQRCode } from "@utils/callRustService";
 
 import { useSharedSessionManagerContext } from "./SharedSessionManagerProvider";

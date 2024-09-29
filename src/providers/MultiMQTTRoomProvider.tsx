@@ -1,3 +1,3 @@
-import MultiMQTTRoomProvider from "@utils/MQTTRoom/react/MultiMQTTRoomProvider";
+import MultiMQTTRoomProvider from "@services/MQTTRoomService/react/MultiMQTTRoomProvider";
 
 export default MultiMQTTRoomProvider;
