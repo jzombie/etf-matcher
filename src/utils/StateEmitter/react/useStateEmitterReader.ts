@@ -11,7 +11,10 @@ import deepEqual from "@utils/deepEqual";
 
 import EmitterState, { StateEmitterDefaultEvents } from "../StateEmitter";
 
-const useStateEmitterReader = <T extends object, K extends keyof T>(
+const useStateEmitterReader = <
+  T extends Record<string, unknown>,
+  K extends keyof T,
+>(
   emitter: EmitterState<T>,
   stateKeyOrKeys: K | K[],
   eventOrEventNames:

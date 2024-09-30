@@ -4,7 +4,7 @@ import deepFreeze from "@utils/deepFreeze";
 
 import StateEmitter, { StateEmitterDefaultEvents } from "./StateEmitter";
 
-interface TestState {
+interface TestState extends Record<string, unknown> {
   count: number;
   text: string;
 }
@@ -192,7 +192,7 @@ describe("StateEmitter", () => {
   });
 });
 
-interface NestedState {
+interface NestedState extends Record<string, unknown> {
   nested: {
     count: number;
     text: string;

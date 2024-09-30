@@ -8,7 +8,7 @@ import customLogger from "@utils/customLogger";
 import EmitterState from "../StateEmitter";
 import useStateEmitterReader from "./useStateEmitterReader";
 
-interface TestState {
+interface TestState extends Record<string, unknown> {
   count: number;
   text: string;
   items: string[];

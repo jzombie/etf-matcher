@@ -7,11 +7,11 @@ export enum StateEmitterDefaultEvents {
   UPDATE = "update",
 }
 
-// TODO: Extend `Record` type instead of `object`
-//
 // Note: Any React-specific functionality should not be directly tied into this class
 // and instead used in the `ReactStateEmitter` extension class.
-export default class StateEmitter<T extends object> extends EventEmitter {
+export default class StateEmitter<
+  T extends Record<string, unknown>,
+> extends EventEmitter {
   // Individual state keys can be subscribed to, so it's best to ensure that they don't
   // conflict with default events
   protected _reservedStateKeys: string[] = Object.keys(
