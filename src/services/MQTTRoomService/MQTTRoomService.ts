@@ -7,6 +7,9 @@ const worker = new Worker(new URL("./MQTTRoom.worker", import.meta.url), {
   type: "module",
 });
 
+// TODO: Don't make this an abstract class; use it as if a single class instance
+// somehow represents all connected rooms, extending the `BaseStatePersistenceAdapter`
+// class
 export default abstract class MQTTRoomService {
   static messageCounter = 0;
   static messagePromises: {
