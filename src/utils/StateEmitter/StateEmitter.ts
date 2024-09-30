@@ -7,6 +7,8 @@ export enum StateEmitterDefaultEvents {
   UPDATE = "update",
 }
 
+// TODO: Extend `Record` type instead of `object`
+//
 // Note: Any React-specific functionality should not be directly tied into this class
 // and instead used in the `ReactStateEmitter` extension class.
 export default class StateEmitter<T extends object> extends EventEmitter {
