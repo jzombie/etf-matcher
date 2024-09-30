@@ -1,7 +1,4 @@
-import {
-  BaseStatePersistenceAdapter,
-  IndexedDBPersistenceProps,
-} from "@src/store";
+import BaseStatePersistenceAdapter from "@src/store/BaseStatePersistenceAdapter";
 import { DBSchema, IDBPDatabase, openDB } from "idb";
 
 const KEYVAL_STORE_NAME = "keyval";
@@ -14,7 +11,7 @@ export interface UpdateEvent<T> {
 
 export const UPDATE_EVENT = "update";
 
-interface MyDB<T extends IndexedDBPersistenceProps> extends DBSchema {
+interface MyDB<T extends Record<string, unknown>> extends DBSchema {
   [KEYVAL_STORE_NAME]: {
     key: string;
     value: T[keyof T];
@@ -22,7 +19,7 @@ interface MyDB<T extends IndexedDBPersistenceProps> extends DBSchema {
 }
 
 export default class IndexedDBService<
-  T extends IndexedDBPersistenceProps,
+  T extends Record<string, unknown>,
 > extends BaseStatePersistenceAdapter<T> {
   private _dbPromise: Promise<IDBPDatabase<MyDB<T>>>;
 

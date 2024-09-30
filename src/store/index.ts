@@ -1,4 +1,3 @@
-import BaseStatePersistenceAdapter from "./BaseStatePersistenceAdapter";
 import store, {
   IndexedDBPersistenceProps,
   StateEmitterDefaultEvents,
@@ -16,7 +15,6 @@ export {
   StateEmitterDefaultEvents,
   multiBucketInstancesAllowed,
   TickerBucketNameError,
-  BaseStatePersistenceAdapter,
 };
 export type {
   TickerBucket,
