@@ -1,3 +1,5 @@
+// Note: `BaseStatePersistenceAdapter` is intentionally not exported here to
+// avoid cyclic dependency issues during testing
 import store, {
   IndexedDBPersistenceProps,
   StateEmitterDefaultEvents,
