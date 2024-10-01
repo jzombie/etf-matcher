@@ -2,7 +2,7 @@ import { Buffer } from "buffer";
 import EventEmitter from "events";
 
 import { MQTTRoomEvents, SendOptions } from "./MQTTRoom.sharedBindings";
-import MQTTRoomService from "./MQTTRoomService";
+import { callMQTTRoomWorker } from "./MQTTRoom.utils";
 import validateTopic from "./validateTopic";
 
 export default class MQTTRoom extends EventEmitter<MQTTRoomEvents> {
@@ -47,10 +47,10 @@ export default class MQTTRoom extends EventEmitter<MQTTRoomEvents> {
   protected async _connect() {
     this._setConnectingState(true);
 
-    const peerId = await MQTTRoomService.callMQTTRoomWorker<string>(
-      "connect-room",
-      [this._brokerURL, this._roomName],
-    );
+    const peerId = await callMQTTRoomWorker<string>("connect-room", [
+      this._brokerURL,
+      this._roomName,
+    ]);
 
     this._setConnectingState(false); // `ing`
     this._setConnectionState(true); // `ion`
@@ -106,11 +106,7 @@ export default class MQTTRoom extends EventEmitter<MQTTRoomEvents> {
     }
 
     try {
-      await MQTTRoomService.callMQTTRoomWorker("send", [
-        this.peerId,
-        data,
-        options,
-      ]);
+      await callMQTTRoomWorker("send", [this.peerId, data, options]);
     } finally {
       this._popStateOperation("send");
     }
@@ -148,7 +144,7 @@ export default class MQTTRoom extends EventEmitter<MQTTRoomEvents> {
     this._peers = [];
     this._setConnectionState(false);
 
-    MQTTRoomService.callMQTTRoomWorker("close", [this.peerId]);
+    callMQTTRoomWorker("close", [this.peerId]);
     this.emit("close");
     this.removeAllListeners();
   }
