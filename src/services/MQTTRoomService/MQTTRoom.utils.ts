@@ -28,6 +28,9 @@ export async function callMQTTRoomWorker<T>(
     worker.postMessage({ functionName, args, messageId });
 
     const handleAbort = () => {
+      cleanup();
+      // Note: As of now the worker & Rust service do not yet support
+      // this action, but it should be safely ignored
       worker.postMessage({ messageId, action: "abort" });
       reject(new Error("Aborted"));
       delete messagePromises[messageId];
