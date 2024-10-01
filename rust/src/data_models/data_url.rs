@@ -29,10 +29,10 @@ impl DataURL {
             DataURL::ETFAggregateDetailShardIndex => "/data/etf_aggregate_detail_shard_index.enc",
             DataURL::ETFHoldingTickersShardIndex => "/data/etf_holding_tickers_shard_index.enc",
             // DataURL::FinancialVectors10K => "/data/financial_vectors.tenk.bin", // TODO: Use encoded bin, provided that compression doesn't actually increase the file size
-            // DataURL::FinancialVectors10K => "/data/NEW_PROTO.financial_vectors.tenk.bin", // TODO: Use encoded bin, provided that compression doesn't actually increase the file size
-            DataURL::FinancialVectors10K => {
-                "/data/NEW_PROTO_NO_POST_SCALE.financial_vectors.tenk.bin"
-            } // TODO: Use encoded bin, provided that compression doesn't actually increase the file size
+            DataURL::FinancialVectors10K => "/data/NEW_PROTO.financial_vectors.tenk.bin", // TODO: Use encoded bin, provided that compression doesn't actually increase the file size
+            // DataURL::FinancialVectors10K => {
+            //     "/data/NEW_PROTO_NO_POST_SCALE.financial_vectors.tenk.bin"
+            // } // TODO: Use encoded bin, provided that compression doesn't actually increase the file size
             // DataURL::FinancialVectors10K => "/data/key_metrics.tenk.bin", // Prototype
             DataURL::Image(_) => panic!("Use image_url() for image paths"), // Prevent calling value() for images
         }
