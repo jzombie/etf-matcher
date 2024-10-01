@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
 
+import { csvToTickerBuckets, tickerBucketsToCSV } from "@services/RustService";
 import { MAX_CSV_IMPORT_SIZE, PROJECT_NAME } from "@src/constants";
 import type { TickerBucket } from "@src/store";
 import store from "@src/store";
@@ -9,7 +10,6 @@ import TickerBucketImportFileDropModal from "@components/TickerBucketImportExpor
 
 import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 
-import { csvToTickerBuckets, tickerBucketsToCSV } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
 

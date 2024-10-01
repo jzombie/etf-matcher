@@ -1,6 +1,6 @@
 import React from "react";
 
-import { RustServiceTickerDetail } from "@utils/callRustService";
+import { RustServiceTickerDetail } from "@services/RustService";
 
 import TickerDetailAppletWrap from "../../components/TickerDetailAppletWrap";
 import FinancialChartsGrid from "./FinancialChartsGrid";

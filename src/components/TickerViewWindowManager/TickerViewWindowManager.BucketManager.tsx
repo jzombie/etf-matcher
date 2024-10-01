@@ -14,6 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 
+import type { RustServiceTickerDetail } from "@services/RustService";
 import {
   multiBucketInstancesAllowed,
   tickerBucketDefaultNames,
@@ -26,8 +27,6 @@ import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
 import DialogModal from "@components/DialogModal";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
-
-import type { RustServiceTickerDetail } from "@utils/callRustService";
 
 export type TickerViewWindowManagerBucketManagerProps = {
   tickerDetail: RustServiceTickerDetail;

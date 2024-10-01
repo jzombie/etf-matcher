@@ -13,10 +13,9 @@ import {
 import AutoScaler from "@layoutKit/AutoScaler";
 import { MQTTRoom, MQTTRoomEvents } from "@services/MQTTRoomService";
 import { useMultiMQTTRoomContext } from "@services/MQTTRoomService/react";
+import { generateQRCode as libGenerateQRCode } from "@services/RustService";
 
 import useEventRefresh from "@hooks/useEventRefresh";
-
-import { generateQRCode as libGenerateQRCode } from "@utils/callRustService";
 
 import { useSharedSessionManagerContext } from "./SharedSessionManagerProvider";
 

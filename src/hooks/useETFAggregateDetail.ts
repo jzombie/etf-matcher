@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 
-import type { RustServiceETFAggregateDetail } from "@utils/callRustService";
-import { fetchETFAggregateDetail } from "@utils/callRustService";
+import type { RustServiceETFAggregateDetail } from "@services/RustService";
+import { fetchETFAggregateDetail } from "@services/RustService";
+
 import customLogger from "@utils/customLogger";
 
 import useAppErrorBoundary from "./useAppErrorBoundary";

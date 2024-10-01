@@ -1,5 +1,5 @@
 import init, * as wasmModule from "../../../public/pkg/etf_matcher";
-import customLogger from "../customLogger";
+import customLogger from "../../utils/customLogger";
 import {
   EnvelopeType,
   NotifierEvent,

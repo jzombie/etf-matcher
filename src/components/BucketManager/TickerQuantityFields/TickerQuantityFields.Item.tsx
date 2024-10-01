@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import { Grid2, IconButton, TextField } from "@mui/material";
 
+import { RustServiceTickerSearchResult } from "@services/RustService";
 import type { TickerBucketTicker } from "@src/store";
 
 import AvatarLogo from "@components/AvatarLogo";
@@ -12,7 +13,6 @@ import TickerSearchModal from "@components/TickerSearchModal";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useTickerDetail from "@hooks/useTickerDetail";
 
-import { RustServiceTickerSearchResult } from "@utils/callRustService";
 import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
 import removeCommas from "@utils/string/removeCommas";
 
