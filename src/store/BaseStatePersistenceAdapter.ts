@@ -1,3 +1,42 @@
+/**
+ * BaseStatePersistenceAdapter
+ *
+ * This abstract class serves as a foundation for various state persistence adapters
+ * in the ETF Matcher project. The goal is to manage the I/O operations of the app
+ * and ensure that the in-memory data store is synchronized with different persistent
+ * storage mechanisms. Here are some key points to consider while building out the
+ * adapters:
+ *
+ * 1. **MQTT Client-to-Client State Transmissions**:
+ *    - Ensure that state changes are transmitted reliably between clients.
+ *    - Handle network interruptions and reconnections gracefully.
+ *    - Implement mechanisms to verify the integrity and freshness of the transmitted state.
+ *
+ * 2. **Import/Export to/from CSV**:
+ *    - Provide user-friendly interfaces for importing and exporting state.
+ *    - Validate the CSV data to ensure it conforms to the expected format.
+ *    - Handle edge cases such as missing or malformed data.
+ *
+ * 3. **IndexedDB Local Database Storage**:
+ *    - Ensure that the local database is synchronized with the in-memory state.
+ *    - Handle database versioning and migrations.
+ *    - Implement mechanisms to detect and resolve stale state.
+ *
+ * 4. **In-Memory Data Store**:
+ *    - Ensure that the in-memory data store is the source of truth during runtime.
+ *    - Implement efficient synchronization mechanisms between the in-memory store and persistent storage.
+ *    - Provide mechanisms to detect and resolve stale or invalid state.
+ *
+ * 5. **Stale State Management**:
+ *    - Implement checks to verify the freshness of the state (e.g., symbols that are no longer traded).
+ *    - Provide mechanisms to update or remove stale state.
+ *    - Ensure that the app can handle invalid references gracefully.
+ *
+ * 6. **General Considerations**:
+ *    - Ensure that the adapters are modular and can be easily extended or replaced.
+ *    - Implement robust error handling and logging.
+ *    - Provide clear and comprehensive documentation for each adapter.
+ */
 import { EventEmitter } from "events";
 
 export const UPDATE_EVENT = "update";
