@@ -99,4 +99,4 @@ interface FileAcceptType {
 export const FILE_IMPORT_ACCEPT_MAP: ReadonlyMap<string, FileAcceptType> =
   new Map([["csv", { extensions: [".csv"], mimeTypes: ["text/csv"] }]]);
 
-export const MAX_CSV_IMPORT_SIZE: number = 1024 * 2;
+export const MAX_CSV_IMPORT_SIZE: number = 1024 * 1024 * 2;
