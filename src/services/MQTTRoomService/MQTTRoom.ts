@@ -140,11 +140,11 @@ export default class MQTTRoom extends EventEmitter<MQTTRoomEvents> {
     return this._peers;
   }
 
-  close() {
+  async close() {
     this._peers = [];
     this._setConnectionState(false);
 
-    callMQTTRoomWorker("close", [this.peerId]);
+    await callMQTTRoomWorker("close", [this.peerId]);
     this.emit("close");
     this.removeAllListeners();
   }
