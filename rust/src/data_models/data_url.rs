@@ -28,8 +28,8 @@ impl DataURL {
             DataURL::TickerETFHoldersShardIndex => "/data/ticker_etf_holders_shard_index.enc",
             DataURL::ETFAggregateDetailShardIndex => "/data/etf_aggregate_detail_shard_index.enc",
             DataURL::ETFHoldingTickersShardIndex => "/data/etf_holding_tickers_shard_index.enc",
-            // DataURL::FinancialVectors10K => "/data/financial_vectors.tenk.bin", // TODO: Use encoded bin, provided that compression doesn't actually increase the file size
-            DataURL::FinancialVectors10K => "/data/NEW_PROTO.financial_vectors.tenk.bin", // TODO: Use encoded bin, provided that compression doesn't actually increase the file size
+            DataURL::FinancialVectors10K => "/data/financial_vectors.tenk.bin", // TODO: Use encoded bin, provided that compression doesn't actually increase the file size
+            // DataURL::FinancialVectors10K => "/data/NEW_PROTO.financial_vectors.tenk.bin", // TODO: Use encoded bin, provided that compression doesn't actually increase the file size
             // DataURL::FinancialVectors10K => {
             //     "/data/NEW_PROTO_NO_POST_SCALE.financial_vectors.tenk.bin"
             // } // TODO: Use encoded bin, provided that compression doesn't actually increase the file size
