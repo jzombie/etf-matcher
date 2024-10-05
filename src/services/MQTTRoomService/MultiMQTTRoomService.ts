@@ -1,3 +1,4 @@
+import store from "@src/store";
 import BaseStatePersistenceAdapter from "@src/store/BaseStatePersistenceAdapter";
 
 import MQTTRoom from "./MQTTRoom";
@@ -23,6 +24,23 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
       allRoomsInSync: false,
       totalParticipantsForAllRooms: 0,
     });
+
+    // FIXME: This is assuming this service is instantiated before the store has
+    // finished restoring the IndexedDB state. A better approach would be to watch
+    // for the "isIndexedDBReady" state property and then proceed accordingly.
+    // The underlying `StateEmitter` class could be extended with a once-like method
+    // which looks at an existing state property as well as a condtion and either
+    // runs it immediately or waits for the condition to be met.
+    store.once("persistent-session-restore", () => {
+      const { subscribedMQTTRoomNames } = store.getState([
+        "subscribedMQTTRoomNames",
+        "isIndexedDBReady",
+      ]);
+
+      for (const roomName of subscribedMQTTRoomNames) {
+        this.connectToRoom(roomName);
+      }
+    });
   }
 
   async connectToRoom(roomName: string): Promise<void> {
@@ -31,6 +49,8 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
     }
 
     const newRoom = new MQTTRoom(BROKER_URL, roomName);
+
+    store.addMQTTRoomSubscription(newRoom);
 
     this.setState((prevState) => ({
       rooms: { ...prevState.rooms, [roomName]: newRoom },
@@ -47,6 +67,8 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
     newRoom.on("connectingstateupdate", handleConnectingStateChange);
 
     newRoom.on("connect", () => {
+      store.addMQTTRoomSubscription(newRoom);
+
       this.setState((prevState) => ({
         connectedRooms: { ...prevState.connectedRooms, [roomName]: newRoom },
       }));
@@ -80,9 +102,17 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
     });
   }
 
-  async disconnectFromRoom(roomName: string): Promise<void> {
+  async disconnectFromRoom(
+    roomName: string,
+    unregisterSubscription = true,
+  ): Promise<void> {
     const room = this.state.rooms[roomName];
     if (room) {
+      if (unregisterSubscription) {
+        // Unregister room subscription on manual disconnect
+        store.removeMQTTRoomSubscription(room);
+      }
+
       await room.close();
     }
   }
