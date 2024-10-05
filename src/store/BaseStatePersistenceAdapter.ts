@@ -37,9 +37,11 @@
  *    - Implement robust error handling and logging.
  *    - Provide clear and comprehensive documentation for each adapter.
  */
-import { EventEmitter } from "events";
+import StateEmitter, {
+  StateEmitterDefaultEvents,
+} from "@utils/StateEmitter/StateEmitter";
 
-export const UPDATE_EVENT = "update";
+export const UPDATE_EVENT = StateEmitterDefaultEvents.UPDATE;
 
 export interface UpdateEvent<T> {
   type: "setItem" | "removeItem" | "clear";
@@ -49,10 +51,15 @@ export interface UpdateEvent<T> {
 
 // Abstract class for state persistence adapters
 export default abstract class BaseStatePersistenceAdapter<
-  T,
-> extends EventEmitter {
+  T extends Record<string, unknown>,
+> extends StateEmitter<T> {
+  // The initial state is optional here because it will likely come from an async source
+  constructor(initialState: T = {} as T) {
+    super(initialState);
+  }
+
   // Emit an update event with the given payload
-  protected emitUpdateEvent(event: UpdateEvent<T>): void {
+  protected _emitUpdateEvent(event: UpdateEvent<T>): void {
     this.emit(UPDATE_EVENT, event);
   }
 
@@ -80,19 +87,19 @@ export default abstract class BaseStatePersistenceAdapter<
   // Public method to set a specific item in the state by key and value
   async setItem<K extends keyof T>(key: K, value: T[K]): Promise<void> {
     await this._handleSetItem(key, value);
-    this.emitUpdateEvent({ type: "setItem", key, value });
+    this._emitUpdateEvent({ type: "setItem", key, value });
   }
 
   // Public method to remove a specific item from the state by key
   async removeItem<K extends keyof T>(key: K): Promise<void> {
     await this._handleRemoveItem(key);
-    this.emitUpdateEvent({ type: "removeItem", key });
+    this._emitUpdateEvent({ type: "removeItem", key });
   }
 
   // Public method to clear all items from the state
   async clear(): Promise<void> {
     await this._handleClear();
-    this.emitUpdateEvent({ type: "clear" });
+    this._emitUpdateEvent({ type: "clear" });
   }
 
   // Abstract methods to be implemented by subclasses
