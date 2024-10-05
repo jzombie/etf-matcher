@@ -65,40 +65,40 @@ export default abstract class BaseStatePersistenceAdapter<
 
   // Public method to be called when the adapter is ready
   async ready(): Promise<void> {
-    await this._handleReady();
+    await this._onReady();
   }
 
   // Public method to get all keys from the state
   async getAllKeys(): Promise<(keyof T)[]> {
-    return this._handleGetAllKeys();
+    return this._onGetAllKeys();
   }
 
   // Public method to get all values from the state
   async getAllValues(): Promise<Array<T[keyof T]>> {
-    return this._handleGetAllValues();
+    return this._onGetAllValues();
   }
 
   // Public method to get a specific item from the state by key
   async getItem<K extends keyof T>(key: K): Promise<T[K] | undefined> {
-    const item = await this._handleGetItem(key);
+    const item = await this._onGetItem(key);
     return item;
   }
 
   // Public method to set a specific item in the state by key and value
   async setItem<K extends keyof T>(key: K, value: T[K]): Promise<void> {
-    await this._handleSetItem(key, value);
+    await this._onSetItem(key, value);
     this._emitUpdateEvent({ type: "setItem", key, value });
   }
 
   // Public method to remove a specific item from the state by key
   async removeItem<K extends keyof T>(key: K): Promise<void> {
-    await this._handleRemoveItem(key);
+    await this._onRemoveItem(key);
     this._emitUpdateEvent({ type: "removeItem", key });
   }
 
   // Public method to clear all items from the state
   async clear(): Promise<void> {
-    await this._handleClear();
+    await this._onClear();
     this._emitUpdateEvent({ type: "clear" });
   }
 
@@ -106,18 +106,16 @@ export default abstract class BaseStatePersistenceAdapter<
   // The `_handle` prefix is used to indicate that these methods are internal handlers
   // that perform the actual operations. This helps distinguish them from the public
   // methods that call these handlers.
-  protected abstract _handleReady(): Promise<void>;
-  protected abstract _handleGetAllKeys(): Promise<(keyof T)[]>;
-  protected abstract _handleGetAllValues(): Promise<Array<T[keyof T]>>;
-  protected abstract _handleGetItem<K extends keyof T>(
+  protected abstract _onReady(): Promise<void>;
+  protected abstract _onGetAllKeys(): Promise<(keyof T)[]>;
+  protected abstract _onGetAllValues(): Promise<Array<T[keyof T]>>;
+  protected abstract _onGetItem<K extends keyof T>(
     key: K,
   ): Promise<T[K] | undefined>;
-  protected abstract _handleSetItem<K extends keyof T>(
+  protected abstract _onSetItem<K extends keyof T>(
     key: K,
     value: T[K],
   ): Promise<void>;
-  protected abstract _handleRemoveItem<K extends keyof T>(
-    key: K,
-  ): Promise<void>;
-  protected abstract _handleClear(): Promise<void>;
+  protected abstract _onRemoveItem<K extends keyof T>(key: K): Promise<void>;
+  protected abstract _onClear(): Promise<void>;
 }

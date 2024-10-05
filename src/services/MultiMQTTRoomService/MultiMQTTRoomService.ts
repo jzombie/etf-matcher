@@ -149,41 +149,41 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
     this.setState({ totalParticipantsForAllRooms: totalParticipants });
   }
 
-  protected async _handleReady(): Promise<void> {
+  protected async _onReady(): Promise<void> {
     // TODO: Implement any initialization logic (perhaps determine if the worker has loaded)
   }
 
-  protected async _handleGetAllKeys(): Promise<(keyof MQTTRoomState)[]> {
+  protected async _onGetAllKeys(): Promise<(keyof MQTTRoomState)[]> {
     return Object.keys(this.state) as (keyof MQTTRoomState)[];
   }
 
-  protected async _handleGetAllValues(): Promise<
+  protected async _onGetAllValues(): Promise<
     Array<MQTTRoomState[keyof MQTTRoomState]>
   > {
     return Object.values(this.state);
   }
 
-  protected async _handleGetItem<K extends keyof MQTTRoomState>(
+  protected async _onGetItem<K extends keyof MQTTRoomState>(
     key: K,
   ): Promise<MQTTRoomState[K] | undefined> {
     return this.state[key];
   }
 
-  protected async _handleSetItem<K extends keyof MQTTRoomState>(
+  protected async _onSetItem<K extends keyof MQTTRoomState>(
     key: K,
     value: MQTTRoomState[K],
   ): Promise<void> {
     this.setState({ [key]: value });
   }
 
-  protected async _handleRemoveItem<K extends keyof MQTTRoomState>(
+  protected async _onRemoveItem<K extends keyof MQTTRoomState>(
     key: K,
   ): Promise<void> {
     const { [key]: _, ...remainingState } = this.state;
     this.setState(remainingState as MQTTRoomState);
   }
 
-  protected async _handleClear(): Promise<void> {
+  protected async _onClear(): Promise<void> {
     // TODO: Wipe the room states, then remove the store MQTT subscriptions
     throw new Error("`clear` is not currently implemented");
   }

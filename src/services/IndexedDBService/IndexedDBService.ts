@@ -36,11 +36,11 @@ export default class IndexedDBService<
   }
 
   // Ensure that the database is ready
-  protected async _handleReady(): Promise<void> {
+  protected async _onReady(): Promise<void> {
     await this._dbPromise;
   }
 
-  protected async _handleGetItem<K extends keyof T>(
+  protected async _onGetItem<K extends keyof T>(
     key: K,
   ): Promise<T[K] | undefined> {
     // TODO: Route errors to UI
@@ -49,7 +49,7 @@ export default class IndexedDBService<
     return value as T[K];
   }
 
-  protected async _handleSetItem<K extends keyof T>(
+  protected async _onSetItem<K extends keyof T>(
     key: K,
     value: T[K],
   ): Promise<void> {
@@ -57,23 +57,23 @@ export default class IndexedDBService<
     await db.put(KEYVAL_STORE_NAME, value, key as string);
   }
 
-  protected async _handleRemoveItem<K extends keyof T>(key: K): Promise<void> {
+  protected async _onRemoveItem<K extends keyof T>(key: K): Promise<void> {
     const db = await this._dbPromise;
     await db.delete(KEYVAL_STORE_NAME, key as string);
   }
 
-  protected async _handleClear(): Promise<void> {
+  protected async _onClear(): Promise<void> {
     const db = await this._dbPromise;
     await db.clear(KEYVAL_STORE_NAME);
   }
 
-  protected async _handleGetAllKeys(): Promise<(keyof T)[]> {
+  protected async _onGetAllKeys(): Promise<(keyof T)[]> {
     const db = await this._dbPromise;
     const keys = await db.getAllKeys(KEYVAL_STORE_NAME);
     return keys as (keyof T)[];
   }
 
-  protected async _handleGetAllValues(): Promise<Array<T[keyof T]>> {
+  protected async _onGetAllValues(): Promise<Array<T[keyof T]>> {
     const db = await this._dbPromise;
     const values = await db.getAll(KEYVAL_STORE_NAME);
     return values as Array<T[keyof T]>;
