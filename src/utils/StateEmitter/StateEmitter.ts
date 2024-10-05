@@ -7,8 +7,8 @@ export enum StateEmitterDefaultEvents {
   UPDATE = "update",
 }
 
-// Note: Any React-specific functionality should not be directly tied into this class
-// and instead used in the `ReactStateEmitter` extension class.
+// The StateEmitter class extends EventEmitter to include state management capabilities.
+// It allows for state updates, immutability enforcement, and event-driven state change notifications.
 export default class StateEmitter<
   T extends Record<string, unknown>,
 > extends EventEmitter {
