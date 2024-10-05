@@ -72,11 +72,9 @@ export default class IndexedDBService<
     return keys as (keyof T)[];
   }
 
-  protected async _handleGetAllValues<K extends keyof T>(): Promise<
-    Array<T[K]>
-  > {
+  protected async _handleGetAllValues(): Promise<Array<T[keyof T]>> {
     const db = await this._dbPromise;
     const values = await db.getAll(KEYVAL_STORE_NAME);
-    return values as Array<T[K]>;
+    return values as Array<T[keyof T]>;
   }
 }

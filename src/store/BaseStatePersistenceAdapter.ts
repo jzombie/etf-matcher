@@ -67,7 +67,7 @@ export default abstract class BaseStatePersistenceAdapter<
   }
 
   // Public method to get all values from the state
-  async getAllValues<K extends keyof T>(): Promise<Array<T[K]>> {
+  async getAllValues(): Promise<Array<T[keyof T]>> {
     return this._handleGetAllValues();
   }
 
@@ -101,9 +101,7 @@ export default abstract class BaseStatePersistenceAdapter<
   // methods that call these handlers.
   protected abstract _handleReady(): Promise<void>;
   protected abstract _handleGetAllKeys(): Promise<(keyof T)[]>;
-  protected abstract _handleGetAllValues<K extends keyof T>(): Promise<
-    Array<T[K]>
-  >;
+  protected abstract _handleGetAllValues(): Promise<Array<T[keyof T]>>;
   protected abstract _handleGetItem<K extends keyof T>(
     key: K,
   ): Promise<T[K] | undefined>;
