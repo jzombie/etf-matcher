@@ -3,6 +3,7 @@
 import store, {
   IndexedDBPersistenceProps,
   StateEmitterDefaultEvents,
+  Store,
   StoreStateProps,
   TickerBucket,
   TickerBucketNameError,
@@ -17,6 +18,7 @@ export {
   StateEmitterDefaultEvents,
   multiBucketInstancesAllowed,
   TickerBucketNameError,
+  Store,
 };
 export type {
   TickerBucket,

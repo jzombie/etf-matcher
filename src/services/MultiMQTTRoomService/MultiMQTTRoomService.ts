@@ -1,4 +1,4 @@
-import store from "@src/store";
+import { Store } from "@src/store";
 import BaseStatePersistenceAdapter from "@src/store/BaseStatePersistenceAdapter";
 
 import MQTTRoom from "./MQTTRoom";
@@ -16,32 +16,13 @@ export type MQTTRoomState = {
 
 // TODO: On dispose, disconnect from all rooms (shouldn't ever need to be done)
 export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQTTRoomState> {
-  constructor() {
-    super({
+  constructor(store: Store) {
+    super(store, {
       rooms: {},
       connectedRooms: {},
       isConnecting: false,
       allRoomsInSync: false,
       totalParticipantsForAllRooms: 0,
-    });
-
-    // TODO: Don't even use store here, just register the service itself in the store, and bind the events there
-    //
-    // FIXME: This is assuming this service is instantiated before the store has
-    // finished restoring the IndexedDB state. A better approach would be to watch
-    // for the "isIndexedDBReady" state property and then proceed accordingly.
-    // The underlying `StateEmitter` class could be extended with a once-like method
-    // which looks at an existing state property as well as a condtion and either
-    // runs it immediately or waits for the condition to be met.
-    store.once("persistent-session-restore", () => {
-      const { subscribedMQTTRoomNames } = store.getState([
-        "subscribedMQTTRoomNames",
-        "isIndexedDBReady",
-      ]);
-
-      for (const roomName of subscribedMQTTRoomNames) {
-        this.connectToRoom(roomName);
-      }
     });
   }
 
@@ -52,7 +33,7 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
 
     const newRoom = new MQTTRoom(BROKER_URL, roomName);
 
-    store.addMQTTRoomSubscription(newRoom);
+    this._store.addMQTTRoomSubscription(newRoom);
 
     // Register room with service
     this.setState((prevState) => ({
@@ -80,8 +61,8 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
     const room = this.state.rooms[roomName];
     if (room) {
       if (unregisterSubscription) {
-        // Unregister room subscription on manual disconnect
-        store.removeMQTTRoomSubscription(room);
+        // Unregister room subscription on *manual* disconnect
+        this._store.removeMQTTRoomSubscription(room);
       }
 
       await room.close();
@@ -89,7 +70,7 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
   }
 
   protected _onRoomConnected(newRoom: MQTTRoom) {
-    store.addMQTTRoomSubscription(newRoom);
+    this._store.addMQTTRoomSubscription(newRoom);
 
     this.setState((prevState) => ({
       connectedRooms: {
@@ -102,8 +83,6 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
   }
 
   protected _onRoomDisconnected(room: MQTTRoom) {
-    store.removeMQTTRoomSubscription(room);
-
     this.setState((prevState) => {
       const { [room.roomName]: __, ...remainingRooms } = prevState.rooms;
       const { [room.roomName]: ___, ...remainingConnectedRooms } =

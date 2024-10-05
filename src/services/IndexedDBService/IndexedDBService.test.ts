@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Define TestSchema as a Record<string, string>
-import { IndexedDBPersistenceProps } from "../../store/";
+import store, { IndexedDBPersistenceProps } from "../../store/";
 import IndexedDBService, {
   UPDATE_EVENT,
   UpdateEvent,
@@ -18,7 +18,7 @@ describe("IndexedDBService", () => {
     global.IDBKeyRange = IDBKeyRange;
 
     // Initialize the Dexie-based interface
-    dbInterface = new IndexedDBService<TestSchema>("test-database");
+    dbInterface = new IndexedDBService<TestSchema>(store, "test-database");
   });
 
   it("should set and get an item", async () => {

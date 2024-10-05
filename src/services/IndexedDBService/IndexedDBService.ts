@@ -1,3 +1,4 @@
+import { Store } from "@src/store";
 import BaseStatePersistenceAdapter from "@src/store/BaseStatePersistenceAdapter";
 import { DBSchema, IDBPDatabase, openDB } from "idb";
 
@@ -23,8 +24,8 @@ export default class IndexedDBService<
 > extends BaseStatePersistenceAdapter<T> {
   private _dbPromise: Promise<IDBPDatabase<MyDB<T>>>;
 
-  constructor(databaseName: string = "my-database") {
-    super();
+  constructor(store: Store, databaseName: string = "my-database") {
+    super(store);
 
     // Open the database
     this._dbPromise = openDB<MyDB<T>>(databaseName, 1, {
@@ -43,7 +44,6 @@ export default class IndexedDBService<
   protected async _onGetItem<K extends keyof T>(
     key: K,
   ): Promise<T[K] | undefined> {
-    // TODO: Route errors to UI
     const db = await this._dbPromise;
     const value = await db.get(KEYVAL_STORE_NAME, key as string);
     return value as T[K];

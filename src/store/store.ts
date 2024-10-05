@@ -1,5 +1,5 @@
 import IndexedDBService from "@services/IndexedDBService";
-import { MQTTRoom } from "@services/MultiMQTTRoomService";
+import MultiMQTTRoomService, { MQTTRoom } from "@services/MultiMQTTRoomService";
 import type { RustServiceCacheDetail } from "@services/RustService";
 import {
   NotifierEvent,
@@ -110,8 +110,12 @@ export type IndexedDBPersistenceProps = {
   [K in (typeof INDEXED_DB_PERSISTENCE_KEYS)[number]]: StoreStateProps[K];
 };
 
-class _Store extends ReactStateEmitter<StoreStateProps> {
+// TODO: Determine exportable props for MultiMQTTRoomService (similar to IndexedDBPersistenceProps)
+
+// TODO: This should be a singleton
+class Store extends ReactStateEmitter<StoreStateProps> {
   private _indexedDBService: IndexedDBService<IndexedDBPersistenceProps>;
+  private _multiMQTTRoomService: MultiMQTTRoomService;
 
   constructor() {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
@@ -181,11 +185,16 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     // Make initial searches faster
     preloadSearchCache();
 
-    this._indexedDBService = new IndexedDBService();
+    this._indexedDBService = new IndexedDBService(this);
+    this._multiMQTTRoomService = new MultiMQTTRoomService(this);
 
     // Note: This returns an unsubscribe callback which could be handed if the store
     // were to be torn down
     this._initLocalSubscriptions();
+  }
+
+  get multiMQTTRoomService(): MultiMQTTRoomService {
+    return this._multiMQTTRoomService;
   }
 
   // Note: This should be called immediately after the `IndexedDBInterface` has been
@@ -408,11 +417,29 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       }
     }
 
+    // Connect to subscribed MQTT rooms
+    this._connectToSubscribedMQTTRooms();
+
     // Emit to listeners that the session has been restored
     this.emit("persistent-session-restore");
 
     // Capture future store updates in the IndexedDB database
     this._subscribeToStateUpdatesForPersistence();
+  }
+
+  private async _connectToSubscribedMQTTRooms(): Promise<
+    PromiseSettledResult<void>[]
+  > {
+    const { subscribedMQTTRoomNames } = this.getState([
+      "subscribedMQTTRoomNames",
+      "isIndexedDBReady",
+    ]);
+
+    const connectPromises = subscribedMQTTRoomNames.map((roomName) =>
+      this._multiMQTTRoomService.connectToRoom(roomName),
+    );
+
+    return Promise.allSettled(connectPromises);
   }
 
   // Subscribes to state updates for persistence in IndexedDB
@@ -768,7 +795,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 }
 
-const store = new _Store();
+const store = new Store();
 
 export default store;
-export { StateEmitterDefaultEvents };
+export { Store, StateEmitterDefaultEvents };

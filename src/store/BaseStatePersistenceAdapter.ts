@@ -41,6 +41,8 @@ import StateEmitter, {
   StateEmitterDefaultEvents,
 } from "@utils/StateEmitter/StateEmitter";
 
+import { Store } from "./store";
+
 export const UPDATE_EVENT = StateEmitterDefaultEvents.UPDATE;
 
 export interface UpdateEvent<T> {
@@ -53,9 +55,12 @@ export interface UpdateEvent<T> {
 export default abstract class BaseStatePersistenceAdapter<
   T extends Record<string, unknown>,
 > extends StateEmitter<T> {
+  protected _store: Store;
+
   // The initial state is optional here because it will likely come from an async source
-  constructor(initialState: T = {} as T) {
+  constructor(store: Store, initialState: T = {} as T) {
     super(initialState);
+    this._store = store;
   }
 
   // Emit an update event with the given payload

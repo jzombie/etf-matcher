@@ -1,14 +1,12 @@
 import React, { ReactNode, createContext, useCallback } from "react";
 
+import store from "@src/store";
+
 import { useStateEmitterReader } from "@utils/StateEmitter";
 import customLogger from "@utils/customLogger";
 
 import MQTTRoom from "../MQTTRoom";
-import MultiMQTTRoomService from "../MultiMQTTRoomService";
 import validateTopic from "../validateTopic";
-
-// Instantiate the MultiMQTTRoomService
-const multiMQTTRoomService = new MultiMQTTRoomService();
 
 interface MultiMQTTRoomContextProps {
   rooms: Record<string, MQTTRoom>;
@@ -30,6 +28,8 @@ export default function MultiMQTTRoomProvider({
 }: {
   children: ReactNode;
 }) {
+  const multiMQTTRoomService = store.multiMQTTRoomService;
+
   const {
     rooms,
     connectedRooms,
@@ -44,23 +44,29 @@ export default function MultiMQTTRoomProvider({
     "totalParticipantsForAllRooms",
   ]);
 
-  const connectToRoom = useCallback(async (roomName: string) => {
-    try {
-      await multiMQTTRoomService.connectToRoom(roomName);
-    } catch (error) {
-      // TODO: Route up to UI
-      customLogger.error(error);
-    }
-  }, []);
+  const connectToRoom = useCallback(
+    async (roomName: string) => {
+      try {
+        await multiMQTTRoomService.connectToRoom(roomName);
+      } catch (error) {
+        // TODO: Route up to UI
+        customLogger.error(error);
+      }
+    },
+    [multiMQTTRoomService],
+  );
 
-  const disconnectFromRoom = useCallback(async (roomName: string) => {
-    try {
-      await multiMQTTRoomService.disconnectFromRoom(roomName);
-    } catch (error) {
-      // TODO: Route up to UI
-      customLogger.error(error);
-    }
-  }, []);
+  const disconnectFromRoom = useCallback(
+    async (roomName: string) => {
+      try {
+        await multiMQTTRoomService.disconnectFromRoom(roomName);
+      } catch (error) {
+        // TODO: Route up to UI
+        customLogger.error(error);
+      }
+    },
+    [multiMQTTRoomService],
+  );
 
   return (
     <MQTTRoomContext.Provider
