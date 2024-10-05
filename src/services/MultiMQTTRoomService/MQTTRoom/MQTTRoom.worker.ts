@@ -3,14 +3,14 @@ import EventEmitter from "events";
 import mqtt from "mqtt";
 import { v4 as uuidv4 } from "uuid";
 
-import customLogger from "../../utils/customLogger";
+import customLogger from "../../../utils/customLogger";
+import validateTopic from "../validateTopic";
 import {
   EnvelopeType,
   MQTTRoomEvents,
   PostMessageStructKey,
   SendOptions,
 } from "./MQTTRoom.sharedBindings";
-import validateTopic from "./validateTopic";
 
 type MessagePayload = {
   peerId: string;

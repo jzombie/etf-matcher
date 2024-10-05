@@ -6,8 +6,8 @@ import React, {
   useState,
 } from "react";
 
-import { MQTTRoom, MQTTRoomEvents } from "@services/MQTTRoomService";
-import { useMultiMQTTRoomContext } from "@services/MQTTRoomService/react";
+import { MQTTRoom, MQTTRoomEvents } from "@services/MultiMQTTRoomService";
+import { useMultiMQTTRoomContext } from "@services/MultiMQTTRoomService/react";
 import { MQTT_SYNC_KEYS } from "@src/constants";
 import store, { StateEmitterDefaultEvents, StoreStateProps } from "@src/store";
 import { useLocation } from "react-router-dom";

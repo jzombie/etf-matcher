@@ -1,5 +1,5 @@
 import IndexedDBService from "@services/IndexedDBService";
-import { MQTTRoom } from "@services/MQTTRoomService";
+import { MQTTRoom } from "@services/MultiMQTTRoomService";
 import type { RustServiceCacheDetail } from "@services/RustService";
 import {
   NotifierEvent,

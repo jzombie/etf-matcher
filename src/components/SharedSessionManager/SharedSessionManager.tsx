@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useMultiMQTTRoomContext } from "@services/MQTTRoomService/react";
+import { useMultiMQTTRoomContext } from "@services/MultiMQTTRoomService/react";
 
 import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
 

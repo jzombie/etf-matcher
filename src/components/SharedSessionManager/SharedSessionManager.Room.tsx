@@ -11,8 +11,8 @@ import {
 } from "@mui/material";
 
 import AutoScaler from "@layoutKit/AutoScaler";
-import { MQTTRoom, MQTTRoomEvents } from "@services/MQTTRoomService";
-import { useMultiMQTTRoomContext } from "@services/MQTTRoomService/react";
+import { MQTTRoom, MQTTRoomEvents } from "@services/MultiMQTTRoomService";
+import { useMultiMQTTRoomContext } from "@services/MultiMQTTRoomService/react";
 import { generateQRCode as libGenerateQRCode } from "@services/RustService";
 
 import useEventRefresh from "@hooks/useEventRefresh";

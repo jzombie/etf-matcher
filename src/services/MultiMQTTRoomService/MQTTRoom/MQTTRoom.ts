@@ -1,9 +1,9 @@
 import { Buffer } from "buffer";
 import EventEmitter from "events";
 
+import validateTopic from "../validateTopic";
 import { MQTTRoomEvents, SendOptions } from "./MQTTRoom.sharedBindings";
 import { callMQTTRoomWorker } from "./MQTTRoom.utils";
-import validateTopic from "./validateTopic";
 
 export default class MQTTRoom extends EventEmitter<MQTTRoomEvents> {
   public static roomMap: Map<MQTTRoom["peerId"], MQTTRoom> = new Map();
