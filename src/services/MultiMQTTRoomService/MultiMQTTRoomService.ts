@@ -132,7 +132,7 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
   }
 
   protected async _handleReady(): Promise<void> {
-    // Implement any initialization logic if needed
+    // TODO: Implement any initialization logic (perhaps determine if the worker has loaded)
   }
 
   protected async _handleGetAllKeys(): Promise<(keyof MQTTRoomState)[]> {
