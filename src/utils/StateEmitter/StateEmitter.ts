@@ -19,19 +19,7 @@ export default class StateEmitter<
   );
 
   private _state!: T;
-  private _shouldDeepfreeze: boolean = true;
   private disposeFunctions: (() => void)[] = [];
-
-  get shouldDeepfreeze(): boolean {
-    return this._shouldDeepfreeze;
-  }
-
-  set shouldDeepfreeze(shouldDeepfreeze: boolean) {
-    this._shouldDeepfreeze = shouldDeepfreeze;
-    customLogger.debug(
-      `Deepfreeze support ${this._shouldDeepfreeze ? "enabled" : "disabled"}.`,
-    );
-  }
 
   public readonly initialState: T;
 
@@ -112,7 +100,7 @@ export default class StateEmitter<
   // Use a getter to provide read-only access to the state
   getState<K extends keyof T>(keys?: K[]): Pick<T, K> | T {
     if (!keys) {
-      return this._shouldDeepfreeze ? deepFreeze(this._state) : this._state;
+      return this._state;
     }
 
     const slice = keys.reduce(
@@ -125,7 +113,7 @@ export default class StateEmitter<
       {} as Pick<T, K>,
     );
 
-    return this._shouldDeepfreeze ? deepFreeze(slice) : slice;
+    return slice;
   }
 
   // Provide a read-only accessor for the entire state
@@ -134,7 +122,7 @@ export default class StateEmitter<
   }
 
   set state(value: T) {
-    throw new Error("State is read-only. Use setState to modify the state.");
+    throw new Error("State is read-only. Use `setState` to modify the state.");
   }
 
   registerDispose(disposeFunction: () => void) {

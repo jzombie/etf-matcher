@@ -311,33 +311,4 @@ describe("useStateEmitterReader", () => {
     // The render count should not increase because we are only listening to 'count' and 'items'
     expect(renderCount).toBe(1);
   });
-
-  it("should not allow direct modification of the state", () => {
-    const { result } = renderHook(() =>
-      useStateEmitterReader(emitter, ["items"]),
-    );
-    expect(result.current).toEqual({ items: ["item1"] });
-
-    // Attempt to modify the state directly
-    expect(() => {
-      act(() => {
-        (result.current as any).items.push("item2");
-      });
-    }).toThrowError("Cannot add property 1, object is not extensible");
-
-    // Ensure that the direct modification did not change the actual state
-    expect(result.current).toEqual({ items: ["item1"] });
-
-    // Properly update the state using setState
-    // Properly update the state using setState
-    act(() => {
-      const newItems = result.current.items
-        ? [...result.current.items, "item2"]
-        : ["item2"];
-      emitter.setState({ items: newItems });
-    });
-
-    // Verify that the state is updated correctly through setState
-    expect(result.current).toEqual({ items: ["item1", "item2"] });
-  });
 });
