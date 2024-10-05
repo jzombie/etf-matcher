@@ -432,7 +432,6 @@ class Store extends ReactStateEmitter<StoreStateProps> {
   > {
     const { subscribedMQTTRoomNames } = this.getState([
       "subscribedMQTTRoomNames",
-      "isIndexedDBReady",
     ]);
 
     const connectPromises = subscribedMQTTRoomNames.map((roomName) =>
