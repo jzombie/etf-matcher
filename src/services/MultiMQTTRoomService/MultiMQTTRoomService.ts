@@ -25,6 +25,8 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
       totalParticipantsForAllRooms: 0,
     });
 
+    // TODO: Don't even use store here, just register the service itself in the store, and bind the events there
+    //
     // FIXME: This is assuming this service is instantiated before the store has
     // finished restoring the IndexedDB state. A better approach would be to watch
     // for the "isIndexedDBReady" state property and then proceed accordingly.
@@ -52,54 +54,23 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
 
     store.addMQTTRoomSubscription(newRoom);
 
+    // Register room with service
     this.setState((prevState) => ({
       rooms: { ...prevState.rooms, [roomName]: newRoom },
     }));
 
-    const handleConnectingStateChange = () => {
-      this.setState((prevState) => ({
-        isConnecting: Object.values(prevState.rooms).some(
-          (room) => room.isConnecting,
-        ),
-      }));
-    };
+    newRoom.on(
+      "connectingstateupdate",
+      this._onRoomConnectingStateChange.bind(this),
+    );
 
-    newRoom.on("connectingstateupdate", handleConnectingStateChange);
+    newRoom.on("connect", () => this._onRoomConnected(newRoom));
 
-    newRoom.on("connect", () => {
-      store.addMQTTRoomSubscription(newRoom);
+    newRoom.on("peersupdate", this._calculateTotalParticipants.bind(this));
 
-      this.setState((prevState) => ({
-        connectedRooms: { ...prevState.connectedRooms, [roomName]: newRoom },
-      }));
+    newRoom.on("syncupdate", this._onRoomSyncUpdate.bind(this));
 
-      this.calculateTotalParticipants();
-    });
-
-    newRoom.on("peersupdate", this.calculateTotalParticipants.bind(this));
-
-    const handleSyncUpdate = () => {
-      this.setState((prevState) => ({
-        allRoomsInSync: Object.values(prevState.rooms).every(
-          (room) => room.isInSync,
-        ),
-      }));
-    };
-
-    newRoom.on("syncupdate", handleSyncUpdate);
-
-    newRoom.on("close", () => {
-      this.setState((prevState) => {
-        const { [roomName]: _, ...remainingRooms } = prevState.rooms;
-        const { [roomName]: __, ...remainingConnectedRooms } =
-          prevState.connectedRooms;
-        return {
-          rooms: remainingRooms,
-          connectedRooms: remainingConnectedRooms,
-        };
-      });
-      this.calculateTotalParticipants();
-    });
+    newRoom.on("close", () => this._onRoomDisconnected(newRoom));
   }
 
   async disconnectFromRoom(
@@ -117,7 +88,54 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
     }
   }
 
-  calculateTotalParticipants() {
+  protected _onRoomConnected(newRoom: MQTTRoom) {
+    store.addMQTTRoomSubscription(newRoom);
+
+    this.setState((prevState) => ({
+      connectedRooms: {
+        ...prevState.connectedRooms,
+        [newRoom.roomName]: newRoom,
+      },
+    }));
+
+    this._calculateTotalParticipants();
+  }
+
+  protected _onRoomDisconnected(room: MQTTRoom) {
+    store.removeMQTTRoomSubscription(room);
+
+    this.setState((prevState) => {
+      const { [room.roomName]: __, ...remainingRooms } = prevState.rooms;
+      const { [room.roomName]: ___, ...remainingConnectedRooms } =
+        prevState.connectedRooms;
+      return { rooms: remainingRooms, connectedRooms: remainingConnectedRooms };
+    });
+  }
+
+  protected _onRoomConnectingStateChange() {
+    this.setState((prevState) => ({
+      isConnecting: Object.values(prevState.rooms).some(
+        (room) => room.isConnecting,
+      ),
+    }));
+  }
+
+  protected _onRoomSyncUpdate() {
+    this.setState((prevState) => ({
+      allRoomsInSync: Object.values(prevState.rooms).every(
+        (room) => room.isInSync,
+      ),
+    }));
+  }
+
+  /**
+   * Calculates the total number of participants across all rooms.
+   *
+   * @remarks
+   * This method iterates over all rooms and sums up the number of participants
+   * by adding one for the room itself and the number of peers in each room.
+   */
+  protected _calculateTotalParticipants() {
     const totalParticipants = Object.values(this.state.rooms).reduce(
       (total, room) => {
         if (room.isConnected) {
@@ -166,12 +184,7 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
   }
 
   protected async _handleClear(): Promise<void> {
-    this.setState({
-      rooms: {},
-      connectedRooms: {},
-      isConnecting: false,
-      allRoomsInSync: false,
-      totalParticipantsForAllRooms: 0,
-    });
+    // TODO: Wipe the room states, then remove the store MQTT subscriptions
+    throw new Error("`clear` is not currently implemented");
   }
 }
