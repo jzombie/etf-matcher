@@ -185,6 +185,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     // Make initial searches faster
     preloadSearchCache();
 
+    // FIXME: In the future, these could be `registerService` methods
     this._indexedDBService = new IndexedDBService(this);
     this._multiMQTTRoomService = new MultiMQTTRoomService(this);
 
