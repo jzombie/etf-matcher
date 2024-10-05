@@ -63,7 +63,7 @@ export default function Room({ room }: RoomProps) {
           }}
         >
           <Button
-            onClick={() => disconnectFromRoom(room)}
+            onClick={() => disconnectFromRoom(room.roomName)}
             color="secondary"
             variant="outlined"
             startIcon={<ExitToApp />}

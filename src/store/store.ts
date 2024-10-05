@@ -175,9 +175,6 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       uiErrors: [],
     });
 
-    // Only deepfreeze in development
-    this.shouldDeepfreeze = !IS_PROD;
-
     // TODO: Poll for data build info once every "x" to ensure the data is always running the latest version
     this._syncDataBuildInfo();
 

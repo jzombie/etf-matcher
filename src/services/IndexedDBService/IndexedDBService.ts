@@ -43,6 +43,7 @@ export default class IndexedDBService<
   protected async _handleGetItem<K extends keyof T>(
     key: K,
   ): Promise<T[K] | undefined> {
+    // TODO: Route errors to UI
     const db = await this._dbPromise;
     const value = await db.get(KEYVAL_STORE_NAME, key as string);
     return value as T[K];
