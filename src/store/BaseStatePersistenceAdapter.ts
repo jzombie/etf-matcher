@@ -63,6 +63,23 @@ export default abstract class BaseStatePersistenceAdapter<
     this._store = store;
   }
 
+  // Abstract methods to be implemented by subclasses
+  // The `_handle` prefix is used to indicate that these methods are internal handlers
+  // that perform the actual operations. This helps distinguish them from the public
+  // methods that call these handlers.
+  protected abstract _onReady(): Promise<void>;
+  protected abstract _onGetAllKeys(): Promise<(keyof T)[]>;
+  protected abstract _onGetAllValues(): Promise<Array<T[keyof T]>>;
+  protected abstract _onGetItem<K extends keyof T>(
+    key: K,
+  ): Promise<T[K] | undefined>;
+  protected abstract _onSetItem<K extends keyof T>(
+    key: K,
+    value: T[K],
+  ): Promise<void>;
+  protected abstract _onRemoveItem<K extends keyof T>(key: K): Promise<void>;
+  protected abstract _onClear(): Promise<void>;
+
   // Emit an update event with the given payload
   protected _emitUpdateEvent(event: UpdateEvent<T>): void {
     this.emit(UPDATE_EVENT, event);
@@ -106,21 +123,4 @@ export default abstract class BaseStatePersistenceAdapter<
     await this._onClear();
     this._emitUpdateEvent({ type: "clear" });
   }
-
-  // Abstract methods to be implemented by subclasses
-  // The `_handle` prefix is used to indicate that these methods are internal handlers
-  // that perform the actual operations. This helps distinguish them from the public
-  // methods that call these handlers.
-  protected abstract _onReady(): Promise<void>;
-  protected abstract _onGetAllKeys(): Promise<(keyof T)[]>;
-  protected abstract _onGetAllValues(): Promise<Array<T[keyof T]>>;
-  protected abstract _onGetItem<K extends keyof T>(
-    key: K,
-  ): Promise<T[K] | undefined>;
-  protected abstract _onSetItem<K extends keyof T>(
-    key: K,
-    value: T[K],
-  ): Promise<void>;
-  protected abstract _onRemoveItem<K extends keyof T>(key: K): Promise<void>;
-  protected abstract _onClear(): Promise<void>;
 }
