@@ -51,7 +51,7 @@ export interface UpdateEvent<T> {
   value?: T[keyof T];
 }
 
-// Abstract class for state persistence adapters
+// Base class for state persistence adapters
 export default abstract class BaseStatePersistenceAdapter<
   T extends Record<string, unknown>,
 > extends StateEmitter<T> {
