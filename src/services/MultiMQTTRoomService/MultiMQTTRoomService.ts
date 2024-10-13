@@ -6,6 +6,12 @@ import validateTopic from "./validateTopic";
 
 const BROKER_URL = import.meta.env.VITE_MQTT_BROKER_URL;
 
+if (!BROKER_URL) {
+  throw new Error(
+    "The MQTT broker URL is not defined. Please set VITE_MQTT_BROKER_URL in the environment variables.",
+  );
+}
+
 export type MQTTRoomState = {
   rooms: Record<string, MQTTRoom>;
   connectedRooms: Record<string, MQTTRoom>;
