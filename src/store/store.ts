@@ -14,6 +14,7 @@ import {
   preloadSearchCache,
   removeCacheEntry,
 } from "@services/RustService";
+import TickerBucketImportExportService from "@services/TickerBucketImportExportService";
 import {
   DEFAULT_TICKER_TAPE_TICKERS,
   INDEXED_DB_PERSISTENCE_KEYS,
@@ -116,7 +117,7 @@ export type IndexedDBPersistenceProps = {
 class Store extends ReactStateEmitter<StoreStateProps> {
   private _indexedDBService: IndexedDBService<IndexedDBPersistenceProps>;
   private _multiMQTTRoomService: MultiMQTTRoomService;
-
+  private _tickerBucketImportExportService: TickerBucketImportExportService;
   constructor() {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
     super({
@@ -188,7 +189,9 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     // FIXME: In the future, these could be `registerService` methods
     this._indexedDBService = new IndexedDBService(this);
     this._multiMQTTRoomService = new MultiMQTTRoomService(this);
-
+    this._tickerBucketImportExportService = new TickerBucketImportExportService(
+      this,
+    );
     // Note: This returns an unsubscribe callback which could be handed if the store
     // were to be torn down
     this._initLocalSubscriptions();
@@ -196,6 +199,10 @@ class Store extends ReactStateEmitter<StoreStateProps> {
 
   get multiMQTTRoomService(): MultiMQTTRoomService {
     return this._multiMQTTRoomService;
+  }
+
+  get tickerBucketImportExportService(): TickerBucketImportExportService {
+    return this._tickerBucketImportExportService;
   }
 
   // Note: This should be called immediately after the `IndexedDBInterface` has been
