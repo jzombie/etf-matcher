@@ -197,4 +197,53 @@ export default class TickerBucketImportExportService extends BaseStatePersistenc
     const timestamp = now.toISOString().slice(0, 19).replace(/:/g, "-"); // Format: YYYY-MM-DDTHH-MM-SS
     return `${PROJECT_NAME.toLowerCase().replaceAll(" ", "-")}-${timestamp}.csv`;
   }
+
+  // ---
+  //
+  // FIXME: The following methods are required by the class but are currently
+  // not needed with the current implementation. I feel this class should still
+  // be a "persistent-adapter-based" class, but perhaps I should just use a
+  // different base class that is more appropriate.
+  //
+  // ---
+
+  protected async _onReady(): Promise<void> {
+    throw new Error("_onReady is not currently implemented.");
+  }
+
+  protected async _onGetAllKeys(): Promise<
+    (keyof TickerBucketImportExportServiceState)[]
+  > {
+    throw new Error("_onGetAllKeys is not currently implemented.");
+  }
+
+  protected async _onGetAllValues(): Promise<
+    Array<
+      TickerBucketImportExportServiceState[keyof TickerBucketImportExportServiceState]
+    >
+  > {
+    throw new Error("_onGetAllValues is not currently implemented.");
+  }
+
+  protected async _onGetItem<
+    K extends keyof TickerBucketImportExportServiceState,
+  >(key: K): Promise<TickerBucketImportExportServiceState[K] | undefined> {
+    throw new Error("_onGetItem is not currently implemented.");
+  }
+
+  protected async _onSetItem<
+    K extends keyof TickerBucketImportExportServiceState,
+  >(key: K, value: TickerBucketImportExportServiceState[K]): Promise<void> {
+    throw new Error("_onSetItem is not currently implemented.");
+  }
+
+  protected async _onRemoveItem<
+    K extends keyof TickerBucketImportExportServiceState,
+  >(key: K): Promise<void> {
+    throw new Error("_onRemoveItem is not currently implemented.");
+  }
+
+  protected async _onClear(): Promise<void> {
+    throw new Error("_onClear is not currently implemented.");
+  }
 }

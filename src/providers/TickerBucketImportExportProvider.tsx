@@ -35,6 +35,8 @@ export const TickerBucketImportExportContext = createContext<
   TickerBucketImportExportContextType | undefined
 >(undefined);
 
+export type { TickerBucketSet };
+
 export type TickerBucketImportExportProviderProps = {
   children: React.ReactNode;
 };
