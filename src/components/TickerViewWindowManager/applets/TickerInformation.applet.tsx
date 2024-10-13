@@ -5,13 +5,12 @@ import { styled } from "@mui/system";
 
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
-
-import EncodedImage from "@components/EncodedImage";
-
 import {
   RustServiceETFAggregateDetail,
   RustServiceTickerDetail,
-} from "@utils/callRustService";
+} from "@services/RustService";
+
+import EncodedImage from "@components/EncodedImage";
 
 import TickerViewWindowManagerBucketManager from "../TickerViewWindowManager.BucketManager";
 import ETFAggregateDetailAppletWrap from "../components/ETFAggregateDetailAppletWrap";

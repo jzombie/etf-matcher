@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 
-import type { RustServiceTickerDetail } from "@utils/callRustService";
-import { fetchTickerDetail } from "@utils/callRustService";
+import type { RustServiceTickerDetail } from "@services/RustService";
+import { fetchTickerDetail } from "@services/RustService";
+
 import customLogger from "@utils/customLogger";
 
 import useAppErrorBoundary from "./useAppErrorBoundary";

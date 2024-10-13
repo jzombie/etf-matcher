@@ -3,13 +3,13 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import { Box, Button, ButtonGroup } from "@mui/material";
 
 import Layout, { Content, Header } from "@layoutKit/Layout";
+import { RustServiceTickerDetail } from "@services/RustService";
 import { TRADING_VIEW_COPYRIGHT_STYLES } from "@src/constants";
 import { MiniChart } from "react-ts-tradingview-widgets";
 import type { DateRange } from "react-ts-tradingview-widgets";
 
 import Transition from "@components/Transition";
 
-import { RustServiceTickerDetail } from "@utils/callRustService";
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
 import TickerDetailAppletWrap from "../components/TickerDetailAppletWrap";

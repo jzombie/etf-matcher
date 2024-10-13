@@ -1,0 +1,1 @@
+TODO: Add a wrapper for `MQTTRoom` which extends `BaseStatePersistenceAdapter`

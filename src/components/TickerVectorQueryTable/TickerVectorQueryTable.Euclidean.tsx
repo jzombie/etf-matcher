@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 
 import Center from "@layoutKit/Center";
+import type { RustServiceTickerDetail } from "@services/RustService";
 
 import AvatarLogo from "@components/AvatarLogo";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
@@ -20,8 +21,6 @@ import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 import useTickerVectorQuery, {
   TickerVectorQueryProps,
 } from "@hooks/useTickerVectorQuery";
-
-import type { RustServiceTickerDetail } from "@utils/callRustService";
 
 import FormattedETFExpenseRatio from "./TickerVectorQueryTable.FormattedETFExpenseRatio";
 

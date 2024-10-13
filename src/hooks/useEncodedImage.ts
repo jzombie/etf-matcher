@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import { fetchImageInfo } from "@utils/callRustService";
-import type { RustServiceImageInfo } from "@utils/callRustService";
+import { fetchImageInfo } from "@services/RustService";
+import type { RustServiceImageInfo } from "@services/RustService";
 
 import useStableCurrentRef from "./useStableCurrentRef";
 

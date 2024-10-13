@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 
+import type { RustServiceCacheDetail } from "@services/RustService";
 import { COLOR_WHEEL_COLORS } from "@src/constants";
 import {
   Cell,
@@ -13,7 +14,6 @@ import {
 
 import useStoreStateReader from "@hooks/useStoreStateReader";
 
-import type { RustServiceCacheDetail } from "@utils/callRustService";
 import formatByteSize from "@utils/string/formatByteSize";
 
 // Define a type for the data entries

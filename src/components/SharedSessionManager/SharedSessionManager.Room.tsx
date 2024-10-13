@@ -11,12 +11,11 @@ import {
 } from "@mui/material";
 
 import AutoScaler from "@layoutKit/AutoScaler";
+import { MQTTRoom, MQTTRoomEvents } from "@services/MultiMQTTRoomService";
+import { useMultiMQTTRoomContext } from "@services/MultiMQTTRoomService/react";
+import { generateQRCode as libGenerateQRCode } from "@services/RustService";
 
 import useEventRefresh from "@hooks/useEventRefresh";
-
-import MQTTRoom, { MQTTRoomEvents } from "@utils/MQTTRoom";
-import { useMultiMQTTRoomContext } from "@utils/MQTTRoom/react";
-import { generateQRCode as libGenerateQRCode } from "@utils/callRustService";
 
 import { useSharedSessionManagerContext } from "./SharedSessionManagerProvider";
 
@@ -64,7 +63,7 @@ export default function Room({ room }: RoomProps) {
           }}
         >
           <Button
-            onClick={() => disconnectFromRoom(room)}
+            onClick={() => disconnectFromRoom(room.roomName)}
             color="secondary"
             variant="outlined"
             startIcon={<ExitToApp />}
