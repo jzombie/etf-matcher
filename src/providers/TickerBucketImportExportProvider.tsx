@@ -115,6 +115,7 @@ export default function TickerBucketImportExportProvider({
     [tickerBucketImportExportService],
   );
 
+  // TODO: Remove
   // const readFiles = useCallback(
   //   async (fileList: FileList | null) => {
   //     setImportErrorMessage(null);
@@ -218,6 +219,8 @@ export default function TickerBucketImportExportProvider({
     },
     [tickerBucketImportExportService],
   );
+
+  // TODO: Remove
   // const writeFile = useCallback(
   //   (filename: string, tickerBuckets: TickerBucket[]) => {
   //     tickerBucketsToCSV(tickerBuckets).then((resp: string) => {
@@ -252,7 +255,7 @@ export default function TickerBucketImportExportProvider({
     [readFiles],
   );
 
-  // TODO: Refactor to use the new service
+  // TODO: Remove
   // const getSameLocalBucket = useCallback(
   //   (
   //     tickerBucketType: TickerBucket["type"],
@@ -269,7 +272,7 @@ export default function TickerBucketImportExportProvider({
   //   [],
   // );
 
-  // TODO: Refactor to use the new service
+  // TODO: Remove
   // This performs the "final merge", writing the new data to the store
   // const handleImportFilename = useCallback(
   //   (filename: string) => {
