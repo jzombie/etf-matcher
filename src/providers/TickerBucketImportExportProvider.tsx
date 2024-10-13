@@ -102,9 +102,9 @@ export default function TickerBucketImportExportProvider({
   );
 
   const readFiles = useCallback(
-    (fileList: FileList | null) => {
+    async (fileList: FileList | null) => {
       try {
-        return tickerBucketImportExportService.readFiles(fileList);
+        return await tickerBucketImportExportService.readFiles(fileList);
       } catch (err) {
         handleVerbatimImportError(err);
       }

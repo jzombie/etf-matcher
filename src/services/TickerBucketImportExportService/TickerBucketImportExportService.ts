@@ -95,21 +95,16 @@ export default class TickerBucketImportExportService extends BaseStatePersistenc
     try {
       fileResults = await Promise.all(
         Array.from(fileList).map(async (file) => {
-          // try {
-          const result = await processFile(file);
-          // Associate the filename with the buckets
-          return {
-            filename: file.name,
-            buckets: result,
-          };
-          // TODO: Clean up
-          // } catch (err) {
-          //   handleVerbatimImportError(err);
-
-          //   // Abruptly stop if there is an error when processing any file.
-          //   // This is the expected behavior for this operation.
-          //   throw err;
-          // }
+          try {
+            const result = await processFile(file);
+            return {
+              filename: file.name,
+              buckets: result,
+            };
+          } catch (err) {
+            customLogger.error(`Error processing file ${file.name}:`, err);
+            throw err; // Propagate the error
+          }
         }),
       );
     } finally {
