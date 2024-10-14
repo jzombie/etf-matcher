@@ -17,6 +17,7 @@ import { RouterProvider } from "react-router-dom";
 import useGAPageTracking from "@hooks/useGAPageTracking";
 
 import router from "./router";
+
 import { darkTheme } from "./theme";
 
 export default function App() {
