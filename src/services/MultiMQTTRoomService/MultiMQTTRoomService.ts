@@ -1,16 +1,10 @@
 import { Store } from "@src/store";
 import BaseStatePersistenceAdapter from "@src/store/BaseStatePersistenceAdapter";
 
+import getEnvVariable from "@utils/getEnvVariable";
+
 import MQTTRoom from "./MQTTRoom";
 import validateTopic from "./validateTopic";
-
-const BROKER_URL = import.meta.env.VITE_MQTT_BROKER_URL;
-
-if (!BROKER_URL) {
-  throw new Error(
-    "The MQTT broker URL is not defined. Please set VITE_MQTT_BROKER_URL in the environment variables.",
-  );
-}
 
 export type MQTTRoomState = {
   rooms: Record<string, MQTTRoom>;
@@ -37,7 +31,10 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
       throw new Error(`Invalid or already connected room name: ${roomName}`);
     }
 
-    const newRoom = new MQTTRoom(BROKER_URL, roomName);
+    const newRoom = new MQTTRoom(
+      getEnvVariable("VITE_MQTT_BROKER_URL"),
+      roomName,
+    );
 
     this._store.addMQTTRoomSubscription(newRoom);
 

@@ -30,7 +30,7 @@ async function initializeWasm() {
   }
 }
 
-// const IS_PROD = import.meta.env.PROD;
+// const IS_PROD = getEnvVariable<boolean>("PROD");
 
 // Used to help prevent console spam for long args
 function truncateArg(arg: unknown, maxLength = 50) {

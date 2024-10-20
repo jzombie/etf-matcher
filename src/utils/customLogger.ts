@@ -1,3 +1,5 @@
+import getEnvVariable from "@utils/getEnvVariable";
+
 /**
  * Custom console logging that retains the original stack trace.
  *
@@ -25,7 +27,7 @@ const PROD_WHITELIST: (keyof Console)[] = ["warn", "error"] as const;
  */
 function _createLoggerMethod(method: keyof Console) {
   // Don't log in production
-  if (import.meta.env.PROD && !PROD_WHITELIST.includes(method)) {
+  if (getEnvVariable<boolean>("PROD") && !PROD_WHITELIST.includes(method)) {
     return () => null;
   }
 

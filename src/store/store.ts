@@ -31,13 +31,12 @@ import arraysEqual from "@utils/arraysEqual";
 import customLogger from "@utils/customLogger";
 import debounceWithKey from "@utils/debounceWithKey";
 import detectHTMLJSVersionSync from "@utils/detectHTMLJSVersionSync";
+import getEnvVariable from "@utils/getEnvVariable";
 
 import {
   CacheAccessedRequests,
   XHROpenedRequests,
 } from "./OpenedNetworkRequests";
-
-const IS_PROD = import.meta.env.PROD;
 
 export type TickerBucketTicker = {
   tickerId: number;
@@ -125,7 +124,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
       isIndexedDBReady: false,
       isAppUnlocked: false,
       isGAPageTrackingEnabled: false,
-      isProductionBuild: IS_PROD,
+      isProductionBuild: getEnvVariable<boolean>("PROD"),
       isOnline: false,
       isRustInit: false,
       dataBuildTime: null,
