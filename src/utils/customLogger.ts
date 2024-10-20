@@ -1,4 +1,4 @@
-import getEnvVariable from "@utils/getEnvVariable";
+import getEnvVariable from "./getEnvVariable";
 
 /**
  * Custom console logging that retains the original stack trace.
