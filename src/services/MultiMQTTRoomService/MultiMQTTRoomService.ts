@@ -1,6 +1,7 @@
 import { Store } from "@src/store";
 import BaseStatePersistenceAdapter from "@src/store/BaseStatePersistenceAdapter";
 
+import customLogger from "@utils/customLogger";
 import getEnvVariable from "@utils/getEnvVariable";
 
 import MQTTRoom from "./MQTTRoom";
@@ -19,6 +20,10 @@ export type MQTTRoomState = {
 //
 // TODO: On dispose, disconnect from all rooms (shouldn't ever need to be done)
 export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQTTRoomState> {
+  protected _autoReconnectAttempts: number = 0;
+  protected _autoReconnectBaseDelay: number = 1000; // 1 second
+  protected _autoReconnectPollingInterval: NodeJS.Timeout | null = null;
+
   constructor(store: Store) {
     super(store, {
       rooms: {},
@@ -26,6 +31,19 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
       isConnecting: false,
       allRoomsInSync: false,
       totalParticipantsForAllRooms: 0,
+    });
+
+    window.addEventListener("online", this._attemptAutoReconnect.bind(this));
+    window.addEventListener("focus", this._attemptAutoReconnect.bind(this));
+    this.registerDispose(() => {
+      window.removeEventListener(
+        "online",
+        this._attemptAutoReconnect.bind(this),
+      );
+      window.removeEventListener(
+        "focus",
+        this._attemptAutoReconnect.bind(this),
+      );
     });
   }
 
@@ -46,6 +64,43 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
     for (const roomName of this.disconnectedSubscribedRoomNames) {
       await this.connectToRoom(roomName);
     }
+  }
+
+  protected async _attemptAutoReconnect(): Promise<void> {
+    if (this.isDisposed || !this.disconnectedSubscribedRoomNames.length) {
+      return;
+    }
+
+    customLogger.debug("Attempting auto reconnect");
+    // if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+    //   customLogger.warn('Max reconnect attempts reached.');
+    //   return;
+    // }
+
+    // const isConnected = await this.checkNetworkConnectivity();
+    if (!this.state.isConnecting) {
+      // this.reconnectAttempts = 0; // Reset attempts on successful connection
+      await this.connectToDisconnectedSubscribedRooms();
+    } else {
+      // this.reconnectAttempts++;
+      const delay =
+        this._autoReconnectBaseDelay * Math.pow(2, this._autoReconnectAttempts);
+      customLogger.warn(`Network check failed. Retrying in ${delay}ms.`);
+      this._scheduleNextAutoReconnectAttempt(delay);
+    }
+  }
+
+  protected _scheduleNextAutoReconnectAttempt(delay: number): void {
+    customLogger.debug(`Scheduling next auto reconnect attempt in ${delay}ms`);
+    ``;
+
+    if (this._autoReconnectPollingInterval) {
+      clearTimeout(this._autoReconnectPollingInterval);
+    }
+    this._autoReconnectPollingInterval = setTimeout(
+      () => this._attemptAutoReconnect(),
+      delay,
+    );
   }
 
   async connectToRoom(roomName: string): Promise<void> {

@@ -15,6 +15,7 @@ export default function SharedSessionManager() {
       <ConnectForm />
 
       {Object.keys(connectedRooms).length > 0 && (
+        // TODO: Also show disconnected rooms so they don't just disappear (related issue: https://linear.app/zenosmosis/issue/ZEN-114/fix-disappearing-mqtt-rooms)
         <div>
           <h3>Connected Rooms:</h3>
           <UnstyledUL>
