@@ -8,6 +8,7 @@ import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import Center from "@layoutKit/Center";
 import Layout, { Content, Header } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
+import { RustServiceTickerDetail } from "@services/RustService";
 
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
@@ -16,8 +17,6 @@ import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
 import Transition from "@components/Transition";
 
 import useTicker10KDetail from "@hooks/useTicker10KDetail";
-
-import { RustServiceTickerDetail } from "@utils/callRustService";
 
 import TickerDetailAppletWrap from "../../components/TickerDetailAppletWrap";
 

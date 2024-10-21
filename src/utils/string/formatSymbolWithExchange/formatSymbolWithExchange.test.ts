@@ -1,6 +1,5 @@
+import type { RustServiceTickerDetail } from "@services/RustService";
 import { describe, expect, it } from "vitest";
-
-import type { RustServiceTickerDetail } from "@utils/callRustService";
 
 import formatSymbolWithExchange from "./formatSymbolWithExchange";
 

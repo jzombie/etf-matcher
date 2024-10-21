@@ -3,10 +3,9 @@ import React from "react";
 import { Alert } from "@mui/material";
 
 import Center from "@layoutKit/Center";
+import { RustServiceTickerDetail } from "@services/RustService";
 
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
-
-import { RustServiceTickerDetail } from "@utils/callRustService";
 
 export type TickerDetailAppletWrapProps = {
   tickerDetail?: RustServiceTickerDetail;

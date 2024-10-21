@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import type { RustServiceTickerSearchResult } from "@services/RustService";
+import { searchTickers } from "@services/RustService";
+
 import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 
-import type { RustServiceTickerSearchResult } from "@utils/callRustService";
-import { searchTickers } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 import debounceWithKey from "@utils/debounceWithKey";
 

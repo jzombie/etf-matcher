@@ -18,6 +18,7 @@ import Padding from "@layoutKit/Padding";
 import { PROJECT_DESCRIPTION } from "@src/constants";
 
 import formatLocalTime from "@utils/formatLocalTime";
+import getEnvVariable from "@utils/getEnvVariable";
 
 import { buildTime } from "../../public/buildTime.json";
 import LogoNavButton from "./LogoNavButton";
@@ -41,7 +42,7 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     // Very simple mechanism to prevent general preview access (and easily bypassed)
-    if (password === import.meta.env.VITE_PREVIEW_UNLOCK) {
+    if (password === getEnvVariable("VITE_PREVIEW_UNLOCK")) {
       onUnlock();
     } else {
       setErrorMessage("Incorrect password");

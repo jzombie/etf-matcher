@@ -13,7 +13,7 @@ import Padding from "@layoutKit/Padding";
 
 import LazyRender from "@components/LazyRender";
 import Section from "@components/Section";
-import SharedSessionManager from "@components/SharedSessionManager";
+import SharedSessionManager from "@components/SettingsManager/SharedSessionManager";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 

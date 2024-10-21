@@ -1,15 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import IndexedDBInterface, {
+// Define TestSchema as a Record<string, string>
+import store, { IndexedDBPersistenceProps } from "../../store/";
+import IndexedDBService, {
   UPDATE_EVENT,
   UpdateEvent,
-} from "../IndexedDBInterface";
+} from "../IndexedDBService";
 
-// Define TestSchema as a Record<string, string>
-type TestSchema = Record<string, string>;
+type TestSchema = IndexedDBPersistenceProps & Record<string, string>;
 
-describe("IndexedDBInterface", () => {
-  let dbInterface: IndexedDBInterface<TestSchema>;
+describe("IndexedDBService", () => {
+  let dbInterface: IndexedDBService<TestSchema>;
 
   beforeEach(() => {
     // Assign the fake-indexeddb to the global scope
@@ -17,7 +18,7 @@ describe("IndexedDBInterface", () => {
     global.IDBKeyRange = IDBKeyRange;
 
     // Initialize the Dexie-based interface
-    dbInterface = new IndexedDBInterface<TestSchema>("test-database");
+    dbInterface = new IndexedDBService<TestSchema>(store, "test-database");
   });
 
   it("should set and get an item", async () => {

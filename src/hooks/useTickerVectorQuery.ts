@@ -1,14 +1,10 @@
 import { useCallback, useMemo, useState } from "react";
 
-import type { TickerBucket } from "@src/store";
-
-import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
-
 import type {
   RustServiceCosineSimilarityResult,
   RustServiceTickerDetail,
   RustServiceTickerDistance,
-} from "@utils/callRustService";
+} from "@services/RustService";
 import {
   fetchCosineByTicker,
   fetchCosineByTickerBucket,
@@ -16,7 +12,11 @@ import {
   fetchEuclideanByTicker,
   fetchEuclideanByTickerBucket,
   fetchTickerDetail,
-} from "@utils/callRustService";
+} from "@services/RustService";
+import type { TickerBucket } from "@src/store";
+
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
+
 import customLogger from "@utils/customLogger";
 
 type RustServiceTickerDetailWithETFExpenseRatio = RustServiceTickerDetail & {

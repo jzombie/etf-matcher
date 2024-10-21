@@ -11,7 +11,7 @@ import TickerBucketImportExportProvider from "@providers/TickerBucketImportExpor
 import { RouteObject, createBrowserRouter } from "react-router-dom";
 
 import MainLayout from "@components/MainLayout";
-import { SharedSessionManagerProvider } from "@components/SharedSessionManager";
+import { SharedSessionManagerProvider } from "@components/SettingsManager/SharedSessionManager";
 
 export const routes: RouteObject[] = [
   {

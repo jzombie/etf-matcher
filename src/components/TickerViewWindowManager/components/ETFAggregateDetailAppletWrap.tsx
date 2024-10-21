@@ -3,13 +3,12 @@ import React from "react";
 import { Alert } from "@mui/material";
 
 import Center from "@layoutKit/Center";
-
-import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
-
 import {
   RustServiceETFAggregateDetail,
   RustServiceTickerDetail,
-} from "@utils/callRustService";
+} from "@services/RustService";
+
+import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 
 import TickerDetailAppletWrap from "./TickerDetailAppletWrap";
 

@@ -24,8 +24,8 @@ import {
 } from "@mui/material";
 
 import Center from "@layoutKit/Center";
+import type { TickerBucketSet } from "@providers/TickerBucketImportExportProvider";
 import { FILE_IMPORT_ACCEPT_MAP } from "@src/constants";
-import type { TickerBucketSet } from "@src/providers/TickerBucketImportExportProvider";
 import store from "@src/store";
 
 import DialogModal, { DialogModalProps } from "@components/DialogModal";

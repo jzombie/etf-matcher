@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import type {
   RustServiceETFAggregateDetail,
   RustServiceTicker10KDetail,
-} from "@utils/callRustService";
+} from "@services/RustService";
 import {
   fetchETFAggregateDetail,
   fetchTicker10KDetail,
-} from "@utils/callRustService";
+} from "@services/RustService";
 
 // TODO: Handle error state (and rename variables; see `useTickerDetail`)
 export default function useTicker10KDetail(tickerId: number, isETF: boolean) {
