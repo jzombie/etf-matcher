@@ -23,6 +23,7 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
   protected _autoReconnectAttempts: number = 0;
   protected _autoReconnectBaseDelay: number = 1000; // 1 second
   protected _autoReconnectPollingInterval: NodeJS.Timeout | null = null;
+  protected _autoReconnectMaxDelay: number = 30000; // 30 seconds
 
   constructor(store: Store) {
     super(store, {
@@ -98,8 +99,10 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
       await this.connectToDisconnectedSubscribedRooms();
     } else {
       // this.reconnectAttempts++;
-      const delay =
-        this._autoReconnectBaseDelay * Math.pow(2, this._autoReconnectAttempts);
+      const delay = Math.min(
+        this._autoReconnectMaxDelay,
+        this._autoReconnectBaseDelay * Math.pow(2, this._autoReconnectAttempts),
+      );
       customLogger.warn(`Network check failed. Retrying in ${delay}ms.`);
       this._scheduleNextAutoReconnectAttempt(delay);
     }
@@ -179,9 +182,16 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
 
   protected _onRoomDisconnected(room: MQTTRoom) {
     this.setState((prevState) => {
+      // Destructure the room to be removed from the rooms object
+      // `remainingRooms` contains all rooms except the disconnected one
       const { [room.roomName]: __, ...remainingRooms } = prevState.rooms;
+
+      // Destructure the room to be removed from the connectedRooms object
+      // `remainingConnectedRooms` contains all connected rooms except the disconnected one
       const { [room.roomName]: ___, ...remainingConnectedRooms } =
         prevState.connectedRooms;
+
+      // Return the updated state with the disconnected room removed
       return { rooms: remainingRooms, connectedRooms: remainingConnectedRooms };
     });
 
