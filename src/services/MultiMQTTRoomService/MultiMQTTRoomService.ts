@@ -29,6 +29,25 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
     });
   }
 
+  /**
+   * The names of the rooms that are subscribed to but not connected.
+   */
+  get disconnectedSubscribedRoomNames(): string[] {
+    const { subscribedMQTTRoomNames } = this._store.getState();
+    const connectedRoomNames = Object.keys(this.state.connectedRooms);
+
+    // Return the difference between subscribed rooms and connected rooms
+    return subscribedMQTTRoomNames.filter(
+      (roomName) => !connectedRoomNames.includes(roomName),
+    );
+  }
+
+  async connectToDisconnectedSubscribedRooms(): Promise<void> {
+    for (const roomName of this.disconnectedSubscribedRoomNames) {
+      await this.connectToRoom(roomName);
+    }
+  }
+
   async connectToRoom(roomName: string): Promise<void> {
     if (!validateTopic(roomName) || this.state.rooms[roomName]) {
       throw new Error(`Invalid or already connected room name: ${roomName}`);

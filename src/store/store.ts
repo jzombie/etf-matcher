@@ -425,27 +425,13 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     }
 
     // Connect to subscribed MQTT rooms
-    this._connectToSubscribedMQTTRooms();
+    this._multiMQTTRoomService.connectToDisconnectedSubscribedRooms();
 
     // Emit to listeners that the session has been restored
     this.emit("persistent-session-restore");
 
     // Capture future store updates in the IndexedDB database
     this._subscribeToStateUpdatesForPersistence();
-  }
-
-  private async _connectToSubscribedMQTTRooms(): Promise<
-    PromiseSettledResult<void>[]
-  > {
-    const { subscribedMQTTRoomNames } = this.getState([
-      "subscribedMQTTRoomNames",
-    ]);
-
-    const connectPromises = subscribedMQTTRoomNames.map((roomName) =>
-      this._multiMQTTRoomService.connectToRoom(roomName),
-    );
-
-    return Promise.allSettled(connectPromises);
   }
 
   // Subscribes to state updates for persistence in IndexedDB
