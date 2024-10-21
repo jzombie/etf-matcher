@@ -266,7 +266,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     window.addEventListener("online", _handleOnlineStatus);
     window.addEventListener("offline", _handleOnlineStatus);
 
-    this.registerDispose(() => {
+    this.registerDisposeFunction(() => {
       window.removeEventListener("online", _handleOnlineStatus);
       window.removeEventListener("offline", _handleOnlineStatus);
     });
@@ -286,7 +286,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
 
     this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
 
-    this.registerDispose(() => {
+    this.registerDisposeFunction(() => {
       this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
     });
   }
@@ -329,7 +329,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
       },
     );
 
-    this.registerDispose(libRustServiceUnsubscribe);
+    this.registerDisposeFunction(libRustServiceUnsubscribe);
   }
 
   // Setups up network request tracking for XHR and Cache
@@ -450,7 +450,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     };
     this.on(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
 
-    this.registerDispose(() => {
+    this.registerDisposeFunction(() => {
       this.off(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
     });
   }

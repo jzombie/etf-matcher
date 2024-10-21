@@ -35,7 +35,7 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
 
     window.addEventListener("online", this._attemptAutoReconnect.bind(this));
     window.addEventListener("focus", this._attemptAutoReconnect.bind(this));
-    this.registerDispose(() => {
+    this.registerDisposeFunction(() => {
       window.removeEventListener(
         "online",
         this._attemptAutoReconnect.bind(this),

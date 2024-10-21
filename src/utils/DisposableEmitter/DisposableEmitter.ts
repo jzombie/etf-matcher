@@ -8,8 +8,7 @@ export default class DisposableEmitter extends EventEmitter {
   private _timeouts: NodeJS.Timeout[] = [];
   private _intervals: NodeJS.Timeout[] = [];
 
-  // TODO: Rename to `registerDisposeFunction`
-  registerDispose(disposeFunction: () => void) {
+  registerDisposeFunction(disposeFunction: () => void) {
     this.disposeFunctions.push(disposeFunction);
   }
 

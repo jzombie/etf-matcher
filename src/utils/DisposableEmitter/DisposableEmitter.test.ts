@@ -11,8 +11,8 @@ describe("DisposableEmitter", () => {
     const disposeFn1 = vi.fn();
     const disposeFn2 = vi.fn();
 
-    emitter.registerDispose(disposeFn1);
-    emitter.registerDispose(disposeFn2);
+    emitter.registerDisposeFunction(disposeFn1);
+    emitter.registerDisposeFunction(disposeFn2);
 
     emitter.dispose();
 
@@ -27,8 +27,8 @@ describe("DisposableEmitter", () => {
     const disposeFn1 = vi.fn(() => callOrder.push("disposeFn1"));
     const disposeFn2 = vi.fn(() => callOrder.push("disposeFn2"));
 
-    emitter.registerDispose(disposeFn1);
-    emitter.registerDispose(disposeFn2);
+    emitter.registerDisposeFunction(disposeFn1);
+    emitter.registerDisposeFunction(disposeFn2);
 
     emitter.dispose();
 
