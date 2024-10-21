@@ -147,4 +147,19 @@ describe("DisposableEmitter", () => {
     );
     consoleWarnSpy.mockRestore();
   });
+
+  it("should allow unregistering a dispose function", () => {
+    const emitter = new DisposableEmitter();
+
+    const disposeFn = vi.fn();
+    const unregister = emitter.registerDisposeFunction(disposeFn);
+
+    // Unregister the dispose function
+    unregister();
+
+    emitter.dispose();
+
+    // Ensure the dispose function is not called after being unregistered
+    expect(disposeFn).not.toHaveBeenCalled();
+  });
 });
