@@ -64,7 +64,7 @@ export default abstract class BaseStatePersistenceAdapter<
   }
 
   // Abstract methods to be implemented by subclasses
-  // The `_handle` prefix is used to indicate that these methods are internal handlers
+  // The `_on` prefix is used to indicate that these methods are internal handlers
   // that perform the actual operations. This helps distinguish them from the public
   // methods that call these handlers.
   protected abstract _onReady(): Promise<void>;
