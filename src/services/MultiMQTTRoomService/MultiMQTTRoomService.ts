@@ -14,6 +14,9 @@ export type MQTTRoomState = {
   totalParticipantsForAllRooms: number;
 };
 
+// TODO: Determine which rooms were disconnected via connection loss vs. manual,
+// in order to create a reconnect strategy
+//
 // TODO: On dispose, disconnect from all rooms (shouldn't ever need to be done)
 export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQTTRoomState> {
   constructor(store: Store) {
