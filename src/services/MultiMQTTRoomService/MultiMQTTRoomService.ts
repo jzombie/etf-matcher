@@ -92,6 +92,10 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
         prevState.connectedRooms;
       return { rooms: remainingRooms, connectedRooms: remainingConnectedRooms };
     });
+
+    // Call `onRoomSyncUpdate` to determine if any additional state updates are
+    //needed to be relayed to the UI
+    this._onRoomSyncUpdate();
   }
 
   protected _onRoomConnectingStateChange() {
@@ -103,10 +107,12 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
   }
 
   protected _onRoomSyncUpdate() {
+    const totalRooms = Object.keys(this.state.rooms).length;
+
     this.setState((prevState) => ({
-      allRoomsInSync: Object.values(prevState.rooms).every(
-        (room) => room.isInSync,
-      ),
+      allRoomsInSync: !totalRooms
+        ? false
+        : Object.values(prevState.rooms).every((room) => room.isInSync),
     }));
   }
 
