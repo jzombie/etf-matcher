@@ -258,23 +258,23 @@ class Store extends ReactStateEmitter<StoreStateProps> {
 
   // Handles online/offline status updates
   private _initOnlineStatusListener() {
-    const _handleOnlineStatus = () => {
+    const _onOnlineStatus = () => {
       this.setState({ isOnline: Boolean(navigator.onLine) });
     };
-    _handleOnlineStatus();
+    _onOnlineStatus();
 
-    window.addEventListener("online", _handleOnlineStatus);
-    window.addEventListener("offline", _handleOnlineStatus);
+    window.addEventListener("online", _onOnlineStatus);
+    window.addEventListener("offline", _onOnlineStatus);
 
     this.registerDisposeFunction(() => {
-      window.removeEventListener("online", _handleOnlineStatus);
-      window.removeEventListener("offline", _handleOnlineStatus);
+      window.removeEventListener("online", _onOnlineStatus);
+      window.removeEventListener("offline", _onOnlineStatus);
     });
   }
 
   // Handles the tracking of ticker views and syncing with Rust service
   private _initTickerViewTracking() {
-    const _handleVisibleTickersUpdate = (keys: (keyof StoreStateProps)[]) => {
+    const _onVisibleTickersUpdate = (keys: (keyof StoreStateProps)[]) => {
       if (keys.includes("visibleTickerIds")) {
         const { visibleTickerIds } = this.getState(["visibleTickerIds"]);
 
@@ -284,10 +284,10 @@ class Store extends ReactStateEmitter<StoreStateProps> {
       }
     };
 
-    this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
+    this.on(StateEmitterDefaultEvents.UPDATE, _onVisibleTickersUpdate);
 
     this.registerDisposeFunction(() => {
-      this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
+      this.off(StateEmitterDefaultEvents.UPDATE, _onVisibleTickersUpdate);
     });
   }
 
@@ -307,7 +307,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
             break;
           case NotifierEvent.XHR_REQUEST_ERROR:
             xhrOpenedRequests.delete(pathName);
-            this._handleXHRError(pathName);
+            this._onXHRError(pathName);
             break;
           case NotifierEvent.XHR_REQUEST_SENT:
             xhrOpenedRequests.delete(pathName);
@@ -372,7 +372,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     return { xhrOpenedRequests, cacheAccessedRequests };
   }
 
-  private _handleXHRError(pathName: string) {
+  private _onXHRError(pathName: string) {
     const xhrRequestErrors = {
       ...this.state.rustServiceXHRRequestErrors,
       [pathName]: {
@@ -436,7 +436,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
 
   // Subscribes to state updates for persistence in IndexedDB
   private _subscribeToStateUpdatesForPersistence() {
-    const _handleStoreStateUpdate = (
+    const _onStoreStateUpdate = (
       storeStateUpdateKeys: (keyof StoreStateProps)[],
     ) => {
       const state = this.getState();
@@ -448,10 +448,10 @@ class Store extends ReactStateEmitter<StoreStateProps> {
         }
       }
     };
-    this.on(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
+    this.on(StateEmitterDefaultEvents.UPDATE, _onStoreStateUpdate);
 
     this.registerDisposeFunction(() => {
-      this.off(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
+      this.off(StateEmitterDefaultEvents.UPDATE, _onStoreStateUpdate);
     });
   }
 
