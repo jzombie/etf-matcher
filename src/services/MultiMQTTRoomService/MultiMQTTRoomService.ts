@@ -140,13 +140,13 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
       this._onRoomConnectingStateChange.bind(this),
     );
 
-    newRoom.on("connect", () => this._onRoomConnected(newRoom));
+    newRoom.on("connect", this._onRoomConnected.bind(this, newRoom));
 
     newRoom.on("peersupdate", this._calculateTotalParticipants.bind(this));
 
     newRoom.on("syncupdate", this._onRoomSyncUpdate.bind(this));
 
-    newRoom.on("close", () => this._onRoomDisconnected(newRoom));
+    newRoom.on("close", this._onRoomDisconnected.bind(this, newRoom));
   }
 
   async disconnectFromRoom(
