@@ -95,9 +95,9 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
     ``;
 
     if (this._autoReconnectPollingInterval) {
-      clearTimeout(this._autoReconnectPollingInterval);
+      this.clearTimeout(this._autoReconnectPollingInterval);
     }
-    this._autoReconnectPollingInterval = setTimeout(
+    this._autoReconnectPollingInterval = this.setTimeout(
       () => this._attemptAutoReconnect(),
       delay,
     );

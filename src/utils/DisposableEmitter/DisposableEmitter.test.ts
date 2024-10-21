@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
+import customLogger from "@utils/customLogger";
+
 import DisposableEmitter from "./DisposableEmitter";
 
 describe("DisposableEmitter", () => {
@@ -58,5 +60,91 @@ describe("DisposableEmitter", () => {
 
     // After disposing, it should be marked as disposed
     expect(emitter.isDisposed).toBe(true);
+  });
+
+  it("should clear timeouts on dispose", () => {
+    const emitter = new DisposableEmitter();
+
+    const timeoutCallback = vi.fn();
+    emitter.setTimeout(timeoutCallback, 100);
+
+    emitter.dispose();
+
+    // Ensure timeout callback is not called after dispose
+    setTimeout(() => {
+      expect(timeoutCallback).not.toHaveBeenCalled();
+    }, 200);
+  });
+
+  it("should clear intervals on dispose", () => {
+    const emitter = new DisposableEmitter();
+
+    const intervalCallback = vi.fn();
+    emitter.setInterval(intervalCallback, 100);
+
+    emitter.dispose();
+
+    // Ensure interval callback is not called after dispose
+    setTimeout(() => {
+      expect(intervalCallback).not.toHaveBeenCalled();
+    }, 200);
+  });
+
+  it("should clear a registered timeout", () => {
+    const emitter = new DisposableEmitter();
+
+    const timeoutCallback = vi.fn();
+    const timeout = emitter.setTimeout(timeoutCallback, 100);
+
+    emitter.clearTimeout(timeout);
+
+    // Ensure timeout callback is not called after clearTimeout
+    setTimeout(() => {
+      expect(timeoutCallback).not.toHaveBeenCalled();
+    }, 200);
+  });
+
+  it("should clear a registered interval", () => {
+    const emitter = new DisposableEmitter();
+
+    const intervalCallback = vi.fn();
+    const interval = emitter.setInterval(intervalCallback, 100);
+
+    emitter.clearInterval(interval);
+
+    // Ensure interval callback is not called after clearInterval
+    setTimeout(() => {
+      expect(intervalCallback).not.toHaveBeenCalled();
+    }, 200);
+  });
+
+  it("should warn when clearing a non-existent timeout", () => {
+    const emitter = new DisposableEmitter();
+    const consoleWarnSpy = vi
+      .spyOn(customLogger, "warn")
+      .mockImplementation(() => {});
+
+    const fakeTimeout = setTimeout(() => {}, 100);
+    emitter.clearTimeout(fakeTimeout);
+
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      "Attempted to clear a non-existent timeout.",
+    );
+    consoleWarnSpy.mockRestore();
+  });
+
+  it("should warn when clearing a non-existent interval", () => {
+    const emitter = new DisposableEmitter();
+    const consoleWarnSpy = vi
+      .spyOn(customLogger, "warn")
+      .mockImplementation(() => {});
+
+    const fakeInterval = setInterval(() => {}, 100);
+    emitter.clearInterval(fakeInterval);
+
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      "Attempted to clear a non-existent interval.",
+    );
+    consoleWarnSpy.mockRestore();
   });
 });
