@@ -20,6 +20,7 @@ export default class StateEmitter<
 
   private _state!: T;
   private disposeFunctions: (() => void)[] = [];
+  private _isDisposed = false;
 
   public readonly initialState: T;
 
@@ -137,5 +138,11 @@ export default class StateEmitter<
     this.disposeFunctions.forEach((fn) => fn());
     this.disposeFunctions = [];
     this.removeAllListeners();
+
+    this._isDisposed = true;
+  }
+
+  get isDisposed(): boolean {
+    return this._isDisposed;
   }
 }

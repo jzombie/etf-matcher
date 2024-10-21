@@ -190,6 +190,20 @@ describe("StateEmitter", () => {
     emitter.setState({ count: 2 });
     expect(listener).toHaveBeenCalledTimes(1); // No additional calls after dispose
   });
+
+  it("should correctly identify when it is disposed", () => {
+    const initialState: TestState = { count: 0, text: "hello" };
+    const emitter = new StateEmitter<TestState>(initialState);
+
+    // Initially, it should not be disposed
+    expect(emitter.isDisposed).toBe(false);
+
+    // Dispose the emitter
+    emitter.dispose();
+
+    // After disposing, it should be marked as disposed
+    expect(emitter.isDisposed).toBe(true);
+  });
 });
 
 describe("StateEmitter - Reset Method", () => {
