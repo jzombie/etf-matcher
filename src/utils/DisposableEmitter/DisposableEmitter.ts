@@ -8,6 +8,10 @@ export default class DisposableEmitter extends EventEmitter {
   private _timeouts: NodeJS.Timeout[] = [];
   private _intervals: NodeJS.Timeout[] = [];
 
+  /**
+   * Registers a dispose function to be called when the emitter is disposed.
+   * Returns a function that can be called to unregister the dispose function.
+   */
   registerDisposeFunction(disposeFunction: () => void): () => void {
     this.disposeFunctions.push(disposeFunction);
 
@@ -19,6 +23,9 @@ export default class DisposableEmitter extends EventEmitter {
     };
   }
 
+  /**
+   * Sets a timeout and registers it for automatic clearing upon disposal.
+   */
   setTimeout(
     callback: (...args: unknown[]) => void,
     ms: number,
@@ -29,6 +36,9 @@ export default class DisposableEmitter extends EventEmitter {
     return timeout;
   }
 
+  /**
+   * Sets an interval and registers it for automatic clearing upon disposal.
+   */
   setInterval(
     callback: (...args: unknown[]) => void,
     ms: number,
@@ -39,6 +49,9 @@ export default class DisposableEmitter extends EventEmitter {
     return interval;
   }
 
+  /**
+   * Clears a registered timeout. Logs a warning if the timeout does not exist.
+   */
   clearTimeout(timeout: NodeJS.Timeout) {
     if (!this._timeouts.includes(timeout)) {
       customLogger.warn("Attempted to clear a non-existent timeout.");
@@ -48,6 +61,9 @@ export default class DisposableEmitter extends EventEmitter {
     }
   }
 
+  /**
+   * Clears a registered interval. Logs a warning if the interval does not exist.
+   */
   clearInterval(interval: NodeJS.Timeout) {
     if (!this._intervals.includes(interval)) {
       customLogger.warn("Attempted to clear a non-existent interval.");
@@ -57,6 +73,10 @@ export default class DisposableEmitter extends EventEmitter {
     }
   }
 
+  /**
+   * Disposes the emitter by calling all registered dispose functions,
+   * removing all event listeners, and clearing all timeouts and intervals.
+   */
   dispose() {
     this.disposeFunctions.forEach((fn) => fn());
     this.disposeFunctions = [];
@@ -71,6 +91,9 @@ export default class DisposableEmitter extends EventEmitter {
     this._isDisposed = true;
   }
 
+  /**
+   * Indicates whether the emitter has been disposed.
+   */
   get isDisposed(): boolean {
     return this._isDisposed;
   }
