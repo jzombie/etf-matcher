@@ -61,9 +61,24 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
   }
 
   async connectToDisconnectedSubscribedRooms(): Promise<void> {
-    for (const roomName of this.disconnectedSubscribedRoomNames) {
-      await this.connectToRoom(roomName);
-    }
+    const connectPromises = this.disconnectedSubscribedRoomNames.map(
+      (roomName) =>
+        this.connectToRoom(roomName).catch((error) => {
+          // TODO: Route to UI notification
+          customLogger.warn(`Failed to connect to room: ${roomName}`, error);
+          return Promise.reject(error); // Ensure the promise is rejected
+        }),
+    );
+
+    const results = await Promise.allSettled(connectPromises);
+
+    results.forEach((result, index) => {
+      if (result.status === "rejected") {
+        const roomName = this.disconnectedSubscribedRoomNames[index];
+        // TODO: Route to UI notification
+        customLogger.warn(`Connection attempt failed for room: ${roomName}`);
+      }
+    });
   }
 
   protected async _attemptAutoReconnect(): Promise<void> {
