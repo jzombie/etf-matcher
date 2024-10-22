@@ -180,6 +180,8 @@ export default class MQTTRoomWorker extends EventEmitter<MQTTRoomWorkerEvents> {
         this.emit("connect");
       });
 
+      // Emitted when the client receives a disconnect packet from the broker.
+      // This is a controlled disconnection initiated by the broker.
       this._mqttClient.on("disconnect", (data: mqtt.IDisconnectPacket) => {
         this._emitLocalHostEvent("disconnect", data);
       });
@@ -241,6 +243,9 @@ export default class MQTTRoomWorker extends EventEmitter<MQTTRoomWorkerEvents> {
         }
       });
 
+      // Emitted when the connection is closed. This can happen after a
+      // disconnect or due to network issues. It indicates that the client is
+      // no longer connected to the broker.
       this._mqttClient.on("close", () => {
         // Emitted after a disconnection.
 
@@ -249,6 +254,8 @@ export default class MQTTRoomWorker extends EventEmitter<MQTTRoomWorkerEvents> {
         // Note: The _emitLocalHostEvent for `close` is emit in `this.close()`
       });
 
+      // Emitted when the client starts attempting to reconnect to the broker
+      // after a disconnection.
       this._mqttClient.on("reconnect", () => {
         // Emitted when a reconnect starts.
 
@@ -257,6 +264,9 @@ export default class MQTTRoomWorker extends EventEmitter<MQTTRoomWorkerEvents> {
         this._emitLocalHostEvent("reconnect");
       });
 
+      // Emitted when the client goes offline, typically due to network issues.
+      // This indicates that the client is not connected and is not currently
+      // trying to reconnect.
       this._mqttClient.on("offline", () => {
         // Emitted when the client goes offline.
 
@@ -265,6 +275,9 @@ export default class MQTTRoomWorker extends EventEmitter<MQTTRoomWorkerEvents> {
         this._emitLocalHostEvent("offline");
       });
 
+      // Emitted when the end() method is called on the client, indicating that
+      // the client is intentionally closing the connection and will not attempt
+      // to reconnect.
       this._mqttClient.on("end", () => {
         // Emitted when mqtt.Client#end() is called. If a callback was passed to mqtt.Client#end(),
         // this event is emitted once the callback returns.
@@ -275,6 +288,8 @@ export default class MQTTRoomWorker extends EventEmitter<MQTTRoomWorkerEvents> {
       });
 
       this._mqttClient.on("error", (err) => {
+        customLogger.error("MQTT client error:", err);
+
         // Emitted when the client cannot connect (i.e. connack rc != 0) or when a parsing error occurs.
         //
         // The following TLS errors will be emitted as an error event:
@@ -285,6 +300,19 @@ export default class MQTTRoomWorker extends EventEmitter<MQTTRoomWorkerEvents> {
         // ENOTFOUND
 
         this.emit("error", err);
+      });
+
+      // Listen for WebSocket errors directly
+      this._mqttClient.stream.on("error", (err) => {
+        customLogger.error("WebSocket error:", err);
+
+        this.emit("error", err);
+      });
+
+      // Emitted when the connection is closed. This can happen after a disconnect or due
+      // to network issues. It indicates that the client is no longer connected to the broker.
+      this._mqttClient.stream.on("close", () => {
+        customLogger.log("WebSocket connection closed.");
       });
     }
   }
@@ -350,6 +378,7 @@ interface CallQueueItem {
   reject: (reason?: unknown) => void;
 }
 
+// TODO: Rename to `createMQTTRoomWorker`?
 async function handleWorkerConnection(
   brokerURL: string,
   roomName: string,

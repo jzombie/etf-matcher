@@ -79,30 +79,18 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
     });
   }
 
-  protected async _attemptAutoReconnect(): Promise<void> {
-    if (this.isDisposed || !this.disconnectedSubscribedRoomNames.length) {
-      return;
-    }
-
-    customLogger.debug("Attempting auto reconnect");
-    if (!this.state.isConnecting) {
-      this._autoReconnectAttempts = 0; // Reset attempts on successful connection
-      await this.connectToDisconnectedSubscribedRooms();
-    } else {
-      // Increase the number of attempts
-      this._autoReconnectAttempts++;
-
-      const delay = Math.min(
-        this._autoReconnectMaxDelay,
-        this._autoReconnectBaseDelay * Math.pow(2, this._autoReconnectAttempts),
-      );
-      customLogger.warn(`Network check failed. Retrying in ${delay}ms.`);
-      this._scheduleNextAutoReconnectAttempt(delay);
-    }
+  protected _calculateBackoffDelay(): number {
+    // Calculate the delay using exponential backoff
+    return Math.min(
+      this._autoReconnectMaxDelay,
+      this._autoReconnectBaseDelay * Math.pow(2, this._autoReconnectAttempts),
+    );
   }
 
-  protected _scheduleNextAutoReconnectAttempt(delay: number): void {
-    customLogger.debug(`Scheduling next auto reconnect attempt in ${delay}ms`);
+  protected _scheduleAutoReconnectWithBackoff(): void {
+    this._autoReconnectAttempts++;
+    const delay = this._calculateBackoffDelay();
+    customLogger.warn(`Scheduling reconnect attempt in ${delay}ms.`);
 
     if (this._autoReconnectPollingInterval) {
       this.clearTimeout(this._autoReconnectPollingInterval);
@@ -111,6 +99,19 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
       () => this._attemptAutoReconnect(),
       delay,
     );
+  }
+
+  protected async _attemptAutoReconnect(): Promise<void> {
+    if (this.isDisposed || !this.disconnectedSubscribedRoomNames.length) {
+      return;
+    }
+
+    customLogger.debug("Attempting auto reconnect");
+    if (!this.state.isConnecting) {
+      await this.connectToDisconnectedSubscribedRooms();
+    } else {
+      this._scheduleAutoReconnectWithBackoff();
+    }
   }
 
   async connectToRoom(roomName: string): Promise<void> {
@@ -135,13 +136,31 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
       this._onRoomConnectingStateChange.bind(this),
     );
 
+    // TODO: Handle
+    newRoom.on("error", this._onRoomError.bind(this, newRoom));
+
     newRoom.on("connect", this._onRoomConnected.bind(this, newRoom));
 
     newRoom.on("peersupdate", this._calculateTotalParticipants.bind(this));
 
     newRoom.on("syncupdate", this._onRoomSyncUpdate.bind(this));
 
-    newRoom.on("close", this._onRoomDisconnected.bind(this, newRoom));
+    newRoom.on("close", this._onRoomClosed.bind(this, newRoom));
+  }
+
+  protected _onRoomConnected(newRoom: MQTTRoom) {
+    this._autoReconnectAttempts = 0; // Reset attempts on successful connection
+
+    this._store.addMQTTRoomSubscription(newRoom);
+
+    this.setState((prevState) => ({
+      connectedRooms: {
+        ...prevState.connectedRooms,
+        [newRoom.roomName]: newRoom,
+      },
+    }));
+
+    this._calculateTotalParticipants();
   }
 
   async disconnectFromRoom(
@@ -159,20 +178,11 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
     }
   }
 
-  protected _onRoomConnected(newRoom: MQTTRoom) {
-    this._store.addMQTTRoomSubscription(newRoom);
-
-    this.setState((prevState) => ({
-      connectedRooms: {
-        ...prevState.connectedRooms,
-        [newRoom.roomName]: newRoom,
-      },
-    }));
-
-    this._calculateTotalParticipants();
+  protected _onRoomError(room: MQTTRoom, err: Error) {
+    customLogger.error("MQTTRoom error", { err });
   }
 
-  protected _onRoomDisconnected(room: MQTTRoom) {
+  protected _onRoomClosed(room: MQTTRoom) {
     this.setState((prevState) => {
       // Destructure the room to be removed from the rooms object
       // `remainingRooms` contains all rooms except the disconnected one
@@ -185,14 +195,14 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
 
       // Regardless of the reason for disconnection, schedule the next auto reconnect attempt
       // (if this room was explicitly disconnected it won't try to reconnect it)
-      this._scheduleNextAutoReconnectAttempt(this._autoReconnectBaseDelay);
+      this._scheduleAutoReconnectWithBackoff();
 
       // Return the updated state with the disconnected room removed
       return { rooms: remainingRooms, connectedRooms: remainingConnectedRooms };
     });
 
     // Call `onRoomSyncUpdate` to determine if any additional state updates are
-    //needed to be relayed to the UI
+    // needed to be relayed to the UI
     this._onRoomSyncUpdate();
   }
 

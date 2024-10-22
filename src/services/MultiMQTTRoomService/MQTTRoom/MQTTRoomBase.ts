@@ -1,6 +1,8 @@
 import { Buffer } from "buffer";
 import EventEmitter from "events";
 
+import customLogger from "@utils/customLogger";
+
 import validateTopic from "../validateTopic";
 import { EnvelopeType, PostMessageStructKey } from "./MQTTRoom.sharedBindings";
 import { MQTTRoomEvents, SendOptions } from "./MQTTRoom.sharedBindings";
@@ -68,22 +70,27 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
   protected async _connect() {
     this._setConnectingState(true);
 
-    const peerId = await MQTTRoomBase._callMQTTRoomWorker<string>(
-      "connect-room",
-      [this._brokerURL, this._roomName],
-    );
+    try {
+      const peerId = await MQTTRoomBase._callMQTTRoomWorker<string>(
+        "connect-room",
+        [this._brokerURL, this._roomName],
+      );
 
-    this._setConnectingState(false); // `ing`
-    this._setConnectionState(true); // `ion`
+      this._setConnectingState(false); // `ing`
+      this._setConnectionState(true); // `ion`
 
-    this._peerId = peerId;
+      this._peerId = peerId;
 
-    // Register with room map
-    MQTTRoomBase._roomMap.set(this._peerId, this);
-    this.once("close", () => MQTTRoomBase._roomMap.delete(this._peerId));
+      // Register with room map
+      MQTTRoomBase._roomMap.set(this._peerId, this);
+      this.once("close", () => MQTTRoomBase._roomMap.delete(this._peerId));
 
-    this._isConnected = true;
-    this.emit("connect");
+      this.emit("connect");
+    } catch (err) {
+      this.emit("error", err as Error);
+
+      this.close(err as Error);
+    }
   }
 
   protected _setSyncState(isInSync: boolean) {
@@ -141,50 +148,6 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
     }
   }
 
-  private static async _handleWorkerMessage(event: MessageEvent) {
-    const {
-      [PostMessageStructKey.MessageId]: messageId,
-      [PostMessageStructKey.Success]: success,
-      [PostMessageStructKey.Result]: result,
-      [PostMessageStructKey.Error]: error,
-      [PostMessageStructKey.EnvelopeType]: envelopeType,
-      [PostMessageStructKey.EventName]: eventName,
-      [PostMessageStructKey.PeerId]: peerId,
-    } = event.data;
-
-    if (envelopeType === EnvelopeType.Function) {
-      if (messageId in MQTTRoomBase._messagePromises) {
-        const { resolve, reject } = MQTTRoomBase._messagePromises[messageId];
-        if (success) {
-          resolve(result);
-        } else {
-          reject(new Error(error));
-        }
-        delete MQTTRoomBase._messagePromises[messageId];
-      }
-    } else if (envelopeType === EnvelopeType.Event) {
-      const room = this._roomMap.get(peerId);
-      if (room) {
-        let { [PostMessageStructKey.EventData]: eventData } = event.data;
-
-        if (eventName === "peersupdate") {
-          room.onPeersUpdated(eventData);
-        }
-
-        if (
-          eventData &&
-          eventData.type === "Buffer" &&
-          Array.isArray(eventData.data)
-        ) {
-          eventData = Buffer.from(eventData.data);
-        }
-
-        // This emits the event directly on the room instance
-        room.emit(eventName, eventData);
-      }
-    }
-  }
-
   private static async _callMQTTRoomWorker<T>(
     functionName: string,
     args: unknown[] = [],
@@ -233,13 +196,77 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
     });
   }
 
-  async close() {
+  private static async _handleWorkerMessage(event: MessageEvent) {
+    const {
+      [PostMessageStructKey.MessageId]: messageId,
+      [PostMessageStructKey.Success]: success,
+      [PostMessageStructKey.Result]: result,
+      [PostMessageStructKey.Error]: error,
+      [PostMessageStructKey.EnvelopeType]: envelopeType,
+      [PostMessageStructKey.EventName]: eventName,
+      [PostMessageStructKey.PeerId]: peerId,
+    } = event.data;
+
+    if (envelopeType === EnvelopeType.Function) {
+      if (messageId in MQTTRoomBase._messagePromises) {
+        const { resolve, reject } = MQTTRoomBase._messagePromises[messageId];
+        if (success) {
+          resolve(result);
+        } else {
+          reject(new Error(error));
+        }
+        delete MQTTRoomBase._messagePromises[messageId];
+      }
+    } else if (envelopeType === EnvelopeType.Event) {
+      const room = this._roomMap.get(peerId);
+
+      if (room) {
+        let { [PostMessageStructKey.EventData]: eventData } = event.data;
+
+        if (eventName === "peersupdate") {
+          room.onPeersUpdated(eventData);
+        }
+
+        if (
+          eventData &&
+          eventData.type === "Buffer" &&
+          Array.isArray(eventData.data)
+        ) {
+          eventData = Buffer.from(eventData.data);
+        }
+
+        if (eventName === "close") {
+          room.close("Worker close event");
+        } else {
+          // This emits the event directly on the room instance
+          room.emit(eventName, eventData);
+        }
+      } else {
+        customLogger.warn("Received message for non-existent room", event.data);
+      }
+    }
+  }
+
+  async close(reason?: unknown) {
+    if (reason) {
+      customLogger.debug("Proceeding to close due to reason:", reason);
+    }
+
     this._peers = [];
-    this._setConnectionState(false);
 
-    await MQTTRoomBase._callMQTTRoomWorker("close", [this._peerId]);
+    this._setConnectingState(false); // `ing`
+    this._setConnectionState(false); // `ion`
 
-    // Note: The `close` event is handled interally via `handleWorkerMessage`
+    try {
+      await MQTTRoomBase._callMQTTRoomWorker("close", [this._peerId]);
+    } catch (err) {
+      // This error is expected if the room has already been closed in the worker.
+      //
+      // This condition may occur if the worker previously experienced an error
+      // which would cause it to close the room.
+    }
+
+    this.emit("close");
 
     this.removeAllListeners();
   }
