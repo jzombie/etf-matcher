@@ -312,7 +312,7 @@ export default class MQTTRoomWorker extends EventEmitter<MQTTRoomWorkerEvents> {
       // Emitted when the connection is closed. This can happen after a disconnect or due
       // to network issues. It indicates that the client is no longer connected to the broker.
       this._mqttClient.stream.on("close", () => {
-        customLogger.log("WebSocket connection closed.");
+        customLogger.log("WebSocket connection closed");
       });
     }
   }
