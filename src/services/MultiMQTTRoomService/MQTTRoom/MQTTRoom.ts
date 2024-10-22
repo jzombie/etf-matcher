@@ -3,9 +3,6 @@ import { Buffer } from "buffer";
 import { SendOptions } from "./MQTTRoom.sharedBindings";
 import MQTTRoomBase from "./MQTTRoomBase";
 
-// import { callMQTTRoomWorker } from "./MQTTRoom.utils";
-
-// TODO: Extend `DisposableEmitter` instead?
 export default class MQTTRoom extends MQTTRoomBase {
   constructor(brokerURL: string, roomName: string) {
     super(brokerURL, roomName);

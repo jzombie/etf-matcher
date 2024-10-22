@@ -5,20 +5,27 @@ import validateTopic from "../validateTopic";
 import { EnvelopeType, PostMessageStructKey } from "./MQTTRoom.sharedBindings";
 import { MQTTRoomEvents, SendOptions } from "./MQTTRoom.sharedBindings";
 
-const worker = new Worker(new URL("./MQTTRoom.worker", import.meta.url), {
-  type: "module",
-});
-
-let messageCounter = 0;
-const messagePromises: {
-  [key: string]: {
-    resolve: CallableFunction;
-    reject: CallableFunction;
-  };
-} = {};
-
 // TODO: Extend `DisposableEmitter` instead?
 export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> {
+  private static _worker = (() => {
+    const worker = new Worker(new URL("./MQTTRoom.worker", import.meta.url), {
+      type: "module",
+    });
+
+    worker.onmessage = (event: MessageEvent) =>
+      MQTTRoomBase._handleWorkerMessage(event);
+
+    return worker;
+  })();
+
+  private static _messageCounter = 0;
+  private static _messagePromises: {
+    [key: string]: {
+      resolve: CallableFunction;
+      reject: CallableFunction;
+    };
+  } = {};
+
   private static _roomMap: Map<MQTTRoomBase["peerId"], MQTTRoomBase> =
     new Map();
 
@@ -58,10 +65,10 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
   protected async _connect() {
     this._setConnectingState(true);
 
-    const peerId = await callMQTTRoomWorker<string>("connect-room", [
-      this._brokerURL,
-      this._roomName,
-    ]);
+    const peerId = await MQTTRoomBase._callMQTTRoomWorker<string>(
+      "connect-room",
+      [this._brokerURL, this._roomName],
+    );
 
     this._setConnectingState(false); // `ing`
     this._setConnectionState(true); // `ion`
@@ -121,14 +128,17 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
     }
 
     try {
-      await callMQTTRoomWorker("send", [this.peerId, data, options]);
+      await MQTTRoomBase._callMQTTRoomWorker("send", [
+        this.peerId,
+        data,
+        options,
+      ]);
     } finally {
       this._popStateOperation("send");
     }
   }
 
-  // TODO: `private async`
-  public static async handleWorkerMessage(event: MessageEvent) {
+  private static async _handleWorkerMessage(event: MessageEvent) {
     const {
       [PostMessageStructKey.MessageId]: messageId,
       [PostMessageStructKey.Success]: success,
@@ -140,14 +150,14 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
     } = event.data;
 
     if (envelopeType === EnvelopeType.Function) {
-      if (messageId in messagePromises) {
-        const { resolve, reject } = messagePromises[messageId];
+      if (messageId in MQTTRoomBase._messagePromises) {
+        const { resolve, reject } = MQTTRoomBase._messagePromises[messageId];
         if (success) {
           resolve(result);
         } else {
           reject(new Error(error));
         }
-        delete messagePromises[messageId];
+        delete MQTTRoomBase._messagePromises[messageId];
       }
     } else if (envelopeType === EnvelopeType.Event) {
       const room = this._roomMap.get(peerId);
@@ -172,66 +182,62 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
     }
   }
 
+  private static async _callMQTTRoomWorker<T>(
+    functionName: string,
+    args: unknown[] = [],
+    abortSignal?: AbortSignal,
+  ): Promise<T> {
+    const messageId = MQTTRoomBase._messageCounter++;
+
+    return new Promise<T>((resolve, reject) => {
+      MQTTRoomBase._messagePromises[messageId] = { resolve, reject };
+
+      MQTTRoomBase._worker.postMessage({ functionName, args, messageId });
+
+      const handleAbort = () => {
+        cleanup();
+        // Note: As of now the worker & Rust service do not yet support
+        // this action, but it should be safely ignored
+        MQTTRoomBase._worker.postMessage({ messageId, action: "abort" });
+        reject(new Error("Aborted"));
+        delete MQTTRoomBase._messagePromises[messageId];
+      };
+
+      if (abortSignal) {
+        abortSignal.addEventListener("abort", handleAbort);
+      }
+
+      const cleanup = () => {
+        if (abortSignal) {
+          abortSignal.removeEventListener("abort", handleAbort);
+        }
+      };
+
+      const wrappedResolve = (value: T) => {
+        cleanup();
+        resolve(value);
+      };
+
+      const wrappedReject = (reason?: unknown) => {
+        cleanup();
+        reject(reason);
+      };
+
+      MQTTRoomBase._messagePromises[messageId] = {
+        resolve: wrappedResolve,
+        reject: wrappedReject,
+      };
+    });
+  }
+
   async close() {
     this._peers = [];
     this._setConnectionState(false);
 
-    await callMQTTRoomWorker("close", [this.peerId]);
+    await MQTTRoomBase._callMQTTRoomWorker("close", [this.peerId]);
 
     // Note: The `close` event is handled interally via `handleWorkerMessage`
-    // this.emit("close");
 
     this.removeAllListeners();
   }
 }
-
-export async function callMQTTRoomWorker<T>(
-  functionName: string,
-  args: unknown[] = [],
-  abortSignal?: AbortSignal,
-): Promise<T> {
-  const messageId = messageCounter++;
-
-  return new Promise<T>((resolve, reject) => {
-    messagePromises[messageId] = { resolve, reject };
-
-    worker.postMessage({ functionName, args, messageId });
-
-    const handleAbort = () => {
-      cleanup();
-      // Note: As of now the worker & Rust service do not yet support
-      // this action, but it should be safely ignored
-      worker.postMessage({ messageId, action: "abort" });
-      reject(new Error("Aborted"));
-      delete messagePromises[messageId];
-    };
-
-    if (abortSignal) {
-      abortSignal.addEventListener("abort", handleAbort);
-    }
-
-    const cleanup = () => {
-      if (abortSignal) {
-        abortSignal.removeEventListener("abort", handleAbort);
-      }
-    };
-
-    const wrappedResolve = (value: T) => {
-      cleanup();
-      resolve(value);
-    };
-
-    const wrappedReject = (reason?: unknown) => {
-      cleanup();
-      reject(reason);
-    };
-
-    messagePromises[messageId] = {
-      resolve: wrappedResolve,
-      reject: wrappedReject,
-    };
-  });
-}
-
-worker.onmessage = (event: MessageEvent) =>
-  MQTTRoomBase.handleWorkerMessage(event);
