@@ -5,6 +5,7 @@ import validateTopic from "../validateTopic";
 import { MQTTRoomEvents, SendOptions } from "./MQTTRoom.sharedBindings";
 import { callMQTTRoomWorker } from "./MQTTRoom.utils";
 
+// TODO: Extend `DisposableEmitter` instead?
 export default class MQTTRoom extends EventEmitter<MQTTRoomEvents> {
   public static roomMap: Map<MQTTRoom["peerId"], MQTTRoom> = new Map();
 
@@ -37,6 +38,8 @@ export default class MQTTRoom extends EventEmitter<MQTTRoomEvents> {
       this._setConnectionState(false);
     });
 
+    // TODO: If switching to `DisposableEmitter`, use the `setTimeout` method it provides
+    //
     // Note: `queueMicrotask` is not sufficient here for letting React be aware
     // of the `connecting state` prior to connect
     setTimeout(() => {
@@ -145,7 +148,10 @@ export default class MQTTRoom extends EventEmitter<MQTTRoomEvents> {
     this._setConnectionState(false);
 
     await callMQTTRoomWorker("close", [this.peerId]);
-    this.emit("close");
+
+    // Note: The `close` event is handled interally via `handleWorkerMessage`
+    // this.emit("close");
+
     this.removeAllListeners();
   }
 }

@@ -63,7 +63,7 @@ export async function callMQTTRoomWorker<T>(
   });
 }
 
-export async function handleWorkerMessage(event: MessageEvent) {
+async function handleWorkerMessage(event: MessageEvent) {
   const {
     [PostMessageStructKey.MessageId]: messageId,
     [PostMessageStructKey.Success]: success,
@@ -101,6 +101,7 @@ export async function handleWorkerMessage(event: MessageEvent) {
         eventData = Buffer.from(eventData.data);
       }
 
+      // This emits the event directly on the room instance
       room.emit(eventName, eventData);
     }
   }
