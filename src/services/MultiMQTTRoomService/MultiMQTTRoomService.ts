@@ -15,9 +15,6 @@ export type MQTTRoomState = {
   totalParticipantsForAllRooms: number;
 };
 
-// TODO: Determine which rooms were disconnected via connection loss vs. manual,
-// in order to create a reconnect strategy
-//
 // TODO: On dispose, disconnect from all rooms (shouldn't ever need to be done)
 export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQTTRoomState> {
   protected _autoReconnectAttempts: number = 0;
@@ -88,17 +85,13 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
     }
 
     customLogger.debug("Attempting auto reconnect");
-    // if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-    //   customLogger.warn('Max reconnect attempts reached.');
-    //   return;
-    // }
-
-    // const isConnected = await this.checkNetworkConnectivity();
     if (!this.state.isConnecting) {
-      // this.reconnectAttempts = 0; // Reset attempts on successful connection
+      this._autoReconnectAttempts = 0; // Reset attempts on successful connection
       await this.connectToDisconnectedSubscribedRooms();
     } else {
-      // this.reconnectAttempts++;
+      // Increase the number of attempts
+      this._autoReconnectAttempts++;
+
       const delay = Math.min(
         this._autoReconnectMaxDelay,
         this._autoReconnectBaseDelay * Math.pow(2, this._autoReconnectAttempts),
@@ -110,7 +103,6 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
 
   protected _scheduleNextAutoReconnectAttempt(delay: number): void {
     customLogger.debug(`Scheduling next auto reconnect attempt in ${delay}ms`);
-    ``;
 
     if (this._autoReconnectPollingInterval) {
       this.clearTimeout(this._autoReconnectPollingInterval);
@@ -190,6 +182,10 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
       // `remainingConnectedRooms` contains all connected rooms except the disconnected one
       const { [room.roomName]: ___, ...remainingConnectedRooms } =
         prevState.connectedRooms;
+
+      // Regardless of the reason for disconnection, schedule the next auto reconnect attempt
+      // (if this room was explicitly disconnected it won't try to reconnect it)
+      this._scheduleNextAutoReconnectAttempt(this._autoReconnectBaseDelay);
 
       // Return the updated state with the disconnected room removed
       return { rooms: remainingRooms, connectedRooms: remainingConnectedRooms };
