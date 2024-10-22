@@ -16,28 +16,16 @@ export default class MQTTRoom extends MQTTRoomBase {
     });
   }
 
+  // The following getters are inherited from MQTTRoomBase and can be used directly:
+  // - peerId
+  // - peers
+  // - isInSync
+  // - roomName
+  // - isConnecting
+  // - isConnected
+
   async send(data: string | Buffer | object, options?: SendOptions) {
-    super.send(data, options);
-  }
-
-  get isInSync() {
-    return this._isInSync;
-  }
-
-  get roomName() {
-    return this._roomName;
-  }
-
-  get isConnecting() {
-    return this._isConnecting;
-  }
-
-  get isConnected() {
-    return this._isConnected;
-  }
-
-  get peers() {
-    return this._peers;
+    return super.send(data, options);
   }
 
   async close() {

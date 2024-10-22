@@ -6,6 +6,13 @@ import { EnvelopeType, PostMessageStructKey } from "./MQTTRoom.sharedBindings";
 import { MQTTRoomEvents, SendOptions } from "./MQTTRoom.sharedBindings";
 
 // TODO: Extend `DisposableEmitter` instead?
+/**
+ * `MQTTRoomBase` is an abstract class that manages MQTT room connections.
+ * It uses a worker thread to handle asynchronous MQTT operations and
+ * facilitates communication between the worker and room instances.
+ *
+ * This is intended to be extended by `MQTTRoom`.
+ */
 export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> {
   private static _worker = (() => {
     const worker = new Worker(new URL("./MQTTRoom.worker", import.meta.url), {
@@ -26,24 +33,20 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
     };
   } = {};
 
-  private static _roomMap: Map<MQTTRoomBase["peerId"], MQTTRoomBase> =
+  private static _roomMap: Map<MQTTRoomBase["_peerId"], MQTTRoomBase> =
     new Map();
 
-  protected _peerId!: string;
-  protected _isConnecting: boolean = false;
-  protected _isConnected: boolean = false;
+  private _peerId!: string;
+  private _isConnecting: boolean = false;
+  private _isConnected: boolean = false;
 
-  protected _brokerURL!: string;
-  protected _roomName!: string;
+  private _brokerURL!: string;
+  private _roomName!: string;
 
-  protected _peers: string[] = [];
+  private _peers: string[] = [];
 
-  protected _isInSync: boolean = false;
-  protected _operationStack: string[] = [];
-
-  get peerId() {
-    return this._peerId;
-  }
+  private _isInSync: boolean = false;
+  private _operationStack: string[] = [];
 
   constructor(brokerURL: string, roomName: string) {
     super();
@@ -76,8 +79,8 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
     this._peerId = peerId;
 
     // Register with room map
-    MQTTRoomBase._roomMap.set(this.peerId, this);
-    this.once("close", () => MQTTRoomBase._roomMap.delete(this.peerId));
+    MQTTRoomBase._roomMap.set(this._peerId, this);
+    this.once("close", () => MQTTRoomBase._roomMap.delete(this._peerId));
 
     this._isConnected = true;
     this.emit("connect");
@@ -129,7 +132,7 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
 
     try {
       await MQTTRoomBase._callMQTTRoomWorker("send", [
-        this.peerId,
+        this._peerId,
         data,
         options,
       ]);
@@ -234,10 +237,34 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
     this._peers = [];
     this._setConnectionState(false);
 
-    await MQTTRoomBase._callMQTTRoomWorker("close", [this.peerId]);
+    await MQTTRoomBase._callMQTTRoomWorker("close", [this._peerId]);
 
     // Note: The `close` event is handled interally via `handleWorkerMessage`
 
     this.removeAllListeners();
+  }
+
+  get peerId() {
+    return this._peerId;
+  }
+
+  get peers() {
+    return this._peers;
+  }
+
+  get isInSync() {
+    return this._isInSync;
+  }
+
+  get roomName() {
+    return this._roomName;
+  }
+
+  get isConnecting() {
+    return this._isConnecting;
+  }
+
+  get isConnected() {
+    return this._isConnected;
   }
 }
