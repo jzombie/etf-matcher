@@ -2,8 +2,17 @@ import EventEmitter from "events";
 
 import customLogger from "@utils/customLogger";
 
+/**
+ * DisposableEmitter is an extension of the Node.js EventEmitter class.
+ * It provides additional functionality to manage and dispose of timeouts and intervals
+ * associated with the emitter, ensuring that resources are properly cleaned up.
+ *
+ * This class is useful in scenarios where you have multiple asynchronous operations
+ * (such as timeouts and intervals) tied to an event emitter, and you want to ensure
+ * they are cleared when no longer needed, preventing potential memory leaks.
+ */
 export default class DisposableEmitter extends EventEmitter {
-  private disposeFunctions: (() => void)[] = [];
+  private _disposeFunctions: (() => void)[] = [];
   private _isDisposed = false;
   private _timeouts: NodeJS.Timeout[] = [];
   private _intervals: NodeJS.Timeout[] = [];
@@ -13,11 +22,11 @@ export default class DisposableEmitter extends EventEmitter {
    * Returns a function that can be called to unregister the dispose function.
    */
   registerDisposeFunction(disposeFunction: () => void): () => void {
-    this.disposeFunctions.push(disposeFunction);
+    this._disposeFunctions.push(disposeFunction);
 
     // Return a function to unregister the dispose function
     return () => {
-      this.disposeFunctions = this.disposeFunctions.filter(
+      this._disposeFunctions = this._disposeFunctions.filter(
         (fn) => fn !== disposeFunction,
       );
     };
@@ -53,24 +62,42 @@ export default class DisposableEmitter extends EventEmitter {
    * Clears a registered timeout. Logs a warning if the timeout does not exist.
    */
   clearTimeout(timeout: NodeJS.Timeout) {
-    if (!this._timeouts.includes(timeout)) {
-      customLogger.warn("Attempted to clear a non-existent timeout.");
-    } else {
-      clearTimeout(timeout);
-      this._timeouts = this._timeouts.filter((t) => t !== timeout);
-    }
+    this._timeouts = this._clearTimer(
+      timeout,
+      this._timeouts,
+      clearTimeout,
+      "timeout",
+    );
   }
 
   /**
    * Clears a registered interval. Logs a warning if the interval does not exist.
    */
   clearInterval(interval: NodeJS.Timeout) {
-    if (!this._intervals.includes(interval)) {
-      customLogger.warn("Attempted to clear a non-existent interval.");
+    this._intervals = this._clearTimer(
+      interval,
+      this._intervals,
+      clearInterval,
+      "interval",
+    );
+  }
+
+  /**
+   * Clears a registered timeout or interval. Logs a warning if it does not exist.
+   */
+  private _clearTimer(
+    timer: NodeJS.Timeout,
+    timers: NodeJS.Timeout[],
+    clearFn: (timer: NodeJS.Timeout) => void,
+    timerType: string,
+  ) {
+    if (!timers.includes(timer)) {
+      customLogger.warn(`Attempted to clear a non-existent ${timerType}.`);
     } else {
-      clearInterval(interval);
-      this._intervals = this._intervals.filter((i) => i !== interval);
+      clearFn(timer);
+      return timers.filter((t) => t !== timer);
     }
+    return timers;
   }
 
   /**
@@ -78,8 +105,12 @@ export default class DisposableEmitter extends EventEmitter {
    * removing all event listeners, and clearing all timeouts and intervals.
    */
   dispose() {
-    this.disposeFunctions.forEach((fn) => fn());
-    this.disposeFunctions = [];
+    return this._doDispose();
+  }
+
+  private _doDispose() {
+    this._disposeFunctions.forEach((fn) => fn());
+    this._disposeFunctions = [];
     this.removeAllListeners();
 
     // Clear all timeouts and intervals
