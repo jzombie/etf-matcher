@@ -28,12 +28,10 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
   })();
 
   private static _messageCounter = 0;
-  private static _messagePromises: {
-    [key: string]: {
-      resolve: CallableFunction;
-      reject: CallableFunction;
-    };
-  } = {};
+  private static _messagePromises = new Map<
+    number,
+    { resolve: CallableFunction; reject: CallableFunction }
+  >();
 
   private static _roomMap: Map<MQTTRoomBase["_peerId"], MQTTRoomBase> =
     new Map();
@@ -156,7 +154,7 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
     const messageId = MQTTRoomBase._messageCounter++;
 
     return new Promise<T>((resolve, reject) => {
-      MQTTRoomBase._messagePromises[messageId] = { resolve, reject };
+      MQTTRoomBase._messagePromises.set(messageId, { resolve, reject });
 
       MQTTRoomBase._worker.postMessage({ functionName, args, messageId });
 
@@ -166,7 +164,7 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
         // this action, but it should be safely ignored
         MQTTRoomBase._worker.postMessage({ messageId, action: "abort" });
         reject(new Error("Aborted"));
-        delete MQTTRoomBase._messagePromises[messageId];
+        MQTTRoomBase._messagePromises.delete(messageId);
       };
 
       if (abortSignal) {
@@ -189,10 +187,10 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
         reject(reason);
       };
 
-      MQTTRoomBase._messagePromises[messageId] = {
+      MQTTRoomBase._messagePromises.set(messageId, {
         resolve: wrappedResolve,
         reject: wrappedReject,
-      };
+      });
     });
   }
 
@@ -209,13 +207,14 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
 
     if (envelopeType === EnvelopeType.Function) {
       if (messageId in MQTTRoomBase._messagePromises) {
-        const { resolve, reject } = MQTTRoomBase._messagePromises[messageId];
+        const { resolve, reject } =
+          MQTTRoomBase._messagePromises.get(messageId)!;
         if (success) {
           resolve(result);
         } else {
           reject(new Error(error));
         }
-        delete MQTTRoomBase._messagePromises[messageId];
+        MQTTRoomBase._messagePromises.delete(messageId);
       }
     } else if (envelopeType === EnvelopeType.Event) {
       const room = this._roomMap.get(peerId);
