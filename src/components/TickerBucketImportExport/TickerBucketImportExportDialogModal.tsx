@@ -24,8 +24,8 @@ import {
 } from "@mui/material";
 
 import Center from "@layoutKit/Center";
+import type { TickerBucketSet } from "@providers/TickerBucketImportExportProvider";
 import { FILE_IMPORT_ACCEPT_MAP } from "@src/constants";
-import type { TickerBucketSet } from "@src/providers/TickerBucketImportExportProvider";
 import store from "@src/store";
 
 import DialogModal, { DialogModalProps } from "@components/DialogModal";
@@ -64,15 +64,17 @@ export default function TickerBucketImportExportDialogModal({
 
   const reset = useCallback(() => {
     setSelectedFilename(null);
-    // setExportFilename(getDefaultExportFilename()); // Leave this alone for now
   }, []);
 
-  // Reset fields when modal is closed
   useEffect(() => {
     if (!isOpen) {
+      // Reset fields when modal is closed
       reset();
+    } else {
+      // Use default export filename when modal is opened
+      setExportFilename(getDefaultExportFilename());
     }
-  }, [isOpen, reset]);
+  }, [isOpen, reset, getDefaultExportFilename]);
 
   useEffect(() => {
     // Reset selected files when `mergeableSets` changes
@@ -219,6 +221,8 @@ const FileUploadArea = ({
   const theme = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // FIXME: Don't hardcode `csv` here
+  //
   // Formatted for `input[type="file"]` element
   const extensionTypes = useMemo(
     () => FILE_IMPORT_ACCEPT_MAP.get("csv")?.mimeTypes?.join(", ") || "",

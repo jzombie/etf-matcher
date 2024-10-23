@@ -26,7 +26,8 @@
       {
         "vars": "all",
         "args": "after-used",
-        "ignoreRestSiblings": true
+        "ignoreRestSiblings": true,
+        "argsIgnorePattern": "^_" // Ignore unused variables that start with an underscore
       }
     ],
     "no-undef": "off", // Disable this rule for TypeScript as it handles this check

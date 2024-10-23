@@ -1,12 +1,12 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 
+import { fetchTickerDetail } from "@services/RustService";
+import type { RustServiceTickerSearchResult } from "@services/RustService";
 import store from "@src/store";
 
 import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import useTickerSearch from "@hooks/useTickerSearch";
 
-import { fetchTickerDetail } from "@utils/callRustService";
-import type { RustServiceTickerSearchResult } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
 export type TickerSearchModalContentProps = {

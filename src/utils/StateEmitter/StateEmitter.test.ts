@@ -4,7 +4,7 @@ import deepFreeze from "@utils/deepFreeze";
 
 import StateEmitter, { StateEmitterDefaultEvents } from "./StateEmitter";
 
-interface TestState {
+interface TestState extends Record<string, unknown> {
   count: number;
   text: string;
 }
@@ -122,7 +122,7 @@ describe("StateEmitter", () => {
 
     expect(() => {
       emitter.state = { count: 1, text: "world" };
-    }).toThrow("State is read-only. Use setState to modify the state.");
+    }).toThrow("State is read-only. Use `setState` to modify the state.");
   });
 
   it("should throw error if initial state contains reserved keys", () => {
@@ -151,8 +151,8 @@ describe("StateEmitter", () => {
     const disposeFn1 = vi.fn();
     const disposeFn2 = vi.fn();
 
-    emitter.registerDispose(disposeFn1);
-    emitter.registerDispose(disposeFn2);
+    emitter.registerDisposeFunction(disposeFn1);
+    emitter.registerDisposeFunction(disposeFn2);
 
     emitter.dispose();
 
@@ -168,8 +168,8 @@ describe("StateEmitter", () => {
     const disposeFn1 = vi.fn(() => callOrder.push("disposeFn1"));
     const disposeFn2 = vi.fn(() => callOrder.push("disposeFn2"));
 
-    emitter.registerDispose(disposeFn1);
-    emitter.registerDispose(disposeFn2);
+    emitter.registerDisposeFunction(disposeFn1);
+    emitter.registerDisposeFunction(disposeFn2);
 
     emitter.dispose();
 
@@ -190,54 +190,19 @@ describe("StateEmitter", () => {
     emitter.setState({ count: 2 });
     expect(listener).toHaveBeenCalledTimes(1); // No additional calls after dispose
   });
-});
 
-interface NestedState {
-  nested: {
-    count: number;
-    text: string;
-  };
-}
+  it("should correctly identify when it is disposed", () => {
+    const initialState: TestState = { count: 0, text: "hello" };
+    const emitter = new StateEmitter<TestState>(initialState);
 
-describe("StateEmitter - Deepfreeze Tests", () => {
-  it("should deepfreeze state when shouldDeepfreeze is true", () => {
-    const initialState: NestedState = { nested: { count: 0, text: "hello" } };
-    const emitter = new StateEmitter<NestedState>(initialState);
+    // Initially, it should not be disposed
+    expect(emitter.isDisposed).toBe(false);
 
-    // Enable deepfreeze
-    emitter.shouldDeepfreeze = true;
-    emitter.setState({ nested: { count: 1, text: "hello" } });
+    // Dispose the emitter
+    emitter.dispose();
 
-    // Attempt to modify the deeply nested state
-    expect(() => {
-      (emitter.state.nested as any).count = 2;
-    }).toThrow();
-    expect(emitter.state).toEqual(
-      deepFreeze({ nested: { count: 1, text: "hello" } }),
-    );
-  });
-
-  it("should not deepfreeze state when shouldDeepfreeze is false", () => {
-    const initialState: NestedState = { nested: { count: 0, text: "hello" } };
-    const emitter = new StateEmitter<NestedState>(initialState);
-
-    // Disable deepfreeze
-    emitter.shouldDeepfreeze = false;
-    emitter.setState({ nested: { count: 1, text: "hello" } });
-
-    // Modify the deeply nested state (incorrectly)
-    (emitter.state.nested as any).count = 2;
-    expect(emitter.state).toEqual({ nested: { count: 2, text: "hello" } });
-  });
-
-  it("should deepfreeze initialState by default", () => {
-    const initialState: NestedState = { nested: { count: 0, text: "hello" } };
-    const emitter = new StateEmitter<NestedState>(initialState);
-    // Attempt to modify the deeply nested initial state
-    expect(() => {
-      (emitter.initialState.nested as any).count = 2;
-    }).toThrow();
-    expect(Object.isFrozen(emitter.initialState)).toBe(true);
+    // After disposing, it should be marked as disposed
+    expect(emitter.isDisposed).toBe(true);
   });
 });
 

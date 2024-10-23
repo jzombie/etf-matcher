@@ -1,5 +1,4 @@
-import EventEmitter from "events";
-
+import DisposableEmitter from "@utils/DisposableEmitter";
 import customLogger from "@utils/customLogger";
 import deepFreeze from "@utils/deepFreeze";
 
@@ -7,9 +6,11 @@ export enum StateEmitterDefaultEvents {
   UPDATE = "update",
 }
 
-// Note: Any React-specific functionality should not be directly tied into this class
-// and instead used in the `ReactStateEmitter` extension class.
-export default class StateEmitter<T extends object> extends EventEmitter {
+// The StateEmitter class extends DisposableEmitter to include state management capabilities.
+// It allows for state updates, immutability enforcement, and event-driven state change notifications.
+export default class StateEmitter<
+  T extends Record<string, unknown>,
+> extends DisposableEmitter {
   // Individual state keys can be subscribed to, so it's best to ensure that they don't
   // conflict with default events
   protected _reservedStateKeys: string[] = Object.keys(
@@ -17,19 +18,6 @@ export default class StateEmitter<T extends object> extends EventEmitter {
   );
 
   private _state!: T;
-  private _shouldDeepfreeze: boolean = true;
-  private disposeFunctions: (() => void)[] = [];
-
-  get shouldDeepfreeze(): boolean {
-    return this._shouldDeepfreeze;
-  }
-
-  set shouldDeepfreeze(shouldDeepfreeze: boolean) {
-    this._shouldDeepfreeze = shouldDeepfreeze;
-    customLogger.debug(
-      `Deepfreeze support ${this._shouldDeepfreeze ? "enabled" : "disabled"}.`,
-    );
-  }
 
   public readonly initialState: T;
 
@@ -110,7 +98,7 @@ export default class StateEmitter<T extends object> extends EventEmitter {
   // Use a getter to provide read-only access to the state
   getState<K extends keyof T>(keys?: K[]): Pick<T, K> | T {
     if (!keys) {
-      return this._shouldDeepfreeze ? deepFreeze(this._state) : this._state;
+      return this._state;
     }
 
     const slice = keys.reduce(
@@ -123,7 +111,7 @@ export default class StateEmitter<T extends object> extends EventEmitter {
       {} as Pick<T, K>,
     );
 
-    return this._shouldDeepfreeze ? deepFreeze(slice) : slice;
+    return slice;
   }
 
   // Provide a read-only accessor for the entire state
@@ -132,20 +120,10 @@ export default class StateEmitter<T extends object> extends EventEmitter {
   }
 
   set state(value: T) {
-    throw new Error("State is read-only. Use setState to modify the state.");
-  }
-
-  registerDispose(disposeFunction: () => void) {
-    this.disposeFunctions.push(disposeFunction);
+    throw new Error("State is read-only. Use `setState` to modify the state.");
   }
 
   reset() {
     this.setState(this.initialState);
-  }
-
-  dispose() {
-    this.disposeFunctions.forEach((fn) => fn());
-    this.disposeFunctions = [];
-    this.removeAllListeners();
   }
 }

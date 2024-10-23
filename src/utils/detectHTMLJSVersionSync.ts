@@ -1,5 +1,6 @@
 import { buildTime } from "../../public/buildTime.json";
 import customLogger from "./customLogger";
+import getIsProdEnv from "./getIsProdEnv";
 
 // Simple utility to determine if HTML and JS are on the same version
 export default function detectHTMLJSVersionSync(): boolean {
@@ -13,7 +14,7 @@ export default function detectHTMLJSVersionSync(): boolean {
 
     return true;
   } else {
-    if (import.meta.env.PROD) {
+    if (getIsProdEnv()) {
       customLogger.warn("HTML and JS versions are not in sync!", {
         jsBuildTime,
         htmlBuildTime,

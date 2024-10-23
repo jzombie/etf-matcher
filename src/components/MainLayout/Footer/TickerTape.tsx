@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
+import { fetchTickerDetail } from "@services/RustService";
 import { TRADING_VIEW_COPYRIGHT_STYLES } from "@src/constants";
 import type { TickerBucket } from "@src/store";
 import {
@@ -9,7 +10,6 @@ import {
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
-import { fetchTickerDetail } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 import deepEqual from "@utils/deepEqual";
 

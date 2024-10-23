@@ -1,19 +1,6 @@
-import {
-  DEFAULT_TICKER_TAPE_TICKERS,
-  INDEXED_DB_PERSISTENCE_KEYS,
-  MAX_RECENTLY_VIEWED_ITEMS,
-  MIN_TICKER_BUCKET_NAME_LENGTH,
-} from "@src/constants";
-import { v4 as uuidv4 } from "uuid";
-
-import IndexedDBInterface from "@utils/IndexedDBInterface";
-import MQTTRoom from "@utils/MQTTRoom";
-import {
-  ReactStateEmitter,
-  StateEmitterDefaultEvents,
-} from "@utils/StateEmitter";
-import arraysEqual from "@utils/arraysEqual";
-import type { RustServiceCacheDetail } from "@utils/callRustService";
+import IndexedDBService from "@services/IndexedDBService";
+import MultiMQTTRoomService, { MQTTRoom } from "@services/MultiMQTTRoomService";
+import type { RustServiceCacheDetail } from "@services/RustService";
 import {
   NotifierEvent,
   clearCache,
@@ -26,17 +13,30 @@ import {
   subscribe as libRustServiceSubscribe,
   preloadSearchCache,
   removeCacheEntry,
-} from "@utils/callRustService";
+} from "@services/RustService";
+import TickerBucketImportExportService from "@services/TickerBucketImportExportService";
+import {
+  DEFAULT_TICKER_TAPE_TICKERS,
+  INDEXED_DB_PERSISTENCE_KEYS,
+  MAX_RECENTLY_VIEWED_ITEMS,
+  MIN_TICKER_BUCKET_NAME_LENGTH,
+} from "@src/constants";
+import { v4 as uuidv4 } from "uuid";
+
+import {
+  ReactStateEmitter,
+  StateEmitterDefaultEvents,
+} from "@utils/StateEmitter";
+import arraysEqual from "@utils/arraysEqual";
 import customLogger from "@utils/customLogger";
 import debounceWithKey from "@utils/debounceWithKey";
 import detectHTMLJSVersionSync from "@utils/detectHTMLJSVersionSync";
+import getIsProdEnv from "@utils/getIsProdEnv";
 
 import {
   CacheAccessedRequests,
   XHROpenedRequests,
 } from "./OpenedNetworkRequests";
-
-const IS_PROD = import.meta.env.PROD;
 
 export type TickerBucketTicker = {
   tickerId: number;
@@ -110,9 +110,13 @@ export type IndexedDBPersistenceProps = {
   [K in (typeof INDEXED_DB_PERSISTENCE_KEYS)[number]]: StoreStateProps[K];
 };
 
-class _Store extends ReactStateEmitter<StoreStateProps> {
-  private _indexedDBInterface: IndexedDBInterface<IndexedDBPersistenceProps>;
+// TODO: Determine exportable props for MultiMQTTRoomService (similar to IndexedDBPersistenceProps)
 
+// TODO: This should be a singleton
+class Store extends ReactStateEmitter<StoreStateProps> {
+  private _indexedDBService: IndexedDBService<IndexedDBPersistenceProps>;
+  private _multiMQTTRoomService: MultiMQTTRoomService;
+  private _tickerBucketImportExportService: TickerBucketImportExportService;
   constructor() {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
     super({
@@ -120,7 +124,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       isIndexedDBReady: false,
       isAppUnlocked: false,
       isGAPageTrackingEnabled: false,
-      isProductionBuild: IS_PROD,
+      isProductionBuild: getIsProdEnv(),
       isOnline: false,
       isRustInit: false,
       dataBuildTime: null,
@@ -175,20 +179,29 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       uiErrors: [],
     });
 
-    // Only deepfreeze in development
-    this.shouldDeepfreeze = !IS_PROD;
-
     // TODO: Poll for data build info once every "x" to ensure the data is always running the latest version
     this._syncDataBuildInfo();
 
     // Make initial searches faster
     preloadSearchCache();
 
-    this._indexedDBInterface = new IndexedDBInterface();
-
+    // FIXME: In the future, these could be `registerService` methods
+    this._indexedDBService = new IndexedDBService(this);
+    this._multiMQTTRoomService = new MultiMQTTRoomService(this);
+    this._tickerBucketImportExportService = new TickerBucketImportExportService(
+      this,
+    );
     // Note: This returns an unsubscribe callback which could be handed if the store
     // were to be torn down
     this._initLocalSubscriptions();
+  }
+
+  get multiMQTTRoomService(): MultiMQTTRoomService {
+    return this._multiMQTTRoomService;
+  }
+
+  get tickerBucketImportExportService(): TickerBucketImportExportService {
+    return this._tickerBucketImportExportService;
   }
 
   // Note: This should be called immediately after the `IndexedDBInterface` has been
@@ -245,23 +258,23 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
   // Handles online/offline status updates
   private _initOnlineStatusListener() {
-    const _handleOnlineStatus = () => {
+    const _onOnlineStatus = () => {
       this.setState({ isOnline: Boolean(navigator.onLine) });
     };
-    _handleOnlineStatus();
+    _onOnlineStatus();
 
-    window.addEventListener("online", _handleOnlineStatus);
-    window.addEventListener("offline", _handleOnlineStatus);
+    window.addEventListener("online", _onOnlineStatus);
+    window.addEventListener("offline", _onOnlineStatus);
 
-    this.registerDispose(() => {
-      window.removeEventListener("online", _handleOnlineStatus);
-      window.removeEventListener("offline", _handleOnlineStatus);
+    this.registerDisposeFunction(() => {
+      window.removeEventListener("online", _onOnlineStatus);
+      window.removeEventListener("offline", _onOnlineStatus);
     });
   }
 
   // Handles the tracking of ticker views and syncing with Rust service
   private _initTickerViewTracking() {
-    const _handleVisibleTickersUpdate = (keys: (keyof StoreStateProps)[]) => {
+    const _onVisibleTickersUpdate = (keys: (keyof StoreStateProps)[]) => {
       if (keys.includes("visibleTickerIds")) {
         const { visibleTickerIds } = this.getState(["visibleTickerIds"]);
 
@@ -271,10 +284,10 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       }
     };
 
-    this.on(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
+    this.on(StateEmitterDefaultEvents.UPDATE, _onVisibleTickersUpdate);
 
-    this.registerDispose(() => {
-      this.off(StateEmitterDefaultEvents.UPDATE, _handleVisibleTickersUpdate);
+    this.registerDisposeFunction(() => {
+      this.off(StateEmitterDefaultEvents.UPDATE, _onVisibleTickersUpdate);
     });
   }
 
@@ -294,7 +307,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
             break;
           case NotifierEvent.XHR_REQUEST_ERROR:
             xhrOpenedRequests.delete(pathName);
-            this._handleXHRError(pathName);
+            this._onXHRError(pathName);
             break;
           case NotifierEvent.XHR_REQUEST_SENT:
             xhrOpenedRequests.delete(pathName);
@@ -316,7 +329,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       },
     );
 
-    this.registerDispose(libRustServiceUnsubscribe);
+    this.registerDisposeFunction(libRustServiceUnsubscribe);
   }
 
   // Setups up network request tracking for XHR and Cache
@@ -359,7 +372,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
     return { xhrOpenedRequests, cacheAccessedRequests };
   }
 
-  private _handleXHRError(pathName: string) {
+  private _onXHRError(pathName: string) {
     const xhrRequestErrors = {
       ...this.state.rustServiceXHRRequestErrors,
       [pathName]: {
@@ -383,7 +396,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   // Handles IndexedDB persistence and session restore
   private async _initIndexedDBPersistence() {
     try {
-      await this._indexedDBInterface.ready();
+      await this._indexedDBService.ready();
       await this._restorePersistentSession();
 
       // Signal it is `ready` *after* restoring the persistent session
@@ -395,14 +408,14 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
   // Restores the persistent session from IndexedDB
   private async _restorePersistentSession() {
-    const indexedDBKeys = await this._indexedDBInterface.getAllKeys();
+    const indexedDBKeys = await this._indexedDBService.getAllKeys();
     const storeStateKeys = Object.keys(this.state) as Array<
       keyof StoreStateProps
     >;
 
     for (const idbKey of indexedDBKeys) {
       if (storeStateKeys.includes(idbKey as keyof StoreStateProps)) {
-        const item = await this._indexedDBInterface.getItem(idbKey);
+        const item = await this._indexedDBService.getItem(idbKey);
         if (item !== undefined) {
           // TODO: Performance could be improved here by not setting state for
           // each key, and using a single batch update instead
@@ -410,6 +423,9 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
         }
       }
     }
+
+    // Connect to subscribed MQTT rooms
+    this._multiMQTTRoomService.connectToDisconnectedSubscribedRooms();
 
     // Emit to listeners that the session has been restored
     this.emit("persistent-session-restore");
@@ -420,7 +436,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
 
   // Subscribes to state updates for persistence in IndexedDB
   private _subscribeToStateUpdatesForPersistence() {
-    const _handleStoreStateUpdate = (
+    const _onStoreStateUpdate = (
       storeStateUpdateKeys: (keyof StoreStateProps)[],
     ) => {
       const state = this.getState();
@@ -428,14 +444,14 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
       for (const persistenceKey of INDEXED_DB_PERSISTENCE_KEYS) {
         if (storeStateUpdateKeys.includes(persistenceKey)) {
           const valueToPersist = state[persistenceKey];
-          this._indexedDBInterface.setItem(persistenceKey, valueToPersist);
+          this._indexedDBService.setItem(persistenceKey, valueToPersist);
         }
       }
     };
-    this.on(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
+    this.on(StateEmitterDefaultEvents.UPDATE, _onStoreStateUpdate);
 
-    this.registerDispose(() => {
-      this.off(StateEmitterDefaultEvents.UPDATE, _handleStoreStateUpdate);
+    this.registerDisposeFunction(() => {
+      this.off(StateEmitterDefaultEvents.UPDATE, _onStoreStateUpdate);
     });
   }
 
@@ -745,18 +761,20 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   // FIXME: Rename to `wipe`?
-  reset() {
+  async reset() {
     const clearPromises = [];
 
     // Wipe IndexedDB store
-    if (this._indexedDBInterface) {
-      clearPromises.push(this._indexedDBInterface.clear());
+    if (this._indexedDBService) {
+      clearPromises.push(this._indexedDBService.clear());
     }
+
+    // TODO: Call `clear` on connected persistent services?
 
     // Clear the cache
     clearPromises.push(this.clearCache());
 
-    Promise.all(clearPromises).finally(() => {
+    await Promise.all(clearPromises).finally(() => {
       // IMPORTANT: `dispose` should be called *before* `reset` or the fresh
       // store state will be synced to IndexedDB, and break `isFreshSession`
       // determination making it always think the session is an existing
@@ -771,7 +789,7 @@ class _Store extends ReactStateEmitter<StoreStateProps> {
   }
 }
 
-const store = new _Store();
+const store = new Store();
 
 export default store;
-export { StateEmitterDefaultEvents };
+export { Store, StateEmitterDefaultEvents };

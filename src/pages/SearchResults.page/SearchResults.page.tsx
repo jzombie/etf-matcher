@@ -14,6 +14,7 @@ import Center from "@layoutKit/Center";
 import Layout, { Content, Header } from "@layoutKit/Layout";
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
+import type { RustServiceTickerSearchResult } from "@services/RustService";
 
 import AvatarLogo from "@components/AvatarLogo";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
@@ -24,7 +25,6 @@ import Transition from "@components/Transition";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
-import type { RustServiceTickerSearchResult } from "@utils/callRustService";
 import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
 import usePageTitleSetter from "@utils/usePageTitleSetter";
 
