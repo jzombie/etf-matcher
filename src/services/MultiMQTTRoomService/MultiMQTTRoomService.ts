@@ -192,8 +192,6 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
   protected _onRoomConnected(newRoom: MQTTRoom) {
     this._autoReconnectAttempts = 0; // Reset attempts on successful connection
 
-    this._store.addMQTTRoomSubscription(newRoom);
-
     this.setState((prevState) => ({
       connectedRooms: {
         ...prevState.connectedRooms,
