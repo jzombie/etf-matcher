@@ -761,7 +761,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
   }
 
   // FIXME: Rename to `wipe`?
-  reset() {
+  async reset() {
     const clearPromises = [];
 
     // Wipe IndexedDB store
@@ -769,10 +769,12 @@ class Store extends ReactStateEmitter<StoreStateProps> {
       clearPromises.push(this._indexedDBService.clear());
     }
 
+    // TODO: Call `clear` on connected persistent services?
+
     // Clear the cache
     clearPromises.push(this.clearCache());
 
-    Promise.all(clearPromises).finally(() => {
+    await Promise.all(clearPromises).finally(() => {
       // IMPORTANT: `dispose` should be called *before* `reset` or the fresh
       // store state will be synced to IndexedDB, and break `isFreshSession`
       // determination making it always think the session is an existing
