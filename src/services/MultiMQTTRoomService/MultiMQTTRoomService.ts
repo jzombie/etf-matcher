@@ -31,18 +31,23 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
       totalParticipantsForAllRooms: 0,
     });
 
-    window.addEventListener("online", this._attemptAutoReconnect.bind(this));
-    window.addEventListener("focus", this._attemptAutoReconnect.bind(this));
-    this.registerDisposeFunction(() => {
-      window.removeEventListener(
-        "online",
-        this._attemptAutoReconnect.bind(this),
-      );
-      window.removeEventListener(
-        "focus",
-        this._attemptAutoReconnect.bind(this),
-      );
-    });
+    // Bind and register event listeners for auto-reconnect
+    (() => {
+      const _boundAttemptAutoReconnect = this._attemptAutoReconnect.bind(this);
+
+      window.addEventListener("online", _boundAttemptAutoReconnect);
+      window.addEventListener("focus", _boundAttemptAutoReconnect);
+      this.registerDisposeFunction(() => {
+        window.removeEventListener(
+          "online",
+          this._attemptAutoReconnect.bind(this),
+        );
+        window.removeEventListener(
+          "focus",
+          this._attemptAutoReconnect.bind(this),
+        );
+      });
+    })();
   }
 
   /**
@@ -162,21 +167,26 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
       rooms: { ...prevState.rooms, [roomName]: newRoom },
     }));
 
-    newRoom.on(
-      "connectingstateupdate",
-      this._onRoomConnectingStateChange.bind(this),
-    );
+    const _boundOnConnectingStateUpdate =
+      this._onRoomConnectingStateChange.bind(this);
+    newRoom.on("connectingstateupdate", _boundOnConnectingStateUpdate);
 
-    // TODO: Handle
-    newRoom.on("error", this._onRoomError.bind(this, newRoom));
+    const _boundOnRoomError = this._onRoomError.bind(this, newRoom);
+    newRoom.on("error", _boundOnRoomError);
 
-    newRoom.on("connect", this._onRoomConnected.bind(this, newRoom));
+    const _boundOnRoomConnected = this._onRoomConnected.bind(this, newRoom);
+    newRoom.on("connect", _boundOnRoomConnected);
 
-    newRoom.on("peersupdate", this._calculateTotalParticipants.bind(this));
+    // TODO: Change tense to be consistent with other listeners
+    const _boundOnPeersUpdate = this._calculateTotalParticipants.bind(this);
+    newRoom.on("peersupdate", _boundOnPeersUpdate);
 
-    newRoom.on("syncupdate", this._onRoomSyncUpdate.bind(this));
+    // TODO: Change tense to be consistent with other listeners
+    const _boundOnRoomSyncUpdate = this._onRoomSyncUpdate.bind(this);
+    newRoom.on("syncupdate", _boundOnRoomSyncUpdate);
 
-    newRoom.on("close", this._onRoomClosed.bind(this, newRoom));
+    const _boundOnRoomClosed = this._onRoomClosed.bind(this, newRoom);
+    newRoom.on("close", _boundOnRoomClosed);
   }
 
   protected _onRoomConnected(newRoom: MQTTRoom) {
