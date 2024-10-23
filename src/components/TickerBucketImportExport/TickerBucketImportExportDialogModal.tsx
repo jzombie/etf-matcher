@@ -64,8 +64,9 @@ export default function TickerBucketImportExportDialogModal({
 
   const reset = useCallback(() => {
     setSelectedFilename(null);
-    // setExportFilename(getDefaultExportFilename()); // Leave this alone for now
-  }, []);
+
+    setExportFilename(getDefaultExportFilename());
+  }, [getDefaultExportFilename]);
 
   // Reset fields when modal is closed
   useEffect(() => {
