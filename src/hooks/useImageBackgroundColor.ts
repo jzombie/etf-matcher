@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { fetchImageInfo } from "@utils/callRustService";
+import { fetchImageInfo } from "@services/RustService";
 
 // Derived from `image.rs` @ `format!("rgba({}, {}, {}, {})", r, g, b, a as f32 / 255.0)`
 const FULLY_TRANSPARENT = "rgba(0, 0, 0, 0)";

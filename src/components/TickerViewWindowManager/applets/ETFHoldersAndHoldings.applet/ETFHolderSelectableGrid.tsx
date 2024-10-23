@@ -8,6 +8,12 @@ import Full from "@layoutKit/Full";
 import Layout, { Content, Footer } from "@layoutKit/Layout";
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
+import { fetchETFHoldersAggregateDetail } from "@services/RustService";
+import type {
+  RustServiceETFAggregateDetail,
+  RustServicePaginatedResults,
+  RustServiceTickerDetail,
+} from "@services/RustService";
 
 import EncodedImage from "@components/EncodedImage";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
@@ -18,12 +24,6 @@ import Transition from "@components/Transition";
 import usePagination from "@hooks/usePagination";
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
-import { fetchETFHoldersAggregateDetail } from "@utils/callRustService";
-import type {
-  RustServiceETFAggregateDetail,
-  RustServicePaginatedResults,
-  RustServiceTickerDetail,
-} from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 import formatCurrency from "@utils/formatCurrency";
 

@@ -4,6 +4,11 @@ import { Box, Divider, Typography } from "@mui/material";
 
 import AutoScaler from "@layoutKit/AutoScaler";
 import {
+  RustServiceTickerDetail,
+  fetchEuclideanByTicker,
+  fetchTickerDetail,
+} from "@services/RustService";
+import {
   Scatter,
   ScatterChart,
   Tooltip,
@@ -15,11 +20,6 @@ import { NameType } from "recharts/types/component/DefaultTooltipContent";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
-import {
-  RustServiceTickerDetail,
-  fetchEuclideanByTicker,
-  fetchTickerDetail,
-} from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
 import AvatarLogo from "./AvatarLogo";

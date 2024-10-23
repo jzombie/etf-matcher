@@ -3,7 +3,8 @@ import React, { useCallback, useState } from "react";
 import { CircularProgress } from "@mui/material";
 import { Box, Button, InputAdornment, TextField } from "@mui/material";
 
-import { useMultiMQTTRoomContext } from "@utils/MQTTRoom/react";
+import { useMultiMQTTRoomContext } from "@services/MultiMQTTRoomService/react";
+
 import customLogger from "@utils/customLogger";
 
 export default function ConnectForm() {

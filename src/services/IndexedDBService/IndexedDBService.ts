@@ -1,4 +1,5 @@
-import { EventEmitter } from "events";
+import { Store } from "@src/store";
+import BaseStatePersistenceAdapter from "@src/store/BaseStatePersistenceAdapter";
 import { DBSchema, IDBPDatabase, openDB } from "idb";
 
 const KEYVAL_STORE_NAME = "keyval";
@@ -18,13 +19,13 @@ interface MyDB<T extends Record<string, unknown>> extends DBSchema {
   };
 }
 
-export default class IndexedDBInterface<
+export default class IndexedDBService<
   T extends Record<string, unknown>,
-> extends EventEmitter {
+> extends BaseStatePersistenceAdapter<T> {
   private _dbPromise: Promise<IDBPDatabase<MyDB<T>>>;
 
-  constructor(databaseName: string = "my-database") {
-    super();
+  constructor(store: Store, databaseName: string = "my-database") {
+    super(store);
 
     // Open the database
     this._dbPromise = openDB<MyDB<T>>(databaseName, 1, {
@@ -36,43 +37,45 @@ export default class IndexedDBInterface<
   }
 
   // Ensure that the database is ready
-  public async ready(): Promise<IDBPDatabase<MyDB<T>>> {
-    return this._dbPromise;
+  protected async _onReady(): Promise<void> {
+    await this._dbPromise;
   }
 
-  async setItem<K extends keyof T>(key: K, value: T[K]): Promise<void> {
-    const db = await this._dbPromise;
-    await db.put(KEYVAL_STORE_NAME, value, key as string);
-    this.emit(UPDATE_EVENT, { type: "setItem", key, value } as UpdateEvent<T>);
-  }
-
-  async getItem<K extends keyof T>(key: K): Promise<T[K] | undefined> {
+  protected async _onGetItem<K extends keyof T>(
+    key: K,
+  ): Promise<T[K] | undefined> {
     const db = await this._dbPromise;
     const value = await db.get(KEYVAL_STORE_NAME, key as string);
     return value as T[K];
   }
 
-  async removeItem<K extends keyof T>(key: K): Promise<void> {
+  protected async _onSetItem<K extends keyof T>(
+    key: K,
+    value: T[K],
+  ): Promise<void> {
+    const db = await this._dbPromise;
+    await db.put(KEYVAL_STORE_NAME, value, key as string);
+  }
+
+  protected async _onRemoveItem<K extends keyof T>(key: K): Promise<void> {
     const db = await this._dbPromise;
     await db.delete(KEYVAL_STORE_NAME, key as string);
-    this.emit(UPDATE_EVENT, { type: "removeItem", key } as UpdateEvent<T>);
   }
 
-  async clear(): Promise<void> {
+  protected async _onClear(): Promise<void> {
     const db = await this._dbPromise;
     await db.clear(KEYVAL_STORE_NAME);
-    this.emit(UPDATE_EVENT, { type: "clear" } as UpdateEvent<T>);
   }
 
-  async getAllKeys<K extends keyof T>(): Promise<K[]> {
+  protected async _onGetAllKeys(): Promise<(keyof T)[]> {
     const db = await this._dbPromise;
     const keys = await db.getAllKeys(KEYVAL_STORE_NAME);
-    return keys as K[];
+    return keys as (keyof T)[];
   }
 
-  async getAllValues<K extends keyof T>(): Promise<Array<T[K]>> {
+  protected async _onGetAllValues(): Promise<Array<T[keyof T]>> {
     const db = await this._dbPromise;
     const values = await db.getAll(KEYVAL_STORE_NAME);
-    return values as Array<T[K]>;
+    return values as Array<T[keyof T]>;
   }
 }

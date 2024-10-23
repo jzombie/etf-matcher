@@ -4,14 +4,13 @@ import { Box } from "@mui/material";
 
 import AutoScaler from "@layoutKit/AutoScaler";
 import Center from "@layoutKit/Center";
-
-import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
-import SectorsPieChart from "@components/SectorsPieChart";
-
 import type {
   RustServiceETFAggregateDetail,
   RustServiceTickerDetail,
-} from "@utils/callRustService";
+} from "@services/RustService";
+
+import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
+import SectorsPieChart from "@components/SectorsPieChart";
 
 import ETFAggregateDetailAppletWrap from "../components/ETFAggregateDetailAppletWrap";
 

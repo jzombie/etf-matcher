@@ -3,9 +3,8 @@ import { useEffect } from "react";
 import store from "@src/store";
 
 import customLogger from "@utils/customLogger";
-
-const GOOGLE_ANALYTICS_ID = import.meta.env.VITE_GOOGLE_ANALYTICS_ID;
-const IS_DEV = import.meta.env.DEV;
+import getEnvVariable from "@utils/getEnvVariable";
+import getIsProdEnv from "@utils/getIsProdEnv";
 
 const PAGE_VIEW_TIMEOUT = 1000;
 
@@ -18,7 +17,7 @@ const IS_GTAG_ENABLED = typeof gtag === "function";
 // doesn't have to be a child of a `react-router` context.
 export default function useGAPageTracking() {
   useEffect(() => {
-    if (IS_DEV) {
+    if (!getIsProdEnv()) {
       customLogger.warn(
         "Skipping GA page tracking due to development environment.",
       );
@@ -26,7 +25,7 @@ export default function useGAPageTracking() {
       return;
     }
 
-    if (!GOOGLE_ANALYTICS_ID) {
+    if (!getEnvVariable("VITE_GOOGLE_ANALYTICS_ID")) {
       customLogger.warn(
         "`GOOGLE_ANALYTICS_ID` was not obtained. Skipping GA page tracking.",
       );

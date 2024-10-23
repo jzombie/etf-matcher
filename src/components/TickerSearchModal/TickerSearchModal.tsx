@@ -24,6 +24,8 @@ import {
   Typography,
 } from "@mui/material";
 
+import { RustServiceTickerSearchResult } from "@services/RustService";
+
 import DialogModal, { DialogModalProps } from "@components/DialogModal";
 import EncodedImage from "@components/EncodedImage";
 
@@ -31,7 +33,6 @@ import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import useKeyboardEvents from "@hooks/useKeyboardEvents";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
-import { RustServiceTickerSearchResult } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
 import useTickerSearchModalContent from "./useTickerSearchModalContent";

@@ -5,17 +5,16 @@ import { Box, Typography } from "@mui/material";
 import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
+import type {
+  RustServiceETFAggregateDetail,
+  RustServiceTicker10KDetail,
+  RustServiceTickerDetail,
+} from "@services/RustService";
 
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
 
 import useTicker10KDetail from "@hooks/useTicker10KDetail";
-
-import type {
-  RustServiceETFAggregateDetail,
-  RustServiceTicker10KDetail,
-  RustServiceTickerDetail,
-} from "@utils/callRustService";
 
 import RenderChart from "./FinancialChartsGrid.Chart";
 

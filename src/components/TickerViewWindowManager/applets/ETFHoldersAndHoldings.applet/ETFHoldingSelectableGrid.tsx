@@ -5,6 +5,12 @@ import { Typography } from "@mui/material";
 import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
+import { fetchETFHoldings } from "@services/RustService";
+import type {
+  RustServiceETFHoldingTickerResponse,
+  RustServicePaginatedResults,
+} from "@services/RustService";
+import { RustServiceTickerDetail } from "@services/RustService";
 
 import EncodedImage from "@components/EncodedImage";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
@@ -13,12 +19,6 @@ import SelectableGrid, { SelectableGridItem } from "@components/SelectableGrid";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
-import { fetchETFHoldings } from "@utils/callRustService";
-import type {
-  RustServiceETFHoldingTickerResponse,
-  RustServicePaginatedResults,
-} from "@utils/callRustService";
-import { RustServiceTickerDetail } from "@utils/callRustService";
 import customLogger from "@utils/customLogger";
 
 import { StyledTitle } from "./common";

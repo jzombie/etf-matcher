@@ -3,12 +3,11 @@ import React, { useMemo } from "react";
 import SyncIcon from "@mui/icons-material/Sync";
 import IconButton from "@mui/material/IconButton";
 
+import { useMultiMQTTRoomContext } from "@services/MultiMQTTRoomService/react";
 import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
 
 import useStoreStateReader from "@hooks/useStoreStateReader";
-
-import { useMultiMQTTRoomContext } from "@utils/MQTTRoom/react";
 
 import styles from "./NetworkRequestIndicator.module.scss";
 

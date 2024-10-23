@@ -5,11 +5,10 @@ import LayersIcon from "@mui/icons-material/Layers";
 import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
 import Layout, { Content, Header } from "@layoutKit/Layout";
+import type { RustServiceTickerDetail } from "@services/RustService";
 
 import TickerDetailAppletWrap from "@components/TickerViewWindowManager/components/TickerDetailAppletWrap";
 import Transition from "@components/Transition";
-
-import type { RustServiceTickerDetail } from "@utils/callRustService";
 
 import ETFHolderSelectableGrid from "./ETFHolderSelectableGrid";
 import ETFHoldingSelectableGrid from "./ETFHoldingSelectableGrid";
