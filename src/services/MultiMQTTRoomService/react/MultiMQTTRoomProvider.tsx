@@ -10,8 +10,8 @@ import validateTopic from "../validateTopic";
 
 interface MultiMQTTRoomContextProps {
   rooms: Record<string, MQTTRoom>;
-  connectToRoom: (roomName: string) => void;
-  disconnectFromRoom: (roomName: string) => void;
+  connectToRoom: (roomName: string) => Promise<void>;
+  disconnectFromRoom: (roomName: string) => Promise<void>;
   connectedRooms: Record<string, MQTTRoom>;
   isConnecting: boolean;
   validateRoomName: (roomName: string) => boolean;
