@@ -5,6 +5,14 @@ import customLogger from "@utils/customLogger";
 import DisposableEmitter from "./DisposableEmitter";
 
 describe("DisposableEmitter", () => {
+  beforeAll(() => {
+    vi.useFakeTimers();
+  });
+
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
   it("should register and call dispose functions on dispose", () => {
     const emitter = new DisposableEmitter();
 
