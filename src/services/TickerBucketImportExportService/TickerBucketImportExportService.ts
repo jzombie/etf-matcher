@@ -43,6 +43,10 @@ export default class TickerBucketImportExportService extends BaseStatePersistenc
     const processFile = (file: File) => {
       return new Promise<TickerBucket[]>((resolve, reject) => {
         const reader = new FileReader();
+        const cleanupReader = () => {
+          reader.onload = null;
+          reader.onerror = null;
+        };
 
         // Log file metadata
         customLogger.debug(`File Name: ${file.name}`);
@@ -67,8 +71,10 @@ export default class TickerBucketImportExportService extends BaseStatePersistenc
               })
               .catch((err) => {
                 reject(err); // Reject the promise if there was an error
-              });
+              })
+              .finally(cleanupReader);
           } else {
+            cleanupReader(); // Ensure cleanup is called if no result
             reject(new Error("Error reading file"));
           }
         };
