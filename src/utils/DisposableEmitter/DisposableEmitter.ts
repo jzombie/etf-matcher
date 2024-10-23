@@ -83,8 +83,14 @@ export default class DisposableEmitter extends EventEmitter {
     this.removeAllListeners();
 
     // Clear all timeouts and intervals
-    this._timeouts.forEach((timeout) => this.clearTimeout(timeout));
-    this._intervals.forEach((interval) => this.clearInterval(interval));
+    //
+    // Note: The `slice()` method is used to create a shallow copy of the arrays.
+    // This is important because `clearTimeout` and `clearInterval` might modify
+    // the `_timeouts` and `_intervals` arrays (e.g., by removing elements).
+    // By iterating over a copy, we avoid potential issues that could arise
+    // from modifying the arrays while iterating over them.
+    this._timeouts.slice().forEach((timeout) => this.clearTimeout(timeout));
+    this._intervals.slice().forEach((interval) => this.clearInterval(interval));
     this._timeouts = [];
     this._intervals = [];
 
