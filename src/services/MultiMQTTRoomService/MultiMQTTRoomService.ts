@@ -115,8 +115,11 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
   }
 
   async connectToRoom(roomName: string): Promise<void> {
-    if (!validateTopic(roomName) || this.state.rooms[roomName]) {
-      throw new Error(`Invalid or already connected room name: ${roomName}`);
+    if (!validateTopic(roomName)) {
+      throw new Error(`Invalid room name: ${roomName}`);
+    }
+    if (this.state.rooms[roomName]) {
+      throw new Error(`Already connected to room: ${roomName}`);
     }
 
     const newRoom = new MQTTRoom(
