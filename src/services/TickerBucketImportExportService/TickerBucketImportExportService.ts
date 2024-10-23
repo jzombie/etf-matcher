@@ -222,19 +222,19 @@ export default class TickerBucketImportExportService extends BaseStatePersistenc
 
   protected async _onGetItem<
     K extends keyof TickerBucketImportExportServiceState,
-  >(key: K): Promise<TickerBucketImportExportServiceState[K] | undefined> {
+  >(_key: K): Promise<TickerBucketImportExportServiceState[K] | undefined> {
     throw new Error("_onGetItem is not currently implemented.");
   }
 
   protected async _onSetItem<
     K extends keyof TickerBucketImportExportServiceState,
-  >(key: K, value: TickerBucketImportExportServiceState[K]): Promise<void> {
+  >(_key: K, _value: TickerBucketImportExportServiceState[K]): Promise<void> {
     throw new Error("_onSetItem is not currently implemented.");
   }
 
   protected async _onRemoveItem<
     K extends keyof TickerBucketImportExportServiceState,
-  >(key: K): Promise<void> {
+  >(_key: K): Promise<void> {
     throw new Error("_onRemoveItem is not currently implemented.");
   }
 
