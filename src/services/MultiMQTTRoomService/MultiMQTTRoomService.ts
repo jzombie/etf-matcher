@@ -58,6 +58,34 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
     );
   }
 
+  // FIXME: Possibly add rate-limiting to the connection process if there are a
+  // lot of rooms to connect to.
+  // Alternatively, limiting the number of rooms that can be connected to at once
+  // could also be done.
+  //
+  // protected async _connectWithRateLimit(roomNames: string[]): Promise<void> {
+  //   const BATCH_SIZE = 3; // Number of simultaneous connections
+  //   const DELAY_BETWEEN_BATCHES = 1000; // 1 second delay between batches
+
+  //   for (let i = 0; i < roomNames.length; i += BATCH_SIZE) {
+  //     const batch = roomNames.slice(i, i + BATCH_SIZE);
+  //     const connectPromises = batch.map((roomName) =>
+  //       this.connectToRoom(roomName).catch((error) => {
+  //         customLogger.warn(`Failed to connect to room: ${roomName}`, error);
+  //         return Promise.reject(error);
+  //       }),
+  //     );
+
+  //     await Promise.allSettled(connectPromises);
+
+  //     if (i + BATCH_SIZE < roomNames.length) {
+  //       await new Promise((resolve) =>
+  //         setTimeout(resolve, DELAY_BETWEEN_BATCHES),
+  //       );
+  //     }
+  //   }
+  // }
+
   async connectToDisconnectedSubscribedRooms(): Promise<void> {
     const connectPromises = this.disconnectedSubscribedRoomNames.map(
       (roomName) =>
