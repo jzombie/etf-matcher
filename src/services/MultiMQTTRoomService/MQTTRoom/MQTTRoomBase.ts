@@ -225,7 +225,7 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
         MQTTRoomBase._messagePromisesMap.delete(messageId);
       }
     } else if (envelopeType === EnvelopeType.Event) {
-      const room = this._roomMap.get(peerId);
+      const room = MQTTRoomBase._roomMap.get(peerId);
 
       if (room) {
         let { [PostMessageStructKey.EventData]: eventData } = event.data;
