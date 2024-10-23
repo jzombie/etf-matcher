@@ -282,5 +282,24 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
   protected async _onClear(): Promise<void> {
     // TODO: Wipe the room states, then remove the store MQTT subscriptions
     throw new Error("`clear` is not currently implemented");
+
+    // TODO: Implement the following?
+
+    // Disconnect from all rooms
+    // await Promise.all(
+    //   Object.values(this.state.rooms).map((room) => room.close()),
+    // );
+
+    // Remove all room subscriptions
+    // this._store.clearMQTTRoomSubscriptions();
+
+    // Clear the state (or, call `reset`?)
+    // this.setState({
+    //   rooms: {},
+    //   connectedRooms: {},
+    //   isConnecting: false,
+    //   allRoomsInSync: false,
+    //   totalParticipantsForAllRooms: 0,
+    // });
   }
 }
