@@ -64,16 +64,17 @@ export default function TickerBucketImportExportDialogModal({
 
   const reset = useCallback(() => {
     setSelectedFilename(null);
+  }, []);
 
-    setExportFilename(getDefaultExportFilename());
-  }, [getDefaultExportFilename]);
-
-  // Reset fields when modal is closed
   useEffect(() => {
     if (!isOpen) {
+      // Reset fields when modal is closed
       reset();
+    } else {
+      // Use default export filename when modal is opened
+      setExportFilename(getDefaultExportFilename());
     }
-  }, [isOpen, reset]);
+  }, [isOpen, reset, getDefaultExportFilename]);
 
   useEffect(() => {
     // Reset selected files when `mergeableSets` changes
