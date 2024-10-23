@@ -97,6 +97,7 @@ FROM frontend-build AS final
 USER root
 
 # Install necessary dependencies including Node.js
+# TODO: Upgrade to Node.js 22: https://nodejs.org/en/blog/announcements/v22-release-announce
 RUN apt-get update && \
     apt-get install -y curl gnupg tini inotify-tools bc && \
     curl -sL https://deb.nodesource.com/setup_20.x | bash - && \
