@@ -221,6 +221,8 @@ const FileUploadArea = ({
   const theme = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // FIXME: Don't hardcode `csv` here
+  //
   // Formatted for `input[type="file"]` element
   const extensionTypes = useMemo(
     () => FILE_IMPORT_ACCEPT_MAP.get("csv")?.mimeTypes?.join(", ") || "",
