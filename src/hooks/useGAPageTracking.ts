@@ -4,6 +4,7 @@ import store from "@src/store";
 
 import customLogger from "@utils/customLogger";
 import getEnvVariable from "@utils/getEnvVariable";
+import getIsProdEnv from "@utils/getIsProdEnv";
 
 const PAGE_VIEW_TIMEOUT = 1000;
 
@@ -16,7 +17,7 @@ const IS_GTAG_ENABLED = typeof gtag === "function";
 // doesn't have to be a child of a `react-router` context.
 export default function useGAPageTracking() {
   useEffect(() => {
-    if (getEnvVariable<boolean>("DEV")) {
+    if (!getIsProdEnv()) {
       customLogger.warn(
         "Skipping GA page tracking due to development environment.",
       );

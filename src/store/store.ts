@@ -31,7 +31,7 @@ import arraysEqual from "@utils/arraysEqual";
 import customLogger from "@utils/customLogger";
 import debounceWithKey from "@utils/debounceWithKey";
 import detectHTMLJSVersionSync from "@utils/detectHTMLJSVersionSync";
-import getEnvVariable from "@utils/getEnvVariable";
+import getIsProdEnv from "@utils/getIsProdEnv";
 
 import {
   CacheAccessedRequests,
@@ -124,7 +124,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
       isIndexedDBReady: false,
       isAppUnlocked: false,
       isGAPageTrackingEnabled: false,
-      isProductionBuild: getEnvVariable<boolean>("PROD"),
+      isProductionBuild: getIsProdEnv(),
       isOnline: false,
       isRustInit: false,
       dataBuildTime: null,
