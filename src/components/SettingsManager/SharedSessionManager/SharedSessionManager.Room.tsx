@@ -47,28 +47,26 @@ export default function Room({ roomName }: RoomProps) {
           <>
             <Alert severity="warning">Room not connected: {roomName}</Alert>
             {nextAutoReconnectTime && (
-              <>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 2,
-                    mt: 1,
-                  }}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 2,
+                  mt: 1,
+                }}
+              >
+                <Typography sx={{ fontWeight: "bold" }}>
+                  Next auto reconnect:{" "}
+                  <Timer onTick={getRemainingAutoReconnectTime} />
+                </Typography>
+                <Button
+                  onClick={() => connectToRoom(roomName)}
+                  variant="contained"
                 >
-                  <Typography sx={{ fontWeight: "bold" }}>
-                    Next auto reconnect:{" "}
-                    <Timer onTick={getRemainingAutoReconnectTime} />
-                  </Typography>
-                  <Button
-                    onClick={() => connectToRoom(roomName)}
-                    variant="contained"
-                  >
-                    Reconnect now
-                  </Button>
-                </Box>
-              </>
+                  Reconnect now
+                </Button>
+              </Box>
             )}
           </>
         )}
