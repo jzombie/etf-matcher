@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
+import formatTime from "@utils/string/formatTime";
+
 type TimerProps = {
   onTick: () => number | null;
 };
@@ -28,16 +30,6 @@ export default function Timer({ onTick }: TimerProps) {
     // Cleanup interval on component unmount
     return () => clearInterval(intervalId);
   }, [stableOnTickRef]);
-
-  // Format the time as a string (e.g., "00:00:00")
-  const formatTime = (seconds: number) => {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return [hrs, mins, secs]
-      .map((val) => String(val).padStart(2, "0"))
-      .join(":");
-  };
 
   if (time === null) {
     return null;
