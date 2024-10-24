@@ -158,7 +158,11 @@ function RoomDetails({ room }: RoomDetailsProps) {
           </AutoScaler>
         </div>
       )}
-      {room.isConnecting && <CircularProgress />}
+      {room.isConnecting && (
+        <Box sx={{ textAlign: "center" }}>
+          <CircularProgress />
+        </Box>
+      )}
       {room.isConnected && (
         <Grid2 container spacing={2}>
           <Grid2 size={{ xs: 12, sm: 6 }}>
