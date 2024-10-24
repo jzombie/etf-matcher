@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from "react";
 
-import { CircularProgress } from "@mui/material";
 import { Box, Button, InputAdornment, TextField } from "@mui/material";
 
 import { useMultiMQTTRoomContext } from "@services/MultiMQTTRoomService/react";
@@ -10,8 +9,7 @@ import customLogger from "@utils/customLogger";
 export default function ConnectForm() {
   const [roomName, setRoomName] = useState("");
   const [isValid, setIsValid] = useState(true);
-  const { connectToRoom, validateRoomName, isConnecting } =
-    useMultiMQTTRoomContext();
+  const { connectToRoom, validateRoomName } = useMultiMQTTRoomContext();
 
   const handleConnect = useCallback(
     (e: React.FormEvent) => {
@@ -75,11 +73,6 @@ export default function ConnectForm() {
           }}
         />
       </Box>
-      {isConnecting && (
-        <Box sx={{ textAlign: "center" }} mt={2}>
-          <CircularProgress />
-        </Box>
-      )}
     </>
   );
 }
