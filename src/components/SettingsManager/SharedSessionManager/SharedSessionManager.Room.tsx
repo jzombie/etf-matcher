@@ -17,6 +17,8 @@ import { MQTTRoom, MQTTRoomEvents } from "@services/MultiMQTTRoomService";
 import { useMultiMQTTRoomContext } from "@services/MultiMQTTRoomService/react";
 import { generateQRCode as libGenerateQRCode } from "@services/RustService";
 
+import Timer from "@components/Timer";
+
 import useEventRefresh from "@hooks/useEventRefresh";
 
 import { useSharedSessionManagerContext } from "./SharedSessionManagerProvider";
@@ -26,7 +28,12 @@ export type RoomProps = {
 };
 
 export default function Room({ roomName }: RoomProps) {
-  const { getRoomWithName } = useMultiMQTTRoomContext();
+  const {
+    getRoomWithName,
+    nextAutoReconnectTime,
+    getRemainingAutoReconnectTime,
+    connectToRoom,
+  } = useMultiMQTTRoomContext();
 
   // IMPORTANT: This should *not* be memoized, as it may change if the room reconnects
   const room = getRoomWithName(roomName);
@@ -37,8 +44,33 @@ export default function Room({ roomName }: RoomProps) {
         {room ? (
           <RoomDetails room={room} />
         ) : (
-          <Alert severity="warning">Room not connected: {roomName}</Alert>
-          // TODO: Show seconds to reconnect with the ability to manually reconnect now (call `connectToRoom` in provider)
+          <>
+            <Alert severity="warning">Room not connected: {roomName}</Alert>
+            {nextAutoReconnectTime && (
+              <>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 2,
+                    mt: 1,
+                  }}
+                >
+                  <Typography sx={{ fontWeight: "bold" }}>
+                    Next auto reconnect:{" "}
+                    <Timer onTick={getRemainingAutoReconnectTime} />
+                  </Typography>
+                  <Button
+                    onClick={() => connectToRoom(roomName)}
+                    variant="contained"
+                  >
+                    Reconnect now
+                  </Button>
+                </Box>
+              </>
+            )}
+          </>
         )}
       </CardContent>
     </Card>
