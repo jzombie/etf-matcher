@@ -42,7 +42,7 @@ export default function Room({ roomName }: RoomProps) {
     <Card variant="outlined" sx={{ mb: 2 }}>
       <CardContent>
         {room ? (
-          <RoomDetails room={room} />
+          <RoomControls room={room} />
         ) : (
           <>
             <Alert severity="warning">Room not connected: {roomName}</Alert>
@@ -75,12 +75,11 @@ export default function Room({ roomName }: RoomProps) {
   );
 }
 
-type RoomDetailsProps = {
+type RoomControlsProps = {
   room: MQTTRoom;
 };
 
-// TODO: A better name than `RoomDetails`?
-function RoomDetails({ room }: RoomDetailsProps) {
+function RoomControls({ room }: RoomControlsProps) {
   // FIXME: This usage of two providers can get a bit confusing. Perhaps the
   // `SharedSessionManagerProvider` should either expose all of these methods,
   // or just move everything into the `MultiMQTTRoomProvider`. My original
