@@ -20,7 +20,9 @@ export default function SharedSessionManager() {
 
       {subscribedMQTTRoomNames.length > 0 ? (
         <div>
-          <h3>Subscribed Rooms:</h3>
+          <h3>
+            Subscribed Room{subscribedMQTTRoomNames.length !== 1 ? "s" : ""}:
+          </h3>
           <UnstyledUL>
             {subscribedMQTTRoomNames.map((roomName) => (
               <UnstyledLI className="unstyled" key={roomName}>
