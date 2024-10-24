@@ -265,6 +265,9 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
     // Call `onRoomSyncUpdate` to determine if any additional state updates are
     // needed to be relayed to the UI
     this._onRoomSyncUpdate();
+
+    // Update the total participants count
+    this._calculateTotalParticipants();
   }
 
   protected _onRoomConnectingStateChange() {
