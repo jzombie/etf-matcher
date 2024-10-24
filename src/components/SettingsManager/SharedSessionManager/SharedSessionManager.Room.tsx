@@ -1,11 +1,13 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import { Devices, ExitToApp, QrCode, Sync } from "@mui/icons-material";
 import {
+  Alert,
   Box,
   Button,
   Card,
   CardContent,
+  CircularProgress,
   Grid2,
   Typography,
 } from "@mui/material";
@@ -25,10 +27,9 @@ export type RoomProps = {
 
 export default function Room({ roomName }: RoomProps) {
   const { getRoomWithName } = useMultiMQTTRoomContext();
-  const room = useMemo(
-    () => getRoomWithName(roomName),
-    [getRoomWithName, roomName],
-  );
+
+  // IMPORTANT: This should *not* be memoized, as it may change if the room reconnects
+  const room = getRoomWithName(roomName);
 
   return (
     <Card variant="outlined" sx={{ mb: 2 }}>
@@ -36,7 +37,7 @@ export default function Room({ roomName }: RoomProps) {
         {room ? (
           <RoomDetails room={room} />
         ) : (
-          <Typography variant="body2">Room not found: {roomName}</Typography>
+          <Alert severity="warning">Room not connected: {roomName}</Alert>
         )}
       </CardContent>
     </Card>
@@ -51,7 +52,12 @@ function RoomDetails({ room }: RoomDetailsProps) {
   const { disconnectFromRoom } = useMultiMQTTRoomContext();
   const { getRoomShareURL } = useSharedSessionManagerContext();
 
-  useEventRefresh<MQTTRoomEvents>(room, ["peersupdate", "syncupdate"]);
+  useEventRefresh<MQTTRoomEvents>(room, [
+    "peersupdate",
+    "syncupdate",
+    "connectingstateupdate",
+    "connectionstateupdate",
+  ]);
 
   const [qrCode, setQRCode] = useState<string | null>("");
 
@@ -89,6 +95,7 @@ function RoomDetails({ room }: RoomDetailsProps) {
           variant="outlined"
           startIcon={<ExitToApp />}
           sx={{ flexGrow: 1 }}
+          disabled={!room.isConnected}
         >
           Disconnect
         </Button>
@@ -112,24 +119,27 @@ function RoomDetails({ room }: RoomDetailsProps) {
           </AutoScaler>
         </div>
       )}
-      <Grid2 container spacing={2}>
-        <Grid2 size={{ xs: 12, sm: 6 }}>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Devices sx={{ mr: 1 }} />
-            <Typography variant="body2">
-              Currently connected devices: {room.peers.length + 1}
-            </Typography>
-          </Box>
+      {room.isConnecting && <CircularProgress />}
+      {room.isConnected && (
+        <Grid2 container spacing={2}>
+          <Grid2 size={{ xs: 12, sm: 6 }}>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Devices sx={{ mr: 1 }} />
+              <Typography variant="body2">
+                Currently connected devices: {room.peers.length + 1}
+              </Typography>
+            </Box>
+          </Grid2>
+          <Grid2 size={{ xs: 12, sm: 6 }}>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Sync sx={{ mr: 1 }} />
+              <Typography variant="body2">
+                In sync: {room.isInSync ? "yes" : "no"}
+              </Typography>
+            </Box>
+          </Grid2>
         </Grid2>
-        <Grid2 size={{ xs: 12, sm: 6 }}>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Sync sx={{ mr: 1 }} />
-            <Typography variant="body2">
-              In sync: {room.isInSync ? "yes" : "no"}
-            </Typography>
-          </Box>
-        </Grid2>
-      </Grid2>
+      )}
     </>
   );
 }
