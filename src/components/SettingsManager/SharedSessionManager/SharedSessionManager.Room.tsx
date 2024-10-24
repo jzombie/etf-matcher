@@ -49,6 +49,11 @@ type RoomDetailsProps = {
 };
 
 function RoomDetails({ room }: RoomDetailsProps) {
+  // FIXME: This usage of two providers can get a bit confusing. Perhaps the
+  // `SharedSessionManagerProvider` should either expose all of these methods,
+  // or just move everything into the `MultiMQTTRoomProvider`. My original
+  // intentions were to keep these separate to allow for more flexibility in
+  // the future, but it may not be worth the complexity.
   const { disconnectFromRoom } = useMultiMQTTRoomContext();
   const { getRoomShareURL } = useSharedSessionManagerContext();
 
