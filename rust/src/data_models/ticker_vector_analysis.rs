@@ -1,4 +1,4 @@
-include!("flatbuffers/financial_vectors.tenk_generated.rs");
+include!("flatbuffers/financial_vectors.tenk_generated.rs"); // TODO: Rename to not be specific to `10-K` or `10-Q`
 use crate::types::TickerId;
 use crate::utils;
 use crate::DataURL;
