@@ -38,6 +38,7 @@ export default function Room({ roomName }: RoomProps) {
           <RoomDetails room={room} />
         ) : (
           <Alert severity="warning">Room not connected: {roomName}</Alert>
+          // TODO: Show seconds to reconnect with the ability to manually reconnect now (call `connectToRoom` in provider)
         )}
       </CardContent>
     </Card>
@@ -48,6 +49,7 @@ type RoomDetailsProps = {
   room: MQTTRoom;
 };
 
+// TODO: A better name than `RoomDetails`?
 function RoomDetails({ room }: RoomDetailsProps) {
   // FIXME: This usage of two providers can get a bit confusing. Perhaps the
   // `SharedSessionManagerProvider` should either expose all of these methods,

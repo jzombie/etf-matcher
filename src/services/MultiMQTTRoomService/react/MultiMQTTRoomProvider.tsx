@@ -20,6 +20,8 @@ interface MultiMQTTRoomContextProps {
   allRoomsInSync: boolean;
   totalParticipantsForAllRooms: number;
   getRoomWithName: (roomName: string) => MQTTRoom | undefined;
+  nextAutoReconnectTime: Date | null;
+  getRemainingAutoReconnectTime: () => number | null;
 }
 
 export const MQTTRoomContext = createContext<
@@ -41,12 +43,14 @@ export default function MultiMQTTRoomProvider({
     isConnecting,
     allRoomsInSync,
     totalParticipantsForAllRooms,
+    nextAutoReconnectTime,
   } = useStateEmitterReader(multiMQTTRoomService, [
     "rooms",
     "connectedRooms",
     "isConnecting",
     "allRoomsInSync",
     "totalParticipantsForAllRooms",
+    "nextAutoReconnectTime",
   ]);
 
   const getRoomWithName = useCallback(
@@ -78,6 +82,10 @@ export default function MultiMQTTRoomProvider({
     [multiMQTTRoomService, triggerUIError],
   );
 
+  const getRemainingAutoReconnectTime = useCallback(() => {
+    return multiMQTTRoomService.getRemainingAutoReconnectTime();
+  }, [multiMQTTRoomService]);
+
   return (
     <MQTTRoomContext.Provider
       value={{
@@ -90,6 +98,8 @@ export default function MultiMQTTRoomProvider({
         allRoomsInSync,
         totalParticipantsForAllRooms,
         getRoomWithName,
+        nextAutoReconnectTime,
+        getRemainingAutoReconnectTime,
       }}
     >
       {children}

@@ -2,6 +2,9 @@ import React from "react";
 
 import { Typography } from "@mui/material";
 
+import { useMultiMQTTRoomContext } from "@services/MultiMQTTRoomService/react";
+
+import Timer from "@components/Timer";
 import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
 
 import useStoreStateReader from "@hooks/useStoreStateReader";
@@ -13,6 +16,9 @@ export default function SharedSessionManager() {
   const { subscribedMQTTRoomNames } = useStoreStateReader(
     "subscribedMQTTRoomNames",
   );
+
+  const { nextAutoReconnectTime, getRemainingAutoReconnectTime } =
+    useMultiMQTTRoomContext();
 
   return (
     <div>
@@ -34,6 +40,15 @@ export default function SharedSessionManager() {
       ) : (
         <Typography sx={{ textAlign: "center", fontWeight: "bold" }}>
           No subscribed rooms.
+        </Typography>
+      )}
+
+      {nextAutoReconnectTime && (
+        <Typography sx={{ textAlign: "center", fontWeight: "bold" }}>
+          {
+            // TODO: Count down to reconnect
+          }
+          Next auto reconnect: <Timer onTick={getRemainingAutoReconnectTime} />
         </Typography>
       )}
     </div>
