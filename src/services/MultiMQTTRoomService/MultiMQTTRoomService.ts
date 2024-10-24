@@ -217,6 +217,10 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
     }
   }
 
+  getRoomWithName(roomName: string): MQTTRoom | undefined {
+    return this.state.rooms[roomName];
+  }
+
   protected _onRoomError(room: MQTTRoom, err: Error) {
     customLogger.error("MQTTRoom error", { err });
   }

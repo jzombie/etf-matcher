@@ -19,6 +19,7 @@ interface MultiMQTTRoomContextProps {
   validateRoomName: (roomName: string) => boolean;
   allRoomsInSync: boolean;
   totalParticipantsForAllRooms: number;
+  getRoomWithName: (roomName: string) => MQTTRoom | undefined;
 }
 
 export const MQTTRoomContext = createContext<
@@ -47,6 +48,11 @@ export default function MultiMQTTRoomProvider({
     "allRoomsInSync",
     "totalParticipantsForAllRooms",
   ]);
+
+  const getRoomWithName = useCallback(
+    (roomName: string) => multiMQTTRoomService.getRoomWithName(roomName),
+    [multiMQTTRoomService],
+  );
 
   const connectToRoom = useCallback(
     async (roomName: string) => {
@@ -83,6 +89,7 @@ export default function MultiMQTTRoomProvider({
         validateRoomName: validateTopic,
         allRoomsInSync,
         totalParticipantsForAllRooms,
+        getRoomWithName,
       }}
     >
       {children}

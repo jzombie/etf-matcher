@@ -76,6 +76,7 @@ export default function ConnectForm() {
         />
       </Box>
       {isConnecting && (
+        // TODO: Prevent annoying effect of circular progress shifting the layout down
         <Box sx={{ textAlign: "center" }} mt={2}>
           <CircularProgress />
         </Box>
