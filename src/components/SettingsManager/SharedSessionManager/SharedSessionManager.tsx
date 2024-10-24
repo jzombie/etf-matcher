@@ -32,7 +32,14 @@ export default function SharedSessionManager() {
           </UnstyledUL>
         </div>
       ) : (
-        <Typography sx={{ textAlign: "center", fontWeight: "bold" }}>
+        <Typography
+          sx={{
+            textAlign: "center",
+            fontWeight: "bold",
+            color: "text.secondary",
+            mt: 2,
+          }}
+        >
           No subscribed rooms.
         </Typography>
       )}
