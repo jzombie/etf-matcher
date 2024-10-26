@@ -13,6 +13,7 @@ export type MQTTRoomState = {
   isConnecting: boolean;
   allRoomsInSync: boolean;
   totalParticipantsForAllRooms: number;
+  nextAutoReconnectTime: Date | null;
 };
 
 // TODO: On dispose, disconnect from all rooms (shouldn't ever need to be done)
@@ -29,6 +30,7 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
       isConnecting: false,
       allRoomsInSync: false,
       totalParticipantsForAllRooms: 0,
+      nextAutoReconnectTime: null,
     });
 
     // Bind and register event listeners for auto-reconnect
@@ -125,6 +127,10 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
     const delay = this._calculateBackoffDelay();
     customLogger.warn(`Scheduling reconnect attempt in ${delay}ms.`);
 
+    // Calculate the next auto-reconnect time
+    const nextAutoReconnectTime = new Date(Date.now() + delay);
+    this.setState({ nextAutoReconnectTime });
+
     if (this._autoReconnectPollingInterval) {
       this.clearTimeout(this._autoReconnectPollingInterval);
     }
@@ -134,6 +140,16 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
     );
   }
 
+  getRemainingAutoReconnectTime(): number | null {
+    if (!this.state.nextAutoReconnectTime) {
+      return null;
+    }
+    const now = new Date();
+    const remainingTime =
+      this.state.nextAutoReconnectTime.getTime() - now.getTime();
+    return Math.max(0, Math.floor(remainingTime / 1000)); // Return remaining time in seconds
+  }
+
   protected async _attemptAutoReconnect(): Promise<void> {
     if (this.isDisposed || !this.disconnectedSubscribedRoomNames.length) {
       return;
@@ -141,6 +157,8 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
 
     customLogger.debug("Attempting auto reconnect");
     if (!this.state.isConnecting) {
+      this.setState({ nextAutoReconnectTime: null });
+
       await this.connectToDisconnectedSubscribedRooms();
     } else {
       this._scheduleAutoReconnectWithBackoff();
@@ -217,6 +235,10 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
     }
   }
 
+  getRoomWithName(roomName: string): MQTTRoom | undefined {
+    return this.state.rooms[roomName];
+  }
+
   protected _onRoomError(room: MQTTRoom, err: Error) {
     customLogger.error("MQTTRoom error", { err });
   }
@@ -243,6 +265,9 @@ export default class MultiMQTTRoomService extends BaseStatePersistenceAdapter<MQ
     // Call `onRoomSyncUpdate` to determine if any additional state updates are
     // needed to be relayed to the UI
     this._onRoomSyncUpdate();
+
+    // Update the total participants count
+    this._calculateTotalParticipants();
   }
 
   protected _onRoomConnectingStateChange() {
