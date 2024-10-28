@@ -22,6 +22,21 @@ export default class DisposableEmitter extends EventEmitter {
    * Returns a function that can be called to unregister the dispose function.
    */
   registerDisposeFunction(disposeFunction: () => void): () => void {
+    // Validate that the disposeFunction is a function
+    if (typeof disposeFunction !== "function") {
+      throw new TypeError("disposeFunction must be a function");
+    }
+
+    // Prevent duplicate registrations
+    if (this._disposeFunctions.includes(disposeFunction)) {
+      return () => {
+        this._disposeFunctions = this._disposeFunctions.filter(
+          (fn) => fn !== disposeFunction,
+        );
+      };
+    }
+
+    // Register the dispose function
     this._disposeFunctions.push(disposeFunction);
 
     // Return a function to unregister the dispose function

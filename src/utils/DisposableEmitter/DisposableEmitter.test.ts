@@ -171,6 +171,38 @@ describe("DisposableEmitter", () => {
     expect(disposeFn).not.toHaveBeenCalled();
   });
 
+  it("should throw a TypeError if the dispose function is not a function", () => {
+    const emitter = new DisposableEmitter();
+
+    expect(() => {
+      emitter.registerDisposeFunction(null as any);
+    }).toThrowError(TypeError);
+
+    expect(() => {
+      emitter.registerDisposeFunction(123 as any);
+    }).toThrowError("disposeFunction must be a function");
+  });
+
+  it("should prevent duplicate dispose function registrations", () => {
+    const emitter = new DisposableEmitter();
+
+    const disposeFn = vi.fn();
+    const unregister = emitter.registerDisposeFunction(disposeFn);
+
+    // Register the same function again
+    const unregisterDuplicate = emitter.registerDisposeFunction(disposeFn);
+
+    // Dispose the emitter
+    emitter.dispose();
+
+    // Ensure the dispose function is called only once
+    expect(disposeFn).toHaveBeenCalledTimes(1);
+
+    // Ensure both unregister functions work
+    unregister();
+    unregisterDuplicate();
+  });
+
   it("should not perform any actions if dispose is called multiple times", () => {
     const emitter = new DisposableEmitter();
 
