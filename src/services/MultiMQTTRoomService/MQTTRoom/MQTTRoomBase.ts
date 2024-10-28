@@ -7,6 +7,11 @@ import validateTopic from "../validateTopic";
 import { EnvelopeType, PostMessageStructKey } from "./MQTTRoom.sharedBindings";
 import { MQTTRoomEvents, SendOptions } from "./MQTTRoom.sharedBindings";
 
+type MessagePromise<T> = {
+  resolve: (value: T | PromiseLike<T>) => void;
+  reject: (reason?: unknown) => void;
+};
+
 // TODO: Extend `DisposableEmitter` instead?
 /**
  * `MQTTRoomBase` is an abstract class that manages MQTT room connections.
@@ -28,10 +33,12 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
   })();
 
   private static _messageCounter = 0;
-  private static _messagePromisesMap = new Map<
-    number,
-    { resolve: CallableFunction; reject: CallableFunction }
-  >();
+
+  // Note: `any` is used in this declaration because the type is set dynamically and
+  // `unknown` is problematic to work with in this context.
+  //
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private static _messagePromisesMap = new Map<number, MessagePromise<any>>();
 
   private static _roomMap: Map<MQTTRoomBase["_peerId"], MQTTRoomBase> =
     new Map();
@@ -156,7 +163,11 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
     const messageId = MQTTRoomBase._messageCounter++;
 
     return new Promise<T>((resolve, reject) => {
-      MQTTRoomBase._messagePromisesMap.set(messageId, { resolve, reject });
+      // Set the promise in the map with the correct type
+      MQTTRoomBase._messagePromisesMap.set(messageId, {
+        resolve,
+        reject,
+      } as MessagePromise<T>);
 
       MQTTRoomBase._worker.postMessage({ functionName, args, messageId });
 
@@ -181,7 +192,7 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
         }
       };
 
-      const wrappedResolve = (value: T) => {
+      const wrappedResolve = (value: T | PromiseLike<T>) => {
         cleanup();
         resolve(value);
 
@@ -197,10 +208,11 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
         MQTTRoomBase._messagePromisesMap.delete(messageId);
       };
 
+      // Update the map with wrapped resolve and reject
       MQTTRoomBase._messagePromisesMap.set(messageId, {
         resolve: wrappedResolve,
         reject: wrappedReject,
-      });
+      } as MessagePromise<T>);
     });
   }
 
