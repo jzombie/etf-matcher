@@ -138,10 +138,15 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
     this._pushStateOperation("send");
 
     if (Buffer.isBuffer(data)) {
-      data = {
-        type: "Buffer",
-        data: Array.from(data),
-      };
+      // If the data is a Buffer, serialize it using the toJSON() method.
+      // The toJSON() method returns an object with the following structure:
+      // {
+      //   type: 'Buffer',  // This indicates that the object represents a serialized Buffer.
+      //   data: [ ... ]    // This is an array of the buffer's bytes.
+      // }
+      // This serialized format is efficient for transferring the buffer data
+      // across threads or processes, such as to a worker.
+      data = data.toJSON();
     }
 
     try {
