@@ -189,4 +189,37 @@ describe("DisposableEmitter", () => {
     // Ensure the emitter is still marked as disposed
     expect(emitter.isDisposed).toBe(true);
   });
+
+  it("should log a warning when any method is called after disposal", () => {
+    const emitter = new DisposableEmitter();
+
+    // Spy on the customLogger.warn method
+    const warnSpy = vi.spyOn(customLogger, "warn").mockImplementation(() => {});
+
+    // Dispose the emitter
+    emitter.dispose();
+
+    // List of methods to test
+    const methodsToTest = [
+      "setTimeout",
+      "setInterval",
+      "clearTimeout",
+      "clearInterval",
+      "registerDisposeFunction",
+      "dispose",
+    ];
+
+    methodsToTest.forEach((methodName) => {
+      // Attempt to call each method
+      (emitter as any)[methodName]();
+
+      // Check that the warning was logged with the correct message
+      expect(warnSpy).toHaveBeenCalledWith(
+        `The method "${methodName}" cannot be called on a disposed emitter.`,
+      );
+    });
+
+    // Restore the original warn method
+    warnSpy.mockRestore();
+  });
 });

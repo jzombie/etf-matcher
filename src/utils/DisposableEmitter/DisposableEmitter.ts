@@ -129,6 +129,14 @@ export default class DisposableEmitter extends EventEmitter {
     this._timeouts = [];
     this._intervals = [];
 
+    // Prevent methods from being called after disposal
+    for (const key of Object.getOwnPropertyNames(Object.getPrototypeOf(this))) {
+      const property = this[key as keyof this];
+      if (typeof property === "function" && key !== "constructor") {
+        (this[key as keyof this] as unknown) = this._createNullifiedMethod(key);
+      }
+    }
+
     this._isDisposed = true;
   }
 
@@ -137,5 +145,16 @@ export default class DisposableEmitter extends EventEmitter {
    */
   get isDisposed(): boolean {
     return this._isDisposed;
+  }
+
+  /**
+   * Creates a nullified method that logs a warning with the method name.
+   */
+  private _createNullifiedMethod(methodName: string) {
+    return () => {
+      customLogger.warn(
+        `The method "${methodName}" cannot be called on a disposed emitter.`,
+      );
+    };
   }
 }
