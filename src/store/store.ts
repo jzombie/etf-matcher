@@ -113,22 +113,17 @@ export type IndexedDBPersistenceProps = {
 // TODO: Determine exportable props for MultiMQTTRoomService (similar to IndexedDBPersistenceProps)
 
 class Store extends ReactStateEmitter<StoreStateProps> {
-  private _indexedDBService!: IndexedDBService<IndexedDBPersistenceProps>;
-  private _multiMQTTRoomService!: MultiMQTTRoomService;
-  private _tickerBucketImportExportService!: TickerBucketImportExportService;
+  private _indexedDBService: IndexedDBService<IndexedDBPersistenceProps>;
+  private _multiMQTTRoomService: MultiMQTTRoomService;
+  private _tickerBucketImportExportService: TickerBucketImportExportService;
 
   private static _instance: Store;
-  public static getInstance(): Store {
-    if (!Store._instance) {
-      Store._instance = new Store();
-    }
-    return Store._instance;
-  }
 
   constructor() {
-    // Use as a singleton
     if (Store._instance) {
-      return Store._instance;
+      throw new Error(
+        "Store instance already created. Use the existing instance.",
+      );
     }
 
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
