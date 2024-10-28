@@ -29,6 +29,9 @@ export default class DisposableEmitter extends EventEmitter {
 
     // Prevent duplicate registrations
     if (this._disposeFunctions.includes(disposeFunction)) {
+      customLogger.warn(
+        "Attempted to register a dispose function that is already registered.",
+      );
       return () => {
         this._disposeFunctions = this._disposeFunctions.filter(
           (fn) => fn !== disposeFunction,
