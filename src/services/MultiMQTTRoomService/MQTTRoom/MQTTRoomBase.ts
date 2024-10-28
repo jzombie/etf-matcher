@@ -40,6 +40,8 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
   private _isConnecting: boolean = false;
   private _isConnected: boolean = false;
 
+  private _isClosing: boolean = false;
+
   private _brokerURL!: string;
   private _roomName!: string;
 
@@ -255,6 +257,13 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
   }
 
   async close(reason?: unknown) {
+    // Prevent double closing
+    if (this._isClosing) {
+      return;
+    }
+
+    this._isClosing = true;
+
     if (reason) {
       customLogger.debug("Proceeding to close due to reason:", reason);
     }
@@ -265,12 +274,14 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
     this._setConnectionState(false); // `ion`
 
     try {
-      await MQTTRoomBase._callMQTTRoomWorker("close", [this._peerId]);
+      if (this._peerId) {
+        await MQTTRoomBase._callMQTTRoomWorker("close", [this._peerId]);
+      }
     } catch (err) {
-      // This error is expected if the room has already been closed in the worker.
-      //
-      // This condition may occur if the worker previously experienced an error
-      // which would cause it to close the room.
+      customLogger.error(
+        "Error closing room in worker",
+        err instanceof Error ? err.message : err,
+      );
     }
 
     this.emit("close");
