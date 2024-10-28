@@ -170,4 +170,23 @@ describe("DisposableEmitter", () => {
     // Ensure the dispose function is not called after being unregistered
     expect(disposeFn).not.toHaveBeenCalled();
   });
+
+  it("should not perform any actions if dispose is called multiple times", () => {
+    const emitter = new DisposableEmitter();
+
+    const disposeFn = vi.fn();
+    emitter.registerDisposeFunction(disposeFn);
+
+    // Call dispose for the first time
+    emitter.dispose();
+
+    // Call dispose again
+    emitter.dispose();
+
+    // Ensure the dispose function is only called once
+    expect(disposeFn).toHaveBeenCalledTimes(1);
+
+    // Ensure the emitter is still marked as disposed
+    expect(emitter.isDisposed).toBe(true);
+  });
 });

@@ -109,6 +109,10 @@ export default class DisposableEmitter extends EventEmitter {
   }
 
   private _doDispose() {
+    if (this._isDisposed) {
+      return;
+    }
+
     this._disposeFunctions.forEach((fn) => fn());
     this._disposeFunctions = [];
     this.removeAllListeners();
