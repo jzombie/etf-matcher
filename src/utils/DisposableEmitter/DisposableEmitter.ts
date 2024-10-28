@@ -24,7 +24,9 @@ export default class DisposableEmitter extends EventEmitter {
   registerDisposeFunction(disposeFunction: () => void): () => void {
     // Validate that the disposeFunction is a function
     if (typeof disposeFunction !== "function") {
-      throw new TypeError("disposeFunction must be a function");
+      throw new TypeError(
+        `disposeFunction must be a function, received ${typeof disposeFunction}.`,
+      );
     }
 
     // Prevent duplicate registrations
