@@ -1,2 +1,3 @@
-[ticker_vectors]
-default = "r5-5-10-20yr(rev-2).financial_vectors.tenq.bin"
+[ticker_vectors.default]
+path = "r5-5-10-20yr(rev-2).financial_vectors.tenq.bin"
+description = "20 years of 10-Q statements, with additional key metrics"
