@@ -1,7 +1,9 @@
 [ticker_vector_config.default]
 path = "r5-5-10-20yr(rev-2).financial_vectors.tenq.bin"
 description = "20 years of 10-Q statements, with additional key metrics"
+last_training_time = "2024-10-20T12:00:00Z"
 
 [ticker_vector_config.r5]
 path = "r5-5-10-20yr.financial_vectors.tenq.bin"
 description = "Original `r5`, before extended training"
+last_training_time = "2024-14-20T12:00:00Z"

@@ -83,8 +83,8 @@ fn generate_rust_code_from_toml(config: &Value) -> String {
     code.push_str("pub struct TickerVectorConfig {\n");
     code.push_str("    pub key: &'static str,\n");
     code.push_str("    pub path: &'static str,\n");
-    code.push_str("    #[allow(dead_code)]\n"); // Make usage of `description` optional
     code.push_str("    pub description: Option<&'static str>,\n");
+    code.push_str("    pub last_training_time: &'static str,\n");
     code.push_str("}\n\n");
 
     // Define the function
@@ -105,10 +105,15 @@ fn generate_rust_code_from_toml(config: &Value) -> String {
                         Some(desc) => format!("Some(\"{}\")", desc),
                         None => "None".to_string(),
                     };
-                    code.push_str(&format!(
-                        "    map.insert(\"{}\", TickerVectorConfig {{ key: \"{}\", path: \"{}\", description: {} }});\n",
-                        key, key, path, description_str
-                    ));
+
+                    if let Some(last_training_time) =
+                        sub_table.get("last_training_time").and_then(|v| v.as_str())
+                    {
+                        code.push_str(&format!(
+                                "    map.insert(\"{}\", TickerVectorConfig {{ key: \"{}\", path: \"{}\", description: {}, last_training_time: \"{}\" }});\n",
+                                key, key, path, description_str, last_training_time
+                            ));
+                    }
                 }
             }
         }
