@@ -78,6 +78,9 @@ fn generate_rust_code_from_toml(config: &Value) -> String {
     code.push_str("use serde::Serialize;\n");
     code.push_str("\n\n");
 
+    // TODO: Derive `file_size` and add it as a metric
+    // TODO: Derive `last_modified` and add it as a metric
+
     // Define the struct
     code.push_str("#[derive(Clone, Serialize)]\n");
     code.push_str("pub struct TickerVectorConfig {\n");
@@ -85,6 +88,9 @@ fn generate_rust_code_from_toml(config: &Value) -> String {
     code.push_str("    pub path: &'static str,\n");
     code.push_str("    pub description: Option<&'static str>,\n");
     code.push_str("    pub last_training_time: &'static str,\n");
+    code.push_str("    pub vector_dimensions: u32,\n");
+    code.push_str("    pub training_sequence_length: u32,\n");
+    code.push_str("    pub training_data_sources: Vec<&'static str>,\n");
     code.push_str("}\n\n");
 
     // Define the function
@@ -99,21 +105,42 @@ fn generate_rust_code_from_toml(config: &Value) -> String {
     {
         for (key, value) in table {
             if let Some(sub_table) = value.as_table() {
-                if let Some(path) = sub_table.get("path").and_then(|v| v.as_str()) {
+                if let (
+                    Some(path),
+                    Some(last_training_time),
+                    Some(vector_dimensions),
+                    Some(training_sequence_length),
+                    Some(training_data_sources),
+                ) = (
+                    sub_table.get("path").and_then(|v| v.as_str()),
+                    sub_table.get("last_training_time").and_then(|v| v.as_str()),
+                    sub_table
+                        .get("vector_dimensions")
+                        .and_then(|v| v.as_integer()),
+                    sub_table
+                        .get("training_sequence_length")
+                        .and_then(|v| v.as_integer()),
+                    sub_table
+                        .get("training_data_sources")
+                        .and_then(|v| v.as_array()),
+                ) {
                     let description = sub_table.get("description").and_then(|v| v.as_str());
                     let description_str = match description {
                         Some(desc) => format!("Some(\"{}\")", desc),
                         None => "None".to_string(),
                     };
 
-                    if let Some(last_training_time) =
-                        sub_table.get("last_training_time").and_then(|v| v.as_str())
-                    {
-                        code.push_str(&format!(
-                                "    map.insert(\"{}\", TickerVectorConfig {{ key: \"{}\", path: \"{}\", description: {}, last_training_time: \"{}\" }});\n",
-                                key, key, path, description_str, last_training_time
-                            ));
-                    }
+                    let sources_str = training_data_sources
+                        .iter()
+                        .filter_map(|v| v.as_str())
+                        .map(|s| format!("\"{}\"", s))
+                        .collect::<Vec<String>>()
+                        .join(", ");
+
+                    code.push_str(&format!(
+                        "    map.insert(\"{}\", TickerVectorConfig {{ key: \"{}\", path: \"{}\", description: {}, last_training_time: \"{}\", vector_dimensions: {}, training_sequence_length: {}, training_data_sources: vec![{}] }});\n",
+                        key, key, path, description_str, last_training_time, vector_dimensions, training_sequence_length, sources_str
+                    ));
                 }
             }
         }
