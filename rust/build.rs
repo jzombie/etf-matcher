@@ -77,10 +77,11 @@ fn generate_rust_code_from_toml(config: &Value) -> String {
     code.push_str("use std::collections::HashMap;\n\n");
 
     // Define the struct
+    code.push_str("#[derive(Clone)]\n");
     code.push_str("pub struct TickerVectorConfig {\n");
-    code.push_str("    path: &'static str,\n");
+    code.push_str("    pub path: &'static str,\n");
     code.push_str("    #[allow(dead_code)]\n"); // Make usage of `description` optional
-    code.push_str("    description: Option<&'static str>,\n");
+    code.push_str("    pub description: Option<&'static str>,\n");
     code.push_str("}\n\n");
 
     // Define the function

@@ -1,5 +1,4 @@
-// Include the generated configuration file
-include!("../__AUTOGEN__generated_ticker_vectors_config.rs");
+use crate::utils::ticker_vector_config_utils::get_ticker_vector_config_by_key;
 
 pub enum DataURL {
     DataBuildInfo,
@@ -41,9 +40,7 @@ impl DataURL {
             }
             DataURL::TickerVectors(key) => {
                 // Use the generated HashMap to dynamically retrieve the TickerVector
-                let map = get_ticker_vectors_map();
-                let ticker_vector_config = map
-                    .get(key.as_str())
+                let ticker_vector_config = get_ticker_vector_config_by_key(key)
                     .expect(&format!("Key not found in ticker vectors map: {}", key));
 
                 // Concatenate the static prefix with the path
