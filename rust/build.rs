@@ -74,10 +74,12 @@ fn load_toml_config(file_path: &str) -> Value {
 fn generate_rust_code_from_toml(config: &Value) -> String {
     let mut code = String::new();
     code.push_str(AUTOGEN_FILE_HEADER);
-    code.push_str("use std::collections::HashMap;\n\n");
+    code.push_str("use std::collections::HashMap;\n");
+    code.push_str("use serde::Serialize;\n");
+    code.push_str("\n\n");
 
     // Define the struct
-    code.push_str("#[derive(Clone)]\n");
+    code.push_str("#[derive(Clone, Serialize)]\n");
     code.push_str("pub struct TickerVectorConfig {\n");
     code.push_str("    pub path: &'static str,\n");
     code.push_str("    #[allow(dead_code)]\n"); // Make usage of `description` optional

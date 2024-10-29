@@ -2,6 +2,6 @@
 path = "r5-5-10-20yr(rev-2).financial_vectors.tenq.bin"
 description = "20 years of 10-Q statements, with additional key metrics"
 
-# [ticker_vectors.r5]
-# path = "/data/r5-5-10-20yr.financial_vectors.tenq.bin"
-# description = "Original `r5`, before extended training"
+[ticker_vectors.r5]
+path = "/data/r5-5-10-20yr.financial_vectors.tenq.bin"
+description = "Original `r5`, before extended training"

@@ -27,6 +27,8 @@ use crate::utils::network_cache::{
     get_cache_size as lib_get_cache_size, remove_cache_entry as lib_remove_cache_entry,
 };
 
+use crate::utils::ticker_vector_config_utils;
+
 #[wasm_bindgen(start)]
 pub fn main() -> Result<(), JsValue> {
     web_sys::console::debug_1(&"Hello from Rust!".into());
@@ -330,6 +332,17 @@ pub async fn get_cosine_by_ticker_bucket(
     // Serialize the result back to JsValue
     serde_wasm_bindgen::to_value(&ranked_tickers)
         .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
+}
+
+#[wasm_bindgen]
+pub fn get_all_ticker_vector_configs() -> Result<JsValue, JsValue> {
+    let configs = ticker_vector_config_utils::get_all_ticker_vector_configs();
+    to_value(&configs).map_err(|err| {
+        JsValue::from_str(&format!(
+            "Failed to convert ticker vector configs to JsValue: {}",
+            err
+        ))
+    })
 }
 
 #[wasm_bindgen]
