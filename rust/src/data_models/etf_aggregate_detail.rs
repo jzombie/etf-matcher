@@ -245,7 +245,7 @@ impl ETFAggregateDetail {
         // TODO: Rename to `etf_ticker_id`
         ticker_id: TickerId,
     ) -> Result<ETFAggregateDetailResponse, JsValue> {
-        let url: &str = DataURL::ETFAggregateDetailShardIndex.value();
+        let url: &str = &DataURL::ETFAggregateDetailShardIndex.value();
         let etf_aggregate_detail: ETFAggregateDetail = query_shard_for_id(
             url,
             &ticker_id,

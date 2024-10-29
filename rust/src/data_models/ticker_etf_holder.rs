@@ -59,7 +59,7 @@ impl TickerETFHolder {
         // Log the start of the function
         // web_sys::console::debug_1(&format!("Fetching ticker ETF holders for ticker_id: {}", ticker_id).into());
 
-        let url: &str = DataURL::TickerETFHoldersShardIndex.value();
+        let url: &str = &DataURL::TickerETFHoldersShardIndex.value();
 
         // Query shard for the ticker_id
         // web_sys::console::debug_1(&format!("Querying shard for ticker_id: {}", ticker_id).into());

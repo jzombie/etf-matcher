@@ -47,7 +47,7 @@ impl ETFHoldingTicker {
         page: usize,
         page_size: usize,
     ) -> Result<PaginatedResults<ETFHoldingTickerResponse>, JsValue> {
-        let url: &str = DataURL::ETFHoldingTickersShardIndex.value();
+        let url: &str = &DataURL::ETFHoldingTickersShardIndex.value();
 
         // Query shard for the ETF ticker ID
         let holdings = query_shard_for_id(url, &etf_ticker_id, |detail: &ETFHoldingTicker| {
@@ -103,7 +103,7 @@ impl ETFHoldingTicker {
         etf_ticker_id: TickerId,
         holding_ticker_id: TickerId,
     ) -> Result<ETFHoldingWeightResponse, JsValue> {
-        let url: &str = DataURL::ETFHoldingTickersShardIndex.value();
+        let url: &str = &DataURL::ETFHoldingTickersShardIndex.value();
 
         // Query shard for the ETF ticker ID
         let holdings = query_shard_for_id(url, &etf_ticker_id, |detail: &ETFHoldingTicker| {

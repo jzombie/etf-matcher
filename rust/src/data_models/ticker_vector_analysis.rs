@@ -35,6 +35,7 @@ pub struct OwnedTickerVectors {
 }
 
 impl OwnedTickerVectors {
+    // TODO: Make this keyed so that multiple models can be loaded simultaneously
     async fn get_all_ticker_vectors() -> Result<OwnedTickerVectors, String> {
         let url = DataURL::FinancialVectors10K.value();
         let file_content = utils::xhr_fetch_cached(url.to_string())

@@ -1,8 +1,8 @@
-use chrono::{DateTime, Utc};
 use crate::data_models::DataURL;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
 use crate::JsValue;
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -13,7 +13,7 @@ pub struct DataBuildInfo {
 
 impl DataBuildInfo {
     pub async fn get_data_build_info() -> Result<DataBuildInfo, JsValue> {
-        let url: &str = DataURL::DataBuildInfo.value();
+        let url: &str = &DataURL::DataBuildInfo.value();
 
         // Fetch and decompress the CSV data, skipping the cache
         let csv_data = fetch_and_decompress_gz(&url, false).await?;

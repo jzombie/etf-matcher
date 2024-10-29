@@ -55,7 +55,7 @@ pub struct TickerDetailResponse {
 
 impl TickerDetail {
     pub async fn get_ticker_detail(ticker_id: TickerId) -> Result<TickerDetailResponse, JsValue> {
-        let url: &str = DataURL::TickerDetailShardIndex.value();
+        let url: &str = &DataURL::TickerDetailShardIndex.value();
         let mut detail: TickerDetail =
             query_shard_for_id(url, &ticker_id, |detail: &TickerDetail| {
                 Some(&detail.ticker_id)

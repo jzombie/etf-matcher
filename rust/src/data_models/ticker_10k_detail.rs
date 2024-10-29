@@ -108,7 +108,7 @@ impl Ticker10KDetail {
     pub async fn get_ticker_10k_detail_by_ticker_id(
         ticker_id: TickerId,
     ) -> Result<Ticker10KDetail, JsValue> {
-        let url: &str = DataURL::Ticker10KDetailShardIndex.value();
+        let url: &str = &DataURL::Ticker10KDetailShardIndex.value();
         let mut ticker_10k_detail: Ticker10KDetail =
             query_shard_for_id(url, &ticker_id, |ticker_10k_detail: &Ticker10KDetail| {
                 Some(&ticker_10k_detail.ticker_id)
