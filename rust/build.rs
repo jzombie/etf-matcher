@@ -16,7 +16,7 @@ fn main() {
     // Load and process the TOML configuration
     let config = load_toml_config("ticker_vectors_config.toml");
     let rust_code = generate_rust_code_from_toml(&config);
-    write_generated_code(&rust_code, "__AUTOGEN__generated_config.rs");
+    write_generated_code(&rust_code, "__AUTOGEN__generated_ticker_vectors_config.rs");
 }
 
 /// Handles the environment variables for encryption and generates Rust code.
@@ -77,14 +77,16 @@ fn generate_rust_code_from_toml(config: &Value) -> String {
     code.push_str("use std::collections::HashMap;\n\n");
 
     // Define the struct
-    code.push_str("pub struct TickerVector {\n");
+    code.push_str("pub struct TickerVectorConfig {\n");
     code.push_str("    path: &'static str,\n");
     code.push_str("    #[allow(dead_code)]\n"); // Make usage of `description` optional
     code.push_str("    description: Option<&'static str>,\n");
     code.push_str("}\n\n");
 
     // Define the function
-    code.push_str("pub fn get_ticker_vectors_map() -> HashMap<&'static str, TickerVector> {\n");
+    code.push_str(
+        "pub fn get_ticker_vectors_map() -> HashMap<&'static str, TickerVectorConfig> {\n",
+    );
     code.push_str("    let mut map = HashMap::new();\n");
 
     if let Some(table) = config.get("ticker_vectors").and_then(|v| v.as_table()) {
@@ -97,7 +99,7 @@ fn generate_rust_code_from_toml(config: &Value) -> String {
                         None => "None".to_string(),
                     };
                     code.push_str(&format!(
-                        "    map.insert(\"{}\", TickerVector {{ path: \"{}\", description: {} }});\n",
+                        "    map.insert(\"{}\", TickerVectorConfig {{ path: \"{}\", description: {} }});\n",
                         key, path, description_str
                     ));
                 }

@@ -1,5 +1,5 @@
 // Include the generated configuration file
-include!("../__AUTOGEN__generated_config.rs");
+include!("../__AUTOGEN__generated_ticker_vectors_config.rs");
 
 pub enum DataURL {
     DataBuildInfo,
@@ -51,6 +51,7 @@ impl DataURL {
 
                 let url = format!("{}{}", PREFIX, ticker_vector.path);
 
+                // TODO: Use as debug log
                 web_sys::console::log_1(&url.to_string().into());
 
                 url // Return the String directly
