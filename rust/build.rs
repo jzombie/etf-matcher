@@ -14,9 +14,12 @@ fn main() {
     handle_encryption_env_vars();
 
     // Load and process the TOML configuration
-    let config = load_toml_config("ticker_vectors_config.toml");
-    let rust_code = generate_rust_code_from_toml(&config);
-    write_generated_code(&rust_code, "__AUTOGEN__generated_ticker_vectors_config.rs");
+    let ticker_vector_configs_toml = load_toml_config("ticker_vector_configs.toml");
+    let ticker_vector_configs_rust_code = generate_rust_code_from_toml(&ticker_vector_configs_toml);
+    write_generated_code(
+        &ticker_vector_configs_rust_code,
+        "__AUTOGEN__generated_ticker_vectors_config.rs",
+    );
 }
 
 /// Handles the environment variables for encryption and generates Rust code.
@@ -93,7 +96,10 @@ fn generate_rust_code_from_toml(config: &Value) -> String {
     );
     code.push_str("    let mut map = HashMap::new();\n");
 
-    if let Some(table) = config.get("ticker_vectors").and_then(|v| v.as_table()) {
+    if let Some(table) = config
+        .get("ticker_vector_config")
+        .and_then(|v| v.as_table())
+    {
         for (key, value) in table {
             if let Some(sub_table) = value.as_table() {
                 if let Some(path) = sub_table.get("path").and_then(|v| v.as_str()) {
