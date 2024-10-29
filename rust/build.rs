@@ -81,6 +81,7 @@ fn generate_rust_code_from_toml(config: &Value) -> String {
     // Define the struct
     code.push_str("#[derive(Clone, Serialize)]\n");
     code.push_str("pub struct TickerVectorConfig {\n");
+    code.push_str("    pub key: &'static str,\n");
     code.push_str("    pub path: &'static str,\n");
     code.push_str("    #[allow(dead_code)]\n"); // Make usage of `description` optional
     code.push_str("    pub description: Option<&'static str>,\n");
@@ -102,8 +103,8 @@ fn generate_rust_code_from_toml(config: &Value) -> String {
                         None => "None".to_string(),
                     };
                     code.push_str(&format!(
-                        "    map.insert(\"{}\", TickerVectorConfig {{ path: \"{}\", description: {} }});\n",
-                        key, path, description_str
+                        "    map.insert(\"{}\", TickerVectorConfig {{ key: \"{}\", path: \"{}\", description: {} }});\n",
+                        key, key, path, description_str
                     ));
                 }
             }
