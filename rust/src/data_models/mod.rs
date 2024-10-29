@@ -13,7 +13,6 @@ pub mod ticker_detail;
 pub mod ticker_etf_holder;
 pub mod ticker_search;
 pub mod ticker_vector_analysis;
-pub mod ticker_vector_config;
 // pub mod ticker_by_id;
 
 pub use data_build_info::DataBuildInfo;
@@ -31,5 +30,4 @@ pub use ticker_bucket::TickerBucket;
 pub use ticker_detail::{TickerDetail, TickerDetailResponse};
 pub use ticker_etf_holder::TickerETFHolder;
 pub use ticker_search::{TickerSearch, TickerSearchResult};
-pub use ticker_vector_config::get_ticker_vector_config;
 // pub use ticker_by_id::TickerById;

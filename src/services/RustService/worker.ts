@@ -80,7 +80,7 @@ async function processQueue() {
           throw new Error(`Unknown function: ${functionName}`);
         }
         const result = await (
-          wasmModule as { [key: string]: CallableFunction }
+          wasmModule as unknown as { [key: string]: CallableFunction }
         )[functionName](...args);
         resolve(result);
       } catch (error) {

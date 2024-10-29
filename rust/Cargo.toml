@@ -44,6 +44,7 @@ flatbuffers = "24.3.25"
 [build-dependencies]
 dotenv = "0.15"
 hex = "0.4"
+toml = "0.8.19"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
