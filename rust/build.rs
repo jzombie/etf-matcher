@@ -1,7 +1,6 @@
 use dotenv::dotenv;
 use std::env;
-use std::fs::{self, File};
-use std::io::Write;
+use std::fs::{self};
 use std::path::Path;
 use toml::Value;
 
@@ -24,7 +23,7 @@ fn main() {
 
 /// Handles the environment variables for encryption and generates Rust code.
 fn handle_encryption_env_vars() {
-    if let (Ok(encrypted_password), Ok(key), Ok(iv)) = (
+    if let (Ok(encrypted_password), Ok(_key), Ok(iv)) = (
         env::var("ENCRYPTED_PASSWORD"),
         env::var("KEY"),
         env::var("IV"),
@@ -32,28 +31,27 @@ fn handle_encryption_env_vars() {
         // Convert the comma-separated string to a byte array
         let encrypted_password_bytes: Vec<u8> = parse_env_variable_to_bytes(&encrypted_password)
             .expect("Failed to parse ENCRYPTED_PASSWORD");
-        let key_bytes: Vec<u8> = parse_env_variable_to_bytes(&key).expect("Failed to parse KEY");
+        // let key_bytes: Vec<u8> = parse_env_variable_to_bytes(&key).expect("Failed to parse KEY");
         let iv_bytes: Vec<u8> = parse_env_variable_to_bytes(&iv).expect("Failed to parse IV");
 
         // Encode the byte arrays as hex strings
         let encrypted_password_hex: String = hex::encode(encrypted_password_bytes);
-        let _key_hex: String = hex::encode(key_bytes); // Not used directly
         let iv_hex: String = hex::encode(iv_bytes);
 
-        // Write the encrypted password, key, and IV to a Rust source file
-        let mut file: File =
-            File::create("src/__AUTOGEN__generated_password.rs").expect("Could not create file");
+        // Build the Rust code as a string
+        let mut code = String::new();
 
-        write!(file, "{}", AUTOGEN_FILE_HEADER).expect("Could not write to file");
-
-        let result = CODE_MATRIX_FUNCTION_TEMPLATE
+        let encryption_matrices_code = CODE_MATRIX_FUNCTION_TEMPLATE
             .replace(
                 "{{CHARACTER_CODE_MATRIX}}",
                 &build_character_codes_matrix(&encrypted_password_hex),
             )
             .replace("{{IV_CODE_MATRIX}}", &build_character_codes_matrix(&iv_hex));
 
-        write!(file, "{}", result).expect("Could not write to file");
+        code.push_str(&encryption_matrices_code);
+
+        // Use the write_generated_code function to write the code to a file
+        write_generated_code(&code, "__AUTOGEN__generated_password.rs");
     } else {
         panic!("ENCRYPTED_PASSWORD, KEY, or IV not set");
     }
@@ -76,7 +74,6 @@ fn load_toml_config(file_path: &str) -> Value {
 /// Generates Rust code from the TOML configuration.
 fn generate_rust_code_from_toml(config: &Value) -> String {
     let mut code = String::new();
-    code.push_str(AUTOGEN_FILE_HEADER);
     code.push_str("use std::collections::HashMap;\n");
     code.push_str("use serde::Serialize;\n");
     code.push_str("\n\n");
@@ -123,15 +120,16 @@ fn generate_rust_code_from_toml(config: &Value) -> String {
     code
 }
 
-// TODO: Rename
-//
 /// Writes the generated Rust code to a file in the output directory.
 fn write_generated_code(code: &str, file_name: &str) {
+    // Concatenate the file header with the generated code
+    let full_code = format!("{}{}", AUTOGEN_FILE_HEADER, code);
+
     // Define the path to the src directory
     let dest_path = Path::new("src").join(file_name);
 
-    // Write the generated code to the specified file in the src directory
-    fs::write(dest_path, code).expect("Failed to write generated code");
+    // Write the full code (header + generated code) to the specified file in the src directory
+    fs::write(dest_path, full_code).expect("Failed to write generated code");
 }
 
 /// Parses an environment variable into a byte array.
