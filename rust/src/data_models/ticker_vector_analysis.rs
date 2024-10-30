@@ -35,9 +35,10 @@ pub struct OwnedTickerVectors {
 }
 
 impl OwnedTickerVectors {
-    // TODO: Make this keyed so that multiple models can be loaded simultaneously
-    async fn get_all_ticker_vectors() -> Result<OwnedTickerVectors, String> {
-        let url = DataURL::TickerVectors("default".to_string()).value();
+    async fn get_all_ticker_vectors(
+        ticker_vector_config_key: &str,
+    ) -> Result<OwnedTickerVectors, String> {
+        let url = DataURL::TickerVectors(ticker_vector_config_key.to_string()).value();
 
         let file_content = utils::xhr_fetch_cached(url.to_string())
             .await
@@ -112,9 +113,11 @@ impl TickerDistance {
     }
 
     pub async fn get_euclidean_by_ticker(
+        ticker_vector_config_key: &str,
         ticker_id: TickerId,
     ) -> Result<Vec<TickerDistance>, String> {
-        let owned_ticker_vectors = OwnedTickerVectors::get_all_ticker_vectors().await?;
+        let owned_ticker_vectors =
+            OwnedTickerVectors::get_all_ticker_vectors(ticker_vector_config_key).await?;
         let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
         let (target_vector, target_pca_coords) =
@@ -138,18 +141,26 @@ impl TickerDistance {
     }
 
     pub async fn get_euclidean_by_ticker_bucket(
+        ticker_vector_config_key: &str,
         tickers_with_quantity: &Vec<TickerWithQuantity>,
     ) -> Result<Vec<TickerDistance>, String> {
         // Generate the custom vector based on the quantities of the tickers
-        let custom_vector =
-            TickerWithQuantity::generate_bucket_vector(tickers_with_quantity).await?;
+        let custom_vector = TickerWithQuantity::generate_bucket_vector(
+            ticker_vector_config_key,
+            tickers_with_quantity,
+        )
+        .await?;
 
         // Triangulate the PCA coordinates for the custom vector
-        let custom_pca_coords =
-            TickerDistance::triangulate_pca_coordinates(custom_vector.clone()).await?;
+        let custom_pca_coords = TickerDistance::triangulate_pca_coordinates(
+            ticker_vector_config_key,
+            custom_vector.clone(),
+        )
+        .await?;
 
         // Call the base method directly with the custom vector and triangulated PCA coordinates
-        let owned_ticker_vectors = OwnedTickerVectors::get_all_ticker_vectors().await?;
+        let owned_ticker_vectors =
+            OwnedTickerVectors::get_all_ticker_vectors(ticker_vector_config_key).await?;
         let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
         // Collect all ticker_ids in the input tickers_with_quantity to exclude them
@@ -167,8 +178,12 @@ impl TickerDistance {
         .await
     }
 
-    pub async fn triangulate_pca_coordinates(user_vector: Vec<f32>) -> Result<Vec<f32>, String> {
-        let owned_ticker_vectors = OwnedTickerVectors::get_all_ticker_vectors().await?;
+    pub async fn triangulate_pca_coordinates(
+        ticker_vector_config_key: &str,
+        user_vector: Vec<f32>,
+    ) -> Result<Vec<f32>, String> {
+        let owned_ticker_vectors =
+            OwnedTickerVectors::get_all_ticker_vectors(ticker_vector_config_key).await?;
         let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
         let mut weighted_pca_coords: Vec<f32> = Vec::new();
@@ -246,9 +261,11 @@ impl TickerDistance {
 
 impl CosineSimilarityResult {
     pub async fn get_cosine_by_ticker(
+        ticker_vector_config_key: &str,
         ticker_id: TickerId,
     ) -> Result<Vec<CosineSimilarityResult>, String> {
-        let owned_ticker_vectors = OwnedTickerVectors::get_all_ticker_vectors().await?;
+        let owned_ticker_vectors =
+            OwnedTickerVectors::get_all_ticker_vectors(ticker_vector_config_key).await?;
         let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
         let (target_vector, _target_pca_coords) =
@@ -295,14 +312,19 @@ impl CosineSimilarityResult {
     }
 
     pub async fn get_cosine_by_ticker_bucket(
+        ticker_vector_config_key: &str,
         tickers_with_quantity: &Vec<TickerWithQuantity>,
     ) -> Result<Vec<CosineSimilarityResult>, String> {
         // Generate the custom vector based on the quantities of the tickers
-        let custom_vector =
-            TickerWithQuantity::generate_bucket_vector(tickers_with_quantity).await?;
+        let custom_vector = TickerWithQuantity::generate_bucket_vector(
+            ticker_vector_config_key,
+            tickers_with_quantity,
+        )
+        .await?;
 
         // Get all ticker vectors
-        let owned_ticker_vectors = OwnedTickerVectors::get_all_ticker_vectors().await?;
+        let owned_ticker_vectors =
+            OwnedTickerVectors::get_all_ticker_vectors(ticker_vector_config_key).await?;
         let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
         let mut results: Vec<CosineSimilarityResult> = ticker_vectors
@@ -342,6 +364,7 @@ impl CosineSimilarityResult {
 
 impl TickerWithQuantity {
     async fn generate_bucket_vector(
+        ticker_vector_config_key: &str,
         tickers_with_quantity: &Vec<TickerWithQuantity>,
     ) -> Result<Vec<f32>, String> {
         // Initialize an empty vector to hold the aggregated result
@@ -355,7 +378,8 @@ impl TickerWithQuantity {
             }
 
             // Fetch the vector associated with the current ticker_id asynchronously
-            let ticker_vector = get_ticker_vector(ticker_with_quantity.ticker_id).await?;
+            let ticker_vector =
+                get_ticker_vector(ticker_vector_config_key, ticker_with_quantity.ticker_id).await?;
 
             // Check if the aggregated_vector is empty, which will only be true for the first ticker
             if aggregated_vector.is_empty() {
@@ -396,8 +420,12 @@ impl TickerWithQuantity {
 }
 
 // TODO: Use consistent naming for `get` and `find` (there's another method called `find_closest_tickers`)
-async fn get_ticker_vector(ticker_id: TickerId) -> Result<Vec<f32>, String> {
-    let owned_ticker_vectors = OwnedTickerVectors::get_all_ticker_vectors().await?;
+async fn get_ticker_vector(
+    ticker_vector_config_key: &str,
+    ticker_id: TickerId,
+) -> Result<Vec<f32>, String> {
+    let owned_ticker_vectors =
+        OwnedTickerVectors::get_all_ticker_vectors(ticker_vector_config_key).await?;
     let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
     // Get the vectors, which is an Option containing a flatbuffers::Vector

@@ -7,12 +7,14 @@ import type {
 } from "../types";
 import tickerBucketToTickersWithQuantity from "../utils/tickerBucketToTickersWithQuantity";
 
+const DEFAULT_TICKER_VECTOR_CONFIG_KEY = "default";
+
 export async function fetchCosineByTicker(
   tickerId: number,
 ): Promise<RustServiceCosineSimilarityResult[]> {
   return callRustService<RustServiceCosineSimilarityResult[]>(
     "get_cosine_by_ticker",
-    [tickerId],
+    [DEFAULT_TICKER_VECTOR_CONFIG_KEY, tickerId],
   );
 }
 
@@ -23,6 +25,7 @@ export async function fetchCosineByTickerBucket(
     tickerBucketToTickersWithQuantity(tickerBucket);
 
   return callRustService("get_cosine_by_ticker_bucket", [
+    DEFAULT_TICKER_VECTOR_CONFIG_KEY,
     rustServiceTickersWithQuantity,
   ]);
 }
@@ -32,7 +35,7 @@ export async function fetchEuclideanByTicker(
 ): Promise<RustServiceTickerDistance[]> {
   return callRustService<RustServiceTickerDistance[]>(
     "get_euclidean_by_ticker",
-    [tickerId],
+    [DEFAULT_TICKER_VECTOR_CONFIG_KEY, tickerId],
   );
 }
 
@@ -44,6 +47,6 @@ export async function fetchEuclideanByTickerBucket(
 
   return callRustService<RustServiceTickerDistance[]>(
     "get_euclidean_by_ticker_bucket",
-    [rustServiceTickersWithQuantity],
+    [DEFAULT_TICKER_VECTOR_CONFIG_KEY, rustServiceTickersWithQuantity],
   );
 }
