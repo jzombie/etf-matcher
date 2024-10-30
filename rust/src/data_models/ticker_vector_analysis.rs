@@ -121,7 +121,7 @@ impl TickerDistance {
         let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
         let (target_vector, target_pca_coords) =
-            match find_target_vector_and_pca(&ticker_vectors, ticker_id) {
+            match get_ticker_vector_and_pca(&ticker_vectors, ticker_id) {
                 Some(result) => result,
                 None => {
                     return Err(
@@ -269,7 +269,7 @@ impl CosineSimilarityResult {
         let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
         let (target_vector, _target_pca_coords) =
-            match find_target_vector_and_pca(&ticker_vectors, ticker_id) {
+            match get_ticker_vector_and_pca(&ticker_vectors, ticker_id) {
                 Some(result) => result,
                 None => {
                     return Err(
@@ -419,7 +419,6 @@ impl TickerWithQuantity {
     }
 }
 
-// TODO: Use consistent naming for `get` and `find` (there's another method called `find_closest_tickers`)
 async fn get_ticker_vector(
     ticker_vector_config_key: &str,
     ticker_id: TickerId,
@@ -452,7 +451,7 @@ async fn get_ticker_vector(
     Err(format!("Ticker ID {} not found", ticker_id).to_string())
 }
 
-fn find_target_vector_and_pca<'a>(
+fn get_ticker_vector_and_pca<'a>(
     ticker_vectors: &'a financial_vectors::ten_k::TickerVectors<'a>,
     ticker_id: TickerId,
 ) -> Option<(flatbuffers::Vector<'a, f32>, Vec<f32>)> {
