@@ -33,6 +33,7 @@ const YELLOW_DOT_RADIUS = 5;
 const MAX_VALUE_MULT_BUFFER = 1.1;
 
 export type PCAScatterPlotProps = {
+  tickerVectorConfigKey: string;
   tickerDetail: RustServiceTickerDetail;
 };
 
@@ -42,16 +43,21 @@ type ChartVectorDistance = {
   pc2: number;
 };
 
+// TODO: Group with other `TickerVector` components
+//
 // This component mimics a radial scatter plot, which `ReCharts` doesn't directly support.
 // The coordinates are based directly on the PCA coordinates.
-export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
+export default function PCAScatterPlot({
+  tickerVectorConfigKey,
+  tickerDetail,
+}: PCAScatterPlotProps) {
   const [chartData, setChartData] = useState<ChartVectorDistance[] | null>(
     null,
   );
 
   useEffect(() => {
     if (tickerDetail) {
-      fetchEuclideanByTicker(tickerDetail.ticker_id)
+      fetchEuclideanByTicker(tickerVectorConfigKey, tickerDetail.ticker_id)
         .then((tickerDistances) =>
           Promise.allSettled(
             tickerDistances.map(async (item) => {
@@ -72,7 +78,7 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
           setChartData(successfulResults);
         });
     }
-  }, [tickerDetail]);
+  }, [tickerVectorConfigKey, tickerDetail]);
 
   const navigateToSymbol = useTickerSymbolNavigation();
 

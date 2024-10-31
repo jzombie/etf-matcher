@@ -211,6 +211,8 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                                 </ToggleButton>
                               </ToggleButtonGroup>
                               <TickerVectorQueryTable
+                                // TODO: Don't hardcode the config key
+                                tickerVectorConfigKey="default"
                                 queryMode="bucket"
                                 query={tickerBucket}
                                 // FIXME: The key is used to update the bucket as holdings are changed; This could be improved
