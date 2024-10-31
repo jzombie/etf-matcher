@@ -1,6 +1,6 @@
 import React from "react";
 
-import callRustService from "@services/RustService";
+import { fetchAllTickerVectorConfigs } from "@services/RustService";
 import { createRoot } from "react-dom/client";
 
 import customLogger from "@utils/customLogger";
@@ -15,8 +15,6 @@ createRoot(container!).render(
 );
 
 // TODO: Remove
-callRustService("get_all_ticker_vector_configs", []).then(
-  (tickerVectorConfigs) => {
-    customLogger.warn("TODO: Remove", { tickerVectorConfigs });
-  },
-);
+fetchAllTickerVectorConfigs().then((tickerVectorConfigs) => {
+  customLogger.warn("TODO: Remove", { tickerVectorConfigs });
+});

@@ -4,8 +4,18 @@ import callRustService from "../callRustService";
 import type {
   RustServiceCosineSimilarityResult,
   RustServiceTickerDistance,
+  RustServiceTickerVectorConfig,
 } from "../types";
 import tickerBucketToTickersWithQuantity from "../utils/tickerBucketToTickersWithQuantity";
+
+export async function fetchAllTickerVectorConfigs(): Promise<
+  RustServiceTickerVectorConfig[]
+> {
+  return callRustService<RustServiceTickerVectorConfig[]>(
+    "get_all_ticker_vector_configs",
+    [],
+  );
+}
 
 export async function fetchCosineByTicker(
   tickerVectorConfigKey: string,
