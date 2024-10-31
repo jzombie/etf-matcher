@@ -16,6 +16,7 @@ import Section from "@components/Section";
 import SharedSessionManager from "@components/SettingsManager/SharedSessionManager";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
+import useTickerVectorConfigs from "@hooks/useTickerVectorConfigs";
 
 import formatLocalTime from "@utils/formatLocalTime";
 import formatByteSize from "@utils/string/formatByteSize";
@@ -58,6 +59,8 @@ export default function SettingsManager() {
     "rustServiceXHRRequestErrors",
     "subscribedMQTTRoomNames",
   ]);
+
+  const tickerVectorConfigs = useTickerVectorConfigs();
 
   return (
     <>
@@ -143,6 +146,22 @@ export default function SettingsManager() {
       </Padding>
 
       <RustCacheTable />
+
+      <Padding>
+        <Section>
+          <h2>Ticker Vector Configs</h2>
+          {
+            // TODO: Improve formatting
+          }
+          {tickerVectorConfigs.map((config) => (
+            <div key={config.key}>
+              {config.key}
+              <br />
+              {config.description}
+            </div>
+          ))}
+        </Section>
+      </Padding>
 
       <Padding>
         <Section>

@@ -43,6 +43,7 @@ import type {
   RustServiceTickerDetail,
   RustServiceTickerDistance,
   RustServiceTickerSearchResult,
+  RustServiceTickerVectorConfig,
   RustServiceTickerWithQuantity,
 } from "./types";
 import { NotifierEvent } from "./workerMainBindings";
@@ -62,6 +63,7 @@ export type {
   RustServiceETFHoldingTickerResponse,
   RustServiceCacheDetail,
   RustServiceImageInfo,
+  RustServiceTickerVectorConfig,
   RustServiceTickerDistance,
   RustServiceCosineSimilarityResult,
   RustServiceTickerWithQuantity,

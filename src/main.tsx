@@ -1,9 +1,6 @@
 import React from "react";
 
-import { fetchAllTickerVectorConfigs } from "@services/RustService";
 import { createRoot } from "react-dom/client";
-
-import customLogger from "@utils/customLogger";
 
 import App from "./App";
 
@@ -13,8 +10,3 @@ createRoot(container!).render(
     <App />
   </React.StrictMode>,
 );
-
-// TODO: Remove
-fetchAllTickerVectorConfigs().then((tickerVectorConfigs) => {
-  customLogger.warn("TODO: Remove", { tickerVectorConfigs });
-});
