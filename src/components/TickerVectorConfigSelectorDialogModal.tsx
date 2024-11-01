@@ -86,7 +86,18 @@ export default function TickerVectorConfigSelectorDialogModal({
                       color="textSecondary"
                       component="span"
                     >
-                      Dimensions: {config.vector_dimensions}
+                      Data Source
+                      {config.training_data_sources.length !== 1
+                        ? "s"
+                        : ""}: {config.training_data_sources.join(", ")}
+                    </Typography>
+                    <br />
+                    <Typography
+                      variant="caption"
+                      color="textSecondary"
+                      component="span"
+                    >
+                      Vector Dimensions: {config.vector_dimensions}
                     </Typography>
                     <br />
                     <Typography
@@ -95,17 +106,6 @@ export default function TickerVectorConfigSelectorDialogModal({
                       component="span"
                     >
                       Sequence Length: {config.training_sequence_length}
-                    </Typography>
-                    <br />
-                    <Typography
-                      variant="caption"
-                      color="textSecondary"
-                      component="span"
-                    >
-                      Data Source
-                      {config.training_data_sources.length !== 1
-                        ? "s"
-                        : ""}: {config.training_data_sources.join(", ")}
                     </Typography>
                   </>
                 }
