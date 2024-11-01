@@ -57,6 +57,8 @@ export default function TickerVectorConfigSelectorDialogModal({
             <ListItem
               key={config.key}
               onClick={() => onSelect(config)}
+              role="button"
+              aria-selected={isSelected}
               sx={{
                 backgroundColor: isSelected ? "action.selected" : undefined,
                 "&:hover": {
@@ -65,7 +67,6 @@ export default function TickerVectorConfigSelectorDialogModal({
               }}
             >
               <ListItemText
-                style={{ cursor: "pointer" }}
                 primary={config.key}
                 secondary={
                   <>
