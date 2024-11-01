@@ -41,7 +41,7 @@ export default function TickerVectorConfigSelectorDialogModal({
   });
 
   return (
-    <DialogModal {...rest}>
+    <DialogModal {...rest} onClose={onClose}>
       <Typography variant="h6" gutterBottom>
         {title}
       </Typography>
@@ -103,8 +103,9 @@ export default function TickerVectorConfigSelectorDialogModal({
                       component="span"
                     >
                       Data Source
-                      {config.training_data_sources.length !== 1 ? "s" : ""}:{" "}
-                      {config.training_data_sources.join(", ")}
+                      {config.training_data_sources.length !== 1
+                        ? "s"
+                        : ""}: {config.training_data_sources.join(", ")}
                     </Typography>
                   </>
                 }
