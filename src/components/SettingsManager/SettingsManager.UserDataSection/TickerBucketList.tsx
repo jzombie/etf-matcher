@@ -1,11 +1,15 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 
 import AssessmentIcon from "@mui/icons-material/Assessment";
-import { Typography } from "@mui/material";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { Button, Typography } from "@mui/material";
 
 import { TickerBucket } from "@src/store";
+import customLogger from "@src/utils/customLogger";
 
 import Section from "@components/Section";
+
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 
 import TickerBucketItem from "./TickerBucketItem";
 
@@ -20,6 +24,31 @@ export default function TickerBucketList({
   const sortedTickerBuckets = useMemo(
     () => [...tickerBuckets].sort((a, b) => a.type.localeCompare(b.type)),
     [tickerBuckets],
+  );
+
+  const { triggerUIError } = useAppErrorBoundary();
+
+  // TODO: Refactor to use a shared clipboard utility
+  const copySymbolsToClipboard = useCallback(
+    (symbols: string[]) => {
+      const symbolsText = symbols.join(", ");
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(symbolsText).then(
+          () => {
+            // TODO: Route to UI success notification
+            customLogger.log("Symbols copied to clipboard:", symbolsText);
+          },
+          (err) => {
+            customLogger.error(err);
+            triggerUIError(new Error("Failed to copy symbols"));
+          },
+        );
+      } else {
+        customLogger.error("Clipboard API not supported");
+        triggerUIError(new Error("Clipboard API not supported"));
+      }
+    },
+    [triggerUIError],
   );
 
   return (
@@ -51,6 +80,7 @@ export default function TickerBucketList({
                 {tickerBucket.type})
               </span>
             </Typography>
+
             <div
               style={{
                 display: "flex",
@@ -66,6 +96,21 @@ export default function TickerBucketList({
                 />
               ))}
             </div>
+            {tickerBucket.tickers.length > 0 && (
+              <Button
+                variant="contained"
+                size="small"
+                startIcon={<ContentCopyIcon />}
+                onClick={() =>
+                  copySymbolsToClipboard(
+                    tickerBucket.tickers.map((ticker) => ticker.symbol),
+                  )
+                }
+                sx={{ mt: 1 }}
+              >
+                Copy Symbols
+              </Button>
+            )}
           </Section>
         </li>
       ))}
