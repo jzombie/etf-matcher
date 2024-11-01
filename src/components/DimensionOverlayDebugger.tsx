@@ -10,7 +10,7 @@ import useElementSize from "@hooks/useElementSize";
 
 export default function DimensionOverlayDebugger() {
   const coverRef = useRef<HTMLDivElement>(null);
-  const coverSize = useElementSize(coverRef);
+  const coverSize = useElementSize(coverRef.current);
 
   return (
     <Cover ref={coverRef} style={{ backgroundColor: "rgba(0,0,0,.8)" }}>

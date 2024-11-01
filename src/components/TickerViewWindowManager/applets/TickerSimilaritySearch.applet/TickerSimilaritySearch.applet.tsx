@@ -22,7 +22,6 @@ import {
 } from "@services/RustService";
 import { DEFAULT_TICKER_VECTOR_CONFIG_KEY } from "@src/constants";
 
-import DimensionOverlayDebugger from "@components/DimensionOverlayDebugger";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
 import TickerPCAScatterPlot from "@components/TickerPCAScatterPlot";
@@ -127,6 +126,11 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
   const { isLoading: isLoadingFinancialDetail, detail: financialDetail } =
     useTicker10KDetail(tickerDetail.ticker_id, tickerDetail.is_etf);
 
+  const contentRef = useRef<HTMLDivElement>(null);
+  const contentSize = useElementSize(contentRef.current);
+
+  const shouldShowLabels = contentSize.width >= 360;
+
   if (isLoadingFinancialDetail) {
     return (
       <Center>
@@ -161,15 +165,15 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
             }
             <ToggleButton value="radial" aria-label="Radial chart">
               <DonutLargeIcon sx={{ mr: 0.5 }} />
-              Radial
+              {shouldShowLabels && "Radial"}
             </ToggleButton>
             <ToggleButton value="euclidean" aria-label="Euclidean">
               <StraightenIcon sx={{ mr: 0.5 }} />
-              Euclidean
+              {shouldShowLabels && "Euclidean"}
             </ToggleButton>
             <ToggleButton value="cosine" aria-label="Cosine">
               <ShowChartIcon sx={{ mr: 0.5 }} />
-              Cosine
+              {shouldShowLabels && "Cosine"}
             </ToggleButton>
           </ToggleButtonGroup>
           <IconButton
@@ -181,7 +185,7 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
           </IconButton>
         </Box>
       </Header>
-      <Content>
+      <Content ref={contentRef}>
         {selectedModelConfig && (
           <Transition
             trigger={`${displayMode}-${selectedModelConfig.key}`}
@@ -204,10 +208,6 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
             )}
           </Transition>
         )}
-        {
-          // TODO: Remove
-        }
-        <DimensionOverlayDebugger />
       </Content>
       <Footer style={{ textAlign: "right" }}>
         <Typography variant="body2" component="span" sx={{ fontSize: ".8rem" }}>
