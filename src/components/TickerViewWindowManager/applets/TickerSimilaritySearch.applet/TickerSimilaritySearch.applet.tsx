@@ -1,9 +1,15 @@
 import React, { useCallback, useRef, useState } from "react";
 
 import DonutLargeIcon from "@mui/icons-material/DonutLarge";
+import SettingsIcon from "@mui/icons-material/Settings";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 import StraightenIcon from "@mui/icons-material/Straighten";
-import { Box, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  ToggleButton,
+  ToggleButtonGroup,
+} from "@mui/material";
 
 import Center from "@layoutKit/Center";
 import Layout, { Content, Header } from "@layoutKit/Layout";
@@ -131,6 +137,9 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
             aria-label="Similarity search toggle"
             size="small"
           >
+            {
+              // TODO: Hide labels if the applet is too narrow
+            }
             <ToggleButton value="radial" aria-label="Radial chart">
               <DonutLargeIcon sx={{ mr: 0.5 }} />
               Radial
@@ -144,12 +153,13 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
               Cosine
             </ToggleButton>
           </ToggleButtonGroup>
-          <Button
+          <IconButton
             onClick={() => setIsTickerVectorConfigSelectorDialogOpen(true)}
-            sx={{ ml: 2 }}
+            aria-label="Select Model"
+            sx={{ ml: 1, mb: 1 }}
           >
-            Select Model
-          </Button>
+            <SettingsIcon />
+          </IconButton>
         </Box>
       </Header>
       <Content>
