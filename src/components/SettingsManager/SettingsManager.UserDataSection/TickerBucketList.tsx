@@ -10,6 +10,7 @@ import customLogger from "@src/utils/customLogger";
 import Section from "@components/Section";
 
 import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
+import { useNotification } from "@hooks/useNotification";
 
 import TickerBucketItem from "./TickerBucketItem";
 
@@ -28,6 +29,8 @@ export default function TickerBucketList({
 
   const { triggerUIError } = useAppErrorBoundary();
 
+  const { showNotification } = useNotification();
+
   // TODO: Refactor to use a shared clipboard utility
   const copySymbolsToClipboard = useCallback(
     (symbols: string[]) => {
@@ -35,8 +38,10 @@ export default function TickerBucketList({
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(symbolsText).then(
           () => {
-            // TODO: Route to UI success notification
-            customLogger.log("Symbols copied to clipboard:", symbolsText);
+            showNotification(
+              `${symbols.length} symbol${symbols.length !== 1 ? "s" : ""} copied to clipboard`,
+              "success",
+            );
           },
           (err) => {
             customLogger.error(err);
@@ -48,7 +53,7 @@ export default function TickerBucketList({
         triggerUIError(new Error("Clipboard API not supported"));
       }
     },
-    [triggerUIError],
+    [showNotification, triggerUIError],
   );
 
   return (
