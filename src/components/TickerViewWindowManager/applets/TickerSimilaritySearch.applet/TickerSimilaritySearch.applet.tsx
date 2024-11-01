@@ -29,6 +29,7 @@ import TickerVectorConfigSelectorDialogModal from "@components/TickerVectorConfi
 import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
 import Transition from "@components/Transition";
 
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import useElementSize from "@hooks/useElementSize";
 import useTicker10KDetail from "@hooks/useTicker10KDetail";
 import useTickerVectorConfigs from "@hooks/useTickerVectorConfigs";
@@ -80,15 +81,21 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
 
   const tickerVectorConfigs = useTickerVectorConfigs();
 
+  const { triggerUIError } = useAppErrorBoundary();
+
   useEffect(() => {
     if (!selectedModelConfig && tickerVectorConfigs.length > 0) {
-      _setSelectedModelConfig(
-        tickerVectorConfigs.find(
-          (config) => config.key === DEFAULT_TICKER_VECTOR_CONFIG_KEY,
-        ) as RustServiceTickerVectorConfig,
-      );
+      const defaultConfig = tickerVectorConfigs.find(
+        (config) => config.key === DEFAULT_TICKER_VECTOR_CONFIG_KEY,
+      ) as RustServiceTickerVectorConfig;
+
+      if (defaultConfig) {
+        _setSelectedModelConfig(defaultConfig);
+      } else {
+        triggerUIError(new Error("No default model configuration found"));
+      }
     }
-  }, [tickerVectorConfigs, selectedModelConfig]);
+  }, [tickerVectorConfigs, selectedModelConfig, triggerUIError]);
 
   const handleSelectModelConfig = useCallback(
     (selectedModelConfig: RustServiceTickerVectorConfig) => {
