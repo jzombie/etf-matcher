@@ -45,6 +45,7 @@ flatbuffers = "24.3.25"
 dotenv = "0.15"
 hex = "0.4"
 toml = "0.8.19"
+serde = { version = "1.0.204", features = ["derive"] }
 
 [lib]
 crate-type = ["cdylib", "rlib"]

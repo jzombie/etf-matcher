@@ -5,6 +5,7 @@ use serde_wasm_bindgen::to_value;
 use std::panic;
 use wasm_bindgen::prelude::*;
 
+pub mod config;
 mod constants;
 mod data_models;
 mod types;
