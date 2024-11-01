@@ -49,6 +49,7 @@ export default function TickerPCAScatterPlot({
   tickerVectorConfigKey,
   tickerDetail,
 }: TickerPCAScatterPlotProps) {
+  // TODO: Handle loading and error states
   const [chartData, setChartData] = useState<ChartVectorDistance[] | null>(
     null,
   );
@@ -105,6 +106,7 @@ export default function TickerPCAScatterPlot({
   );
 
   if (!chartData) {
+    // TODO: Render a loading indicator?
     return null;
   }
 
