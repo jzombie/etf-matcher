@@ -15,8 +15,9 @@ fn main() {
     handle_encryption_env_vars();
 
     // Load and process the TOML configuration
-    let ticker_vector_configs_toml = load_toml_config("ticker_vector_configs.toml");
-    let ticker_vector_configs_rust_code = generate_rust_code_from_toml(&ticker_vector_configs_toml);
+    let ticker_vector_configs_toml = load_ticker_vector_toml_config("ticker_vector_configs.toml");
+    let ticker_vector_configs_rust_code =
+        generate_ticker_vector_config_rust_code(&ticker_vector_configs_toml);
     write_generated_code(
         &ticker_vector_configs_rust_code,
         "__AUTOGEN__generated_ticker_vectors_config.rs",
@@ -59,10 +60,8 @@ fn handle_encryption_env_vars() {
     }
 }
 
-// TODO: Rename
-//
 /// Loads a TOML configuration file and returns it as a `Value`.
-fn load_toml_config(file_path: &str) -> Value {
+fn load_ticker_vector_toml_config(file_path: &str) -> Value {
     let config_content = fs::read_to_string(file_path)
         .unwrap_or_else(|_| panic!("Failed to read configuration file: {}", file_path));
     let parsed_config = config_content
@@ -72,9 +71,8 @@ fn load_toml_config(file_path: &str) -> Value {
     parsed_config
 }
 
-// TODO: Rename
 /// Generates Rust code from the TOML configuration.
-fn generate_rust_code_from_toml(config: &Value) -> String {
+fn generate_ticker_vector_config_rust_code(config: &Value) -> String {
     let mut code = String::new();
     code.push_str("use std::collections::HashMap;\n");
     code.push_str("use crate::config::TickerVectorConfig;\n\n");
