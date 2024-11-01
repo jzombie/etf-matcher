@@ -160,18 +160,23 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
             aria-label="Similarity search toggle"
             size="small"
           >
-            {
-              // TODO: Hide labels if the applet is too narrow
-            }
-            <ToggleButton value="radial" aria-label="Radial chart">
+            <ToggleButton
+              value="radial"
+              aria-label="Radial chart"
+              title="Radial chart"
+            >
               <DonutLargeIcon sx={{ mr: 0.5 }} />
               {shouldShowLabels && "Radial"}
             </ToggleButton>
-            <ToggleButton value="euclidean" aria-label="Euclidean">
+            <ToggleButton
+              value="euclidean"
+              aria-label="Euclidean"
+              title="Euclidean"
+            >
               <StraightenIcon sx={{ mr: 0.5 }} />
               {shouldShowLabels && "Euclidean"}
             </ToggleButton>
-            <ToggleButton value="cosine" aria-label="Cosine">
+            <ToggleButton value="cosine" aria-label="Cosine" title="Cosine">
               <ShowChartIcon sx={{ mr: 0.5 }} />
               {shouldShowLabels && "Cosine"}
             </ToggleButton>
