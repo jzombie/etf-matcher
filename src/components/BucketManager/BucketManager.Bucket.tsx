@@ -15,7 +15,10 @@ import {
 } from "@mui/material";
 
 import Padding from "@layoutKit/Padding";
-import { SIMILARITY_MATCHES_NOTICE } from "@src/constants";
+import {
+  DEFAULT_TICKER_VECTOR_CONFIG_KEY,
+  SIMILARITY_MATCHES_NOTICE,
+} from "@src/constants";
 import store, { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucket } from "@src/store";
 
@@ -217,8 +220,9 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                                 </ToggleButton>
                               </ToggleButtonGroup>
                               <TickerVectorQueryTable
-                                // TODO: Don't hardcode the config key
-                                tickerVectorConfigKey="default"
+                                tickerVectorConfigKey={
+                                  DEFAULT_TICKER_VECTOR_CONFIG_KEY
+                                }
                                 queryMode="bucket"
                                 query={tickerBucket}
                                 // FIXME: The key is used to update the bucket as holdings are changed; This could be improved
