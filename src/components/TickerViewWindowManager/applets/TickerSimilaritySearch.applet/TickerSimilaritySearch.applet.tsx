@@ -126,8 +126,15 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
   const { isLoading: isLoadingFinancialDetail, detail: financialDetail } =
     useTicker10KDetail(tickerDetail.ticker_id, tickerDetail.is_etf);
 
-  const contentRef = useRef<HTMLDivElement>(null);
-  const contentSize = useElementSize(contentRef.current);
+  // Using `useState` for `contentElement` to ensure it triggers a re-render
+  // when the element is set, allowing `useElementSize` to update immediately.
+  //
+  // This fixes a bug where the labels were not immediately shown, and would only
+  // show after the component had re-rendered.
+  const [contentElement, setContentElement] = useState<HTMLElement | null>(
+    null,
+  );
+  const contentSize = useElementSize(contentElement);
 
   const shouldShowLabels = contentSize.width >= 360;
 
@@ -190,7 +197,7 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
           </IconButton>
         </Box>
       </Header>
-      <Content ref={contentRef}>
+      <Content ref={setContentElement}>
         {selectedModelConfig && (
           <Transition
             trigger={`${displayMode}-${selectedModelConfig.key}`}
