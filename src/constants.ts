@@ -81,9 +81,10 @@ export const INDEXED_DB_PERSISTENCE_KEYS: readonly (keyof StoreStateProps)[] = [
   "subscribedMQTTRoomNames",
 ] as const;
 
+// TODO: Remove; This should come from the model config description
 export const SIMILARITY_MATCHES_NOTICE = `
-  Note: Similarity matches are based on 10 years
-  of financial data from 10-K statements. For
+  Note: Similarity matches are based on 20 years
+  of financial data from 10-Q statements. For
   ETFs, we use weighted averages of these
   statements. The data is analyzed and compared
   using machine learning and linear algebra

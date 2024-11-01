@@ -175,6 +175,12 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                               ))}
                             </UnstyledUL>
 
+                            {
+                              // TODO: I'm holding off on adding model config selectio here
+                              // (including adding in PCA radial charts), and will instead be
+                              // re-using the ticker detail window management for this view.
+                              // Related issue: https://linear.app/zenosmosis/issue/ZEN-128/re-use-tickerdetail-layouts-for-bucket-views
+                            }
                             <Box>
                               <Typography variant="h6">
                                 &quot;{tickerBucket.name}&quot; Similarity
