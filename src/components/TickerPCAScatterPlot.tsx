@@ -32,7 +32,7 @@ const YELLOW_DOT_RADIUS = 5;
 // Prevent coordinates from overflowing radial chart
 const MAX_VALUE_MULT_BUFFER = 1.1;
 
-export type PCAScatterPlotProps = {
+export type TickerPCAScatterPlotProps = {
   tickerVectorConfigKey: string;
   tickerDetail: RustServiceTickerDetail;
 };
@@ -43,14 +43,12 @@ type ChartVectorDistance = {
   pc2: number;
 };
 
-// TODO: Group with other `TickerVector` components
-//
 // This component mimics a radial scatter plot, which `ReCharts` doesn't directly support.
 // The coordinates are based directly on the PCA coordinates.
-export default function PCAScatterPlot({
+export default function TickerPCAScatterPlot({
   tickerVectorConfigKey,
   tickerDetail,
-}: PCAScatterPlotProps) {
+}: TickerPCAScatterPlotProps) {
   const [chartData, setChartData] = useState<ChartVectorDistance[] | null>(
     null,
   );
@@ -111,6 +109,10 @@ export default function PCAScatterPlot({
   }
 
   return (
+    // Note: `AutoScaler` is used instead of `ResponsiveContainer` to better
+    //control the layout with the app.
+    //
+    // FIXME: Hardcoding the height may need to be revisited.
     <AutoScaler style={{ height: 300 }}>
       <ScatterChart
         margin={{ top: 0, right: 0, bottom: 0, left: 0 }}

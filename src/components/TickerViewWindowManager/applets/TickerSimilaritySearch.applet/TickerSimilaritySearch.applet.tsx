@@ -13,7 +13,7 @@ import { RustServiceTickerDetail } from "@services/RustService";
 import DialogModal from "@components/DialogModal";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
-import PCAScatterPlot from "@components/PCAScatterPlot";
+import TickerPCAScatterPlot from "@components/TickerPCAScatterPlot";
 import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
 import Transition from "@components/Transition";
 
@@ -137,7 +137,7 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
       <Content>
         <Transition trigger={displayMode} direction={getDirection()}>
           {displayMode === "radial" ? (
-            <PCAScatterPlot
+            <TickerPCAScatterPlot
               // TODO: Don't hardcode the config key
               tickerVectorConfigKey="default"
               tickerDetail={tickerDetail}
