@@ -163,7 +163,10 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
         </Box>
       </Header>
       <Content>
-        <Transition trigger={displayMode} direction={getDirection()}>
+        <Transition
+          trigger={`${displayMode}-${selectedModelConfigKey}`}
+          direction={getDirection()}
+        >
           {displayMode === "radial" ? (
             <TickerPCAScatterPlot
               tickerVectorConfigKey={selectedModelConfigKey}
