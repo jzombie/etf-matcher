@@ -124,11 +124,6 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
     return currentIndex > prevIndex ? "left" : "right";
   }, [displayMode]);
 
-  // const handleModelSelect = (model: string) => {
-  //   setSelectedModel(model);
-  //   handleDialogClose();
-  // };
-
   // TODO: Handle error state
   const { isLoading: isLoadingFinancialDetail, detail: financialDetail } =
     useTicker10KDetail(tickerDetail.ticker_id, tickerDetail.is_etf);
