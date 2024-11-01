@@ -58,6 +58,7 @@ export default function TickerVectorConfigSelectorDialogModal({
               }}
             >
               <ListItemText
+                style={{ cursor: "pointer" }}
                 primary={config.key}
                 secondary={
                   <>
