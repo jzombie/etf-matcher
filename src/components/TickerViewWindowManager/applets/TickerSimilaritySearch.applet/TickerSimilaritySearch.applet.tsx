@@ -152,7 +152,7 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
   return (
     <Layout>
       <Header>
-        <Box sx={{ textAlign: "center", marginBottom: 1 }}>
+        <Box sx={{ textAlign: "center" }}>
           <ToggleButtonGroup
             value={displayMode}
             exclusive
