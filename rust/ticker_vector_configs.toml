@@ -10,7 +10,7 @@ training_data_sources = ["10-Q", "key metrics"]
 [ticker_vector_config.r5]
 path = "r5-5-10-20yr.financial_vectors.tenq.bin"
 description = "Original `r5`, before extended training"
-last_training_time = "2024-14-20T12:00:00Z"
+last_training_time = "2024-10-14T12:00:00Z"
 vector_dimensions = 128
 training_sequence_length = 80
 training_data_sources = ["10-Q", "key metrics"]
