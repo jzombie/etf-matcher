@@ -7,12 +7,14 @@ import StraightenIcon from "@mui/icons-material/Straighten";
 import {
   Box,
   IconButton,
+  Link,
   ToggleButton,
   ToggleButtonGroup,
+  Typography,
 } from "@mui/material";
 
 import Center from "@layoutKit/Center";
-import Layout, { Content, Header } from "@layoutKit/Layout";
+import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
 import { RustServiceTickerDetail } from "@services/RustService";
 import { DEFAULT_TICKER_VECTOR_CONFIG_KEY } from "@src/constants";
@@ -184,6 +186,19 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
           )}
         </Transition>
       </Content>
+      <Footer style={{ textAlign: "right" }}>
+        <Typography variant="body2" component="span" sx={{ fontSize: ".8rem" }}>
+          Using model:{" "}
+          <Link
+            component="button"
+            variant="body2"
+            onClick={() => setIsTickerVectorConfigSelectorDialogOpen(true)}
+            sx={{ cursor: "pointer", color: "text.secondary" }}
+          >
+            {selectedModelConfigKey}
+          </Link>
+        </Typography>
+      </Footer>
       <TickerVectorConfigSelectorDialogModal
         open={isTickerVectorConfigSelectorDialogOpen}
         onClose={() => setIsTickerVectorConfigSelectorDialogOpen(false)}
