@@ -9,11 +9,12 @@ import Center from "@layoutKit/Center";
 import Layout, { Content, Header } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
 import { RustServiceTickerDetail } from "@services/RustService";
+import { DEFAULT_TICKER_VECTOR_CONFIG_KEY } from "@src/constants";
 
-import DialogModal from "@components/DialogModal";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
 import TickerPCAScatterPlot from "@components/TickerPCAScatterPlot";
+import TickerVectorConfigSelectorDialogModal from "@components/TickerVectorConfigSelectorDialogModal";
 import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
 import Transition from "@components/Transition";
 
@@ -56,8 +57,25 @@ type ComponentWrapProps = {
 function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
   const [displayMode, setDisplayMode] = useState<DisplayMode>("radial");
   const previousModeRef = useRef<DisplayMode>("radial");
-  const [isDialogOpen, setDialogOpen] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<string>("default");
+  const [
+    isTickerVectorConfigSelectorDialogOpen,
+    setIsTickerVectorConfigSelectorDialogOpen,
+  ] = useState(false);
+
+  const [selectedModelConfigKey, _setSelectedModelConfigKey] = useState<string>(
+    DEFAULT_TICKER_VECTOR_CONFIG_KEY,
+  );
+
+  const handleSelectModelConfig = useCallback(
+    (selectedModelConfigKey: string) => {
+      // Set the key
+      _setSelectedModelConfigKey(selectedModelConfigKey);
+
+      // Close the dialog
+      setIsTickerVectorConfigSelectorDialogOpen(false);
+    },
+    [],
+  );
 
   const handleDisplayModeChange = useCallback(
     (event: React.MouseEvent<HTMLElement>, newMode: DisplayMode | null) => {
@@ -75,13 +93,10 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
     return currentIndex > prevIndex ? "left" : "right";
   }, [displayMode]);
 
-  const handleDialogOpen = () => setDialogOpen(true);
-  const handleDialogClose = () => setDialogOpen(false);
-
-  const handleModelSelect = (model: string) => {
-    setSelectedModel(model);
-    handleDialogClose();
-  };
+  // const handleModelSelect = (model: string) => {
+  //   setSelectedModel(model);
+  //   handleDialogClose();
+  // };
 
   // TODO: Handle error state
   const { isLoading: isLoadingFinancialDetail, detail: financialDetail } =
@@ -129,7 +144,10 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
               Cosine
             </ToggleButton>
           </ToggleButtonGroup>
-          <Button onClick={handleDialogOpen} sx={{ ml: 2 }}>
+          <Button
+            onClick={() => setIsTickerVectorConfigSelectorDialogOpen(true)}
+            sx={{ ml: 2 }}
+          >
             Select Model
           </Button>
         </Box>
@@ -138,8 +156,7 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
         <Transition trigger={displayMode} direction={getDirection()}>
           {displayMode === "radial" ? (
             <TickerPCAScatterPlot
-              // TODO: Don't hardcode the config key
-              tickerVectorConfigKey="default"
+              tickerVectorConfigKey={selectedModelConfigKey}
               tickerDetail={tickerDetail}
             />
           ) : (
@@ -148,23 +165,18 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
                 queryMode="ticker-detail"
                 query={tickerDetail}
                 alignment={displayMode}
-                tickerVectorConfigKey={selectedModel} // Pass the selected model key
+                tickerVectorConfigKey={selectedModelConfigKey}
               />
             </Scrollable>
           )}
         </Transition>
       </Content>
-      <DialogModal open={isDialogOpen} onClose={handleDialogClose}>
-        <Box sx={{ padding: 2 }}>
-          <h3>Select a Model</h3>
-          <Button onClick={() => handleModelSelect("default")}>
-            Default Model
-          </Button>
-          <Button onClick={() => handleModelSelect("model1")}>Model 1</Button>
-          <Button onClick={() => handleModelSelect("model2")}>Model 2</Button>
-          {/* Add more models as needed */}
-        </Box>
-      </DialogModal>
+      <TickerVectorConfigSelectorDialogModal
+        open={isTickerVectorConfigSelectorDialogOpen}
+        onClose={() => setIsTickerVectorConfigSelectorDialogOpen(false)}
+        selectedConfigKey={selectedModelConfigKey}
+        onSelect={handleSelectModelConfig}
+      />
     </Layout>
   );
 }
