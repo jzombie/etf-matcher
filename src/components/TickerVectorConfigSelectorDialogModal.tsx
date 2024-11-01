@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import {
   Button,
@@ -34,11 +34,15 @@ export default function TickerVectorConfigSelectorDialogModal({
   const tickerVectorConfigs = useTickerVectorConfigs();
 
   // Sort the configs so that `default` comes first
-  const sortedConfigs = tickerVectorConfigs.sort((a, b) => {
-    if (a.key === DEFAULT_TICKER_VECTOR_CONFIG_KEY) return -1;
-    if (b.key === DEFAULT_TICKER_VECTOR_CONFIG_KEY) return 1;
-    return a.key.localeCompare(b.key);
-  });
+  const sortedConfigs = useMemo(
+    () =>
+      tickerVectorConfigs.sort((a, b) => {
+        if (a.key === DEFAULT_TICKER_VECTOR_CONFIG_KEY) return -1;
+        if (b.key === DEFAULT_TICKER_VECTOR_CONFIG_KEY) return 1;
+        return a.key.localeCompare(b.key);
+      }),
+    [tickerVectorConfigs],
+  );
 
   return (
     <DialogModal {...rest} onClose={onClose}>
