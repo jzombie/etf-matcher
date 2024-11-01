@@ -22,6 +22,7 @@ import {
 } from "@services/RustService";
 import { DEFAULT_TICKER_VECTOR_CONFIG_KEY } from "@src/constants";
 
+import DimensionOverlayDebugger from "@components/DimensionOverlayDebugger";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
 import TickerPCAScatterPlot from "@components/TickerPCAScatterPlot";
@@ -29,6 +30,7 @@ import TickerVectorConfigSelectorDialogModal from "@components/TickerVectorConfi
 import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
 import Transition from "@components/Transition";
 
+import useElementSize from "@hooks/useElementSize";
 import useTicker10KDetail from "@hooks/useTicker10KDetail";
 import useTickerVectorConfigs from "@hooks/useTickerVectorConfigs";
 
@@ -202,6 +204,10 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
             )}
           </Transition>
         )}
+        {
+          // TODO: Remove
+        }
+        <DimensionOverlayDebugger />
       </Content>
       <Footer style={{ textAlign: "right" }}>
         <Typography variant="body2" component="span" sx={{ fontSize: ".8rem" }}>
