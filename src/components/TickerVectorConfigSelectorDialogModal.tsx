@@ -30,7 +30,7 @@ export default function TickerVectorConfigSelectorDialogModal({
 }: TickerVectorConfigSelectorDialogModalProps) {
   const tickerVectorConfigs = useTickerVectorConfigs();
 
-  // Sort the configs so that 'default' comes first
+  // Sort the configs so that `default` comes first
   const sortedConfigs = tickerVectorConfigs.sort((a, b) => {
     if (a.key === DEFAULT_TICKER_VECTOR_CONFIG_KEY) return -1;
     if (b.key === DEFAULT_TICKER_VECTOR_CONFIG_KEY) return 1;
@@ -61,10 +61,18 @@ export default function TickerVectorConfigSelectorDialogModal({
                 primary={config.key}
                 secondary={
                   <>
-                    <Typography variant="body2" color="textSecondary">
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="span"
+                    >
                       {config.description}
                     </Typography>
-                    <Typography variant="caption" color="textSecondary">
+                    <Typography
+                      variant="caption"
+                      color="textSecondary"
+                      component="span"
+                    >
                       Last Trained: {lastTrainingDate.toLocaleDateString()}
                     </Typography>
                   </>
