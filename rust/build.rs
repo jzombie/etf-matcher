@@ -68,7 +68,7 @@ fn load_toml_config(file_path: &str) -> Value {
     let parsed_config = config_content
         .parse::<Value>()
         .expect("Invalid TOML format");
-    println!("Parsed TOML: {:?}", parsed_config); // Debug print
+
     parsed_config
 }
 
