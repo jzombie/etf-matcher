@@ -16,7 +16,6 @@ import Section from "@components/Section";
 import SharedSessionManager from "@components/SettingsManager/SharedSessionManager";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
-import useTickerVectorConfigs from "@hooks/useTickerVectorConfigs";
 
 import formatLocalTime from "@utils/formatLocalTime";
 import formatByteSize from "@utils/string/formatByteSize";
@@ -59,8 +58,6 @@ export default function SettingsManager() {
     "rustServiceXHRRequestErrors",
     "subscribedMQTTRoomNames",
   ]);
-
-  const tickerVectorConfigs = useTickerVectorConfigs();
 
   return (
     <>
@@ -147,6 +144,8 @@ export default function SettingsManager() {
 
       <RustCacheTable />
 
+      {/* 
+      // TODO: Incorporate to select the default model config?
       <Padding>
         <Section>
           <h2>Ticker Vector Configs</h2>
@@ -161,7 +160,7 @@ export default function SettingsManager() {
             </div>
           ))}
         </Section>
-      </Padding>
+      </Padding> */}
 
       <Padding>
         <Section>
