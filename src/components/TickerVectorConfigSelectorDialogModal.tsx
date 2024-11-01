@@ -20,12 +20,14 @@ export type TickerVectorConfigSelectorDialogModalProps = Omit<
 > & {
   onSelect: (nextSelectedConfigKey: string) => void;
   selectedConfigKey: string;
+  title?: string;
 };
 
 export default function TickerVectorConfigSelectorDialogModal({
   onSelect,
   selectedConfigKey,
   onClose,
+  title = "Select a Model Configuration",
   ...rest
 }: TickerVectorConfigSelectorDialogModalProps) {
   const tickerVectorConfigs = useTickerVectorConfigs();
@@ -40,7 +42,7 @@ export default function TickerVectorConfigSelectorDialogModal({
   return (
     <DialogModal {...rest}>
       <Typography variant="h6" gutterBottom>
-        Select a Model Configuration
+        {title}
       </Typography>
       <List>
         {sortedConfigs.map((config) => {
