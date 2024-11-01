@@ -68,6 +68,7 @@ export default function TickerVectorConfigSelectorDialogModal({
                     >
                       {config.description}
                     </Typography>
+                    <br />
                     <Typography
                       variant="caption"
                       color="textSecondary"
