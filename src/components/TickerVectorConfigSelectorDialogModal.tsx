@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 
+import { RustServiceTickerVectorConfig } from "@services/RustService";
 import { DEFAULT_TICKER_VECTOR_CONFIG_KEY } from "@src/constants";
 
 import useTickerVectorConfigs from "@hooks/useTickerVectorConfigs";
@@ -18,14 +19,14 @@ export type TickerVectorConfigSelectorDialogModalProps = Omit<
   DialogModalProps,
   "children"
 > & {
-  onSelect: (nextSelectedConfigKey: string) => void;
-  selectedConfigKey: string;
+  onSelect: (nextSelectedConfig: RustServiceTickerVectorConfig) => void;
+  selectedConfig: RustServiceTickerVectorConfig;
   title?: string;
 };
 
 export default function TickerVectorConfigSelectorDialogModal({
   onSelect,
-  selectedConfigKey,
+  selectedConfig,
   onClose,
   title = "Select a Model Configuration",
   ...rest
@@ -46,12 +47,12 @@ export default function TickerVectorConfigSelectorDialogModal({
       </Typography>
       <List>
         {sortedConfigs.map((config) => {
-          const isSelected = config.key === selectedConfigKey;
+          const isSelected = config.key === selectedConfig.key;
           const lastTrainingDate = new Date(config.last_training_time);
           return (
             <ListItem
               key={config.key}
-              onClick={() => onSelect(config.key)}
+              onClick={() => onSelect(config)}
               sx={{
                 backgroundColor: isSelected ? "action.selected" : undefined,
                 "&:hover": {

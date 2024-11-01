@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import DonutLargeIcon from "@mui/icons-material/DonutLarge";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -16,7 +16,10 @@ import {
 import Center from "@layoutKit/Center";
 import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
-import { RustServiceTickerDetail } from "@services/RustService";
+import {
+  RustServiceTickerDetail,
+  RustServiceTickerVectorConfig,
+} from "@services/RustService";
 import { DEFAULT_TICKER_VECTOR_CONFIG_KEY } from "@src/constants";
 
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
@@ -27,6 +30,7 @@ import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
 import Transition from "@components/Transition";
 
 import useTicker10KDetail from "@hooks/useTicker10KDetail";
+import useTickerVectorConfigs from "@hooks/useTickerVectorConfigs";
 
 import TickerDetailAppletWrap from "../../components/TickerDetailAppletWrap";
 
@@ -70,14 +74,25 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
     setIsTickerVectorConfigSelectorDialogOpen,
   ] = useState(false);
 
-  const [selectedModelConfigKey, _setSelectedModelConfigKey] = useState<string>(
-    DEFAULT_TICKER_VECTOR_CONFIG_KEY,
-  );
+  const [selectedModelConfig, _setSelectedModelConfig] =
+    useState<RustServiceTickerVectorConfig | null>(null);
+
+  const tickerVectorConfigs = useTickerVectorConfigs();
+
+  useEffect(() => {
+    if (!selectedModelConfig && tickerVectorConfigs.length > 0) {
+      _setSelectedModelConfig(
+        tickerVectorConfigs.find(
+          (config) => config.key === DEFAULT_TICKER_VECTOR_CONFIG_KEY,
+        ) as RustServiceTickerVectorConfig,
+      );
+    }
+  }, [tickerVectorConfigs, selectedModelConfig]);
 
   const handleSelectModelConfig = useCallback(
-    (selectedModelConfigKey: string) => {
+    (selectedModelConfig: RustServiceTickerVectorConfig) => {
       // Set the key
-      _setSelectedModelConfigKey(selectedModelConfigKey);
+      _setSelectedModelConfig(selectedModelConfig);
 
       // Close the dialog
       setIsTickerVectorConfigSelectorDialogOpen(false);
@@ -165,26 +180,28 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
         </Box>
       </Header>
       <Content>
-        <Transition
-          trigger={`${displayMode}-${selectedModelConfigKey}`}
-          direction={getDirection()}
-        >
-          {displayMode === "radial" ? (
-            <TickerPCAScatterPlot
-              tickerVectorConfigKey={selectedModelConfigKey}
-              tickerDetail={tickerDetail}
-            />
-          ) : (
-            <Scrollable>
-              <TickerVectorQueryTable
-                queryMode="ticker-detail"
-                query={tickerDetail}
-                alignment={displayMode}
-                tickerVectorConfigKey={selectedModelConfigKey}
+        {selectedModelConfig && (
+          <Transition
+            trigger={`${displayMode}-${selectedModelConfig.key}`}
+            direction={getDirection()}
+          >
+            {displayMode === "radial" ? (
+              <TickerPCAScatterPlot
+                tickerVectorConfigKey={selectedModelConfig.key}
+                tickerDetail={tickerDetail}
               />
-            </Scrollable>
-          )}
-        </Transition>
+            ) : (
+              <Scrollable>
+                <TickerVectorQueryTable
+                  queryMode="ticker-detail"
+                  query={tickerDetail}
+                  alignment={displayMode}
+                  tickerVectorConfigKey={selectedModelConfig.key}
+                />
+              </Scrollable>
+            )}
+          </Transition>
+        )}
       </Content>
       <Footer style={{ textAlign: "right" }}>
         <Typography variant="body2" component="span" sx={{ fontSize: ".8rem" }}>
@@ -195,16 +212,18 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
             onClick={() => setIsTickerVectorConfigSelectorDialogOpen(true)}
             sx={{ cursor: "pointer", color: "text.secondary" }}
           >
-            {selectedModelConfigKey}
+            {selectedModelConfig?.key || "N/A"}
           </Link>
         </Typography>
       </Footer>
-      <TickerVectorConfigSelectorDialogModal
-        open={isTickerVectorConfigSelectorDialogOpen}
-        onClose={() => setIsTickerVectorConfigSelectorDialogOpen(false)}
-        selectedConfigKey={selectedModelConfigKey}
-        onSelect={handleSelectModelConfig}
-      />
+      {selectedModelConfig && (
+        <TickerVectorConfigSelectorDialogModal
+          open={isTickerVectorConfigSelectorDialogOpen}
+          onClose={() => setIsTickerVectorConfigSelectorDialogOpen(false)}
+          selectedConfig={selectedModelConfig}
+          onSelect={handleSelectModelConfig}
+        />
+      )}
     </Layout>
   );
 }
