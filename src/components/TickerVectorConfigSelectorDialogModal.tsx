@@ -80,6 +80,32 @@ export default function TickerVectorConfigSelectorDialogModal({
                     >
                       Last Trained: {lastTrainingDate.toLocaleDateString()}
                     </Typography>
+                    <br />
+                    <Typography
+                      variant="caption"
+                      color="textSecondary"
+                      component="span"
+                    >
+                      Dimensions: {config.vector_dimensions}
+                    </Typography>
+                    <br />
+                    <Typography
+                      variant="caption"
+                      color="textSecondary"
+                      component="span"
+                    >
+                      Sequence Length: {config.training_sequence_length}
+                    </Typography>
+                    <br />
+                    <Typography
+                      variant="caption"
+                      color="textSecondary"
+                      component="span"
+                    >
+                      Data Source
+                      {config.training_data_sources.length !== 1 ? "s" : ""}:{" "}
+                      {config.training_data_sources.join(", ")}
+                    </Typography>
                   </>
                 }
               />
