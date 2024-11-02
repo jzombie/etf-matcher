@@ -2,6 +2,9 @@ import React from "react";
 
 import {
   Button,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   List,
   ListItem,
   ListItemText,
@@ -34,93 +37,98 @@ export default function TickerVectorConfigSelectorDialogModal({
 
   return (
     <DialogModal {...rest} onClose={onClose}>
-      <Typography variant="h6" gutterBottom>
-        {title}
-      </Typography>
-      <List>
-        {tickerVectorConfigs.map(
-          (tickerVectorConfig: RustServiceTickerVectorConfig) => {
-            const isSelected = tickerVectorConfig.key === selectedConfig.key;
+      <DialogTitle>
+        <Typography variant="h6">{title}</Typography>
+      </DialogTitle>
+      <DialogContent>
+        <List>
+          {tickerVectorConfigs.map(
+            (tickerVectorConfig: RustServiceTickerVectorConfig) => {
+              const isSelected = tickerVectorConfig.key === selectedConfig.key;
 
-            return (
-              <ListItem
-                key={tickerVectorConfig.key}
-                onClick={() => onSelect(tickerVectorConfig)}
-                role="button"
-                aria-selected={isSelected}
-                sx={{
-                  backgroundColor: isSelected ? "action.selected" : undefined,
-                  "&:hover": {
-                    backgroundColor: "action.hover",
-                  },
-                }}
-              >
-                <ListItemText
-                  primary={tickerVectorConfig.key}
-                  secondary={
-                    <>
-                      <Typography
-                        variant="body2"
-                        color="textSecondary"
-                        component="span"
-                      >
-                        {tickerVectorConfig.description}
-                      </Typography>
-                      <br />
-                      <Typography
-                        variant="caption"
-                        color="textSecondary"
-                        component="span"
-                      >
-                        Last Trained:{" "}
-                        {tickerVectorConfig.last_training_time.toLocaleDateString()}
-                      </Typography>
-                      <br />
-                      <Typography
-                        variant="caption"
-                        color="textSecondary"
-                        component="span"
-                      >
-                        Data Source
-                        {tickerVectorConfig.training_data_sources.length !== 1
-                          ? "s"
-                          : ""}
-                        : {tickerVectorConfig.training_data_sources.join(", ")}
-                      </Typography>
-                      <br />
-                      <Typography
-                        variant="caption"
-                        color="textSecondary"
-                        component="span"
-                      >
-                        Vector Dimensions:{" "}
-                        {tickerVectorConfig.vector_dimensions}
-                      </Typography>
-                      <br />
-                      <Typography
-                        variant="caption"
-                        color="textSecondary"
-                        component="span"
-                      >
-                        Sequence Length:{" "}
-                        {tickerVectorConfig.training_sequence_length}
-                      </Typography>
-                    </>
-                  }
-                />
-              </ListItem>
-            );
-          },
-        )}
-      </List>
-      <Button
-        onClick={onClose}
-        color="primary"
-        variant="contained"
-        sx={{ mt: 2 }}
-      >
-        Close
-      </Button>
+              return (
+                <ListItem
+                  key={tickerVectorConfig.key}
+                  onClick={() => onSelect(tickerVectorConfig)}
+                  role="button"
+                  aria-selected={isSelected}
+                  sx={{
+                    backgroundColor: isSelected ? "action.selected" : undefined,
+                    "&:hover": {
+                      backgroundColor: "action.hover",
+                    },
+                  }}
+                >
+                  <ListItemText
+                    primary={tickerVectorConfig.key}
+                    secondary={
+                      <>
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="span"
+                        >
+                          {tickerVectorConfig.description}
+                        </Typography>
+                        <br />
+                        <Typography
+                          variant="caption"
+                          color="textSecondary"
+                          component="span"
+                        >
+                          Last Trained:{" "}
+                          {tickerVectorConfig.last_training_time.toLocaleDateString()}
+                        </Typography>
+                        <br />
+                        <Typography
+                          variant="caption"
+                          color="textSecondary"
+                          component="span"
+                        >
+                          Data Source
+                          {tickerVectorConfig.training_data_sources.length !== 1
+                            ? "s"
+                            : ""}
+                          :{" "}
+                          {tickerVectorConfig.training_data_sources.join(", ")}
+                        </Typography>
+                        <br />
+                        <Typography
+                          variant="caption"
+                          color="textSecondary"
+                          component="span"
+                        >
+                          Vector Dimensions:{" "}
+                          {tickerVectorConfig.vector_dimensions}
+                        </Typography>
+                        <br />
+                        <Typography
+                          variant="caption"
+                          color="textSecondary"
+                          component="span"
+                        >
+                          Sequence Length:{" "}
+                          {tickerVectorConfig.training_sequence_length}
+                        </Typography>
+                      </>
+                    }
+                  />
+                </ListItem>
+              );
+            },
+          )}
+        </List>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={onClose}
+          color="primary"
+          variant="contained"
+          sx={{ mt: 2 }}
+        >
+          Close
+        </Button>
+      </DialogActions>
     </DialogModal>
   );
 }
