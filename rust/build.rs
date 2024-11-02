@@ -1,3 +1,4 @@
+use chrono::prelude::*;
 use dotenv::dotenv;
 use std::env;
 use std::fs::{self};
@@ -22,6 +23,24 @@ fn main() {
         &ticker_vector_configs_rust_code,
         "__AUTOGEN__generated_ticker_vectors_config.rs",
     );
+
+    // Generate the compilation time constant file
+    generate_compilation_time_constant();
+}
+
+fn generate_compilation_time_constant() {
+    // Get the current time as a human-readable string
+    let now: DateTime<Utc> = Utc::now();
+    let formatted_time = now.to_rfc3339(); // Format as an ISO 8601 string
+
+    // Generate the Rust code
+    let code = format!(
+        "pub const RUST_COMPILATION_TIME: &str = \"{}\";",
+        formatted_time
+    );
+
+    // Use the existing write_generated_code function to write the code to a file
+    write_generated_code(&code, "__AUTOGEN__compilation_time.rs");
 }
 
 /// Handles the environment variables for encryption and generates Rust code.

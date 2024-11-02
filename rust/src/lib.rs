@@ -30,9 +30,12 @@ use crate::utils::network_cache::{
 
 use crate::utils::ticker_vector_config_utils;
 
+include!("__AUTOGEN__compilation_time.rs");
+
 #[wasm_bindgen(start)]
 pub fn main() -> Result<(), JsValue> {
     web_sys::console::debug_1(&"Hello from Rust!".into());
+    web_sys::console::debug_1(&format!("Rust compiled at: {}", RUST_COMPILATION_TIME).into());
     panic::set_hook(Box::new(console_error_panic_hook::hook));
     Ok(())
 }

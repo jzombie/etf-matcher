@@ -46,6 +46,7 @@ dotenv = "0.15"
 hex = "0.4"
 toml = "0.8.19"
 serde = { version = "1.0.204", features = ["derive"] }
+chrono = { version = "0.4.38", features = ["serde"] }
 
 [lib]
 crate-type = ["cdylib", "rlib"]
