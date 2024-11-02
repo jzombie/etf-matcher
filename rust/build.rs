@@ -1,5 +1,6 @@
 use chrono::prelude::*;
 use dotenv::dotenv;
+use indexmap::IndexMap;
 use std::env;
 use std::fs::{self};
 use std::path::Path;
@@ -79,76 +80,70 @@ fn handle_encryption_env_vars() {
     }
 }
 
-/// Loads a TOML configuration file and returns it as a `Value`.
-fn load_ticker_vector_toml_config(file_path: &str) -> Value {
+/// Loads a TOML configuration file and returns it as an `IndexMap`.
+fn load_ticker_vector_toml_config(file_path: &str) -> IndexMap<String, Value> {
     let config_content = fs::read_to_string(file_path)
         .unwrap_or_else(|_| panic!("Failed to read configuration file: {}", file_path));
-    let parsed_config = config_content
+    let parsed_config: Value = config_content
         .parse::<Value>()
         .expect("Invalid TOML format");
 
     parsed_config
+        .get("ticker_vector_config")
+        .and_then(|v| v.as_table())
+        .map(|table| table.iter().map(|(k, v)| (k.clone(), v.clone())).collect())
+        .unwrap_or_else(IndexMap::new)
 }
 
 /// Generates Rust code from the TOML configuration.
-fn generate_ticker_vector_config_rust_code(config: &Value) -> String {
+fn generate_ticker_vector_config_rust_code(config: &IndexMap<String, Value>) -> String {
     let mut code = String::new();
-    code.push_str("use std::collections::HashMap;\n");
+    code.push_str("use indexmap::IndexMap;\n");
     code.push_str("use crate::config::TickerVectorConfig;\n\n");
-    code.push_str("\n\n");
 
-    // TODO: Derive `file_size` and add it as a metric
-    // TODO: Derive `last_modified` and add it as a metric
-
-    // Define the function
     code.push_str(
-        "pub fn get_ticker_vectors_map() -> HashMap<&'static str, TickerVectorConfig> {\n",
+        "pub fn get_ticker_vectors_map() -> IndexMap<&'static str, TickerVectorConfig> {\n",
     );
-    code.push_str("    let mut map = HashMap::new();\n");
+    code.push_str("    let mut map = IndexMap::new();\n");
 
-    if let Some(table) = config
-        .get("ticker_vector_config")
-        .and_then(|v| v.as_table())
-    {
-        for (key, value) in table {
-            if let Some(sub_table) = value.as_table() {
-                if let (
-                    Some(path),
-                    Some(last_training_time),
-                    Some(vector_dimensions),
-                    Some(training_sequence_length),
-                    Some(training_data_sources),
-                ) = (
-                    sub_table.get("path").and_then(|v| v.as_str()),
-                    sub_table.get("last_training_time").and_then(|v| v.as_str()),
-                    sub_table
-                        .get("vector_dimensions")
-                        .and_then(|v| v.as_integer()),
-                    sub_table
-                        .get("training_sequence_length")
-                        .and_then(|v| v.as_integer()),
-                    sub_table
-                        .get("training_data_sources")
-                        .and_then(|v| v.as_array()),
-                ) {
-                    let description = sub_table.get("description").and_then(|v| v.as_str());
-                    let description_str = match description {
-                        Some(desc) => format!("Some(\"{}\")", desc),
-                        None => "None".to_string(),
-                    };
+    for (sort_order, (key, value)) in config.iter().enumerate() {
+        if let Some(sub_table) = value.as_table() {
+            if let (
+                Some(path),
+                Some(last_training_time),
+                Some(vector_dimensions),
+                Some(training_sequence_length),
+                Some(training_data_sources),
+            ) = (
+                sub_table.get("path").and_then(|v| v.as_str()),
+                sub_table.get("last_training_time").and_then(|v| v.as_str()),
+                sub_table
+                    .get("vector_dimensions")
+                    .and_then(|v| v.as_integer()),
+                sub_table
+                    .get("training_sequence_length")
+                    .and_then(|v| v.as_integer()),
+                sub_table
+                    .get("training_data_sources")
+                    .and_then(|v| v.as_array()),
+            ) {
+                let description = sub_table.get("description").and_then(|v| v.as_str());
+                let description_str = match description {
+                    Some(desc) => format!("Some(\"{}\")", desc),
+                    None => "None".to_string(),
+                };
 
-                    let sources_str = training_data_sources
-                        .iter()
-                        .filter_map(|v| v.as_str())
-                        .map(|s| format!("\"{}\"", s))
-                        .collect::<Vec<String>>()
-                        .join(", ");
+                let sources_str = training_data_sources
+                    .iter()
+                    .filter_map(|v| v.as_str())
+                    .map(|s| format!("\"{}\"", s))
+                    .collect::<Vec<String>>()
+                    .join(", ");
 
-                    code.push_str(&format!(
-                        "    map.insert(\"{}\", TickerVectorConfig {{ key: \"{}\", path: \"{}\", description: {}, last_training_time: \"{}\", vector_dimensions: {}, training_sequence_length: {}, training_data_sources: vec![{}] }});\n",
-                        key, key, path, description_str, last_training_time, vector_dimensions, training_sequence_length, sources_str
-                    ));
-                }
+                code.push_str(&format!(
+                    "    map.insert(\"{}\", TickerVectorConfig {{ key: \"{}\", sort_order: {}, path: \"{}\", description: {}, last_training_time: \"{}\", vector_dimensions: {}, training_sequence_length: {}, training_data_sources: vec![{}] }});\n",
+                    key, key, sort_order, path, description_str, last_training_time, vector_dimensions, training_sequence_length, sources_str
+                ));
             }
         }
     }

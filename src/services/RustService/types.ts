@@ -240,6 +240,7 @@ export type RustServiceImageInfo = {
 
 export type RustServiceTickerVectorConfig = {
   key: string;
+  sort_order: number;
   path: string;
   description?: string;
   last_training_time: Date;

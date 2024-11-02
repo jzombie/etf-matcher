@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Serialize, Deserialize)]
 pub struct TickerVectorConfig {
     pub key: &'static str,
+    pub sort_order: u32,
     pub path: &'static str,
     pub description: Option<&'static str>,
     pub last_training_time: &'static str,

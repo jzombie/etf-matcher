@@ -40,13 +40,15 @@ image = "0.25.2"
 qrcode-generator = "4.1.9"
 chrono = { version = "0.4.38", features = ["serde"] }
 flatbuffers = "24.3.25"
+indexmap = "2.6.0"
 
 [build-dependencies]
 dotenv = "0.15"
 hex = "0.4"
-toml = "0.8.19"
+toml = {version = "0.8.19", features = ["preserve_order"] }
 serde = { version = "1.0.204", features = ["derive"] }
 chrono = { version = "0.4.38", features = ["serde"] }
+indexmap = "2.6.0"
 
 [lib]
 crate-type = ["cdylib", "rlib"]

@@ -79,18 +79,13 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
   const [selectedModelConfig, _setSelectedModelConfig] =
     useState<RustServiceTickerVectorConfig | null>(null);
 
-  const tickerVectorConfigs = useTickerVectorConfigs();
-
+  const { tickerVectorConfigs } = useTickerVectorConfigs();
   const { triggerUIError } = useAppErrorBoundary();
 
   useEffect(() => {
-    if (
-      !selectedModelConfig &&
-      tickerVectorConfigs.tickerVectorConfigs.length > 0
-    ) {
-      const defaultConfig = tickerVectorConfigs.tickerVectorConfigs.find(
-        (config: RustServiceTickerVectorConfig) =>
-          config.key === DEFAULT_TICKER_VECTOR_CONFIG_KEY,
+    if (!selectedModelConfig && tickerVectorConfigs.length > 0) {
+      const defaultConfig = tickerVectorConfigs.find(
+        (config) => config.key === DEFAULT_TICKER_VECTOR_CONFIG_KEY,
       ) as RustServiceTickerVectorConfig;
 
       if (defaultConfig) {

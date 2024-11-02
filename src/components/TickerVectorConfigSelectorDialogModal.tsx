@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 
 import {
   Button,
@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 
 import { RustServiceTickerVectorConfig } from "@services/RustService";
-import { DEFAULT_TICKER_VECTOR_CONFIG_KEY } from "@src/constants";
 
 import useTickerVectorConfigs from "@hooks/useTickerVectorConfigs";
 
@@ -31,23 +30,7 @@ export default function TickerVectorConfigSelectorDialogModal({
   title = "Select a Model Configuration",
   ...rest
 }: TickerVectorConfigSelectorDialogModalProps) {
-  const tickerVectorConfigs = useTickerVectorConfigs();
-
-  // Sort the configs so that `default` comes first
-  const sortedConfigs = useMemo(
-    () =>
-      [...tickerVectorConfigs.tickerVectorConfigs].sort(
-        (
-          a: RustServiceTickerVectorConfig,
-          b: RustServiceTickerVectorConfig,
-        ) => {
-          if (a.key === DEFAULT_TICKER_VECTOR_CONFIG_KEY) return -1;
-          if (b.key === DEFAULT_TICKER_VECTOR_CONFIG_KEY) return 1;
-          return a.key.localeCompare(b.key);
-        },
-      ),
-    [tickerVectorConfigs],
-  );
+  const { tickerVectorConfigs } = useTickerVectorConfigs();
 
   return (
     <DialogModal {...rest} onClose={onClose}>
@@ -55,7 +38,7 @@ export default function TickerVectorConfigSelectorDialogModal({
         {title}
       </Typography>
       <List>
-        {sortedConfigs.map(
+        {tickerVectorConfigs.map(
           (tickerVectorConfig: RustServiceTickerVectorConfig) => {
             const isSelected = tickerVectorConfig.key === selectedConfig.key;
 
