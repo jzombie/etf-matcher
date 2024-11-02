@@ -53,7 +53,7 @@ impl DataURL {
     }
 
     fn build_path(file_name: &str) -> String {
-        let full_path: PathBuf = [DATA_BASE_PATH, file_name].iter().collect();
+        let full_path = PathBuf::from(DATA_BASE_PATH).join(file_name);
         full_path.to_string_lossy().into_owned()
     }
 
