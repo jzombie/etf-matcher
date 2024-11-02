@@ -8,13 +8,27 @@ import type {
 } from "../types";
 import tickerBucketToTickersWithQuantity from "../utils/tickerBucketToTickersWithQuantity";
 
+type RawTickerVectorConfig = Omit<
+  RustServiceTickerVectorConfig,
+  "last_training_time"
+> & {
+  // "Over-the-wire" format
+  last_training_time: string;
+};
+
 export async function fetchAllTickerVectorConfigs(): Promise<
   RustServiceTickerVectorConfig[]
 > {
-  return callRustService<RustServiceTickerVectorConfig[]>(
+  const configs = await callRustService<RawTickerVectorConfig[]>(
     "get_all_ticker_vector_configs",
     [],
   );
+
+  // Convert `last_training_time` to Date objects
+  return configs.map((config) => ({
+    ...config,
+    last_training_time: new Date(config.last_training_time),
+  }));
 }
 
 export async function fetchCosineByTicker(

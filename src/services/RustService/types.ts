@@ -242,7 +242,7 @@ export type RustServiceTickerVectorConfig = {
   key: string;
   path: string;
   description?: string;
-  last_training_time: string; // TODO: Can the be made a `Date` object instead?
+  last_training_time: Date;
   vector_dimensions: number;
   training_sequence_length: number;
   training_data_sources: string[];

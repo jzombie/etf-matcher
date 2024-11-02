@@ -50,13 +50,13 @@ export default function TickerVectorConfigSelectorDialogModal({
         {title}
       </Typography>
       <List>
-        {sortedConfigs.map((config) => {
-          const isSelected = config.key === selectedConfig.key;
-          const lastTrainingDate = new Date(config.last_training_time);
+        {sortedConfigs.map((tickerVectorConfig) => {
+          const isSelected = tickerVectorConfig.key === selectedConfig.key;
+
           return (
             <ListItem
-              key={config.key}
-              onClick={() => onSelect(config)}
+              key={tickerVectorConfig.key}
+              onClick={() => onSelect(tickerVectorConfig)}
               role="button"
               aria-selected={isSelected}
               sx={{
@@ -67,7 +67,7 @@ export default function TickerVectorConfigSelectorDialogModal({
               }}
             >
               <ListItemText
-                primary={config.key}
+                primary={tickerVectorConfig.key}
                 secondary={
                   <>
                     <Typography
@@ -75,7 +75,7 @@ export default function TickerVectorConfigSelectorDialogModal({
                       color="textSecondary"
                       component="span"
                     >
-                      {config.description}
+                      {tickerVectorConfig.description}
                     </Typography>
                     <br />
                     <Typography
@@ -83,7 +83,8 @@ export default function TickerVectorConfigSelectorDialogModal({
                       color="textSecondary"
                       component="span"
                     >
-                      Last Trained: {lastTrainingDate.toLocaleDateString()}
+                      Last Trained:{" "}
+                      {tickerVectorConfig.last_training_time.toLocaleDateString()}
                     </Typography>
                     <br />
                     <Typography
@@ -92,9 +93,10 @@ export default function TickerVectorConfigSelectorDialogModal({
                       component="span"
                     >
                       Data Source
-                      {config.training_data_sources.length !== 1
+                      {tickerVectorConfig.training_data_sources.length !== 1
                         ? "s"
-                        : ""}: {config.training_data_sources.join(", ")}
+                        : ""}
+                      : {tickerVectorConfig.training_data_sources.join(", ")}
                     </Typography>
                     <br />
                     <Typography
@@ -102,7 +104,7 @@ export default function TickerVectorConfigSelectorDialogModal({
                       color="textSecondary"
                       component="span"
                     >
-                      Vector Dimensions: {config.vector_dimensions}
+                      Vector Dimensions: {tickerVectorConfig.vector_dimensions}
                     </Typography>
                     <br />
                     <Typography
@@ -110,7 +112,8 @@ export default function TickerVectorConfigSelectorDialogModal({
                       color="textSecondary"
                       component="span"
                     >
-                      Sequence Length: {config.training_sequence_length}
+                      Sequence Length:{" "}
+                      {tickerVectorConfig.training_sequence_length}
                     </Typography>
                   </>
                 }
