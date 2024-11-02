@@ -7,7 +7,8 @@ import {
 
 import useAppErrorBoundary from "./useAppErrorBoundary";
 
-// TODO: Refactor into a base `useRustServiceCall` hook (or something similarly named)
+// TODO: Refactor into a base `useRustServiceCall` hook (or something similarly
+// named). It should include an onload callback.
 export default function useTickerVectorConfigs() {
   const [tickerVectorConfigs, setTickerVectorConfigs] = useState<
     RustServiceTickerVectorConfig[]
