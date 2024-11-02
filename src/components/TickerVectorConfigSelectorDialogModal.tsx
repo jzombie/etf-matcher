@@ -55,11 +55,7 @@ export default function TickerVectorConfigSelectorDialogModal({
 
   return (
     <DialogModal {...rest} open={isOpen} onClose={onClose}>
-      <DialogTitle>
-        <Typography variant="h6" gutterBottom>
-          {title}
-        </Typography>
-      </DialogTitle>
+      <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <List>
           {tickerVectorConfigs.map(
