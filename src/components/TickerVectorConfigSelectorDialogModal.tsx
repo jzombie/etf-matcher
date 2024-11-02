@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Button,
@@ -27,6 +27,7 @@ export type TickerVectorConfigSelectorDialogModalProps = Omit<
 };
 
 export default function TickerVectorConfigSelectorDialogModal({
+  open: isOpen,
   onSelect,
   selectedConfig,
   onClose,
@@ -35,10 +36,29 @@ export default function TickerVectorConfigSelectorDialogModal({
 }: TickerVectorConfigSelectorDialogModalProps) {
   const { tickerVectorConfigs } = useTickerVectorConfigs();
 
+  // The use `useState` instead of `useRef` is because we want to trigger a
+  // re-render when the selected item changes, allowing us to perform side
+  // effects such as scrolling the item into view, only after it has initially
+  // been rendered
+  const [selectedListItemElement, setSelectedListItemElement] =
+    useState<HTMLLIElement | null>(null);
+
+  // Scroll selected list item into view
+  useEffect(() => {
+    if (selectedListItemElement && isOpen) {
+      selectedListItemElement.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }
+  }, [selectedListItemElement, isOpen]);
+
   return (
-    <DialogModal {...rest} onClose={onClose}>
+    <DialogModal {...rest} open={isOpen} onClose={onClose}>
       <DialogTitle>
-        <Typography variant="h6">{title}</Typography>
+        <Typography variant="h6" gutterBottom>
+          {title}
+        </Typography>
       </DialogTitle>
       <DialogContent>
         <List>
@@ -52,6 +72,7 @@ export default function TickerVectorConfigSelectorDialogModal({
                   onClick={() => onSelect(tickerVectorConfig)}
                   role="button"
                   aria-selected={isSelected}
+                  ref={(el) => isSelected && setSelectedListItemElement(el)}
                   sx={{
                     backgroundColor: isSelected ? "action.selected" : undefined,
                     "&:hover": {
@@ -77,7 +98,9 @@ export default function TickerVectorConfigSelectorDialogModal({
                           component="span"
                         >
                           Last Trained:{" "}
-                          {tickerVectorConfig.last_training_time.toLocaleDateString()}
+                          {new Date(
+                            tickerVectorConfig.last_training_time,
+                          ).toLocaleDateString()}
                         </Typography>
                         <br />
                         <Typography
