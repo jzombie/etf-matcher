@@ -20,7 +20,6 @@ import {
   RustServiceTickerDetail,
   RustServiceTickerVectorConfig,
 } from "@services/RustService";
-import { DEFAULT_TICKER_VECTOR_CONFIG_KEY } from "@src/constants";
 
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
@@ -31,6 +30,7 @@ import Transition from "@components/Transition";
 
 import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import useElementSize from "@hooks/useElementSize";
+import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import useTicker10KDetail from "@hooks/useTicker10KDetail";
 import useTickerVectorConfigs from "@hooks/useTickerVectorConfigs";
 
@@ -82,11 +82,18 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
   const { tickerVectorConfigs } = useTickerVectorConfigs();
   const { triggerUIError } = useAppErrorBoundary();
 
+  const { preferredTickerVectorConfigKey } = useStoreStateReader(
+    "preferredTickerVectorConfigKey",
+  );
+
+  // TODO: Refactor `resume` and `persist` hooks (and relevant states) into a custom hook
+
+  // Resume config
   useEffect(() => {
     if (!selectedModelConfig && tickerVectorConfigs.length > 0) {
       const defaultConfig = tickerVectorConfigs.find(
-        (config) => config.key === DEFAULT_TICKER_VECTOR_CONFIG_KEY,
-      ) as RustServiceTickerVectorConfig;
+        (config) => config.key === preferredTickerVectorConfigKey,
+      );
 
       if (defaultConfig) {
         _setSelectedModelConfig(defaultConfig);
@@ -94,7 +101,21 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
         triggerUIError(new Error("No default model configuration found"));
       }
     }
-  }, [tickerVectorConfigs, selectedModelConfig, triggerUIError]);
+  }, [
+    tickerVectorConfigs,
+    preferredTickerVectorConfigKey,
+    selectedModelConfig,
+    triggerUIError,
+  ]);
+
+  // Persist config
+  useEffect(() => {
+    if (selectedModelConfig) {
+      store.setState({
+        preferredTickerVectorConfigKey: selectedModelConfig.key,
+      });
+    }
+  }, [selectedModelConfig]);
 
   const handleSelectModelConfig = useCallback(
     (selectedModelConfig: RustServiceTickerVectorConfig) => {

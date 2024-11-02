@@ -79,6 +79,9 @@ export const MQTT_SYNC_KEYS: readonly (keyof StoreStateProps)[] = [
 export const INDEXED_DB_PERSISTENCE_KEYS: readonly (keyof StoreStateProps)[] = [
   "tickerBuckets",
   "subscribedMQTTRoomNames",
+  // TODO: Enable this once for sure this won't lead to a crash if the selected
+  // config is deleted
+  // "preferredTickerVectorConfigKey",
 ] as const;
 
 // TODO: Remove; This should come from the model config description

@@ -15,10 +15,7 @@ import {
 } from "@mui/material";
 
 import Padding from "@layoutKit/Padding";
-import {
-  DEFAULT_TICKER_VECTOR_CONFIG_KEY,
-  SIMILARITY_MATCHES_NOTICE,
-} from "@src/constants";
+import { SIMILARITY_MATCHES_NOTICE } from "@src/constants";
 import store, { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucket } from "@src/store";
 
@@ -28,6 +25,8 @@ import SearchModalButton from "@components/SearchModalButton";
 import Section from "@components/Section";
 import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
 import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
+
+import useStoreStateReader from "@hooks/useStoreStateReader";
 
 import BucketTicker from "./BucketManager.Bucket.Ticker";
 import BucketForm from "./BucketManager.BucketForm";
@@ -80,6 +79,10 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
       }
     },
     [],
+  );
+
+  const { preferredTickerVectorConfigKey } = useStoreStateReader(
+    "preferredTickerVectorConfigKey",
   );
 
   return (
@@ -221,7 +224,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                               </ToggleButtonGroup>
                               <TickerVectorQueryTable
                                 tickerVectorConfigKey={
-                                  DEFAULT_TICKER_VECTOR_CONFIG_KEY
+                                  preferredTickerVectorConfigKey
                                 }
                                 queryMode="bucket"
                                 query={tickerBucket}
