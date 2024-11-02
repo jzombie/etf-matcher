@@ -53,6 +53,8 @@ export default function TickerVectorConfigSelectorDialogModal({
     }
   }, [selectedListItemElement, isOpen]);
 
+  // TODO: Enable keyboard navigation
+
   return (
     <DialogModal {...rest} open={isOpen} onClose={onClose}>
       <DialogTitle>{title}</DialogTitle>
