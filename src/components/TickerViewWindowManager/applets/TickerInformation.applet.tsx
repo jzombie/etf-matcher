@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 
-import { Box, Typography } from "@mui/material";
+import { Box, Divider, Link, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 
 import Padding from "@layoutKit/Padding";
@@ -11,6 +11,8 @@ import {
 } from "@services/RustService";
 
 import EncodedImage from "@components/EncodedImage";
+
+import getSymbolThirdPartyLink from "@utils/string/getSymbolThirdPartyLink";
 
 import TickerViewWindowManagerBucketManager from "../TickerViewWindowManager.BucketManager";
 import ETFAggregateDetailAppletWrap from "../components/ETFAggregateDetailAppletWrap";
@@ -91,6 +93,46 @@ export default function TickerInformationApplet({
               // TODO: Add asset class, etc.
             }
           </InfoWrapper>
+          {tickerDetail && (
+            <>
+              <Divider sx={{ mb: 2 }} />
+              <Box sx={{ fontSize: ".8rem" }}>
+                <Typography
+                  variant="body2"
+                  sx={{ fontWeight: "bold" }}
+                  gutterBottom
+                >
+                  External Resources
+                </Typography>
+                <Link
+                  sx={{ mx: 0.5 }}
+                  href={getSymbolThirdPartyLink({
+                    tickerSymbol: tickerDetail?.symbol,
+                    companyName: tickerDetail?.company_name,
+                    isETF: tickerDetail?.is_etf,
+                    provider: "stockanalysis.com",
+                  })}
+                  target="_blank"
+                >
+                  stockanalysis.com
+                </Link>
+                <Link
+                  sx={{ mx: 0.5 }}
+                  href={getSymbolThirdPartyLink({
+                    tickerSymbol: tickerDetail?.symbol,
+                    companyName: tickerDetail?.company_name,
+                    isETF: tickerDetail?.is_etf,
+                    provider: "google.com",
+                  })}
+                  target="_blank"
+                >
+                  google.com
+                </Link>
+              </Box>
+            </>
+
+            // TODO: Add ability to copy the symbol to clipboard (refactor current implemention in `SettingsManager`)
+          )}
         </Padding>
       </Scrollable>
       {!isTiling && tickerDetail && (
