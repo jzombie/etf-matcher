@@ -1,9 +1,8 @@
 import { useCallback } from "react";
 
+import usePageTitleSetter from "@hooks/usePageTitleSetter";
 import useTickerSearch from "@hooks/useTickerSearch";
 import useURLState from "@hooks/useURLState";
-
-import usePageTitleSetter from "@utils/usePageTitleSetter";
 
 export default function useSearchResultsURLState() {
   const {

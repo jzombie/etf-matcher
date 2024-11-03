@@ -5,7 +5,7 @@ import Scrollable from "@layoutKit/Scrollable";
 import FullContainer from "@components/FullContainer";
 import SettingsManager from "@components/SettingsManager";
 
-import usePageTitleSetter from "@utils/usePageTitleSetter";
+import usePageTitleSetter from "@hooks/usePageTitleSetter";
 
 export default function SettingsPage() {
   usePageTitleSetter("Settings");

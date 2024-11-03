@@ -7,9 +7,8 @@ import heroImg from "@assets/hero.webp";
 import Scrollable from "@layoutKit/Scrollable";
 import { INVESTMENT_DISCLAIMER, PROJECT_DESCRIPTION } from "@src/constants";
 
+import usePageTitleSetter from "@hooks/usePageTitleSetter";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
-
-import usePageTitleSetter from "@utils/usePageTitleSetter";
 
 export default function HomePage() {
   // Home page; no title override
