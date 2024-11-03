@@ -22,7 +22,7 @@ import {
   YAxis,
 } from "recharts";
 
-import formatCurrency from "@utils/formatCurrency";
+import formatCurrency from "@utils/string/formatCurrency";
 
 // TODO: Refactor
 const TICK_COLOR = "#999";
