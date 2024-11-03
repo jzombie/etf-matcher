@@ -17,8 +17,8 @@ import Layout, { Content, Footer } from "@layoutKit/Layout";
 import Padding from "@layoutKit/Padding";
 import { PROJECT_DESCRIPTION } from "@src/constants";
 
-import formatLocalTime from "@utils/formatLocalTime";
 import getEnvVariable from "@utils/getEnvVariable";
+import formatLocalTime from "@utils/string/formatLocalTime";
 
 import { buildTime } from "../../public/buildTime.json";
 import LogoNavButton from "./LogoNavButton";

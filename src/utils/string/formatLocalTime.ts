@@ -1,4 +1,4 @@
-import LRUCache from "./LRUCache";
+import LRUCache from "../LRUCache";
 
 const lruCache = new LRUCache<string, string>(100);
 

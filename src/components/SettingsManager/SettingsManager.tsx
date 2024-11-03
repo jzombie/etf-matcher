@@ -17,8 +17,8 @@ import SharedSessionManager from "@components/SettingsManager/SharedSessionManag
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
-import formatLocalTime from "@utils/formatLocalTime";
 import formatByteSize from "@utils/string/formatByteSize";
+import formatLocalTime from "@utils/string/formatLocalTime";
 
 import RustCachePieChart from "./SettingsManager.RustCachePieChart";
 import RustCacheTable from "./SettingsManager.RustCacheTable";
