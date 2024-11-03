@@ -3,7 +3,6 @@ export const SYMBOL_THIRD_PARTY_PROVIDERS = [
   "google.com",
 ] as const;
 
-// Define a type for the providers
 type TickerSymbolThirdPartyProvider =
   (typeof SYMBOL_THIRD_PARTY_PROVIDERS)[number];
 
