@@ -221,6 +221,8 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
       </Header>
       <Content ref={setContentElement}>
         {selectedModelConfig && (
+          // Due to some of the child components of the`Transition` wrapper,
+          // it's being conditionally rendered for now.
           <Transition
             trigger={`${displayMode}-${selectedModelConfig.key}`}
             direction={getDirection()}
