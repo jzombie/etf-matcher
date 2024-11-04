@@ -43,10 +43,10 @@ impl DataURL {
                 Self::build_path("etf_holding_tickers_shard_index.enc")
             }
             DataURL::TickerVectors(key) => {
-                match get_ticker_vector_config_by_key(key) {
-                    Some(config) => Self::build_path(&config.path),
-                    None => panic!("Key not found in ticker vectors map: {}", key), // Or return Result instead
-                }
+                get_ticker_vector_config_by_key(key)
+                    .map(|config| Self::build_path(&config.path))
+                    .ok_or_else(|| format!("Key not found in ticker vectors map: {}", key))
+                    .expect(&format!("Invalid ticker vector key: {}", key)) // Or propagate the error up
             }
             DataURL::Image(_) => panic!("Use image_url() for image paths"), // Prevent calling value() for images
         }
