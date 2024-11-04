@@ -15,6 +15,25 @@ type UsePromiseProps<T, A extends unknown[] = []> = {
 /**
  * This hook provides a convenient way to handle asynchronous operations
  * with built-in state management for `pending`, `success`, and `error` states.
+ *
+ * @template T - The type of the data returned by the promise.
+ * @template A - The type of the arguments passed to the promise function.
+ *
+ * @param {UsePromiseProps<T, A>} props - The properties for configuring the hook.
+ * @param {(...args: A) => Promise<T>} props.promiseFunction - The function that returns a promise.
+ * @param {(data: T) => void} [props.onLoad] - Optional callback invoked when the promise resolves successfully.
+ * @param {(error: Error) => void} [props.onError] - Optional callback invoked when the promise is rejected.
+ * @param {boolean} props.autoExecute - If true, the promise function is automatically executed on mount.
+ * @param {A} [props.autoExecuteProps] - The arguments to use for the initial auto-execute. These are only evaluated once on the initial auto-execute and do not trigger re-evaluation if changed.
+ *
+ * @returns {{ data: T | null, isPending: boolean, error: Error | null, execute: (...args: A) => void }}
+ * - `data`: The data returned by the promise, or null if not yet resolved.
+ * - `isPending`: A boolean indicating if the promise is currently pending.
+ * - `error`: The error returned by the promise, or null if not yet rejected.
+ * - `execute`: A function to manually execute the promise with specific arguments.
+ *
+ * Note: The `autoExecuteProps` are only used for the initial auto-execute.
+ * Changing them does not trigger a re-evaluation. To re-evaluate, call the `execute` function explicitly.
  */
 export default function usePromise<T, A extends unknown[] = []>({
   promiseFunction,
