@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import type {
   RustServiceETFAggregateDetail,
@@ -9,35 +9,32 @@ import {
   fetchTicker10KDetail,
 } from "@services/RustService";
 
-// TODO: Refactor to use `usePromise`
-//
-// TODO: Handle error state (and rename variables; see `useTickerDetail`)
+import customLogger from "@utils/customLogger";
+
+import usePromise from "./usePromise";
+
+// TODO: Rename `detail` to `ticker10KDetail` (or equivalent)
 export default function useTicker10KDetail(tickerId: number, isETF: boolean) {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [detail, setDetail] = useState<
-    RustServiceTicker10KDetail | RustServiceETFAggregateDetail | null
-  >(null);
+  const {
+    data: detail,
+    isPending: isLoading,
+    error,
+    execute,
+  } = usePromise<
+    RustServiceTicker10KDetail | RustServiceETFAggregateDetail,
+    [is: number, isETF: boolean]
+  >({
+    promiseFunction: (id, isETF) =>
+      isETF ? fetchETFAggregateDetail(id) : fetchTicker10KDetail(id),
+    onError: customLogger.error,
+    autoExecute: false,
+  });
 
   useEffect(() => {
     if (tickerId) {
-      setIsLoading(true);
-
-      const fetchData = async () => {
-        try {
-          const result = isETF
-            ? await fetchETFAggregateDetail(tickerId)
-            : await fetchTicker10KDetail(tickerId);
-
-          setDetail(result);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      fetchData();
+      execute(tickerId, isETF);
     }
-  }, [tickerId, isETF]);
+  }, [tickerId, isETF, execute]);
 
-  // TODO: Rename to `financialDetail` or `tenKDetail`
-  return { isLoading, detail };
+  return { detail, isLoading, error };
 }
