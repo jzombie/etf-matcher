@@ -114,7 +114,7 @@ export default function useTickerSearch(
     },
   });
 
-  // Perform search or reset
+  // Perform auto-search or auto-reset, based on the search parameters
   useEffect(() => {
     if (!searchQuery.trim().length) {
       resetSearch();
