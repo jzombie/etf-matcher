@@ -21,7 +21,7 @@ export type TickerInformationAppletProps = {
   tickerDetail?: RustServiceTickerDetail | null;
   isLoadingTickerDetail: boolean;
   tickerDetailError?: Error | unknown;
-  etfAggregateDetail?: RustServiceETFAggregateDetail;
+  etfAggregateDetail?: RustServiceETFAggregateDetail | null;
   isLoadingETFAggregateDetail: boolean;
   etfAggregateDetailError?: Error | unknown;
   isTiling: boolean;
@@ -188,7 +188,7 @@ function InfoItem({
 
 function useFormattedSectorAndIndustry(
   tickerDetail?: RustServiceTickerDetail | null,
-  etfAggregateDetail?: RustServiceETFAggregateDetail,
+  etfAggregateDetail?: RustServiceETFAggregateDetail | null,
 ) {
   const formatDetail = useCallback(
     (baseEntity?: string, topEntity?: string): JSX.Element => {

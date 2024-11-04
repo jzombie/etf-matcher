@@ -16,7 +16,7 @@ export type ETFAggregateDetailAppletWrapProps = {
   tickerDetail?: RustServiceTickerDetail | null;
   isLoadingTickerDetail: boolean;
   tickerDetailError?: Error | unknown;
-  etfAggregateDetail?: RustServiceETFAggregateDetail;
+  etfAggregateDetail?: RustServiceETFAggregateDetail | null;
   isLoadingETFAggregateDetail: boolean;
   etfAggregateDetailError?: Error | unknown;
   isTiling: boolean;
