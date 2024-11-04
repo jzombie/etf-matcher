@@ -8,15 +8,18 @@ import customLogger from "@utils/customLogger";
 import usePromise from "./usePromise";
 
 export default function useEncodedImage(encSrc?: string) {
-  const { data, isPending, error, execute } = usePromise<RustServiceImageInfo>({
-    promiseFunction: () => fetchImageInfo(encSrc!),
+  const { data, isPending, error, execute } = usePromise<
+    RustServiceImageInfo,
+    [string]
+  >({
+    promiseFunction: (encSrc) => fetchImageInfo(encSrc),
     autoExecute: false,
     onError: customLogger.error,
   });
 
   useEffect(() => {
     if (encSrc) {
-      execute();
+      execute(encSrc);
     }
   }, [encSrc, execute]);
 
