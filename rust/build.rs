@@ -95,7 +95,52 @@ fn load_ticker_vector_toml_config(file_path: &str) -> IndexMap<String, Value> {
         .unwrap_or_else(IndexMap::new)
 }
 
-/// Generates Rust code from the TOML configuration.
+fn parse_ticker_vector_config(
+    key: &str,
+    sort_order: usize,
+    sub_table: &toml::Table,
+) -> Option<String> {
+    let (
+        path,
+        last_training_time,
+        vector_dimensions,
+        training_sequence_length,
+        training_data_sources,
+    ) = match (
+        sub_table.get("path").and_then(|v| v.as_str()),
+        sub_table.get("last_training_time").and_then(|v| v.as_str()),
+        sub_table
+            .get("vector_dimensions")
+            .and_then(|v| v.as_integer()),
+        sub_table
+            .get("training_sequence_length")
+            .and_then(|v| v.as_integer()),
+        sub_table
+            .get("training_data_sources")
+            .and_then(|v| v.as_array()),
+    ) {
+        (Some(p), Some(t), Some(vd), Some(tsl), Some(tds)) => (p, t, vd, tsl, tds),
+        _ => return None,
+    };
+
+    let description = sub_table
+        .get("description")
+        .and_then(|v| v.as_str())
+        .map_or("None".to_string(), |desc| format!("Some(\"{}\")", desc));
+
+    let sources_str = training_data_sources
+        .iter()
+        .filter_map(|v| v.as_str())
+        .map(|s| format!("\"{}\"", s))
+        .collect::<Vec<String>>()
+        .join(", ");
+
+    Some(format!(
+        "    map.insert(\"{}\", TickerVectorConfig {{ key: \"{}\", sort_order: {}, path: \"{}\", description: {}, last_training_time: \"{}\", vector_dimensions: {}, training_sequence_length: {}, training_data_sources: vec![{}] }});\n",
+        key, key, sort_order, path, description, last_training_time, vector_dimensions, training_sequence_length, sources_str
+    ))
+}
+
 fn generate_ticker_vector_config_rust_code(config: &IndexMap<String, Value>) -> String {
     let mut code = String::new();
     code.push_str("use indexmap::IndexMap;\n");
@@ -108,42 +153,8 @@ fn generate_ticker_vector_config_rust_code(config: &IndexMap<String, Value>) -> 
 
     for (sort_order, (key, value)) in config.iter().enumerate() {
         if let Some(sub_table) = value.as_table() {
-            if let (
-                Some(path),
-                Some(last_training_time),
-                Some(vector_dimensions),
-                Some(training_sequence_length),
-                Some(training_data_sources),
-            ) = (
-                sub_table.get("path").and_then(|v| v.as_str()),
-                sub_table.get("last_training_time").and_then(|v| v.as_str()),
-                sub_table
-                    .get("vector_dimensions")
-                    .and_then(|v| v.as_integer()),
-                sub_table
-                    .get("training_sequence_length")
-                    .and_then(|v| v.as_integer()),
-                sub_table
-                    .get("training_data_sources")
-                    .and_then(|v| v.as_array()),
-            ) {
-                let description = sub_table.get("description").and_then(|v| v.as_str());
-                let description_str = match description {
-                    Some(desc) => format!("Some(\"{}\")", desc),
-                    None => "None".to_string(),
-                };
-
-                let sources_str = training_data_sources
-                    .iter()
-                    .filter_map(|v| v.as_str())
-                    .map(|s| format!("\"{}\"", s))
-                    .collect::<Vec<String>>()
-                    .join(", ");
-
-                code.push_str(&format!(
-                    "    map.insert(\"{}\", TickerVectorConfig {{ key: \"{}\", sort_order: {}, path: \"{}\", description: {}, last_training_time: \"{}\", vector_dimensions: {}, training_sequence_length: {}, training_data_sources: vec![{}] }});\n",
-                    key, key, sort_order, path, description_str, last_training_time, vector_dimensions, training_sequence_length, sources_str
-                ));
+            if let Some(config_str) = parse_ticker_vector_config(key, sort_order, sub_table) {
+                code.push_str(&config_str);
             }
         }
     }
