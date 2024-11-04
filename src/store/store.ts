@@ -17,6 +17,7 @@ import {
 import TickerBucketImportExportService from "@services/TickerBucketImportExportService";
 import {
   DEFAULT_TICKER_TAPE_TICKERS,
+  DEFAULT_TICKER_VECTOR_CONFIG_KEY,
   INDEXED_DB_PERSISTENCE_KEYS,
   MAX_RECENTLY_VIEWED_ITEMS,
   MIN_TICKER_BUCKET_NAME_LENGTH,
@@ -104,6 +105,7 @@ export type StoreStateProps = {
   latestCacheOpenedRequestPathName: string | null;
   subscribedMQTTRoomNames: string[];
   uiErrors: Error[];
+  preferredTickerVectorConfigKey: string;
 };
 
 export type IndexedDBPersistenceProps = {
@@ -185,6 +187,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
       latestCacheOpenedRequestPathName: null,
       subscribedMQTTRoomNames: [],
       uiErrors: [],
+      preferredTickerVectorConfigKey: DEFAULT_TICKER_VECTOR_CONFIG_KEY,
     });
 
     Store._instance = this;

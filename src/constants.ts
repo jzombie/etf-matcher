@@ -79,11 +79,15 @@ export const MQTT_SYNC_KEYS: readonly (keyof StoreStateProps)[] = [
 export const INDEXED_DB_PERSISTENCE_KEYS: readonly (keyof StoreStateProps)[] = [
   "tickerBuckets",
   "subscribedMQTTRoomNames",
+  // TODO: Enable this once for sure this won't lead to a crash if the selected
+  // config is deleted
+  // "preferredTickerVectorConfigKey",
 ] as const;
 
+// TODO: Remove; This should come from the model config description
 export const SIMILARITY_MATCHES_NOTICE = `
-  Note: Similarity matches are based on 10 years
-  of financial data from 10-K statements. For
+  Note: Similarity matches are based on 20 years
+  of financial data from 10-Q statements. For
   ETFs, we use weighted averages of these
   statements. The data is analyzed and compared
   using machine learning and linear algebra
@@ -100,3 +104,5 @@ export const FILE_IMPORT_ACCEPT_MAP: ReadonlyMap<string, FileAcceptType> =
   new Map([["csv", { extensions: [".csv"], mimeTypes: ["text/csv"] }]]);
 
 export const MAX_CSV_IMPORT_SIZE: number = 1024 * 1024 * 2;
+
+export const DEFAULT_TICKER_VECTOR_CONFIG_KEY = "default";

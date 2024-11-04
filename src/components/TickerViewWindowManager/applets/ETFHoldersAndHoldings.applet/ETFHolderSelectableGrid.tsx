@@ -25,7 +25,7 @@ import usePagination from "@hooks/usePagination";
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
 import customLogger from "@utils/customLogger";
-import formatCurrency from "@utils/formatCurrency";
+import formatCurrency from "@utils/string/formatCurrency";
 
 import { StyledTitle } from "./common";
 

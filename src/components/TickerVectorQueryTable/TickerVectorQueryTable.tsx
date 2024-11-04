@@ -8,12 +8,14 @@ import Cosine from "./TickerVectorQueryTable.Cosine";
 import Euclidean from "./TickerVectorQueryTable.Euclidean";
 
 export type VectorSimiliartyTableProps = {
+  tickerVectorConfigKey: string;
   queryMode: TickerVectorQueryProps["queryMode"];
   query: TickerVectorQueryProps["query"];
   alignment: "euclidean" | "cosine";
 };
 
 export default function TickerVectorQueryTable({
+  tickerVectorConfigKey,
   queryMode,
   query,
   alignment,
@@ -24,9 +26,17 @@ export default function TickerVectorQueryTable({
       direction={alignment === "euclidean" ? "right" : "left"}
     >
       {alignment === "euclidean" ? (
-        <Euclidean queryMode={queryMode} query={query} />
+        <Euclidean
+          tickerVectorConfigKey={tickerVectorConfigKey}
+          queryMode={queryMode}
+          query={query}
+        />
       ) : (
-        <Cosine queryMode={queryMode} query={query} />
+        <Cosine
+          tickerVectorConfigKey={tickerVectorConfigKey}
+          queryMode={queryMode}
+          query={query}
+        />
       )}
     </Transition>
   );

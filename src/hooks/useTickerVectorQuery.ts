@@ -34,11 +34,13 @@ export type RustServiceTickerDetailWithCosineSimilarity =
   };
 
 export type TickerVectorQueryProps = {
+  tickerVectorConfigKey: string;
   queryMode: "ticker-detail" | "bucket";
   query: RustServiceTickerDetail | TickerBucket;
 };
 
 export default function useTickerVectorQuery({
+  tickerVectorConfigKey,
   queryMode,
   query,
 }: TickerVectorQueryProps) {
@@ -72,7 +74,7 @@ export default function useTickerVectorQuery({
   // Utility function to handle common fetching logic
   const _fetchData = useCallback(
     async <T, R, M>(
-      fetchFunction: (id: T) => Promise<R[]>,
+      fetchFunction: (key: string, id: T) => Promise<R[]>,
       mapFunction: (item: R) => Promise<M>,
       setLoading: React.Dispatch<React.SetStateAction<boolean>>,
       setResults: React.Dispatch<React.SetStateAction<M[]>>,
@@ -81,7 +83,7 @@ export default function useTickerVectorQuery({
     ) => {
       setLoading(true);
       try {
-        const items = await fetchFunction(id);
+        const items = await fetchFunction(tickerVectorConfigKey, id);
         const detailPromises = items.map(mapFunction);
         const settledDetails = await Promise.allSettled(detailPromises);
 
@@ -103,7 +105,7 @@ export default function useTickerVectorQuery({
         setLoading(false);
       }
     },
-    [triggerUIError],
+    [triggerUIError, tickerVectorConfigKey],
   );
 
   const fetchTickerDetailWithETFExpenseRatio: (

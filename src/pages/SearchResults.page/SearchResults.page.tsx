@@ -23,10 +23,10 @@ import SelectableGrid from "@components/SelectableGrid";
 import TickerViewWindowManager from "@components/TickerViewWindowManager";
 import Transition from "@components/Transition";
 
+import usePageTitleSetter from "@hooks/usePageTitleSetter";
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
 import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
-import usePageTitleSetter from "@utils/usePageTitleSetter";
 
 import useSearchResultsURLState from "./useSearchResultsURLState";
 

@@ -5,7 +5,7 @@ import Scrollable from "@layoutKit/Scrollable";
 import BucketManager from "@components/BucketManager";
 import FullContainer from "@components/FullContainer";
 
-import usePageTitleSetter from "@utils/usePageTitleSetter";
+import usePageTitleSetter from "@hooks/usePageTitleSetter";
 
 export default function WatchlistsPage() {
   usePageTitleSetter("Watchlists");

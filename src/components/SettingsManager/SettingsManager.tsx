@@ -17,8 +17,8 @@ import SharedSessionManager from "@components/SettingsManager/SharedSessionManag
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
-import formatLocalTime from "@utils/formatLocalTime";
 import formatByteSize from "@utils/string/formatByteSize";
+import formatLocalTime from "@utils/string/formatLocalTime";
 
 import RustCachePieChart from "./SettingsManager.RustCachePieChart";
 import RustCacheTable from "./SettingsManager.RustCacheTable";
@@ -143,6 +143,24 @@ export default function SettingsManager() {
       </Padding>
 
       <RustCacheTable />
+
+      {/* 
+      // TODO: Incorporate to select the default model config?
+      <Padding>
+        <Section>
+          <h2>Ticker Vector Configs</h2>
+          {
+            // TODO: Improve formatting
+          }
+          {tickerVectorConfigs.map((config) => (
+            <div key={config.key}>
+              {config.key}
+              <br />
+              {config.description}
+            </div>
+          ))}
+        </Section>
+      </Padding> */}
 
       <Padding>
         <Section>

@@ -24,6 +24,7 @@ import generateQRCode from "./lib/generateQRCode";
 import searchTickers from "./lib/searchTickers";
 import { csvToTickerBuckets, tickerBucketsToCSV } from "./lib/tickerBuckets";
 import {
+  fetchAllTickerVectorConfigs,
   fetchCosineByTicker,
   fetchCosineByTickerBucket,
   fetchEuclideanByTicker,
@@ -42,6 +43,7 @@ import type {
   RustServiceTickerDetail,
   RustServiceTickerDistance,
   RustServiceTickerSearchResult,
+  RustServiceTickerVectorConfig,
   RustServiceTickerWithQuantity,
 } from "./types";
 import { NotifierEvent } from "./workerMainBindings";
@@ -61,6 +63,7 @@ export type {
   RustServiceETFHoldingTickerResponse,
   RustServiceCacheDetail,
   RustServiceImageInfo,
+  RustServiceTickerVectorConfig,
   RustServiceTickerDistance,
   RustServiceCosineSimilarityResult,
   RustServiceTickerWithQuantity,
@@ -69,6 +72,7 @@ export type {
 export {
   removeCacheEntry,
   clearCache,
+  fetchAllTickerVectorConfigs,
   fetchCosineByTicker,
   fetchCosineByTickerBucket,
   fetchEuclideanByTicker,

@@ -32,7 +32,8 @@ const YELLOW_DOT_RADIUS = 5;
 // Prevent coordinates from overflowing radial chart
 const MAX_VALUE_MULT_BUFFER = 1.1;
 
-export type PCAScatterPlotProps = {
+export type TickerPCAScatterPlotProps = {
+  tickerVectorConfigKey: string;
   tickerDetail: RustServiceTickerDetail;
 };
 
@@ -44,14 +45,18 @@ type ChartVectorDistance = {
 
 // This component mimics a radial scatter plot, which `ReCharts` doesn't directly support.
 // The coordinates are based directly on the PCA coordinates.
-export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
+export default function TickerPCAScatterPlot({
+  tickerVectorConfigKey,
+  tickerDetail,
+}: TickerPCAScatterPlotProps) {
+  // TODO: Handle loading and error states
   const [chartData, setChartData] = useState<ChartVectorDistance[] | null>(
     null,
   );
 
   useEffect(() => {
     if (tickerDetail) {
-      fetchEuclideanByTicker(tickerDetail.ticker_id)
+      fetchEuclideanByTicker(tickerVectorConfigKey, tickerDetail.ticker_id)
         .then((tickerDistances) =>
           Promise.allSettled(
             tickerDistances.map(async (item) => {
@@ -72,7 +77,7 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
           setChartData(successfulResults);
         });
     }
-  }, [tickerDetail]);
+  }, [tickerVectorConfigKey, tickerDetail]);
 
   const navigateToSymbol = useTickerSymbolNavigation();
 
@@ -101,10 +106,15 @@ export default function PCAScatterPlot({ tickerDetail }: PCAScatterPlotProps) {
   );
 
   if (!chartData) {
+    // TODO: Render a loading indicator?
     return null;
   }
 
   return (
+    // Note: `AutoScaler` is used instead of `ResponsiveContainer` to better
+    //control the layout with the app.
+    //
+    // FIXME: Hardcoding the height may need to be revisited.
     <AutoScaler style={{ height: 300 }}>
       <ScatterChart
         margin={{ top: 0, right: 0, bottom: 0, left: 0 }}

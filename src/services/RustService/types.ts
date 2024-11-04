@@ -238,6 +238,17 @@ export type RustServiceImageInfo = {
   rgba: string;
 };
 
+export type RustServiceTickerVectorConfig = {
+  key: string;
+  sort_order: number;
+  path: string;
+  description?: string;
+  last_training_time: Date;
+  vector_dimensions: number;
+  training_sequence_length: number;
+  training_data_sources: string[];
+};
+
 export type RustServiceTickerDistance = {
   ticker_id: number;
   distance: number;

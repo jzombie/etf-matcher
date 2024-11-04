@@ -25,11 +25,13 @@ import useTickerVectorQuery, {
 import FormattedETFExpenseRatio from "./TickerVectorQueryTable.FormattedETFExpenseRatio";
 
 export type TickerVectorQueryTableCosineProps = {
+  tickerVectorConfigKey: string;
   queryMode: TickerVectorQueryProps["queryMode"];
   query: TickerVectorQueryProps["query"];
 };
 
 export default function TickerVectorQueryTableCosine({
+  tickerVectorConfigKey,
   queryMode,
   query,
 }: TickerVectorQueryTableCosineProps) {
@@ -47,6 +49,7 @@ export default function TickerVectorQueryTableCosine({
     resultsCosine: tickerDetails,
     fetchCosine,
   } = useTickerVectorQuery({
+    tickerVectorConfigKey,
     queryMode,
     query,
   });

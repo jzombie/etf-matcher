@@ -26,6 +26,8 @@ import Section from "@components/Section";
 import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
 import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
 
+import useStoreStateReader from "@hooks/useStoreStateReader";
+
 import BucketTicker from "./BucketManager.Bucket.Ticker";
 import BucketForm from "./BucketManager.BucketForm";
 
@@ -77,6 +79,10 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
       }
     },
     [],
+  );
+
+  const { preferredTickerVectorConfigKey } = useStoreStateReader(
+    "preferredTickerVectorConfigKey",
   );
 
   return (
@@ -175,6 +181,12 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                               ))}
                             </UnstyledUL>
 
+                            {
+                              // TODO: I'm holding off on adding model config selectio here
+                              // (including adding in PCA radial charts), and will instead be
+                              // re-using the ticker detail window management for this view.
+                              // Related issue: https://linear.app/zenosmosis/issue/ZEN-128/re-use-tickerdetail-layouts-for-bucket-views
+                            }
                             <Box>
                               <Typography variant="h6">
                                 &quot;{tickerBucket.name}&quot; Similarity
@@ -211,6 +223,9 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                                 </ToggleButton>
                               </ToggleButtonGroup>
                               <TickerVectorQueryTable
+                                tickerVectorConfigKey={
+                                  preferredTickerVectorConfigKey
+                                }
                                 queryMode="bucket"
                                 query={tickerBucket}
                                 // FIXME: The key is used to update the bucket as holdings are changed; This could be improved

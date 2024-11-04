@@ -1,4 +1,4 @@
-import LRUCache from "./LRUCache";
+import LRUCache from "../LRUCache";
 
 const numberFormatCache = new LRUCache<string, Intl.NumberFormat>(100);
 

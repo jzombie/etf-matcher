@@ -1,3 +1,6 @@
+use crate::utils::ticker_vector_config_utils::get_ticker_vector_config_by_key;
+use std::path::PathBuf;
+
 pub enum DataURL {
     DataBuildInfo,
     // TickerByIdIndex,
@@ -10,44 +13,62 @@ pub enum DataURL {
     TickerETFHoldersShardIndex,
     ETFAggregateDetailShardIndex,
     ETFHoldingTickersShardIndex,
-    FinancialVectors10K,
+    TickerVectors(String), // Made plural because this is a `FlatBuffer` file of multiple vectors
     Image(String),
 }
 
+// In relation to the web root
+const DATA_BASE_PATH: &str = "/data";
+
 impl DataURL {
-    pub fn value(&self) -> &'static str {
+    pub fn value(&self) -> String {
         match self {
-            DataURL::DataBuildInfo => "/data/data_build_info.enc",
-            // DataURL::TickerByIdIndex => "/data/ticker_by_id_index.enc",
-            DataURL::ExchangeByIdIndex => "/data/exchange_by_id_index.enc",
-            DataURL::SectorByIdIndex => "/data/sector_by_id_index.enc",
-            DataURL::IndustryByIdIndex => "/data/industry_by_id_index.enc",
-            DataURL::TickerSearch => "/data/ticker_search_dict.enc",
-            DataURL::TickerDetailShardIndex => "/data/ticker_detail_shard_index.enc",
-            DataURL::Ticker10KDetailShardIndex => "/data/ticker_10k_detail_shard_index.enc",
-            DataURL::TickerETFHoldersShardIndex => "/data/ticker_etf_holders_shard_index.enc",
-            DataURL::ETFAggregateDetailShardIndex => "/data/etf_aggregate_detail_shard_index.enc",
-            DataURL::ETFHoldingTickersShardIndex => "/data/etf_holding_tickers_shard_index.enc",
-            //
-            // 10-K
-            // DataURL::FinancialVectors10K => "/data/financial_vectors.tenk.bin", // TODO: Use encoded bin, provided that compression doesn't actually increase the file size
-            // DataURL::FinancialVectors10K => "/data/r2.financial_vectors.tenk.bin", // TODO: Use encoded bin, provided that compression doesn't actually increase the file size
-            // DataURL::FinancialVectors10K => "/data/r4.financial_vectors.tenk.bin", // TODO: Use encoded bin, provided that compression doesn't actually increase the file size
-            // DataURL::FinancialVectors10K => "/data/r4a.financial_vectors.tenq.bin", // TODO: Use encoded bin, provided that compression doesn't actually increase the file size
-            //
-            // 10-Q
-            // DataURL::FinancialVectors10K => "/data/r5-5-10-20yr.financial_vectors.tenq.bin", // TODO: Use encoded bin, provided that compression doesn't actually increase the file size
-            DataURL::FinancialVectors10K => "/data/r5-5-10-20yr(rev-2).financial_vectors.tenq.bin", // TODO: Use encoded bin, provided that compression doesn't actually increase the file size
-            //
-            // DataURL::FinancialVectors10K => "/data/key_metrics.tenk.bin", // Prototype
+            DataURL::DataBuildInfo => Self::build_path("data_build_info.enc"),
+            // DataURL::TickerByIdIndex => Self::build_path("ticker_by_id_index.enc"),
+            DataURL::ExchangeByIdIndex => Self::build_path("exchange_by_id_index.enc"),
+            DataURL::SectorByIdIndex => Self::build_path("sector_by_id_index.enc"),
+            DataURL::IndustryByIdIndex => Self::build_path("industry_by_id_index.enc"),
+            DataURL::TickerSearch => Self::build_path("ticker_search_dict.enc"),
+            DataURL::TickerDetailShardIndex => Self::build_path("ticker_detail_shard_index.enc"),
+            DataURL::Ticker10KDetailShardIndex => {
+                Self::build_path("ticker_10k_detail_shard_index.enc")
+            }
+            DataURL::TickerETFHoldersShardIndex => {
+                Self::build_path("ticker_etf_holders_shard_index.enc")
+            }
+            DataURL::ETFAggregateDetailShardIndex => {
+                Self::build_path("etf_aggregate_detail_shard_index.enc")
+            }
+            DataURL::ETFHoldingTickersShardIndex => {
+                Self::build_path("etf_holding_tickers_shard_index.enc")
+            }
+            DataURL::TickerVectors(ticker_vector_config_key) => {
+                get_ticker_vector_config_by_key(ticker_vector_config_key)
+                    .map(|ticker_vector_config| Self::build_path(&ticker_vector_config.path))
+                    .ok_or_else(|| {
+                        format!(
+                            "Key not found in ticker vectors map: {}",
+                            ticker_vector_config_key
+                        )
+                    })
+                    .expect(&format!(
+                        "Invalid ticker vector key: {}",
+                        ticker_vector_config_key
+                    )) // Or propagate the error up
+            }
             DataURL::Image(_) => panic!("Use image_url() for image paths"), // Prevent calling value() for images
         }
+    }
+
+    fn build_path(file_name: &str) -> String {
+        let full_path = PathBuf::from(DATA_BASE_PATH).join(file_name);
+        full_path.to_string_lossy().into_owned()
     }
 
     // Function to get full URL for images
     pub fn image_url(&self) -> String {
         match self {
-            DataURL::Image(filename) => format!("/data/images/{}", filename),
+            DataURL::Image(filename) => Self::build_path(&format!("images/{}", filename)),
             _ => panic!("Not an image URL"),
         }
     }

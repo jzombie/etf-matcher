@@ -1,22 +1,38 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import DonutLargeIcon from "@mui/icons-material/DonutLarge";
+import SettingsIcon from "@mui/icons-material/Settings";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 import StraightenIcon from "@mui/icons-material/Straighten";
-import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  Link,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from "@mui/material";
 
 import Center from "@layoutKit/Center";
-import Layout, { Content, Header } from "@layoutKit/Layout";
+import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
-import { RustServiceTickerDetail } from "@services/RustService";
+import {
+  RustServiceTickerDetail,
+  RustServiceTickerVectorConfig,
+} from "@services/RustService";
 
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
-import PCAScatterPlot from "@components/PCAScatterPlot";
+import TickerPCAScatterPlot from "@components/TickerPCAScatterPlot";
+import TickerVectorConfigSelectorDialogModal from "@components/TickerVectorConfigSelectorDialogModal";
 import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
 import Transition from "@components/Transition";
 
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
+import useElementSize from "@hooks/useElementSize";
+import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import useTicker10KDetail from "@hooks/useTicker10KDetail";
+import useTickerVectorConfigs from "@hooks/useTickerVectorConfigs";
 
 import TickerDetailAppletWrap from "../../components/TickerDetailAppletWrap";
 
@@ -55,6 +71,62 @@ type ComponentWrapProps = {
 function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
   const [displayMode, setDisplayMode] = useState<DisplayMode>("radial");
   const previousModeRef = useRef<DisplayMode>("radial");
+  const [
+    isTickerVectorConfigSelectorDialogOpen,
+    setIsTickerVectorConfigSelectorDialogOpen,
+  ] = useState(false);
+
+  const [selectedModelConfig, _setSelectedModelConfig] =
+    useState<RustServiceTickerVectorConfig | null>(null);
+
+  const { tickerVectorConfigs } = useTickerVectorConfigs();
+  const { triggerUIError } = useAppErrorBoundary();
+
+  const { preferredTickerVectorConfigKey } = useStoreStateReader(
+    "preferredTickerVectorConfigKey",
+  );
+
+  // TODO: Refactor `resume` and `persist` hooks (and relevant states) into a custom hook
+
+  // Resume config
+  useEffect(() => {
+    if (!selectedModelConfig && tickerVectorConfigs.length > 0) {
+      const defaultConfig = tickerVectorConfigs.find(
+        (config) => config.key === preferredTickerVectorConfigKey,
+      );
+
+      if (defaultConfig) {
+        _setSelectedModelConfig(defaultConfig);
+      } else {
+        triggerUIError(new Error("No default model configuration found"));
+      }
+    }
+  }, [
+    tickerVectorConfigs,
+    preferredTickerVectorConfigKey,
+    selectedModelConfig,
+    triggerUIError,
+  ]);
+
+  // Persist config
+  useEffect(() => {
+    if (selectedModelConfig) {
+      store.setState({
+        preferredTickerVectorConfigKey: selectedModelConfig.key,
+      });
+    }
+  }, [selectedModelConfig]);
+
+  const handleSelectModelConfig = useCallback(
+    (selectedModelConfig: RustServiceTickerVectorConfig) => {
+      // Set the key
+      _setSelectedModelConfig(selectedModelConfig);
+
+      // Close the dialog
+      setIsTickerVectorConfigSelectorDialogOpen(false);
+    },
+    [],
+  );
 
   const handleDisplayModeChange = useCallback(
     (event: React.MouseEvent<HTMLElement>, newMode: DisplayMode | null) => {
@@ -75,6 +147,18 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
   // TODO: Handle error state
   const { isLoading: isLoadingFinancialDetail, detail: financialDetail } =
     useTicker10KDetail(tickerDetail.ticker_id, tickerDetail.is_etf);
+
+  // Using `useState` for `contentElement` to ensure it triggers a re-render
+  // when the element is set, allowing `useElementSize` to update immediately.
+  //
+  // This fixes a bug where the labels were not immediately shown, and would only
+  // show after the component had re-rendered.
+  const [contentElement, setContentElement] = useState<HTMLElement | null>(
+    null,
+  );
+  const contentSize = useElementSize(contentElement);
+
+  const shouldShowLabels = contentSize.width >= 360;
 
   if (isLoadingFinancialDetail) {
     return (
@@ -97,7 +181,7 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
   return (
     <Layout>
       <Header>
-        <Box sx={{ textAlign: "center", marginBottom: 1 }}>
+        <Box sx={{ textAlign: "center" }}>
           <ToggleButtonGroup
             value={displayMode}
             exclusive
@@ -105,36 +189,83 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
             aria-label="Similarity search toggle"
             size="small"
           >
-            <ToggleButton value="radial" aria-label="Radial chart">
+            <ToggleButton
+              value="radial"
+              aria-label="Radial chart"
+              title="Radial chart"
+            >
               <DonutLargeIcon sx={{ mr: 0.5 }} />
-              Radial
+              {shouldShowLabels && "Radial"}
             </ToggleButton>
-            <ToggleButton value="euclidean" aria-label="Euclidean">
+            <ToggleButton
+              value="euclidean"
+              aria-label="Euclidean"
+              title="Euclidean"
+            >
               <StraightenIcon sx={{ mr: 0.5 }} />
-              Euclidean
+              {shouldShowLabels && "Euclidean"}
             </ToggleButton>
-            <ToggleButton value="cosine" aria-label="Cosine">
+            <ToggleButton value="cosine" aria-label="Cosine" title="Cosine">
               <ShowChartIcon sx={{ mr: 0.5 }} />
-              Cosine
+              {shouldShowLabels && "Cosine"}
             </ToggleButton>
           </ToggleButtonGroup>
+          <IconButton
+            onClick={() => setIsTickerVectorConfigSelectorDialogOpen(true)}
+            aria-label="Select Model"
+            sx={{ ml: 1, mb: 1 }}
+          >
+            <SettingsIcon />
+          </IconButton>
         </Box>
       </Header>
-      <Content>
-        <Transition trigger={displayMode} direction={getDirection()}>
-          {displayMode === "radial" ? (
-            <PCAScatterPlot tickerDetail={tickerDetail} />
-          ) : (
-            <Scrollable>
-              <TickerVectorQueryTable
-                queryMode="ticker-detail"
-                query={tickerDetail}
-                alignment={displayMode}
+      <Content ref={setContentElement}>
+        {selectedModelConfig && (
+          // Due to some of the child components of the`Transition` wrapper,
+          // it's being conditionally rendered for now.
+          <Transition
+            trigger={`${displayMode}-${selectedModelConfig.key}`}
+            direction={getDirection()}
+          >
+            {displayMode === "radial" ? (
+              <TickerPCAScatterPlot
+                tickerVectorConfigKey={selectedModelConfig.key}
+                tickerDetail={tickerDetail}
               />
-            </Scrollable>
-          )}
-        </Transition>
+            ) : (
+              <Scrollable>
+                <TickerVectorQueryTable
+                  queryMode="ticker-detail"
+                  query={tickerDetail}
+                  alignment={displayMode}
+                  tickerVectorConfigKey={selectedModelConfig.key}
+                />
+              </Scrollable>
+            )}
+          </Transition>
+        )}
       </Content>
+      <Footer style={{ textAlign: "right" }}>
+        <Typography variant="body2" component="span" sx={{ fontSize: ".8rem" }}>
+          Using model:{" "}
+          <Link
+            component="button"
+            variant="body2"
+            onClick={() => setIsTickerVectorConfigSelectorDialogOpen(true)}
+            sx={{ cursor: "pointer", color: "text.secondary" }}
+          >
+            {selectedModelConfig?.key || "N/A"}
+          </Link>
+        </Typography>
+      </Footer>
+      {selectedModelConfig && (
+        <TickerVectorConfigSelectorDialogModal
+          open={isTickerVectorConfigSelectorDialogOpen}
+          onClose={() => setIsTickerVectorConfigSelectorDialogOpen(false)}
+          selectedConfig={selectedModelConfig}
+          onSelect={handleSelectModelConfig}
+        />
+      )}
     </Layout>
   );
 }

@@ -25,11 +25,13 @@ import useTickerVectorQuery, {
 import FormattedETFExpenseRatio from "./TickerVectorQueryTable.FormattedETFExpenseRatio";
 
 export type TickerVectorQueryTableEuclideanProps = {
+  tickerVectorConfigKey: string;
   queryMode: TickerVectorQueryProps["queryMode"];
   query: TickerVectorQueryProps["query"];
 };
 
 export default function TickerVectorQueryTableEuclidean({
+  tickerVectorConfigKey,
   queryMode,
   query,
 }: TickerVectorQueryTableEuclideanProps) {
@@ -47,6 +49,7 @@ export default function TickerVectorQueryTableEuclidean({
     fetchEuclidean,
     resultsEuclidean: tickerDetails,
   } = useTickerVectorQuery({
+    tickerVectorConfigKey,
     queryMode,
     query,
   });

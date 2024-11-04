@@ -5,6 +5,7 @@ use serde_wasm_bindgen::to_value;
 use std::panic;
 use wasm_bindgen::prelude::*;
 
+pub mod config;
 mod constants;
 mod data_models;
 mod types;
@@ -27,9 +28,14 @@ use crate::utils::network_cache::{
     get_cache_size as lib_get_cache_size, remove_cache_entry as lib_remove_cache_entry,
 };
 
+use crate::utils::ticker_vector_config_utils;
+
+include!("__AUTOGEN__compilation_time.rs");
+
 #[wasm_bindgen(start)]
 pub fn main() -> Result<(), JsValue> {
     web_sys::console::debug_1(&"Hello from Rust!".into());
+    web_sys::console::debug_1(&format!("Rust compiled at: {}", RUST_COMPILATION_TIME).into());
     panic::set_hook(Box::new(console_error_panic_hook::hook));
     Ok(())
 }
@@ -194,14 +200,17 @@ pub async fn get_all_major_sectors() -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
-pub async fn get_euclidean_by_ticker(ticker_id: TickerId) -> Result<JsValue, JsValue> {
+pub async fn get_euclidean_by_ticker(
+    ticker_vector_config_key: &str,
+    ticker_id: TickerId,
+) -> Result<JsValue, JsValue> {
     // Call the find_closest_tickers function from the ticker_vector_analysis module
-    let closest_tickers =
-        ticker_vector_analysis::TickerDistance::get_euclidean_by_ticker(ticker_id)
-            .await
-            .map_err(|err| {
-                JsValue::from_str(&format!("Failed to find closest ticker IDs: {}", err))
-            })?;
+    let closest_tickers = ticker_vector_analysis::TickerDistance::get_euclidean_by_ticker(
+        ticker_vector_config_key,
+        ticker_id,
+    )
+    .await
+    .map_err(|err| JsValue::from_str(&format!("Failed to find closest ticker IDs: {}", err)))?;
 
     // Convert the results to JsValue
     let js_array = js_sys::Array::new();
@@ -253,6 +262,7 @@ pub async fn get_euclidean_by_ticker(ticker_id: TickerId) -> Result<JsValue, JsV
 
 #[wasm_bindgen]
 pub async fn get_euclidean_by_ticker_bucket(
+    ticker_vector_config_key: &str,
     tickers_with_quantity: JsValue,
 ) -> Result<JsValue, JsValue> {
     // Deserialize the input JsValue into Rust Vec<TickerWithQuantity>
@@ -263,6 +273,7 @@ pub async fn get_euclidean_by_ticker_bucket(
     // Find the closest tickers by quantity
     let closest_tickers: Vec<ticker_vector_analysis::TickerDistance> =
         ticker_vector_analysis::TickerDistance::get_euclidean_by_ticker_bucket(
+            ticker_vector_config_key,
             &tickers_with_quantity,
         )
         .await
@@ -274,17 +285,22 @@ pub async fn get_euclidean_by_ticker_bucket(
 }
 
 #[wasm_bindgen]
-pub async fn get_cosine_by_ticker(ticker_id: TickerId) -> Result<JsValue, JsValue> {
+pub async fn get_cosine_by_ticker(
+    ticker_vector_config_key: &str,
+    ticker_id: TickerId,
+) -> Result<JsValue, JsValue> {
     // Call the rank_tickers_by_cosine_similarity function from the ticker_vector_analysis module
-    let similar_tickers =
-        ticker_vector_analysis::CosineSimilarityResult::get_cosine_by_ticker(ticker_id)
-            .await
-            .map_err(|err| {
-                JsValue::from_str(&format!(
-                    "Failed to rank tickers by cosine similarity: {}",
-                    err
-                ))
-            })?;
+    let similar_tickers = ticker_vector_analysis::CosineSimilarityResult::get_cosine_by_ticker(
+        ticker_vector_config_key,
+        ticker_id,
+    )
+    .await
+    .map_err(|err| {
+        JsValue::from_str(&format!(
+            "Failed to rank tickers by cosine similarity: {}",
+            err
+        ))
+    })?;
 
     // Convert the results to JsValue
     let js_array = js_sys::Array::new();
@@ -312,6 +328,7 @@ pub async fn get_cosine_by_ticker(ticker_id: TickerId) -> Result<JsValue, JsValu
 
 #[wasm_bindgen]
 pub async fn get_cosine_by_ticker_bucket(
+    ticker_vector_config_key: &str,
     tickers_with_quantity: JsValue,
 ) -> Result<JsValue, JsValue> {
     // Deserialize the input JsValue into Rust Vec<TickerWithQuantity>
@@ -322,6 +339,7 @@ pub async fn get_cosine_by_ticker_bucket(
     // Rank tickers by cosine similarity using the quantity
     let ranked_tickers: Vec<ticker_vector_analysis::CosineSimilarityResult> =
         ticker_vector_analysis::CosineSimilarityResult::get_cosine_by_ticker_bucket(
+            ticker_vector_config_key,
             &tickers_with_quantity,
         )
         .await
@@ -330,6 +348,17 @@ pub async fn get_cosine_by_ticker_bucket(
     // Serialize the result back to JsValue
     serde_wasm_bindgen::to_value(&ranked_tickers)
         .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
+}
+
+#[wasm_bindgen]
+pub fn get_all_ticker_vector_configs() -> Result<JsValue, JsValue> {
+    let configs = ticker_vector_config_utils::get_all_ticker_vector_configs();
+    to_value(&configs).map_err(|err| {
+        JsValue::from_str(&format!(
+            "Failed to convert ticker vector configs to JsValue: {}",
+            err
+        ))
+    })
 }
 
 #[wasm_bindgen]
