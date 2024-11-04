@@ -3,12 +3,15 @@ import { useEffect } from "react";
 import { fetchImageInfo } from "@services/RustService";
 import type { RustServiceImageInfo } from "@services/RustService";
 
+import customLogger from "@utils/customLogger";
+
 import usePromise from "./usePromise";
 
 export default function useEncodedImage(encSrc?: string) {
   const { data, isPending, error, execute } = usePromise<RustServiceImageInfo>({
     promiseFunction: () => fetchImageInfo(encSrc!),
     autoExecute: false,
+    onError: customLogger.error,
   });
 
   useEffect(() => {
@@ -20,6 +23,6 @@ export default function useEncodedImage(encSrc?: string) {
   return {
     isLoading: isPending,
     base64: data ? data.base64 : null,
-    hasError: !!error,
+    error,
   };
 }

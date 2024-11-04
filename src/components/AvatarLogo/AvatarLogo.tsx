@@ -31,7 +31,7 @@ export default function AvatarLogo({
 }: AvatarLogoProps) {
   const logoBgColor = useImageBackgroundColor(tickerDetail?.logo_filename);
 
-  const { isLoading, base64, hasError } = useEncodedImage(
+  const { isLoading, base64, error } = useEncodedImage(
     tickerDetail?.logo_filename,
   );
 
@@ -44,7 +44,7 @@ export default function AvatarLogo({
     return <CircularProgress style={style} className={className} />;
   }
 
-  if (hasError) {
+  if (error) {
     return <ErrorIcon color="error" />;
   }
 
