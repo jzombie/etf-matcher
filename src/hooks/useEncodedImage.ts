@@ -5,6 +5,8 @@ import type { RustServiceImageInfo } from "@services/RustService";
 
 import useStableCurrentRef from "./useStableCurrentRef";
 
+// TODO: Refactor to use `usePromise`
+//
 export default function useEncodedImage(encSrc?: string) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [base64, setBase64] = useState<string | null>(null);

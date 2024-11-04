@@ -26,6 +26,8 @@ const DEFAULT_PROPS: Required<TickerSearchProps> = {
   initialSelectedIndex: -1,
 };
 
+// TODO: Refactor to use `usePromise`
+//
 export default function useTickerSearch(
   props: Partial<TickerSearchProps> = DEFAULT_PROPS,
 ) {

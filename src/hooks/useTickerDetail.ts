@@ -8,6 +8,8 @@ import customLogger from "@utils/customLogger";
 import useAppErrorBoundary from "./useAppErrorBoundary";
 import useStableCurrentRef from "./useStableCurrentRef";
 
+// TODO: Refactor to use `usePromise`
+//
 export default function useTickerDetail(
   tickerId?: number,
   onLoad?: (tickerDetail: RustServiceTickerDetail) => void,

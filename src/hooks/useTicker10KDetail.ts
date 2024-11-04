@@ -9,6 +9,8 @@ import {
   fetchTicker10KDetail,
 } from "@services/RustService";
 
+// TODO: Refactor to use `usePromise`
+//
 // TODO: Handle error state (and rename variables; see `useTickerDetail`)
 export default function useTicker10KDetail(tickerId: number, isETF: boolean) {
   const [isLoading, setIsLoading] = useState<boolean>(false);

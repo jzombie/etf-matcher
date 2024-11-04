@@ -14,6 +14,8 @@ export type ETFAggregateDetailRequestProps = {
   shouldLoad?: boolean;
 };
 
+// TODO: Refactor to use `usePromise`
+//
 export default function useETFAggregateDetail({
   tickerId,
   onLoad,
