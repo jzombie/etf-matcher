@@ -8,7 +8,7 @@ import { RustServiceTickerDetail } from "@services/RustService";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 
 export type TickerDetailAppletWrapProps = {
-  tickerDetail?: RustServiceTickerDetail;
+  tickerDetail?: RustServiceTickerDetail | null;
   isLoadingTickerDetail: boolean;
   tickerDetailError?: Error | unknown;
   isTiling: boolean;

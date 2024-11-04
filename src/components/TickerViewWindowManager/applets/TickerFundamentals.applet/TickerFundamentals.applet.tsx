@@ -6,7 +6,7 @@ import TickerDetailAppletWrap from "../../components/TickerDetailAppletWrap";
 import FinancialChartsGrid from "./FinancialChartsGrid";
 
 export type TickerFundamentalsAppletProps = {
-  tickerDetail?: RustServiceTickerDetail;
+  tickerDetail?: RustServiceTickerDetail | null;
   isLoadingTickerDetail: boolean;
   tickerDetailError?: Error | unknown;
   isTiling: boolean;

@@ -18,7 +18,7 @@ const DATE_RANGES: DateRange[] = ["1D", "1M", "3M", "12M", "60M", "ALL"];
 const DEFAULT_DATE_RANGE: DateRange = "12M";
 
 export type HistoricalPriceChartAppletProps = {
-  tickerDetail?: RustServiceTickerDetail;
+  tickerDetail?: RustServiceTickerDetail | null;
   isLoadingTickerDetail: boolean;
   tickerDetailError?: Error | unknown;
   isTiling: boolean;

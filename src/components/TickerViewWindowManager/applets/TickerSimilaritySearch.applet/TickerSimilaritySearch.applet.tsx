@@ -40,7 +40,7 @@ const DISPLAY_MODES = ["radial", "euclidean", "cosine"] as const;
 type DisplayMode = (typeof DISPLAY_MODES)[number];
 
 export type TickerSimilaritySearchAppletProps = {
-  tickerDetail?: RustServiceTickerDetail;
+  tickerDetail?: RustServiceTickerDetail | null;
   isLoadingTickerDetail: boolean;
   tickerDetailError?: Error | unknown;
   isTiling: boolean;

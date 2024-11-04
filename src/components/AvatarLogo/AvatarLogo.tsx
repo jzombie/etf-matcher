@@ -16,7 +16,7 @@ import useImageBackgroundColor from "@hooks/useImageBackgroundColor";
 import styles from "./AvatarLogo.module.scss";
 
 export type AvatarLogoProps = Omit<AvatarProps, "src"> & {
-  tickerDetail?: RustServiceTickerDetail | RustServiceTickerSearchResult;
+  tickerDetail?: RustServiceTickerDetail | RustServiceTickerSearchResult | null;
   title?: AvatarProps["title"];
   className?: AvatarProps["className"];
   style?: AvatarProps["style"];

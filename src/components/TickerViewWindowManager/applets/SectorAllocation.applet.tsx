@@ -15,7 +15,7 @@ import SectorsPieChart from "@components/SectorsPieChart";
 import ETFAggregateDetailAppletWrap from "../components/ETFAggregateDetailAppletWrap";
 
 export type SectorAllocationAppletProps = {
-  tickerDetail?: RustServiceTickerDetail;
+  tickerDetail?: RustServiceTickerDetail | null;
   isLoadingTickerDetail: boolean;
   tickerDetailError?: Error | unknown;
   etfAggregateDetail?: RustServiceETFAggregateDetail;
