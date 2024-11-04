@@ -116,20 +116,27 @@ describe("usePromise", () => {
 
   it("should warn and update state correctly when execute is called multiple times before resolution", async () => {
     const consoleWarnSpy = vi.spyOn(customLogger, "warn");
+
+    // Mock promise function that resolves to different values based on input
     const promiseFunction = vi.fn(
-      () => new Promise((resolve) => setTimeout(() => resolve("data"), 100)),
+      (arg) =>
+        new Promise((resolve) => setTimeout(() => resolve(`data${arg}`), 100)),
     );
+
+    let callArg = 1;
 
     const { result } = renderHook(() =>
       usePromise({
-        promiseFunction,
+        promiseFunction: () => promiseFunction(callArg), // Initial call with argument 1
         autoExecute: false,
       }),
     );
 
     act(() => {
-      result.current.execute();
-      result.current.execute(); // Call execute again before the first promise resolves
+      result.current.execute(); // First execution with argument 1
+
+      callArg = 2;
+      result.current.execute(); // Second execution with argument 2
     });
 
     // Check that the warning was logged
@@ -137,9 +144,9 @@ describe("usePromise", () => {
       "A new promise is being invoked while another is still pending. This might lead to unexpected behavior.",
     );
 
-    // Wait for the promise to resolve
+    // Wait for the promise to resolve and check that the final data is from the second execution
     await waitFor(() => {
-      expect(result.current.data).toBe("data");
+      expect(result.current.data).toBe("data2");
       expect(result.current.isPending).toBe(false);
       expect(result.current.error).toBe(null);
     });
