@@ -13,10 +13,10 @@ import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import TickerDetailAppletWrap from "./TickerDetailAppletWrap";
 
 export type ETFAggregateDetailAppletWrapProps = {
-  tickerDetail?: RustServiceTickerDetail;
+  tickerDetail?: RustServiceTickerDetail | null;
   isLoadingTickerDetail: boolean;
   tickerDetailError?: Error | unknown;
-  etfAggregateDetail?: RustServiceETFAggregateDetail;
+  etfAggregateDetail?: RustServiceETFAggregateDetail | null;
   isLoadingETFAggregateDetail: boolean;
   etfAggregateDetailError?: Error | unknown;
   isTiling: boolean;

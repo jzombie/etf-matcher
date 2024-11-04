@@ -1,55 +1,36 @@
-import { useEffect, useState } from "react";
-
 import {
   RustServiceTickerVectorConfig,
   fetchAllTickerVectorConfigs,
 } from "@services/RustService";
 
+import usePromise from "@hooks/usePromise";
+
+import customLogger from "@utils/customLogger";
+
 import useAppErrorBoundary from "./useAppErrorBoundary";
 
-// TODO: Refactor into a base `useRustServiceCall` hook (or something similarly
-// named). It should include an onload callback (to work asynchronously), as well
-// as accept an optional debounce time (such as when used for search).
-// Referenced in issue: https://linear.app/zenosmosis/issue/ZEN-129/refactor-rust-service-hooks-to-base-hook
 export default function useTickerVectorConfigs() {
-  const [tickerVectorConfigs, setTickerVectorConfigs] = useState<
-    RustServiceTickerVectorConfig[]
-  >([]);
-
-  // Add loading and error states
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
   const { triggerUIError } = useAppErrorBoundary();
 
-  useEffect(() => {
-    let mounted = true; // Track if the component is mounted
-    setIsLoading(true);
-    setError(null);
+  const {
+    data: tickerVectorConfigs,
+    isPending: isLoadingTickerVectorConfigs,
+    error: tickerVectorConfigsError,
+  } = usePromise<RustServiceTickerVectorConfig[]>({
+    fn: fetchAllTickerVectorConfigs,
+    onError: (error) => {
+      customLogger.error(error);
 
-    fetchAllTickerVectorConfigs()
-      .then((tickerVectorConfigs) => {
-        if (mounted) {
-          setTickerVectorConfigs(tickerVectorConfigs);
-          setIsLoading(false);
-        }
-      })
-      .catch((error) => {
-        if (mounted) {
-          setError(error);
-          setIsLoading(false);
-          triggerUIError(error);
-        }
-      });
-
-    return () => {
-      mounted = false; // Cleanup function to set mounted to false
-    };
-  }, [triggerUIError]);
+      triggerUIError(
+        new Error("Error when trying to load ticker vector configs"),
+      );
+    },
+    autoExecute: true,
+  });
 
   return {
-    tickerVectorConfigs,
-    areTickerVectorConfigsLoading: isLoading,
-    tickerVectorConfigsError: error,
+    tickerVectorConfigs: tickerVectorConfigs || [],
+    isLoadingTickerVectorConfigs,
+    tickerVectorConfigsError,
   };
 }

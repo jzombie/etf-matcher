@@ -18,10 +18,10 @@ import TickerViewWindowManagerBucketManager from "../TickerViewWindowManager.Buc
 import ETFAggregateDetailAppletWrap from "../components/ETFAggregateDetailAppletWrap";
 
 export type TickerInformationAppletProps = {
-  tickerDetail?: RustServiceTickerDetail;
+  tickerDetail?: RustServiceTickerDetail | null;
   isLoadingTickerDetail: boolean;
   tickerDetailError?: Error | unknown;
-  etfAggregateDetail?: RustServiceETFAggregateDetail;
+  etfAggregateDetail?: RustServiceETFAggregateDetail | null;
   isLoadingETFAggregateDetail: boolean;
   etfAggregateDetailError?: Error | unknown;
   isTiling: boolean;
@@ -187,8 +187,8 @@ function InfoItem({
 }
 
 function useFormattedSectorAndIndustry(
-  tickerDetail?: RustServiceTickerDetail,
-  etfAggregateDetail?: RustServiceETFAggregateDetail,
+  tickerDetail?: RustServiceTickerDetail | null,
+  etfAggregateDetail?: RustServiceETFAggregateDetail | null,
 ) {
   const formatDetail = useCallback(
     (baseEntity?: string, topEntity?: string): JSX.Element => {

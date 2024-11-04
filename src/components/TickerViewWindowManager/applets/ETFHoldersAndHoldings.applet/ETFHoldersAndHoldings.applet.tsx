@@ -17,7 +17,7 @@ const DISPLAY_MODES = ["holders", "holdings"] as const;
 type DisplayMode = (typeof DISPLAY_MODES)[number];
 
 export type ETFHoldersAndHoldingsAppletProps = {
-  tickerDetail?: RustServiceTickerDetail;
+  tickerDetail?: RustServiceTickerDetail | null;
   isLoadingTickerDetail: boolean;
   tickerDetailError?: Error | unknown;
   isTiling: boolean;

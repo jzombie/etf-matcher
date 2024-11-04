@@ -1,40 +1,31 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import { fetchImageInfo } from "@services/RustService";
 import type { RustServiceImageInfo } from "@services/RustService";
 
-import useStableCurrentRef from "./useStableCurrentRef";
+import customLogger from "@utils/customLogger";
+
+import usePromise from "./usePromise";
 
 export default function useEncodedImage(encSrc?: string) {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [base64, setBase64] = useState<string | null>(null);
-  const [hasError, setHasError] = useState<boolean>(false);
-
-  const encSrcStaticRef = useStableCurrentRef(encSrc);
+  const { data, isPending, error, execute } = usePromise<
+    RustServiceImageInfo,
+    [string]
+  >({
+    fn: (encSrc) => fetchImageInfo(encSrc),
+    autoExecute: false,
+    onError: customLogger.error,
+  });
 
   useEffect(() => {
-    if (encSrcStaticRef.current !== encSrc) {
-      setBase64(null);
-      setHasError(false); // Reset error state on new image source
-    }
-
     if (encSrc) {
-      setIsLoading(true);
-      fetchImageInfo(encSrc)
-        .then((imageInfo: RustServiceImageInfo) => {
-          if (encSrcStaticRef.current === encSrc) {
-            setBase64(imageInfo.base64);
-            setHasError(false); // Reset error state if the image loads successfully
-          }
-        })
-        .catch(() => {
-          setHasError(true); // Set error state if the image fails to load
-        })
-        .finally(() => setIsLoading(false));
-    } else {
-      setIsLoading(false);
+      execute(encSrc);
     }
-  }, [encSrc, encSrcStaticRef]);
+  }, [encSrc, execute]);
 
-  return { isLoading, base64, hasError };
+  return {
+    isLoading: isPending,
+    base64: data ? data.base64 : null,
+    error,
+  };
 }
