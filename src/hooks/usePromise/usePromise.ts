@@ -51,6 +51,7 @@ export default function usePromise<T, A extends unknown[] = []>({
 
   const hasAutoExecutedRef = useRef(false);
   const pendingPromiseRef = useRef<Promise<T> | null>(null);
+  const hasLoggedWarningRef = useRef(false);
 
   const stableAutoExecuteProps = useStableCurrentRef(autoExecuteProps);
   const onLoadStableRef = useStableCurrentRef(onLoad);
@@ -59,10 +60,11 @@ export default function usePromise<T, A extends unknown[] = []>({
 
   const execute = useCallback(
     (...args: A) => {
-      if (pendingPromiseRef.current) {
+      if (pendingPromiseRef.current && !hasLoggedWarningRef.current) {
         customLogger.warn(
           "A new promise is being invoked while another is still pending. This might lead to unexpected behavior.",
         );
+        hasLoggedWarningRef.current = true;
       }
 
       const onLoad = onLoadStableRef.current;
