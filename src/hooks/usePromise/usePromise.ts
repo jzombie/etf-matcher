@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
+
+import customLogger from "@utils/customLogger";
 
 type UsePromiseProps<T> = {
   promiseFunction: () => Promise<T>;
@@ -23,38 +25,59 @@ export default function usePromise<T>({
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
+  const hasAutoExecutedRef = useRef(false);
+  const pendingPromiseRef = useRef<Promise<T> | null>(null);
+
   const onLoadStableRef = useStableCurrentRef(onLoad);
   const promiseFunctionStableRef = useStableCurrentRef(promiseFunction);
   const onErrorStableRef = useStableCurrentRef(onError);
 
   const execute = useCallback(() => {
+    if (pendingPromiseRef.current) {
+      customLogger.warn(
+        "A new promise is being invoked while another is still pending. This might lead to unexpected behavior.",
+      );
+    }
+
     const onLoad = onLoadStableRef.current;
     const promiseFunction = promiseFunctionStableRef.current;
     const onError = onErrorStableRef.current;
+
     setIsPending(true);
     setError(null);
 
-    promiseFunction()
+    const newPromise = promiseFunction();
+    pendingPromiseRef.current = newPromise;
+
+    newPromise
       .then((result) => {
-        setData(result);
-        if (onLoad) {
-          onLoad(result);
+        if (pendingPromiseRef.current === newPromise) {
+          setData(result);
+          if (onLoad) {
+            onLoad(result);
+          }
         }
       })
       .catch((error) => {
-        setError(error);
-        if (onError) {
-          onError(error);
+        if (pendingPromiseRef.current === newPromise) {
+          setError(error);
+          if (onError) {
+            onError(error);
+          }
         }
       })
       .finally(() => {
-        setIsPending(false);
+        if (pendingPromiseRef.current === newPromise) {
+          pendingPromiseRef.current = null;
+          setIsPending(false);
+        }
       });
   }, [promiseFunctionStableRef, onLoadStableRef, onErrorStableRef]);
 
   useEffect(() => {
-    if (autoExecute) {
+    if (autoExecute && !hasAutoExecutedRef.current) {
       execute();
+      hasAutoExecutedRef.current = true;
     }
   }, [autoExecute, execute]);
 
