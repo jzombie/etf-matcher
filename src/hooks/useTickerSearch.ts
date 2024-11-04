@@ -127,7 +127,6 @@ export default function useTickerSearch(
     pageSize,
     resetSearch,
     onlyExactMatches,
-    setPage,
     handleSearchTickers,
   ]);
 
