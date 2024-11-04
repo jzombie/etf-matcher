@@ -17,7 +17,7 @@ export default function useTickerVectorConfigs() {
     isPending: isLoadingTickerVectorConfigs,
     error: tickerVectorConfigsError,
   } = usePromise<RustServiceTickerVectorConfig[]>({
-    promiseFunction: fetchAllTickerVectorConfigs,
+    fn: fetchAllTickerVectorConfigs,
     onError: (error) => {
       customLogger.error(error);
 

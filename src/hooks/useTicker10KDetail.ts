@@ -24,7 +24,7 @@ export default function useTicker10KDetail(tickerId: number, isETF: boolean) {
     RustServiceTicker10KDetail | RustServiceETFAggregateDetail,
     [is: number, isETF: boolean]
   >({
-    promiseFunction: (id, isETF) =>
+    fn: (id, isETF) =>
       isETF ? fetchETFAggregateDetail(id) : fetchTicker10KDetail(id),
     onError: customLogger.error,
     autoExecute: false,

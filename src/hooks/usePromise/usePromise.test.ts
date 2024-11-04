@@ -10,7 +10,7 @@ describe("usePromise", () => {
   it("should return initial state correctly", () => {
     const { result } = renderHook(() =>
       usePromise({
-        promiseFunction: () => Promise.resolve("data"),
+        fn: () => Promise.resolve("data"),
         autoExecute: false,
       }),
     );
@@ -21,10 +21,10 @@ describe("usePromise", () => {
   });
 
   it("should execute promise and update state on success", async () => {
-    const promiseFunction = vi.fn(() => Promise.resolve("data"));
+    const fn = vi.fn(() => Promise.resolve("data"));
     const { result } = renderHook(() =>
       usePromise({
-        promiseFunction,
+        fn,
         autoExecute: false,
       }),
     );
@@ -43,10 +43,10 @@ describe("usePromise", () => {
   });
 
   it("should execute promise and update state on error", async () => {
-    const promiseFunction = vi.fn(() => Promise.reject(new Error("error")));
+    const fn = vi.fn(() => Promise.reject(new Error("error")));
     const { result } = renderHook(() =>
       usePromise({
-        promiseFunction,
+        fn,
         autoExecute: false,
       }),
     );
@@ -65,10 +65,10 @@ describe("usePromise", () => {
   });
 
   it("should auto-execute promise if autoExecute is true", async () => {
-    const promiseFunction = vi.fn(() => Promise.resolve("data"));
+    const fn = vi.fn(() => Promise.resolve("data"));
     const { result } = renderHook(() =>
       usePromise({
-        promiseFunction,
+        fn,
         autoExecute: true,
       }),
     );
@@ -84,10 +84,10 @@ describe("usePromise", () => {
 
   it("should call onLoad callback on success", async () => {
     const onLoad = vi.fn();
-    const promiseFunction = vi.fn(() => Promise.resolve("data"));
+    const fn = vi.fn(() => Promise.resolve("data"));
     renderHook(() =>
       usePromise({
-        promiseFunction,
+        fn,
         onLoad,
         autoExecute: true,
       }),
@@ -100,10 +100,10 @@ describe("usePromise", () => {
 
   it("should call onError callback on error", async () => {
     const onError = vi.fn();
-    const promiseFunction = vi.fn(() => Promise.reject(new Error("error")));
+    const fn = vi.fn(() => Promise.reject(new Error("error")));
     renderHook(() =>
       usePromise({
-        promiseFunction,
+        fn,
         onError,
         autoExecute: true,
       }),
@@ -118,7 +118,7 @@ describe("usePromise", () => {
     const consoleWarnSpy = vi.spyOn(customLogger, "warn");
 
     // Mock promise function that resolves to different values based on input
-    const promiseFunction = vi.fn(
+    const fn = vi.fn(
       (arg) =>
         new Promise((resolve) => setTimeout(() => resolve(`data${arg}`), 100)),
     );
@@ -127,7 +127,7 @@ describe("usePromise", () => {
 
     const { result } = renderHook(() =>
       usePromise({
-        promiseFunction: () => promiseFunction(callArg), // Initial call with argument 1
+        fn: () => fn(callArg), // Initial call with argument 1
         autoExecute: false,
       }),
     );
@@ -156,12 +156,12 @@ describe("usePromise", () => {
   });
 
   it("should execute promise with provided arguments", async () => {
-    const promiseFunction = vi.fn((arg1: string, arg2: number) =>
+    const fn = vi.fn((arg1: string, arg2: number) =>
       Promise.resolve(`data-${arg1}-${arg2}`),
     );
     const { result } = renderHook(() =>
       usePromise({
-        promiseFunction,
+        fn,
         autoExecute: false,
       }),
     );
@@ -178,16 +178,16 @@ describe("usePromise", () => {
       expect(result.current.error).toBe(null);
     });
 
-    expect(promiseFunction).toHaveBeenCalledWith("test", 42);
+    expect(fn).toHaveBeenCalledWith("test", 42);
   });
 
   it("should auto-execute promise with autoExecuteProps if autoExecute is true", async () => {
-    const promiseFunction = vi.fn((arg1: string, arg2: number) =>
+    const fn = vi.fn((arg1: string, arg2: number) =>
       Promise.resolve(`data-${arg1}-${arg2}`),
     );
     const { result } = renderHook(() =>
       usePromise({
-        promiseFunction,
+        fn,
         autoExecute: true,
         autoExecuteProps: ["auto", 99],
       }),
@@ -201,19 +201,19 @@ describe("usePromise", () => {
       expect(result.current.error).toBe(null);
     });
 
-    expect(promiseFunction).toHaveBeenCalledWith("auto", 99);
+    expect(fn).toHaveBeenCalledWith("auto", 99);
   });
 
   it("should not auto-execute if autoExecute is false, even with autoExecuteProps", () => {
-    const promiseFunction = vi.fn();
+    const fn = vi.fn();
     renderHook(() =>
       usePromise({
-        promiseFunction,
+        fn,
         autoExecute: false,
         autoExecuteProps: ["auto", 99],
       }),
     );
 
-    expect(promiseFunction).not.toHaveBeenCalled();
+    expect(fn).not.toHaveBeenCalled();
   });
 });

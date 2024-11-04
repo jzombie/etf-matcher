@@ -132,7 +132,7 @@ export default function useTickerVectorQuery({
     error: errorEuclidean,
     execute: executeEuclidean,
   } = usePromise<RustServiceTickerDetailWithEuclideanDistance[]>({
-    promiseFunction: fetchEuclideanData,
+    fn: fetchEuclideanData,
     onLoad: (data) => customLogger.info("Euclidean data loaded", data),
     onError: (error) => {
       customLogger.error(error);
@@ -148,7 +148,7 @@ export default function useTickerVectorQuery({
     error: errorCosine,
     execute: executeCosine,
   } = usePromise<RustServiceTickerDetailWithCosineSimilarity[]>({
-    promiseFunction: fetchCosineData,
+    fn: fetchCosineData,
     onLoad: (data) => customLogger.info("Cosine data loaded", data),
     onError: (error) => {
       customLogger.error(error);

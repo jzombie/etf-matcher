@@ -97,7 +97,7 @@ export default function useTickerSearch(
       },
     ]
   >({
-    promiseFunction: ({ searchQuery, page, pageSize, onlyExactMatches }) => {
+    fn: ({ searchQuery, page, pageSize, onlyExactMatches }) => {
       return searchQuery
         ? searchTickers(searchQuery, page, pageSize, onlyExactMatches)
         : Promise.resolve({ results: [], total_count: 0 });

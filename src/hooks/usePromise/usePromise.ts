@@ -8,7 +8,7 @@ import customLogger from "@utils/customLogger";
 //for possibile improvements to use `AbortController`.
 
 type UsePromiseProps<T, A extends unknown[] = []> = {
-  promiseFunction: (...args: A) => Promise<T>;
+  fn: (...args: A) => Promise<T>;
   onLoad?: (data: T) => void;
   onError?: (error: Error) => void;
   autoExecute: boolean;
@@ -23,7 +23,7 @@ type UsePromiseProps<T, A extends unknown[] = []> = {
  * @template A - The type of the arguments passed to the promise function.
  *
  * @param {UsePromiseProps<T, A>} props - The properties for configuring the hook.
- * @param {(...args: A) => Promise<T>} props.promiseFunction - The function that returns a promise.
+ * @param {(...args: A) => Promise<T>} props.fn - The function that returns a promise.
  * @param {(data: T) => void} [props.onLoad] - Optional callback invoked when the promise resolves successfully.
  * @param {(error: Error) => void} [props.onError] - Optional callback invoked when the promise is rejected.
  * @param {boolean} props.autoExecute - If true, the promise function is automatically executed on mount.
@@ -39,7 +39,7 @@ type UsePromiseProps<T, A extends unknown[] = []> = {
  * Changing them does not trigger a re-evaluation. To re-evaluate, call the `execute` function explicitly.
  */
 export default function usePromise<T, A extends unknown[] = []>({
-  promiseFunction,
+  fn,
   onLoad,
   onError,
   autoExecute,
@@ -55,7 +55,7 @@ export default function usePromise<T, A extends unknown[] = []>({
 
   const stableAutoExecuteProps = useStableCurrentRef(autoExecuteProps);
   const onLoadStableRef = useStableCurrentRef(onLoad);
-  const promiseFunctionStableRef = useStableCurrentRef(promiseFunction);
+  const fnStableRef = useStableCurrentRef(fn);
   const onErrorStableRef = useStableCurrentRef(onError);
 
   const execute = useCallback(
@@ -68,13 +68,13 @@ export default function usePromise<T, A extends unknown[] = []>({
       }
 
       const onLoad = onLoadStableRef.current;
-      const promiseFunction = promiseFunctionStableRef.current;
+      const fn = fnStableRef.current;
       const onError = onErrorStableRef.current;
 
       setIsPending(true);
       setError(null);
 
-      const newPromise = promiseFunction(...args);
+      const newPromise = fn(...args);
       pendingPromiseRef.current = newPromise;
 
       newPromise
@@ -101,7 +101,7 @@ export default function usePromise<T, A extends unknown[] = []>({
           }
         });
     },
-    [promiseFunctionStableRef, onLoadStableRef, onErrorStableRef],
+    [fnStableRef, onLoadStableRef, onErrorStableRef],
   );
 
   useEffect(() => {

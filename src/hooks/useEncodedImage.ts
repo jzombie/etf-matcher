@@ -12,7 +12,7 @@ export default function useEncodedImage(encSrc?: string) {
     RustServiceImageInfo,
     [string]
   >({
-    promiseFunction: (encSrc) => fetchImageInfo(encSrc),
+    fn: (encSrc) => fetchImageInfo(encSrc),
     autoExecute: false,
     onError: customLogger.error,
   });

@@ -11,7 +11,7 @@ export default function useImageBackgroundColor(
   imageFilename?: string,
 ): string | null {
   const { data: imageInfo, execute } = usePromise<{ rgba: string }, [string]>({
-    promiseFunction: fetchImageInfo,
+    fn: fetchImageInfo,
     autoExecute: false,
   });
 
