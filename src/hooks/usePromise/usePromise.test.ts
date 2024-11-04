@@ -154,4 +154,66 @@ describe("usePromise", () => {
     // Clean up the spy
     consoleWarnSpy.mockRestore();
   });
+
+  it("should execute promise with provided arguments", async () => {
+    const promiseFunction = vi.fn((arg1: string, arg2: number) =>
+      Promise.resolve(`data-${arg1}-${arg2}`),
+    );
+    const { result } = renderHook(() =>
+      usePromise({
+        promiseFunction,
+        autoExecute: false,
+      }),
+    );
+
+    act(() => {
+      result.current.execute("test", 42);
+    });
+
+    expect(result.current.isPending).toBe(true);
+
+    await waitFor(() => {
+      expect(result.current.data).toBe("data-test-42");
+      expect(result.current.isPending).toBe(false);
+      expect(result.current.error).toBe(null);
+    });
+
+    expect(promiseFunction).toHaveBeenCalledWith("test", 42);
+  });
+
+  it("should auto-execute promise with autoExecuteProps if autoExecute is true", async () => {
+    const promiseFunction = vi.fn((arg1: string, arg2: number) =>
+      Promise.resolve(`data-${arg1}-${arg2}`),
+    );
+    const { result } = renderHook(() =>
+      usePromise({
+        promiseFunction,
+        autoExecute: true,
+        autoExecuteProps: ["auto", 99],
+      }),
+    );
+
+    expect(result.current.isPending).toBe(true);
+
+    await waitFor(() => {
+      expect(result.current.data).toBe("data-auto-99");
+      expect(result.current.isPending).toBe(false);
+      expect(result.current.error).toBe(null);
+    });
+
+    expect(promiseFunction).toHaveBeenCalledWith("auto", 99);
+  });
+
+  it("should not auto-execute if autoExecute is false, even with autoExecuteProps", () => {
+    const promiseFunction = vi.fn();
+    renderHook(() =>
+      usePromise({
+        promiseFunction,
+        autoExecute: false,
+        autoExecuteProps: ["auto", 99],
+      }),
+    );
+
+    expect(promiseFunction).not.toHaveBeenCalled();
+  });
 });

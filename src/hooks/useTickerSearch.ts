@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { RustServiceTickerSearchResult } from "@services/RustService";
 import { searchTickers } from "@services/RustService";
@@ -6,9 +6,9 @@ import { searchTickers } from "@services/RustService";
 import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 
 import customLogger from "@utils/customLogger";
-import debounceWithKey from "@utils/debounceWithKey";
 
 import usePagination from "./usePagination";
+import usePromise from "./usePromise";
 
 export type TickerSearchProps = {
   initialQuery?: string;
@@ -26,8 +26,6 @@ const DEFAULT_PROPS: Required<TickerSearchProps> = {
   initialSelectedIndex: -1,
 };
 
-// TODO: Refactor to use `usePromise`
-//
 export default function useTickerSearch(
   props: Partial<TickerSearchProps> = DEFAULT_PROPS,
 ) {
@@ -50,10 +48,6 @@ export default function useTickerSearch(
   >([]);
   const [totalSearchResults, _setTotalSearchResults] = useState<number>(0);
 
-  const [tickerSearchError, _setTickerSearchError] = useState<Error | unknown>(
-    null,
-  );
-
   const {
     page,
     previousPage,
@@ -73,10 +67,7 @@ export default function useTickerSearch(
     mergedProps.initialSelectedIndex,
   );
 
-  const [isLoading, _setisLoading] = useState<boolean>(false);
-
   const resetSearch = useCallback(() => {
-    _setisLoading(false);
     _setSearchQuery("");
     _setSearchResults([]);
     _setTotalSearchResults(0);
@@ -88,57 +79,47 @@ export default function useTickerSearch(
     _setSearchQuery(searchQuery.toUpperCase());
   }, []);
 
-  const previousSearchQueryRef = useRef(searchQuery);
+  const {
+    isPending: isLoading,
+    error: tickerSearchError,
+    execute: handleSearchTickers,
+  } = usePromise<
+    {
+      results: RustServiceTickerSearchResult[];
+      total_count: number;
+    },
+    [
+      {
+        searchQuery: string;
+        page: number;
+        pageSize: number;
+        onlyExactMatches: boolean;
+      },
+    ]
+  >({
+    promiseFunction: ({ searchQuery, page, pageSize, onlyExactMatches }) => {
+      return searchQuery
+        ? searchTickers(searchQuery, page, pageSize, onlyExactMatches)
+        : Promise.resolve({ results: [], total_count: 0 });
+    },
+    autoExecute: false,
+    onLoad: ({ results, total_count }) => {
+      _setSearchResults(results);
+      _setTotalSearchResults(total_count);
+      setSelectedIndex(DEFAULT_PROPS.initialSelectedIndex);
+    },
+    onError: (err) => {
+      triggerUIError(new Error("Error when searching tickers"));
+      customLogger.error("Caught error when searching tickers", err);
+    },
+  });
 
   // Perform search or reset
   useEffect(() => {
     if (!searchQuery.trim().length) {
       resetSearch();
     } else {
-      const previousSearchQuery = previousSearchQueryRef.current;
-
-      let activePage = page;
-      if (
-        previousSearchQuery &&
-        searchQuery.trim() !== previousSearchQuery.trim()
-      ) {
-        activePage = DEFAULT_PROPS.initialPage;
-      }
-
-      _setisLoading(true);
-      _setTickerSearchError(null);
-
-      // The `debouncedSearch` helps prevent potential infinite loop errors that can be
-      // caused by the user rapidly paginating through results. Usage of the AbortController
-      // AbortSignal didn't seem to alleviate this.
-      const debouncedSearch = debounceWithKey(
-        "use_search:search_tickers",
-        () => {
-          searchTickers(searchQuery, activePage, pageSize, onlyExactMatches)
-            .then((searchResultsWithTotalCount) => {
-              const { results, total_count } = searchResultsWithTotalCount;
-
-              _setSearchResults(results);
-              _setTotalSearchResults(total_count);
-              setPage(activePage);
-              setSelectedIndex(DEFAULT_PROPS.initialSelectedIndex);
-            })
-            .catch((err) => {
-              triggerUIError(new Error("Error when searching tickers"));
-              customLogger.error("Caught error when searching tickers", err);
-            })
-            .finally(() => {
-              _setisLoading(false);
-            });
-        },
-        50,
-      );
-
-      previousSearchQueryRef.current = searchQuery;
-
-      return () => {
-        debouncedSearch.clear();
-      };
+      handleSearchTickers({ searchQuery, page, pageSize, onlyExactMatches });
     }
   }, [
     searchQuery,
@@ -147,7 +128,7 @@ export default function useTickerSearch(
     resetSearch,
     onlyExactMatches,
     setPage,
-    triggerUIError,
+    handleSearchTickers,
   ]);
 
   return {
