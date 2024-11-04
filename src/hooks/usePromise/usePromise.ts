@@ -4,6 +4,9 @@ import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 import customLogger from "@utils/customLogger";
 
+// TODO: Reference https://developers.raycast.com/utilities/react-hooks/usepromise
+//for possibile improvements to use `AbortController`.
+
 type UsePromiseProps<T, A extends unknown[] = []> = {
   promiseFunction: (...args: A) => Promise<T>;
   onLoad?: (data: T) => void;
