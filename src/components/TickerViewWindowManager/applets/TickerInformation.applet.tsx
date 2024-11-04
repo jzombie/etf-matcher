@@ -113,6 +113,8 @@ export default function TickerInformationApplet({
                     provider: "stockanalysis.com",
                   })}
                   target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`View ${tickerDetail?.symbol} on stockanalysis.com`}
                 >
                   stockanalysis.com
                 </Link>
@@ -125,6 +127,8 @@ export default function TickerInformationApplet({
                     provider: "google.com",
                   })}
                   target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`View ${tickerDetail?.symbol} on stockanalysis.com`}
                 >
                   google.com
                 </Link>
