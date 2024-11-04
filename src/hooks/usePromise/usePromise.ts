@@ -9,6 +9,10 @@ type UsePromiseProps<T> = {
   autoExecute: boolean;
 };
 
+/**
+ * This hook provides a convenient way to handle asynchronous operations
+ * with built-in state management for `pending`, `success`, and `error` states.
+ */
 export default function usePromise<T>({
   promiseFunction,
   onLoad,
