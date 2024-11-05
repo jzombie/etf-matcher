@@ -2,8 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
-import customLogger from "@utils/customLogger";
-
 // TODO: Reference https://developers.raycast.com/utilities/react-hooks/usepromise
 //for possibile improvements to use `AbortController`.
 
