@@ -31,14 +31,13 @@ export default function TickerBucketPage({
 
   // Log the location object and extracted parameters
   useEffect(() => {
+    // TODO: Remove this
     console.log("Current location:", location);
     console.log("Bucket Type:", bucketType);
     console.log("Bucket Name:", bucketName);
-
-    // TODO: Determine which ticker bucket to use from the provided bucket type and name; if the bucket name is not determinable, perhaps navigate back to the buckets page of type?
-    // TODO: Use Rust Levenshtein distance to determine the closest match to the bucket name
     console.log("Ticker Buckets:", tickerBuckets);
 
+    // TODO: Refactor
     (async () => {
       if (bucketName) {
         let closestBucket = null;
@@ -60,6 +59,7 @@ export default function TickerBucketPage({
           }
         }
 
+        // TODO: Remove
         if (closestBucket) {
           console.log("Closest Bucket:", closestBucket);
         } else {
@@ -67,7 +67,7 @@ export default function TickerBucketPage({
         }
       }
     })();
-  }, [location, bucketType, bucketName]);
+  }, [location, bucketType, bucketName, tickerBuckets]);
 
   if (!bucketName) {
     return <div>No bucket name provided</div>;
