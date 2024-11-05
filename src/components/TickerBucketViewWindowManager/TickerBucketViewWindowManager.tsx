@@ -51,12 +51,28 @@ export default function TickerBucketViewWindowManager({
   // TODO: Redefine as necessary
   const contentMap = useMemo(
     () => ({
-      "Ticker Information": <div>Ticker Information</div>,
-      "Historical Prices": <div>Historical Prices</div>,
-      "Sector Allocation": <div>Sector Allocation</div>,
-      "Similarity Search": <div>Similarity Search</div>,
-      "ETF Holders and Holdings": <div>ETF Holders and Holdings</div>,
-      Fundamentals: <div>Fundamentals</div>,
+      "Ticker Information": (
+        <div>
+          TODO: Render combined ticker information. Possibly incliude checkboxes
+          to dynamically hide/show a particular ticker from the calculations.
+        </div>
+      ),
+      "Historical Prices": (
+        <div>TODO: Render multiple items in the same chart</div>
+      ),
+      "Sector Allocation": <div>Render combined weighted allocations</div>,
+      "Similarity Search": (
+        <div>
+          TODO: Use this opportunity to render PCA scatter plot of the entire
+          bucket
+        </div>
+      ),
+      "ETF Holders and Holdings": (
+        <div>
+          TODO: Possibly replace with the ability to manage the bucket itself
+        </div>
+      ),
+      Fundamentals: <div>TODO: Render combined fundamentals</div>,
     }),
     [],
   );
