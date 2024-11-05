@@ -70,6 +70,7 @@ export default function HeaderMenu() {
     setDrawerOpen((prev) => !prev);
   };
 
+  // TODO: Consider refactoring so this isn't hardcoded here
   const menuItems = useMemo(
     () => [
       { key: "/", label: "Home", icon: <Home fontSize="small" />, link: "/" },
@@ -115,15 +116,30 @@ export default function HeaderMenu() {
     [totalPortfolioBuckets, totalWatchlistBuckets, openImportExportModal],
   );
 
-  const selectedKey = useMemo(
-    () =>
-      menuItems.find(
-        (item) =>
-          matchPath({ path: item.key, end: true }, location.pathname) ||
-          matchPath({ path: `${item.key}/*`, end: false }, location.pathname),
-      )?.key,
-    [location.pathname, menuItems],
-  );
+  // TODO: Consider refactoring so this isn't hardcoded here
+  const selectedKey = useMemo(() => {
+    if (
+      matchPath(
+        { path: "/portfolio/:bucketName", end: false },
+        location.pathname,
+      )
+    ) {
+      return "/portfolios";
+    }
+    if (
+      matchPath(
+        { path: "/watchlist/:bucketName", end: false },
+        location.pathname,
+      )
+    ) {
+      return "/watchlists";
+    }
+    return menuItems.find(
+      (item) =>
+        matchPath({ path: item.key, end: true }, location.pathname) ||
+        matchPath({ path: `${item.key}/*`, end: false }, location.pathname),
+    )?.key;
+  }, [location.pathname, menuItems]);
 
   const shouldHighlightSearchButton = !selectedKey;
 
