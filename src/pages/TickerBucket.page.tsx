@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { fetchLevenshteinDistance } from "@services/RustService";
+import type { TickerBucket } from "@src/store";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import TickerBucketViewWindowManager from "@components/TickerBucketViewWindowManager";
@@ -18,6 +19,9 @@ export default function TickerBucketPage({
   bucketType,
 }: TickerBucketPageProps) {
   const { tickerBuckets } = useStoreStateReader("tickerBuckets");
+
+  const [selectedTickerBucket, setSelectedTickerBucket] =
+    useState<TickerBucket | null>(null);
 
   const navigate = useNavigate();
 
@@ -68,6 +72,7 @@ export default function TickerBucketPage({
           console.log("Closest Bucket:", closestBucket);
 
           setPageTitle(`${closestBucket.name} (${bucketType})`);
+          setSelectedTickerBucket(closestBucket);
 
           // TODO: Re-update the URL to match the bucket
         } else {
@@ -81,14 +86,9 @@ export default function TickerBucketPage({
     })();
   }, [location, bucketType, bucketName, tickerBuckets, navigate]);
 
-  if (!bucketName) {
-    return <div>No bucket name provided</div>;
+  if (!selectedTickerBucket) {
+    return <div>Locating ticker bucket...</div>;
   }
 
-  return (
-    <TickerBucketViewWindowManager
-      bucketType={bucketType}
-      bucketName={bucketName}
-    />
-  );
+  return <TickerBucketViewWindowManager tickerBucket={selectedTickerBucket} />;
 }

@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 
 import Full from "@layoutKit/Full";
 import Layout, { Content, Footer } from "@layoutKit/Layout";
+import type { TickerBucket } from "@src/store";
 import { MosaicNode } from "react-mosaic-component";
 
 import WindowManager from "@components/WindowManager";
@@ -9,13 +10,11 @@ import WindowManager from "@components/WindowManager";
 import customLogger from "@utils/customLogger";
 
 export type TickerBucketViewWindowManagerProps = {
-  bucketType: "portfolio" | "watchlist";
-  bucketName: string;
+  tickerBucket: TickerBucket;
 };
 
 export default function TickerBucketViewWindowManager({
-  bucketType,
-  bucketName,
+  tickerBucket,
 }: TickerBucketViewWindowManagerProps) {
   // TODO: Redefine as necessary
   const initialValue: MosaicNode<string> = useMemo(
@@ -94,7 +93,7 @@ export default function TickerBucketViewWindowManager({
           />
         </Content>
         <Footer>
-          TickerBucketViewWindowManager: {bucketType}:{bucketName}
+          TickerBucketViewWindowManager: {tickerBucket.type}:{tickerBucket.name}
         </Footer>
       </Layout>
     </Full>
