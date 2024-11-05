@@ -68,6 +68,8 @@ export default function TickerBucketPage({
           console.log("Closest Bucket:", closestBucket);
 
           setPageTitle(`${closestBucket.name} (${bucketType})`);
+
+          // TODO: Re-update the URL to match the bucket
         } else {
           // TODO: Remove
           console.log("No matching bucket found");
