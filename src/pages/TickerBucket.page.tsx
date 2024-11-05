@@ -1,12 +1,14 @@
 import React, { useEffect } from "react";
 
 import { fetchLevenshteinDistance } from "@services/RustService";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import TickerBucketViewWindowManager from "@components/TickerBucketViewWindowManager";
 
 import usePageTitleSetter from "@hooks/usePageTitleSetter";
 import useStoreStateReader from "@hooks/useStoreStateReader";
+
+import setPageTitle from "@utils/setPageTitle";
 
 export type TickerBucketPageProps = {
   bucketType: "portfolio" | "watchlist";
@@ -17,8 +19,10 @@ export default function TickerBucketPage({
 }: TickerBucketPageProps) {
   const { tickerBuckets } = useStoreStateReader("tickerBuckets");
 
+  const navigate = useNavigate();
+
   // Set the page title
-  usePageTitleSetter("Ticker Bucket");
+  usePageTitleSetter("Determining Bucket...");
 
   // Get the current location object
   const location = useLocation();
@@ -59,15 +63,21 @@ export default function TickerBucketPage({
           }
         }
 
-        // TODO: Remove
         if (closestBucket) {
+          // TODO: Remove
           console.log("Closest Bucket:", closestBucket);
+
+          setPageTitle(`${closestBucket.name} (${bucketType})`);
         } else {
+          // TODO: Remove
           console.log("No matching bucket found");
+
+          // TODO: Navigate back to the buckets page of the appropriate type
+          navigate(`/${bucketType}s`);
         }
       }
     })();
-  }, [location, bucketType, bucketName, tickerBuckets]);
+  }, [location, bucketType, bucketName, tickerBuckets, navigate]);
 
   if (!bucketName) {
     return <div>No bucket name provided</div>;
