@@ -114,7 +114,7 @@ describe("usePromise", () => {
     });
   });
 
-  it("should warn and update state correctly when execute is called multiple times before resolution", async () => {
+  it("should update state correctly when execute is called multiple times before resolution", async () => {
     const consoleWarnSpy = vi.spyOn(customLogger, "warn");
 
     // Mock promise function that resolves to different values based on input
@@ -139,10 +139,13 @@ describe("usePromise", () => {
       result.current.execute(); // Second execution with argument 2
     });
 
+    // FIXME: This is currently commented-out due to removing the warning in the hook.
+    // This may need to be revisited again in the future.
+    //
     // Check that the warning was logged
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
-      "A new promise is being invoked while another is still pending. This might lead to unexpected behavior.",
-    );
+    // expect(consoleWarnSpy).toHaveBeenCalledWith(
+    //   "A new promise is being invoked while another is still pending. This might lead to unexpected behavior.",
+    // );
 
     // Wait for the promise to resolve and check that the final data is from the second execution
     await waitFor(() => {
