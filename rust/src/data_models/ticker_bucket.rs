@@ -84,22 +84,26 @@ impl TickerBucket {
             .await
             .map_err(|err| JsValue::from_str(&format!("Failed to fetch tickers: {:?}", err)))?;
 
-        let mut ticker_map = HashMap::new();
+        let mut ticker_map: HashMap<(String, Option<u32>), Vec<(TickerId, Option<String>)>> =
+            HashMap::new();
         for ticker in all_tickers {
             let exchange_short_name = match ticker.exchange_id {
-                Some(exchange_id) => ExchangeById::get_short_name_by_exchange_id(exchange_id)
-                    .await
-                    .ok(),
+                Some(exchange_id) => {
+                    let short_name = ExchangeById::get_short_name_by_exchange_id(exchange_id)
+                        .await
+                        .ok();
+                    short_name
+                }
                 None => None,
             };
-            ticker_map.insert(
-                ticker.symbol.clone(),
-                (ticker.ticker_id, exchange_short_name),
-            );
+
+            // Use a tuple of (symbol, exchange_id) as the key
+            let key = (ticker.symbol.clone(), ticker.exchange_id);
+            let entry = ticker_map.entry(key).or_insert_with(Vec::new);
+            entry.push((ticker.ticker_id, exchange_short_name));
         }
 
         let mut rdr = csv::Reader::from_reader(csv_data.as_bytes());
-
         let headers = rdr
             .headers()
             .map_err(|err| JsValue::from_str(&format!("Failed to read CSV headers: {:?}", err)))?
@@ -131,6 +135,9 @@ impl TickerBucket {
 
             let symbol =
                 TickerBucket::get_field_by_name(&record, &headers, CSV_HEADER_TICKER_SYMBOL)?;
+            let exchange_short_name =
+                TickerBucket::get_field_by_name(&record, &headers, CSV_HEADER_TICKER_EXCHANGE)?
+                    .to_string();
             let quantity =
                 TickerBucket::get_field_by_name(&record, &headers, CSV_HEADER_TICKER_QUANTITY)?
                     .parse::<f32>()
@@ -138,13 +145,20 @@ impl TickerBucket {
                         JsValue::from_str(&format!("Failed to parse quantity: {:?}", err))
                     })?;
 
-            // Normalize `ticker_id` and `exchange_short_name` with what's already in the system, in case these have been changed.
-            // FIXME: This relates to this ticket: https://linear.app/zenosmosis/issue/ZEN-86/implement-auto-reindex-strategy
-            // and this handling should be refactored accordingly. A caveat with this current approach is that IF the same
-            // symbol were to be present on multiple exchanges, this would not work out well, but currently being limited to
-            // U.S. exchanges, that shouldn't pose a problem.
-            let (ticker_id, exchange_short_name) = match ticker_map.get(symbol) {
-                Some((id, exchange)) => (*id, exchange.clone()),
+            // Use the symbol and exchange_short_name as the key for lookup
+            let (ticker_id, _) = match ticker_map.iter().find_map(|((sym, _), entries)| {
+                if sym == symbol {
+                    entries
+                        .iter()
+                        .find(|(_, exch_short_name)| {
+                            exch_short_name.as_deref() == Some(&exchange_short_name)
+                        })
+                        .map(|(id, _)| *id)
+                } else {
+                    None
+                }
+            }) {
+                Some(id) => (id, Some(exchange_short_name.clone())),
                 None => {
                     return Err(JsValue::from_str(&format!(
                         "Error: Ticker symbol {} not found in the system",
@@ -156,11 +170,10 @@ impl TickerBucket {
             let ticker = TickerBucketTicker {
                 ticker_id,
                 symbol: symbol.to_string(),
-                exchange_short_name,
+                exchange_short_name: Some(exchange_short_name),
                 quantity,
             };
 
-            // Group tickers by their bucket
             let bucket = buckets_map.entry(uuid.clone()).or_insert(TickerBucket {
                 uuid,
                 name,
