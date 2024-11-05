@@ -18,6 +18,7 @@ import Padding from "@layoutKit/Padding";
 import { SIMILARITY_MATCHES_NOTICE } from "@src/constants";
 import store, { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucket } from "@src/store";
+import { Link } from "react-router-dom";
 
 import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
 import ScrollTo from "@components/ScrollTo";
@@ -256,6 +257,15 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                 </>
               )}
             </>
+            {
+              // TODO: Remove; just temporary
+              // TODO: Extract this link location to a shared helper, and make provisions so that it cannot be overlapped
+            }
+            <Link
+              to={`/${tickerBucket.type}/${tickerBucket.name.trim().toLowerCase().replace(/\s+/g, "-")}`}
+            >
+              Go to {tickerBucket.name} page
+            </Link>
           </Section>
         </Padding>
       </ScrollTo>
