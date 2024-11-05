@@ -16,6 +16,7 @@ import fetchAllMajorSectors from "./lib/fetchAllMajorSectors";
 import fetchDataBuildInfo from "./lib/fetchDataBuildInfo";
 import fetchETFAggregateDetail from "./lib/fetchETFAggregateDetail";
 import fetchImageInfo from "./lib/fetchImageInfo";
+import fetchLevenshteinDistance from "./lib/fetchLevenshteinDistance";
 import fetchSymbolAndExchange from "./lib/fetchSymbolAndExchange";
 import fetchTicker10KDetail from "./lib/fetchTicker10KDetail";
 import fetchTickerDetail from "./lib/fetchTickerDetail";
@@ -95,4 +96,5 @@ export {
   fetchAllMajorSectors,
   tickerBucketsToCSV,
   csvToTickerBuckets,
+  fetchLevenshteinDistance,
 };

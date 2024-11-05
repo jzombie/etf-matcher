@@ -28,7 +28,7 @@ use crate::utils::network_cache::{
     get_cache_size as lib_get_cache_size, remove_cache_entry as lib_remove_cache_entry,
 };
 
-use crate::utils::ticker_vector_config_utils;
+use crate::utils::{levenshtein_distance, ticker_vector_config_utils};
 
 include!("__AUTOGEN__compilation_time.rs");
 
@@ -389,6 +389,11 @@ pub async fn csv_to_ticker_buckets(csv_data: &str) -> Result<JsValue, JsValue> {
         }
         Err(err) => Err(err),
     }
+}
+
+#[wasm_bindgen]
+pub fn levenshtein_distance(a: &str, b: &str) -> usize {
+    utils::levenshtein_distance::levenshtein_distance(a, b)
 }
 
 #[wasm_bindgen]
