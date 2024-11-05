@@ -84,6 +84,7 @@ impl TickerBucket {
             .await
             .map_err(|err| JsValue::from_str(&format!("Failed to fetch tickers: {:?}", err)))?;
 
+        // Create a map to associate symbols and exchange IDs with ticker IDs and exchange short names
         let mut ticker_map: HashMap<(String, Option<u32>), Vec<(TickerId, Option<String>)>> =
             HashMap::new();
         for ticker in all_tickers {
@@ -145,7 +146,7 @@ impl TickerBucket {
                         JsValue::from_str(&format!("Failed to parse quantity: {:?}", err))
                     })?;
 
-            // Use the symbol and exchange_short_name as the key for lookup
+            // Use the symbol and exchange_short_name to find the correct ticker_id
             let (ticker_id, _) = match ticker_map.iter().find_map(|((sym, _), entries)| {
                 if sym == symbol {
                     entries
@@ -174,6 +175,7 @@ impl TickerBucket {
                 quantity,
             };
 
+            // Group tickers by their bucket
             let bucket = buckets_map.entry(uuid.clone()).or_insert(TickerBucket {
                 uuid,
                 name,
