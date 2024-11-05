@@ -32,5 +32,14 @@ export default function TickerBucketPage({
     console.log("Bucket Name:", bucketName);
   }, [location, bucketType, bucketName]);
 
-  return <TickerBucketViewWindowManager bucketName="test" />;
+  if (!bucketName) {
+    return <div>No bucket name provided</div>;
+  }
+
+  return (
+    <TickerBucketViewWindowManager
+      bucketType={bucketType}
+      bucketName={bucketName}
+    />
+  );
 }
