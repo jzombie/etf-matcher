@@ -2,7 +2,6 @@ mod decrypt;
 mod notifier;
 
 pub mod fetch_and_decompress;
-pub mod levenshtein_distance;
 pub mod network_cache;
 pub mod parse;
 pub mod shard;

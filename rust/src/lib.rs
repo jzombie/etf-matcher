@@ -1,5 +1,6 @@
 extern crate flatbuffers as fb;
 use data_models::ticker_vector_analysis::TickerWithQuantity;
+use levenshtein::levenshtein;
 use qrcode_generator::QrCodeEcc;
 use serde_wasm_bindgen::to_value;
 use std::panic;
@@ -393,7 +394,7 @@ pub async fn csv_to_ticker_buckets(csv_data: &str) -> Result<JsValue, JsValue> {
 
 #[wasm_bindgen]
 pub fn levenshtein_distance(a: &str, b: &str) -> usize {
-    utils::levenshtein_distance::levenshtein_distance(a, b)
+    levenshtein(a, b)
 }
 
 #[wasm_bindgen]
