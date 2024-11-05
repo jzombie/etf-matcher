@@ -80,8 +80,8 @@ export default function TickerBucketImportExportProvider({
   }, [tickerBucketImportExportService]);
 
   // Note: These errors may contain validation errors from the Rust service
-  // and are currently echoing up verbatim to the UI, which isn't typical
-  // of other implementations of this.
+  // and are currently echoing up verbatim to the UI, which isn't a typical
+  // pattern for error handling in this app.
   const handleVerbatimImportError = useCallback(
     (err: Error | string | unknown) => {
       customLogger.error(err);
