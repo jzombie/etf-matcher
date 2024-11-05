@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import { defineConfig } from "vite";
 import checker from "vite-plugin-checker";
+import { compression } from "vite-plugin-compression2";
 import eslint from "vite-plugin-eslint";
 import { createHtmlPlugin } from "vite-plugin-html";
 import sitemap from "vite-plugin-sitemap";
@@ -128,6 +129,20 @@ export default defineConfig(({ mode }) => {
           minifyCSS: true,
           minifyURLs: true,
         },
+      }),
+      // Reference: Discussion on GitHub Pages compression support
+      // @https://github.com/orgs/community/discussions/21655
+      //
+      // Note: It's unclear if this impacts GitHub Pages, but it's worth trying
+      // since it doesn't notably increase build time. The compiled wasm files
+      // appear to be served at the same size as reported by this plugin, theoretically
+      // meaning that GitHub Page is automatically using max compression, but
+      // this is just a guess.
+      compression({
+        algorithm: "gzip", // Use gzip compression
+        include: /\.(js|css|wasm)$/i, // Include .js, .css, and .wasm files
+        threshold: 1024, // Only compress files larger than 1KB
+        deleteOriginalAssets: false, // Keep original files
       }),
       ...(IS_PROD
         ? [
