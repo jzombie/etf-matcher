@@ -28,7 +28,7 @@ use crate::utils::network_cache::{
     get_cache_size as lib_get_cache_size, remove_cache_entry as lib_remove_cache_entry,
 };
 
-use crate::utils::{levenshtein_distance, ticker_vector_config_utils};
+use crate::utils::ticker_vector_config_utils;
 
 include!("__AUTOGEN__compilation_time.rs");
 
