@@ -85,6 +85,8 @@ impl TickerBucket {
             .map_err(|err| JsValue::from_str(&format!("Failed to fetch tickers: {:?}", err)))?;
 
         // Create a map to associate symbols and exchange IDs with ticker IDs and exchange short names
+        //
+        // This is a prerequisite step for mapping ticker symbols to ticker IDs
         let mut ticker_map: HashMap<(String, Option<u32>), Vec<(TickerId, Option<String>)>> =
             HashMap::new();
         for ticker in all_tickers {
@@ -117,14 +119,16 @@ impl TickerBucket {
                 JsValue::from_str(&format!("Failed to read CSV record: {:?}", err))
             })?;
 
-            let uuid = TickerBucket::get_field_by_name(&record, &headers, CSV_HEADER_BUCKET_UUID)?
-                .to_string();
-            let name = TickerBucket::get_field_by_name(&record, &headers, CSV_HEADER_BUCKET_NAME)?
-                .to_string();
+            let bucket_uuid =
+                TickerBucket::get_field_by_name(&record, &headers, CSV_HEADER_BUCKET_UUID)?
+                    .to_string();
+            let bucket_name =
+                TickerBucket::get_field_by_name(&record, &headers, CSV_HEADER_BUCKET_NAME)?
+                    .to_string();
             let bucket_type =
                 TickerBucket::get_field_by_name(&record, &headers, CSV_HEADER_BUCKET_TYPE)?
                     .to_string();
-            let description =
+            let bucket_description =
                 TickerBucket::get_field_by_name(&record, &headers, CSV_HEADER_BUCKET_DESCRIPTION)?
                     .to_string();
             let is_user_configurable =
@@ -134,7 +138,7 @@ impl TickerBucket {
                         JsValue::from_str(&format!("Failed to parse boolean: {:?}", err))
                     })?;
 
-            let symbol =
+            let ticker_symbol =
                 TickerBucket::get_field_by_name(&record, &headers, CSV_HEADER_TICKER_SYMBOL)?;
             let exchange_short_name =
                 TickerBucket::get_field_by_name(&record, &headers, CSV_HEADER_TICKER_EXCHANGE)?
@@ -148,7 +152,7 @@ impl TickerBucket {
 
             // Use the symbol and exchange_short_name to find the correct ticker_id
             let (ticker_id, _) = match ticker_map.iter().find_map(|((sym, _), entries)| {
-                if sym == symbol {
+                if sym == ticker_symbol {
                     entries
                         .iter()
                         .find(|(_, exch_short_name)| {
@@ -163,27 +167,29 @@ impl TickerBucket {
                 None => {
                     return Err(JsValue::from_str(&format!(
                         "Error: Ticker symbol {} not found in the system",
-                        symbol
+                        ticker_symbol
                     )))
                 }
             };
 
             let ticker = TickerBucketTicker {
                 ticker_id,
-                symbol: symbol.to_string(),
+                symbol: ticker_symbol.to_string(),
                 exchange_short_name: Some(exchange_short_name),
                 quantity,
             };
 
             // Group tickers by their bucket
-            let bucket = buckets_map.entry(uuid.clone()).or_insert(TickerBucket {
-                uuid,
-                name,
-                bucket_type,
-                description,
-                is_user_configurable,
-                tickers: Vec::new(),
-            });
+            let bucket = buckets_map
+                .entry(bucket_uuid.clone())
+                .or_insert(TickerBucket {
+                    uuid: bucket_uuid,
+                    name: bucket_name,
+                    bucket_type,
+                    description: bucket_description,
+                    is_user_configurable,
+                    tickers: Vec::new(),
+                });
 
             bucket.tickers.push(ticker);
         }
