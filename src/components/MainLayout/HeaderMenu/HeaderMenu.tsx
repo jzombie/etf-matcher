@@ -118,22 +118,23 @@ export default function HeaderMenu() {
 
   // TODO: Consider refactoring so this isn't hardcoded here
   const selectedKey = useMemo(() => {
-    if (
-      matchPath(
-        { path: "/portfolio/:bucketName", end: false },
-        location.pathname,
-      )
-    ) {
-      return "/portfolios";
-    }
-    if (
-      matchPath(
-        { path: "/watchlist/:bucketName", end: false },
-        location.pathname,
-      )
-    ) {
-      return "/watchlists";
-    }
+    // TODO: Uncomment only if using singular bucket types (otherwise delete)
+    // if (
+    //   matchPath(
+    //     { path: "/portfolio/:bucketName", end: false },
+    //     location.pathname,
+    //   )
+    // ) {
+    //   return "/portfolios";
+    // }
+    // if (
+    //   matchPath(
+    //     { path: "/watchlist/:bucketName", end: false },
+    //     location.pathname,
+    //   )
+    // ) {
+    //   return "/watchlists";
+    // }
     return menuItems.find(
       (item) =>
         matchPath({ path: item.key, end: true }, location.pathname) ||
