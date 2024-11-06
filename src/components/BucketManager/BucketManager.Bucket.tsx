@@ -262,7 +262,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
               // TODO: Extract this link location to a shared helper, and make provisions so that it cannot be overlapped
             }
             <Link
-              to={`/${tickerBucket.type}/${tickerBucket.name.trim().toLowerCase().replace(/\s+/g, "-")}`}
+              to={`/${tickerBucket.type}s/${tickerBucket.name.trim().toLowerCase().replace(/\s+/g, "-")}`}
             >
               Go to {tickerBucket.name} page
             </Link>

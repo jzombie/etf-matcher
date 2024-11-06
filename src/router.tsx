@@ -46,7 +46,7 @@ export const routes: RouteObject[] = [
       },
       {
         // A specific portfolio
-        path: "portfolio/:bucketName",
+        path: "portfolios/:bucketName",
         element: <TickerBucketPage bucketType="portfolio" />,
       },
       {
@@ -56,7 +56,7 @@ export const routes: RouteObject[] = [
       },
       {
         // A specific watchlist
-        path: "watchlist/:bucketName",
+        path: "watchlists/:bucketName",
         element: <TickerBucketPage bucketType="watchlist" />,
       },
       {
