@@ -7,8 +7,6 @@ import { MosaicNode } from "react-mosaic-component";
 
 import WindowManager from "@components/WindowManager";
 
-import customLogger from "@utils/customLogger";
-
 export type TickerBucketViewWindowManagerProps = {
   tickerBucket: TickerBucket;
 };
@@ -17,7 +15,7 @@ export default function TickerBucketViewWindowManager({
   tickerBucket,
 }: TickerBucketViewWindowManagerProps) {
   // TODO: Redefine as necessary
-  const initialValue: MosaicNode<string> = useMemo(
+  const initialLayout: MosaicNode<string> = useMemo(
     () => ({
       first: {
         direction: "column",
@@ -80,7 +78,10 @@ export default function TickerBucketViewWindowManager({
     <Full>
       <Layout>
         <Content>
-          <WindowManager initialValue={initialValue} contentMap={contentMap} />
+          <WindowManager
+            initialLayout={initialLayout}
+            contentMap={contentMap}
+          />
         </Content>
         <Footer>
           TickerBucketViewWindowManager: {tickerBucket.type}:{tickerBucket.name}

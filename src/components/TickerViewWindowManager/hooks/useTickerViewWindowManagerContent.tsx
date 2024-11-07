@@ -31,7 +31,7 @@ export default function useTickerViewWindowManagerContent(
   });
 
   // Initial layout definition
-  const initialValue: MosaicNode<string> = useMemo(
+  const initialLayout: MosaicNode<string> = useMemo(
     () => ({
       first: {
         direction: "column",
@@ -132,7 +132,7 @@ export default function useTickerViewWindowManagerContent(
   );
 
   return {
-    initialValue,
+    initialLayout,
     contentMap,
     tickerDetail,
   };

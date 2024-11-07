@@ -19,12 +19,12 @@ import useDetermineAutoTiling from "./hooks/useDetermineAutoTiling";
 import useWindowManagerLayout from "./hooks/useWindowManagerLayout";
 
 export type WindowManagerProps = {
-  initialValue: MosaicNode<string>;
+  initialLayout: MosaicNode<string>;
   contentMap: Record<string, React.ReactNode>;
 };
 
 export default function WindowManager({
-  initialValue,
+  initialLayout,
   contentMap,
 }: WindowManagerProps) {
   const { isAutoTiling: isTiling, componentRef } = useDetermineAutoTiling();
@@ -37,7 +37,7 @@ export default function WindowManager({
     openedWindows,
     updateOpenWindows,
   } = useWindowManagerLayout({
-    initialValue,
+    initialLayout,
     contentMap,
   });
 
@@ -49,9 +49,9 @@ export default function WindowManager({
             <Layout>
               <Content>
                 <WindowManagerBase
-                  initialValue={layout || initialValue}
+                  initialLayout={layout || initialLayout}
                   contentMap={contentMap}
-                  onChange={(newLayout) => {
+                  onLayoutChange={(newLayout) => {
                     setLayout(newLayout);
                     updateOpenWindows(newLayout); // Update open windows when layout changes
 

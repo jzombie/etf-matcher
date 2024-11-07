@@ -16,17 +16,12 @@ export default function TickerViewWindowManager({
   // TODO: Don't hardcode
   const isTiling = true;
 
-  // TODO: Rename to `initialLayout`?
-  const { initialValue, contentMap, tickerDetail } =
+  const { initialLayout, contentMap, tickerDetail } =
     useTickerViewWindowManagerContent(tickerId, isTiling);
 
   return (
     <TickerContainer tickerId={tickerId}>
-      <WindowManager
-        // TODO: Rename to `initialLayout`?
-        initialValue={initialValue}
-        contentMap={contentMap}
-      />
+      <WindowManager initialLayout={initialLayout} contentMap={contentMap} />
       {tickerDetail && (
         <TickerViewWindowManagerBucketManager tickerDetail={tickerDetail} />
       )}

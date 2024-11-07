@@ -6,12 +6,12 @@ import addWindowToLayout from "../utils/addWindowToLayout";
 import removeWindowFromLayout from "../utils/removeWindowFromLayout";
 
 export type UseWindowManagerLayoutProps = {
-  initialValue: MosaicNode<string> | null;
+  initialLayout: MosaicNode<string> | null;
   contentMap: Record<string, React.ReactNode>;
 };
 
 export default function useWindowManagerLayout({
-  initialValue,
+  initialLayout,
   contentMap,
 }: UseWindowManagerLayoutProps) {
   // Track layout, open windows, saved layouts, and split percentages
@@ -81,9 +81,9 @@ export default function useWindowManagerLayout({
   );
 
   useEffect(() => {
-    setLayout(initialValue);
-    updateOpenWindows(initialValue); // Initialize open windows
-  }, [contentMap, initialValue, updateOpenWindows]);
+    setLayout(initialLayout);
+    updateOpenWindows(initialLayout); // Initialize open windows
+  }, [contentMap, initialLayout, updateOpenWindows]);
 
   const areAllWindowsOpen =
     Array.from(openedWindows).length === Object.values(contentMap).length;

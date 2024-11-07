@@ -15,24 +15,24 @@ import "./mosaic-custom-overrides.css";
 const DEBOUNCED_RESIZE_TIMEOUT = 100;
 
 export type WindowManagerBaseProps = {
-  initialValue: MosaicNode<string>;
+  initialLayout: MosaicNode<string>;
   contentMap: { [key: string]: React.ReactNode };
-  value?: MosaicNode<string>;
-  onChange?: (newLayout: MosaicNode<string> | null) => void;
+  layout?: MosaicNode<string>;
+  onLayoutChange?: (newLayout: MosaicNode<string> | null) => void;
 };
 
 export default function WindowManagerBase({
-  initialValue,
+  initialLayout,
   contentMap,
-  value,
-  onChange,
+  layout,
+  onLayoutChange,
 }: WindowManagerBaseProps) {
-  const onChangeStableCurrentRef = useStableCurrentRef(onChange);
+  const onChangeStableCurrentRef = useStableCurrentRef(onLayoutChange);
   const [isResizing, setIsResizing] = useState<boolean>(false);
   const resizeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isResizingStableCurrentRef = useStableCurrentRef(isResizing);
 
-  const handleChange = useCallback(
+  const handleLayoutChange = useCallback(
     (newLayout: MosaicNode<string> | null) => {
       const onChange = onChangeStableCurrentRef.current;
 
@@ -89,10 +89,10 @@ export default function WindowManagerBase({
               isResizing={isResizing}
             />
           )}
-          initialValue={initialValue}
-          value={value}
+          initialValue={initialLayout}
+          value={layout}
           zeroStateView={<CustomZeroStateView />}
-          onChange={handleChange}
+          onChange={handleLayoutChange}
         />
       </Box>
     </Full>
