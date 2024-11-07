@@ -9,6 +9,7 @@ import TickerBucketViewWindowManager from "@components/TickerBucketViewWindowMan
 import usePageTitleSetter from "@hooks/usePageTitleSetter";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 
+import customLogger from "@utils/customLogger";
 import setPageTitle from "@utils/setPageTitle";
 
 export type TickerBucketPageProps = {
@@ -40,10 +41,10 @@ export default function TickerBucketPage({
   // Log the location object and extracted parameters
   useEffect(() => {
     // TODO: Remove this
-    console.log("Current location:", location);
-    console.log("Bucket Type:", bucketType);
-    console.log("Bucket Name:", bucketName);
-    console.log("Ticker Buckets:", tickerBuckets);
+    customLogger.log("Current location:", location);
+    customLogger.log("Bucket Type:", bucketType);
+    customLogger.log("Bucket Name:", bucketName);
+    customLogger.log("Ticker Buckets:", tickerBuckets);
 
     // TODO: Refactor
     (async () => {
@@ -69,7 +70,7 @@ export default function TickerBucketPage({
 
         if (closestBucket) {
           // TODO: Remove
-          console.log("Closest Bucket:", closestBucket);
+          customLogger.log("Closest Bucket:", closestBucket);
 
           setPageTitle(`${closestBucket.name} (${bucketType})`);
           setSelectedTickerBucket(closestBucket);
@@ -77,7 +78,7 @@ export default function TickerBucketPage({
           // TODO: Re-update the URL to match the bucket
         } else {
           // TODO: Remove
-          console.log("No matching bucket found");
+          customLogger.log("No matching bucket found");
 
           // TODO: Navigate back to the buckets page of the appropriate type
           navigate(`/${bucketType}s`);
