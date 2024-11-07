@@ -7,7 +7,6 @@ import {
   Typography,
 } from "@mui/material";
 
-import Full from "@layoutKit/Full";
 import Layout, { Content, Footer } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
 import { MosaicNode } from "react-mosaic-component";
@@ -27,7 +26,8 @@ export default function WindowManager({
   initialLayout,
   contentMap,
 }: WindowManagerProps) {
-  const { isAutoTiling: isTiling, componentRef } = useDetermineAutoTiling();
+  const { isAutoTiling: isTiling, componentRef: layoutRef } =
+    useDetermineAutoTiling();
 
   const {
     layout,
@@ -42,68 +42,66 @@ export default function WindowManager({
   });
 
   return (
-    <Full ref={componentRef}>
-      <Layout>
-        <Content>
-          {isTiling ? (
-            <Layout>
-              <Content>
-                <WindowManagerBase
-                  initialLayout={layout || initialLayout}
-                  contentMap={contentMap}
-                  onLayoutChange={(newLayout) => {
-                    setLayout(newLayout);
-                    updateOpenWindows(newLayout); // Update open windows when layout changes
+    <Layout ref={layoutRef}>
+      <Content>
+        {isTiling ? (
+          <Layout>
+            <Content>
+              <WindowManagerBase
+                initialLayout={layout || initialLayout}
+                contentMap={contentMap}
+                onLayoutChange={(newLayout) => {
+                  setLayout(newLayout);
+                  updateOpenWindows(newLayout); // Update open windows when layout changes
 
-                    // TODO: Remove
-                    customLogger.debug({ newLayout });
-                  }}
-                />
-              </Content>
-              {!areAllWindowsOpen && (
-                <Footer>
-                  <Box sx={{ overflow: "auto" }}>
-                    {/* Dynamically generate buttons based on contentMap */}
-                    <ToggleButtonGroup
-                      value={Array.from(openedWindows)} // Convert openWindows to array
-                      aria-label="window selection"
-                      sx={{ float: "right" }}
-                    >
-                      {Object.keys(contentMap).map((key) => {
-                        if (openedWindows.has(key)) {
-                          return null;
-                        }
+                  // TODO: Remove
+                  customLogger.debug({ newLayout });
+                }}
+              />
+            </Content>
+            {!areAllWindowsOpen && (
+              <Footer>
+                <Box sx={{ overflow: "auto" }}>
+                  {/* Dynamically generate buttons based on contentMap */}
+                  <ToggleButtonGroup
+                    value={Array.from(openedWindows)} // Convert openWindows to array
+                    aria-label="window selection"
+                    sx={{ float: "right" }}
+                  >
+                    {Object.keys(contentMap).map((key) => {
+                      if (openedWindows.has(key)) {
+                        return null;
+                      }
 
-                        return (
-                          <ToggleButton
-                            key={key}
-                            value={key}
-                            disabled={openedWindows.has(key)} // Disable button if the window is open
-                            onClick={() => toggleWindow(key)} // Toggle window on click
-                          >
-                            {key}
-                          </ToggleButton>
-                        );
-                      })}
-                    </ToggleButtonGroup>
-                  </Box>
-                </Footer>
-              )}
-            </Layout>
-          ) : (
-            <Scrollable>
-              {Object.entries(contentMap).map(([tileName, tileView], idx) => (
-                <React.Fragment key={idx}>
-                  <Typography variant="h6" sx={{ padding: 1 }}>
-                    {tileName}
-                  </Typography>
-                  {tileView}
-                </React.Fragment>
-              ))}
-            </Scrollable>
-          )}
-        </Content>
-      </Layout>
-    </Full>
+                      return (
+                        <ToggleButton
+                          key={key}
+                          value={key}
+                          disabled={openedWindows.has(key)} // Disable button if the window is open
+                          onClick={() => toggleWindow(key)} // Toggle window on click
+                        >
+                          {key}
+                        </ToggleButton>
+                      );
+                    })}
+                  </ToggleButtonGroup>
+                </Box>
+              </Footer>
+            )}
+          </Layout>
+        ) : (
+          <Scrollable>
+            {Object.entries(contentMap).map(([tileName, tileView], idx) => (
+              <React.Fragment key={idx}>
+                <Typography variant="h6" sx={{ padding: 1 }}>
+                  {tileName}
+                </Typography>
+                {tileView}
+              </React.Fragment>
+            ))}
+          </Scrollable>
+        )}
+      </Content>
+    </Layout>
   );
 }
