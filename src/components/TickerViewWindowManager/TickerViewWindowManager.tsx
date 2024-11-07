@@ -13,7 +13,10 @@ import Scrollable from "@layoutKit/Scrollable";
 import { MosaicNode, MosaicParent } from "react-mosaic-component";
 
 import TickerContainer from "@components/TickerContainer";
-import WindowManager from "@components/WindowManager";
+import WindowManager, {
+  addWindowToLayout,
+  removeWindowFromLayout,
+} from "@components/WindowManager";
 
 import useResizeObserver from "@hooks/useResizeObserver";
 
@@ -203,55 +206,4 @@ export default function TickerViewWindowManager({
       </TickerContainer>
     </Full>
   );
-}
-
-// Utility to remove a window from the layout and get its split percentage
-function removeWindowFromLayout(
-  layout: MosaicNode<string> | null,
-  windowId: string,
-  saveSplitPercentage?: (splitPercentage: number | undefined) => void,
-): MosaicNode<string> | null {
-  if (!layout) return null;
-
-  if (typeof layout === "string") {
-    return layout === windowId ? null : layout;
-  }
-
-  const { first, second, direction, splitPercentage } =
-    layout as MosaicParent<string>;
-
-  if (saveSplitPercentage) {
-    saveSplitPercentage(splitPercentage);
-  }
-
-  const newFirst = removeWindowFromLayout(first, windowId, saveSplitPercentage);
-  const newSecond = removeWindowFromLayout(
-    second,
-    windowId,
-    saveSplitPercentage,
-  );
-
-  if (!newFirst && !newSecond) return null;
-  if (!newFirst) return newSecond;
-  if (!newSecond) return newFirst;
-
-  return { first: newFirst, second: newSecond, direction, splitPercentage };
-}
-
-// Utility to restore/add a window to its previous layout position
-function addWindowToLayout(
-  layout: MosaicNode<string> | null,
-  windowLayout: MosaicNode<string>,
-  splitPercentage?: number,
-): MosaicNode<string> | null {
-  if (!layout) {
-    return windowLayout; // Add the window if layout is null
-  }
-
-  return {
-    direction: "row",
-    first: layout,
-    second: windowLayout,
-    splitPercentage: splitPercentage || 75, // Use saved splitPercentage or default to 50
-  };
 }
