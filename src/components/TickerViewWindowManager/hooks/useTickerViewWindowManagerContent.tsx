@@ -5,12 +5,12 @@ import { MosaicNode } from "react-mosaic-component";
 import useETFAggregateDetail from "@hooks/useETFAggregateDetail";
 import useTickerDetail from "@hooks/useTickerDetail";
 
-import ETFHoldersAndHoldingsApplet from "./applets/ETFHoldersAndHoldings.applet";
-import HistoricalPriceChartApplet from "./applets/HistoricalPriceChart.applet";
-import SectorAllocationApplet from "./applets/SectorAllocation.applet";
-import TickerFundamentalsApplet from "./applets/TickerFundamentals.applet";
-import TickerInformationApplet from "./applets/TickerInformation.applet";
-import TickerSimilaritySearchApplet from "./applets/TickerSimilaritySearch.applet";
+import ETFHoldersAndHoldingsApplet from "../applets/ETFHoldersAndHoldings.applet";
+import HistoricalPriceChartApplet from "../applets/HistoricalPriceChart.applet";
+import SectorAllocationApplet from "../applets/SectorAllocation.applet";
+import TickerFundamentalsApplet from "../applets/TickerFundamentals.applet";
+import TickerInformationApplet from "../applets/TickerInformation.applet";
+import TickerSimilaritySearchApplet from "../applets/TickerSimilaritySearch.applet";
 
 export default function useTickerViewWindowManagerContent(
   tickerId: number,

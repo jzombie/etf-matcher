@@ -23,7 +23,7 @@ import useResizeObserver from "@hooks/useResizeObserver";
 import customLogger from "@utils/customLogger";
 
 import TickerViewWindowManagerBucketManager from "./TickerViewWindowManager.BucketManager";
-import useTickerViewWindowManagerContent from "./useTickerViewWindowManagerContent";
+import useTickerViewWindowManagerContent from "./hooks/useTickerViewWindowManagerContent";
 
 const TILING_MODE_MIN_WIDTH_THRESHOLD = 956;
 
