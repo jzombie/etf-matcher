@@ -28,7 +28,7 @@ import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
 import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
 
-import useSearchResultsURLState from "./useSearchResultsURLState";
+import useSearchResultsURLState from "./hooks/useSearchResultsURLState";
 
 export default function SearchResultsPage() {
   const {
