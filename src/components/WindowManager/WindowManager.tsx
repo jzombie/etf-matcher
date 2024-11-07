@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import {
   Box,
@@ -11,6 +11,8 @@ import Layout, { Content, Footer } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
 import { MosaicNode } from "react-mosaic-component";
 
+import useStableCurrentRef from "@hooks/useStableCurrentRef";
+
 import customLogger from "@utils/customLogger";
 
 import WindowManagerBase from "./WindowManagerBase";
@@ -20,14 +22,26 @@ import useWindowManagerLayout from "./hooks/useWindowManagerLayout";
 export type WindowManagerProps = {
   initialLayout: MosaicNode<string>;
   contentMap: Record<string, React.ReactNode>;
+  onTilingStateChange?: (isTiling: boolean) => void;
 };
 
 export default function WindowManager({
   initialLayout,
   contentMap,
+  onTilingStateChange,
 }: WindowManagerProps) {
   const { isAutoTiling: isTiling, componentRef: layoutRef } =
     useDetermineAutoTiling();
+
+  const onTilingStateChangeRef = useStableCurrentRef(onTilingStateChange);
+
+  useEffect(() => {
+    const onTilingStateChange = onTilingStateChangeRef.current;
+
+    if (typeof onTilingStateChange === "function") {
+      onTilingStateChange(isTiling);
+    }
+  }, [isTiling, onTilingStateChangeRef]);
 
   const {
     layout,

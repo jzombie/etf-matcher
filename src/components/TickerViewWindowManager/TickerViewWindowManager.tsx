@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import TickerContainer from "@components/TickerContainer";
 import WindowManager from "@components/WindowManager";
@@ -13,15 +13,18 @@ export type TickerViewWindowManagerProps = {
 export default function TickerViewWindowManager({
   tickerId,
 }: TickerViewWindowManagerProps) {
-  // TODO: Don't hardcode
-  const isTiling = true;
+  const [isTiling, setIsTiling] = useState(true);
 
   const { initialLayout, contentMap, tickerDetail } =
     useTickerViewWindowManagerContent(tickerId, isTiling);
 
   return (
     <TickerContainer tickerId={tickerId}>
-      <WindowManager initialLayout={initialLayout} contentMap={contentMap} />
+      <WindowManager
+        onTilingStateChange={setIsTiling}
+        initialLayout={initialLayout}
+        contentMap={contentMap}
+      />
       {tickerDetail && (
         <TickerViewWindowManagerBucketManager tickerDetail={tickerDetail} />
       )}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import Full from "@layoutKit/Full";
 import Layout, { Content, Footer } from "@layoutKit/Layout";
@@ -15,8 +15,7 @@ export type TickerBucketViewWindowManagerProps = {
 export default function TickerBucketViewWindowManager({
   tickerBucket,
 }: TickerBucketViewWindowManagerProps) {
-  // TODO: Don't hardcode
-  const isTiling = true;
+  const [isTiling, setIsTiling] = useState(true);
 
   const { initialLayout, contentMap } = useTickerBucketViewWindowManagerContent(
     tickerBucket,
@@ -28,6 +27,7 @@ export default function TickerBucketViewWindowManager({
       <Layout>
         <Content>
           <WindowManager
+            onTilingStateChange={setIsTiling}
             initialLayout={initialLayout}
             contentMap={contentMap}
           />
