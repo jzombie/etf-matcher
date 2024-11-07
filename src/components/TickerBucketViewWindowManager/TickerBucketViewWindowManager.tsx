@@ -80,17 +80,7 @@ export default function TickerBucketViewWindowManager({
     <Full>
       <Layout>
         <Content>
-          <WindowManager
-            initialValue={initialValue}
-            contentMap={contentMap}
-            onChange={(newLayout) => {
-              // setLayout(newLayout);
-              // updateOpenWindows(newLayout); // Update open windows when layout changes
-
-              // TODO: Remove
-              customLogger.debug({ newLayout });
-            }}
-          />
+          <WindowManager initialValue={initialValue} contentMap={contentMap} />
         </Content>
         <Footer>
           TickerBucketViewWindowManager: {tickerBucket.type}:{tickerBucket.name}
