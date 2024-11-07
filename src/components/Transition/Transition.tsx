@@ -4,8 +4,8 @@ import Full from "@layoutKit/Full";
 import "animate.css";
 
 import TransitionChildView from "./Transition.ChildView";
+import useTransition from "./hooks/useTransition";
 import { TransitionProps } from "./types";
-import useTransition from "./useTransition";
 
 /**
  * IMPORTANT: Ensure that `trigger` is invoked *after* all asynchronous actions

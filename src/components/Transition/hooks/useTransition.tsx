@@ -11,7 +11,7 @@ import React, {
 
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
-import type { TransitionProps } from "./types";
+import type { TransitionProps } from "../types";
 
 export default function useTransition({
   children,
