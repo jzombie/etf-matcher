@@ -6,6 +6,7 @@ import { MosaicNode } from "react-mosaic-component";
 import useMultiETFAggregateDetail from "@hooks/useMultiETFAggregateDetail";
 import useMultiTickerDetail from "@hooks/useMultiTickerDetail";
 
+import MultiTickerInformationApplet from "../applets/MultiTickerInformation.applet";
 import type { TickerBucketViewWindowManagerAppletWrapProps } from "../components/TickerBucketViewWindowManager.AppletWrap";
 
 export default function useTickerBucketViewWindowManagerContent(
@@ -92,15 +93,9 @@ export default function useTickerBucketViewWindowManagerContent(
   );
 
   // TODO: Redefine as necessary
-  // TODO: Use common props
   const contentMap = useMemo(
     () => ({
-      "Ticker Information": (
-        <div>
-          TODO: Render combined ticker information. Possibly incliude checkboxes
-          to dynamically hide/show a particular ticker from the calculations.
-        </div>
-      ),
+      "Ticker Information": <MultiTickerInformationApplet {...commonProps} />,
       "Historical Prices": (
         <div>TODO: Render multiple items in the same chart</div>
       ),
@@ -118,7 +113,7 @@ export default function useTickerBucketViewWindowManagerContent(
       ),
       Fundamentals: <div>TODO: Render combined fundamentals</div>,
     }),
-    [],
+    [commonProps],
   );
 
   return {
