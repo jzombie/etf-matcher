@@ -219,4 +219,36 @@ describe("usePromise", () => {
 
     expect(fn).not.toHaveBeenCalled();
   });
+
+  it("should reset state correctly", async () => {
+    const fn = vi.fn(() => Promise.resolve("data"));
+    const { result } = renderHook(() =>
+      usePromise({
+        fn,
+        autoExecute: false,
+      }),
+    );
+
+    // Execute the promise
+    act(() => {
+      result.current.execute();
+    });
+
+    // Wait for the promise to resolve
+    await waitFor(() => {
+      expect(result.current.data).toBe("data");
+      expect(result.current.isPending).toBe(false);
+      expect(result.current.error).toBe(null);
+    });
+
+    // Call reset
+    act(() => {
+      result.current.reset();
+    });
+
+    // Check that the state has been reset
+    expect(result.current.data).toBe(null);
+    expect(result.current.isPending).toBe(false);
+    expect(result.current.error).toBe(null);
+  });
 });

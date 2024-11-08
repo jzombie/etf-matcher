@@ -114,5 +114,11 @@ export default function usePromise<T, A extends unknown[] = []>({
     }
   }, [autoExecute, stableAutoExecuteProps, execute]);
 
-  return { data, isPending, error, execute };
+  const reset = useCallback(() => {
+    setData(null);
+    setIsPending(false);
+    setError(null);
+  }, []);
+
+  return { data, isPending, error, execute, reset };
 }
