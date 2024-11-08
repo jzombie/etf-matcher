@@ -132,6 +132,9 @@ export default function TickerInformationApplet({
                 >
                   google.com
                 </Link>
+                {
+                  // TODO: Include link to company, ETF, etc. (and possibly include SEC filings either here or in the "fundamentals" section)
+                }
               </Box>
             </>
 
