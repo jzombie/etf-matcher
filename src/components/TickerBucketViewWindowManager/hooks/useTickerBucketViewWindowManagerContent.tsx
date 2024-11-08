@@ -6,11 +6,12 @@ import { MosaicNode } from "react-mosaic-component";
 import useMultiETFAggregateDetail from "@hooks/useMultiETFAggregateDetail";
 import useMultiTickerDetail from "@hooks/useMultiTickerDetail";
 
+import type { TickerBucketViewWindowManagerAppletWrapProps } from "../components/TickerBucketViewWindowManager.AppletWrap";
+
 export default function useTickerBucketViewWindowManagerContent(
   tickerBucket: TickerBucket,
   isTiling: boolean,
 ) {
-  // TODO: Refactor accordingly
   const tickerIds = useMemo(
     () => tickerBucket.tickers.map((ticker) => ticker.tickerId),
     [tickerBucket],
@@ -35,7 +36,29 @@ export default function useTickerBucketViewWindowManagerContent(
     error: multiETFAggregateDetailsError,
   } = useMultiETFAggregateDetail(etfTickerIds);
 
-  console.log({ multiETFAggregateDetails });
+  const commonProps: Omit<
+    TickerBucketViewWindowManagerAppletWrapProps,
+    "children"
+  > = useMemo(
+    () => ({
+      multiTickerDetails,
+      isLoadingMultiTickerDetails,
+      multiTickerDetailsError,
+      multiETFAggregateDetails,
+      isLoadingMultiETFAggregateDetails,
+      multiETFAggregateDetailsError,
+      isTiling,
+    }),
+    [
+      multiTickerDetails,
+      isLoadingMultiTickerDetails,
+      multiTickerDetailsError,
+      multiETFAggregateDetails,
+      isLoadingMultiETFAggregateDetails,
+      multiETFAggregateDetailsError,
+      isTiling,
+    ],
+  );
 
   // TODO: Redefine as necessary
   const initialLayout: MosaicNode<string> = useMemo(
@@ -69,6 +92,7 @@ export default function useTickerBucketViewWindowManagerContent(
   );
 
   // TODO: Redefine as necessary
+  // TODO: Use common props
   const contentMap = useMemo(
     () => ({
       "Ticker Information": (

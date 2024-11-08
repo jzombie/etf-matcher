@@ -11,6 +11,7 @@ import SectorAllocationApplet from "../applets/SectorAllocation.applet";
 import TickerFundamentalsApplet from "../applets/TickerFundamentals.applet";
 import TickerInformationApplet from "../applets/TickerInformation.applet";
 import TickerSimilaritySearchApplet from "../applets/TickerSimilaritySearch.applet";
+import type { TickerViewWindowManagerAppletWrapProps } from "../components/TickerViewWindowManager.AppletWrap";
 
 export default function useTickerViewWindowManagerContent(
   tickerId: number,
@@ -31,26 +32,27 @@ export default function useTickerViewWindowManagerContent(
   });
 
   // Common props for all applets
-  const commonProps = useMemo(
-    () => ({
-      tickerDetail,
-      isLoadingTickerDetail,
-      tickerDetailError,
-      etfAggregateDetail,
-      isLoadingETFAggregateDetail,
-      etfAggregateDetailError,
-      isTiling,
-    }),
-    [
-      tickerDetail,
-      isLoadingTickerDetail,
-      tickerDetailError,
-      etfAggregateDetail,
-      isLoadingETFAggregateDetail,
-      etfAggregateDetailError,
-      isTiling,
-    ],
-  );
+  const commonProps: Omit<TickerViewWindowManagerAppletWrapProps, "children"> =
+    useMemo(
+      () => ({
+        tickerDetail,
+        isLoadingTickerDetail,
+        tickerDetailError,
+        etfAggregateDetail,
+        isLoadingETFAggregateDetail,
+        etfAggregateDetailError,
+        isTiling,
+      }),
+      [
+        tickerDetail,
+        isLoadingTickerDetail,
+        tickerDetailError,
+        etfAggregateDetail,
+        isLoadingETFAggregateDetail,
+        etfAggregateDetailError,
+        isTiling,
+      ],
+    );
 
   // Initial layout definition
   const initialLayout: MosaicNode<string> = useMemo(
