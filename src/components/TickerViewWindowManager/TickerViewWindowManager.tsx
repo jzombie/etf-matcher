@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import TickerContainer from "@components/TickerContainer";
 import WindowManager from "@components/WindowManager";
 
-import TickerViewWindowManagerBucketManager from "./TickerViewWindowManager.BucketManager";
+import TickerViewWindowManagerBucketManager from "./components/TickerViewWindowManager.BucketManager";
 import useTickerViewWindowManagerContent from "./hooks/useTickerViewWindowManagerContent";
 
 export type TickerViewWindowManagerProps = {

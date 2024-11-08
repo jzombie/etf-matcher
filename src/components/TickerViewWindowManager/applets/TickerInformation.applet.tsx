@@ -14,27 +14,21 @@ import EncodedImage from "@components/EncodedImage";
 
 import getSymbolThirdPartyLink from "@utils/string/getSymbolThirdPartyLink";
 
-import TickerViewWindowManagerBucketManager from "../TickerViewWindowManager.BucketManager";
-import ETFAggregateDetailAppletWrap from "../components/ETFAggregateDetailAppletWrap";
+import TickerViewWindowManagerAppletWrap, {
+  TickerViewWindowManagerAppletWrapProps,
+} from "../components/TickerViewWindowManager.AppletWrap";
+import TickerViewWindowManagerBucketManager from "../components/TickerViewWindowManager.BucketManager";
 
-export type TickerInformationAppletProps = {
-  tickerDetail?: RustServiceTickerDetail | null;
-  isLoadingTickerDetail: boolean;
-  tickerDetailError?: Error | unknown;
-  etfAggregateDetail?: RustServiceETFAggregateDetail | null;
-  isLoadingETFAggregateDetail: boolean;
-  etfAggregateDetailError?: Error | unknown;
-  isTiling: boolean;
-};
+export type TickerInformationAppletProps = Omit<
+  TickerViewWindowManagerAppletWrapProps,
+  "children"
+>;
 
 export default function TickerInformationApplet({
   tickerDetail,
-  isLoadingTickerDetail,
-  tickerDetailError,
   etfAggregateDetail,
-  isLoadingETFAggregateDetail,
-  etfAggregateDetailError,
   isTiling,
+  ...rest
 }: TickerInformationAppletProps) {
   const { formattedSector, formattedIndustry } = useFormattedSectorAndIndustry(
     tickerDetail,
@@ -42,14 +36,11 @@ export default function TickerInformationApplet({
   );
 
   return (
-    <ETFAggregateDetailAppletWrap
+    <TickerViewWindowManagerAppletWrap
       tickerDetail={tickerDetail}
-      isLoadingTickerDetail={isLoadingTickerDetail}
-      tickerDetailError={tickerDetailError}
       etfAggregateDetail={etfAggregateDetail}
-      isLoadingETFAggregateDetail={isLoadingETFAggregateDetail}
-      etfAggregateDetailError={etfAggregateDetailError}
       isTiling={isTiling}
+      {...rest}
     >
       <Scrollable style={{ textAlign: "center" }}>
         <Padding>
@@ -145,7 +136,7 @@ export default function TickerInformationApplet({
       {!isTiling && tickerDetail && (
         <TickerViewWindowManagerBucketManager tickerDetail={tickerDetail} />
       )}
-    </ETFAggregateDetailAppletWrap>
+    </TickerViewWindowManagerAppletWrap>
   );
 }
 
@@ -189,6 +180,7 @@ function InfoItem({
   );
 }
 
+// TODO: Extract to a shared hook
 function useFormattedSectorAndIndustry(
   tickerDetail?: RustServiceTickerDetail | null,
   etfAggregateDetail?: RustServiceETFAggregateDetail | null,

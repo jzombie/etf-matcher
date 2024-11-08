@@ -3,7 +3,6 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import { Box, Button, ButtonGroup } from "@mui/material";
 
 import Layout, { Content, Header } from "@layoutKit/Layout";
-import { RustServiceTickerDetail } from "@services/RustService";
 import { TRADING_VIEW_COPYRIGHT_STYLES } from "@src/constants";
 import { MiniChart } from "react-ts-tradingview-widgets";
 import type { DateRange } from "react-ts-tradingview-widgets";
@@ -12,23 +11,21 @@ import Transition from "@components/Transition";
 
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
-import TickerDetailAppletWrap from "../components/TickerDetailAppletWrap";
+import TickerViewWindowManagerAppletWrap, {
+  TickerViewWindowManagerAppletWrapProps,
+} from "../components/TickerViewWindowManager.AppletWrap";
 
 const DATE_RANGES: DateRange[] = ["1D", "1M", "3M", "12M", "60M", "ALL"];
 const DEFAULT_DATE_RANGE: DateRange = "12M";
 
-export type HistoricalPriceChartAppletProps = {
-  tickerDetail?: RustServiceTickerDetail | null;
-  isLoadingTickerDetail: boolean;
-  tickerDetailError?: Error | unknown;
-  isTiling: boolean;
-};
+export type HistoricalPriceChartAppletProps = Omit<
+  TickerViewWindowManagerAppletWrapProps,
+  "children"
+>;
 
 export default function HistoricalPriceChartApplet({
   tickerDetail,
-  isLoadingTickerDetail,
-  tickerDetailError,
-  isTiling,
+  ...rest
 }: HistoricalPriceChartAppletProps) {
   const formattedSymbolWithExchange = useMemo(() => {
     if (tickerDetail) {
@@ -56,12 +53,7 @@ export default function HistoricalPriceChartApplet({
   }, [dateRange]);
 
   return (
-    <TickerDetailAppletWrap
-      tickerDetail={tickerDetail}
-      isLoadingTickerDetail={isLoadingTickerDetail}
-      tickerDetailError={tickerDetailError}
-      isTiling={isTiling}
-    >
+    <TickerViewWindowManagerAppletWrap tickerDetail={tickerDetail} {...rest}>
       <Layout>
         <Header>
           <Box sx={{ textAlign: "center" }}>
@@ -91,6 +83,6 @@ export default function HistoricalPriceChartApplet({
           </Transition>
         </Content>
       </Layout>
-    </TickerDetailAppletWrap>
+    </TickerViewWindowManagerAppletWrap>
   );
 }

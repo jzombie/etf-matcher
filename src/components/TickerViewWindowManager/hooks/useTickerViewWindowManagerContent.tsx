@@ -30,6 +30,28 @@ export default function useTickerViewWindowManagerContent(
     shouldLoad: isETF,
   });
 
+  // Common props for all applets
+  const commonProps = useMemo(
+    () => ({
+      tickerDetail,
+      isLoadingTickerDetail,
+      tickerDetailError,
+      etfAggregateDetail,
+      isLoadingETFAggregateDetail,
+      etfAggregateDetailError,
+      isTiling,
+    }),
+    [
+      tickerDetail,
+      isLoadingTickerDetail,
+      tickerDetailError,
+      etfAggregateDetail,
+      isLoadingETFAggregateDetail,
+      etfAggregateDetailError,
+      isTiling,
+    ],
+  );
+
   // Initial layout definition
   const initialLayout: MosaicNode<string> = useMemo(
     () => ({
@@ -64,71 +86,17 @@ export default function useTickerViewWindowManagerContent(
   // Map content to window titles
   const contentMap = useMemo(
     () => ({
-      "Ticker Information": (
-        <TickerInformationApplet
-          tickerDetail={tickerDetail}
-          isLoadingTickerDetail={isLoadingTickerDetail}
-          tickerDetailError={tickerDetailError}
-          etfAggregateDetail={etfAggregateDetail}
-          isLoadingETFAggregateDetail={isLoadingETFAggregateDetail}
-          etfAggregateDetailError={etfAggregateDetailError}
-          isTiling={isTiling}
-        />
-      ),
-      "Historical Prices": (
-        <HistoricalPriceChartApplet
-          tickerDetail={tickerDetail}
-          isLoadingTickerDetail={isLoadingTickerDetail}
-          tickerDetailError={tickerDetailError}
-          isTiling={isTiling}
-        />
-      ),
-      "Sector Allocation": (
-        <SectorAllocationApplet
-          tickerDetail={tickerDetail}
-          isLoadingTickerDetail={isLoadingTickerDetail}
-          tickerDetailError={tickerDetailError}
-          etfAggregateDetail={etfAggregateDetail}
-          isLoadingETFAggregateDetail={isLoadingETFAggregateDetail}
-          etfAggregateDetailError={etfAggregateDetailError}
-          isTiling={isTiling}
-        />
-      ),
-      "Similarity Search": (
-        <TickerSimilaritySearchApplet
-          tickerDetail={tickerDetail}
-          isLoadingTickerDetail={isLoadingTickerDetail}
-          tickerDetailError={tickerDetailError}
-          isTiling={isTiling}
-        />
-      ),
+      "Ticker Information": <TickerInformationApplet {...commonProps} />,
+      "Historical Prices": <HistoricalPriceChartApplet {...commonProps} />,
+      "Sector Allocation": <SectorAllocationApplet {...commonProps} />,
+      "Similarity Search": <TickerSimilaritySearchApplet {...commonProps} />,
 
-      Fundamentals: (
-        <TickerFundamentalsApplet
-          tickerDetail={tickerDetail}
-          isLoadingTickerDetail={isLoadingTickerDetail}
-          tickerDetailError={tickerDetailError}
-          isTiling={isTiling}
-        />
-      ),
+      Fundamentals: <TickerFundamentalsApplet {...commonProps} />,
       "ETF Holders and Holdings": (
-        <ETFHoldersAndHoldingsApplet
-          tickerDetail={tickerDetail}
-          isLoadingTickerDetail={isLoadingTickerDetail}
-          tickerDetailError={tickerDetailError}
-          isTiling={isTiling}
-        />
+        <ETFHoldersAndHoldingsApplet {...commonProps} />
       ),
     }),
-    [
-      etfAggregateDetail,
-      etfAggregateDetailError,
-      isLoadingETFAggregateDetail,
-      isLoadingTickerDetail,
-      isTiling,
-      tickerDetail,
-      tickerDetailError,
-    ],
+    [commonProps],
   );
 
   return {

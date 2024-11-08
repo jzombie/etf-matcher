@@ -34,33 +34,26 @@ import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import useTicker10KDetail from "@hooks/useTicker10KDetail";
 import useTickerVectorConfigs from "@hooks/useTickerVectorConfigs";
 
-import TickerDetailAppletWrap from "../../components/TickerDetailAppletWrap";
+import TickerViewWindowManagerAppletWrap, {
+  TickerViewWindowManagerAppletWrapProps,
+} from "../components/TickerViewWindowManager.AppletWrap";
 
 const DISPLAY_MODES = ["radial", "euclidean", "cosine"] as const;
 type DisplayMode = (typeof DISPLAY_MODES)[number];
 
-export type TickerSimilaritySearchAppletProps = {
-  tickerDetail?: RustServiceTickerDetail | null;
-  isLoadingTickerDetail: boolean;
-  tickerDetailError?: Error | unknown;
-  isTiling: boolean;
-};
+export type TickerSimilaritySearchAppletProps = Omit<
+  TickerViewWindowManagerAppletWrapProps,
+  "children"
+>;
 
 export default function TickerSimilaritySearchApplet({
   tickerDetail,
-  isLoadingTickerDetail,
-  tickerDetailError,
-  isTiling,
+  ...rest
 }: TickerSimilaritySearchAppletProps) {
   return (
-    <TickerDetailAppletWrap
-      tickerDetail={tickerDetail}
-      isLoadingTickerDetail={isLoadingTickerDetail}
-      tickerDetailError={tickerDetailError}
-      isTiling={isTiling}
-    >
+    <TickerViewWindowManagerAppletWrap tickerDetail={tickerDetail} {...rest}>
       {tickerDetail && <ComponentWrap tickerDetail={tickerDetail} />}
-    </TickerDetailAppletWrap>
+    </TickerViewWindowManagerAppletWrap>
   );
 }
 

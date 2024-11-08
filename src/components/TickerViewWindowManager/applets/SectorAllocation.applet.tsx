@@ -4,34 +4,24 @@ import { Box } from "@mui/material";
 
 import AutoScaler from "@layoutKit/AutoScaler";
 import Center from "@layoutKit/Center";
-import type {
-  RustServiceETFAggregateDetail,
-  RustServiceTickerDetail,
-} from "@services/RustService";
+import type { RustServiceETFAggregateDetail } from "@services/RustService";
 
 import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
 import SectorsPieChart from "@components/SectorsPieChart";
 
-import ETFAggregateDetailAppletWrap from "../components/ETFAggregateDetailAppletWrap";
+import TickerViewWindowManagerAppletWrap, {
+  TickerViewWindowManagerAppletWrapProps,
+} from "../components/TickerViewWindowManager.AppletWrap";
 
-export type SectorAllocationAppletProps = {
-  tickerDetail?: RustServiceTickerDetail | null;
-  isLoadingTickerDetail: boolean;
-  tickerDetailError?: Error | unknown;
-  etfAggregateDetail?: RustServiceETFAggregateDetail | null;
-  isLoadingETFAggregateDetail: boolean;
-  etfAggregateDetailError?: Error | unknown;
-  isTiling: boolean;
-};
+export type SectorAllocationAppletProps = Omit<
+  TickerViewWindowManagerAppletWrapProps,
+  "children"
+>;
 
 export default function SectorAllocationApplet({
   tickerDetail,
-  isLoadingTickerDetail,
-  tickerDetailError,
   etfAggregateDetail,
-  isLoadingETFAggregateDetail,
-  etfAggregateDetailError,
-  isTiling,
+  ...rest
 }: SectorAllocationAppletProps) {
   const distribution: RustServiceETFAggregateDetail["major_sector_distribution"] =
     useMemo(() => {
@@ -51,14 +41,10 @@ export default function SectorAllocationApplet({
     ]);
 
   return (
-    <ETFAggregateDetailAppletWrap
+    <TickerViewWindowManagerAppletWrap
       tickerDetail={tickerDetail}
-      isLoadingTickerDetail={isLoadingTickerDetail}
-      tickerDetailError={tickerDetailError}
       etfAggregateDetail={etfAggregateDetail}
-      isLoadingETFAggregateDetail={isLoadingETFAggregateDetail}
-      etfAggregateDetailError={etfAggregateDetailError}
-      isTiling={isTiling}
+      {...rest}
     >
       <>
         {distribution ? (
@@ -76,6 +62,6 @@ export default function SectorAllocationApplet({
           </Center>
         )}
       </>
-    </ETFAggregateDetailAppletWrap>
+    </TickerViewWindowManagerAppletWrap>
   );
 }
