@@ -51,7 +51,7 @@ export default function useMultiTickerDetail(
   };
 
   const {
-    data: tickerDetails,
+    data: multiTickerDetails,
     isPending: isLoading,
     error,
     execute,
@@ -72,5 +72,5 @@ export default function useMultiTickerDetail(
     }
   }, [tickerIds, execute, reset]);
 
-  return { isLoading, tickerDetails, error };
+  return { isLoading, multiTickerDetails, error };
 }

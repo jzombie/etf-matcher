@@ -55,7 +55,7 @@ export default function useMultiETFAggregateDetail(
   };
 
   const {
-    data: etfAggregateDetails,
+    data: multiETFAggregateDetails,
     isPending: isLoading,
     error,
     execute,
@@ -76,5 +76,5 @@ export default function useMultiETFAggregateDetail(
     }
   }, [etfTickerIds, execute, reset]);
 
-  return { isLoading, etfAggregateDetails, error };
+  return { isLoading, multiETFAggregateDetails, error };
 }

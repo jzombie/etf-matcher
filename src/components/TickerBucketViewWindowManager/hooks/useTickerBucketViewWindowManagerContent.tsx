@@ -16,26 +16,26 @@ export default function useTickerBucketViewWindowManagerContent(
     [tickerBucket],
   );
   const {
-    isLoading: isLoadingTickerDetails,
-    tickerDetails,
-    error: tickerDetailsError,
+    isLoading: isLoadingMultiTickerDetails,
+    multiTickerDetails,
+    error: multiTickerDetailsError,
   } = useMultiTickerDetail(tickerIds);
 
   const etfTickerIds = useMemo(
     () =>
-      tickerDetails
+      multiTickerDetails
         ?.filter((ticker) => ticker.is_etf)
         .map((ticker) => ticker.ticker_id) || [],
-    [tickerDetails],
+    [multiTickerDetails],
   );
 
   const {
-    isLoading: isLoadingETFAggregateDetails,
-    etfAggregateDetails,
-    error: etfAggregateDetailsError,
+    isLoading: isLoadingMultiETFAggregateDetails,
+    multiETFAggregateDetails,
+    error: multiETFAggregateDetailsError,
   } = useMultiETFAggregateDetail(etfTickerIds);
 
-  console.log({ etfAggregateDetails });
+  console.log({ multiETFAggregateDetails });
 
   // TODO: Redefine as necessary
   const initialLayout: MosaicNode<string> = useMemo(
