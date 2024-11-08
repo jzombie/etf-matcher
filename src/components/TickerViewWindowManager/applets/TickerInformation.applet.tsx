@@ -1,16 +1,14 @@
-import React, { useCallback, useMemo } from "react";
+import React from "react";
 
 import { Box, Divider, Link, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
-import {
-  RustServiceETFAggregateDetail,
-  RustServiceTickerDetail,
-} from "@services/RustService";
 
 import EncodedImage from "@components/EncodedImage";
+
+import useFormattedSectorAndIndustry from "@hooks/useFormattedSectorAndIndustry";
 
 import getSymbolThirdPartyLink from "@utils/string/getSymbolThirdPartyLink";
 
@@ -178,62 +176,4 @@ function InfoItem({
       </Typography>
     </Box>
   );
-}
-
-// TODO: Extract to a shared hook
-function useFormattedSectorAndIndustry(
-  tickerDetail?: RustServiceTickerDetail | null,
-  etfAggregateDetail?: RustServiceETFAggregateDetail | null,
-) {
-  const formatDetail = useCallback(
-    (baseEntity?: string, topEntity?: string): JSX.Element => {
-      // If both are missing, return "N/A"
-      if (!baseEntity && !topEntity) {
-        return <>N/A</>;
-      }
-
-      // If baseDetail is missing, but aggregateDetail is present, use aggregateDetail
-      if (!baseEntity) {
-        return <>{topEntity}</>;
-      }
-
-      // If both are present, format them together
-      if (topEntity) {
-        return (
-          <>
-            {baseEntity}
-            <br />({topEntity})
-          </>
-        );
-      }
-
-      // Otherwise, just return baseEntity
-      return <>{baseEntity}</>;
-    },
-    [],
-  );
-
-  const formattedSector = useMemo(() => {
-    return formatDetail(
-      tickerDetail?.sector_name,
-      etfAggregateDetail?.top_pct_sector_name,
-    );
-  }, [
-    formatDetail,
-    tickerDetail?.sector_name,
-    etfAggregateDetail?.top_pct_sector_name,
-  ]);
-
-  const formattedIndustry = useMemo(() => {
-    return formatDetail(
-      tickerDetail?.industry_name,
-      etfAggregateDetail?.top_pct_industry_name,
-    );
-  }, [
-    formatDetail,
-    tickerDetail?.industry_name,
-    etfAggregateDetail?.top_pct_industry_name,
-  ]);
-
-  return { formattedSector, formattedIndustry };
 }
