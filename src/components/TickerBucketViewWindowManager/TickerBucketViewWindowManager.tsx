@@ -33,6 +33,9 @@ export default function TickerBucketViewWindowManager({
           />
         </Content>
         <Footer>
+          {
+            // TODO: Handle accordingly
+          }
           TickerBucketViewWindowManager: {tickerBucket.type}:{tickerBucket.name}
         </Footer>
       </Layout>

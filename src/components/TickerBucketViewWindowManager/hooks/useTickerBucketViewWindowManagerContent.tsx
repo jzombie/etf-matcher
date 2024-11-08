@@ -3,10 +3,40 @@ import React, { useMemo } from "react";
 import type { TickerBucket } from "@src/store";
 import { MosaicNode } from "react-mosaic-component";
 
+import useMultiETFAggregateDetail from "@hooks/useMultiETFAggregateDetail";
+import useMultiTickerDetail from "@hooks/useMultiTickerDetail";
+
 export default function useTickerBucketViewWindowManagerContent(
   tickerBucket: TickerBucket,
   isTiling: boolean,
 ) {
+  // TODO: Refactor accordingly
+  const tickerIds = useMemo(
+    () => tickerBucket.tickers.map((ticker) => ticker.tickerId),
+    [tickerBucket],
+  );
+  const {
+    isLoading: isLoadingTickerDetails,
+    tickerDetails,
+    error: tickerDetailsError,
+  } = useMultiTickerDetail(tickerIds);
+
+  const etfTickerIds = useMemo(
+    () =>
+      tickerDetails
+        ?.filter((ticker) => ticker.is_etf)
+        .map((ticker) => ticker.ticker_id) || [],
+    [tickerDetails],
+  );
+
+  const {
+    isLoading: isLoadingETFAggregateDetails,
+    etfAggregateDetails,
+    error: etfAggregateDetailsError,
+  } = useMultiETFAggregateDetail(etfTickerIds);
+
+  console.log({ etfAggregateDetails });
+
   // TODO: Redefine as necessary
   const initialLayout: MosaicNode<string> = useMemo(
     () => ({
