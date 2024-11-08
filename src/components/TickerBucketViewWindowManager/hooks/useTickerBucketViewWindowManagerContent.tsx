@@ -6,6 +6,7 @@ import { MosaicNode } from "react-mosaic-component";
 import useMultiETFAggregateDetail from "@hooks/useMultiETFAggregateDetail";
 import useMultiTickerDetail from "@hooks/useMultiTickerDetail";
 
+import MultiTickerHistoricalPriceChartApplet from "../applets/MultiTickerHistoricalPriceChart.applet";
 import MultiTickerInformationApplet from "../applets/MultiTickerInformation.applet";
 import type { TickerBucketViewWindowManagerAppletWrapProps } from "../components/TickerBucketViewWindowManager.AppletWrap";
 
@@ -97,7 +98,7 @@ export default function useTickerBucketViewWindowManagerContent(
     () => ({
       "Ticker Information": <MultiTickerInformationApplet {...commonProps} />,
       "Historical Prices": (
-        <div>TODO: Render multiple items in the same chart</div>
+        <MultiTickerHistoricalPriceChartApplet {...commonProps} />
       ),
       "Sector Allocation": <div>Render combined weighted allocations</div>,
       "Similarity Search": (
