@@ -23,6 +23,9 @@ export type WindowProps = {
   isResizing: boolean;
 };
 
+// TODO: Render the children in a `portal` view so that they can be re-parented
+// without losing state. This is especially beneficial for advanced charting
+// components.
 export default function Window({ id, path, content, isResizing }: WindowProps) {
   const theme = useTheme();
 
