@@ -75,8 +75,7 @@ export default function HistoricalPriceChartApplet({
             <MiniChart
               symbol={formattedSymbolWithExchange}
               colorTheme="dark"
-              width="100%"
-              height="100%"
+              autosize
               copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
               dateRange={dateRange}
             />
