@@ -91,31 +91,6 @@ export default function useTickerBucketViewWindowManagerContent(
       second: "Sector Allocation",
       direction: "column",
       splitPercentage: 80,
-
-      // first: {
-      //   direction: "column",
-      //   first: {
-      //     direction: "row",
-      //     first: "Ticker Information",
-      //     second: "Historical Prices",
-      //     splitPercentage: 39.361702127659576,
-      //   },
-      //   second: {
-      //     first: "Sector Allocation",
-      //     second: "Similarity Search",
-      //     direction: "row",
-      //     splitPercentage: 40.13679097684473,
-      //   },
-      //   splitPercentage: 52.089700882585255,
-      // },
-      // second: {
-      //   first: "ETF Holders and Holdings",
-      //   second: "Fundamentals",
-      //   direction: "column",
-      //   splitPercentage: 51.89061500352696,
-      // },
-      // direction: "row",
-      // splitPercentage: 60.4332129963899,
     }),
     [],
   );
