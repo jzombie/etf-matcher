@@ -3,7 +3,10 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import { Box, Button, ButtonGroup } from "@mui/material";
 
 import Layout, { Content, Header } from "@layoutKit/Layout";
-import { TRADING_VIEW_COPYRIGHT_STYLES } from "@src/constants";
+import {
+  TRADING_VIEW_COPYRIGHT_STYLES,
+  TRADING_VIEW_THEME,
+} from "@src/constants";
 import { MiniChart } from "react-ts-tradingview-widgets";
 import type { DateRange } from "react-ts-tradingview-widgets";
 
@@ -74,7 +77,7 @@ export default function HistoricalPriceChartApplet({
           <Transition trigger={dateRange} direction={getDirection()}>
             <MiniChart
               symbol={formattedSymbolWithExchange}
-              colorTheme="dark"
+              colorTheme={TRADING_VIEW_THEME}
               autosize
               copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
               dateRange={dateRange}

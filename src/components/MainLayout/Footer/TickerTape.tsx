@@ -1,7 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { fetchTickerDetail } from "@services/RustService";
-import { TRADING_VIEW_COPYRIGHT_STYLES } from "@src/constants";
+import {
+  TRADING_VIEW_COPYRIGHT_STYLES,
+  TRADING_VIEW_THEME,
+} from "@src/constants";
 import type { TickerBucket } from "@src/store";
 import {
   TickerTape as LibTickerTape,
@@ -68,7 +71,7 @@ export default function TickerTape() {
 
   return (
     <LibTickerTape
-      colorTheme="dark"
+      colorTheme={TRADING_VIEW_THEME}
       copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
       symbols={tickerTapeSymbols}
     />

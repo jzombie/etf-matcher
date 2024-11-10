@@ -33,6 +33,8 @@ export const TRADING_VIEW_COPYRIGHT_STYLES: Readonly<{
   },
 };
 
+export const TRADING_VIEW_THEME = "dark";
+
 export const DEFAULT_TICKER_TAPE_TICKERS: ReadonlyArray<{
   symbol: string;
   exchangeShortName: string;

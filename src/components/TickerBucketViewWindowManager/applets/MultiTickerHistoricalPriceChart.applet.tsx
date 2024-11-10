@@ -1,6 +1,9 @@
 import React, { useMemo } from "react";
 
-import { TRADING_VIEW_COPYRIGHT_STYLES } from "@src/constants";
+import {
+  TRADING_VIEW_COPYRIGHT_STYLES,
+  TRADING_VIEW_THEME,
+} from "@src/constants";
 import { AdvancedRealTimeChart } from "react-ts-tradingview-widgets";
 
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange/formatSymbolWithExchange";
@@ -35,7 +38,7 @@ export default function MultiTickerHistoricalPriceChartApplet({
         symbol={formattedSymbolsWithExchange?.[0]}
         watchlist={formattedSymbolsWithExchange}
         allow_symbol_change={false}
-        theme="dark"
+        theme={TRADING_VIEW_THEME}
         autosize
         copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
       />
