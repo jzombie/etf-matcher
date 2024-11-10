@@ -1,12 +1,10 @@
-import React, { useMemo } from "react";
+import React from "react";
 
 import {
   TRADING_VIEW_COPYRIGHT_STYLES,
   TRADING_VIEW_THEME,
 } from "@src/constants";
 import { AdvancedRealTimeChart } from "react-ts-tradingview-widgets";
-
-import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange/formatSymbolWithExchange";
 
 import TickerBucketViewWindowManagerAppletWrap, {
   TickerBucketViewWindowManagerAppletWrapProps,
@@ -18,20 +16,12 @@ export type MultiTickerHistoricalPriceChartAppletProps = Omit<
 >;
 
 export default function MultiTickerHistoricalPriceChartApplet({
-  multiTickerDetails,
+  formattedSymbolsWithExchange,
   ...rest
 }: MultiTickerHistoricalPriceChartAppletProps) {
-  const formattedSymbolsWithExchange = useMemo(
-    () =>
-      multiTickerDetails?.map((tickerDetail) =>
-        formatSymbolWithExchange(tickerDetail),
-      ),
-    [multiTickerDetails],
-  );
-
   return (
     <TickerBucketViewWindowManagerAppletWrap
-      multiTickerDetails={multiTickerDetails}
+      formattedSymbolsWithExchange={formattedSymbolsWithExchange}
       {...rest}
     >
       {
@@ -45,14 +35,16 @@ export default function MultiTickerHistoricalPriceChartApplet({
         // - Advanced Chart Documentation: https://www.tradingview.com/widget-docs/widgets/charts/advanced-chart/
         // - React TS TradingView Widgets: https://github.com/JorrinKievit/react-ts-tradingview-widgets
       }
-      <AdvancedRealTimeChart
-        symbol={formattedSymbolsWithExchange?.[0]}
-        watchlist={formattedSymbolsWithExchange}
-        allow_symbol_change={false}
-        theme={TRADING_VIEW_THEME}
-        autosize
-        copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
-      />
+      {formattedSymbolsWithExchange && (
+        <AdvancedRealTimeChart
+          symbol={formattedSymbolsWithExchange?.[0]}
+          watchlist={formattedSymbolsWithExchange}
+          allow_symbol_change={false}
+          theme={TRADING_VIEW_THEME}
+          autosize
+          copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
+        />
+      )}
     </TickerBucketViewWindowManagerAppletWrap>
   );
 }

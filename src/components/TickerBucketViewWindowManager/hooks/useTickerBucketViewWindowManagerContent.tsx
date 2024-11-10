@@ -6,6 +6,8 @@ import { MosaicNode } from "react-mosaic-component";
 import useMultiETFAggregateDetail from "@hooks/useMultiETFAggregateDetail";
 import useMultiTickerDetail from "@hooks/useMultiTickerDetail";
 
+import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
+
 import MultiTickerHistoricalPriceChartApplet from "../applets/MultiTickerHistoricalPriceChart.applet";
 import MultiTickerInformationApplet from "../applets/MultiTickerInformation.applet";
 import type { TickerBucketViewWindowManagerAppletWrapProps } from "../components/TickerBucketViewWindowManager.AppletWrap";
@@ -38,12 +40,21 @@ export default function useTickerBucketViewWindowManagerContent(
     error: multiETFAggregateDetailsError,
   } = useMultiETFAggregateDetail(etfTickerIds);
 
+  const formattedSymbolsWithExchange = useMemo(
+    () =>
+      multiTickerDetails?.map((tickerDetail) =>
+        formatSymbolWithExchange(tickerDetail),
+      ),
+    [multiTickerDetails],
+  );
+
   const commonProps: Omit<
     TickerBucketViewWindowManagerAppletWrapProps,
     "children"
   > = useMemo(
     () => ({
       multiTickerDetails,
+      formattedSymbolsWithExchange,
       isLoadingMultiTickerDetails,
       multiTickerDetailsError,
       multiETFAggregateDetails,
@@ -53,6 +64,7 @@ export default function useTickerBucketViewWindowManagerContent(
     }),
     [
       multiTickerDetails,
+      formattedSymbolsWithExchange,
       isLoadingMultiTickerDetails,
       multiTickerDetailsError,
       multiETFAggregateDetails,

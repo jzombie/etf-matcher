@@ -9,6 +9,7 @@ import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 
 export type MultiTickerDetailsAppletWrapProps = {
   multiTickerDetails?: RustServiceTickerDetail[] | null;
+  formattedSymbolsWithExchange?: string[] | null;
   isLoadingMultiTickerDetails: boolean;
   multiTickerDetailsError?: Error | unknown;
   isTiling: boolean; // TODO: Refactor to use common types, so this can be excluded specifically from here (potentially in: https://linear.app/zenosmosis/issue/ZEN-128/re-use-tickerdetail-layouts-for-bucket-views)
@@ -19,7 +20,6 @@ export default function MultiTickerDetailsAppletWrap({
   multiTickerDetails,
   isLoadingMultiTickerDetails,
   multiTickerDetailsError,
-  isTiling,
   children,
 }: MultiTickerDetailsAppletWrapProps) {
   if (isLoadingMultiTickerDetails) {

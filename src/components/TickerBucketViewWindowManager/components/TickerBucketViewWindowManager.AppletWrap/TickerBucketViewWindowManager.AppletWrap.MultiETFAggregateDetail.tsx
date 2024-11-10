@@ -9,6 +9,7 @@ import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 
 export type MultiETFAggregateDetailAppletWrapProps = {
   multiETFAggregateDetails?: RustServiceETFAggregateDetail[] | null;
+  formattedSymbolsWithExchange?: string[] | null;
   isLoadingMultiETFAggregateDetails: boolean;
   multiETFAggregateDetailsError?: Error | unknown;
   isTiling: boolean;
@@ -19,7 +20,6 @@ export default function MultiETFAggregateDetailAppletWrap({
   multiETFAggregateDetails,
   isLoadingMultiETFAggregateDetails,
   multiETFAggregateDetailsError,
-  isTiling,
   children,
 }: MultiETFAggregateDetailAppletWrapProps) {
   if (isLoadingMultiETFAggregateDetails) {
