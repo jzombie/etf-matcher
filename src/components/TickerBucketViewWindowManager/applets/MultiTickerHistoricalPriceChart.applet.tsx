@@ -34,6 +34,17 @@ export default function MultiTickerHistoricalPriceChartApplet({
       multiTickerDetails={multiTickerDetails}
       {...rest}
     >
+      {
+        // FIXME: Callbacks are not supported in TradingView charts without using
+        // their charting library directly:
+        // https://www.tradingview.com/HTML5-stock-forex-bitcoin-charting-library/
+        //
+        // This will require setting ETF Matcher to establish its own data feed directly.
+        //
+        // Additional references:
+        // - Advanced Chart Documentation: https://www.tradingview.com/widget-docs/widgets/charts/advanced-chart/
+        // - React TS TradingView Widgets: https://github.com/JorrinKievit/react-ts-tradingview-widgets
+      }
       <AdvancedRealTimeChart
         symbol={formattedSymbolsWithExchange?.[0]}
         watchlist={formattedSymbolsWithExchange}
