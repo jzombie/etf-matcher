@@ -68,6 +68,10 @@ impl MajorSectorWeight {
     }
 }
 
+// TODO: For simplicty, these `avg_*` metrics should come directly from `ticker_10k_detail`,
+// and the data source should be updated to provide the data there. This will
+// not only simplify the code, but make less data needed to download.
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ETFAggregateDetail {
     pub ticker_id: TickerId,
