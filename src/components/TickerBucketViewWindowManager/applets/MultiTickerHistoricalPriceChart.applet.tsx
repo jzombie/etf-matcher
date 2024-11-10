@@ -53,14 +53,6 @@ export default function MultiTickerHistoricalPriceChartApplet({
         autosize
         copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
       />
-      {/* <div>
-        TODO: Probably use this chart to render multiple tickers:
-        https://tradingview-widgets.jorrinkievit.xyz/docs/components/AdvancedRealTimeChartWidget
-      </div>
-
-      {multiTickerDetails?.map((tickerDetail) => (
-        <div key={tickerDetail.ticker_id}>{tickerDetail.symbol}</div>
-      ))} */}
     </TickerBucketViewWindowManagerAppletWrap>
   );
 }
