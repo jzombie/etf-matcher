@@ -18,7 +18,6 @@ struct ETFHoldingTickerJSON {
     pub holding_percentage: f32,
 }
 
-// TODO: Rename without `Response` suffix. Rename original.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ETFHoldingTicker {
     pub holding_ticker_id: TickerId,
