@@ -34,6 +34,10 @@ export default function MultiTickerHistoricalPriceChartApplet({
         // Additional references:
         // - Advanced Chart Documentation: https://www.tradingview.com/widget-docs/widgets/charts/advanced-chart/
         // - React TS TradingView Widgets: https://github.com/JorrinKievit/react-ts-tradingview-widgets
+        //
+        // TODO: Consider adding an overlay which appears on the first usage,
+        // explaining how this chart doesn't update the app's state, in a fashion
+        // that is easy to comprehend.
       }
       {formattedSymbolsWithExchange && (
         <AdvancedRealTimeChart
