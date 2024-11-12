@@ -1,3 +1,5 @@
+// TODO: Rename file to `rustServiceTypes`
+
 // FIXME: These consist solely of the `Rust service worker` types and perhaps
 // this file should be renamed.
 
@@ -49,72 +51,6 @@ export type RustServiceETFAggregateDetail = {
   top_pct_sector_name?: string;
   top_pct_industry_name?: string;
   top_pct_sector_weight?: number;
-  //
-  avg_revenue_current?: number;
-  avg_revenue_1_yr?: number;
-  avg_revenue_2_yr?: number;
-  avg_revenue_3_yr?: number;
-  avg_revenue_4_yr?: number;
-  //
-  avg_gross_profit_current?: number;
-  avg_gross_profit_1_yr?: number;
-  avg_gross_profit_2_yr?: number;
-  avg_gross_profit_3_yr?: number;
-  avg_gross_profit_4_yr?: number;
-  //
-  avg_operating_income_current?: number;
-  avg_operating_income_1_yr?: number;
-  avg_operating_income_2_yr?: number;
-  avg_operating_income_3_yr?: number;
-  avg_operating_income_4_yr?: number;
-  //
-  avg_net_income_current?: number;
-  avg_net_income_1_yr?: number;
-  avg_net_income_2_yr?: number;
-  avg_net_income_3_yr?: number;
-  avg_net_income_4_yr?: number;
-  //
-  avg_total_assets_current?: number;
-  avg_total_assets_1_yr?: number;
-  avg_total_assets_2_yr?: number;
-  avg_total_assets_3_yr?: number;
-  avg_total_assets_4_yr?: number;
-  //
-  avg_total_liabilities_current?: number;
-  avg_total_liabilities_1_yr?: number;
-  avg_total_liabilities_2_yr?: number;
-  avg_total_liabilities_3_yr?: number;
-  avg_total_liabilities_4_yr?: number;
-  //
-  avg_total_stockholders_equity_current?: number;
-  avg_total_stockholders_equity_1_yr?: number;
-  avg_total_stockholders_equity_2_yr?: number;
-  avg_total_stockholders_equity_3_yr?: number;
-  avg_total_stockholders_equity_4_yr?: number;
-  //
-  avg_operating_cash_flow_current?: number;
-  avg_operating_cash_flow_1_yr?: number;
-  avg_operating_cash_flow_2_yr?: number;
-  avg_operating_cash_flow_3_yr?: number;
-  avg_operating_cash_flow_4_yr?: number;
-  //
-  avg_net_cash_provided_by_operating_activities_current?: number;
-  avg_net_cash_provided_by_operating_activities_1_yr?: number;
-  avg_net_cash_provided_by_operating_activities_2_yr?: number;
-  avg_net_cash_provided_by_operating_activities_3_yr?: number;
-  avg_net_cash_provided_by_operating_activities_4_yr?: number;
-  //
-  avg_net_cash_used_for_investing_activities_current?: number;
-  avg_net_cash_used_for_investing_activities_1_yr?: number;
-  avg_net_cash_used_for_investing_activities_2_yr?: number;
-  avg_net_cash_used_for_investing_activities_3_yr?: number;
-  avg_net_cash_used_for_investing_activities_4_yr?: number;
-  //
-  avg_net_cash_used_provided_by_financing_activities_current?: number;
-  avg_net_cash_used_provided_by_financing_activities_1_yr?: number;
-  avg_net_cash_used_provided_by_financing_activities_2_yr?: number;
-  avg_net_cash_used_provided_by_financing_activities_3_yr?: number;
-  avg_net_cash_used_provided_by_financing_activities_4_yr?: number;
   //
   major_sector_distribution?: {
     major_sector_name: string;
