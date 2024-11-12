@@ -31,9 +31,8 @@ pub struct ETFHoldingTicker {
     pub is_etf: bool,
 }
 
-// TODO: Rename without `Response` suffix. Rename original.
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ETFHoldingWeightResponse {
+pub struct ETFHoldingWeight {
     pub etf_ticker_id: TickerId,
     pub holding_ticker_id: TickerId,
     pub holding_market_value: f32,
@@ -101,7 +100,7 @@ impl ETFHoldingTicker {
     pub async fn get_etf_holding_weight(
         etf_ticker_id: TickerId,
         holding_ticker_id: TickerId,
-    ) -> Result<ETFHoldingWeightResponse, JsValue> {
+    ) -> Result<ETFHoldingWeight, JsValue> {
         let url: &str = &DataURL::ETFHoldingTickersShardIndex.value();
 
         // Query shard for the ETF ticker ID
@@ -126,7 +125,7 @@ impl ETFHoldingTicker {
                 ))
             })?;
 
-        Ok(ETFHoldingWeightResponse {
+        Ok(ETFHoldingWeight {
             etf_ticker_id,
             holding_ticker_id: holding.holding_ticker_id,
             holding_market_value: holding.holding_market_value,

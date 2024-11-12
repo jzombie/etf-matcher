@@ -140,8 +140,7 @@ export type RustServiceTicker10KDetail = {
   are_financials_current: boolean;
 };
 
-// TODO: Rename without `Response` suffix
-export type RustServiceETFHoldingWeightResponse = {
+export type RustServiceETFHoldingWeight = {
   etf_ticker_id: number;
   holding_ticker_id: number;
   holding_market_value: number;

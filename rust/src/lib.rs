@@ -16,9 +16,9 @@ use crate::types::TickerId;
 
 use crate::data_models::{
     ticker_vector_analysis, DataBuildInfo, DataURL, ETFAggregateDetail, ETFHoldingTicker,
-    ETFHoldingWeightResponse, ExchangeById, IndustryById, PaginatedResults, SectorById,
-    Ticker10KDetail, TickerBucket, TickerDetail, TickerDetailResponse, TickerETFHolder,
-    TickerSearch, TickerSearchResult,
+    ETFHoldingWeight, ExchangeById, IndustryById, PaginatedResults, SectorById, Ticker10KDetail,
+    TickerBucket, TickerDetail, TickerDetailResponse, TickerETFHolder, TickerSearch,
+    TickerSearchResult,
 };
 
 use crate::data_models::image::get_image_info as lib_get_image_info;
@@ -165,11 +165,11 @@ pub async fn get_etf_holding_weight(
     etf_ticker_id: TickerId,
     holding_ticker_id: TickerId,
 ) -> Result<JsValue, JsValue> {
-    let etf_holding_weight: ETFHoldingWeightResponse =
+    let etf_holding_weight: ETFHoldingWeight =
         ETFHoldingTicker::get_etf_holding_weight(etf_ticker_id, holding_ticker_id).await?;
     to_value(&etf_holding_weight).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
-            "Failed to convert ETFHoldingWeightResponse to JsValue: {}",
+            "Failed to convert ETFHoldingWeight to JsValue: {}",
             err
         ))
     })
