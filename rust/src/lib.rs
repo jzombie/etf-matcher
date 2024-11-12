@@ -15,9 +15,9 @@ mod utils;
 use crate::types::TickerId;
 
 use crate::data_models::{
-    ticker_vector_analysis, DataBuildInfo, DataURL, ETFAggregateDetail, ETFAggregateDetailResponse,
-    ETFHoldingTicker, ETFHoldingTickerResponse, ETFHoldingWeightResponse, ExchangeById,
-    IndustryById, PaginatedResults, SectorById, Ticker10KDetail, TickerBucket, TickerDetail,
+    ticker_vector_analysis, DataBuildInfo, DataURL, ETFAggregateDetail, ETFHoldingTicker,
+    ETFHoldingTickerResponse, ETFHoldingWeightResponse, ExchangeById, IndustryById,
+    PaginatedResults, SectorById, Ticker10KDetail, TickerBucket, TickerDetail,
     TickerDetailResponse, TickerETFHolder, TickerSearch, TickerSearchResult,
 };
 
@@ -119,7 +119,7 @@ pub async fn get_etf_holders_aggregate_detail_by_ticker_id(
     page: usize,
     page_size: usize,
 ) -> Result<JsValue, JsValue> {
-    let paginated_etf_aggregate_details: PaginatedResults<ETFAggregateDetailResponse> =
+    let paginated_etf_aggregate_details: PaginatedResults<ETFAggregateDetail> =
         TickerETFHolder::get_etf_holders_aggregate_detail_by_ticker_id(ticker_id, page, page_size)
             .await?;
     to_value(&paginated_etf_aggregate_details).map_err(|err: serde_wasm_bindgen::Error| {
@@ -134,7 +134,7 @@ pub async fn get_etf_holders_aggregate_detail_by_ticker_id(
 pub async fn get_etf_aggregate_detail_by_ticker_id(
     ticker_id: TickerId,
 ) -> Result<JsValue, JsValue> {
-    let etf_detail: ETFAggregateDetailResponse =
+    let etf_detail: ETFAggregateDetail =
         ETFAggregateDetail::get_etf_aggregate_detail_by_ticker_id(ticker_id).await?;
     to_value(&etf_detail).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(

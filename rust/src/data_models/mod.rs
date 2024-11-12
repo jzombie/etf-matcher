@@ -17,7 +17,7 @@ pub mod ticker_vector_analysis;
 
 pub use data_build_info::DataBuildInfo;
 pub use data_url::DataURL;
-pub use etf_aggregate_detail::{ETFAggregateDetail, ETFAggregateDetailResponse};
+pub use etf_aggregate_detail::ETFAggregateDetail;
 pub use etf_holding_ticker::{
     ETFHoldingTicker, ETFHoldingTickerResponse, ETFHoldingWeightResponse,
 };
