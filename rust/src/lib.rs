@@ -16,9 +16,9 @@ use crate::types::TickerId;
 
 use crate::data_models::{
     ticker_vector_analysis, DataBuildInfo, DataURL, ETFAggregateDetail, ETFHoldingTicker,
-    ETFHoldingTickerResponse, ETFHoldingWeightResponse, ExchangeById, IndustryById,
-    PaginatedResults, SectorById, Ticker10KDetail, TickerBucket, TickerDetail,
-    TickerDetailResponse, TickerETFHolder, TickerSearch, TickerSearchResult,
+    ETFHoldingWeightResponse, ExchangeById, IndustryById, PaginatedResults, SectorById,
+    Ticker10KDetail, TickerBucket, TickerDetail, TickerDetailResponse, TickerETFHolder,
+    TickerSearch, TickerSearchResult,
 };
 
 use crate::data_models::image::get_image_info as lib_get_image_info;
@@ -150,11 +150,11 @@ pub async fn get_etf_holdings_by_etf_ticker_id(
     page: usize,
     page_size: usize,
 ) -> Result<JsValue, JsValue> {
-    let etf_holding_tickers: PaginatedResults<ETFHoldingTickerResponse> =
+    let etf_holding_tickers: PaginatedResults<ETFHoldingTicker> =
         ETFHoldingTicker::get_etf_holdings_by_etf_ticker_id(etf_ticker_id, page, page_size).await?;
     to_value(&etf_holding_tickers).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
-            "Failed to convert <PaginatedResults<ETFHoldingTickerResponse> to JsValue: {}",
+            "Failed to convert <PaginatedResults<ETFHoldingTicker> to JsValue: {}",
             err
         ))
     })

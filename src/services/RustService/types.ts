@@ -150,8 +150,7 @@ export type RustServiceETFHoldingWeightResponse = {
   holding_percentage: number;
 };
 
-// TODO: Rename without `Response` suffix
-export type RustServiceETFHoldingTickerResponse = {
+export type RustServiceETFHoldingTicker = {
   holding_ticker_id: number;
   holding_symbol: string;
   holding_market_value: number;
