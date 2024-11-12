@@ -46,6 +46,7 @@ export default function MultiTickerHistoricalPriceChartApplet({
           allow_symbol_change={false}
           theme={TRADING_VIEW_THEME}
           autosize
+          hotlist
           copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
         />
       )}
