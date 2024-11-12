@@ -22,7 +22,7 @@ pub struct TickerDetailRaw {
     pub ticker_id: TickerId,
     pub symbol: String,
     pub exchange_short_name: Option<String>,
-    pub company_name: String, // TODO: Option type?
+    pub company_name: String,
     pub cik: Option<String>,
     pub country_code: Option<String>,
     pub currency_code: Option<String>,
