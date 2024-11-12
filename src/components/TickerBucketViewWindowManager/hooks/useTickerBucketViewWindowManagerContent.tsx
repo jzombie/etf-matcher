@@ -9,6 +9,7 @@ import useMultiTickerDetail from "@hooks/useMultiTickerDetail";
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
 import MultiTickerHistoricalPriceChartApplet from "../applets/MultiTickerHistoricalPriceChart.applet";
+import MultiTickerManagerApplet from "../applets/MultiTickerManager.applet";
 import type { TickerBucketViewWindowManagerAppletWrapProps } from "../components/TickerBucketViewWindowManager.AppletWrap";
 
 export default function useTickerBucketViewWindowManagerContent(
@@ -87,7 +88,11 @@ export default function useTickerBucketViewWindowManagerContent(
         },
         splitPercentage: 75,
       },
-      second: "Sector Allocation",
+      second: {
+        first: "Ticker Manager",
+        second: "Sector Allocation",
+        direction: "row",
+      },
       direction: "column",
       splitPercentage: 80,
     }),
@@ -97,6 +102,7 @@ export default function useTickerBucketViewWindowManagerContent(
   // TODO: Redefine as necessary
   const contentMap = useMemo(
     () => ({
+      "Ticker Manager": <MultiTickerManagerApplet {...commonProps} />,
       "Historical Prices": (
         <MultiTickerHistoricalPriceChartApplet {...commonProps} />
       ),
