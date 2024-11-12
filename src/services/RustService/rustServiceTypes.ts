@@ -25,7 +25,7 @@ export type RustServiceTickerDetail = {
   ticker_id: number;
   symbol: string;
   exchange_short_name?: string;
-  company_name: string; // TODO: Option type?
+  company_name: string;
   cik?: string;
   country_code?: string;
   currency_code?: string;
