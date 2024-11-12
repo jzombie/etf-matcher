@@ -103,6 +103,9 @@ export default function TickerBucketImportExportProvider({
 
   const readFiles = useCallback(
     async (fileList: FileList | null) => {
+      // Clear existing error messages before reading new files
+      setImportErrorMessage(null);
+
       try {
         return await tickerBucketImportExportService.readFiles(fileList);
       } catch (err) {
