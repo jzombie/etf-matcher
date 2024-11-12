@@ -19,7 +19,7 @@ where
 
 // TODO: Add `major_sector` mapping
 #[derive(Serialize, Deserialize, Debug)]
-pub struct TickerDetail {
+pub struct TickerDetailRaw {
     pub ticker_id: TickerId,
     pub symbol: String,
     pub exchange_short_name: Option<String>,
@@ -36,9 +36,8 @@ pub struct TickerDetail {
     pub logo_filename: Option<String>,
 }
 
-// TODO: Rename without `Response` suffix. Rename original.
 #[derive(Serialize, Deserialize, Debug)]
-pub struct TickerDetailResponse {
+pub struct TickerDetail {
     pub ticker_id: TickerId,
     pub symbol: String,
     pub exchange_short_name: Option<String>,
@@ -54,10 +53,10 @@ pub struct TickerDetailResponse {
 }
 
 impl TickerDetail {
-    pub async fn get_ticker_detail(ticker_id: TickerId) -> Result<TickerDetailResponse, JsValue> {
+    pub async fn get_ticker_detail(ticker_id: TickerId) -> Result<TickerDetail, JsValue> {
         let url = DataURL::TickerDetailShardIndex.value();
-        let mut detail: TickerDetail =
-            query_shard_for_id(&url, &ticker_id, |detail: &TickerDetail| {
+        let mut detail: TickerDetailRaw =
+            query_shard_for_id(&url, &ticker_id, |detail: &TickerDetailRaw| {
                 Some(&detail.ticker_id)
             })
             .await?
@@ -84,7 +83,7 @@ impl TickerDetail {
         };
 
         // Construct the response
-        Ok(TickerDetailResponse {
+        Ok(TickerDetail {
             ticker_id: detail.ticker_id,
             symbol: detail.symbol,
             exchange_short_name: detail.exchange_short_name,

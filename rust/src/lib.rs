@@ -17,8 +17,7 @@ use crate::types::TickerId;
 use crate::data_models::{
     ticker_vector_analysis, DataBuildInfo, DataURL, ETFAggregateDetail, ETFHoldingTicker,
     ETFHoldingWeight, ExchangeById, IndustryById, PaginatedResults, SectorById, Ticker10KDetail,
-    TickerBucket, TickerDetail, TickerDetailResponse, TickerETFHolder, TickerSearch,
-    TickerSearchResult,
+    TickerBucket, TickerDetail, TickerETFHolder, TickerSearch, TickerSearchResult,
 };
 
 use crate::data_models::image::get_image_info as lib_get_image_info;
@@ -92,7 +91,7 @@ pub async fn search_tickers(
 
 #[wasm_bindgen]
 pub async fn get_ticker_detail(ticker_id: TickerId) -> Result<JsValue, JsValue> {
-    let detail: TickerDetailResponse = TickerDetail::get_ticker_detail(ticker_id).await?;
+    let detail: TickerDetail = TickerDetail::get_ticker_detail(ticker_id).await?;
     to_value(&detail).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
             "Failed to convert TickerDetail to JsValue: {}",

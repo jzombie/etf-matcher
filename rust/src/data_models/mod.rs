@@ -25,7 +25,7 @@ pub use paginated_results::PaginatedResults;
 pub use sector_by_id::SectorById;
 pub use ticker_10k_detail::Ticker10KDetail;
 pub use ticker_bucket::TickerBucket;
-pub use ticker_detail::{TickerDetail, TickerDetailResponse};
+pub use ticker_detail::TickerDetail;
 pub use ticker_etf_holder::TickerETFHolder;
 pub use ticker_search::{TickerSearch, TickerSearchResult};
 // pub use ticker_by_id::TickerById;
