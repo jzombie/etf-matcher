@@ -1,7 +1,5 @@
-// TODO: Rename file to `rustServiceTypes`
-
-// FIXME: These consist solely of the `Rust service worker` types and perhaps
-// this file should be renamed.
+// Note: This file consists of types defined within the Rust service, and these types
+// use snake_case ("_") naming instead of camelCase.
 
 export type RustServiceDataBuildInfo = {
   time: string;

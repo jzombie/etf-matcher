@@ -4,7 +4,7 @@ import type {
   RustServiceETFHoldingTicker,
   RustServiceETFHoldingWeightResponse,
   RustServicePaginatedResults,
-} from "../types";
+} from "../rustServiceTypes";
 
 export async function fetchETFHoldings(
   tickerId: number,

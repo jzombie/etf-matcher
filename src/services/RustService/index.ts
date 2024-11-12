@@ -1,4 +1,3 @@
-// TODO: Move this into `services` directory
 import callRustService, { subscribe } from "./callRustService";
 import {
   clearCache,
@@ -46,7 +45,7 @@ import type {
   RustServiceTickerSearchResult,
   RustServiceTickerVectorConfig,
   RustServiceTickerWithQuantity,
-} from "./types";
+} from "./rustServiceTypes";
 import { NotifierEvent } from "./workerMainBindings";
 
 export default callRustService;

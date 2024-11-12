@@ -1,5 +1,5 @@
 import callRustService from "../callRustService";
-import type { RustServiceTickerDetail } from "../types";
+import type { RustServiceTickerDetail } from "../rustServiceTypes";
 
 export default async function fetchTickerDetail(
   tickerId: number,
