@@ -3,7 +3,7 @@ import React, { ReactNode, createContext, useCallback, useState } from "react";
 import { TickerBucket } from "@src/store";
 
 // Define a generic type for the context value
-type TickerBucketViewWindowManagerContentContextType = {
+type TickerSelectionManagerContextType = {
   activeTickers: string[];
   selectTicker: (ticker: string) => void;
   deselectTicker: (ticker: string) => void;
@@ -11,7 +11,7 @@ type TickerBucketViewWindowManagerContentContextType = {
 };
 
 // Set up the default value with empty functions and an empty array for active tickers
-const defaultContextValue: TickerBucketViewWindowManagerContentContextType = {
+const defaultContextValue: TickerSelectionManagerContextType = {
   activeTickers: [],
   selectTicker: () => {},
   deselectTicker: () => {},
@@ -19,20 +19,18 @@ const defaultContextValue: TickerBucketViewWindowManagerContentContextType = {
 };
 
 // Create the context with a generic type and default value
-export const TickerBucketViewWindowManagerContentContext =
-  createContext<TickerBucketViewWindowManagerContentContextType>(
-    defaultContextValue,
-  );
+export const TickerSelectionManagerContext =
+  createContext<TickerSelectionManagerContextType>(defaultContextValue);
 
-export type TickerBucketViewWindowManagerContentProviderProps = {
+export type TickerSelectionManagerProviderProps = {
   children: ReactNode;
   tickerBucket: TickerBucket;
 };
 
-export default function TickerBucketViewWindowManagerContentProvider({
+export default function TickerSelectionManagerProvider({
   children,
   tickerBucket,
-}: TickerBucketViewWindowManagerContentProviderProps) {
+}: TickerSelectionManagerProviderProps) {
   const [activeTickers, setActiveTickers] = useState<string[]>([]);
 
   // TODO: Set initial `activeTickers` to be whatever is in the bucket
@@ -56,7 +54,7 @@ export default function TickerBucketViewWindowManagerContentProvider({
   }, []);
 
   return (
-    <TickerBucketViewWindowManagerContentContext.Provider
+    <TickerSelectionManagerContext.Provider
       value={{
         activeTickers,
         selectTicker,
@@ -65,7 +63,7 @@ export default function TickerBucketViewWindowManagerContentProvider({
       }}
     >
       {children}
-    </TickerBucketViewWindowManagerContentContext.Provider>
+    </TickerSelectionManagerContext.Provider>
   );
 }
 
