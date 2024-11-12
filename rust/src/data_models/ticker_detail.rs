@@ -17,15 +17,15 @@ where
     Ok(num != 0)
 }
 
-// TODO: Add `major_sector` mapping
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TickerDetailRaw {
     pub ticker_id: TickerId,
     pub symbol: String,
     pub exchange_short_name: Option<String>,
-    pub company_name: String,
+    pub company_name: String, // TODO: Option type?
     pub cik: Option<String>,
     pub country_code: Option<String>,
+    pub currency_code: Option<String>,
     pub industry_id: Option<IndustryId>,
     pub sector_id: Option<SectorId>,
     #[serde(deserialize_with = "from_numeric_to_bool")]
@@ -44,6 +44,7 @@ pub struct TickerDetail {
     pub company_name: String,
     pub cik: Option<String>,
     pub country_code: Option<String>,
+    pub currency_code: Option<String>,
     pub industry_name: Option<String>,
     pub sector_name: Option<String>,
     pub is_etf: bool,
@@ -90,6 +91,7 @@ impl TickerDetail {
             company_name: detail.company_name,
             cik: detail.cik,
             country_code: detail.country_code,
+            currency_code: detail.currency_code,
             industry_name,
             sector_name,
             is_etf: detail.is_etf,

@@ -5,8 +5,8 @@ import ShowChartIcon from "@mui/icons-material/ShowChart";
 import { Box, ButtonGroup, IconButton, Typography } from "@mui/material";
 
 import type {
-  RustServiceETFAggregateDetail,
   RustServiceTicker10KDetail,
+  RustServiceTickerDetail,
 } from "@services/RustService";
 import { DEFAULT_CURRENCY_CODE } from "@src/constants";
 import { COLOR_WHEEL_COLORS } from "@src/constants";
@@ -27,35 +27,24 @@ import formatCurrency from "@utils/string/formatCurrency";
 // TODO: Refactor
 const TICK_COLOR = "#999";
 
-export type RenderChartProps = {
+export type FinancialChartsGridChartProps = {
   title: string;
   chartData: { year: string; value: number }[];
-  financialDetail: RustServiceTicker10KDetail | RustServiceETFAggregateDetail;
+  tickerDetail: RustServiceTickerDetail;
   colorIndex: number;
 };
 
-export default function RenderChart({
+export default function FinancialChartsGridChart({
   title,
   chartData,
-  financialDetail,
+  tickerDetail,
   colorIndex,
-}: RenderChartProps) {
+}: FinancialChartsGridChartProps) {
   const [chartType, setChartType] = useState<"line" | "bar">("bar");
 
   const handleChartTypeChange = (type: "line" | "bar") => {
     setChartType(type);
   };
-
-  // TODO: Move to a common place (or extend `useTicker10KDetail` include this)
-  // Search for other instances of this same function and replace
-  const isETFAggregateDetail = useCallback(
-    (
-      data: RustServiceTicker10KDetail | RustServiceETFAggregateDetail,
-    ): data is RustServiceETFAggregateDetail => {
-      return "avg_revenue_current" in data;
-    },
-    [],
-  );
 
   const darkenColor = useCallback((color: string) => {
     // Simple darkening function (this can be improved)
@@ -116,9 +105,7 @@ export default function RenderChart({
             <YAxis
               tickFormatter={(value: number) =>
                 formatCurrency(
-                  isETFAggregateDetail(financialDetail)
-                    ? financialDetail.currency_code
-                    : DEFAULT_CURRENCY_CODE,
+                  tickerDetail.currency_code || DEFAULT_CURRENCY_CODE,
                   value,
                 )
               }
@@ -128,9 +115,7 @@ export default function RenderChart({
             <Tooltip
               formatter={(value: number) =>
                 formatCurrency(
-                  isETFAggregateDetail(financialDetail)
-                    ? financialDetail.currency_code
-                    : DEFAULT_CURRENCY_CODE,
+                  tickerDetail.currency_code || DEFAULT_CURRENCY_CODE,
                   value,
                 )
               }
@@ -153,9 +138,7 @@ export default function RenderChart({
             <YAxis
               tickFormatter={(value: number) =>
                 formatCurrency(
-                  isETFAggregateDetail(financialDetail)
-                    ? financialDetail.currency_code
-                    : DEFAULT_CURRENCY_CODE,
+                  tickerDetail.currency_code || DEFAULT_CURRENCY_CODE,
                   value,
                 )
               }
@@ -165,9 +148,7 @@ export default function RenderChart({
             <Tooltip
               formatter={(value: number) =>
                 formatCurrency(
-                  isETFAggregateDetail(financialDetail)
-                    ? financialDetail.currency_code
-                    : DEFAULT_CURRENCY_CODE,
+                  tickerDetail.currency_code || DEFAULT_CURRENCY_CODE,
                   value,
                 )
               }

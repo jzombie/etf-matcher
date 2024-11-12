@@ -12,7 +12,7 @@ import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert
 
 import useTicker10KDetail from "@hooks/useTicker10KDetail";
 
-import RenderChart from "./FinancialChartsGrid.Chart";
+import FinancialChartsGridChart from "./FinancialChartsGrid.Chart";
 
 export type FinancialChartsGridProps = {
   tickerDetail: RustServiceTickerDetail;
@@ -92,7 +92,7 @@ export default function FinancialChartsGrid({
             gap: 2,
           }}
         >
-          <RenderChart
+          <FinancialChartsGridChart
             title="Revenue"
             chartData={createChartData(
               financialDetail.revenue_current,
@@ -101,10 +101,10 @@ export default function FinancialChartsGrid({
               financialDetail.revenue_3_yr,
               financialDetail.revenue_4_yr,
             )}
-            financialDetail={financialDetail}
+            tickerDetail={tickerDetail}
             colorIndex={0}
           />
-          <RenderChart
+          <FinancialChartsGridChart
             title="Gross Profit"
             chartData={createChartData(
               financialDetail.gross_profit_current,
@@ -113,10 +113,10 @@ export default function FinancialChartsGrid({
               financialDetail.gross_profit_3_yr,
               financialDetail.gross_profit_4_yr,
             )}
-            financialDetail={financialDetail}
+            tickerDetail={tickerDetail}
             colorIndex={1}
           />
-          <RenderChart
+          <FinancialChartsGridChart
             title="Operating Income"
             chartData={createChartData(
               financialDetail.operating_income_current,
@@ -125,10 +125,10 @@ export default function FinancialChartsGrid({
               financialDetail.operating_income_3_yr,
               financialDetail.operating_income_4_yr,
             )}
-            financialDetail={financialDetail}
+            tickerDetail={tickerDetail}
             colorIndex={2}
           />
-          <RenderChart
+          <FinancialChartsGridChart
             title="Net Income"
             chartData={createChartData(
               financialDetail.net_income_current,
@@ -137,10 +137,10 @@ export default function FinancialChartsGrid({
               financialDetail.net_income_3_yr,
               financialDetail.net_income_4_yr,
             )}
-            financialDetail={financialDetail}
+            tickerDetail={tickerDetail}
             colorIndex={3}
           />
-          <RenderChart
+          <FinancialChartsGridChart
             title="Total Assets"
             chartData={createChartData(
               financialDetail.total_assets_current,
@@ -149,10 +149,10 @@ export default function FinancialChartsGrid({
               financialDetail.total_assets_3_yr,
               financialDetail.total_assets_4_yr,
             )}
-            financialDetail={financialDetail}
+            tickerDetail={tickerDetail}
             colorIndex={4}
           />
-          <RenderChart
+          <FinancialChartsGridChart
             title="Total Liabilities"
             chartData={createChartData(
               financialDetail.total_liabilities_current,
@@ -161,10 +161,10 @@ export default function FinancialChartsGrid({
               financialDetail.total_liabilities_3_yr,
               financialDetail.total_liabilities_4_yr,
             )}
-            financialDetail={financialDetail}
+            tickerDetail={tickerDetail}
             colorIndex={5}
           />
-          <RenderChart
+          <FinancialChartsGridChart
             title="Operating Cash Flow"
             chartData={createChartData(
               financialDetail.operating_cash_flow_current,
@@ -173,7 +173,7 @@ export default function FinancialChartsGrid({
               financialDetail.operating_cash_flow_3_yr,
               financialDetail.operating_cash_flow_4_yr,
             )}
-            financialDetail={financialDetail}
+            tickerDetail={tickerDetail}
             colorIndex={6}
           />
         </Box>
