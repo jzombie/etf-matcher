@@ -2,7 +2,7 @@ import callRustService from "../callRustService";
 import type {
   RustServicePaginatedResults,
   RustServiceTickerSearchResult,
-} from "../types";
+} from "../rustServiceTypes";
 
 export default async function searchTickers(
   query: string,

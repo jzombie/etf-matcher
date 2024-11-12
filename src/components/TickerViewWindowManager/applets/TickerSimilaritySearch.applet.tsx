@@ -139,7 +139,7 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
 
   // TODO: Handle error state
   const { isLoading: isLoadingFinancialDetail, detail: financialDetail } =
-    useTicker10KDetail(tickerDetail.ticker_id, tickerDetail.is_etf);
+    useTicker10KDetail(tickerDetail.ticker_id);
 
   // Using `useState` for `contentElement` to ensure it triggers a re-render
   // when the element is set, allowing `useElementSize` to update immediately.

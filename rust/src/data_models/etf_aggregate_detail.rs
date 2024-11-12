@@ -68,12 +68,8 @@ impl MajorSectorWeight {
     }
 }
 
-// TODO: For simplicty, these `avg_*` metrics should come directly from `ticker_10k_detail`,
-// and the data source should be updated to provide the data there. This will
-// not only simplify the code, but make less data needed to download.
-
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ETFAggregateDetail {
+pub struct ETFAggregateDetailRaw {
     pub ticker_id: TickerId,
     pub etf_name: Option<String>,
     pub expense_ratio: f32,
@@ -81,83 +77,16 @@ pub struct ETFAggregateDetail {
     pub top_market_value_sector_id: Option<SectorId>,
     pub top_market_value_industry_id: Option<IndustryId>,
     pub top_sector_market_value: f64,
-    pub currency_code: String,
+    pub currency_code: Option<String>,
     pub top_pct_sector_id: Option<SectorId>,
     pub top_pct_industry_id: Option<IndustryId>,
     pub top_pct_sector_weight: f32,
     //
-    pub avg_revenue_current: Option<f64>,
-    pub avg_revenue_1_yr: Option<f64>,
-    pub avg_revenue_2_yr: Option<f64>,
-    pub avg_revenue_3_yr: Option<f64>,
-    pub avg_revenue_4_yr: Option<f64>,
-    //
-    pub avg_gross_profit_current: Option<f64>,
-    pub avg_gross_profit_1_yr: Option<f64>,
-    pub avg_gross_profit_2_yr: Option<f64>,
-    pub avg_gross_profit_3_yr: Option<f64>,
-    pub avg_gross_profit_4_yr: Option<f64>,
-    //
-    pub avg_operating_income_current: Option<f64>,
-    pub avg_operating_income_1_yr: Option<f64>,
-    pub avg_operating_income_2_yr: Option<f64>,
-    pub avg_operating_income_3_yr: Option<f64>,
-    pub avg_operating_income_4_yr: Option<f64>,
-    //
-    pub avg_net_income_current: Option<f64>,
-    pub avg_net_income_1_yr: Option<f64>,
-    pub avg_net_income_2_yr: Option<f64>,
-    pub avg_net_income_3_yr: Option<f64>,
-    pub avg_net_income_4_yr: Option<f64>,
-    //
-    pub avg_total_assets_current: Option<f64>,
-    pub avg_total_assets_1_yr: Option<f64>,
-    pub avg_total_assets_2_yr: Option<f64>,
-    pub avg_total_assets_3_yr: Option<f64>,
-    pub avg_total_assets_4_yr: Option<f64>,
-    //
-    pub avg_total_liabilities_current: Option<f64>,
-    pub avg_total_liabilities_1_yr: Option<f64>,
-    pub avg_total_liabilities_2_yr: Option<f64>,
-    pub avg_total_liabilities_3_yr: Option<f64>,
-    pub avg_total_liabilities_4_yr: Option<f64>,
-    //
-    pub avg_total_stockholders_equity_current: Option<f64>,
-    pub avg_total_stockholders_equity_1_yr: Option<f64>,
-    pub avg_total_stockholders_equity_2_yr: Option<f64>,
-    pub avg_total_stockholders_equity_3_yr: Option<f64>,
-    pub avg_total_stockholders_equity_4_yr: Option<f64>,
-    //
-    pub avg_operating_cash_flow_current: Option<f64>,
-    pub avg_operating_cash_flow_1_yr: Option<f64>,
-    pub avg_operating_cash_flow_2_yr: Option<f64>,
-    pub avg_operating_cash_flow_3_yr: Option<f64>,
-    pub avg_operating_cash_flow_4_yr: Option<f64>,
-    //
-    pub avg_net_cash_provided_by_operating_activities_current: Option<f64>,
-    pub avg_net_cash_provided_by_operating_activities_1_yr: Option<f64>,
-    pub avg_net_cash_provided_by_operating_activities_2_yr: Option<f64>,
-    pub avg_net_cash_provided_by_operating_activities_3_yr: Option<f64>,
-    pub avg_net_cash_provided_by_operating_activities_4_yr: Option<f64>,
-    //
-    pub avg_net_cash_used_for_investing_activities_current: Option<f64>,
-    pub avg_net_cash_used_for_investing_activities_1_yr: Option<f64>,
-    pub avg_net_cash_used_for_investing_activities_2_yr: Option<f64>,
-    pub avg_net_cash_used_for_investing_activities_3_yr: Option<f64>,
-    pub avg_net_cash_used_for_investing_activities_4_yr: Option<f64>,
-    //
-    pub avg_net_cash_used_provided_by_financing_activities_current: Option<f64>,
-    pub avg_net_cash_used_provided_by_financing_activities_1_yr: Option<f64>,
-    pub avg_net_cash_used_provided_by_financing_activities_2_yr: Option<f64>,
-    pub avg_net_cash_used_provided_by_financing_activities_3_yr: Option<f64>,
-    pub avg_net_cash_used_provided_by_financing_activities_4_yr: Option<f64>,
-    //
     pub major_sector_distribution: Option<String>,
 }
 
-// TODO: Rename without `Response` suffix. Rename original `ETFAggregateDetail`.
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ETFAggregateDetailResponse {
+pub struct ETFAggregateDetail {
     pub ticker_id: TickerId,
     pub etf_symbol: String,
     pub expense_ratio: f32,
@@ -166,94 +95,28 @@ pub struct ETFAggregateDetailResponse {
     pub top_market_value_sector_name: Option<String>,
     pub top_market_value_industry_name: Option<String>,
     pub top_sector_market_value: f64,
-    pub currency_code: String,
+    pub currency_code: Option<String>,
     pub top_pct_sector_name: Option<String>,
     pub top_pct_industry_name: Option<String>,
     pub top_pct_sector_weight: f32,
     //
-    pub avg_revenue_current: Option<f64>,
-    pub avg_revenue_1_yr: Option<f64>,
-    pub avg_revenue_2_yr: Option<f64>,
-    pub avg_revenue_3_yr: Option<f64>,
-    pub avg_revenue_4_yr: Option<f64>,
-    //
-    pub avg_gross_profit_current: Option<f64>,
-    pub avg_gross_profit_1_yr: Option<f64>,
-    pub avg_gross_profit_2_yr: Option<f64>,
-    pub avg_gross_profit_3_yr: Option<f64>,
-    pub avg_gross_profit_4_yr: Option<f64>,
-    //
-    pub avg_operating_income_current: Option<f64>,
-    pub avg_operating_income_1_yr: Option<f64>,
-    pub avg_operating_income_2_yr: Option<f64>,
-    pub avg_operating_income_3_yr: Option<f64>,
-    pub avg_operating_income_4_yr: Option<f64>,
-    //
-    pub avg_net_income_current: Option<f64>,
-    pub avg_net_income_1_yr: Option<f64>,
-    pub avg_net_income_2_yr: Option<f64>,
-    pub avg_net_income_3_yr: Option<f64>,
-    pub avg_net_income_4_yr: Option<f64>,
-    //
-    pub avg_total_assets_current: Option<f64>,
-    pub avg_total_assets_1_yr: Option<f64>,
-    pub avg_total_assets_2_yr: Option<f64>,
-    pub avg_total_assets_3_yr: Option<f64>,
-    pub avg_total_assets_4_yr: Option<f64>,
-    //
-    pub avg_total_liabilities_current: Option<f64>,
-    pub avg_total_liabilities_1_yr: Option<f64>,
-    pub avg_total_liabilities_2_yr: Option<f64>,
-    pub avg_total_liabilities_3_yr: Option<f64>,
-    pub avg_total_liabilities_4_yr: Option<f64>,
-    //
-    pub avg_total_stockholders_equity_current: Option<f64>,
-    pub avg_total_stockholders_equity_1_yr: Option<f64>,
-    pub avg_total_stockholders_equity_2_yr: Option<f64>,
-    pub avg_total_stockholders_equity_3_yr: Option<f64>,
-    pub avg_total_stockholders_equity_4_yr: Option<f64>,
-    //
-    pub avg_operating_cash_flow_current: Option<f64>,
-    pub avg_operating_cash_flow_1_yr: Option<f64>,
-    pub avg_operating_cash_flow_2_yr: Option<f64>,
-    pub avg_operating_cash_flow_3_yr: Option<f64>,
-    pub avg_operating_cash_flow_4_yr: Option<f64>,
-    //
-    pub avg_net_cash_provided_by_operating_activities_current: Option<f64>,
-    pub avg_net_cash_provided_by_operating_activities_1_yr: Option<f64>,
-    pub avg_net_cash_provided_by_operating_activities_2_yr: Option<f64>,
-    pub avg_net_cash_provided_by_operating_activities_3_yr: Option<f64>,
-    pub avg_net_cash_provided_by_operating_activities_4_yr: Option<f64>,
-    //
-    pub avg_net_cash_used_for_investing_activities_current: Option<f64>,
-    pub avg_net_cash_used_for_investing_activities_1_yr: Option<f64>,
-    pub avg_net_cash_used_for_investing_activities_2_yr: Option<f64>,
-    pub avg_net_cash_used_for_investing_activities_3_yr: Option<f64>,
-    pub avg_net_cash_used_for_investing_activities_4_yr: Option<f64>,
-    //
-    pub avg_net_cash_used_provided_by_financing_activities_current: Option<f64>,
-    pub avg_net_cash_used_provided_by_financing_activities_1_yr: Option<f64>,
-    pub avg_net_cash_used_provided_by_financing_activities_2_yr: Option<f64>,
-    pub avg_net_cash_used_provided_by_financing_activities_3_yr: Option<f64>,
-    pub avg_net_cash_used_provided_by_financing_activities_4_yr: Option<f64>,
-    //
     pub major_sector_distribution: Option<Vec<MajorSectorWeight>>,
     //
-    pub logo_filename: Option<String>,
-    //
-    pub are_financials_current: bool,
+    pub logo_filename: Option<String>, // TODO: Remove `logo_filename` from here?  Just get from ticker
 }
 
 impl ETFAggregateDetail {
     pub async fn get_etf_aggregate_detail_by_ticker_id(
         // TODO: Rename to `etf_ticker_id`
         ticker_id: TickerId,
-    ) -> Result<ETFAggregateDetailResponse, JsValue> {
+    ) -> Result<ETFAggregateDetail, JsValue> {
         let url: &str = &DataURL::ETFAggregateDetailShardIndex.value();
-        let etf_aggregate_detail: ETFAggregateDetail = query_shard_for_id(
+        let etf_aggregate_detail_raw: ETFAggregateDetailRaw = query_shard_for_id(
             url,
             &ticker_id,
-            |etf_aggregate_detail: &ETFAggregateDetail| Some(&etf_aggregate_detail.ticker_id),
+            |etf_aggregate_detail_raw: &ETFAggregateDetailRaw| {
+                Some(&etf_aggregate_detail_raw.ticker_id)
+            },
         )
         .await?
         .ok_or_else(|| JsValue::from_str(&format!("ETF ticker ID {} not found", ticker_id)))?;
@@ -262,7 +125,8 @@ impl ETFAggregateDetail {
         let (etf_symbol, exchange_short_name) =
             get_symbol_and_exchange_by_ticker_id(ticker_id).await?;
 
-        let top_market_value_sector_name = match etf_aggregate_detail.top_market_value_sector_id {
+        let top_market_value_sector_name = match etf_aggregate_detail_raw.top_market_value_sector_id
+        {
             Some(top_market_value_sector_id) => {
                 SectorById::get_sector_name_with_id(top_market_value_sector_id)
                     .await
@@ -271,24 +135,24 @@ impl ETFAggregateDetail {
             None => None,
         };
 
-        let top_market_value_industry_name = match etf_aggregate_detail.top_market_value_industry_id
-        {
-            Some(top_market_value_industry_id) => {
-                IndustryById::get_industry_name_with_id(top_market_value_industry_id)
-                    .await
-                    .ok()
-            }
-            None => None,
-        };
+        let top_market_value_industry_name =
+            match etf_aggregate_detail_raw.top_market_value_industry_id {
+                Some(top_market_value_industry_id) => {
+                    IndustryById::get_industry_name_with_id(top_market_value_industry_id)
+                        .await
+                        .ok()
+                }
+                None => None,
+            };
 
-        let top_pct_sector_name = match etf_aggregate_detail.top_pct_sector_id {
+        let top_pct_sector_name = match etf_aggregate_detail_raw.top_pct_sector_id {
             Some(top_pct_sector_id) => SectorById::get_sector_name_with_id(top_pct_sector_id)
                 .await
                 .ok(),
             None => None,
         };
 
-        let top_pct_industry_name = match etf_aggregate_detail.top_pct_industry_id {
+        let top_pct_industry_name = match etf_aggregate_detail_raw.top_pct_industry_id {
             Some(top_pct_industry_id) => {
                 IndustryById::get_industry_name_with_id(top_pct_industry_id)
                     .await
@@ -304,7 +168,7 @@ impl ETFAggregateDetail {
         );
 
         let major_sector_distribution: Option<Vec<MajorSectorWeight>> =
-            match &etf_aggregate_detail.major_sector_distribution {
+            match &etf_aggregate_detail_raw.major_sector_distribution {
                 Some(json_str) => {
                     match MajorSectorWeight::parse_major_sector_distribution(json_str).await {
                         Ok(sector_weights) => Some(sector_weights),
@@ -312,7 +176,7 @@ impl ETFAggregateDetail {
                             // Handle the error, log if necessary, and return None
                             let error_message = format!(
                                 "Error parsing ETF sector distribution for ticker ID {}: {}",
-                                etf_aggregate_detail.ticker_id, err
+                                etf_aggregate_detail_raw.ticker_id, err
                             );
                             web_sys::console::error_1(&error_message.into());
                             None
@@ -322,112 +186,23 @@ impl ETFAggregateDetail {
                 None => None,
             };
 
-        let response = ETFAggregateDetailResponse {
-            ticker_id: etf_aggregate_detail.ticker_id,
+        let response = ETFAggregateDetail {
+            ticker_id: etf_aggregate_detail_raw.ticker_id,
             etf_symbol,
-            expense_ratio: etf_aggregate_detail.expense_ratio,
+            expense_ratio: etf_aggregate_detail_raw.expense_ratio,
             exchange_short_name,
-            etf_name: etf_aggregate_detail.etf_name,
+            etf_name: etf_aggregate_detail_raw.etf_name,
             top_market_value_sector_name,
             top_market_value_industry_name,
-            top_sector_market_value: etf_aggregate_detail.top_sector_market_value,
-            currency_code: etf_aggregate_detail.currency_code,
+            top_sector_market_value: etf_aggregate_detail_raw.top_sector_market_value,
+            currency_code: etf_aggregate_detail_raw.currency_code,
             top_pct_sector_name,
             top_pct_industry_name,
-            top_pct_sector_weight: etf_aggregate_detail.top_pct_sector_weight,
-            //
-            avg_revenue_current: etf_aggregate_detail.avg_revenue_current,
-            avg_revenue_1_yr: etf_aggregate_detail.avg_revenue_1_yr,
-            avg_revenue_2_yr: etf_aggregate_detail.avg_revenue_2_yr,
-            avg_revenue_3_yr: etf_aggregate_detail.avg_revenue_3_yr,
-            avg_revenue_4_yr: etf_aggregate_detail.avg_revenue_4_yr,
-            //
-            avg_gross_profit_current: etf_aggregate_detail.avg_gross_profit_current,
-            avg_gross_profit_1_yr: etf_aggregate_detail.avg_gross_profit_1_yr,
-            avg_gross_profit_2_yr: etf_aggregate_detail.avg_gross_profit_2_yr,
-            avg_gross_profit_3_yr: etf_aggregate_detail.avg_gross_profit_3_yr,
-            avg_gross_profit_4_yr: etf_aggregate_detail.avg_gross_profit_4_yr,
-            //
-            avg_operating_income_current: etf_aggregate_detail.avg_operating_income_current,
-            avg_operating_income_1_yr: etf_aggregate_detail.avg_operating_income_1_yr,
-            avg_operating_income_2_yr: etf_aggregate_detail.avg_operating_income_2_yr,
-            avg_operating_income_3_yr: etf_aggregate_detail.avg_operating_income_3_yr,
-            avg_operating_income_4_yr: etf_aggregate_detail.avg_operating_income_4_yr,
-            //
-            avg_net_income_current: etf_aggregate_detail.avg_net_income_current,
-            avg_net_income_1_yr: etf_aggregate_detail.avg_net_income_1_yr,
-            avg_net_income_2_yr: etf_aggregate_detail.avg_net_income_2_yr,
-            avg_net_income_3_yr: etf_aggregate_detail.avg_net_income_3_yr,
-            avg_net_income_4_yr: etf_aggregate_detail.avg_net_income_4_yr,
-            //
-            avg_total_assets_current: etf_aggregate_detail.avg_total_assets_current,
-            avg_total_assets_1_yr: etf_aggregate_detail.avg_total_assets_1_yr,
-            avg_total_assets_2_yr: etf_aggregate_detail.avg_total_assets_2_yr,
-            avg_total_assets_3_yr: etf_aggregate_detail.avg_total_assets_3_yr,
-            avg_total_assets_4_yr: etf_aggregate_detail.avg_total_assets_4_yr,
-            //
-            avg_total_liabilities_current: etf_aggregate_detail.avg_total_liabilities_current,
-            avg_total_liabilities_1_yr: etf_aggregate_detail.avg_total_liabilities_1_yr,
-            avg_total_liabilities_2_yr: etf_aggregate_detail.avg_total_liabilities_2_yr,
-            avg_total_liabilities_3_yr: etf_aggregate_detail.avg_total_liabilities_3_yr,
-            avg_total_liabilities_4_yr: etf_aggregate_detail.avg_total_liabilities_4_yr,
-            //
-            avg_total_stockholders_equity_current: etf_aggregate_detail
-                .avg_total_stockholders_equity_current,
-            avg_total_stockholders_equity_1_yr: etf_aggregate_detail
-                .avg_total_stockholders_equity_1_yr,
-            avg_total_stockholders_equity_2_yr: etf_aggregate_detail
-                .avg_total_stockholders_equity_2_yr,
-            avg_total_stockholders_equity_3_yr: etf_aggregate_detail
-                .avg_total_stockholders_equity_3_yr,
-            avg_total_stockholders_equity_4_yr: etf_aggregate_detail
-                .avg_total_stockholders_equity_4_yr,
-            //
-            avg_operating_cash_flow_current: etf_aggregate_detail.avg_operating_cash_flow_current,
-            avg_operating_cash_flow_1_yr: etf_aggregate_detail.avg_operating_cash_flow_1_yr,
-            avg_operating_cash_flow_2_yr: etf_aggregate_detail.avg_operating_cash_flow_2_yr,
-            avg_operating_cash_flow_3_yr: etf_aggregate_detail.avg_operating_cash_flow_3_yr,
-            avg_operating_cash_flow_4_yr: etf_aggregate_detail.avg_operating_cash_flow_4_yr,
-            //
-            avg_net_cash_provided_by_operating_activities_current: etf_aggregate_detail
-                .avg_net_cash_provided_by_operating_activities_current,
-            avg_net_cash_provided_by_operating_activities_1_yr: etf_aggregate_detail
-                .avg_net_cash_provided_by_operating_activities_1_yr,
-            avg_net_cash_provided_by_operating_activities_2_yr: etf_aggregate_detail
-                .avg_net_cash_provided_by_operating_activities_2_yr,
-            avg_net_cash_provided_by_operating_activities_3_yr: etf_aggregate_detail
-                .avg_net_cash_provided_by_operating_activities_3_yr,
-            avg_net_cash_provided_by_operating_activities_4_yr: etf_aggregate_detail
-                .avg_net_cash_provided_by_operating_activities_4_yr,
-            //
-            avg_net_cash_used_for_investing_activities_current: etf_aggregate_detail
-                .avg_net_cash_used_for_investing_activities_current,
-            avg_net_cash_used_for_investing_activities_1_yr: etf_aggregate_detail
-                .avg_net_cash_used_for_investing_activities_1_yr,
-            avg_net_cash_used_for_investing_activities_2_yr: etf_aggregate_detail
-                .avg_net_cash_used_for_investing_activities_2_yr,
-            avg_net_cash_used_for_investing_activities_3_yr: etf_aggregate_detail
-                .avg_net_cash_used_for_investing_activities_3_yr,
-            avg_net_cash_used_for_investing_activities_4_yr: etf_aggregate_detail
-                .avg_net_cash_used_for_investing_activities_4_yr,
-            //
-            avg_net_cash_used_provided_by_financing_activities_current: etf_aggregate_detail
-                .avg_net_cash_used_provided_by_financing_activities_current,
-            avg_net_cash_used_provided_by_financing_activities_1_yr: etf_aggregate_detail
-                .avg_net_cash_used_provided_by_financing_activities_1_yr,
-            avg_net_cash_used_provided_by_financing_activities_2_yr: etf_aggregate_detail
-                .avg_net_cash_used_provided_by_financing_activities_2_yr,
-            avg_net_cash_used_provided_by_financing_activities_3_yr: etf_aggregate_detail
-                .avg_net_cash_used_provided_by_financing_activities_3_yr,
-            avg_net_cash_used_provided_by_financing_activities_4_yr: etf_aggregate_detail
-                .avg_net_cash_used_provided_by_financing_activities_4_yr,
+            top_pct_sector_weight: etf_aggregate_detail_raw.top_pct_sector_weight,
             //
             major_sector_distribution,
             //
             logo_filename,
-            //
-            // FIXME: This boolean check could be improved (see also in `Ticker10KDetail`)
-            are_financials_current: etf_aggregate_detail.avg_revenue_current.is_some(),
         };
 
         Ok(response)

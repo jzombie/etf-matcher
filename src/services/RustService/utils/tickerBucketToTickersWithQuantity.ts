@@ -1,6 +1,6 @@
 import type { TickerBucket } from "@src/store";
 
-import type { RustServiceTickerWithQuantity } from "../types";
+import type { RustServiceTickerWithQuantity } from "../rustServiceTypes";
 
 export default function tickerBucketToTickersWithQuantity(
   tickerBucket: TickerBucket,

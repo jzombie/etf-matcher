@@ -1,4 +1,3 @@
-// TODO: Move this into `services` directory
 import callRustService, { subscribe } from "./callRustService";
 import {
   clearCache,
@@ -36,8 +35,8 @@ import type {
   RustServiceCosineSimilarityResult,
   RustServiceDataBuildInfo,
   RustServiceETFAggregateDetail,
-  RustServiceETFHoldingTickerResponse,
-  RustServiceETFHoldingWeightResponse,
+  RustServiceETFHoldingTicker,
+  RustServiceETFHoldingWeight,
   RustServiceImageInfo,
   RustServicePaginatedResults,
   RustServiceTicker10KDetail,
@@ -46,7 +45,7 @@ import type {
   RustServiceTickerSearchResult,
   RustServiceTickerVectorConfig,
   RustServiceTickerWithQuantity,
-} from "./types";
+} from "./rustServiceTypes";
 import { NotifierEvent } from "./workerMainBindings";
 
 export default callRustService;
@@ -60,8 +59,8 @@ export type {
   RustServiceTickerDetail,
   RustServiceETFAggregateDetail,
   RustServiceTicker10KDetail,
-  RustServiceETFHoldingWeightResponse,
-  RustServiceETFHoldingTickerResponse,
+  RustServiceETFHoldingWeight,
+  RustServiceETFHoldingTicker,
   RustServiceCacheDetail,
   RustServiceImageInfo,
   RustServiceTickerVectorConfig,

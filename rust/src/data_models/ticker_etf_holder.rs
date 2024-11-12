@@ -1,8 +1,8 @@
 use crate::types::TickerId;
 use crate::utils::shard::query_shard_for_id;
+use crate::ETFAggregateDetail;
 use crate::JsValue;
 use crate::{DataURL, PaginatedResults};
-use crate::{ETFAggregateDetail, ETFAggregateDetailResponse};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -18,7 +18,7 @@ impl TickerETFHolder {
         ticker_id: TickerId,
         page: usize,
         page_size: usize,
-    ) -> Result<PaginatedResults<ETFAggregateDetailResponse>, JsValue> {
+    ) -> Result<PaginatedResults<ETFAggregateDetail>, JsValue> {
         let paginated_etf_holder_ids =
             TickerETFHolder::get_ticker_etf_holder_ids_by_ticker_id(ticker_id, page, page_size)
                 .await?;

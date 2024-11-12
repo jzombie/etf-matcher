@@ -5,37 +5,24 @@ import { Box, Typography } from "@mui/material";
 import Center from "@layoutKit/Center";
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
-import type {
-  RustServiceETFAggregateDetail,
-  RustServiceTicker10KDetail,
-  RustServiceTickerDetail,
-} from "@services/RustService";
+import type { RustServiceTickerDetail } from "@services/RustService";
 
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
 
 import useTicker10KDetail from "@hooks/useTicker10KDetail";
 
-import RenderChart from "./FinancialChartsGrid.Chart";
+import FinancialChartsGridChart from "./FinancialChartsGrid.Chart";
 
 export type FinancialChartsGridProps = {
   tickerDetail: RustServiceTickerDetail;
 };
-
-// TODO: Move to a common place (or extend `useTicker10KDetail` include this)
-// Search for other instances of this same function and replace
-function isETFAggregateDetail(
-  data: RustServiceTicker10KDetail | RustServiceETFAggregateDetail,
-): data is RustServiceETFAggregateDetail {
-  return "avg_revenue_current" in data;
-}
 
 export default function FinancialChartsGrid({
   tickerDetail,
 }: FinancialChartsGridProps) {
   const { isLoading, detail: financialDetail } = useTicker10KDetail(
     tickerDetail.ticker_id,
-    tickerDetail.is_etf,
   );
 
   // TODO: Move out of `FinancialChartsGrid` scope?
@@ -105,158 +92,88 @@ export default function FinancialChartsGrid({
             gap: 2,
           }}
         >
-          <RenderChart
+          <FinancialChartsGridChart
             title="Revenue"
             chartData={createChartData(
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_revenue_current
-                : financialDetail.revenue_current,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_revenue_1_yr
-                : financialDetail.revenue_1_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_revenue_2_yr
-                : financialDetail.revenue_2_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_revenue_3_yr
-                : financialDetail.revenue_3_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_revenue_4_yr
-                : financialDetail.revenue_4_yr,
+              financialDetail.revenue_current,
+              financialDetail.revenue_1_yr,
+              financialDetail.revenue_2_yr,
+              financialDetail.revenue_3_yr,
+              financialDetail.revenue_4_yr,
             )}
-            financialDetail={financialDetail}
+            tickerDetail={tickerDetail}
             colorIndex={0}
           />
-          <RenderChart
+          <FinancialChartsGridChart
             title="Gross Profit"
             chartData={createChartData(
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_gross_profit_current
-                : financialDetail.gross_profit_current,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_gross_profit_1_yr
-                : financialDetail.gross_profit_1_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_gross_profit_2_yr
-                : financialDetail.gross_profit_2_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_gross_profit_3_yr
-                : financialDetail.gross_profit_3_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_gross_profit_4_yr
-                : financialDetail.gross_profit_4_yr,
+              financialDetail.gross_profit_current,
+              financialDetail.gross_profit_1_yr,
+              financialDetail.gross_profit_2_yr,
+              financialDetail.gross_profit_3_yr,
+              financialDetail.gross_profit_4_yr,
             )}
-            financialDetail={financialDetail}
+            tickerDetail={tickerDetail}
             colorIndex={1}
           />
-          <RenderChart
+          <FinancialChartsGridChart
             title="Operating Income"
             chartData={createChartData(
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_operating_income_current
-                : financialDetail.operating_income_current,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_operating_income_1_yr
-                : financialDetail.operating_income_1_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_operating_income_2_yr
-                : financialDetail.operating_income_2_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_operating_income_3_yr
-                : financialDetail.operating_income_3_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_operating_income_4_yr
-                : financialDetail.operating_income_4_yr,
+              financialDetail.operating_income_current,
+              financialDetail.operating_income_1_yr,
+              financialDetail.operating_income_2_yr,
+              financialDetail.operating_income_3_yr,
+              financialDetail.operating_income_4_yr,
             )}
-            financialDetail={financialDetail}
+            tickerDetail={tickerDetail}
             colorIndex={2}
           />
-          <RenderChart
+          <FinancialChartsGridChart
             title="Net Income"
             chartData={createChartData(
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_net_income_current
-                : financialDetail.net_income_current,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_net_income_1_yr
-                : financialDetail.net_income_1_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_net_income_2_yr
-                : financialDetail.net_income_2_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_net_income_3_yr
-                : financialDetail.net_income_3_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_net_income_4_yr
-                : financialDetail.net_income_4_yr,
+              financialDetail.net_income_current,
+              financialDetail.net_income_1_yr,
+              financialDetail.net_income_2_yr,
+              financialDetail.net_income_3_yr,
+              financialDetail.net_income_4_yr,
             )}
-            financialDetail={financialDetail}
+            tickerDetail={tickerDetail}
             colorIndex={3}
           />
-          <RenderChart
+          <FinancialChartsGridChart
             title="Total Assets"
             chartData={createChartData(
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_total_assets_current
-                : financialDetail.total_assets_current,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_total_assets_1_yr
-                : financialDetail.total_assets_1_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_total_assets_2_yr
-                : financialDetail.total_assets_2_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_total_assets_3_yr
-                : financialDetail.total_assets_3_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_total_assets_4_yr
-                : financialDetail.total_assets_4_yr,
+              financialDetail.total_assets_current,
+              financialDetail.total_assets_1_yr,
+              financialDetail.total_assets_2_yr,
+              financialDetail.total_assets_3_yr,
+              financialDetail.total_assets_4_yr,
             )}
-            financialDetail={financialDetail}
+            tickerDetail={tickerDetail}
             colorIndex={4}
           />
-          <RenderChart
+          <FinancialChartsGridChart
             title="Total Liabilities"
             chartData={createChartData(
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_total_liabilities_current
-                : financialDetail.total_liabilities_current,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_total_liabilities_1_yr
-                : financialDetail.total_liabilities_1_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_total_liabilities_2_yr
-                : financialDetail.total_liabilities_2_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_total_liabilities_3_yr
-                : financialDetail.total_liabilities_3_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_total_liabilities_4_yr
-                : financialDetail.total_liabilities_4_yr,
+              financialDetail.total_liabilities_current,
+              financialDetail.total_liabilities_1_yr,
+              financialDetail.total_liabilities_2_yr,
+              financialDetail.total_liabilities_3_yr,
+              financialDetail.total_liabilities_4_yr,
             )}
-            financialDetail={financialDetail}
+            tickerDetail={tickerDetail}
             colorIndex={5}
           />
-          <RenderChart
+          <FinancialChartsGridChart
             title="Operating Cash Flow"
             chartData={createChartData(
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_operating_cash_flow_current
-                : financialDetail.operating_cash_flow_current,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_operating_cash_flow_1_yr
-                : financialDetail.operating_cash_flow_1_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_operating_cash_flow_2_yr
-                : financialDetail.operating_cash_flow_2_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_operating_cash_flow_3_yr
-                : financialDetail.operating_cash_flow_3_yr,
-              isETFAggregateDetail(financialDetail)
-                ? financialDetail.avg_operating_cash_flow_4_yr
-                : financialDetail.operating_cash_flow_4_yr,
+              financialDetail.operating_cash_flow_current,
+              financialDetail.operating_cash_flow_1_yr,
+              financialDetail.operating_cash_flow_2_yr,
+              financialDetail.operating_cash_flow_3_yr,
+              financialDetail.operating_cash_flow_4_yr,
             )}
-            financialDetail={financialDetail}
+            tickerDetail={tickerDetail}
             colorIndex={6}
           />
         </Box>

@@ -9,7 +9,6 @@ import useMultiTickerDetail from "@hooks/useMultiTickerDetail";
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
 import MultiTickerHistoricalPriceChartApplet from "../applets/MultiTickerHistoricalPriceChart.applet";
-import MultiTickerInformationApplet from "../applets/MultiTickerInformation.applet";
 import type { TickerBucketViewWindowManagerAppletWrapProps } from "../components/TickerBucketViewWindowManager.AppletWrap";
 
 export default function useTickerBucketViewWindowManagerContent(

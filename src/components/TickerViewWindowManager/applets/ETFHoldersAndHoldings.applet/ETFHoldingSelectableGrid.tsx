@@ -7,7 +7,7 @@ import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 import { fetchETFHoldings } from "@services/RustService";
 import type {
-  RustServiceETFHoldingTickerResponse,
+  RustServiceETFHoldingTicker,
   RustServicePaginatedResults,
 } from "@services/RustService";
 import { RustServiceTickerDetail } from "@services/RustService";
@@ -33,7 +33,7 @@ export default function ETFHoldingSelectableGrid({
   const [isLoadingETFHoldings, setIsLoadingETFHoldings] =
     useState<boolean>(false);
   const [paginatedHoldings, setPaginatedHoldings] =
-    useState<RustServicePaginatedResults<RustServiceETFHoldingTickerResponse> | null>(
+    useState<RustServicePaginatedResults<RustServiceETFHoldingTicker> | null>(
       null,
     );
 
@@ -53,7 +53,7 @@ export default function ETFHoldingSelectableGrid({
   const navigateToSymbol = useTickerSymbolNavigation();
 
   const handleItemSelect = useCallback(
-    (holding: RustServiceETFHoldingTickerResponse) => {
+    (holding: RustServiceETFHoldingTicker) => {
       navigateToSymbol(holding.holding_symbol);
     },
     [navigateToSymbol],
@@ -81,7 +81,7 @@ export default function ETFHoldingSelectableGrid({
     return null;
   }
 
-  const gridItems: SelectableGridItem<RustServiceETFHoldingTickerResponse>[] =
+  const gridItems: SelectableGridItem<RustServiceETFHoldingTicker>[] =
     paginatedHoldings.results.map((result) => ({
       id: result.holding_ticker_id,
       data: result,

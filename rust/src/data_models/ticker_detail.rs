@@ -17,15 +17,15 @@ where
     Ok(num != 0)
 }
 
-// TODO: Add `major_sector` mapping
 #[derive(Serialize, Deserialize, Debug)]
-pub struct TickerDetail {
+pub struct TickerDetailRaw {
     pub ticker_id: TickerId,
     pub symbol: String,
     pub exchange_short_name: Option<String>,
     pub company_name: String,
     pub cik: Option<String>,
     pub country_code: Option<String>,
+    pub currency_code: Option<String>,
     pub industry_id: Option<IndustryId>,
     pub sector_id: Option<SectorId>,
     #[serde(deserialize_with = "from_numeric_to_bool")]
@@ -36,15 +36,15 @@ pub struct TickerDetail {
     pub logo_filename: Option<String>,
 }
 
-// TODO: Rename without `Response` suffix. Rename original.
 #[derive(Serialize, Deserialize, Debug)]
-pub struct TickerDetailResponse {
+pub struct TickerDetail {
     pub ticker_id: TickerId,
     pub symbol: String,
     pub exchange_short_name: Option<String>,
     pub company_name: String,
     pub cik: Option<String>,
     pub country_code: Option<String>,
+    pub currency_code: Option<String>,
     pub industry_name: Option<String>,
     pub sector_name: Option<String>,
     pub is_etf: bool,
@@ -54,10 +54,10 @@ pub struct TickerDetailResponse {
 }
 
 impl TickerDetail {
-    pub async fn get_ticker_detail(ticker_id: TickerId) -> Result<TickerDetailResponse, JsValue> {
+    pub async fn get_ticker_detail(ticker_id: TickerId) -> Result<TickerDetail, JsValue> {
         let url = DataURL::TickerDetailShardIndex.value();
-        let mut detail: TickerDetail =
-            query_shard_for_id(&url, &ticker_id, |detail: &TickerDetail| {
+        let mut detail: TickerDetailRaw =
+            query_shard_for_id(&url, &ticker_id, |detail: &TickerDetailRaw| {
                 Some(&detail.ticker_id)
             })
             .await?
@@ -84,13 +84,14 @@ impl TickerDetail {
         };
 
         // Construct the response
-        Ok(TickerDetailResponse {
+        Ok(TickerDetail {
             ticker_id: detail.ticker_id,
             symbol: detail.symbol,
             exchange_short_name: detail.exchange_short_name,
             company_name: detail.company_name,
             cik: detail.cik,
             country_code: detail.country_code,
+            currency_code: detail.currency_code,
             industry_name,
             sector_name,
             is_etf: detail.is_etf,

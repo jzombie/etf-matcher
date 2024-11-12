@@ -5,7 +5,7 @@ import type {
   RustServiceCosineSimilarityResult,
   RustServiceTickerDistance,
   RustServiceTickerVectorConfig,
-} from "../types";
+} from "../rustServiceTypes";
 import tickerBucketToTickersWithQuantity from "../utils/tickerBucketToTickersWithQuantity";
 
 type RawTickerVectorConfig = Omit<
