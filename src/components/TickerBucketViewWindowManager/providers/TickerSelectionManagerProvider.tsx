@@ -31,7 +31,10 @@ export default function TickerSelectionManagerProvider({
   children,
   tickerBucket,
 }: TickerSelectionManagerProviderProps) {
-  const [selectedTickerIds, setSelectedTickerIds] = useState<number[]>([]);
+  const [selectedTickerIds, setSelectedTickerIds] = useState<number[]>(() =>
+    // Initially set to all tickers in the bucket
+    tickerBucket.tickers.map((ticker) => ticker.tickerId),
+  );
 
   // TODO: Set initial `activeTickers` to be whatever is in the bucket
 
@@ -52,10 +55,6 @@ export default function TickerSelectionManagerProvider({
       prevTickerIds.filter((t) => t !== tickerId),
     );
   }, []);
-
-  // TODO: Add a `selectAllTickerIds` (or equiv. named)
-
-  console.log({ selectedTickerIds });
 
   const clearTickers = useCallback(() => {
     setSelectedTickerIds([]);
