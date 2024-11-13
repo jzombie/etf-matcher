@@ -19,8 +19,6 @@ export default function MultiTickerHistoricalPriceChartApplet({
   formattedSymbolsWithExchange,
   ...rest
 }: MultiTickerHistoricalPriceChartAppletProps) {
-  console.log({ formattedSymbolsWithExchange });
-
   return (
     <TickerBucketViewWindowManagerAppletWrap
       formattedSymbolsWithExchange={formattedSymbolsWithExchange}
