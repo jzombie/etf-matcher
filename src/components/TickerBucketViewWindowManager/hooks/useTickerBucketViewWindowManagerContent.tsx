@@ -52,16 +52,8 @@ export default function useTickerBucketViewWindowManagerContent(
     [multiTickerDetails],
   );
 
-  const formattedFilteredSymbolsWithExchange = useMemo(
-    () =>
-      multiTickerDetails
-        ?.filter((tickerDetail) =>
-          selectedTickerIds.includes(tickerDetail.ticker_id),
-        )
-        .map((tickerDetail) => formatSymbolWithExchange(tickerDetail)),
-    [multiTickerDetails, selectedTickerIds],
-  );
-
+  // FIXME: The layout will be reset to `initialLayout` if these dependencies
+  // change. This may require some modification.
   const commonProps: Omit<
     TickerBucketViewWindowManagerAppletWrapProps,
     "children"
@@ -69,7 +61,6 @@ export default function useTickerBucketViewWindowManagerContent(
     () => ({
       multiTickerDetails,
       formattedSymbolsWithExchange,
-      formattedFilteredSymbolsWithExchange,
       isLoadingMultiTickerDetails,
       multiTickerDetailsError,
       multiETFAggregateDetails,
@@ -80,7 +71,6 @@ export default function useTickerBucketViewWindowManagerContent(
     [
       multiTickerDetails,
       formattedSymbolsWithExchange,
-      formattedFilteredSymbolsWithExchange,
       isLoadingMultiTickerDetails,
       multiTickerDetailsError,
       multiETFAggregateDetails,
