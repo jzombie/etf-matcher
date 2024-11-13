@@ -12,14 +12,11 @@ import MultiTickerFundamentalsApplet from "../applets/MultiTickerFundamentals.ap
 import MultiTickerHistoricalPriceChartApplet from "../applets/MultiTickerHistoricalPriceChart.applet";
 import MultiTickerManagerApplet from "../applets/MultiTickerManager.applet";
 import type { TickerBucketViewWindowManagerAppletWrapProps } from "../components/TickerBucketViewWindowManager.AppletWrap";
-import useTickerSelectionManagerContext from "../hooks/useTickerSelectionManagerContext";
 
 export default function useTickerBucketViewWindowManagerContent(
   tickerBucket: TickerBucket,
   isTiling: boolean,
 ) {
-  const { selectedTickerIds } = useTickerSelectionManagerContext();
-
   const tickerIds = useMemo(
     () => tickerBucket.tickers.map((ticker) => ticker.tickerId),
     [tickerBucket],
