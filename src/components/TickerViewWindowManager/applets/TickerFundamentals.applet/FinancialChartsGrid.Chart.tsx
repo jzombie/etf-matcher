@@ -4,10 +4,6 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 import { Box, ButtonGroup, IconButton, Typography } from "@mui/material";
 
-import type {
-  RustServiceTicker10KDetail,
-  RustServiceTickerDetail,
-} from "@services/RustService";
 import { DEFAULT_CURRENCY_CODE } from "@src/constants";
 import { COLOR_WHEEL_COLORS } from "@src/constants";
 import {
@@ -30,15 +26,15 @@ const TICK_COLOR = "#999";
 export type FinancialChartsGridChartProps = {
   title: string;
   chartData: { year: string; value: number }[];
-  tickerDetail: RustServiceTickerDetail;
   colorIndex: number;
+  currencyCode?: string;
 };
 
 export default function FinancialChartsGridChart({
   title,
   chartData,
-  tickerDetail,
   colorIndex,
+  currencyCode = DEFAULT_CURRENCY_CODE,
 }: FinancialChartsGridChartProps) {
   const [chartType, setChartType] = useState<"line" | "bar">("bar");
 
@@ -104,20 +100,14 @@ export default function FinancialChartsGridChart({
             <XAxis dataKey="year" tick={(props) => <CustomTick {...props} />} />
             <YAxis
               tickFormatter={(value: number) =>
-                formatCurrency(
-                  tickerDetail.currency_code || DEFAULT_CURRENCY_CODE,
-                  value,
-                )
+                formatCurrency(currencyCode || DEFAULT_CURRENCY_CODE, value)
               }
               padding={{ top: 20, bottom: 0 }}
               tick={{ fill: TICK_COLOR }}
             />
             <Tooltip
               formatter={(value: number) =>
-                formatCurrency(
-                  tickerDetail.currency_code || DEFAULT_CURRENCY_CODE,
-                  value,
-                )
+                formatCurrency(currencyCode || DEFAULT_CURRENCY_CODE, value)
               }
             />
             <Line
@@ -137,20 +127,14 @@ export default function FinancialChartsGridChart({
             <XAxis dataKey="year" tick={(props) => <CustomTick {...props} />} />
             <YAxis
               tickFormatter={(value: number) =>
-                formatCurrency(
-                  tickerDetail.currency_code || DEFAULT_CURRENCY_CODE,
-                  value,
-                )
+                formatCurrency(currencyCode || DEFAULT_CURRENCY_CODE, value)
               }
               padding={{ top: 20, bottom: 0 }}
               tick={{ fill: TICK_COLOR }}
             />
             <Tooltip
               formatter={(value: number) =>
-                formatCurrency(
-                  tickerDetail.currency_code || DEFAULT_CURRENCY_CODE,
-                  value,
-                )
+                formatCurrency(currencyCode || DEFAULT_CURRENCY_CODE, value)
               }
             />
             <Bar

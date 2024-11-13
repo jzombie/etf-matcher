@@ -101,7 +101,7 @@ export default function FinancialChartsGrid({
               financialDetail.revenue_3_yr,
               financialDetail.revenue_4_yr,
             )}
-            tickerDetail={tickerDetail}
+            currencyCode={tickerDetail.currency_code}
             colorIndex={0}
           />
           <FinancialChartsGridChart
@@ -113,7 +113,7 @@ export default function FinancialChartsGrid({
               financialDetail.gross_profit_3_yr,
               financialDetail.gross_profit_4_yr,
             )}
-            tickerDetail={tickerDetail}
+            currencyCode={tickerDetail.currency_code}
             colorIndex={1}
           />
           <FinancialChartsGridChart
@@ -125,7 +125,7 @@ export default function FinancialChartsGrid({
               financialDetail.operating_income_3_yr,
               financialDetail.operating_income_4_yr,
             )}
-            tickerDetail={tickerDetail}
+            currencyCode={tickerDetail.currency_code}
             colorIndex={2}
           />
           <FinancialChartsGridChart
@@ -137,7 +137,7 @@ export default function FinancialChartsGrid({
               financialDetail.net_income_3_yr,
               financialDetail.net_income_4_yr,
             )}
-            tickerDetail={tickerDetail}
+            currencyCode={tickerDetail.currency_code}
             colorIndex={3}
           />
           <FinancialChartsGridChart
@@ -149,7 +149,7 @@ export default function FinancialChartsGrid({
               financialDetail.total_assets_3_yr,
               financialDetail.total_assets_4_yr,
             )}
-            tickerDetail={tickerDetail}
+            currencyCode={tickerDetail.currency_code}
             colorIndex={4}
           />
           <FinancialChartsGridChart
@@ -161,7 +161,7 @@ export default function FinancialChartsGrid({
               financialDetail.total_liabilities_3_yr,
               financialDetail.total_liabilities_4_yr,
             )}
-            tickerDetail={tickerDetail}
+            currencyCode={tickerDetail.currency_code}
             colorIndex={5}
           />
           <FinancialChartsGridChart
@@ -173,7 +173,7 @@ export default function FinancialChartsGrid({
               financialDetail.operating_cash_flow_3_yr,
               financialDetail.operating_cash_flow_4_yr,
             )}
-            tickerDetail={tickerDetail}
+            currencyCode={tickerDetail.currency_code}
             colorIndex={6}
           />
         </Box>
