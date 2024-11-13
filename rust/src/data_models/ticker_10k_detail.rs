@@ -18,6 +18,26 @@ where
     })
 }
 
+macro_rules! accumulate_fields {
+    ($accumulated:expr, $detail:expr, $weight:expr, { $($field:ident),* }) => {
+        $(
+            $accumulated.$field = Some(
+                $accumulated.$field.unwrap_or(0.0) + $detail.$field.unwrap_or(0.0) * $weight
+            );
+        )*
+    };
+}
+
+macro_rules! finalize_accumulated_fields {
+    ($accumulated:expr, $total_weight:expr, { $($field:ident),* }) => {
+        if $total_weight > 0.0 {
+            $(
+                $accumulated.$field = $accumulated.$field.map(|total| total / $total_weight);
+            )*
+        }
+    };
+}
+
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Ticker10KDetail {
     pub ticker_id: TickerId,
@@ -126,17 +146,7 @@ impl Ticker10KDetail {
         ticker_weights: Vec<(TickerId, f64)>,
     ) -> Result<Ticker10KDetail, JsValue> {
         let url: &str = &DataURL::Ticker10KDetailShardIndex.value();
-
-        // Initialize an empty Ticker10KDetail to accumulate weighted values
-        let mut accumulated_detail = Ticker10KDetail {
-            ticker_id: TickerId::default(),
-            is_current: Some(true),
-            calendar_year_current: None,
-            calendar_year_1_yr: None,
-            // Initialize all other fields as needed
-            ..Default::default() // Ensure `Default` trait is implemented for Ticker10KDetail
-        };
-
+        let mut accumulated_detail = Ticker10KDetail::default();
         let mut total_weight = 0.0;
 
         for (ticker_id, weight) in ticker_weights {
@@ -146,93 +156,144 @@ impl Ticker10KDetail {
                 })
                 .await?
             {
-                // Accumulate weighted values for each field
-                accumulated_detail.revenue_current = Some(
-                    accumulated_detail.revenue_current.unwrap_or(0.0)
-                        + detail.revenue_current.unwrap_or(0.0) * weight,
-                );
-
-                accumulated_detail.revenue_current = Some(
-                    accumulated_detail.revenue_1_yr.unwrap_or(0.0)
-                        + detail.revenue_1_yr.unwrap_or(0.0) * weight,
-                );
-
-                accumulated_detail.revenue_current = Some(
-                    accumulated_detail.revenue_2_yr.unwrap_or(0.0)
-                        + detail.revenue_2_yr.unwrap_or(0.0) * weight,
-                );
-
-                accumulated_detail.revenue_current = Some(
-                    accumulated_detail.revenue_3_yr.unwrap_or(0.0)
-                        + detail.revenue_3_yr.unwrap_or(0.0) * weight,
-                );
-
-                accumulated_detail.revenue_current = Some(
-                    accumulated_detail.revenue_4_yr.unwrap_or(0.0)
-                        + detail.revenue_4_yr.unwrap_or(0.0) * weight,
-                );
-
-                //
-
-                accumulated_detail.gross_profit_current = Some(
-                    accumulated_detail.gross_profit_current.unwrap_or(0.0)
-                        + detail.gross_profit_current.unwrap_or(0.0) * weight,
-                );
-
-                accumulated_detail.gross_profit_current = Some(
-                    accumulated_detail.gross_profit_1_yr.unwrap_or(0.0)
-                        + detail.gross_profit_1_yr.unwrap_or(0.0) * weight,
-                );
-
-                accumulated_detail.gross_profit_current = Some(
-                    accumulated_detail.gross_profit_2_yr.unwrap_or(0.0)
-                        + detail.gross_profit_2_yr.unwrap_or(0.0) * weight,
-                );
-
-                accumulated_detail.gross_profit_current = Some(
-                    accumulated_detail.gross_profit_3_yr.unwrap_or(0.0)
-                        + detail.gross_profit_3_yr.unwrap_or(0.0) * weight,
-                );
-
-                accumulated_detail.gross_profit_current = Some(
-                    accumulated_detail.gross_profit_4_yr.unwrap_or(0.0)
-                        + detail.gross_profit_4_yr.unwrap_or(0.0) * weight,
-                );
-
-                // TODO: Repeat for other fields
-
+                accumulate_fields!(accumulated_detail, detail, weight, {
+                    revenue_current,
+                    revenue_1_yr,
+                    revenue_2_yr,
+                    revenue_3_yr,
+                    revenue_4_yr,
+                    //
+                    gross_profit_current,
+                    gross_profit_1_yr,
+                    gross_profit_2_yr,
+                    gross_profit_3_yr,
+                    gross_profit_4_yr,
+                    //
+                    operating_income_current,
+                    operating_income_1_yr,
+                    operating_income_2_yr,
+                    operating_income_3_yr,
+                    operating_income_4_yr,
+                    //
+                    net_income_current,
+                    net_income_1_yr,
+                    net_income_2_yr,
+                    net_income_3_yr,
+                    net_income_4_yr,
+                    //
+                    total_assets_current,
+                    total_assets_1_yr,
+                    total_assets_2_yr,
+                    total_assets_3_yr,
+                    total_assets_4_yr,
+                    //
+                    total_liabilities_current,
+                    total_liabilities_1_yr,
+                    total_liabilities_2_yr,
+                    total_liabilities_3_yr,
+                    total_liabilities_4_yr,
+                    //
+                    total_stockholders_equity_current,
+                    total_stockholders_equity_1_yr,
+                    total_stockholders_equity_2_yr,
+                    total_stockholders_equity_3_yr,
+                    total_stockholders_equity_4_yr,
+                    //
+                    operating_cash_flow_current,
+                    operating_cash_flow_1_yr,
+                    operating_cash_flow_2_yr,
+                    operating_cash_flow_3_yr,
+                    operating_cash_flow_4_yr,
+                    //
+                    net_cash_provided_by_operating_activities_current,
+                    net_cash_provided_by_operating_activities_1_yr,
+                    net_cash_provided_by_operating_activities_2_yr,
+                    net_cash_provided_by_operating_activities_3_yr,
+                    net_cash_provided_by_operating_activities_4_yr,
+                    //
+                    net_cash_used_for_investing_activities_current,
+                    net_cash_used_for_investing_activities_1_yr,
+                    net_cash_used_for_investing_activities_2_yr,
+                    net_cash_used_for_investing_activities_3_yr,
+                    net_cash_used_for_investing_activities_4_yr,
+                    //
+                    net_cash_used_provided_by_financing_activities_current,
+                    net_cash_used_provided_by_financing_activities_1_yr,
+                    net_cash_used_provided_by_financing_activities_2_yr,
+                    net_cash_used_provided_by_financing_activities_3_yr,
+                    net_cash_used_provided_by_financing_activities_4_yr
+                });
                 total_weight += weight;
             }
         }
 
-        if total_weight > 0.0 {
-            // Divide by total weight to get the weighted average for each field
-            accumulated_detail.revenue_current = accumulated_detail
-                .revenue_current
-                .map(|total| total / total_weight);
-
-            accumulated_detail.revenue_1_yr = accumulated_detail
-                .revenue_1_yr
-                .map(|total| total / total_weight);
-
-            accumulated_detail.revenue_2_yr = accumulated_detail
-                .revenue_2_yr
-                .map(|total| total / total_weight);
-
-            accumulated_detail.revenue_3_yr = accumulated_detail
-                .revenue_3_yr
-                .map(|total| total / total_weight);
-
-            accumulated_detail.revenue_4_yr = accumulated_detail
-                .revenue_4_yr
-                .map(|total| total / total_weight);
-
-            accumulated_detail.gross_profit_current = accumulated_detail
-                .gross_profit_current
-                .map(|total| total / total_weight);
-
-            // TODO: Repeat for other fields as needed
-        }
+        finalize_accumulated_fields!(accumulated_detail, total_weight, {
+            revenue_current,
+            revenue_1_yr,
+            revenue_2_yr,
+            revenue_3_yr,
+            revenue_4_yr,
+            //
+            gross_profit_current,
+            gross_profit_1_yr,
+            gross_profit_2_yr,
+            gross_profit_3_yr,
+            gross_profit_4_yr,
+            //
+            operating_income_current,
+            operating_income_1_yr,
+            operating_income_2_yr,
+            operating_income_3_yr,
+            operating_income_4_yr,
+            //
+            net_income_current,
+            net_income_1_yr,
+            net_income_2_yr,
+            net_income_3_yr,
+            net_income_4_yr,
+            //
+            total_assets_current,
+            total_assets_1_yr,
+            total_assets_2_yr,
+            total_assets_3_yr,
+            total_assets_4_yr,
+            //
+            total_liabilities_current,
+            total_liabilities_1_yr,
+            total_liabilities_2_yr,
+            total_liabilities_3_yr,
+            total_liabilities_4_yr,
+            //
+            total_stockholders_equity_current,
+            total_stockholders_equity_1_yr,
+            total_stockholders_equity_2_yr,
+            total_stockholders_equity_3_yr,
+            total_stockholders_equity_4_yr,
+            //
+            operating_cash_flow_current,
+            operating_cash_flow_1_yr,
+            operating_cash_flow_2_yr,
+            operating_cash_flow_3_yr,
+            operating_cash_flow_4_yr,
+            //
+            net_cash_provided_by_operating_activities_current,
+            net_cash_provided_by_operating_activities_1_yr,
+            net_cash_provided_by_operating_activities_2_yr,
+            net_cash_provided_by_operating_activities_3_yr,
+            net_cash_provided_by_operating_activities_4_yr,
+            //
+            net_cash_used_for_investing_activities_current,
+            net_cash_used_for_investing_activities_1_yr,
+            net_cash_used_for_investing_activities_2_yr,
+            net_cash_used_for_investing_activities_3_yr,
+            net_cash_used_for_investing_activities_4_yr,
+            //
+            net_cash_used_provided_by_financing_activities_current,
+            net_cash_used_provided_by_financing_activities_1_yr,
+            net_cash_used_provided_by_financing_activities_2_yr,
+            net_cash_used_provided_by_financing_activities_3_yr,
+            net_cash_used_provided_by_financing_activities_4_yr
+        });
 
         Ok(accumulated_detail)
     }
