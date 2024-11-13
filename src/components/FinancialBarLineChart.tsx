@@ -23,6 +23,22 @@ import formatCurrency from "@utils/string/formatCurrency";
 // TODO: Refactor
 const TICK_COLOR = "#999";
 
+export function createChartData(
+  currentValue: number | undefined,
+  year1Value: number | undefined,
+  year2Value: number | undefined,
+  year3Value: number | undefined,
+  year4Value: number | undefined,
+) {
+  return [
+    { year: "4 Years Ago", value: year4Value || 0 },
+    { year: "3 Years Ago", value: year3Value || 0 },
+    { year: "2 Years Ago", value: year2Value || 0 },
+    { year: "1 Year Ago", value: year1Value || 0 },
+    { year: "Current", value: currentValue || 0 },
+  ];
+}
+
 export type FinancialBarLineChartProps = {
   title: string;
   chartData: { year: string; value: number }[];

@@ -7,7 +7,9 @@ import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 import type { RustServiceTickerDetail } from "@services/RustService";
 
-import FinancialBarLineChart from "@components/FinancialBarLineChart";
+import FinancialBarLineChart, {
+  createChartData,
+} from "@components/FinancialBarLineChart";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
 
@@ -25,22 +27,6 @@ export default function FinancialChartsGrid({
   );
 
   // TODO: Move out of `FinancialChartsGrid` scope?
-  const createChartData = useCallback(
-    (
-      currentValue: number | undefined,
-      year1Value: number | undefined,
-      year2Value: number | undefined,
-      year3Value: number | undefined,
-      year4Value: number | undefined,
-    ) => [
-      { year: "4 Years Ago", value: year4Value || 0 },
-      { year: "3 Years Ago", value: year3Value || 0 },
-      { year: "2 Years Ago", value: year2Value || 0 },
-      { year: "1 Year Ago", value: year1Value || 0 },
-      { year: "Current", value: currentValue || 0 },
-    ],
-    [],
-  );
 
   if (isLoading) {
     return (
