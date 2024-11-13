@@ -7,12 +7,11 @@ import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 import type { RustServiceTickerDetail } from "@services/RustService";
 
+import FinancialBarLineChart from "@components/FinancialBarLineChart";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
 
 import useTicker10KDetail from "@hooks/useTicker10KDetail";
-
-import FinancialChartsGridChart from "./FinancialChartsGrid.Chart";
 
 export type FinancialChartsGridProps = {
   tickerDetail: RustServiceTickerDetail;
@@ -92,7 +91,7 @@ export default function FinancialChartsGrid({
             gap: 2,
           }}
         >
-          <FinancialChartsGridChart
+          <FinancialBarLineChart
             title="Revenue"
             chartData={createChartData(
               financialDetail.revenue_current,
@@ -104,7 +103,7 @@ export default function FinancialChartsGrid({
             currencyCode={tickerDetail.currency_code}
             colorIndex={0}
           />
-          <FinancialChartsGridChart
+          <FinancialBarLineChart
             title="Gross Profit"
             chartData={createChartData(
               financialDetail.gross_profit_current,
@@ -116,7 +115,7 @@ export default function FinancialChartsGrid({
             currencyCode={tickerDetail.currency_code}
             colorIndex={1}
           />
-          <FinancialChartsGridChart
+          <FinancialBarLineChart
             title="Operating Income"
             chartData={createChartData(
               financialDetail.operating_income_current,
@@ -128,7 +127,7 @@ export default function FinancialChartsGrid({
             currencyCode={tickerDetail.currency_code}
             colorIndex={2}
           />
-          <FinancialChartsGridChart
+          <FinancialBarLineChart
             title="Net Income"
             chartData={createChartData(
               financialDetail.net_income_current,
@@ -140,7 +139,7 @@ export default function FinancialChartsGrid({
             currencyCode={tickerDetail.currency_code}
             colorIndex={3}
           />
-          <FinancialChartsGridChart
+          <FinancialBarLineChart
             title="Total Assets"
             chartData={createChartData(
               financialDetail.total_assets_current,
@@ -152,7 +151,7 @@ export default function FinancialChartsGrid({
             currencyCode={tickerDetail.currency_code}
             colorIndex={4}
           />
-          <FinancialChartsGridChart
+          <FinancialBarLineChart
             title="Total Liabilities"
             chartData={createChartData(
               financialDetail.total_liabilities_current,
@@ -164,7 +163,7 @@ export default function FinancialChartsGrid({
             currencyCode={tickerDetail.currency_code}
             colorIndex={5}
           />
-          <FinancialChartsGridChart
+          <FinancialBarLineChart
             title="Operating Cash Flow"
             chartData={createChartData(
               financialDetail.operating_cash_flow_current,

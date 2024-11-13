@@ -23,19 +23,19 @@ import formatCurrency from "@utils/string/formatCurrency";
 // TODO: Refactor
 const TICK_COLOR = "#999";
 
-export type FinancialChartsGridChartProps = {
+export type FinancialBarLineChartProps = {
   title: string;
   chartData: { year: string; value: number }[];
   colorIndex: number;
   currencyCode?: string;
 };
 
-export default function FinancialChartsGridChart({
+export default function FinancialBarLineChart({
   title,
   chartData,
   colorIndex,
   currencyCode = DEFAULT_CURRENCY_CODE,
-}: FinancialChartsGridChartProps) {
+}: FinancialBarLineChartProps) {
   const [chartType, setChartType] = useState<"line" | "bar">("bar");
 
   const handleChartTypeChange = (type: "line" | "bar") => {
