@@ -14,6 +14,16 @@ export type TickerBucketViewWindowManagerProps = {
 export default function TickerBucketViewWindowManager({
   tickerBucket,
 }: TickerBucketViewWindowManagerProps) {
+  return (
+    <TickerSelectionManagerProvider tickerBucket={tickerBucket}>
+      <ContextWrappedWindowManager tickerBucket={tickerBucket} />
+    </TickerSelectionManagerProvider>
+  );
+}
+
+function ContextWrappedWindowManager({
+  tickerBucket,
+}: TickerBucketViewWindowManagerProps) {
   const [isTiling, setIsTiling] = useState(true);
 
   const { initialLayout, contentMap } = useTickerBucketViewWindowManagerContent(
@@ -22,12 +32,10 @@ export default function TickerBucketViewWindowManager({
   );
 
   return (
-    <TickerSelectionManagerProvider tickerBucket={tickerBucket}>
-      <WindowManager
-        onTilingStateChange={setIsTiling}
-        initialLayout={initialLayout}
-        contentMap={contentMap}
-      />
-    </TickerSelectionManagerProvider>
+    <WindowManager
+      onTilingStateChange={setIsTiling}
+      initialLayout={initialLayout}
+      contentMap={contentMap}
+    />
   );
 }

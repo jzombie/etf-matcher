@@ -4,17 +4,17 @@ import { TickerBucket } from "@src/store";
 
 // Define a generic type for the context value
 type TickerSelectionManagerContextType = {
-  activeTickers: string[];
-  selectTicker: (ticker: string) => void;
-  deselectTicker: (ticker: string) => void;
+  selectedTickerIds: number[];
+  selectTickerId: (ticker: number) => void;
+  deselectTickerId: (ticker: number) => void;
   clearTickers: () => void;
 };
 
 // Set up the default value with empty functions and an empty array for active tickers
 const defaultContextValue: TickerSelectionManagerContextType = {
-  activeTickers: [],
-  selectTicker: () => {},
-  deselectTicker: () => {},
+  selectedTickerIds: [],
+  selectTickerId: () => {},
+  deselectTickerId: () => {},
   clearTickers: () => {},
 };
 
@@ -31,7 +31,7 @@ export default function TickerSelectionManagerProvider({
   children,
   tickerBucket,
 }: TickerSelectionManagerProviderProps) {
-  const [activeTickers, setActiveTickers] = useState<string[]>([]);
+  const [selectedTickerIds, setSelectedTickerIds] = useState<number[]>([]);
 
   // TODO: Set initial `activeTickers` to be whatever is in the bucket
 
@@ -39,26 +39,34 @@ export default function TickerSelectionManagerProvider({
   // currently in the bucket, to see how they can affect similarity searches,
   // etc., and so that decisions can be made to manually add them.
 
-  const selectTicker = useCallback((ticker: string) => {
-    setActiveTickers((prevTickers) =>
-      prevTickers.includes(ticker) ? prevTickers : [...prevTickers, ticker],
+  const selectTickerId = useCallback((tickerId: number) => {
+    setSelectedTickerIds((prevTickerIds) =>
+      prevTickerIds.includes(tickerId)
+        ? prevTickerIds
+        : [...prevTickerIds, tickerId],
     );
   }, []);
 
-  const deselectTicker = useCallback((ticker: string) => {
-    setActiveTickers((prevTickers) => prevTickers.filter((t) => t !== ticker));
+  const deselectTickerId = useCallback((tickerId: number) => {
+    setSelectedTickerIds((prevTickerIds) =>
+      prevTickerIds.filter((t) => t !== tickerId),
+    );
   }, []);
 
+  // TODO: Add a `selectAllTickerIds` (or equiv. named)
+
+  console.log({ selectedTickerIds });
+
   const clearTickers = useCallback(() => {
-    setActiveTickers([]);
+    setSelectedTickerIds([]);
   }, []);
 
   return (
     <TickerSelectionManagerContext.Provider
       value={{
-        activeTickers,
-        selectTicker,
-        deselectTicker,
+        selectedTickerIds,
+        selectTickerId,
+        deselectTickerId,
         clearTickers,
       }}
     >
@@ -66,14 +74,3 @@ export default function TickerSelectionManagerProvider({
     </TickerSelectionManagerContext.Provider>
   );
 }
-
-// Custom hook to access the context easily
-// export const useTickerBucketViewWindowManagerContent = () => {
-//   const context = useContext(TickerBucketViewWindowManagerContentContext);
-//   if (!context) {
-//     throw new Error(
-//       "useTickerBucketViewWindowManagerContent must be used within a TickerBucketViewWindowManagerContentProvider",
-//     );
-//   }
-//   return context;
-// };

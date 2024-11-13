@@ -11,11 +11,14 @@ import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 import MultiTickerHistoricalPriceChartApplet from "../applets/MultiTickerHistoricalPriceChart.applet";
 import MultiTickerManagerApplet from "../applets/MultiTickerManager.applet";
 import type { TickerBucketViewWindowManagerAppletWrapProps } from "../components/TickerBucketViewWindowManager.AppletWrap";
+import useTickerSelectionManagerContext from "../hooks/useTickerSelectionManagerContext";
 
 export default function useTickerBucketViewWindowManagerContent(
   tickerBucket: TickerBucket,
   isTiling: boolean,
 ) {
+  const { selectedTickerIds } = useTickerSelectionManagerContext();
+
   const tickerIds = useMemo(
     () => tickerBucket.tickers.map((ticker) => ticker.tickerId),
     [tickerBucket],
@@ -42,10 +45,12 @@ export default function useTickerBucketViewWindowManagerContent(
 
   const formattedSymbolsWithExchange = useMemo(
     () =>
-      multiTickerDetails?.map((tickerDetail) =>
-        formatSymbolWithExchange(tickerDetail),
-      ),
-    [multiTickerDetails],
+      multiTickerDetails
+        ?.filter((tickerDetail) =>
+          selectedTickerIds.includes(tickerDetail.ticker_id),
+        )
+        .map((tickerDetail) => formatSymbolWithExchange(tickerDetail)),
+    [multiTickerDetails, selectedTickerIds],
   );
 
   const commonProps: Omit<
