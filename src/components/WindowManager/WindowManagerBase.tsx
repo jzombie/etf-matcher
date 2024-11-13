@@ -84,7 +84,7 @@ export default function WindowManagerBase({
             <Window
               id={id}
               path={path}
-              totalWindowCount={3}
+              totalWindowCount={3} // TODO: Should this be hardcoded?
               content={contentMap[id]}
               isResizing={isResizing}
             />
