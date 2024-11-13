@@ -2,7 +2,7 @@ extern crate flatbuffers as fb;
 use data_models::ticker_vector_analysis::TickerWithQuantity;
 use levenshtein::levenshtein;
 use qrcode_generator::QrCodeEcc;
-use serde_wasm_bindgen::to_value;
+use serde_wasm_bindgen::{from_value, to_value};
 use std::panic;
 use wasm_bindgen::prelude::*;
 
@@ -104,6 +104,26 @@ pub async fn get_ticker_detail(ticker_id: TickerId) -> Result<JsValue, JsValue> 
 pub async fn get_ticker_10k_detail(ticker_id: TickerId) -> Result<JsValue, JsValue> {
     let detail: Ticker10KDetail =
         Ticker10KDetail::get_ticker_10k_detail_by_ticker_id(ticker_id).await?;
+    to_value(&detail).map_err(|err: serde_wasm_bindgen::Error| {
+        JsValue::from_str(&format!(
+            "Failed to convert Ticker10KDetail to JsValue: {}",
+            err
+        ))
+    })
+}
+
+#[wasm_bindgen]
+pub async fn get_weighted_ticker_10k_detail(
+    ticker_weights_js: JsValue,
+) -> Result<JsValue, JsValue> {
+    // Deserialize the JsValue into Vec<(TickerId, f64)>
+    let ticker_weights: Vec<(TickerId, f64)> = from_value(ticker_weights_js).map_err(|err| {
+        JsValue::from_str(&format!("Failed to deserialize ticker weights: {}", err))
+    })?;
+
+    let detail: Ticker10KDetail =
+        Ticker10KDetail::get_weighted_ticker_10k_detail_by_ticker_ids(ticker_weights).await?;
+
     to_value(&detail).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
             "Failed to convert Ticker10KDetail to JsValue: {}",

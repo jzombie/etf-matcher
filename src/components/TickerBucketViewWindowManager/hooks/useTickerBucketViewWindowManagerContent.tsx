@@ -8,6 +8,7 @@ import useMultiTickerDetail from "@hooks/useMultiTickerDetail";
 
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
+import MultiTickerFundamentalsApplet from "../applets/MultiTickerFundamentals.applet";
 import MultiTickerHistoricalPriceChartApplet from "../applets/MultiTickerHistoricalPriceChart.applet";
 import MultiTickerManagerApplet from "../applets/MultiTickerManager.applet";
 import type { TickerBucketViewWindowManagerAppletWrapProps } from "../components/TickerBucketViewWindowManager.AppletWrap";
@@ -118,7 +119,7 @@ export default function useTickerBucketViewWindowManagerContent(
           bucket
         </div>
       ),
-      Fundamentals: <div>TODO: Render combined fundamentals</div>,
+      Fundamentals: <MultiTickerFundamentalsApplet {...commonProps} />,
     }),
     [commonProps],
   );

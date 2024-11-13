@@ -21,8 +21,8 @@ export default function MultiTickerManagerApplet({
   const { selectTickerId, deselectTickerId, selectedTickerIds } =
     useTickerSelectionManagerContext();
 
-  // const handleSymbolActivationChange = useCallback(() => {}, []);
-
+  // TODO: Add controls to control weights, these (along with active selections)
+  // should adjust the weighted financial metrics and similarity search in real-time
   return (
     <TickerBucketViewWindowManagerAppletWrap
       multiTickerDetails={multiTickerDetails}

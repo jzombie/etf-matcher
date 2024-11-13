@@ -3,6 +3,7 @@ use crate::utils::shard::query_shard_for_id;
 use crate::DataURL;
 use crate::JsValue;
 use serde::{Deserialize, Deserializer, Serialize};
+use std::default::Default;
 
 // TODO: Move to a utility (also search for `from_numeric_to_bool`)
 fn deserialize_is_current<'de, D>(deserializer: D) -> Result<Option<bool>, D::Error>
@@ -17,7 +18,7 @@ where
     })
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Ticker10KDetail {
     pub ticker_id: TickerId,
     //
@@ -119,5 +120,61 @@ impl Ticker10KDetail {
         ticker_10k_detail.are_financials_current = ticker_10k_detail.is_current;
 
         Ok(ticker_10k_detail)
+    }
+
+    pub async fn get_weighted_ticker_10k_detail_by_ticker_ids(
+        ticker_weights: Vec<(TickerId, f64)>,
+    ) -> Result<Ticker10KDetail, JsValue> {
+        let url: &str = &DataURL::Ticker10KDetailShardIndex.value();
+
+        // Initialize an empty Ticker10KDetail to accumulate weighted values
+        let mut accumulated_detail = Ticker10KDetail {
+            ticker_id: TickerId::default(),
+            is_current: Some(true),
+            calendar_year_current: None,
+            calendar_year_1_yr: None,
+            // Initialize all other fields as needed
+            ..Default::default() // Ensure `Default` trait is implemented for Ticker10KDetail
+        };
+
+        let mut total_weight = 0.0;
+
+        for (ticker_id, weight) in ticker_weights {
+            if let Some(detail) =
+                query_shard_for_id(url, &ticker_id, |ticker_10k_detail: &Ticker10KDetail| {
+                    Some(&ticker_10k_detail.ticker_id)
+                })
+                .await?
+            {
+                // Accumulate weighted values for each field
+                accumulated_detail.revenue_current = Some(
+                    accumulated_detail.revenue_current.unwrap_or(0.0)
+                        + detail.revenue_current.unwrap_or(0.0) * weight,
+                );
+
+                accumulated_detail.gross_profit_current = Some(
+                    accumulated_detail.gross_profit_current.unwrap_or(0.0)
+                        + detail.gross_profit_current.unwrap_or(0.0) * weight,
+                );
+
+                // TODO: Repeat for other fields
+
+                total_weight += weight;
+            }
+        }
+
+        if total_weight > 0.0 {
+            // Divide by total weight to get the weighted average for each field
+            accumulated_detail.revenue_current = accumulated_detail
+                .revenue_current
+                .map(|total| total / total_weight);
+            accumulated_detail.gross_profit_current = accumulated_detail
+                .gross_profit_current
+                .map(|total| total / total_weight);
+
+            // TODO: Repeat for other fields as needed
+        }
+
+        Ok(accumulated_detail)
     }
 }
