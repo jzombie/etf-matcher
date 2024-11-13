@@ -46,6 +46,14 @@ export default function useTickerBucketViewWindowManagerContent(
 
   const formattedSymbolsWithExchange = useMemo(
     () =>
+      multiTickerDetails?.map((tickerDetail) =>
+        formatSymbolWithExchange(tickerDetail),
+      ),
+    [multiTickerDetails],
+  );
+
+  const formattedFilteredSymbolsWithExchange = useMemo(
+    () =>
       multiTickerDetails
         ?.filter((tickerDetail) =>
           selectedTickerIds.includes(tickerDetail.ticker_id),
@@ -61,6 +69,7 @@ export default function useTickerBucketViewWindowManagerContent(
     () => ({
       multiTickerDetails,
       formattedSymbolsWithExchange,
+      formattedFilteredSymbolsWithExchange,
       isLoadingMultiTickerDetails,
       multiTickerDetailsError,
       multiETFAggregateDetails,
@@ -71,6 +80,7 @@ export default function useTickerBucketViewWindowManagerContent(
     [
       multiTickerDetails,
       formattedSymbolsWithExchange,
+      formattedFilteredSymbolsWithExchange,
       isLoadingMultiTickerDetails,
       multiTickerDetailsError,
       multiETFAggregateDetails,
@@ -80,7 +90,6 @@ export default function useTickerBucketViewWindowManagerContent(
     ],
   );
 
-  // TODO: Redefine as necessary
   const initialLayout: MosaicNode<string> = useMemo(
     () => ({
       first: {

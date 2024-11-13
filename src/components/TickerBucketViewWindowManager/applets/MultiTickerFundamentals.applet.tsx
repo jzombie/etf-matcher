@@ -24,7 +24,6 @@ export type MultiTickerFundamentalsAppletProps = Omit<
 >;
 
 export default function MultiTickerFundamentalsApplet({
-  formattedSymbolsWithExchange,
   ...rest
 }: MultiTickerFundamentalsAppletProps) {
   const [multiTickerFinancialDetail, setMultiTickerFinancialDetail] =
@@ -41,10 +40,7 @@ export default function MultiTickerFundamentalsApplet({
   }, [selectedTickerIds]);
 
   return (
-    <TickerBucketViewWindowManagerAppletWrap
-      formattedSymbolsWithExchange={formattedSymbolsWithExchange}
-      {...rest}
-    >
+    <TickerBucketViewWindowManagerAppletWrap {...rest}>
       {multiTickerFinancialDetail && (
         <Scrollable>
           <Padding>
