@@ -152,9 +152,51 @@ impl Ticker10KDetail {
                         + detail.revenue_current.unwrap_or(0.0) * weight,
                 );
 
+                accumulated_detail.revenue_current = Some(
+                    accumulated_detail.revenue_1_yr.unwrap_or(0.0)
+                        + detail.revenue_1_yr.unwrap_or(0.0) * weight,
+                );
+
+                accumulated_detail.revenue_current = Some(
+                    accumulated_detail.revenue_2_yr.unwrap_or(0.0)
+                        + detail.revenue_2_yr.unwrap_or(0.0) * weight,
+                );
+
+                accumulated_detail.revenue_current = Some(
+                    accumulated_detail.revenue_3_yr.unwrap_or(0.0)
+                        + detail.revenue_3_yr.unwrap_or(0.0) * weight,
+                );
+
+                accumulated_detail.revenue_current = Some(
+                    accumulated_detail.revenue_4_yr.unwrap_or(0.0)
+                        + detail.revenue_4_yr.unwrap_or(0.0) * weight,
+                );
+
+                //
+
                 accumulated_detail.gross_profit_current = Some(
                     accumulated_detail.gross_profit_current.unwrap_or(0.0)
                         + detail.gross_profit_current.unwrap_or(0.0) * weight,
+                );
+
+                accumulated_detail.gross_profit_current = Some(
+                    accumulated_detail.gross_profit_1_yr.unwrap_or(0.0)
+                        + detail.gross_profit_1_yr.unwrap_or(0.0) * weight,
+                );
+
+                accumulated_detail.gross_profit_current = Some(
+                    accumulated_detail.gross_profit_2_yr.unwrap_or(0.0)
+                        + detail.gross_profit_2_yr.unwrap_or(0.0) * weight,
+                );
+
+                accumulated_detail.gross_profit_current = Some(
+                    accumulated_detail.gross_profit_3_yr.unwrap_or(0.0)
+                        + detail.gross_profit_3_yr.unwrap_or(0.0) * weight,
+                );
+
+                accumulated_detail.gross_profit_current = Some(
+                    accumulated_detail.gross_profit_4_yr.unwrap_or(0.0)
+                        + detail.gross_profit_4_yr.unwrap_or(0.0) * weight,
                 );
 
                 // TODO: Repeat for other fields
@@ -168,6 +210,23 @@ impl Ticker10KDetail {
             accumulated_detail.revenue_current = accumulated_detail
                 .revenue_current
                 .map(|total| total / total_weight);
+
+            accumulated_detail.revenue_1_yr = accumulated_detail
+                .revenue_1_yr
+                .map(|total| total / total_weight);
+
+            accumulated_detail.revenue_2_yr = accumulated_detail
+                .revenue_2_yr
+                .map(|total| total / total_weight);
+
+            accumulated_detail.revenue_3_yr = accumulated_detail
+                .revenue_3_yr
+                .map(|total| total / total_weight);
+
+            accumulated_detail.revenue_4_yr = accumulated_detail
+                .revenue_4_yr
+                .map(|total| total / total_weight);
+
             accumulated_detail.gross_profit_current = accumulated_detail
                 .gross_profit_current
                 .map(|total| total / total_weight);
