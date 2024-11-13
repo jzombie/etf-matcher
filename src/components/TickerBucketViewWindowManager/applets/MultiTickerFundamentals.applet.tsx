@@ -21,6 +21,7 @@ export default function MultiTickerFundamentalsApplet({
   useEffect(() => {
     fetchWeightedTicker10KDetail(
       selectedTickerIds,
+      // TODO: Don't hardcode these weights
       selectedTickerIds.map((_) => 1),
     ).then((agg10KDetail) => console.log({ agg10KDetail }));
   }, [selectedTickerIds]);
