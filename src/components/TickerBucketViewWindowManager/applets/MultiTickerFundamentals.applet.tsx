@@ -81,6 +81,7 @@ export default function MultiTickerFundamentalsApplet({
                   multiTickerFinancialDetail.revenue_3_yr,
                   multiTickerFinancialDetail.revenue_4_yr,
                 )}
+                // TODO: Determine how this should be handled. No guarantee these are all going to be USD.
                 // currencyCode={tickerDetail.currency_code}
                 colorIndex={0}
               />
@@ -93,6 +94,7 @@ export default function MultiTickerFundamentalsApplet({
                   multiTickerFinancialDetail.gross_profit_3_yr,
                   multiTickerFinancialDetail.gross_profit_4_yr,
                 )}
+                // TODO: Determine how this should be handled. No guarantee these are all going to be USD.
                 // currencyCode={tickerDetail.currency_code}
                 colorIndex={1}
               />
@@ -105,6 +107,7 @@ export default function MultiTickerFundamentalsApplet({
                   multiTickerFinancialDetail.operating_income_3_yr,
                   multiTickerFinancialDetail.operating_income_4_yr,
                 )}
+                // TODO: Determine how this should be handled. No guarantee these are all going to be USD.
                 // currencyCode={tickerDetail.currency_code}
                 colorIndex={2}
               />
@@ -117,6 +120,7 @@ export default function MultiTickerFundamentalsApplet({
                   multiTickerFinancialDetail.net_income_3_yr,
                   multiTickerFinancialDetail.net_income_4_yr,
                 )}
+                // TODO: Determine how this should be handled. No guarantee these are all going to be USD.
                 // currencyCode={tickerDetail.currency_code}
                 colorIndex={3}
               />
@@ -129,6 +133,7 @@ export default function MultiTickerFundamentalsApplet({
                   multiTickerFinancialDetail.total_assets_3_yr,
                   multiTickerFinancialDetail.total_assets_4_yr,
                 )}
+                // TODO: Determine how this should be handled. No guarantee these are all going to be USD.
                 // currencyCode={tickerDetail.currency_code}
                 colorIndex={4}
               />
@@ -141,6 +146,7 @@ export default function MultiTickerFundamentalsApplet({
                   multiTickerFinancialDetail.total_liabilities_3_yr,
                   multiTickerFinancialDetail.total_liabilities_4_yr,
                 )}
+                // TODO: Determine how this should be handled. No guarantee these are all going to be USD.
                 // currencyCode={tickerDetail.currency_code}
                 colorIndex={5}
               />
@@ -153,6 +159,7 @@ export default function MultiTickerFundamentalsApplet({
                   multiTickerFinancialDetail.operating_cash_flow_3_yr,
                   multiTickerFinancialDetail.operating_cash_flow_4_yr,
                 )}
+                // TODO: Determine how this should be handled. No guarantee these are all going to be USD.
                 // currencyCode={tickerDetail.currency_code}
                 colorIndex={6}
               />
