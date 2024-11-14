@@ -78,6 +78,44 @@ export const multiBucketInstancesAllowed: Readonly<TickerBucket["type"][]> = [
   "portfolio",
 ];
 
+const DEFAULT_TICKER_BUCKETS: TickerBucket[] = [
+  // Note: The following `UUID`s are created at each store initialization,
+  // but are replaced if an existing session has loaded via IndexedDB.
+  // See: `_restorePersistentSession` in this class.
+  {
+    uuid: uuidv4(),
+    name: "My Portfolio",
+    tickers: [],
+    type: "portfolio",
+    description: "Default portfolio",
+    isUserConfigurable: true,
+  },
+  {
+    uuid: uuidv4(),
+    name: "My Watchlist",
+    tickers: [],
+    type: "watchlist",
+    description: "Default watchlist",
+    isUserConfigurable: true,
+  },
+  {
+    uuid: uuidv4(),
+    name: "My Ticker Tape",
+    tickers: [],
+    type: "ticker_tape",
+    description: "Ticker tape",
+    isUserConfigurable: true,
+  },
+  {
+    uuid: uuidv4(),
+    name: "My Recently Viewed",
+    tickers: [],
+    type: "recently_viewed",
+    description: "Recently viewed tickers",
+    isUserConfigurable: false,
+  },
+];
+
 export type StoreStateProps = {
   isHTMLJSVersionSynced: boolean;
   isIndexedDBReady: boolean;
@@ -141,43 +179,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
       isDirtyState: false,
       visibleTickerIds: [],
       isSearchModalOpen: false,
-      tickerBuckets: [
-        // Note: The following `UUID`s are created at each store initialization,
-        // but are replaced if an existing session has loaded via IndexedDB.
-        // See: `_restorePersistentSession` in this class.
-        {
-          uuid: uuidv4(),
-          name: "My Portfolio",
-          tickers: [],
-          type: "portfolio",
-          description: "Default portfolio",
-          isUserConfigurable: true,
-        },
-        {
-          uuid: uuidv4(),
-          name: "My Watchlist",
-          tickers: [],
-          type: "watchlist",
-          description: "Default watchlist",
-          isUserConfigurable: true,
-        },
-        {
-          uuid: uuidv4(),
-          name: "My Ticker Tape",
-          tickers: [],
-          type: "ticker_tape",
-          description: "Ticker tape",
-          isUserConfigurable: true,
-        },
-        {
-          uuid: uuidv4(),
-          name: "My Recently Viewed",
-          tickers: [],
-          type: "recently_viewed",
-          description: "Recently viewed tickers",
-          isUserConfigurable: false,
-        },
-      ],
+      tickerBuckets: DEFAULT_TICKER_BUCKETS,
       isProfilingCacheOverlayOpen: false,
       cacheProfilerWaitTime: 500,
       cacheDetails: [],
