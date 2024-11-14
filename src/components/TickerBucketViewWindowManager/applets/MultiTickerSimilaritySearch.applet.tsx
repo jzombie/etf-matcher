@@ -34,9 +34,10 @@ export default function MultiTickerSimilaritySearchApplet({
     }
   }, [adjustedTickerBucket, fetchEuclidean]);
 
-  useEffect(() => {
-    console.log({ resultsEuclidean });
-  }, [resultsEuclidean]);
+  // TODO: Handle
+  // useEffect(() => {
+  //   console.log({ resultsEuclidean });
+  // }, [resultsEuclidean]);
 
   return (
     <TickerBucketViewWindowManagerAppletWrap

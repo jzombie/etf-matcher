@@ -18,8 +18,10 @@ import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
 import {
   RustServiceTickerDetail,
+  RustServiceTickerDistance,
   RustServiceTickerVectorConfig,
 } from "@services/RustService";
+import { fetchEuclideanByTicker } from "@services/RustService";
 
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
@@ -30,9 +32,13 @@ import Transition from "@components/Transition";
 
 import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import useElementSize from "@hooks/useElementSize";
+import useObjectHash from "@hooks/useObjectHash";
+import usePromise from "@hooks/usePromise";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import useTicker10KDetail from "@hooks/useTicker10KDetail";
 import useTickerVectorConfigs from "@hooks/useTickerVectorConfigs";
+
+import customLogger from "@utils/customLogger";
 
 import TickerViewWindowManagerAppletWrap, {
   TickerViewWindowManagerAppletWrapProps,
@@ -153,6 +159,27 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
 
   const shouldShowLabels = contentSize.width >= 360;
 
+  const { data: tickerDistances, execute: fetchTickerDistances } = usePromise<
+    RustServiceTickerDistance[],
+    [tickerVectorConfigKey: string, tickerId: number]
+  >({
+    fn: (tickerVectorConfigKey, tickerId) =>
+      fetchEuclideanByTicker(tickerVectorConfigKey, tickerId),
+    onError: (err) => {
+      customLogger.error(err);
+      triggerUIError(new Error("Could not fetch PCA similarity results"));
+    },
+    autoExecute: false,
+  });
+
+  const hashedTickerDistances = useObjectHash(tickerDistances);
+
+  useEffect(() => {
+    if (selectedModelConfig && tickerDetail) {
+      fetchTickerDistances(selectedModelConfig.key, tickerDetail.ticker_id);
+    }
+  }, [selectedModelConfig, tickerDetail, fetchTickerDistances]);
+
   if (isLoadingFinancialDetail) {
     return (
       <Center>
@@ -217,14 +244,11 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
           // Due to some of the child components of the`Transition` wrapper,
           // it's being conditionally rendered for now.
           <Transition
-            trigger={`${displayMode}-${selectedModelConfig.key}`}
+            trigger={`${displayMode}-${selectedModelConfig.key}-${hashedTickerDistances}`}
             direction={getDirection()}
           >
             {displayMode === "radial" ? (
-              <TickerPCAScatterPlot
-                tickerVectorConfigKey={selectedModelConfig.key}
-                tickerDetail={tickerDetail}
-              />
+              <TickerPCAScatterPlot tickerDistances={tickerDistances} />
             ) : (
               <Scrollable>
                 <TickerVectorQueryTable

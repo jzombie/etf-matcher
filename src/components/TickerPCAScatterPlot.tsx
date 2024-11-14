@@ -5,7 +5,7 @@ import { Box, Divider, Typography } from "@mui/material";
 import AutoScaler from "@layoutKit/AutoScaler";
 import {
   RustServiceTickerDetail,
-  fetchEuclideanByTicker,
+  RustServiceTickerDistance,
   fetchTickerDetail,
 } from "@services/RustService";
 import {
@@ -32,52 +32,47 @@ const YELLOW_DOT_RADIUS = 5;
 // Prevent coordinates from overflowing radial chart
 const MAX_VALUE_MULT_BUFFER = 1.1;
 
-export type TickerPCAScatterPlotProps = {
-  tickerVectorConfigKey: string;
-  tickerDetail: RustServiceTickerDetail;
-};
-
 type ChartVectorDistance = {
   tickerDetail: RustServiceTickerDetail;
   pc1: number;
   pc2: number;
 };
 
+export type TickerPCAScatterPlotProps = {
+  // Where `tickerDistances` is obtained from `fetchEuclideanByTicker`
+  tickerDistances?: RustServiceTickerDistance[] | null;
+};
+
 // This component mimics a radial scatter plot, which `ReCharts` doesn't directly support.
 // The coordinates are based directly on the PCA coordinates.
 export default function TickerPCAScatterPlot({
-  tickerVectorConfigKey,
-  tickerDetail,
+  tickerDistances,
 }: TickerPCAScatterPlotProps) {
-  // TODO: Handle loading and error states
+  // TODO: Handle loading and error states (possibly refactor to `usePromise` for this)
   const [chartData, setChartData] = useState<ChartVectorDistance[] | null>(
     null,
   );
 
   useEffect(() => {
-    if (tickerDetail) {
-      fetchEuclideanByTicker(tickerVectorConfigKey, tickerDetail.ticker_id)
-        .then((tickerDistances) =>
-          Promise.allSettled(
-            tickerDistances.map(async (item) => {
-              const tickerDetail = await fetchTickerDetail(item.ticker_id);
-              return {
-                tickerDetail,
-                pc1: item.translated_pca_coords[0],
-                pc2: item.translated_pca_coords[1],
-              };
-            }),
-          ),
-        )
-        .then((results) => {
-          // Filter out failed promises
-          const successfulResults = results
-            .filter((result) => result.status === "fulfilled")
-            .map((result) => result.value); // Extract the `value` from the fulfilled promises
-          setChartData(successfulResults);
-        });
+    if (tickerDistances) {
+      Promise.allSettled(
+        tickerDistances.map(async (item) => {
+          const tickerDetail = await fetchTickerDetail(item.ticker_id);
+          return {
+            tickerDetail,
+            pc1: item.translated_pca_coords[0],
+            pc2: item.translated_pca_coords[1],
+          };
+        }),
+      ).then((results) => {
+        // Filter out failed promises
+        const successfulResults = results
+          .filter((result) => result.status === "fulfilled")
+          .map((result) => result.value); // Extract the `value` from the fulfilled promises
+        setChartData(successfulResults);
+      });
     }
-  }, [tickerVectorConfigKey, tickerDetail]);
+  }, [tickerDistances]);
 
   const navigateToSymbol = useTickerSymbolNavigation();
 
