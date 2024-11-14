@@ -1,10 +1,17 @@
 import React, { useEffect } from "react";
 
-import Box from "@mui/material/Box";
-import Checkbox from "@mui/material/Checkbox";
-import FormControlLabel from "@mui/material/FormControlLabel";
+import { fetchEuclideanByTickerBucket } from "@services/RustService";
+import { RustServiceTickerDistance } from "@services/RustService";
+import { TickerBucket } from "@src/store";
 
-import useTickerVectorQuery from "@hooks/useTickerVectorQuery";
+import TickerPCAScatterPlot from "@components/TickerPCAScatterPlot";
+
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
+// import useObjectHash from "@hooks/useObjectHash";
+import usePromise from "@hooks/usePromise";
+import useStoreStateReader from "@hooks/useStoreStateReader";
+
+import customLogger from "@utils/customLogger";
 
 import TickerBucketViewWindowManagerAppletWrap, {
   TickerBucketViewWindowManagerAppletWrapProps,
@@ -20,31 +27,51 @@ export default function MultiTickerSimilaritySearchApplet({
   multiTickerDetails,
   ...rest
 }: MultiTickerSimilaritySearchAppletProps) {
+  const { triggerUIError } = useAppErrorBoundary();
+
   const { adjustedTickerBucket } = useTickerSelectionManagerContext();
 
-  const { fetchEuclidean, resultsEuclidean } = useTickerVectorQuery({
-    tickerVectorConfigKey: "default", // TODO: Don't hardocde
-    queryMode: "bucket",
-    query: adjustedTickerBucket,
+  const { preferredTickerVectorConfigKey } = useStoreStateReader(
+    "preferredTickerVectorConfigKey",
+  );
+
+  const { data: tickerDistances, execute: fetchTickerDistances } = usePromise<
+    RustServiceTickerDistance[],
+    [tickerVectorConfigKey: string, adjustedTickerBucket: TickerBucket]
+  >({
+    fn: (tickerVectorConfigKey, adjustedTickerBucket) =>
+      fetchEuclideanByTickerBucket(tickerVectorConfigKey, adjustedTickerBucket),
+    onError: (err) => {
+      customLogger.error(err);
+      triggerUIError(new Error("Could not fetch PCA similarity results"));
+    },
+    autoExecute: false,
   });
 
-  useEffect(() => {
-    if (adjustedTickerBucket) {
-      fetchEuclidean();
-    }
-  }, [adjustedTickerBucket, fetchEuclidean]);
+  // const hashedTickerDistances = useObjectHash(tickerDistances);
 
-  // TODO: Handle
-  // useEffect(() => {
-  //   console.log({ resultsEuclidean });
-  // }, [resultsEuclidean]);
+  useEffect(() => {
+    if (preferredTickerVectorConfigKey && adjustedTickerBucket) {
+      fetchTickerDistances(
+        preferredTickerVectorConfigKey,
+        adjustedTickerBucket,
+      );
+    }
+  }, [
+    preferredTickerVectorConfigKey,
+    adjustedTickerBucket,
+    fetchTickerDistances,
+  ]);
 
   return (
     <TickerBucketViewWindowManagerAppletWrap
       multiTickerDetails={multiTickerDetails}
       {...rest}
     >
-      [TODO: Build out]
+      {
+        // TODO: Build out
+      }
+      <TickerPCAScatterPlot tickerDistances={tickerDistances} />
     </TickerBucketViewWindowManagerAppletWrap>
   );
 }
