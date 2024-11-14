@@ -1,24 +1,23 @@
 import React, { ReactNode, createContext, useCallback, useState } from "react";
 
-import { TickerBucket } from "@src/store";
+import { TickerBucket, TickerBucketTicker } from "@src/store";
 
-// Define a generic type for the context value
-type TickerSelectionManagerContextType = {
-  selectedTickerIds: number[];
-  selectTickerId: (ticker: number) => void;
-  deselectTickerId: (ticker: number) => void;
+export type TickerSelectionManagerContextType = {
+  selectedTickers: TickerBucketTicker[];
+  selectTicker: (ticker: TickerBucketTicker) => void;
+  deselectTicker: (tickerId: number) => void;
   clearTickers: () => void;
 };
 
-// Set up the default value with empty functions and an empty array for active tickers
+// Set up the default value with empty functions and an empty array for selected tickers
 const defaultContextValue: TickerSelectionManagerContextType = {
-  selectedTickerIds: [],
-  selectTickerId: () => {},
-  deselectTickerId: () => {},
+  selectedTickers: [],
+  selectTicker: () => {},
+  deselectTicker: () => {},
   clearTickers: () => {},
 };
 
-// Create the context with a generic type and default value
+// Create the context with the specified type and default value
 export const TickerSelectionManagerContext =
   createContext<TickerSelectionManagerContextType>(defaultContextValue);
 
@@ -31,41 +30,46 @@ export default function TickerSelectionManagerProvider({
   children,
   tickerBucket,
 }: TickerSelectionManagerProviderProps) {
-  const [selectedTickerIds, setSelectedTickerIds] = useState<number[]>(() =>
-    // Initially set to all tickers in the bucket
-    tickerBucket.tickers.map((ticker) => ticker.tickerId),
+  const [selectedTickers, setSelectedTickers] = useState<TickerBucketTicker[]>(
+    () => tickerBucket.tickers,
   );
 
-  // TODO: Set initial `activeTickers` to be whatever is in the bucket
+  const selectTicker = useCallback((newTicker: TickerBucketTicker) => {
+    setSelectedTickers((prevTickers) => {
+      const existingTicker = prevTickers.find(
+        (ticker) => ticker.tickerId === newTicker.tickerId,
+      );
 
-  // TODO: Consider allowing additional tickers to be added that are not
-  // currently in the bucket, to see how they can affect similarity searches,
-  // etc., and so that decisions can be made to manually add them.
-
-  const selectTickerId = useCallback((tickerId: number) => {
-    setSelectedTickerIds((prevTickerIds) =>
-      prevTickerIds.includes(tickerId)
-        ? prevTickerIds
-        : [...prevTickerIds, tickerId],
-    );
+      if (existingTicker) {
+        // If ticker is already selected, update the quantity
+        return prevTickers.map((ticker) =>
+          ticker.tickerId === newTicker.tickerId
+            ? { ...ticker, quantity: ticker.quantity + newTicker.quantity }
+            : ticker,
+        );
+      } else {
+        // If ticker is not selected, add it to the list
+        return [...prevTickers, newTicker];
+      }
+    });
   }, []);
 
-  const deselectTickerId = useCallback((tickerId: number) => {
-    setSelectedTickerIds((prevTickerIds) =>
-      prevTickerIds.filter((t) => t !== tickerId),
+  const deselectTicker = useCallback((tickerId: number) => {
+    setSelectedTickers((prevTickers) =>
+      prevTickers.filter((ticker) => ticker.tickerId !== tickerId),
     );
   }, []);
 
   const clearTickers = useCallback(() => {
-    setSelectedTickerIds([]);
+    setSelectedTickers([]);
   }, []);
 
   return (
     <TickerSelectionManagerContext.Provider
       value={{
-        selectedTickerIds,
-        selectTickerId,
-        deselectTickerId,
+        selectedTickers,
+        selectTicker,
+        deselectTicker,
         clearTickers,
       }}
     >
