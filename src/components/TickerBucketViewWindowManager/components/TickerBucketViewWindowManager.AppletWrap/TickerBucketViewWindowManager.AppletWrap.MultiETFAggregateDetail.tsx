@@ -12,7 +12,7 @@ export type MultiETFAggregateDetailAppletWrapProps = {
   formattedSymbolsWithExchange?: string[] | null;
   isLoadingMultiETFAggregateDetails: boolean;
   multiETFAggregateDetailsError?: Error | unknown;
-  isTiling: boolean;
+  isTiling: boolean; // TODO: Refactor to use common types, so this can be excluded specifically from here (potentially in: https://linear.app/zenosmosis/issue/ZEN-128/re-use-tickerdetail-layouts-for-bucket-views)
   children: React.ReactNode;
 };
 
