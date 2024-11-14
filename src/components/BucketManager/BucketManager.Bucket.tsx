@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -16,6 +16,8 @@ import ScrollTo from "@components/ScrollTo";
 import SearchModalButton from "@components/SearchModalButton";
 import Section from "@components/Section";
 import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
+
+import getTickerBucketLink from "@utils/getTickerBucketLink";
 
 import BucketTicker from "./BucketManager.Bucket.Ticker";
 import BucketForm from "./BucketManager.BucketForm";
@@ -53,6 +55,11 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
 
     setIsCollapsed(false);
   }, []);
+
+  const tickerBucketLink = useMemo(
+    () => getTickerBucketLink(tickerBucket),
+    [tickerBucket],
+  );
 
   return (
     <>
@@ -172,15 +179,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                 </>
               )}
             </>
-            {
-              // TODO: Remove; just temporary
-              // TODO: Extract this link location to a shared helper, and make provisions so that it cannot be overlapped
-            }
-            <Link
-              to={`/${tickerBucket.type}s/${tickerBucket.name.trim().toLowerCase().replace(/\s+/g, "-")}`}
-            >
-              Go to {tickerBucket.name} page
-            </Link>
+            <Link to={tickerBucketLink}>Go to {tickerBucket.name} page</Link>
           </Section>
         </Padding>
       </ScrollTo>
