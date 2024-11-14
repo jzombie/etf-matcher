@@ -3,7 +3,9 @@ import React from "react";
 import Box from "@mui/material/Box";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import TextField from "@mui/material/TextField";
+
+// import TextField from "@mui/material/TextField";
+import Scrollable from "@layoutKit/Scrollable";
 
 // New import for quantity input
 import TickerBucketViewWindowManagerAppletWrap, {
@@ -35,14 +37,14 @@ export default function MultiTickerManagerApplet({
       multiTickerDetails={multiTickerDetails}
       {...rest}
     >
-      <Box>
+      <Scrollable>
         {multiTickerDetails?.map((tickerDetail) => {
           const isSelected = selectedTickers.some(
             (ticker) => ticker.tickerId === tickerDetail.ticker_id,
           );
-          const selectedTicker = selectedTickers.find(
-            (ticker) => ticker.tickerId === tickerDetail.ticker_id,
-          );
+          // const selectedTicker = selectedTickers.find(
+          //   (ticker) => ticker.tickerId === tickerDetail.ticker_id,
+          // );
 
           return (
             <Box
@@ -88,7 +90,7 @@ export default function MultiTickerManagerApplet({
             </Box>
           );
         })}
-      </Box>
+      </Scrollable>
     </TickerBucketViewWindowManagerAppletWrap>
   );
 }
