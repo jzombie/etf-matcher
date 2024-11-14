@@ -80,24 +80,25 @@ export default function useTickerBucketViewWindowManagerContent(
 
   const initialLayout: MosaicNode<string> = useMemo(
     () => ({
+      direction: "row",
       first: {
-        direction: "row",
-        first: "Historical Prices",
-        second: {
-          first: "Fundamentals",
+        first: {
+          first: "Historical Prices",
           second: "Similarity Search",
-          direction: "column",
-          splitPercentage: 52,
+          direction: "row",
+          splitPercentage: 64,
         },
-        splitPercentage: 75,
+        second: {
+          first: "Sector Allocation",
+          second: "Ticker Manager",
+          direction: "row",
+          splitPercentage: 50,
+        },
+        direction: "column",
+        splitPercentage: 80,
       },
-      second: {
-        first: "Sector Allocation",
-        second: "Ticker Manager",
-        direction: "row",
-      },
-      direction: "column",
-      splitPercentage: 80,
+      second: "Fundamentals",
+      splitPercentage: 75,
     }),
     [],
   );
