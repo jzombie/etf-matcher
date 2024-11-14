@@ -1,5 +1,7 @@
 import React from "react";
 
+import { Box, styled } from "@mui/material";
+
 import {
   TRADING_VIEW_COPYRIGHT_STYLES,
   TRADING_VIEW_THEME,
@@ -15,16 +17,25 @@ export type MultiTickerHistoricalPriceChartAppletProps = Omit<
   "children"
 >;
 
+const StyledBox = styled(Box)({
+  height: 500,
+});
+
 export default function MultiTickerHistoricalPriceChartApplet({
   formattedSymbolsWithExchange,
+  isTiling,
   ...rest
 }: MultiTickerHistoricalPriceChartAppletProps) {
+  // This is used to help set height on mobile
+  const Container = isTiling ? React.Fragment : StyledBox;
+
   return (
     <TickerBucketViewWindowManagerAppletWrap
+      isTiling={isTiling}
       formattedSymbolsWithExchange={formattedSymbolsWithExchange}
       {...rest}
     >
-      {
+      {formattedSymbolsWithExchange && (
         // FIXME: Callbacks are not supported in TradingView charts without using
         // their charting library directly:
         // https://www.tradingview.com/HTML5-stock-forex-bitcoin-charting-library/
@@ -38,17 +49,17 @@ export default function MultiTickerHistoricalPriceChartApplet({
         // TODO: Consider adding an overlay which appears on the first usage,
         // explaining how this chart doesn't update the app's state, in a fashion
         // that is easy to comprehend.
-      }
-      {formattedSymbolsWithExchange && (
-        <AdvancedRealTimeChart
-          symbol={formattedSymbolsWithExchange?.[0]}
-          watchlist={formattedSymbolsWithExchange}
-          allow_symbol_change={false}
-          theme={TRADING_VIEW_THEME}
-          autosize
-          hotlist
-          copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
-        />
+        <Container>
+          <AdvancedRealTimeChart
+            symbol={formattedSymbolsWithExchange?.[0]}
+            watchlist={formattedSymbolsWithExchange}
+            allow_symbol_change={false}
+            theme={TRADING_VIEW_THEME}
+            autosize
+            hotlist
+            copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
+          />
+        </Container>
       )}
     </TickerBucketViewWindowManagerAppletWrap>
   );
