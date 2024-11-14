@@ -91,8 +91,8 @@ export default function useTickerBucketViewWindowManagerContent(
         splitPercentage: 75,
       },
       second: {
-        first: "Ticker Manager",
-        second: "Sector Allocation",
+        first: "Sector Allocation",
+        second: "Ticker Manager",
         direction: "row",
       },
       direction: "column",
