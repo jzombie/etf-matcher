@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
 
+import { Typography } from "@mui/material";
+
+import Center from "@layoutKit/Center";
+import Layout, { Content, Header } from "@layoutKit/Layout";
+import Padding from "@layoutKit/Padding";
 import { fetchLevenshteinDistance } from "@services/RustService";
 import type { TickerBucket } from "@src/store";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -88,8 +93,23 @@ export default function TickerBucketPage({
   }, [location, bucketType, bucketName, tickerBuckets, navigate]);
 
   if (!selectedTickerBucket) {
-    return <div>Locating ticker bucket...</div>;
+    return (
+      <Center style={{ fontWeight: "bold" }}>Locating ticker bucket...</Center>
+    );
   }
 
-  return <TickerBucketViewWindowManager tickerBucket={selectedTickerBucket} />;
+  return (
+    <Layout>
+      <Header>
+        <Padding>
+          <Typography variant="body2">
+            {selectedTickerBucket.name} {selectedTickerBucket.type}
+          </Typography>
+        </Padding>
+      </Header>
+      <Content>
+        <TickerBucketViewWindowManager tickerBucket={selectedTickerBucket} />
+      </Content>
+    </Layout>
+  );
 }
