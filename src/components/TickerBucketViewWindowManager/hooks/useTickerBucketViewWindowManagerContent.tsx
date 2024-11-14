@@ -11,6 +11,7 @@ import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 import MultiTickerFundamentalsApplet from "../applets/MultiTickerFundamentals.applet";
 import MultiTickerHistoricalPriceChartApplet from "../applets/MultiTickerHistoricalPriceChart.applet";
 import MultiTickerManagerApplet from "../applets/MultiTickerManager.applet";
+import MultiTickerSimilaritySearchApplet from "../applets/MultiTickerSimilaritySearch.applet";
 import type { TickerBucketViewWindowManagerAppletWrapProps } from "../components/TickerBucketViewWindowManager.AppletWrap";
 
 export default function useTickerBucketViewWindowManagerContent(
@@ -110,10 +111,7 @@ export default function useTickerBucketViewWindowManagerContent(
       ),
       "Sector Allocation": <div>Render combined weighted allocations</div>,
       "Similarity Search": (
-        <div>
-          TODO: Use this opportunity to render PCA scatter plot of the entire
-          bucket
-        </div>
+        <MultiTickerSimilaritySearchApplet {...commonProps} />
       ),
       Fundamentals: <MultiTickerFundamentalsApplet {...commonProps} />,
     }),

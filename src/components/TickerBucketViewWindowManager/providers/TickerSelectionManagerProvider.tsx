@@ -1,4 +1,10 @@
-import React, { ReactNode, createContext, useCallback, useState } from "react";
+import React, {
+  ReactNode,
+  createContext,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 
 import { TickerBucket, TickerBucketTicker } from "@src/store";
 
@@ -7,6 +13,7 @@ export type TickerSelectionManagerContextType = {
   selectTicker: (ticker: TickerBucketTicker) => void;
   deselectTicker: (tickerId: number) => void;
   clearTickers: () => void;
+  adjustedTickerBucket: TickerBucket;
 };
 
 // Set up the default value with empty functions and an empty array for selected tickers
@@ -15,6 +22,14 @@ const defaultContextValue: TickerSelectionManagerContextType = {
   selectTicker: () => {},
   deselectTicker: () => {},
   clearTickers: () => {},
+  adjustedTickerBucket: {
+    uuid: "N/A",
+    name: "N/A",
+    tickers: [],
+    type: "watchlist",
+    description: "N/A",
+    isUserConfigurable: true,
+  },
 };
 
 // Create the context with the specified type and default value
@@ -32,6 +47,14 @@ export default function TickerSelectionManagerProvider({
 }: TickerSelectionManagerProviderProps) {
   const [selectedTickers, setSelectedTickers] = useState<TickerBucketTicker[]>(
     () => tickerBucket.tickers,
+  );
+
+  const adjustedTickerBucket = useMemo(
+    () => ({
+      ...tickerBucket,
+      tickers: selectedTickers,
+    }),
+    [tickerBucket, selectedTickers],
   );
 
   const selectTicker = useCallback((newTicker: TickerBucketTicker) => {
@@ -71,6 +94,7 @@ export default function TickerSelectionManagerProvider({
         selectTicker,
         deselectTicker,
         clearTickers,
+        adjustedTickerBucket,
       }}
     >
       {children}
