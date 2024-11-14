@@ -17,8 +17,6 @@ import SearchModalButton from "@components/SearchModalButton";
 import Section from "@components/Section";
 import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
 
-import useStoreStateReader from "@hooks/useStoreStateReader";
-
 import BucketTicker from "./BucketManager.Bucket.Ticker";
 import BucketForm from "./BucketManager.BucketForm";
 
