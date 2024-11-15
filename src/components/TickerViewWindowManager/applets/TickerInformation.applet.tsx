@@ -1,16 +1,22 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import { Box, Divider, Link, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
+import { Link as ReactRouterLink } from "react-router-dom";
 
 import EncodedImage from "@components/EncodedImage";
 
 import useFormattedSectorAndIndustry from "@hooks/useFormattedSectorAndIndustry";
+import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
 import getSymbolThirdPartyLink from "@utils/string/getSymbolThirdPartyLink";
+import {
+  formatTickerBucketPageTitle,
+  getTickerBucketLink,
+} from "@utils/tickerBucketLinkUtils";
 
 import TickerViewWindowManagerAppletWrap, {
   TickerViewWindowManagerAppletWrapProps,
@@ -32,6 +38,20 @@ export default function TickerInformationApplet({
     tickerDetail,
     etfAggregateDetail,
   );
+
+  const { tickerBuckets } = useStoreStateReader("tickerBuckets");
+
+  const linkableTickerBuckets = useMemo(() => {
+    // Note: `tickerBuckets` is used as a dependency to ensure this hook
+    // re-renders when they have changed
+    if (tickerBuckets && tickerDetail) {
+      return store
+        .getTickerBucketsWithTicker(tickerDetail?.ticker_id)
+        .filter((tickerBucket) => tickerBucket.isUserConfigurable);
+    }
+
+    return null;
+  }, [tickerDetail, tickerBuckets]);
 
   return (
     <TickerViewWindowManagerAppletWrap
@@ -121,11 +141,58 @@ export default function TickerInformationApplet({
                 >
                   google.com
                 </Link>
-                {
-                  // TODO: Add link to company, ETF, etc. (and possibly include SEC filings either here or in the "fundamentals" section)
-                  // TODO: Add links to relevant ticker buckets (if applicable)
-                }
               </Box>
+              {linkableTickerBuckets && (
+                <>
+                  <Divider sx={{ my: 2 }} />
+                  <Box sx={{ fontSize: ".8rem" }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: "bold" }}
+                      gutterBottom
+                    >
+                      Also found in:
+                    </Typography>
+                    {linkableTickerBuckets.map((tickerBucket) => (
+                      <ReactRouterLink
+                        key={tickerBucket.uuid}
+                        to={getTickerBucketLink(tickerBucket)}
+                        style={{ margin: 2 }}
+                      >
+                        {formatTickerBucketPageTitle(tickerBucket)}
+                      </ReactRouterLink>
+                    ))}
+                    {/* <Link
+                  sx={{ mx: 0.5 }}
+                  href={getSymbolThirdPartyLink({
+                    tickerSymbol: tickerDetail?.symbol,
+                    companyName: tickerDetail?.company_name,
+                    isETF: tickerDetail?.is_etf,
+                    provider: "stockanalysis.com",
+                  })}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`View ${tickerDetail?.symbol} on stockanalysis.com`}
+                >
+                  stockanalysis.com
+                </Link>
+                <Link
+                  sx={{ mx: 0.5 }}
+                  href={getSymbolThirdPartyLink({
+                    tickerSymbol: tickerDetail?.symbol,
+                    companyName: tickerDetail?.company_name,
+                    isETF: tickerDetail?.is_etf,
+                    provider: "google.com",
+                  })}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`View ${tickerDetail?.symbol} on stockanalysis.com`}
+                >
+                  google.com
+                </Link> */}
+                  </Box>
+                </>
+              )}
             </>
 
             // TODO: Add ability to copy the symbol to clipboard (search for `copySymbolsToClipboard` and refactor)

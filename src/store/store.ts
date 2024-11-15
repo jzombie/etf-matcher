@@ -753,6 +753,12 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     }
   }
 
+  getTickerBucketsWithTicker(tickerId: number): TickerBucket[] {
+    return this.state.tickerBuckets.filter((bucket) =>
+      bucket.tickers.some((ticker) => ticker.tickerId === tickerId),
+    );
+  }
+
   async removeCacheEntry(key: string): Promise<void> {
     await removeCacheEntry(key);
 
