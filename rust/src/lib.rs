@@ -1,5 +1,5 @@
 extern crate flatbuffers as fb;
-use data_models::ticker_vector_analysis::TickerWithQuantity;
+use data_models::ticker_vector_analysis::TickerWithWeight;
 use levenshtein::levenshtein;
 use qrcode_generator::QrCodeEcc;
 use serde_wasm_bindgen::{from_value, to_value};
@@ -285,8 +285,8 @@ pub async fn get_euclidean_by_ticker_bucket(
     ticker_vector_config_key: &str,
     tickers_with_quantity: JsValue,
 ) -> Result<JsValue, JsValue> {
-    // Deserialize the input JsValue into Rust Vec<TickerWithQuantity>
-    let tickers_with_quantity: Vec<TickerWithQuantity> =
+    // Deserialize the input JsValue into Rust Vec<TickerWithWeight>
+    let tickers_with_quantity: Vec<TickerWithWeight> =
         serde_wasm_bindgen::from_value(tickers_with_quantity)
             .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
 
@@ -351,8 +351,8 @@ pub async fn get_cosine_by_ticker_bucket(
     ticker_vector_config_key: &str,
     tickers_with_quantity: JsValue,
 ) -> Result<JsValue, JsValue> {
-    // Deserialize the input JsValue into Rust Vec<TickerWithQuantity>
-    let tickers_with_quantity: Vec<TickerWithQuantity> =
+    // Deserialize the input JsValue into Rust Vec<TickerWithWeight>
+    let tickers_with_quantity: Vec<TickerWithWeight> =
         serde_wasm_bindgen::from_value(tickers_with_quantity)
             .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
 

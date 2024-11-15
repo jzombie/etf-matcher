@@ -20,12 +20,12 @@ pub struct CosineSimilarityResult {
     pub similarity_score: f32,
 }
 
-// TODO: Extract into a common type to use with `get_weighted_ticker_10k_detail_by_ticker_ids`. Consider changing `quantity` to `weight`.
+// TODO: Extract into a common type to use with `get_weighted_ticker_10k_detail_by_ticker_ids`. Consider changing `weight` to `weight`.
 #[derive(Deserialize)]
-pub struct TickerWithQuantity {
+pub struct TickerWithWeight {
     pub ticker_id: TickerId,
     // Float is used to allow usage of fractional shares
-    pub quantity: f32,
+    pub weight: f32,
 }
 
 pub struct OwnedTickerVectors {
@@ -143,14 +143,12 @@ impl TickerDistance {
 
     pub async fn get_euclidean_by_ticker_bucket(
         ticker_vector_config_key: &str,
-        tickers_with_quantity: &Vec<TickerWithQuantity>,
+        tickers_with_weight: &Vec<TickerWithWeight>,
     ) -> Result<Vec<TickerDistance>, String> {
         // Generate the custom vector based on the quantities of the tickers
-        let custom_vector = TickerWithQuantity::generate_bucket_vector(
-            ticker_vector_config_key,
-            tickers_with_quantity,
-        )
-        .await?;
+        let custom_vector =
+            TickerWithWeight::generate_bucket_vector(ticker_vector_config_key, tickers_with_weight)
+                .await?;
 
         // Triangulate the PCA coordinates for the custom vector
         let custom_pca_coords = TickerDistance::triangulate_pca_coordinates(
@@ -164,10 +162,10 @@ impl TickerDistance {
             OwnedTickerVectors::get_all_ticker_vectors(ticker_vector_config_key).await?;
         let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
-        // Collect all ticker_ids in the input tickers_with_quantity to exclude them
-        let exclude_ticker_ids: Vec<TickerId> = tickers_with_quantity
+        // Collect all ticker_ids in the input tickers_with_weight to exclude them
+        let exclude_ticker_ids: Vec<TickerId> = tickers_with_weight
             .iter()
-            .map(|ticker_with_quantity| ticker_with_quantity.ticker_id)
+            .map(|ticker_with_weight| ticker_with_weight.ticker_id)
             .collect();
 
         TickerDistance::find_closest_tickers_by_vector(
@@ -314,14 +312,12 @@ impl CosineSimilarityResult {
 
     pub async fn get_cosine_by_ticker_bucket(
         ticker_vector_config_key: &str,
-        tickers_with_quantity: &Vec<TickerWithQuantity>,
+        tickers_with_weight: &Vec<TickerWithWeight>,
     ) -> Result<Vec<CosineSimilarityResult>, String> {
         // Generate the custom vector based on the quantities of the tickers
-        let custom_vector = TickerWithQuantity::generate_bucket_vector(
-            ticker_vector_config_key,
-            tickers_with_quantity,
-        )
-        .await?;
+        let custom_vector =
+            TickerWithWeight::generate_bucket_vector(ticker_vector_config_key, tickers_with_weight)
+                .await?;
 
         // Get all ticker vectors
         let owned_ticker_vectors =
@@ -363,56 +359,56 @@ impl CosineSimilarityResult {
     }
 }
 
-impl TickerWithQuantity {
+impl TickerWithWeight {
     async fn generate_bucket_vector(
         ticker_vector_config_key: &str,
-        tickers_with_quantity: &Vec<TickerWithQuantity>,
+        tickers_with_weight: &Vec<TickerWithWeight>,
     ) -> Result<Vec<f32>, String> {
         // Initialize an empty vector to hold the aggregated result
         let mut aggregated_vector: Vec<f32> = Vec::new();
 
-        // Loop through each ticker in the input list, along with its corresponding quantity
-        for ticker_with_quantity in tickers_with_quantity {
-            // Validate quantity
-            if ticker_with_quantity.quantity <= 0.0 {
-                return Err("Invalid quantity: Must be a positive number.".to_string());
+        // Loop through each ticker in the input list, along with its corresponding weight
+        for ticker_with_weight in tickers_with_weight {
+            // Validate weight
+            if ticker_with_weight.weight <= 0.0 {
+                return Err("Invalid weight: Must be a positive number.".to_string());
             }
 
             // Fetch the vector associated with the current ticker_id asynchronously
             let ticker_vector =
-                get_ticker_vector(ticker_vector_config_key, ticker_with_quantity.ticker_id).await?;
+                get_ticker_vector(ticker_vector_config_key, ticker_with_weight.ticker_id).await?;
 
             // Check if the aggregated_vector is empty, which will only be true for the first ticker
             if aggregated_vector.is_empty() {
                 // Initialize the aggregated_vector with the values from the first ticker's vector,
-                // scaling each value by the quantity associated with this ticker.
+                // scaling each value by the weight associated with this ticker.
                 aggregated_vector = ticker_vector
                     .iter()
-                    .map(|&value| value * ticker_with_quantity.quantity as f32)
+                    .map(|&value| value * ticker_with_weight.weight as f32)
                     .collect();
             } else {
                 // If this is not the first ticker, add the current ticker's vector to the
-                // aggregated_vector. Each element of the vector is scaled by the quantity
+                // aggregated_vector. Each element of the vector is scaled by the weight
                 // associated with this ticker and then added to the corresponding element in the
                 // aggregated_vector.
                 for (i, &value) in ticker_vector.iter().enumerate() {
-                    aggregated_vector[i] += value * ticker_with_quantity.quantity as f32;
+                    aggregated_vector[i] += value * ticker_with_weight.weight as f32;
                 }
             }
         }
 
-        // Calculate the total quantity by summing up the quantities of all tickers
-        let total_quantity: f32 = tickers_with_quantity.iter().map(|t| t.quantity).sum();
+        // Calculate the total weight by summing up the quantities of all tickers
+        let total_weight: f32 = tickers_with_weight.iter().map(|t| t.weight).sum();
 
-        // Check if the total quantity is zero, which would mean that the function can't generate a valid vector
-        if total_quantity == 0.0 {
-            return Err("Total quantity is zero, cannot generate a valid vector.".to_string());
+        // Check if the total weight is zero, which would mean that the function can't generate a valid vector
+        if total_weight == 0.0 {
+            return Err("Total weight is zero, cannot generate a valid vector.".to_string());
         }
 
-        // Normalize the aggregated_vector by dividing each element by the total quantity.
+        // Normalize the aggregated_vector by dividing each element by the total weight.
         // This step essentially computes the weighted average of the vectors.
         for value in &mut aggregated_vector {
-            *value /= total_quantity;
+            *value /= total_weight;
         }
 
         // Return the resulting aggregated and normalized vector
