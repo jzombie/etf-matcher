@@ -13,7 +13,6 @@ type UsePromiseProps<T, A extends unknown[] = []> = {
   autoExecuteProps?: A;
 };
 
-// TODO: Consider adding an optional `trigger` to make `autoExecute` re-execute, when triggered
 /**
  * This hook provides a convenient way to handle asynchronous operations
  * with built-in state management for `pending`, `success`, and `error` states.
@@ -34,6 +33,7 @@ type UsePromiseProps<T, A extends unknown[] = []> = {
  * - `error`: The error returned by the promise, or null if not yet rejected.
  * - `execute`: A function to manually execute the promise with specific arguments.
  *
+ * TODO: Consider changing the following behavior, with a config flag.
  * Note: The `autoExecuteProps` are only used for the initial auto-execute.
  * Changing them does not trigger a re-evaluation. To re-evaluate, call the `execute` function explicitly.
  */
