@@ -3,7 +3,6 @@ import React from "react";
 import Box from "@mui/material/Box";
 import Checkbox from "@mui/material/Checkbox";
 
-// import TextField from "@mui/material/TextField";
 import Scrollable from "@layoutKit/Scrollable";
 
 import AvatarLogo from "@components/AvatarLogo";
@@ -28,13 +27,6 @@ export default function MultiTickerManagerApplet({
 
   // TODO: Add ability to copy the selected ticker symbols (search for `copySymbolsToClipboard` and refactor)
 
-  // const handleQuantityChange = (tickerId: number, newQuantity: number) => {
-  //   const ticker = multiTickerDetails?.find((t) => t.ticker_id === tickerId);
-  //   if (ticker) {
-  //     selectTicker({ ...ticker, quantity: newQuantity });
-  //   }
-  // };
-
   return (
     <TickerBucketViewWindowManagerAppletWrap
       multiTickerDetails={multiTickerDetails}
@@ -45,9 +37,6 @@ export default function MultiTickerManagerApplet({
           const isSelected = selectedTickers.some(
             (ticker) => ticker.tickerId === tickerDetail.ticker_id,
           );
-          // const selectedTicker = selectedTickers.find(
-          //   (ticker) => ticker.tickerId === tickerDetail.ticker_id,
-          // );
 
           return (
             <Box
