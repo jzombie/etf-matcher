@@ -19,7 +19,6 @@ import Scrollable from "@layoutKit/Scrollable";
 import {
   RustServiceTickerDetail,
   RustServiceTickerDistance,
-  RustServiceTickerVectorConfig,
 } from "@services/RustService";
 import { fetchEuclideanByTicker } from "@services/RustService";
 
@@ -34,7 +33,6 @@ import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import useElementSize from "@hooks/useElementSize";
 import useObjectHash from "@hooks/useObjectHash";
 import usePromise from "@hooks/usePromise";
-import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import useTicker10KDetail from "@hooks/useTicker10KDetail";
 import useTickerVectorConfigs from "@hooks/useTickerVectorConfigs";
 
@@ -78,24 +76,10 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
   const { triggerUIError } = useAppErrorBoundary();
 
   const {
-    tickerVectorConfigs,
     preferredTickerVectorConfig,
     preferredTickerVectorConfigKey,
     setPreferredTickerVectorConfig,
   } = useTickerVectorConfigs();
-
-  // TODO: Refactor `resume` and `persist` hooks (and relevant states) into a custom hook
-
-  const handleSelectModelConfig = useCallback(
-    (selectedModelConfig: RustServiceTickerVectorConfig) => {
-      // Set the key
-      _setSelectedModelConfig(selectedModelConfig);
-
-      // Close the dialog
-      setIsTickerVectorConfigSelectorDialogOpen(false);
-    },
-    [],
-  );
 
   const handleDisplayModeChange = useCallback(
     (event: React.MouseEvent<HTMLElement>, newMode: DisplayMode | null) => {
