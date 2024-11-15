@@ -1,20 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 import { Typography } from "@mui/material";
 
 import Center from "@layoutKit/Center";
 import Layout, { Content, Header } from "@layoutKit/Layout";
 import Padding from "@layoutKit/Padding";
-import { fetchLevenshteinDistance } from "@services/RustService";
 import type { TickerBucket } from "@src/store";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import TickerBucketViewWindowManager from "@components/TickerBucketViewWindowManager";
 
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import usePageTitleSetter from "@hooks/usePageTitleSetter";
+import usePromise from "@hooks/usePromise";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 
 import customLogger from "@utils/customLogger";
+import { fetchClosestTickerBucketName } from "@utils/getTickerBucketLink";
 import setPageTitle from "@utils/setPageTitle";
 
 export type TickerBucketPageProps = {
@@ -24,76 +26,65 @@ export type TickerBucketPageProps = {
 export default function TickerBucketPage({
   bucketType,
 }: TickerBucketPageProps) {
-  const { tickerBuckets } = useStoreStateReader("tickerBuckets");
+  const { triggerUIError } = useAppErrorBoundary();
 
-  const [selectedTickerBucket, setSelectedTickerBucket] =
-    useState<TickerBucket | null>(null);
+  const { tickerBuckets } = useStoreStateReader("tickerBuckets");
 
   const navigate = useNavigate();
 
   // Set the page title
   usePageTitleSetter("Determining Bucket...");
 
-  // Get the current location object
-  const location = useLocation();
-
   // Extract parameters from the URL
-  const { bucketName } = useParams<{
+  const { bucketName: urlBucketName } = useParams<{
     bucketType: string;
     bucketName: string;
   }>();
 
-  // Log the location object and extracted parameters
+  const {
+    data: selectedTickerBucket,
+    execute: executeClosestTickerBucketSearch,
+  } = usePromise<TickerBucket | null, [string, string, TickerBucket[]]>({
+    fn: (bucketType, urlBucketName, tickerBuckets) =>
+      fetchClosestTickerBucketName(urlBucketName, tickerBuckets).then(
+        (closestBucket) => {
+          if (!closestBucket) {
+            // Navigate back to the buckets page of the appropriate type
+            navigate(`/${bucketType}s`);
+          } else {
+            setPageTitle(`${closestBucket.name} (${bucketType})`);
+          }
+
+          // TODO: If the page URL doesn't match the bucket name, update it accordingly
+
+          return closestBucket;
+        },
+      ),
+    onError: (err) => {
+      customLogger.error(err);
+      triggerUIError(new Error("Could not parse ticker bucket from URL"));
+    },
+    autoExecute: false,
+  });
+
   useEffect(() => {
-    // TODO: Remove this
-    customLogger.log("Current location:", location);
-    customLogger.log("Bucket Type:", bucketType);
-    customLogger.log("Bucket Name:", bucketName);
-    customLogger.log("Ticker Buckets:", tickerBuckets);
-
-    // TODO: Refactor
-    (async () => {
-      if (bucketName) {
-        let closestBucket = null;
-        let minDistance = Infinity;
-
-        for (const bucket of tickerBuckets) {
-          if (bucket.type !== bucketType) {
-            continue;
-          }
-
-          const distance = await fetchLevenshteinDistance(
-            bucket.name,
-            bucketName,
-          );
-
-          if (distance < minDistance) {
-            minDistance = distance;
-            closestBucket = bucket;
-          }
-        }
-
-        if (closestBucket) {
-          // TODO: Remove
-          customLogger.log("Closest Bucket:", closestBucket);
-
-          setPageTitle(`${closestBucket.name} (${bucketType})`);
-          setSelectedTickerBucket(closestBucket);
-
-          // TODO: Re-update the URL to match the bucket
-        } else {
-          // TODO: Remove
-          customLogger.log("No matching bucket found");
-
-          // TODO: Navigate back to the buckets page of the appropriate type
-          navigate(`/${bucketType}s`);
-        }
-      }
-    })();
-  }, [location, bucketType, bucketName, tickerBuckets, navigate]);
+    if (bucketType && tickerBuckets && urlBucketName) {
+      executeClosestTickerBucketSearch(
+        bucketType,
+        urlBucketName,
+        tickerBuckets,
+      );
+    }
+  }, [
+    bucketType,
+    tickerBuckets,
+    urlBucketName,
+    executeClosestTickerBucketSearch,
+  ]);
 
   if (!selectedTickerBucket) {
     return (
+      // TODO: Include the bucket name here
       <Center style={{ fontWeight: "bold" }}>Locating ticker bucket...</Center>
     );
   }
