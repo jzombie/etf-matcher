@@ -11,9 +11,24 @@ import {
 
 export type AdvancedRealTimeChartProps = LibAdvancedRealTimeChartProps;
 
+// https://www.tradingview.com/charting-library-docs/latest/customization/overrides/chart-overrides/#chart-styles
+export enum AdvancedRealTimeChartStyle {
+  BARS = "0", // Bars
+  CANDLES = "1", // Candles
+  HOLLOW_CANDLES = "2", // Hollow Candles
+  AREA = "3", // Area
+  HEIKIN_ASHI = "4", // Heikin Ashi
+  LINE = "5", // Line
+  RENKO = "6", // Renko
+  KAGI = "7", // Kagi
+  POINT_AND_FIGURE = "8", // Point & Figure
+  LINE_BREAK = "9", // Line Break
+}
+
 // https://tradingview-widgets.jorrinkievit.xyz/docs/components/AdvancedRealTimeChartWidget/
 export default function AdvancedRealTimeChart({
   symbol,
+  style = AdvancedRealTimeChartStyle.AREA,
   allow_symbol_change = false,
   theme = TRADING_VIEW_THEME,
   autosize = true,
@@ -24,6 +39,7 @@ export default function AdvancedRealTimeChart({
   return (
     <LibAdvancedRealTimeChart
       symbol={symbol}
+      style={style}
       allow_symbol_change={allow_symbol_change}
       theme={theme}
       autosize={autosize}
