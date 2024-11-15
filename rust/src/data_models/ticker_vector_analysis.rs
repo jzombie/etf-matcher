@@ -20,6 +20,7 @@ pub struct CosineSimilarityResult {
     pub similarity_score: f32,
 }
 
+// TODO: Extract into a common type to use with `get_weighted_ticker_10k_detail_by_ticker_ids`. Consider changing `quantity` to `weight`.
 #[derive(Deserialize)]
 pub struct TickerWithQuantity {
     pub ticker_id: TickerId,
