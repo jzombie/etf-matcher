@@ -69,7 +69,7 @@ export default function MultiTickerSimilaritySearchApplet({
       {...rest}
     >
       {
-        // TODO: Build out
+        // TODO: Finish adding other similarity search components
       }
       <TickerPCAScatterPlot tickerDistances={tickerDistances} />
     </TickerBucketViewWindowManagerAppletWrap>
