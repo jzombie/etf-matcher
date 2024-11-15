@@ -9,17 +9,21 @@ export default function getTickerBucketLink(
 
 export async function fetchClosestTickerBucketName(
   candidateBucketName: string,
+  bucketType: string,
   tickerBuckets: TickerBucket[],
 ): Promise<TickerBucket | null> {
   let closestBucket: TickerBucket | null = null;
   let minDistance = Infinity;
 
+  const filteredTickerBuckets = tickerBuckets.filter(
+    (bucket) => bucket.type === bucketType,
+  );
+
   // Calculate Levenshtein distance between the path and each TickerBucket link
-  for (const bucket of tickerBuckets) {
-    const bucketLink = getTickerBucketLink(bucket);
+  for (const bucket of filteredTickerBuckets) {
     const distance = await fetchLevenshteinDistance(
-      bucketLink,
       candidateBucketName,
+      bucket.name,
     );
 
     if (distance < minDistance) {
