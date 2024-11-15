@@ -50,7 +50,7 @@ export default function TickerInformationApplet({
         .filter((tickerBucket) => tickerBucket.isUserConfigurable);
     }
 
-    return null;
+    return [];
   }, [tickerDetail, tickerBuckets]);
 
   return (
@@ -142,7 +142,7 @@ export default function TickerInformationApplet({
                   google.com
                 </Link>
               </Box>
-              {linkableTickerBuckets && (
+              {linkableTickerBuckets.length > 0 && (
                 <>
                   <Divider sx={{ my: 2 }} />
                   <Box sx={{ fontSize: ".8rem" }}>
