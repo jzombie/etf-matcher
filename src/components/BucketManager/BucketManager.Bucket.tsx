@@ -17,7 +17,7 @@ import SearchModalButton from "@components/SearchModalButton";
 import Section from "@components/Section";
 import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
 
-import getTickerBucketLink from "@utils/getTickerBucketLink";
+import { getTickerBucketLink } from "@utils/tickerBucketLinkUtils";
 
 import BucketTicker from "./BucketManager.Bucket.Ticker";
 import BucketForm from "./BucketManager.BucketForm";
@@ -179,7 +179,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                 </>
               )}
             </>
-            <Link to={tickerBucketLink}>Go to {tickerBucket.name} page</Link>
+              <Link to={tickerBucketLink}>Go to {tickerBucket.name} page</Link>
           </Section>
         </Padding>
       </ScrollTo>

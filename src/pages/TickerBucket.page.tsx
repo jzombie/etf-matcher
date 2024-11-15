@@ -16,8 +16,8 @@ import usePromise from "@hooks/usePromise";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 
 import customLogger from "@utils/customLogger";
-import { fetchClosestTickerBucketName } from "@utils/getTickerBucketLink";
 import setPageTitle from "@utils/setPageTitle";
+import { fetchClosestTickerBucketName } from "@utils/tickerBucketLinkUtils";
 
 export type TickerBucketPageProps = {
   bucketType: "portfolio" | "watchlist";
