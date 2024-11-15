@@ -2,11 +2,7 @@ import React, { useMemo } from "react";
 
 import { Box, styled } from "@mui/material";
 
-import {
-  TRADING_VIEW_COPYRIGHT_STYLES,
-  TRADING_VIEW_THEME,
-} from "@src/constants";
-import { AdvancedRealTimeChart } from "react-ts-tradingview-widgets";
+import AdvancedRealTimeChart from "@components/vendor/tradingview/AdvancedRealTimeChart";
 
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
@@ -46,14 +42,7 @@ export default function HistoricalPriceChartApplet({
       {...rest}
     >
       <Container>
-        <AdvancedRealTimeChart
-          symbol={formattedSymbolWithExchange}
-          allow_symbol_change={false}
-          theme={TRADING_VIEW_THEME}
-          autosize
-          hotlist
-          copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
-        />
+        <AdvancedRealTimeChart symbol={formattedSymbolWithExchange} />
       </Container>
     </TickerViewWindowManagerAppletWrap>
   );

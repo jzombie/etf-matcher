@@ -2,11 +2,7 @@ import React from "react";
 
 import { Box, styled } from "@mui/material";
 
-import {
-  TRADING_VIEW_COPYRIGHT_STYLES,
-  TRADING_VIEW_THEME,
-} from "@src/constants";
-import { AdvancedRealTimeChart } from "react-ts-tradingview-widgets";
+import AdvancedRealTimeChart from "@components/vendor/tradingview/AdvancedRealTimeChart";
 
 import TickerBucketViewWindowManagerAppletWrap, {
   TickerBucketViewWindowManagerAppletWrapProps,
@@ -53,11 +49,6 @@ export default function MultiTickerHistoricalPriceChartApplet({
           <AdvancedRealTimeChart
             symbol={formattedSymbolsWithExchange?.[0]}
             watchlist={formattedSymbolsWithExchange}
-            allow_symbol_change={false}
-            theme={TRADING_VIEW_THEME}
-            autosize
-            hotlist
-            copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
           />
         </Container>
       )}
