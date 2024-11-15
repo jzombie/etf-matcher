@@ -54,6 +54,9 @@ export default function MultiTickerManagerApplet({
               display="flex"
               alignItems="center"
             >
+              {
+                // TODO: Use `AvatarLogo` and consider laying them out horizontally
+              }
               <FormControlLabel
                 control={
                   <Checkbox
