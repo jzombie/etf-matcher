@@ -32,3 +32,18 @@ export async function fetchClosestTickerBucketName(
 
   return closestBucket;
 }
+
+export function formatTickerBucketPageTitle(
+  tickerBucket: TickerBucket,
+): string {
+  const { name, type } = tickerBucket;
+
+  // Check if the name already ends with the type (case-insensitive)
+  const shouldOmitType = name.trim().toLowerCase().endsWith(type.toLowerCase());
+
+  // Capitalize the first letter of the type
+  const capitalizedType = type.charAt(0).toUpperCase() + type.slice(1);
+
+  // Return the formatted title
+  return shouldOmitType ? name : `${name} ${capitalizedType}`;
+}

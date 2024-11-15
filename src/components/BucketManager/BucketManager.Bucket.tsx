@@ -17,7 +17,10 @@ import SearchModalButton from "@components/SearchModalButton";
 import Section from "@components/Section";
 import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
 
-import { getTickerBucketLink } from "@utils/tickerBucketLinkUtils";
+import {
+  formatTickerBucketPageTitle,
+  getTickerBucketLink,
+} from "@utils/tickerBucketLinkUtils";
 
 import BucketTicker from "./BucketManager.Bucket.Ticker";
 import BucketForm from "./BucketManager.BucketForm";
@@ -58,6 +61,11 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
 
   const tickerBucketLink = useMemo(
     () => getTickerBucketLink(tickerBucket),
+    [tickerBucket],
+  );
+
+  const formattedTickerBucketPageTitle = useMemo(
+    () => formatTickerBucketPageTitle(tickerBucket),
     [tickerBucket],
   );
 
@@ -180,7 +188,9 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
               )}
             </>
             {tickerBucket.tickers.length > 0 && (
-              <Link to={tickerBucketLink}>Go to {tickerBucket.name} page</Link>
+              <Link to={tickerBucketLink}>
+                Go to &quot;{formattedTickerBucketPageTitle}&quot; page
+              </Link>
             )}
           </Section>
         </Padding>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 
 import { Typography } from "@mui/material";
 
@@ -17,7 +17,10 @@ import useStoreStateReader from "@hooks/useStoreStateReader";
 
 import customLogger from "@utils/customLogger";
 import setPageTitle from "@utils/setPageTitle";
-import { fetchClosestTickerBucketName } from "@utils/tickerBucketLinkUtils";
+import {
+  fetchClosestTickerBucketName,
+  formatTickerBucketPageTitle,
+} from "@utils/tickerBucketLinkUtils";
 
 export type TickerBucketPageProps = {
   bucketType: "portfolio" | "watchlist";
@@ -57,7 +60,7 @@ export default function TickerBucketPage({
         } else {
           // TODO: If the ticker bucket has no items, navigate elsewhere
 
-          setPageTitle(`${closestBucket.name} (${bucketType})`);
+          setPageTitle(formatTickerBucketPageTitle(closestBucket));
         }
 
         // TODO: If the page URL doesn't match the bucket name, update it accordingly
@@ -86,6 +89,14 @@ export default function TickerBucketPage({
     executeClosestTickerBucketSearch,
   ]);
 
+  const formattedTickerBucketPageTitle = useMemo(() => {
+    if (selectedTickerBucket) {
+      const formattedTitle = formatTickerBucketPageTitle(selectedTickerBucket);
+
+      return formattedTitle;
+    }
+  }, [selectedTickerBucket]);
+
   if (!selectedTickerBucket) {
     return (
       // TODO: Include the bucket name here
@@ -98,16 +109,7 @@ export default function TickerBucketPage({
       <Header>
         <Padding>
           <Typography variant="body2">
-            {
-              // TODO: Update page title with this same logic
-            }
-            {selectedTickerBucket.name}
-            {selectedTickerBucket.name
-              .trim()
-              .toLowerCase()
-              .endsWith(selectedTickerBucket.type)
-              ? "" // If the name ends with the type, omit the type
-              : ` ${selectedTickerBucket.type}`}
+            {formattedTickerBucketPageTitle}
           </Typography>
         </Padding>
       </Header>
