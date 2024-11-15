@@ -199,82 +199,88 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
   }
 
   return (
-    <Layout>
-      <Header>
-        <Box sx={{ textAlign: "center" }}>
-          <ToggleButtonGroup
-            value={displayMode}
-            exclusive
-            onChange={handleDisplayModeChange}
-            aria-label="Similarity search toggle"
-            size="small"
-          >
-            <ToggleButton
-              value="radial"
-              aria-label="Radial chart"
-              title="Radial chart"
+    <>
+      <Layout>
+        <Header>
+          <Box sx={{ textAlign: "center" }}>
+            <ToggleButtonGroup
+              value={displayMode}
+              exclusive
+              onChange={handleDisplayModeChange}
+              aria-label="Similarity search toggle"
+              size="small"
             >
-              <DonutLargeIcon sx={{ mr: 0.5 }} />
-              {shouldShowLabels && "Radial"}
-            </ToggleButton>
-            <ToggleButton
-              value="euclidean"
-              aria-label="Euclidean"
-              title="Euclidean"
+              <ToggleButton
+                value="radial"
+                aria-label="Radial chart"
+                title="Radial chart"
+              >
+                <DonutLargeIcon sx={{ mr: 0.5 }} />
+                {shouldShowLabels && "Radial"}
+              </ToggleButton>
+              <ToggleButton
+                value="euclidean"
+                aria-label="Euclidean"
+                title="Euclidean"
+              >
+                <StraightenIcon sx={{ mr: 0.5 }} />
+                {shouldShowLabels && "Euclidean"}
+              </ToggleButton>
+              <ToggleButton value="cosine" aria-label="Cosine" title="Cosine">
+                <ShowChartIcon sx={{ mr: 0.5 }} />
+                {shouldShowLabels && "Cosine"}
+              </ToggleButton>
+            </ToggleButtonGroup>
+            <IconButton
+              onClick={() => setIsTickerVectorConfigSelectorDialogOpen(true)}
+              aria-label="Select Model"
+              sx={{ ml: 1, mb: 1 }}
             >
-              <StraightenIcon sx={{ mr: 0.5 }} />
-              {shouldShowLabels && "Euclidean"}
-            </ToggleButton>
-            <ToggleButton value="cosine" aria-label="Cosine" title="Cosine">
-              <ShowChartIcon sx={{ mr: 0.5 }} />
-              {shouldShowLabels && "Cosine"}
-            </ToggleButton>
-          </ToggleButtonGroup>
-          <IconButton
-            onClick={() => setIsTickerVectorConfigSelectorDialogOpen(true)}
-            aria-label="Select Model"
-            sx={{ ml: 1, mb: 1 }}
-          >
-            <SettingsIcon />
-          </IconButton>
-        </Box>
-      </Header>
-      <Content ref={setContentElement}>
-        {selectedModelConfig && (
-          // Due to some of the child components of the`Transition` wrapper,
-          // it's being conditionally rendered for now.
-          <Transition
-            trigger={`${displayMode}-${selectedModelConfig.key}-${hashedTickerDistances}`}
-            direction={getDirection()}
-          >
-            {displayMode === "radial" ? (
-              <TickerPCAScatterPlot tickerDistances={tickerDistances} />
-            ) : (
-              <Scrollable>
-                <TickerVectorQueryTable
-                  queryMode="ticker-detail"
-                  query={tickerDetail}
-                  alignment={displayMode}
-                  tickerVectorConfigKey={selectedModelConfig.key}
-                />
-              </Scrollable>
-            )}
-          </Transition>
-        )}
-      </Content>
-      <Footer style={{ textAlign: "right" }}>
-        <Typography variant="body2" component="span" sx={{ fontSize: ".8rem" }}>
-          Using model:{" "}
-          <Link
-            component="button"
+              <SettingsIcon />
+            </IconButton>
+          </Box>
+        </Header>
+        <Content ref={setContentElement}>
+          {selectedModelConfig && (
+            // Due to some of the child components of the`Transition` wrapper,
+            // it's being conditionally rendered for now.
+            <Transition
+              trigger={`${displayMode}-${selectedModelConfig.key}-${hashedTickerDistances}`}
+              direction={getDirection()}
+            >
+              {displayMode === "radial" ? (
+                <TickerPCAScatterPlot tickerDistances={tickerDistances} />
+              ) : (
+                <Scrollable>
+                  <TickerVectorQueryTable
+                    queryMode="ticker-detail"
+                    query={tickerDetail}
+                    alignment={displayMode}
+                    tickerVectorConfigKey={selectedModelConfig.key}
+                  />
+                </Scrollable>
+              )}
+            </Transition>
+          )}
+        </Content>
+        <Footer style={{ textAlign: "right" }}>
+          <Typography
             variant="body2"
-            onClick={() => setIsTickerVectorConfigSelectorDialogOpen(true)}
-            sx={{ cursor: "pointer", color: "text.secondary" }}
+            component="span"
+            sx={{ fontSize: ".8rem" }}
           >
-            {selectedModelConfig?.key || "N/A"}
-          </Link>
-        </Typography>
-      </Footer>
+            Using model:{" "}
+            <Link
+              component="button"
+              variant="body2"
+              onClick={() => setIsTickerVectorConfigSelectorDialogOpen(true)}
+              sx={{ cursor: "pointer", color: "text.secondary" }}
+            >
+              {selectedModelConfig?.key || "N/A"}
+            </Link>
+          </Typography>
+        </Footer>
+      </Layout>
       {selectedModelConfig && (
         <TickerVectorConfigSelectorDialogModal
           open={isTickerVectorConfigSelectorDialogOpen}
@@ -283,6 +289,6 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
           onSelect={handleSelectModelConfig}
         />
       )}
-    </Layout>
+    </>
   );
 }
