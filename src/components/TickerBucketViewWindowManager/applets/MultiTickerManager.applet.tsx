@@ -1,11 +1,14 @@
 import React from "react";
 
+import LinkIcon from "@mui/icons-material/Link";
 import Box from "@mui/material/Box";
 import Checkbox from "@mui/material/Checkbox";
 
 import Scrollable from "@layoutKit/Scrollable";
 
 import AvatarLogo from "@components/AvatarLogo";
+
+import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
 // New import for quantity input
 import TickerBucketViewWindowManagerAppletWrap, {
@@ -24,6 +27,8 @@ export default function MultiTickerManagerApplet({
 }: MultiTickerManagerAppletProps) {
   const { selectTicker, deselectTicker, selectedTickers } =
     useTickerSelectionManagerContext();
+
+  const navigateToSymbol = useTickerSymbolNavigation();
 
   // TODO: Add ability to copy the selected ticker symbols (search for `copySymbolsToClipboard` and refactor)
 
@@ -79,17 +84,50 @@ export default function MultiTickerManagerApplet({
               />
               <Box>
                 <Box display="flex" alignItems="center">
-                  <Box fontWeight="bold" sx={{ marginRight: 1 }}>
-                    {tickerDetail.symbol}
+                  {/* Symbol and Button */}
+                  <Box display="flex" alignItems="center" marginRight={1}>
+                    <Box
+                      sx={{
+                        fontWeight: "bold",
+                        marginRight: 1,
+                      }}
+                    >
+                      {tickerDetail.symbol}
+                    </Box>
+                    <Box fontSize="small" color="text.secondary">
+                      {tickerDetail.exchange_short_name}
+                    </Box>
                   </Box>
-                  <Box fontSize="small" color="text.secondary">
-                    {tickerDetail.exchange_short_name}
+
+                  {/* Adjacent Link */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      cursor: "pointer",
+                    }}
+                    title="View Details"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent triggering parent click handler
+                      navigateToSymbol(tickerDetail.symbol);
+                    }}
+                  >
+                    <LinkIcon
+                      fontSize="small"
+                      sx={{
+                        marginLeft: 0.5,
+                        color: "text.secondary",
+                        "&:hover": { color: "primary.main" },
+                      }}
+                    />
                   </Box>
                 </Box>
+
+                {/* Company Name */}
                 <Box
-                  fontSize="small"
-                  color="text.secondary"
                   sx={{
+                    fontSize: "small",
+                    color: "text.secondary",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
