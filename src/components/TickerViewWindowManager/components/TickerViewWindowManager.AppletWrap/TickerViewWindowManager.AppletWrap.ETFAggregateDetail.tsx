@@ -7,13 +7,15 @@ import { RustServiceETFAggregateDetail } from "@services/RustService";
 
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 
-export type ETFAggregateDetailAppletWrapProps = {
-  etfAggregateDetail?: RustServiceETFAggregateDetail | null;
-  isLoadingETFAggregateDetail: boolean;
-  etfAggregateDetailError?: Error | unknown;
-  isTiling: boolean;
-  children: React.ReactNode;
-};
+import type { TickerViewWindowManagerCommonProps } from "../../types";
+
+export type ETFAggregateDetailAppletWrapProps =
+  TickerViewWindowManagerCommonProps & {
+    etfAggregateDetail?: RustServiceETFAggregateDetail | null;
+    isLoadingETFAggregateDetail: boolean;
+    etfAggregateDetailError?: Error | unknown;
+    children: React.ReactNode;
+  };
 
 export default function ETFAggregateDetailAppletWrap({
   etfAggregateDetail,

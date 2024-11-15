@@ -7,15 +7,15 @@ import { RustServiceTickerDetail } from "@services/RustService";
 
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 
-export type MultiTickerDetailsAppletWrapProps = {
-  tickerBucketType: string;
-  multiTickerDetails?: RustServiceTickerDetail[] | null;
-  formattedSymbolsWithExchange?: string[] | null;
-  isLoadingMultiTickerDetails: boolean;
-  multiTickerDetailsError?: Error | unknown;
-  isTiling: boolean; // TODO: Refactor to use common types, so this can be excluded specifically from here (potentially in: https://linear.app/zenosmosis/issue/ZEN-128/re-use-tickerdetail-layouts-for-bucket-views)
-  children: React.ReactNode;
-};
+import type { TickerBucketViewWindowManagerCommonProps } from "../../types";
+
+export type MultiTickerDetailsAppletWrapProps =
+  TickerBucketViewWindowManagerCommonProps & {
+    multiTickerDetails?: RustServiceTickerDetail[] | null;
+    isLoadingMultiTickerDetails: boolean;
+    multiTickerDetailsError?: Error | unknown;
+    children: React.ReactNode;
+  };
 
 export default function MultiTickerDetailsAppletWrap({
   multiTickerDetails,
