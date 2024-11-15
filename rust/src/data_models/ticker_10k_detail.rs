@@ -38,6 +38,7 @@ macro_rules! finalize_accumulated_fields {
     };
 }
 
+// TODO: Very important, add cash growth metric, and more metrics in general
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Ticker10KDetail {
     pub ticker_id: TickerId,
