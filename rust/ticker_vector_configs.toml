@@ -9,6 +9,16 @@ training_sequence_length = 80
 training_data_sources = ["10-Q", "key metrics"]
 
 
+[ticker_vector_config.v2-d-fat-skippy]
+path = "v2-d-fat-skippy-preliminary.price-value-attention-composite.financial_vectors.tenq.bin"
+proto_noteboook = "v2-d-fat-skippy.price-value-attention-composite-10-Q-key-metrics-autoencoder-lstm"
+description = "Preliminary Price Value Autoencoder w/ pct_change metrics (not fully trained); Trial #0143"
+last_training_time = "2024-15-01T12:00:00Z"
+vector_dimensions = 432
+training_sequence_length = 80
+training_data_sources = ["10-Q", "key metrics"]
+
+
 [ticker_vector_config.r5-extended]
 path = "r5-5-10-20yr(rev-2).financial_vectors.tenq.bin"
 description = "20 years of 10-Q statements, with additional key metrics"
