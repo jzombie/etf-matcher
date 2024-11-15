@@ -251,4 +251,29 @@ describe("usePromise", () => {
     expect(result.current.isPending).toBe(false);
     expect(result.current.error).toBe(null);
   });
+
+  it("should clear data when an error occurs", async () => {
+    const fn = vi.fn(() => Promise.reject(new Error("test error")));
+    const { result } = renderHook(() =>
+      usePromise({
+        fn,
+        autoExecute: false,
+      }),
+    );
+
+    // Execute the promise
+    act(() => {
+      result.current.execute();
+    });
+
+    // Expect isPending to be true while executing
+    expect(result.current.isPending).toBe(true);
+
+    // Wait for the promise to reject
+    await waitFor(() => {
+      expect(result.current.isPending).toBe(false);
+      expect(result.current.error).toEqual(new Error("test error"));
+      expect(result.current.data).toBe(null); // Check that data is cleared on error
+    });
+  });
 });

@@ -90,6 +90,9 @@ export default function usePromise<T, A extends unknown[] = []>({
         })
         .catch((error) => {
           if (pendingPromiseRef.current === newPromise) {
+            // Clear data on error
+            setData(null);
+
             setError(error);
             if (onError) {
               onError(error);

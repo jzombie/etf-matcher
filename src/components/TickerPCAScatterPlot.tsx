@@ -71,6 +71,8 @@ export default function TickerPCAScatterPlot({
           .map((result) => result.value); // Extract the `value` from the fulfilled promises
         setChartData(successfulResults);
       });
+    } else {
+      setChartData(null);
     }
   }, [tickerDistances]);
 
