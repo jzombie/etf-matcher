@@ -2,10 +2,11 @@ import React from "react";
 
 import Box from "@mui/material/Box";
 import Checkbox from "@mui/material/Checkbox";
-import FormControlLabel from "@mui/material/FormControlLabel";
 
 // import TextField from "@mui/material/TextField";
 import Scrollable from "@layoutKit/Scrollable";
+
+import AvatarLogo from "@components/AvatarLogo";
 
 // New import for quantity input
 import TickerBucketViewWindowManagerAppletWrap, {
@@ -53,45 +54,65 @@ export default function MultiTickerManagerApplet({
               key={tickerDetail.ticker_id}
               display="flex"
               alignItems="center"
-            >
-              {
-                // TODO: Use `AvatarLogo` and consider laying them out horizontally
+              padding={1}
+              sx={{
+                cursor: "pointer",
+              }}
+              onClick={() =>
+                isSelected
+                  ? deselectTicker(tickerDetail.ticker_id)
+                  : selectTicker({
+                      tickerId: tickerDetail.ticker_id,
+                      exchangeShortName: tickerDetail.exchange_short_name,
+                      symbol: tickerDetail.symbol,
+                      quantity: 1,
+                    })
               }
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={isSelected}
-                    onChange={(evt) =>
-                      evt.target.checked
-                        ? selectTicker({
-                            tickerId: tickerDetail.ticker_id,
-                            exchangeShortName: tickerDetail.exchange_short_name,
-                            symbol: tickerDetail.symbol,
-                            // TODO: Don't hardcode quantity?
-                            quantity: 1,
-                          })
-                        : deselectTicker(tickerDetail.ticker_id)
-                    }
-                  />
-                }
-                label={tickerDetail.symbol}
+            >
+              <Checkbox
+                checked={isSelected}
+                onChange={(evt) => {
+                  evt.stopPropagation(); // Prevent the parent click handler from firing
+                  evt.target.checked
+                    ? selectTicker({
+                        tickerId: tickerDetail.ticker_id,
+                        exchangeShortName: tickerDetail.exchange_short_name,
+                        symbol: tickerDetail.symbol,
+                        quantity: 1,
+                      })
+                    : deselectTicker(tickerDetail.ticker_id);
+                }}
               />
-              {/* {isSelected && (
-                <TextField
-                  type="number"
-                  label="Quantity"
-                  value={selectedTicker?.quantity || 1}
-                  onChange={(e) =>
-                    handleQuantityChange(
-                      tickerDetail.tickerId,
-                      Number(e.target.value),
-                    )
-                  }
-                  inputProps={{ min: 0 }}
-                  size="small"
-                  style={{ width: 80, marginLeft: 8 }}
-                />
-              )} */}
+              <AvatarLogo
+                tickerDetail={tickerDetail}
+                style={{ marginRight: 8 }}
+                onClick={(e) => e.stopPropagation()} // Prevent double triggering
+              />
+              <Box>
+                <Box display="flex" alignItems="center">
+                  <Box fontWeight="bold" sx={{ marginRight: 1 }}>
+                    {tickerDetail.symbol}
+                  </Box>
+                  <Box fontSize="small" color="text.secondary">
+                    {tickerDetail.exchange_short_name}
+                  </Box>
+                </Box>
+                <Box
+                  fontSize="small"
+                  color="text.secondary"
+                  sx={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxWidth: "200px", // Adjust based on layout needs
+                    display: "inline-block",
+                    verticalAlign: "middle",
+                  }}
+                  title={tickerDetail.company_name} // Tooltip for full name
+                >
+                  {tickerDetail.company_name}
+                </Box>
+              </Box>
             </Box>
           );
         })}
