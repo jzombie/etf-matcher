@@ -46,20 +46,24 @@ export default function TickerBucketPage({
     execute: executeClosestTickerBucketSearch,
   } = usePromise<TickerBucket | null, [string, string, TickerBucket[]]>({
     fn: (bucketType, urlBucketName, tickerBuckets) =>
-      fetchClosestTickerBucketName(urlBucketName, tickerBuckets).then(
-        (closestBucket) => {
-          if (!closestBucket) {
-            // Navigate back to the buckets page of the appropriate type
-            navigate(`/${bucketType}s`);
-          } else {
-            setPageTitle(`${closestBucket.name} (${bucketType})`);
-          }
+      fetchClosestTickerBucketName(
+        urlBucketName,
+        bucketType,
+        tickerBuckets,
+      ).then((closestBucket) => {
+        if (!closestBucket) {
+          // Navigate back to the buckets page of the appropriate type
+          navigate(`/${bucketType}s`);
+        } else {
+          // TODO: If the ticker bucket has no items, navigate elsewhere
 
-          // TODO: If the page URL doesn't match the bucket name, update it accordingly
+          setPageTitle(`${closestBucket.name} (${bucketType})`);
+        }
 
-          return closestBucket;
-        },
-      ),
+        // TODO: If the page URL doesn't match the bucket name, update it accordingly
+
+        return closestBucket;
+      }),
     onError: (err) => {
       customLogger.error(err);
       triggerUIError(new Error("Could not parse ticker bucket from URL"));
@@ -94,7 +98,13 @@ export default function TickerBucketPage({
       <Header>
         <Padding>
           <Typography variant="body2">
-            {selectedTickerBucket.name} {selectedTickerBucket.type}
+            {selectedTickerBucket.name}
+            {selectedTickerBucket.name
+              .trim()
+              .toLowerCase()
+              .endsWith(selectedTickerBucket.type)
+              ? "" // If the name ends with the type, omit the type
+              : ` ${selectedTickerBucket.type}`}
           </Typography>
         </Padding>
       </Header>
