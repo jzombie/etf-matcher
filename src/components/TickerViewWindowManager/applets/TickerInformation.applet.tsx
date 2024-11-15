@@ -151,7 +151,8 @@ export default function TickerInformationApplet({
                       sx={{ fontWeight: "bold" }}
                       gutterBottom
                     >
-                      Also found in:
+                      Associated Bucket
+                      {linkableTickerBuckets.length !== 1 ? "s" : ""}
                     </Typography>
                     {linkableTickerBuckets.map((tickerBucket) => (
                       <ReactRouterLink
