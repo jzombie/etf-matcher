@@ -179,7 +179,9 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                 </>
               )}
             </>
+            {tickerBucket.tickers.length > 0 && (
               <Link to={tickerBucketLink}>Go to {tickerBucket.name} page</Link>
+            )}
           </Section>
         </Padding>
       </ScrollTo>
