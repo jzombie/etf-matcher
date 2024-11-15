@@ -1,15 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
+import { Link, Typography } from "@mui/material";
+
+import Layout, { Content, Footer } from "@layoutKit/Layout";
 import { fetchEuclideanByTickerBucket } from "@services/RustService";
 import { RustServiceTickerDistance } from "@services/RustService";
 import { TickerBucket } from "@src/store";
 
 import TickerPCAScatterPlot from "@components/TickerPCAScatterPlot";
+import TickerVectorConfigSelectorDialogModal from "@components/TickerVectorConfigSelectorDialogModal";
 
 import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
-// import useObjectHash from "@hooks/useObjectHash";
 import usePromise from "@hooks/usePromise";
-import useStoreStateReader from "@hooks/useStoreStateReader";
+import useTickerVectorConfigs from "@hooks/useTickerVectorConfigs";
 
 import customLogger from "@utils/customLogger";
 
@@ -29,11 +32,18 @@ export default function MultiTickerSimilaritySearchApplet({
 }: MultiTickerSimilaritySearchAppletProps) {
   const { triggerUIError } = useAppErrorBoundary();
 
+  const [
+    isTickerVectorConfigSelectorDialogOpen,
+    setIsTickerVectorConfigSelectorDialogOpen,
+  ] = useState(false);
+
   const { adjustedTickerBucket } = useTickerSelectionManagerContext();
 
-  const { preferredTickerVectorConfigKey } = useStoreStateReader(
-    "preferredTickerVectorConfigKey",
-  );
+  const {
+    preferredTickerVectorConfigKey,
+    preferredTickerVectorConfig,
+    setPreferredTickerVectorConfig,
+  } = useTickerVectorConfigs();
 
   const { data: tickerDistances, execute: fetchTickerDistances } = usePromise<
     RustServiceTickerDistance[],
@@ -47,8 +57,6 @@ export default function MultiTickerSimilaritySearchApplet({
     },
     autoExecute: false,
   });
-
-  // const hashedTickerDistances = useObjectHash(tickerDistances);
 
   useEffect(() => {
     if (preferredTickerVectorConfigKey && adjustedTickerBucket) {
@@ -68,10 +76,41 @@ export default function MultiTickerSimilaritySearchApplet({
       multiTickerDetails={multiTickerDetails}
       {...rest}
     >
-      {
-        // TODO: Finish adding other similarity search components
-      }
-      <TickerPCAScatterPlot tickerDistances={tickerDistances} />
+      <Layout>
+        <Content>
+          {
+            // TODO: Finish adding other similarity search components
+          }
+          <TickerPCAScatterPlot tickerDistances={tickerDistances} />
+        </Content>
+        <Footer>
+          <Footer style={{ textAlign: "right" }}>
+            <Typography
+              variant="body2"
+              component="span"
+              sx={{ fontSize: ".8rem" }}
+            >
+              Using model:{" "}
+              <Link
+                component="button"
+                variant="body2"
+                onClick={() => setIsTickerVectorConfigSelectorDialogOpen(true)}
+                sx={{ cursor: "pointer", color: "text.secondary" }}
+              >
+                {preferredTickerVectorConfigKey || "N/A"}
+              </Link>
+            </Typography>
+          </Footer>
+        </Footer>
+        {preferredTickerVectorConfig && (
+          <TickerVectorConfigSelectorDialogModal
+            open={isTickerVectorConfigSelectorDialogOpen}
+            onClose={() => setIsTickerVectorConfigSelectorDialogOpen(false)}
+            selectedConfig={preferredTickerVectorConfig}
+            onSelect={setPreferredTickerVectorConfig}
+          />
+        )}
+      </Layout>
     </TickerBucketViewWindowManagerAppletWrap>
   );
 }

@@ -1,3 +1,5 @@
+import { useCallback, useMemo } from "react";
+
 import {
   RustServiceTickerVectorConfig,
   fetchAllTickerVectorConfigs,
@@ -8,9 +10,14 @@ import usePromise from "@hooks/usePromise";
 import customLogger from "@utils/customLogger";
 
 import useAppErrorBoundary from "./useAppErrorBoundary";
+import useStoreStateReader, { store } from "./useStoreStateReader";
 
 export default function useTickerVectorConfigs() {
   const { triggerUIError } = useAppErrorBoundary();
+
+  const { preferredTickerVectorConfigKey } = useStoreStateReader(
+    "preferredTickerVectorConfigKey",
+  );
 
   const {
     data: tickerVectorConfigs,
@@ -28,9 +35,29 @@ export default function useTickerVectorConfigs() {
     autoExecute: true,
   });
 
+  const preferredTickerVectorConfig = useMemo(() => {
+    const preferredConfig = tickerVectorConfigs?.find(
+      (config) => config.key === preferredTickerVectorConfigKey,
+    );
+
+    return preferredConfig;
+  }, [preferredTickerVectorConfigKey, tickerVectorConfigs]);
+
+  const setPreferredTickerVectorConfig = useCallback(
+    (tickerVectorConfig: RustServiceTickerVectorConfig) => {
+      store.setState({
+        preferredTickerVectorConfigKey: tickerVectorConfig.key,
+      });
+    },
+    [],
+  );
+
   return {
     tickerVectorConfigs: tickerVectorConfigs || [],
     isLoadingTickerVectorConfigs,
     tickerVectorConfigsError,
+    preferredTickerVectorConfig,
+    preferredTickerVectorConfigKey: preferredTickerVectorConfig?.key,
+    setPreferredTickerVectorConfig,
   };
 }

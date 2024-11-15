@@ -75,46 +75,16 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
     setIsTickerVectorConfigSelectorDialogOpen,
   ] = useState(false);
 
-  const [selectedModelConfig, _setSelectedModelConfig] =
-    useState<RustServiceTickerVectorConfig | null>(null);
-
-  const { tickerVectorConfigs } = useTickerVectorConfigs();
   const { triggerUIError } = useAppErrorBoundary();
 
-  const { preferredTickerVectorConfigKey } = useStoreStateReader(
-    "preferredTickerVectorConfigKey",
-  );
+  const {
+    tickerVectorConfigs,
+    preferredTickerVectorConfig,
+    preferredTickerVectorConfigKey,
+    setPreferredTickerVectorConfig,
+  } = useTickerVectorConfigs();
 
   // TODO: Refactor `resume` and `persist` hooks (and relevant states) into a custom hook
-
-  // Resume config
-  useEffect(() => {
-    if (!selectedModelConfig && tickerVectorConfigs.length > 0) {
-      const defaultConfig = tickerVectorConfigs.find(
-        (config) => config.key === preferredTickerVectorConfigKey,
-      );
-
-      if (defaultConfig) {
-        _setSelectedModelConfig(defaultConfig);
-      } else {
-        triggerUIError(new Error("No default model configuration found"));
-      }
-    }
-  }, [
-    tickerVectorConfigs,
-    preferredTickerVectorConfigKey,
-    selectedModelConfig,
-    triggerUIError,
-  ]);
-
-  // Persist config
-  useEffect(() => {
-    if (selectedModelConfig) {
-      store.setState({
-        preferredTickerVectorConfigKey: selectedModelConfig.key,
-      });
-    }
-  }, [selectedModelConfig]);
 
   const handleSelectModelConfig = useCallback(
     (selectedModelConfig: RustServiceTickerVectorConfig) => {
@@ -175,10 +145,13 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
   const hashedTickerDistances = useObjectHash(tickerDistances);
 
   useEffect(() => {
-    if (selectedModelConfig && tickerDetail) {
-      fetchTickerDistances(selectedModelConfig.key, tickerDetail.ticker_id);
+    if (preferredTickerVectorConfigKey && tickerDetail) {
+      fetchTickerDistances(
+        preferredTickerVectorConfigKey,
+        tickerDetail.ticker_id,
+      );
     }
-  }, [selectedModelConfig, tickerDetail, fetchTickerDistances]);
+  }, [preferredTickerVectorConfigKey, tickerDetail, fetchTickerDistances]);
 
   if (isLoadingFinancialDetail) {
     return (
@@ -241,11 +214,11 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
           </Box>
         </Header>
         <Content ref={setContentElement}>
-          {selectedModelConfig && (
+          {preferredTickerVectorConfigKey && (
             // Due to some of the child components of the`Transition` wrapper,
             // it's being conditionally rendered for now.
             <Transition
-              trigger={`${displayMode}-${selectedModelConfig.key}-${hashedTickerDistances}`}
+              trigger={`${displayMode}-${preferredTickerVectorConfigKey}-${hashedTickerDistances}`}
               direction={getDirection()}
             >
               {displayMode === "radial" ? (
@@ -256,7 +229,7 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
                     queryMode="ticker-detail"
                     query={tickerDetail}
                     alignment={displayMode}
-                    tickerVectorConfigKey={selectedModelConfig.key}
+                    tickerVectorConfigKey={preferredTickerVectorConfigKey}
                   />
                 </Scrollable>
               )}
@@ -276,17 +249,17 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
               onClick={() => setIsTickerVectorConfigSelectorDialogOpen(true)}
               sx={{ cursor: "pointer", color: "text.secondary" }}
             >
-              {selectedModelConfig?.key || "N/A"}
+              {preferredTickerVectorConfigKey || "N/A"}
             </Link>
           </Typography>
         </Footer>
       </Layout>
-      {selectedModelConfig && (
+      {preferredTickerVectorConfig && (
         <TickerVectorConfigSelectorDialogModal
           open={isTickerVectorConfigSelectorDialogOpen}
           onClose={() => setIsTickerVectorConfigSelectorDialogOpen(false)}
-          selectedConfig={selectedModelConfig}
-          onSelect={handleSelectModelConfig}
+          selectedConfig={preferredTickerVectorConfig}
+          onSelect={setPreferredTickerVectorConfig}
         />
       )}
     </>
