@@ -8,6 +8,7 @@ import { RustServiceTickerDetail } from "@services/RustService";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 
 export type MultiTickerDetailsAppletWrapProps = {
+  tickerBucketType: string;
   multiTickerDetails?: RustServiceTickerDetail[] | null;
   formattedSymbolsWithExchange?: string[] | null;
   isLoadingMultiTickerDetails: boolean;

@@ -8,6 +8,7 @@ import { RustServiceETFAggregateDetail } from "@services/RustService";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 
 export type MultiETFAggregateDetailAppletWrapProps = {
+  tickerBucketType: string;
   multiETFAggregateDetails?: RustServiceETFAggregateDetail[] | null;
   formattedSymbolsWithExchange?: string[] | null;
   isLoadingMultiETFAggregateDetails: boolean;

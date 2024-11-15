@@ -24,6 +24,7 @@ export type MultiTickerFundamentalsAppletProps = Omit<
 >;
 
 export default function MultiTickerFundamentalsApplet({
+  tickerBucketType,
   ...rest
 }: MultiTickerFundamentalsAppletProps) {
   const [multiTickerFinancialDetail, setMultiTickerFinancialDetail] =
@@ -38,7 +39,10 @@ export default function MultiTickerFundamentalsApplet({
   }, [selectedTickers]);
 
   return (
-    <TickerBucketViewWindowManagerAppletWrap {...rest}>
+    <TickerBucketViewWindowManagerAppletWrap
+      tickerBucketType={tickerBucketType}
+      {...rest}
+    >
       {multiTickerFinancialDetail && (
         <Scrollable>
           <Padding>
@@ -49,7 +53,7 @@ export default function MultiTickerFundamentalsApplet({
                 sx={{ textAlign: "center" }}
               >
                 The following metrics are based on a weighted average of the
-                holdings in this bucket.
+                holdings in this {tickerBucketType}.
               </Typography>
             </Box>
 

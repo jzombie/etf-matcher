@@ -50,6 +50,8 @@ export default function useTickerBucketViewWindowManagerContent(
     [multiTickerDetails],
   );
 
+  const tickerBucketType = useMemo(() => tickerBucket.type, [tickerBucket]);
+
   // FIXME: The layout will be reset to `initialLayout` if these dependencies
   // change. This may require some modification.
   const commonProps: Omit<
@@ -57,6 +59,7 @@ export default function useTickerBucketViewWindowManagerContent(
     "children"
   > = useMemo(
     () => ({
+      tickerBucketType,
       multiTickerDetails,
       formattedSymbolsWithExchange,
       isLoadingMultiTickerDetails,
@@ -67,6 +70,7 @@ export default function useTickerBucketViewWindowManagerContent(
       isTiling,
     }),
     [
+      tickerBucketType,
       multiTickerDetails,
       formattedSymbolsWithExchange,
       isLoadingMultiTickerDetails,

@@ -11,6 +11,7 @@ export type TickerBucketViewWindowManagerAppletWrapProps =
   MultiTickerDetailsAppletWrapProps & MultiETFAggregateDetailAppletWrapProps;
 
 export default function TickerBucketViewWindowManagerAppletWrap({
+  tickerBucketType,
   multiTickerDetails,
   isLoadingMultiTickerDetails,
   multiTickerDetailsError,
@@ -22,6 +23,7 @@ export default function TickerBucketViewWindowManagerAppletWrap({
 }: TickerBucketViewWindowManagerAppletWrapProps) {
   return (
     <MultiTickerDetailsAppletWrap
+      tickerBucketType={tickerBucketType}
       multiTickerDetails={multiTickerDetails}
       isLoadingMultiTickerDetails={isLoadingMultiTickerDetails}
       multiTickerDetailsError={multiTickerDetailsError}
@@ -31,6 +33,7 @@ export default function TickerBucketViewWindowManagerAppletWrap({
         <>
           {multiTickerDetails.some((ticker) => ticker.is_etf) ? (
             <MultiETFAggregateDetailAppletWrap
+              tickerBucketType={tickerBucketType}
               multiETFAggregateDetails={multiETFAggregateDetails}
               isLoadingMultiETFAggregateDetails={
                 isLoadingMultiETFAggregateDetails
