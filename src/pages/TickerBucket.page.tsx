@@ -98,6 +98,9 @@ export default function TickerBucketPage({
       <Header>
         <Padding>
           <Typography variant="body2">
+            {
+              // TODO: Update page title with this same logic
+            }
             {selectedTickerBucket.name}
             {selectedTickerBucket.name
               .trim()
