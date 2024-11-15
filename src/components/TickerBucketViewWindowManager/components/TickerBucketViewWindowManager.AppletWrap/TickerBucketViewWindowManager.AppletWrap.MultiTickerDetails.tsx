@@ -17,6 +17,7 @@ export type MultiTickerDetailsAppletWrapProps =
     children: React.ReactNode;
   };
 
+// TODO: Render loading indicator
 export default function MultiTickerDetailsAppletWrap({
   multiTickerDetails,
   isLoadingMultiTickerDetails,

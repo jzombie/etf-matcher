@@ -17,6 +17,7 @@ export type MultiETFAggregateDetailAppletWrapProps =
     children: React.ReactNode;
   };
 
+// TODO: Render loading indicator
 export default function MultiETFAggregateDetailAppletWrap({
   multiETFAggregateDetails,
   isLoadingMultiETFAggregateDetails,
