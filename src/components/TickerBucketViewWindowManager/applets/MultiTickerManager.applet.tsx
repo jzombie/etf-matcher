@@ -25,6 +25,8 @@ export default function MultiTickerManagerApplet({
   const { selectTicker, deselectTicker, selectedTickers } =
     useTickerSelectionManagerContext();
 
+  // TODO: Add ability to copy the selected ticker symbols (search for `copySymbolsToClipboard` and refactor)
+
   // const handleQuantityChange = (tickerId: number, newQuantity: number) => {
   //   const ticker = multiTickerDetails?.find((t) => t.ticker_id === tickerId);
   //   if (ticker) {

@@ -128,7 +128,7 @@ export default function TickerInformationApplet({
               </Box>
             </>
 
-            // TODO: Add ability to copy the symbol to clipboard (refactor current implemention in `SettingsManager`)
+            // TODO: Add ability to copy the symbol to clipboard (search for `copySymbolsToClipboard` and refactor)
           )}
         </Padding>
       </Scrollable>
