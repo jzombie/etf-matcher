@@ -13,6 +13,7 @@ type UsePromiseProps<T, A extends unknown[] = []> = {
   autoExecuteProps?: A;
 };
 
+// TODO: Consider adding an optional `trigger` to make `autoExecute` re-execute, when triggered
 /**
  * This hook provides a convenient way to handle asynchronous operations
  * with built-in state management for `pending`, `success`, and `error` states.
