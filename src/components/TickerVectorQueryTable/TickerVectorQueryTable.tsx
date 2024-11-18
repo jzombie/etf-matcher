@@ -1,7 +1,5 @@
 import React from "react";
 
-import Transition from "@components/Transition";
-
 import { TickerVectorQueryProps } from "@hooks/useTickerVectorQuery";
 
 import Cosine from "./TickerVectorQueryTable.Cosine";
@@ -21,10 +19,7 @@ export default function TickerVectorQueryTable({
   alignment,
 }: VectorSimiliartyTableProps) {
   return (
-    <Transition
-      trigger={alignment === "euclidean"}
-      direction={alignment === "euclidean" ? "right" : "left"}
-    >
+    <>
       {alignment === "euclidean" ? (
         <Euclidean
           tickerVectorConfigKey={tickerVectorConfigKey}
@@ -38,6 +33,6 @@ export default function TickerVectorQueryTable({
           query={query}
         />
       )}
-    </Transition>
+    </>
   );
 }
