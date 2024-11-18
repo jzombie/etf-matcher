@@ -1,6 +1,6 @@
 [ticker_vector_config.default]
 path = "r5-5-10-20yr(rev-2).financial_vectors.tenq.bin"
-description = "20 years of 10-Q statements, with additional key metrics"
+description = "`r5` (extended training); 20 years of 10-Q statements, with additional key metrics"
 proto_noteboook = "r5-5-10-20yr.etf-matcher-10-Q-key-metrics-vectors-lstm-parallel"
 last_training_time = "2024-10-20T12:00:00Z"
 vector_dimensions = 128
@@ -10,7 +10,7 @@ training_data_sources = ["10-Q", "key metrics"]
 
 [ticker_vector_config.r5]
 path = "r5-5-10-20yr.financial_vectors.tenq.bin"
-description = "Original `r5`, before extended training"
+description = "Original `r5`; 20 years of 10-Q statements, with additional key metrics"
 proto_noteboook = "r5-5-10-20yr.etf-matcher-10-Q-key-metrics-vectors-lstm-parallel"
 last_training_time = "2024-10-14T12:00:00Z"
 vector_dimensions = 128
