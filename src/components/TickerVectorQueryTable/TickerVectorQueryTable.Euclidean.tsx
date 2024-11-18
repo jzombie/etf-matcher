@@ -56,10 +56,12 @@ export default function TickerVectorQueryTableEuclidean({
 
   // Auto-fetch
   useEffect(() => {
-    if (query && fetchEuclidean) {
+    // Note: `tickerVectorConfigKey` is used here ensure this refetches when it
+    // changes
+    if (tickerVectorConfigKey && query && fetchEuclidean) {
       fetchEuclidean();
     }
-  }, [fetchEuclidean, query]);
+  }, [tickerVectorConfigKey, fetchEuclidean, query]);
 
   if (isLoading) {
     return (
