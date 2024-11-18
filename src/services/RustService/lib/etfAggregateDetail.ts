@@ -1,7 +1,7 @@
 import callRustService from "../callRustService";
 import type { RustServiceETFAggregateDetail } from "../rustServiceTypes";
 
-export default async function fetchETFAggregateDetail(
+export async function fetchETFAggregateDetail(
   etfTickerId: number,
 ): Promise<RustServiceETFAggregateDetail> {
   return callRustService<RustServiceETFAggregateDetail>(

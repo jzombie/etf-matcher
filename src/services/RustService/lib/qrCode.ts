@@ -1,5 +1,5 @@
 import callRustService from "../callRustService";
 
-export default async function generateQRCode(data: string): Promise<string> {
+export async function generateQRCode(data: string): Promise<string> {
   return callRustService<string>("generate_qr_code", [data]);
 }

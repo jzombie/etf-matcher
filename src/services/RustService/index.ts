@@ -1,4 +1,5 @@
 import callRustService, { subscribe } from "./callRustService";
+import { fetchAllMajorSectors } from "./lib/allMajorSectors";
 import {
   clearCache,
   fetchCacheDetails,
@@ -6,19 +7,18 @@ import {
   preloadSearchCache,
   removeCacheEntry,
 } from "./lib/cache";
+import { fetchDataBuildInfo } from "./lib/dataBuildInfo";
+import { fetchETFAggregateDetail } from "./lib/etfAggregateDetail";
 import {
   fetchETFHoldersAggregateDetail,
   fetchETFHoldingWeight,
   fetchETFHoldings,
 } from "./lib/etfHoldings";
-import fetchAllMajorSectors from "./lib/fetchAllMajorSectors";
-import fetchDataBuildInfo from "./lib/fetchDataBuildInfo";
-import fetchETFAggregateDetail from "./lib/fetchETFAggregateDetail";
-import fetchImageInfo from "./lib/fetchImageInfo";
-import fetchLevenshteinDistance from "./lib/fetchLevenshteinDistance";
-import fetchSymbolAndExchange from "./lib/fetchSymbolAndExchange";
-import generateQRCode from "./lib/generateQRCode";
+import { fetchImageInfo } from "./lib/imageInfo";
+import { fetchLevenshteinDistance } from "./lib/levenshteinDistance";
+import { generateQRCode } from "./lib/qrCode";
 import searchTickers from "./lib/searchTickers";
+import { fetchSymbolAndExchange } from "./lib/symbolAndExchange";
 import {
   fetchTicker10KDetail,
   fetchWeightedTicker10KDetail,
