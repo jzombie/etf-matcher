@@ -14,12 +14,14 @@ import {
 } from "@mui/material";
 
 import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
+import Scrollable from "@layoutKit/Scrollable";
 import { fetchEuclideanByTickerBucket } from "@services/RustService";
 import { RustServiceTickerDistance } from "@services/RustService";
 import { TickerBucket } from "@src/store";
 
 import TickerPCAScatterPlot from "@components/TickerPCAScatterPlot";
 import TickerVectorConfigSelectorDialogModal from "@components/TickerVectorConfigSelectorDialogModal";
+import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
 
 import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import usePromise from "@hooks/usePromise";
@@ -107,6 +109,10 @@ export default function MultiTickerSimilaritySearchApplet({
   // TODO: Remove hardcoding
   const shouldShowLabels = true;
 
+  if (!preferredTickerVectorConfigKey) {
+    return null;
+  }
+
   return (
     <TickerBucketViewWindowManagerAppletWrap
       multiTickerDetails={multiTickerDetails}
@@ -156,7 +162,18 @@ export default function MultiTickerSimilaritySearchApplet({
           {
             // TODO: Finish adding other similarity search components
           }
-          <TickerPCAScatterPlot tickerDistances={tickerDistances} />
+          {displayMode === "radial" ? (
+            <TickerPCAScatterPlot tickerDistances={tickerDistances} />
+          ) : (
+            <Scrollable>
+              <TickerVectorQueryTable
+                queryMode="bucket"
+                query={adjustedTickerBucket}
+                alignment={displayMode}
+                tickerVectorConfigKey={preferredTickerVectorConfigKey}
+              />
+            </Scrollable>
+          )}
         </Content>
         <Footer>
           <Footer style={{ textAlign: "right" }}>
