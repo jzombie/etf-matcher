@@ -37,6 +37,9 @@ export type MultiTickerSimilaritySearchAppletProps = Omit<
   "children"
 >;
 
+const DISPLAY_MODES = ["radial", "euclidean", "cosine"] as const;
+type DisplayMode = (typeof DISPLAY_MODES)[number];
+
 export default function MultiTickerSimilaritySearchApplet({
   multiTickerDetails,
   ...rest
@@ -94,9 +97,6 @@ export default function MultiTickerSimilaritySearchApplet({
     },
     [displayMode],
   );
-
-  const DISPLAY_MODES = ["radial", "euclidean", "cosine"] as const;
-  type DisplayMode = (typeof DISPLAY_MODES)[number];
 
   const getDirection = useCallback(() => {
     const prevIndex = DISPLAY_MODES.indexOf(previousModeRef.current);
