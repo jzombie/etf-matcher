@@ -1,8 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
-import { Link, Typography } from "@mui/material";
+import DonutLargeIcon from "@mui/icons-material/DonutLarge";
+import SettingsIcon from "@mui/icons-material/Settings";
+import ShowChartIcon from "@mui/icons-material/ShowChart";
+import StraightenIcon from "@mui/icons-material/Straighten";
+import {
+  Box,
+  IconButton,
+  Link,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from "@mui/material";
 
-import Layout, { Content, Footer } from "@layoutKit/Layout";
+import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
 import { fetchEuclideanByTickerBucket } from "@services/RustService";
 import { RustServiceTickerDistance } from "@services/RustService";
 import { TickerBucket } from "@src/store";
@@ -71,12 +82,76 @@ export default function MultiTickerSimilaritySearchApplet({
     fetchTickerDistances,
   ]);
 
+  const [displayMode, setDisplayMode] = useState<DisplayMode>("radial");
+  const previousModeRef = useRef<DisplayMode>("radial");
+
+  const handleDisplayModeChange = useCallback(
+    (event: React.MouseEvent<HTMLElement>, newMode: DisplayMode | null) => {
+      if (newMode !== null) {
+        previousModeRef.current = displayMode; // Store the previous mode
+        setDisplayMode(newMode);
+      }
+    },
+    [displayMode],
+  );
+
+  const DISPLAY_MODES = ["radial", "euclidean", "cosine"] as const;
+  type DisplayMode = (typeof DISPLAY_MODES)[number];
+
+  const getDirection = useCallback(() => {
+    const prevIndex = DISPLAY_MODES.indexOf(previousModeRef.current);
+    const currentIndex = DISPLAY_MODES.indexOf(displayMode);
+    return currentIndex > prevIndex ? "left" : "right";
+  }, [displayMode]);
+
+  // TODO: Remove hardcoding
+  const shouldShowLabels = true;
+
   return (
     <TickerBucketViewWindowManagerAppletWrap
       multiTickerDetails={multiTickerDetails}
       {...rest}
     >
       <Layout>
+        <Header>
+          <Box sx={{ textAlign: "center" }}>
+            <ToggleButtonGroup
+              value={displayMode}
+              exclusive
+              onChange={handleDisplayModeChange}
+              aria-label="Similarity search toggle"
+              size="small"
+            >
+              <ToggleButton
+                value="radial"
+                aria-label="Radial chart"
+                title="Radial chart"
+              >
+                <DonutLargeIcon sx={{ mr: 0.5 }} />
+                {shouldShowLabels && "Radial"}
+              </ToggleButton>
+              <ToggleButton
+                value="euclidean"
+                aria-label="Euclidean"
+                title="Euclidean"
+              >
+                <StraightenIcon sx={{ mr: 0.5 }} />
+                {shouldShowLabels && "Euclidean"}
+              </ToggleButton>
+              <ToggleButton value="cosine" aria-label="Cosine" title="Cosine">
+                <ShowChartIcon sx={{ mr: 0.5 }} />
+                {shouldShowLabels && "Cosine"}
+              </ToggleButton>
+            </ToggleButtonGroup>
+            <IconButton
+              onClick={() => setIsTickerVectorConfigSelectorDialogOpen(true)}
+              aria-label="Select Model"
+              sx={{ ml: 1, mb: 1 }}
+            >
+              <SettingsIcon />
+            </IconButton>
+          </Box>
+        </Header>
         <Content>
           {
             // TODO: Finish adding other similarity search components
