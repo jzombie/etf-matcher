@@ -11,6 +11,7 @@ import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 import MultiTickerFundamentalsApplet from "../applets/MultiTickerFundamentals.applet";
 import MultiTickerHistoricalPriceChartApplet from "../applets/MultiTickerHistoricalPriceChart.applet";
 import MultiTickerManagerApplet from "../applets/MultiTickerManager.applet";
+import MultiTickerSectorAllocationApplet from "../applets/MultiTickerSectorAllocation.applet";
 import MultiTickerSimilaritySearchApplet from "../applets/MultiTickerSimilaritySearch.applet";
 import type { TickerBucketViewWindowManagerAppletWrapProps } from "../components/TickerBucketViewWindowManager.AppletWrap";
 
@@ -107,14 +108,15 @@ export default function useTickerBucketViewWindowManagerContent(
     [],
   );
 
-  // TODO: Redefine as necessary
   const contentMap = useMemo(
     () => ({
       "Ticker Manager": <MultiTickerManagerApplet {...commonProps} />,
       "Historical Prices": (
         <MultiTickerHistoricalPriceChartApplet {...commonProps} />
       ),
-      "Sector Allocation": <div>Render combined weighted allocations</div>,
+      "Sector Allocation": (
+        <MultiTickerSectorAllocationApplet {...commonProps} />
+      ),
       "Similarity Search": (
         <MultiTickerSimilaritySearchApplet {...commonProps} />
       ),

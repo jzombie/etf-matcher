@@ -37,6 +37,11 @@ export type RustServiceTickerDetail = {
   logo_filename?: string;
 };
 
+export type RustServiceTickerWeightedSectorDistribution = {
+  major_sector_name: string;
+  weight: number;
+}[];
+
 export type RustServiceETFAggregateDetail = {
   ticker_id: number;
   etf_symbol: string;

@@ -101,6 +101,25 @@ pub async fn get_ticker_detail(ticker_id: TickerId) -> Result<JsValue, JsValue> 
 }
 
 #[wasm_bindgen]
+pub async fn get_weighted_ticker_sector_distribution(
+    ticker_weights_js: JsValue,
+) -> Result<JsValue, JsValue> {
+    // Deserialize the JsValue into Vec<(TickerId, f64)>
+    let ticker_weights: Vec<(TickerId, f64)> = from_value(ticker_weights_js).map_err(|err| {
+        JsValue::from_str(&format!("Failed to deserialize ticker weights: {}", err))
+    })?;
+
+    // Call the Rust method to calculate weighted sector distribution
+    let sector_distribution =
+        TickerDetail::get_weighted_ticker_sector_distribution(ticker_weights).await?;
+
+    // Serialize the result into JsValue
+    to_value(&sector_distribution).map_err(|err| {
+        JsValue::from_str(&format!("Failed to serialize sector distribution: {}", err))
+    })
+}
+
+#[wasm_bindgen]
 pub async fn get_ticker_10k_detail(ticker_id: TickerId) -> Result<JsValue, JsValue> {
     let detail: Ticker10KDetail =
         Ticker10KDetail::get_ticker_10k_detail_by_ticker_id(ticker_id).await?;

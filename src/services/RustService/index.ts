@@ -17,14 +17,18 @@ import fetchETFAggregateDetail from "./lib/fetchETFAggregateDetail";
 import fetchImageInfo from "./lib/fetchImageInfo";
 import fetchLevenshteinDistance from "./lib/fetchLevenshteinDistance";
 import fetchSymbolAndExchange from "./lib/fetchSymbolAndExchange";
-import fetchTicker10KDetail, {
-  fetchWeightedTicker10KDetail,
-} from "./lib/fetchTicker10KDetail";
-import fetchTickerDetail from "./lib/fetchTickerDetail";
-import fetchTickerId from "./lib/fetchTickerId";
 import generateQRCode from "./lib/generateQRCode";
 import searchTickers from "./lib/searchTickers";
+import {
+  fetchTicker10KDetail,
+  fetchWeightedTicker10KDetail,
+} from "./lib/ticker10KDetail";
 import { csvToTickerBuckets, tickerBucketsToCSV } from "./lib/tickerBuckets";
+import {
+  fetchTickerDetail,
+  fetchWeightedTickerSectorDistribution,
+} from "./lib/tickerDetail";
+import { fetchTickerId } from "./lib/tickerId";
 import {
   fetchAllTickerVectorConfigs,
   fetchCosineByTicker,
@@ -46,6 +50,7 @@ import type {
   RustServiceTickerDistance,
   RustServiceTickerSearchResult,
   RustServiceTickerVectorConfig,
+  RustServiceTickerWeightedSectorDistribution,
   RustServiceTickerWithWeight,
 } from "./rustServiceTypes";
 import { NotifierEvent } from "./workerMainBindings";
@@ -66,6 +71,7 @@ export type {
   RustServiceCacheDetail,
   RustServiceImageInfo,
   RustServiceTickerVectorConfig,
+  RustServiceTickerWeightedSectorDistribution,
   RustServiceTickerDistance,
   RustServiceCosineSimilarityResult,
   RustServiceTickerWithWeight,
@@ -91,6 +97,7 @@ export {
   fetchETFHoldingWeight,
   fetchETFHoldersAggregateDetail,
   fetchTickerDetail,
+  fetchWeightedTickerSectorDistribution,
   fetchTicker10KDetail,
   fetchWeightedTicker10KDetail,
   fetchSymbolAndExchange,

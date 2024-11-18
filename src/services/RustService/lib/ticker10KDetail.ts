@@ -3,7 +3,7 @@ import type { TickerBucketTicker } from "@src/store";
 import callRustService from "../callRustService";
 import type { RustServiceTicker10KDetail } from "../rustServiceTypes";
 
-export default async function fetchTicker10KDetail(
+export async function fetchTicker10KDetail(
   tickerId: number,
 ): Promise<RustServiceTicker10KDetail> {
   return callRustService<RustServiceTicker10KDetail>("get_ticker_10k_detail", [
@@ -11,7 +11,7 @@ export default async function fetchTicker10KDetail(
   ]);
 }
 
-export function fetchWeightedTicker10KDetail(
+export async function fetchWeightedTicker10KDetail(
   tickerBucketTickers: TickerBucketTicker[],
 ): Promise<RustServiceTicker10KDetail> {
   const tickerWeightPairs = tickerBucketTickers.map((ticker) => [

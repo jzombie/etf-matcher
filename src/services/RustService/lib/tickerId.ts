@@ -1,6 +1,6 @@
 import callRustService from "../callRustService";
 
-export default async function fetchTickerId(
+export async function fetchTickerId(
   tickerSymbol: string,
   exchangeShortName: string,
 ): Promise<number> {

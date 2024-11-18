@@ -2,10 +2,12 @@ use crate::types::{IndustryId, SectorId, TickerId};
 use crate::utils::logo_utils::extract_logo_filename;
 use crate::utils::shard::query_shard_for_id;
 use crate::DataURL;
+use crate::ETFAggregateDetail;
 use crate::IndustryById;
 use crate::JsValue;
 use crate::SectorById;
 use serde::{Deserialize, Deserializer, Serialize};
+use std::collections::HashMap;
 
 // TODO: Move to a utility (also search for `deserialize_is_current`)
 // Custom deserialization function to convert Option<i32> to Option<bool>
@@ -51,6 +53,13 @@ pub struct TickerDetail {
     pub is_held_in_etf: bool,
     pub score_avg_dca: Option<f32>,
     pub logo_filename: Option<String>,
+}
+
+// TODO: Combine type with `MajorSectorWeight` in etf_aggregate_detail
+#[derive(Debug, Serialize)]
+pub struct TickerWeightedSectorDistribution {
+    pub major_sector_name: String,
+    pub weight: f64,
 }
 
 impl TickerDetail {
@@ -99,5 +108,61 @@ impl TickerDetail {
             score_avg_dca: detail.score_avg_dca,
             logo_filename: detail.logo_filename,
         })
+    }
+
+    pub async fn get_weighted_ticker_sector_distribution(
+        ticker_weights: Vec<(TickerId, f64)>,
+    ) -> Result<Vec<TickerWeightedSectorDistribution>, JsValue> {
+        let mut sector_weights: HashMap<String, f64> = HashMap::new();
+        let mut total_weight = 0.0;
+
+        for (ticker_id, weight) in ticker_weights {
+            total_weight += weight;
+
+            // Determine if the ticker is an ETF
+            if let Ok(ticker_detail) = TickerDetail::get_ticker_detail(ticker_id).await {
+                if ticker_detail.is_etf {
+                    // Fetch ETF aggregate detail for major sector distribution
+                    if let Ok(etf_detail) =
+                        ETFAggregateDetail::get_etf_aggregate_detail_by_ticker_id(ticker_id).await
+                    {
+                        if let Some(major_sector_distribution) =
+                            etf_detail.major_sector_distribution
+                        {
+                            for sector_weight in major_sector_distribution {
+                                let entry = sector_weights
+                                    .entry(sector_weight.major_sector_name.clone())
+                                    .or_insert(0.0);
+                                *entry += weight * sector_weight.weight as f64;
+                            }
+                        }
+                    }
+                } else {
+                    // For non-ETFs, use the sector name from ticker detail
+                    if let Some(sector_name) = ticker_detail.sector_name {
+                        let entry = sector_weights.entry(sector_name).or_insert(0.0);
+                        *entry += weight;
+                    }
+                }
+            } else {
+                return Err(JsValue::from_str(&format!(
+                    "Failed to fetch details for ticker ID: {}",
+                    ticker_id
+                )));
+            }
+        }
+
+        // Normalize weights
+        let normalized_weights: Vec<TickerWeightedSectorDistribution> = sector_weights
+            .into_iter()
+            .map(
+                |(major_sector_name, weight)| TickerWeightedSectorDistribution {
+                    major_sector_name,
+                    weight: weight / total_weight,
+                },
+            )
+            .collect();
+
+        Ok(normalized_weights)
     }
 }
