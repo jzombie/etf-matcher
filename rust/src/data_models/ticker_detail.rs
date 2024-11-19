@@ -1,4 +1,4 @@
-use crate::types::{IndustryId, SectorId, TickerId};
+use crate::types::{IndustryId, SectorId, TickerId, TickerWeightedSectorDistribution};
 use crate::utils::logo_utils::extract_logo_filename;
 use crate::utils::shard::query_shard_for_id;
 use crate::DataURL;
@@ -53,13 +53,6 @@ pub struct TickerDetail {
     pub is_held_in_etf: bool,
     pub score_avg_dca: Option<f32>,
     pub logo_filename: Option<String>,
-}
-
-// TODO: Combine type with `MajorSectorWeight` in etf_aggregate_detail
-#[derive(Debug, Serialize)]
-pub struct TickerWeightedSectorDistribution {
-    pub major_sector_name: String,
-    pub weight: f64,
 }
 
 impl TickerDetail {

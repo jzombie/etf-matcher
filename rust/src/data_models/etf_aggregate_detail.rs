@@ -1,4 +1,4 @@
-use crate::types::{IndustryId, SectorId, TickerId};
+use crate::types::{IndustryId, SectorId, TickerId, TickerWeightedSectorDistribution};
 use crate::utils::extract_logo_filename;
 use crate::utils::shard::query_shard_for_id;
 use crate::utils::ticker_utils::get_symbol_and_exchange_by_ticker_id;
@@ -10,16 +10,10 @@ use crate::TickerSearch;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct MajorSectorWeight {
-    pub major_sector_name: String,
-    pub weight: f32,
-}
-
-impl MajorSectorWeight {
+impl TickerWeightedSectorDistribution {
     async fn parse_major_sector_distribution(
         json_str: &str,
-    ) -> Result<Vec<MajorSectorWeight>, String> {
+    ) -> Result<Vec<TickerWeightedSectorDistribution>, String> {
         // Parse the JSON and handle any errors
         let parsed_json: Value =
             serde_json::from_str(json_str).map_err(|e| format!("Failed to parse JSON: {}", e))?;
@@ -38,15 +32,15 @@ impl MajorSectorWeight {
                     if weight > f32::MAX as f64 || weight < f32::MIN as f64 {
                         return Err(format!("Weight value {} is out of range for f32", weight));
                     }
-                    let weight_f32 = weight as f32; // Safe to cast now
+                    // let weight_f32 = weight as f32; // Safe to cast now
 
                     // Fetch the major sector name asynchronously
                     if let Ok(major_sector_name) =
                         SectorById::get_major_sector_name_with_id(major_sector_id).await
                     {
-                        result.push(MajorSectorWeight {
-                            major_sector_name,  // Use sector name instead of ID
-                            weight: weight_f32, // Use the safely cast f32 value
+                        result.push(TickerWeightedSectorDistribution {
+                            major_sector_name, // Use sector name instead of ID
+                            weight,
                         });
                     } else {
                         return Err(format!(
@@ -100,7 +94,7 @@ pub struct ETFAggregateDetail {
     pub top_pct_industry_name: Option<String>,
     pub top_pct_sector_weight: f32,
     //
-    pub major_sector_distribution: Option<Vec<MajorSectorWeight>>,
+    pub major_sector_distribution: Option<Vec<TickerWeightedSectorDistribution>>,
     //
     pub logo_filename: Option<String>, // TODO: Remove `logo_filename` from here?  Just get from ticker
 }
@@ -167,10 +161,14 @@ impl ETFAggregateDetail {
             &ticker_raw_search_result.symbol,
         );
 
-        let major_sector_distribution: Option<Vec<MajorSectorWeight>> =
+        let major_sector_distribution: Option<Vec<TickerWeightedSectorDistribution>> =
             match &etf_aggregate_detail_raw.major_sector_distribution {
                 Some(json_str) => {
-                    match MajorSectorWeight::parse_major_sector_distribution(json_str).await {
+                    match TickerWeightedSectorDistribution::parse_major_sector_distribution(
+                        json_str,
+                    )
+                    .await
+                    {
                         Ok(sector_weights) => Some(sector_weights),
                         Err(err) => {
                             // Handle the error, log if necessary, and return None
