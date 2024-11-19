@@ -38,3 +38,11 @@ training_sequence_length = 80
 training_data_sources = ["10-Q", "key metrics"]
 
 
+[ticker_vector_config.v3-price-value-composite]
+path = "v3.price-value-composite-10-Q-key-metrics-autoencoder.financial_vectors.tenq.bin"
+proto_noteboook = "v3.price-value-composite-10-Q-key-metrics-autoencoder-lstm"
+description = "Price Value Composite Autoencoder w/ pct_change metrics (fully trained); Trial #0143"
+last_training_time = "2024-11-18T12:00:00Z"
+vector_dimensions = 368
+training_sequence_length = 80
+training_data_sources = ["10-Q", "key metrics"]
