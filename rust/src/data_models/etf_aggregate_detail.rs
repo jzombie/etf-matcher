@@ -96,7 +96,7 @@ pub struct ETFAggregateDetail {
     //
     pub major_sector_distribution: Option<Vec<TickerWeightedSectorDistribution>>,
     //
-    pub logo_filename: Option<String>, // TODO: Remove `logo_filename` from here?  Just get from ticker
+    pub logo_filename: Option<String>,
 }
 
 impl ETFAggregateDetail {
