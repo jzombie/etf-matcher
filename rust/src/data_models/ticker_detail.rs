@@ -29,6 +29,8 @@ pub struct TickerDetailRaw {
     pub country_code: Option<String>,
     pub currency_code: Option<String>,
     pub industry_id: Option<IndustryId>,
+    /// Note: For ETFs, using the `major_sector_distribution` found in
+    /// `ETFAggregateDetail` will provide more granular results
     pub sector_id: Option<SectorId>,
     #[serde(deserialize_with = "from_numeric_to_bool")]
     pub is_etf: bool,
