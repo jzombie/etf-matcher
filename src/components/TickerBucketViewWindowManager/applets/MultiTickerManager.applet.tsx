@@ -7,7 +7,6 @@ import Checkbox from "@mui/material/Checkbox";
 import Scrollable from "@layoutKit/Scrollable";
 
 import AvatarLogo from "@components/AvatarLogo";
-// import LogarithmicSliderInputCombo from "@components/LogarithmicSliderInputCombo";
 import LogarithmicSlider from "@components/LogarithmicSlider";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
