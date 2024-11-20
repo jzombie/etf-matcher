@@ -141,6 +141,9 @@ export default function TickerInformationApplet({
                 >
                   google.com
                 </Link>
+                {
+                  // TODO: Add `TradingView` link
+                }
               </Box>
               {linkableTickerBuckets.length > 0 && (
                 <>
