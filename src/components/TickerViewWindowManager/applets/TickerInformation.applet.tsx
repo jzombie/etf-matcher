@@ -47,7 +47,9 @@ export default function TickerInformationApplet({
     if (tickerBuckets && tickerDetail) {
       return store
         .getTickerBucketsWithTicker(tickerDetail?.ticker_id)
-        .filter((tickerBucket) => tickerBucket.isUserConfigurable);
+        .filter((tickerBucket) =>
+          ["portfolio", "watchlist"].includes(tickerBucket.type),
+        );
     }
 
     return [];
