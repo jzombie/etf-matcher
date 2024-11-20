@@ -31,43 +31,6 @@ export default function MultiTickerManagerApplet({
 
   const navigateToSymbol = useTickerSymbolNavigation();
 
-  // TODO: Extract to a component
-  const renderQuantitySlider = (tickerId: number) => {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          paddingTop: 1,
-          paddingLeft: 4,
-          width: "100%",
-        }}
-        onClick={(e) => {
-          e.stopPropagation(); // Prevent triggering parent click handler
-        }}
-      >
-        <LogarithmicSlider
-          // aria-label="Quantity Slider"
-          defaultValue={1}
-          // valueLabelDisplay="auto"
-          min={0.001}
-          max={10000000} // Adjust range as necessary
-          step={1}
-          sx={{
-            color: "primary.main",
-            marginLeft: 2,
-            width: "80%",
-          }}
-          onChange={(evt, val) => {
-            evt.stopPropagation();
-
-            console.log(val);
-          }}
-        />
-      </Box>
-    );
-  };
-
   return (
     <TickerBucketViewWindowManagerAppletWrap
       multiTickerDetails={multiTickerDetails}
@@ -176,11 +139,47 @@ export default function MultiTickerManagerApplet({
                   </Box>
                 </Box>
               </Box>
-              {renderQuantitySlider(tickerDetail.ticker_id)}
+              <QuantitySlider />
             </Box>
           );
         })}
       </Scrollable>
     </TickerBucketViewWindowManagerAppletWrap>
+  );
+}
+
+function QuantitySlider() {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        paddingTop: 1,
+        paddingLeft: 4,
+        width: "100%",
+      }}
+      onClick={(e) => {
+        e.stopPropagation(); // Prevent triggering parent click handler
+      }}
+    >
+      <LogarithmicSlider
+        // aria-label="Quantity Slider"
+        defaultValue={1}
+        // valueLabelDisplay="auto"
+        min={0.001}
+        max={10000000} // Adjust range as necessary
+        step={1}
+        sx={{
+          color: "primary.main",
+          marginLeft: 2,
+          width: "80%",
+        }}
+        onChange={(evt, val) => {
+          evt.stopPropagation();
+
+          console.log(val);
+        }}
+      />
+    </Box>
   );
 }
