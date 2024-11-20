@@ -49,25 +49,11 @@ export default function MultiTickerManagerApplet({
               flexDirection="column" // Updated to stack slider vertically
               alignItems="start"
               padding={1}
-              sx={{
-                cursor: "pointer",
-              }}
-              onClick={() =>
-                isSelected
-                  ? deselectTicker(tickerDetail.ticker_id)
-                  : selectTicker({
-                      tickerId: tickerDetail.ticker_id,
-                      exchangeShortName: tickerDetail.exchange_short_name,
-                      symbol: tickerDetail.symbol,
-                      quantity: 1,
-                    })
-              }
             >
               <Box display="flex" alignItems="center" width="100%">
                 <Checkbox
                   checked={isSelected}
                   onChange={(evt) => {
-                    evt.stopPropagation(); // Prevent the parent click handler from firing
                     evt.target.checked
                       ? selectTicker({
                           tickerId: tickerDetail.ticker_id,
@@ -81,7 +67,6 @@ export default function MultiTickerManagerApplet({
                 <AvatarLogo
                   tickerDetail={tickerDetail}
                   style={{ marginRight: 8 }}
-                  onClick={(e) => e.stopPropagation()} // Prevent double triggering
                 />
                 <Box>
                   <Box display="flex" alignItems="center">
@@ -106,8 +91,7 @@ export default function MultiTickerManagerApplet({
                         cursor: "pointer",
                       }}
                       title="View Details"
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent triggering parent click handler
+                      onClick={() => {
                         navigateToSymbol(tickerDetail.symbol);
                       }}
                     >
@@ -139,7 +123,22 @@ export default function MultiTickerManagerApplet({
                   </Box>
                 </Box>
               </Box>
-              <QuantitySlider />
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  paddingTop: 1,
+                  paddingLeft: 4,
+                  width: "100%",
+                }}
+              >
+                <QuantitySlider
+                  onChange={(evt, val) => {
+                    // TODO: Handle
+                    console.log({ val });
+                  }}
+                />
+              </Box>
             </Box>
           );
         })}
@@ -148,38 +147,25 @@ export default function MultiTickerManagerApplet({
   );
 }
 
-function QuantitySlider() {
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        paddingTop: 1,
-        paddingLeft: 4,
-        width: "100%",
-      }}
-      onClick={(e) => {
-        e.stopPropagation(); // Prevent triggering parent click handler
-      }}
-    >
-      <LogarithmicSlider
-        // aria-label="Quantity Slider"
-        defaultValue={1}
-        // valueLabelDisplay="auto"
-        min={0.001}
-        max={10000000} // Adjust range as necessary
-        step={1}
-        sx={{
-          color: "primary.main",
-          marginLeft: 2,
-          width: "80%",
-        }}
-        onChange={(evt, val) => {
-          evt.stopPropagation();
+type QuantitySliderProps = {
+  onChange: (evt: Event, value: number) => void;
+};
 
-          console.log(val);
-        }}
-      />
-    </Box>
+function QuantitySlider({ onChange }: QuantitySliderProps) {
+  return (
+    <LogarithmicSlider
+      // aria-label="Quantity Slider"
+      defaultValue={1}
+      // valueLabelDisplay="auto"
+      min={0.001}
+      max={10000000} // Adjust range as necessary
+      step={1}
+      sx={{
+        color: "primary.main",
+        marginLeft: 2,
+        width: "80%",
+      }}
+      onChange={onChange}
+    />
   );
 }
