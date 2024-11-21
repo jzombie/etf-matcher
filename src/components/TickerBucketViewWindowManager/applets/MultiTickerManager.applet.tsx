@@ -2,12 +2,13 @@ import React, {
   ChangeEvent,
   useCallback,
   useEffect,
+  useId,
   useRef,
   useState,
 } from "react";
 
 import LinkIcon from "@mui/icons-material/Link";
-import { Box, Input } from "@mui/material";
+import { Box, Input, InputLabel } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 
 import Scrollable from "@layoutKit/Scrollable";
@@ -260,6 +261,8 @@ function QuantitySlider({
     [handleChange, min],
   );
 
+  const inputId = useId();
+
   return (
     <Box mx={1}>
       <Box>
@@ -279,8 +282,25 @@ function QuantitySlider({
           disabled={disabled}
         />
       </Box>
-      <Box sx={{ textAlign: "right" }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "flex-end",
+        }}
+      >
+        <InputLabel
+          htmlFor={inputId}
+          sx={{
+            marginRight: 1, // Space between label and input
+            fontSize: "0.875rem", // Match the input font size
+            color: "text.secondary", // Optional: Adjust label color
+          }}
+        >
+          Weight
+        </InputLabel>
         <Input
+          id={inputId}
           type="text" // Use text to allow formatted input
           value={formatNumberWithCommas(componentValue)}
           onChange={handleInputChange}
