@@ -89,18 +89,18 @@ export default function useTickerBucketViewWindowManagerContent(
       first: {
         first: {
           first: "Historical Prices",
-          second: "Similarity Search",
+          second: "Sector Allocation",
           direction: "row",
-          splitPercentage: 64,
+          splitPercentage: 72.86409915891987,
         },
         second: {
-          first: "Sector Allocation",
+          first: "Similarity Search",
           second: "Ticker Manager",
           direction: "row",
           splitPercentage: 50,
         },
         direction: "column",
-        splitPercentage: 80,
+        splitPercentage: 45.05169214456128,
       },
       second: "Fundamentals",
       splitPercentage: 75,
