@@ -165,7 +165,7 @@ export default function MultiTickerManagerApplet({
               >
                 <Box style={{ width: "100%" }}>
                   <QuantitySlider
-                    tickerSymbol={tickerBucketTicker.symbol}
+                    tickerSymbol={tickerBucketTicker?.symbol}
                     disabled={isDisabled}
                     onChange={(evt, val) => {
                       if (!tickerBucketTicker) {
@@ -207,7 +207,7 @@ export default function MultiTickerManagerApplet({
 }
 
 type QuantitySliderProps = {
-  tickerSymbol: string;
+  tickerSymbol?: string;
   min: number;
   max: number;
   defaultValue?: number;
@@ -253,7 +253,7 @@ function QuantitySlider({
     <Box>
       <Box>
         <LogarithmicSlider
-          aria-label={`${tickerSymbol} Quantity Slider`}
+          aria-label={`${tickerSymbol || "Ticker"} Quantity Slider`}
           valueLabelDisplay="auto"
           min={min}
           max={max}
