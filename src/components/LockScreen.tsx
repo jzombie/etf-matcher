@@ -122,7 +122,12 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
             </Center>
           </Content>
           <Footer>
-            <Typography variant="body2" sx={{ textAlign: "center" }}>
+            <Typography
+              variant="body2"
+              sx={{ textAlign: "center" }}
+              mx={1}
+              mb={1}
+            >
               {INVESTMENT_DISCLAIMER}
               Build time: {formatLocalTime(buildTime)}
             </Typography>
