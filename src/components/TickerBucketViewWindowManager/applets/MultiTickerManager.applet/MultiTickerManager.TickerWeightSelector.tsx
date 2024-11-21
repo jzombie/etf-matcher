@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 
-import { Box, Input, InputLabel } from "@mui/material";
+import { Box, BoxProps, Input, InputLabel } from "@mui/material";
 
 import LogarithmicSlider from "@components/LogarithmicSlider";
 
@@ -14,7 +14,7 @@ import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
 
-type TickerWeightSeletorProps = {
+type TickerWeightSeletorProps = Omit<BoxProps, "onChange"> & {
   min: number;
   max: number;
   onChange: (evt: Event, value: number) => void;
@@ -34,6 +34,7 @@ export default function TickerWeightSelector({
   disabled,
   tickerSymbol,
   inputLabel = "Weight",
+  ...rest
 }: TickerWeightSeletorProps) {
   const onChangeStableRef = useStableCurrentRef(onChange);
 
@@ -73,7 +74,7 @@ export default function TickerWeightSelector({
   const inputId = useId();
 
   return (
-    <Box mx={1}>
+    <Box {...rest}>
       <Box>
         <LogarithmicSlider
           aria-label={`${tickerSymbol || "Ticker"} ${inputLabel} Slider`}

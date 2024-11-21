@@ -157,6 +157,7 @@ export default function MultiTickerManagerApplet({
               >
                 <Box style={{ width: "100%" }}>
                   <TickerWeightSelector
+                    mx={8}
                     tickerSymbol={tickerBucketTicker?.symbol}
                     disabled={isDisabled}
                     onChange={(evt, val) => {
