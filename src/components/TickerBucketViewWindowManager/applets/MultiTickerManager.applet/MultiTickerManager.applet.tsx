@@ -187,7 +187,7 @@ export default function MultiTickerManagerApplet({
                     defaultValue={tickerBucketTicker?.quantity}
                     // TODO: Adjust threshold automatically and arbitrarily
                     min={0.001}
-                    max={10000000} // Adjust range as necessary
+                    max={10000000000} // Adjust range as necessary
                   />
                 </Box>
               </Box>
