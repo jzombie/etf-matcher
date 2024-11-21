@@ -7,7 +7,7 @@ import React, {
 } from "react";
 
 import LinkIcon from "@mui/icons-material/Link";
-import Box from "@mui/material/Box";
+import { Box, Input } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 
 import Scrollable from "@layoutKit/Scrollable";
@@ -227,7 +227,7 @@ function QuantitySlider({
 }: QuantitySliderProps) {
   const onChangeStableRef = useStableCurrentRef(onChange);
 
-  const [renderedValue, setRenderedValue] = useState<number>(
+  const [componentValue, setComponentValue] = useState<number>(
     defaultValue || value || 0,
   );
 
@@ -242,15 +242,26 @@ function QuantitySlider({
 
       const onChange = onChangeStableRef.current;
 
-      setRenderedValue(value);
+      setComponentValue(value);
 
       onChange(evt as Event, value);
     },
     [onChangeStableRef],
   );
 
+  const handleInputChange = useCallback(
+    (evt: ChangeEvent<HTMLInputElement>) => {
+      // Remove commas from the input value
+      const rawValue = evt.target.value.replace(/,/g, "");
+      const parsedValue = parseFloat(rawValue);
+
+      handleChange(evt, isNaN(parsedValue) ? min : parsedValue);
+    },
+    [handleChange, min],
+  );
+
   return (
-    <Box>
+    <Box mx={1}>
       <Box>
         <LogarithmicSlider
           aria-label={`${tickerSymbol || "Ticker"} Quantity Slider`}
@@ -260,21 +271,27 @@ function QuantitySlider({
           step={1}
           sx={{
             color: "primary.main",
-            marginLeft: 2,
-            width: "80%",
           }}
           formatValueLabel={(logValue) => formatNumberWithCommas(logValue)}
           defaultValue={defaultValueRef.current}
-          value={renderedValue}
+          value={componentValue}
           onChange={handleChange}
           disabled={disabled}
         />
       </Box>
-      <Box>
-        <input
-          type="number"
-          value={renderedValue}
-          onChange={(evt) => handleChange(evt, parseFloat(evt.target.value))}
+      <Box sx={{ textAlign: "right" }}>
+        <Input
+          type="text" // Use text to allow formatted input
+          value={formatNumberWithCommas(componentValue)}
+          onChange={handleInputChange}
+          inputProps={{
+            min,
+            max,
+          }}
+          disabled={disabled}
+          sx={{
+            fontSize: "0.875rem",
+          }}
         />
       </Box>
     </Box>
