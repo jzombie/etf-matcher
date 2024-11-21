@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import LinkIcon from "@mui/icons-material/Link";
 import Box from "@mui/material/Box";
@@ -13,6 +13,7 @@ import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
 import customLogger from "@utils/customLogger";
+import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
 
 import TickerBucketViewWindowManagerAppletWrap, {
   TickerBucketViewWindowManagerAppletWrapProps,
@@ -28,8 +29,17 @@ export default function MultiTickerManagerApplet({
   multiTickerDetails,
   ...rest
 }: MultiTickerManagerAppletProps) {
-  const { selectTicker, deselectTicker, selectedTickers } =
-    useTickerSelectionManagerContext();
+  const {
+    selectTicker,
+    deselectTicker,
+    selectedTickers,
+    adjustedTickerBucket,
+  } = useTickerSelectionManagerContext();
+
+  // TODO: Remove
+  useEffect(() => {
+    customLogger.debug({ multiTickerDetails, adjustedTickerBucket });
+  }, [multiTickerDetails, adjustedTickerBucket]);
 
   const navigateToSymbol = useTickerSymbolNavigation();
 
@@ -39,14 +49,14 @@ export default function MultiTickerManagerApplet({
       {...rest}
     >
       <Scrollable>
-        {multiTickerDetails?.map((tickerDetail) => {
+        {adjustedTickerBucket.tickers?.map((tickerBucketTicker) => {
           const isSelected = selectedTickers.some(
-            (ticker) => ticker.tickerId === tickerDetail.ticker_id,
+            (ticker) => ticker.tickerId === tickerBucketTicker.tickerId,
           );
 
           return (
             <Box
-              key={tickerDetail.ticker_id}
+              key={tickerBucketTicker.tickerId}
               display="flex"
               flexDirection="column" // Updated to stack slider vertically
               alignItems="start"
@@ -58,18 +68,21 @@ export default function MultiTickerManagerApplet({
                   onChange={(evt) => {
                     evt.target.checked
                       ? selectTicker({
-                          tickerId: tickerDetail.ticker_id,
-                          exchangeShortName: tickerDetail.exchange_short_name,
-                          symbol: tickerDetail.symbol,
+                          tickerId: tickerBucketTicker.tickerId,
+                          exchangeShortName:
+                            tickerBucketTicker.exchangeShortName,
+                          symbol: tickerBucketTicker.symbol,
                           quantity: 1,
                         })
-                      : deselectTicker(tickerDetail.ticker_id);
+                      : deselectTicker(tickerBucketTicker.tickerId);
                   }}
                 />
+                {/* 
+                // TODO: Acquire ticker detail
                 <AvatarLogo
                   tickerDetail={tickerDetail}
                   style={{ marginRight: 8 }}
-                />
+                /> */}
                 <Box>
                   <Box display="flex" alignItems="center">
                     <Box display="flex" alignItems="center" marginRight={1}>
@@ -79,10 +92,10 @@ export default function MultiTickerManagerApplet({
                           marginRight: 1,
                         }}
                       >
-                        {tickerDetail.symbol}
+                        {tickerBucketTicker.symbol}
                       </Box>
                       <Box fontSize="small" color="text.secondary">
-                        {tickerDetail.exchange_short_name}
+                        {tickerBucketTicker.exchangeShortName}
                       </Box>
                     </Box>
 
@@ -94,7 +107,7 @@ export default function MultiTickerManagerApplet({
                       }}
                       title="View Details"
                       onClick={() => {
-                        navigateToSymbol(tickerDetail.symbol);
+                        navigateToSymbol(tickerBucketTicker.symbol);
                       }}
                     >
                       <LinkIcon
@@ -119,9 +132,12 @@ export default function MultiTickerManagerApplet({
                       display: "inline-block",
                       verticalAlign: "middle",
                     }}
-                    title={tickerDetail.company_name} // Tooltip for full name
+                    // TODO: Acquire ticker detail
+                    // title={tickerBucketTicker.company_name} // Tooltip for full name
                   >
-                    {tickerDetail.company_name}
+                    {/* 
+                    // TODO: Acquire ticker detail
+                    {tickerDetail.company_name} */}
                   </Box>
                 </Box>
               </Box>
@@ -140,7 +156,11 @@ export default function MultiTickerManagerApplet({
                       // TODO: Handle
                       customLogger.debug({ val });
                     }}
-                    defaultValue={1} // TODO: Obtain from bucket weight
+                    // TODO: Use current value instead
+                    defaultValue={tickerBucketTicker.quantity}
+                    // TODO: Adjust threshold automatically and arbitrarily
+                    min={0.001}
+                    max={10000000} // Adjust range as necessary
                   />
                 </Box>
               </Box>
@@ -153,11 +173,18 @@ export default function MultiTickerManagerApplet({
 }
 
 type QuantitySliderProps = {
+  min: number;
+  max: number;
   onChange: (evt: Event, value: number) => void;
   defaultValue: number;
 };
 
-function QuantitySlider({ onChange, defaultValue }: QuantitySliderProps) {
+function QuantitySlider({
+  min,
+  max,
+  onChange,
+  defaultValue,
+}: QuantitySliderProps) {
   const onChangeStableRef = useStableCurrentRef(onChange);
 
   const handleSliderChange = useCallback(
@@ -175,15 +202,16 @@ function QuantitySlider({ onChange, defaultValue }: QuantitySliderProps) {
         <LogarithmicSlider
           // aria-label="Quantity Slider"
           defaultValue={defaultValue}
-          // valueLabelDisplay="auto"
-          min={0.001}
-          max={10000000} // Adjust range as necessary
+          valueLabelDisplay="auto"
+          min={min}
+          max={max}
           step={1}
           sx={{
             color: "primary.main",
             marginLeft: 2,
             width: "80%",
           }}
+          formatValueLabel={(logValue) => formatNumberWithCommas(logValue)}
           onChange={handleSliderChange}
         />
       </Box>

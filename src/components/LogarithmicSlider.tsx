@@ -8,6 +8,7 @@ export type LogarithmicSliderProps = Omit<SliderProps, "onChange"> & {
   min: number;
   max: number;
   defaultValue?: number; // Initial value
+  formatValueLabel?: (value: number) => number | string;
   onChange?: (evt: Event, value: number) => void;
 };
 
@@ -17,10 +18,12 @@ export default function LogarithmicSlider({
   min,
   max,
   defaultValue = 1,
+  formatValueLabel,
   onChange,
   ...rest
 }: LogarithmicSliderProps) {
   const onChangeStableRef = useStableCurrentRef(onChange);
+  const formatValueLabelStableRef = useStableCurrentRef(formatValueLabel);
 
   // Convert slider value from linear to logarithmic scale
   const logScale = useCallback(
@@ -54,6 +57,21 @@ export default function LogarithmicSlider({
     [onChangeStableRef, logScale],
   );
 
+  const handleFormatValueLabel = useCallback(
+    (linearValue: number) => {
+      const formatValueLabel = formatValueLabelStableRef.current;
+
+      const logValue = logScale(linearValue);
+
+      if (typeof formatValueLabel === "function") {
+        return formatValueLabel(logValue);
+      } else {
+        return logValue;
+      }
+    },
+    [formatValueLabelStableRef, logScale],
+  );
+
   return (
     <Slider
       {...rest}
@@ -61,6 +79,7 @@ export default function LogarithmicSlider({
       max={100}
       step={0.1}
       defaultValue={linearScale(defaultValue || min)}
+      valueLabelFormat={handleFormatValueLabel}
       onChange={handleChange}
     />
   );
