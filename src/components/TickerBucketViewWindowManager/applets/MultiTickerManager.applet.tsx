@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 
 import LinkIcon from "@mui/icons-material/Link";
 import Box from "@mui/material/Box";
@@ -9,7 +9,10 @@ import Scrollable from "@layoutKit/Scrollable";
 import AvatarLogo from "@components/AvatarLogo";
 import LogarithmicSlider from "@components/LogarithmicSlider";
 
+import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
+
+import customLogger from "@utils/customLogger";
 
 import TickerBucketViewWindowManagerAppletWrap, {
   TickerBucketViewWindowManagerAppletWrapProps,
@@ -131,12 +134,15 @@ export default function MultiTickerManagerApplet({
                   width: "100%",
                 }}
               >
-                <QuantitySlider
-                  onChange={(evt, val) => {
-                    // TODO: Handle
-                    console.log({ val });
-                  }}
-                />
+                <Box style={{ width: "100%" }}>
+                  <QuantitySlider
+                    onChange={(evt, val) => {
+                      // TODO: Handle
+                      customLogger.debug({ val });
+                    }}
+                    defaultValue={1} // TODO: Obtain from bucket weight
+                  />
+                </Box>
               </Box>
             </Box>
           );
@@ -148,23 +154,42 @@ export default function MultiTickerManagerApplet({
 
 type QuantitySliderProps = {
   onChange: (evt: Event, value: number) => void;
+  defaultValue: number;
 };
 
-function QuantitySlider({ onChange }: QuantitySliderProps) {
+function QuantitySlider({ onChange, defaultValue }: QuantitySliderProps) {
+  const onChangeStableRef = useStableCurrentRef(onChange);
+
+  const handleSliderChange = useCallback(
+    (evt: Event, value: number) => {
+      const onChange = onChangeStableRef.current;
+
+      onChange(evt, value);
+    },
+    [onChangeStableRef],
+  );
+
   return (
-    <LogarithmicSlider
-      // aria-label="Quantity Slider"
-      defaultValue={1}
-      // valueLabelDisplay="auto"
-      min={0.001}
-      max={10000000} // Adjust range as necessary
-      step={1}
-      sx={{
-        color: "primary.main",
-        marginLeft: 2,
-        width: "80%",
-      }}
-      onChange={onChange}
-    />
+    <Box>
+      <Box>
+        <LogarithmicSlider
+          // aria-label="Quantity Slider"
+          defaultValue={defaultValue}
+          // valueLabelDisplay="auto"
+          min={0.001}
+          max={10000000} // Adjust range as necessary
+          step={1}
+          sx={{
+            color: "primary.main",
+            marginLeft: 2,
+            width: "80%",
+          }}
+          onChange={handleSliderChange}
+        />
+      </Box>
+      <Box>
+        <input type="number" />
+      </Box>
+    </Box>
   );
 }
