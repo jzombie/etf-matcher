@@ -59,18 +59,15 @@ export default function MultiTickerManagerApplet({
               tickerBucketTicker.tickerId === tickerDetail.ticker_id,
           );
 
-          // TODO: Handle this condition
-          if (!tickerBucketTicker) {
-            return "N/A";
-          }
+          const isDisabled = !tickerBucketTicker;
 
           const isSelected = selectedTickers.some(
-            (ticker) => ticker.tickerId === tickerBucketTicker.tickerId,
+            (ticker) => ticker.tickerId === tickerDetail.ticker_id,
           );
 
           return (
             <Box
-              key={tickerBucketTicker.tickerId}
+              key={tickerDetail.ticker_id}
               display="flex"
               flexDirection="column" // Updated to stack slider vertically
               alignItems="start"
@@ -82,19 +79,19 @@ export default function MultiTickerManagerApplet({
                   onChange={(evt) => {
                     evt.target.checked
                       ? selectTicker({
-                          tickerId: tickerBucketTicker.tickerId,
-                          exchangeShortName:
-                            tickerBucketTicker.exchangeShortName,
-                          symbol: tickerBucketTicker.symbol,
+                          tickerId: tickerDetail.ticker_id,
+                          exchangeShortName: tickerDetail.exchange_short_name,
+                          symbol: tickerDetail.symbol,
                           quantity: 1,
                         })
-                      : deselectTicker(tickerBucketTicker.tickerId);
+                      : deselectTicker(tickerDetail.ticker_id);
                   }}
                 />
 
                 <AvatarLogo
                   tickerDetail={tickerDetail}
                   style={{ marginRight: 8 }}
+                  disabled={isDisabled}
                 />
                 <Box>
                   <Box display="flex" alignItems="center">
@@ -105,10 +102,10 @@ export default function MultiTickerManagerApplet({
                           marginRight: 1,
                         }}
                       >
-                        {tickerBucketTicker.symbol}
+                        {tickerDetail.symbol}
                       </Box>
                       <Box fontSize="small" color="text.secondary">
-                        {tickerBucketTicker.exchangeShortName}
+                        {tickerDetail.exchange_short_name}
                       </Box>
                     </Box>
 
@@ -120,7 +117,7 @@ export default function MultiTickerManagerApplet({
                       }}
                       title="View Details"
                       onClick={() => {
-                        navigateToSymbol(tickerBucketTicker.symbol);
+                        navigateToSymbol(tickerDetail.symbol);
                       }}
                     >
                       <LinkIcon
@@ -162,7 +159,15 @@ export default function MultiTickerManagerApplet({
               >
                 <Box style={{ width: "100%" }}>
                   <QuantitySlider
+                    disabled={isDisabled}
                     onChange={(evt, val) => {
+                      if (!tickerBucketTicker) {
+                        customLogger.warn(
+                          "`tickerBucketTicker` is not available and cannot be adjusted",
+                        );
+                        return;
+                      }
+
                       // TODO: Throttling might be better suited for this so that it can make adjustments while sliding
                       debounceWithKey(
                         `$multi-ticker-select-${tickerBucketTicker.tickerId}}`,
@@ -178,7 +183,7 @@ export default function MultiTickerManagerApplet({
                       // TODO: Remove
                       customLogger.debug({ val });
                     }}
-                    defaultValue={tickerBucketTicker.quantity}
+                    defaultValue={tickerBucketTicker?.quantity}
                     // TODO: Adjust threshold automatically and arbitrarily
                     min={0.001}
                     max={10000000} // Adjust range as necessary
@@ -199,6 +204,7 @@ type QuantitySliderProps = {
   defaultValue?: number;
   value?: number;
   onChange: (evt: Event, value: number) => void;
+  disabled?: boolean;
 };
 
 function QuantitySlider({
@@ -207,6 +213,7 @@ function QuantitySlider({
   onChange,
   defaultValue,
   value,
+  disabled,
 }: QuantitySliderProps) {
   const onChangeStableRef = useStableCurrentRef(onChange);
 
@@ -240,6 +247,7 @@ function QuantitySlider({
           defaultValue={defaultValueRef.current}
           value={value}
           onChange={handleSliderChange}
+          disabled={disabled}
         />
       </Box>
       <Box>
