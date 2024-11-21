@@ -14,8 +14,16 @@ export const PROJECT_AUTHOR_LINKEDIN_URL =
   "https://www.linkedin.com/in/jeremyharrisconsultant/";
 export const PROJECT_AUTHOR_EMAIL = "info@zenosmosis.com";
 
-export const INVESTMENT_DISCLAIMER =
-  "Disclaimer: The information provided on this platform is for informational purposes only and does not constitute financial, investment, or other professional advice. You should not rely on this information to make any investment decisions. Always consult with a qualified financial advisor before making any investment decisions. We do not guarantee the accuracy, completeness, or timeliness of any information provided and shall not be held liable for any errors or omissions, or for any loss or damage incurred as a result of using this information.";
+export const INVESTMENT_DISCLAIMER = `
+Disclaimer: The information provided on this platform pertains exclusively to 
+U.S. equities markets and is for informational purposes only. It does not 
+constitute financial, investment, or other professional advice. You should not 
+rely on this information to make any investment decisions. Always consult with 
+a qualified financial advisor before making any investment decisions. We do not 
+guarantee the accuracy, completeness, or timeliness of any information provided 
+and shall not be held liable for any errors or omissions, or for any loss or 
+damage incurred as a result of using this information.
+`;
 
 /**
  * TradingView attribution is placed statically at the footer of the page.
