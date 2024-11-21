@@ -13,6 +13,7 @@ import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
 import customLogger from "@utils/customLogger";
+import debounceWithKey from "@utils/debounceWithKey";
 import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
 
 import TickerBucketViewWindowManagerAppletWrap, {
@@ -24,6 +25,9 @@ export type MultiTickerManagerAppletProps = Omit<
   TickerBucketViewWindowManagerAppletWrapProps,
   "children"
 >;
+
+// Number of milliseconds to wait before applying calculation updates
+const TICKER_QUANTITY_ADJUST_DEBOUNCE_TIME = 250;
 
 export default function MultiTickerManagerApplet({
   multiTickerDetails,
@@ -159,8 +163,17 @@ export default function MultiTickerManagerApplet({
                 <Box style={{ width: "100%" }}>
                   <QuantitySlider
                     onChange={(evt, val) => {
-                      // TODO: Debounce
-                      selectTicker({ ...tickerBucketTicker, quantity: val });
+                      // TODO: Throttling might be better suited for this so that it can make adjustments while sliding
+                      debounceWithKey(
+                        `$multi-ticker-select-${tickerBucketTicker.tickerId}}`,
+                        () => {
+                          selectTicker({
+                            ...tickerBucketTicker,
+                            quantity: val,
+                          });
+                        },
+                        TICKER_QUANTITY_ADJUST_DEBOUNCE_TIME,
+                      );
 
                       // TODO: Remove
                       customLogger.debug({ val });
