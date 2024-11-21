@@ -208,23 +208,25 @@ export default function MultiTickerManagerApplet({
 }
 
 type QuantitySliderProps = {
-  tickerSymbol?: string;
   min: number;
   max: number;
+  onChange: (evt: Event, value: number) => void;
   defaultValue?: number;
   value?: number;
-  onChange: (evt: Event, value: number) => void;
   disabled?: boolean;
+  tickerSymbol?: string;
+  inputLabel?: string;
 };
 
 function QuantitySlider({
-  tickerSymbol,
   min,
   max,
   onChange,
   defaultValue,
   value,
   disabled,
+  tickerSymbol,
+  inputLabel = "Weight",
 }: QuantitySliderProps) {
   const onChangeStableRef = useStableCurrentRef(onChange);
 
@@ -267,7 +269,7 @@ function QuantitySlider({
     <Box mx={1}>
       <Box>
         <LogarithmicSlider
-          aria-label={`${tickerSymbol || "Ticker"} Quantity Slider`}
+          aria-label={`${tickerSymbol || "Ticker"} ${inputLabel} Slider`}
           valueLabelDisplay="auto"
           min={min}
           max={max}
@@ -297,7 +299,7 @@ function QuantitySlider({
             color: "text.secondary", // Optional: Adjust label color
           }}
         >
-          Weight
+          {inputLabel}
         </InputLabel>
         <Input
           id={inputId}
