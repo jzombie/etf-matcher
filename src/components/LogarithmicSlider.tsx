@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 
 import Slider, { SliderProps } from "@mui/material/Slider";
 
@@ -10,6 +10,7 @@ export type LogarithmicSliderProps = Omit<SliderProps, "onChange"> & {
   defaultValue?: number; // Initial value
   formatValueLabel?: (value: number) => number | string;
   onChange?: (evt: Event, value: number) => void;
+  value?: number;
 };
 
 // Note: This component does not currently support logarithmic range
@@ -20,6 +21,7 @@ export default function LogarithmicSlider({
   defaultValue = 1,
   formatValueLabel,
   onChange,
+  value,
   ...rest
 }: LogarithmicSliderProps) {
   const onChangeStableRef = useStableCurrentRef(onChange);
@@ -80,6 +82,7 @@ export default function LogarithmicSlider({
       step={0.1}
       defaultValue={linearScale(defaultValue || min)}
       valueLabelFormat={handleFormatValueLabel}
+      value={value && linearScale(value)}
       onChange={handleChange}
     />
   );
