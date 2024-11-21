@@ -168,7 +168,8 @@ export default function MultiTickerManagerApplet({
                         return;
                       }
 
-                      // TODO: Throttling might be better suited for this so that it can make adjustments while sliding
+                      // Note: I experimented with throttling here and the performance
+                      // tradeoff didn't seem worth it
                       debounceWithKey(
                         `$multi-ticker-select-${tickerBucketTicker.tickerId}}`,
                         () => {
