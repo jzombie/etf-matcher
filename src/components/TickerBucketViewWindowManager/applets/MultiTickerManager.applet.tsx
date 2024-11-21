@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import LinkIcon from "@mui/icons-material/Link";
 import Box from "@mui/material/Box";
@@ -159,6 +165,7 @@ export default function MultiTickerManagerApplet({
               >
                 <Box style={{ width: "100%" }}>
                   <QuantitySlider
+                    tickerSymbol={tickerBucketTicker.symbol}
                     disabled={isDisabled}
                     onChange={(evt, val) => {
                       if (!tickerBucketTicker) {
@@ -200,6 +207,7 @@ export default function MultiTickerManagerApplet({
 }
 
 type QuantitySliderProps = {
+  tickerSymbol: string;
   min: number;
   max: number;
   defaultValue?: number;
@@ -209,6 +217,7 @@ type QuantitySliderProps = {
 };
 
 function QuantitySlider({
+  tickerSymbol,
   min,
   max,
   onChange,
@@ -218,14 +227,24 @@ function QuantitySlider({
 }: QuantitySliderProps) {
   const onChangeStableRef = useStableCurrentRef(onChange);
 
+  const [renderedValue, setRenderedValue] = useState<number>(
+    defaultValue || value || 0,
+  );
+
   // Prevent MUI warnings regarding changing the default value
   const defaultValueRef = useRef(defaultValue);
 
-  const handleSliderChange = useCallback(
-    (evt: Event, value: number) => {
+  const handleChange = useCallback(
+    (evt: Event | ChangeEvent<HTMLInputElement>, value: number) => {
+      if (!value || value < 0) {
+        value = 0;
+      }
+
       const onChange = onChangeStableRef.current;
 
-      onChange(evt, value);
+      setRenderedValue(value);
+
+      onChange(evt as Event, value);
     },
     [onChangeStableRef],
   );
@@ -234,7 +253,7 @@ function QuantitySlider({
     <Box>
       <Box>
         <LogarithmicSlider
-          // aria-label="Quantity Slider"
+          aria-label={`${tickerSymbol} Quantity Slider`}
           valueLabelDisplay="auto"
           min={min}
           max={max}
@@ -246,13 +265,17 @@ function QuantitySlider({
           }}
           formatValueLabel={(logValue) => formatNumberWithCommas(logValue)}
           defaultValue={defaultValueRef.current}
-          value={value}
-          onChange={handleSliderChange}
+          value={renderedValue}
+          onChange={handleChange}
           disabled={disabled}
         />
       </Box>
       <Box>
-        <input type="number" />
+        <input
+          type="number"
+          value={renderedValue}
+          onChange={(evt) => handleChange(evt, parseFloat(evt.target.value))}
+        />
       </Box>
     </Box>
   );
