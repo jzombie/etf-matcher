@@ -57,6 +57,7 @@ export default function TickerSelectionManagerProvider({
     [tickerBucket, selectedTickers],
   );
 
+  // TODO: Rename so this conveys the weight can be updated as well
   const selectTicker = useCallback((newTicker: TickerBucketTicker) => {
     setSelectedTickers((prevTickers) => {
       const existingTicker = prevTickers.find(
@@ -67,7 +68,7 @@ export default function TickerSelectionManagerProvider({
         // If ticker is already selected, update the quantity
         return prevTickers.map((ticker) =>
           ticker.tickerId === newTicker.tickerId
-            ? { ...ticker, quantity: ticker.quantity + newTicker.quantity }
+            ? { ...ticker, quantity: newTicker.quantity }
             : ticker,
         );
       } else {

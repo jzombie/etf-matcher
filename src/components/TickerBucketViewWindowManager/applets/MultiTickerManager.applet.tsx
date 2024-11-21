@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 
 import LinkIcon from "@mui/icons-material/Link";
 import Box from "@mui/material/Box";
@@ -49,7 +49,17 @@ export default function MultiTickerManagerApplet({
       {...rest}
     >
       <Scrollable>
-        {adjustedTickerBucket.tickers?.map((tickerBucketTicker) => {
+        {multiTickerDetails?.map((tickerDetail) => {
+          const tickerBucketTicker = adjustedTickerBucket.tickers.find(
+            (tickerBucketTicker) =>
+              tickerBucketTicker.tickerId === tickerDetail.ticker_id,
+          );
+
+          // TODO: Handle this condition
+          if (!tickerBucketTicker) {
+            return "N/A";
+          }
+
           const isSelected = selectedTickers.some(
             (ticker) => ticker.tickerId === tickerBucketTicker.tickerId,
           );
@@ -77,12 +87,11 @@ export default function MultiTickerManagerApplet({
                       : deselectTicker(tickerBucketTicker.tickerId);
                   }}
                 />
-                {/* 
-                // TODO: Acquire ticker detail
+
                 <AvatarLogo
                   tickerDetail={tickerDetail}
                   style={{ marginRight: 8 }}
-                /> */}
+                />
                 <Box>
                   <Box display="flex" alignItems="center">
                     <Box display="flex" alignItems="center" marginRight={1}>
@@ -132,12 +141,9 @@ export default function MultiTickerManagerApplet({
                       display: "inline-block",
                       verticalAlign: "middle",
                     }}
-                    // TODO: Acquire ticker detail
-                    // title={tickerBucketTicker.company_name} // Tooltip for full name
+                    title={tickerDetail.company_name} // Tooltip for full name
                   >
-                    {/* 
-                    // TODO: Acquire ticker detail
-                    {tickerDetail.company_name} */}
+                    {tickerDetail.company_name}
                   </Box>
                 </Box>
               </Box>
@@ -153,10 +159,12 @@ export default function MultiTickerManagerApplet({
                 <Box style={{ width: "100%" }}>
                   <QuantitySlider
                     onChange={(evt, val) => {
-                      // TODO: Handle
+                      // TODO: Debounce
+                      selectTicker({ ...tickerBucketTicker, quantity: val });
+
+                      // TODO: Remove
                       customLogger.debug({ val });
                     }}
-                    // TODO: Use current value instead
                     defaultValue={tickerBucketTicker.quantity}
                     // TODO: Adjust threshold automatically and arbitrarily
                     min={0.001}
@@ -175,8 +183,9 @@ export default function MultiTickerManagerApplet({
 type QuantitySliderProps = {
   min: number;
   max: number;
+  defaultValue?: number;
+  value?: number;
   onChange: (evt: Event, value: number) => void;
-  defaultValue: number;
 };
 
 function QuantitySlider({
@@ -184,8 +193,12 @@ function QuantitySlider({
   max,
   onChange,
   defaultValue,
+  value,
 }: QuantitySliderProps) {
   const onChangeStableRef = useStableCurrentRef(onChange);
+
+  // Prevent MUI warnings regarding changing the default value
+  const defaultValueRef = useRef(defaultValue);
 
   const handleSliderChange = useCallback(
     (evt: Event, value: number) => {
@@ -201,7 +214,6 @@ function QuantitySlider({
       <Box>
         <LogarithmicSlider
           // aria-label="Quantity Slider"
-          defaultValue={defaultValue}
           valueLabelDisplay="auto"
           min={min}
           max={max}
@@ -212,6 +224,8 @@ function QuantitySlider({
             width: "80%",
           }}
           formatValueLabel={(logValue) => formatNumberWithCommas(logValue)}
+          defaultValue={defaultValueRef.current}
+          value={value}
           onChange={handleSliderChange}
         />
       </Box>
