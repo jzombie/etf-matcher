@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 
 import Slider, { SliderProps } from "@mui/material/Slider";
 
