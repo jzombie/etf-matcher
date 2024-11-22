@@ -5,7 +5,7 @@ import { Box } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 
 import Center from "@layoutKit/Center";
-import Layout, { Aside, Content } from "@layoutKit/Layout";
+import Layout, { Aside, Content, Footer, Header } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
 
 import AvatarLogo from "@components/AvatarLogo";
@@ -53,7 +53,11 @@ export default function MultiTickerManagerApplet({
       {...rest}
     >
       <Layout>
-        {/* <Content style={{ flexDirection: "row" }}> */}
+        <Header>
+          <Aside>to the side</Aside>
+          <div style={{ width: "100%", textAlign: "center" }}>Hello</div>
+          <Aside>to the side</Aside>
+        </Header>
         <Content>
           <Aside style={{ border: "1px yellow solid" }}>
             <Center>test</Center>
@@ -211,6 +215,10 @@ export default function MultiTickerManagerApplet({
             <Center>test</Center>
           </Aside>
         </Content>
+        <Footer>
+          <div style={{ width: "100%" }}>Hello</div>
+          <Aside>to the side</Aside>
+        </Footer>
       </Layout>
     </TickerBucketViewWindowManagerAppletWrap>
   );

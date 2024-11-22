@@ -10,6 +10,11 @@
   .header {
     position: relative;
     overflow: visible;
+
+    &-row {
+      display: flex;
+      flex-direction: row;
+    }
   }
 
   .content {
@@ -20,7 +25,7 @@
     height: 100%;
     position: relative;
 
-    &.content-row {
+    &-row {
       flex-direction: row;
     }
   }
@@ -28,6 +33,11 @@
   .footer {
     position: relative;
     overflow: visible;
+
+    &-row {
+      display: flex;
+      flex-direction: row;
+    }
   }
 
   .aside {

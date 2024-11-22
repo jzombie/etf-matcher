@@ -5,6 +5,7 @@ import { render } from "@testing-library/react";
 
 import { describe, expect, it } from "vitest";
 
+import Aside from "./Aside";
 import Header from "./Header";
 
 describe("Header Component", () => {
@@ -56,5 +57,16 @@ describe("Header Component", () => {
       </Header>,
     );
     expect(ref.current).toBeInstanceOf(HTMLElement);
+  });
+
+  it("applies row layout when Aside is a direct child", () => {
+    const { container } = render(
+      <Header>
+        <Aside>Left Sidebar</Aside>
+        <div>Main Header Content</div>
+      </Header>,
+    );
+
+    expect(container.firstChild).toHaveClass("header-row");
   });
 });

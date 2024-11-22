@@ -5,6 +5,7 @@ import { render } from "@testing-library/react";
 
 import { describe, expect, it } from "vitest";
 
+import Aside from "./Aside";
 import Footer from "./Footer";
 
 describe("Footer Component", () => {
@@ -56,5 +57,16 @@ describe("Footer Component", () => {
       </Footer>,
     );
     expect(ref.current).toBeInstanceOf(HTMLElement);
+  });
+
+  it("applies row layout when Aside is a direct child", () => {
+    const { container } = render(
+      <Footer>
+        <Aside>Left Sidebar</Aside>
+        <div>Main Footer Content</div>
+      </Footer>,
+    );
+
+    expect(container.firstChild).toHaveClass("footer-row");
   });
 });
