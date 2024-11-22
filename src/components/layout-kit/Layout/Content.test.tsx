@@ -5,6 +5,7 @@ import { render } from "@testing-library/react";
 
 import { describe, expect, it } from "vitest";
 
+import Aside from "./Aside";
 import Content from "./Content";
 
 describe("Content Component", () => {
@@ -56,5 +57,16 @@ describe("Content Component", () => {
       </Content>,
     );
     expect(ref.current).toBeInstanceOf(HTMLElement);
+  });
+
+  it("adapts layout when Aside is a direct child", () => {
+    const { container } = render(
+      <Content>
+        <Aside>Left Sidebar</Aside>
+        <div>Main Content</div>
+      </Content>,
+    );
+
+    expect(container.firstChild).toHaveClass("content-row");
   });
 });

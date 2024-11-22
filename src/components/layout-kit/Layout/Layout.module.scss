@@ -19,10 +19,20 @@
     overflow: hidden;
     height: 100%;
     position: relative;
+
+    &.content-row {
+      flex-direction: row;
+    }
   }
 
   .footer {
     position: relative;
     overflow: visible;
+  }
+
+  .aside {
+    flex-shrink: 0; /* Prevent the aside from shrinking */
+    display: flex; /* Ensure children are laid out flexibly */
+    margin: 0; /* Avoid introducing unintended spacing */
   }
 }
