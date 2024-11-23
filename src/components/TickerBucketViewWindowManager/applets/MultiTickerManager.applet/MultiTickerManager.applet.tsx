@@ -1,14 +1,8 @@
 import React, { useEffect } from "react";
 
-import LinkIcon from "@mui/icons-material/Link";
-import { Box } from "@mui/material";
-import Checkbox from "@mui/material/Checkbox";
-
 import Center from "@layoutKit/Center";
 import Layout, { Aside, Content, Footer, Header } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
-
-import AvatarLogo from "@components/AvatarLogo";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
@@ -19,7 +13,7 @@ import TickerBucketViewWindowManagerAppletWrap, {
   TickerBucketViewWindowManagerAppletWrapProps,
 } from "../../components/TickerBucketViewWindowManager.AppletWrap";
 import useTickerSelectionManagerContext from "../../hooks/useTickerSelectionManagerContext";
-import TickerWeightSelector from "./MultiTickerManager.TickerWeightSelector";
+import MultiTickerManagerTicker from "./MultiTickerManager.Ticker";
 
 export type MultiTickerManagerAppletProps = Omit<
   TickerBucketViewWindowManagerAppletWrapProps,
@@ -72,142 +66,38 @@ export default function MultiTickerManagerApplet({
                   tickerBucketTicker.tickerId === tickerDetail.ticker_id,
               );
 
-              const isDisabled = !tickerBucketTicker;
-
               const isSelected = selectedTickers.some(
                 (ticker) => ticker.tickerId === tickerDetail.ticker_id,
               );
 
+              const isDisabled = !tickerBucketTicker;
+
               return (
-                <Box
+                <MultiTickerManagerTicker
                   key={tickerDetail.ticker_id}
-                  display="flex"
-                  flexDirection="column" // Updated to stack slider vertically
-                  alignItems="start"
-                  padding={1}
-                >
-                  <Box display="flex" alignItems="center" width="100%">
-                    <Checkbox
-                      checked={isSelected}
-                      onChange={(evt) => {
-                        evt.target.checked
-                          ? selectTicker({
-                              tickerId: tickerDetail.ticker_id,
-                              exchangeShortName:
-                                tickerDetail.exchange_short_name,
-                              symbol: tickerDetail.symbol,
-                              quantity: 1,
-                            })
-                          : deselectTicker(tickerDetail.ticker_id);
-                      }}
-                    />
-
-                    <AvatarLogo
-                      tickerDetail={tickerDetail}
-                      style={{ marginRight: 8 }}
-                      disabled={isDisabled}
-                    />
-                    <Box>
-                      <Box display="flex" alignItems="center">
-                        <Box display="flex" alignItems="center" marginRight={1}>
-                          <Box
-                            sx={{
-                              fontWeight: "bold",
-                              marginRight: 1,
-                            }}
-                          >
-                            {tickerDetail.symbol}
-                          </Box>
-                          <Box fontSize="small" color="text.secondary">
-                            {tickerDetail.exchange_short_name}
-                          </Box>
-                        </Box>
-
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            cursor: "pointer",
-                          }}
-                          title="View Details"
-                          onClick={() => {
-                            navigateToSymbol(tickerDetail.symbol);
-                          }}
-                        >
-                          <LinkIcon
-                            fontSize="small"
-                            sx={{
-                              marginLeft: 0.5,
-                              color: "text.secondary",
-                              "&:hover": { color: "primary.main" },
-                            }}
-                          />
-                        </Box>
-                      </Box>
-
-                      <Box
-                        sx={{
-                          fontSize: "small",
-                          color: "text.secondary",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                          maxWidth: "200px", // Adjust based on layout needs
-                          display: "inline-block",
-                          verticalAlign: "middle",
-                        }}
-                        title={tickerDetail.company_name} // Tooltip for full name
-                      >
-                        {tickerDetail.company_name}
-                      </Box>
-                    </Box>
-                  </Box>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      paddingTop: 1,
-                      paddingLeft: 4,
-                      width: "100%",
-                    }}
-                  >
-                    <Box style={{ width: "100%" }}>
-                      <TickerWeightSelector
-                        mx={8}
-                        tickerSymbol={tickerBucketTicker?.symbol}
-                        disabled={isDisabled}
-                        onChange={(evt, val) => {
-                          if (!tickerBucketTicker) {
-                            customLogger.warn(
-                              "`tickerBucketTicker` is not available and cannot be adjusted",
-                            );
-                            return;
-                          }
-
-                          // Note: I experimented with throttling here and the performance
-                          // tradeoff didn't seem worth it
-                          debounceWithKey(
-                            `$multi-ticker-select-${tickerBucketTicker.tickerId}}`,
-                            () => {
-                              selectTicker({
-                                ...tickerBucketTicker,
-                                quantity: val,
-                              });
-                            },
-                            TICKER_QUANTITY_ADJUST_DEBOUNCE_TIME,
-                          );
-
-                          // TODO: Remove
-                          customLogger.debug({ val });
-                        }}
-                        defaultValue={tickerBucketTicker?.quantity}
-                        // TODO: Adjust threshold automatically and arbitrarily
-                        min={0.001}
-                        max={10000000000} // Adjust range as necessary
-                      />
-                    </Box>
-                  </Box>
-                </Box>
+                  adjustedTickerBucket={adjustedTickerBucket}
+                  tickerDetail={tickerDetail}
+                  // TODO: Memoize
+                  onSelectOrModify={(adjustedTicker) => {
+                    // Note: I experimented with throttling here and the performance
+                    // tradeoff didn't seem worth it
+                    debounceWithKey(
+                      `$multi-ticker-select-${adjustedTicker.tickerId}}`,
+                      () => {
+                        selectTicker(adjustedTicker);
+                      },
+                      TICKER_QUANTITY_ADJUST_DEBOUNCE_TIME,
+                    );
+                  }}
+                  // TODO: Memoize
+                  onDeselect={() => deselectTicker(tickerDetail.ticker_id)}
+                  onNavigate={() => navigateToSymbol(tickerDetail.symbol)}
+                  // TODO: Don't hardcode
+                  minWeight={0.001}
+                  maxWeight={10000000000}
+                  selected={isSelected}
+                  disabled={isDisabled}
+                />
               );
             })}
           </Scrollable>
