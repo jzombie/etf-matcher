@@ -177,7 +177,7 @@ export default function SearchResultsPage() {
         // hiding header if exact match is enabled and the user is viewing a symbol
       }
       <Header ref={headerRef}>
-        <Padding>
+        <Padding half>
           <Box
             display="flex"
             alignItems="center"

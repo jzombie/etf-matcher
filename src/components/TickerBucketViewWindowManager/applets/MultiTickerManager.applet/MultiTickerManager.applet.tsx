@@ -57,7 +57,7 @@ export default function MultiTickerManagerApplet({
       <Layout>
         <Content>
           <Aside>
-            <Padding>
+            <Padding half>
               <Box
                 display="flex"
                 flexDirection="column"

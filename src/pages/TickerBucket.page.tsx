@@ -107,7 +107,7 @@ export default function TickerBucketPage({
   return (
     <Layout>
       <Header>
-        <Padding>
+        <Padding half>
           <Typography variant="body2">
             {formattedTickerBucketPageTitle}
           </Typography>

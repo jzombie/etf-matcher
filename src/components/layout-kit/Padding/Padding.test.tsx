@@ -57,4 +57,23 @@ describe("Padding Component", () => {
     );
     expect(ref.current).toBeInstanceOf(HTMLElement);
   });
+
+  it("applies half padding when 'half' prop is true", () => {
+    const { container, asFragment } = render(
+      <Padding half>
+        <span>Test Content</span>
+      </Padding>,
+    );
+    expect(container.firstChild).toHaveClass("half");
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <section
+          class="padding half"
+        >
+          <span>
+            Test Content</span>
+        </section>
+      </DocumentFragment>
+    `);
+  });
 });

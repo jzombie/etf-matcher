@@ -7,12 +7,17 @@ import styles from "./Padding.module.scss";
 export type PaddingProps = HTMLAttributes<HTMLElement> & {
   children: React.ReactNode;
   className?: string;
+  half?: boolean;
 };
 
 const Padding = forwardRef<HTMLElement, PaddingProps>(
-  ({ children, className, ...rest }, ref) => {
+  ({ children, className, half = false, ...rest }, ref) => {
     return (
-      <section ref={ref} className={clsx(styles.padding, className)} {...rest}>
+      <section
+        ref={ref}
+        className={clsx(styles.padding, { [styles.half]: half }, className)}
+        {...rest}
+      >
         {children}
       </section>
     );
