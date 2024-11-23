@@ -71,6 +71,7 @@ export default function MultiTickerManagerApplet({
                 <IconButton
                   onClick={saveTickerBucket}
                   disabled={isTickerBucketSaved}
+                  title="Save"
                 >
                   <SaveIcon fontSize="large" />
                 </IconButton>
@@ -79,6 +80,7 @@ export default function MultiTickerManagerApplet({
                 <IconButton
                   onClick={selectAllTickerIds}
                   disabled={areAllTickersSelected}
+                  title="Select All"
                 >
                   <CheckBoxOutlineBlankIcon fontSize="large" />
                 </IconButton>
@@ -87,6 +89,7 @@ export default function MultiTickerManagerApplet({
                 <IconButton
                   onClick={clearSelectedTickerIds}
                   disabled={areNoTickersSelected}
+                  title="Unselect All"
                 >
                   <CheckBoxIcon fontSize="large" />
                 </IconButton>
@@ -98,6 +101,7 @@ export default function MultiTickerManagerApplet({
                     customLogger.log("Add child item action triggered");
                   }}
                   // disabled={isDisabled}
+                  title="Add New Ticker or Group"
                 >
                   <AddCircleOutlineIcon fontSize="large" />
                 </IconButton>
