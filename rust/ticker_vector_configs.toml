@@ -1,6 +1,16 @@
-# TODO: Add number of features used for training
-
+# [ticker_vector_config.spy-corr]
 [ticker_vector_config.default]
+path = "v4.spy-corr-composite-10-Q-key-metrics.financial_vectors.tenq.bin"
+description = "SPY Corr Prototype"
+proto_noteboook = "v4.spy-corr-composite-10-Q-key-metrics-autoencoder-lstm"
+last_training_time = "2024-11-23T12:00:00Z"
+features = 250
+vector_dimensions = 192
+training_sequence_length = 80
+training_data_sources = ["10-Q", "key metrics", "Correlated S&P 500"]
+
+
+[ticker_vector_config.r5-extended]
 path = "r5-5-10-20yr(rev-2).financial_vectors.tenq.bin"
 description = "`r5` (extended training); 20 years of 10-Q statements, with additional key metrics"
 proto_noteboook = "r5-5-10-20yr.etf-matcher-10-Q-key-metrics-vectors-lstm-parallel"
