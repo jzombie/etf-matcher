@@ -13,14 +13,14 @@ import type { TickerBucket, TickerBucketTicker } from "@src/store";
 
 import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 
-import TickerQuantityFields from "./TickerQuantityFields";
+import TickerSelectionFields from "./TickerSelectionFields";
 
 export type TickerBucketFormProps = {
   bucketType: TickerBucket["type"];
   existingBucket?: TickerBucket;
   onClose?: () => void;
   onCancel?: () => void;
-  disableTickerQuantityFields?: boolean;
+  disableTickerSelectionFields?: boolean;
 };
 
 export default function TickerBucketForm({
@@ -28,7 +28,7 @@ export default function TickerBucketForm({
   existingBucket,
   onClose,
   onCancel,
-  disableTickerQuantityFields = false,
+  disableTickerSelectionFields = false,
 }: TickerBucketFormProps) {
   const { triggerUIError } = useAppErrorBoundary();
 
@@ -193,8 +193,8 @@ export default function TickerBucketForm({
             {isShowingDescription ? "Hide" : "Show"} Description Field
           </Button>
 
-          {!disableTickerQuantityFields && (
-            <TickerQuantityFields
+          {!disableTickerSelectionFields && (
+            <TickerSelectionFields
               tickerBucket={existingBucket}
               onSaveableStateChange={(isSaveable) =>
                 setIsPortfolioSaveBlocked(!isSaveable)

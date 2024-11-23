@@ -16,7 +16,7 @@ import useTickerDetail from "@hooks/useTickerDetail";
 import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
 import removeCommas from "@utils/string/removeCommas";
 
-export type TickerQuantityFieldsItemProps = {
+export type TickerSelectionFieldsItemProps = {
   initialBucketTicker?: TickerBucketTicker;
   existingBucketTickers: TickerBucketTicker[];
   onUpdate: (bucketTicker: TickerBucketTicker | null) => void;
@@ -26,7 +26,7 @@ export type TickerQuantityFieldsItemProps = {
   omitShares?: boolean;
 };
 
-export default function TickerQuantityFieldsItem({
+export default function TickerSelectionFieldsItem({
   initialBucketTicker,
   onUpdate,
   onDelete,
@@ -34,7 +34,7 @@ export default function TickerQuantityFieldsItem({
   onErrorStateChange,
   existingBucketTickers = [],
   omitShares = false,
-}: TickerQuantityFieldsItemProps) {
+}: TickerSelectionFieldsItemProps) {
   const onUpdateStableRef = useStableCurrentRef(onUpdate);
   const onDeleteStableRef = useStableCurrentRef(onDelete);
   const onCancelStableRef = useStableCurrentRef(onCancel);

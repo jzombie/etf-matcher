@@ -261,7 +261,7 @@ export default function TickerViewWindowManagerBucketManager({
                 bucketType={selectedBucketType}
                 onCancel={handleCloseBucketDialog}
                 onClose={() => setIsShowingBucketForm(false)}
-                disableTickerQuantityFields
+                disableTickerSelectionFields
               />
             </>
           )}
