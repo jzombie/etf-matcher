@@ -14,6 +14,7 @@ export default function Section({
   children,
   bgColor,
   noPadding,
+  sx = {},
   ...rest
 }: SectionProps) {
   return (
@@ -22,6 +23,7 @@ export default function Section({
       sx={{
         backgroundColor: bgColor || "rgba(255, 255, 255, 0.05)",
         borderRadius: "8px",
+        ...sx,
       }}
       {...rest}
     >
