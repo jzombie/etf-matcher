@@ -101,7 +101,8 @@ export default function MultiTickerManagerApplet({
                     // TODO: Implement
                     customLogger.log("Add child item action triggered");
                   }}
-                  // disabled={isDisabled}
+                  // TODO: Implement
+                  disabled={true}
                   title="Add New Ticker or Group"
                 >
                   <AddCircleOutlineIcon fontSize="large" />
