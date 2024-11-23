@@ -55,7 +55,7 @@ export default function MultiTickerManagerApplet({
       <Layout>
         <Header>
           <Aside>to the side</Aside>
-          <div style={{ width: "100%", textAlign: "center" }}>Hello</div>
+          <Content style={{ textAlign: "center" }}>Hello</Content>
           <Aside>to the side</Aside>
         </Header>
         <Content>
@@ -216,7 +216,7 @@ export default function MultiTickerManagerApplet({
           </Aside>
         </Content>
         <Footer>
-          <div style={{ width: "100%" }}>Hello</div>
+          <Content>Hello</Content>
           <Aside>to the side</Aside>
         </Footer>
       </Layout>
