@@ -14,7 +14,10 @@ export type TickerSelectionManagerContextType = {
   selectedTickerIds: number[];
   selectTickerId: (tickerId: number) => void;
   deselectTickerId: (tickerId: number) => void;
+  selectAllTickerIds: () => void;
   clearSelectedTickerIds: () => void;
+  areAllTickersSelected: boolean;
+  areNoTickersSelected: boolean;
   adjustTicker: (adjustedTicker: TickerBucketTicker) => void;
   adjustedTickerBucket: TickerBucket;
   filteredTickerBucket: TickerBucket;
@@ -27,7 +30,10 @@ const DEFAULT_CONTEXT_VALUE: TickerSelectionManagerContextType = {
   selectedTickerIds: [],
   selectTickerId: () => {},
   deselectTickerId: () => {},
+  selectAllTickerIds: () => {},
   clearSelectedTickerIds: () => {},
+  areAllTickersSelected: true,
+  areNoTickersSelected: false,
   adjustTicker: () => {},
   adjustedTickerBucket: {
     uuid: "N/A",
@@ -131,9 +137,23 @@ export default function TickerSelectionManagerProvider({
     );
   }, []);
 
+  const selectAllTickerIds = useCallback(() => {
+    setSelectedTickerIds(tickerBucket.tickers.map((ticker) => ticker.tickerId));
+  }, [tickerBucket]);
+
   const clearSelectedTickerIds = useCallback(() => {
     setSelectedTickerIds([]);
   }, []);
+
+  const areAllTickersSelected = useMemo(
+    () => selectedTickerIds.length === tickerBucket.tickers.length,
+    [selectedTickerIds, tickerBucket.tickers.length],
+  );
+
+  const areNoTickersSelected = useMemo(
+    () => selectedTickerIds.length === 0,
+    [selectedTickerIds],
+  );
 
   return (
     <TickerSelectionManagerContext.Provider
@@ -141,7 +161,10 @@ export default function TickerSelectionManagerProvider({
         selectedTickerIds,
         selectTickerId,
         deselectTickerId,
+        selectAllTickerIds,
         clearSelectedTickerIds,
+        areAllTickersSelected,
+        areNoTickersSelected,
         adjustTicker,
         adjustedTickerBucket,
         filteredTickerBucket,

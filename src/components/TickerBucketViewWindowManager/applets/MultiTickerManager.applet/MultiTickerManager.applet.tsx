@@ -39,6 +39,10 @@ export default function MultiTickerManagerApplet({
     selectTickerId,
     deselectTickerId,
     selectedTickerIds,
+    selectAllTickerIds,
+    clearSelectedTickerIds,
+    areAllTickersSelected,
+    areNoTickersSelected,
     adjustTicker,
     adjustedTickerBucket,
     filteredTickerBucket,
@@ -73,24 +77,18 @@ export default function MultiTickerManagerApplet({
 
                 {/* Select All Icon */}
                 <IconButton
-                  onClick={() => {
-                    // TODO: Implement
-                    customLogger.log("Select all action triggered");
-                  }}
-                  // disabled={isDisabled}
+                  onClick={selectAllTickerIds}
+                  disabled={areAllTickersSelected}
                 >
-                  <CheckBoxIcon fontSize="large" />
+                  <CheckBoxOutlineBlankIcon fontSize="large" />
                 </IconButton>
 
                 {/* Unselect All Icon */}
                 <IconButton
-                  onClick={() => {
-                    // TODO: Implement
-                    customLogger.log("Unselect all action triggered");
-                  }}
-                  // disabled={isDisabled}
+                  onClick={clearSelectedTickerIds}
+                  disabled={areNoTickersSelected}
                 >
-                  <CheckBoxOutlineBlankIcon fontSize="large" />
+                  <CheckBoxIcon fontSize="large" />
                 </IconButton>
 
                 {/* Add Child Bucket Icon */}
