@@ -53,8 +53,6 @@ export default function useTickerBucketViewWindowManagerContent(
 
   const tickerBucketType = useMemo(() => tickerBucket.type, [tickerBucket]);
 
-  // FIXME: The layout will be reset to `initialLayout` if these dependencies
-  // change. This may require some modification.
   const commonProps: Omit<
     TickerBucketViewWindowManagerAppletWrapProps,
     "children"
