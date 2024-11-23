@@ -1,109 +1,121 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useEffect } from "react";
 
-import { Box } from "@mui/material";
+import {
+  Box,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from "@mui/material";
 
-import Full from "@layoutKit/Full";
-import { Mosaic, MosaicNode } from "react-mosaic-component";
-import "react-mosaic-component/react-mosaic-component.css";
+import Layout, { Content, Footer } from "@layoutKit/Layout";
+import Scrollable from "@layoutKit/Scrollable";
+import { MosaicNode } from "react-mosaic-component";
 
-import useResizeObserver from "@hooks/useResizeObserver";
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
-import Window from "./WindowManager.Window";
-import "./mosaic-custom-overrides.css";
+import customLogger from "@utils/customLogger";
 
-const DEBOUNCED_RESIZE_TIMEOUT = 100;
+import WindowManagerBase from "./WindowManagerBase";
+import useDetermineAutoTiling from "./hooks/useDetermineAutoTiling";
+import useWindowManagerLayout from "./hooks/useWindowManagerLayout";
 
 export type WindowManagerProps = {
-  initialValue: MosaicNode<string>;
-  contentMap: { [key: string]: React.ReactNode };
-  value?: MosaicNode<string>;
-  onChange?: (newLayout: MosaicNode<string> | null) => void;
+  initialLayout: MosaicNode<string>;
+  contentMap: Record<string, React.ReactNode>;
+  onTilingStateChange?: (isTiling: boolean) => void;
 };
 
 export default function WindowManager({
-  initialValue,
+  initialLayout,
   contentMap,
-  value,
-  onChange,
+  onTilingStateChange,
 }: WindowManagerProps) {
-  const onChangeStableCurrentRef = useStableCurrentRef(onChange);
-  const [isResizing, setIsResizing] = useState<boolean>(false);
-  const resizeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isResizingStableCurrentRef = useStableCurrentRef(isResizing);
+  const { isAutoTiling: isTiling, componentRef: layoutRef } =
+    useDetermineAutoTiling();
 
-  const handleChange = useCallback(
-    (newLayout: MosaicNode<string> | null) => {
-      const onChange = onChangeStableCurrentRef.current;
+  const onTilingStateChangeRef = useStableCurrentRef(onTilingStateChange);
 
-      if (!isResizingStableCurrentRef.current) {
-        // Set resizing to true
-        setIsResizing(true);
-      }
+  useEffect(() => {
+    const onTilingStateChange = onTilingStateChangeRef.current;
 
-      // Call the provided onChange if it exists
-      if (typeof onChange === "function") {
-        onChange(newLayout);
-      }
+    if (typeof onTilingStateChange === "function") {
+      onTilingStateChange(isTiling);
+    }
+  }, [isTiling, onTilingStateChangeRef]);
 
-      // Clear any previous timeout
-      if (resizeTimeoutRef.current) {
-        clearTimeout(resizeTimeoutRef.current);
-      }
-
-      // Set a new timeout to set `isResizing` to false after 100ms
-      resizeTimeoutRef.current = setTimeout(() => {
-        setIsResizing(false);
-      }, DEBOUNCED_RESIZE_TIMEOUT);
-    },
-    [onChangeStableCurrentRef, isResizingStableCurrentRef],
-  );
-
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-
-  useResizeObserver(containerRef, (entries) => {
-    if (!entries || entries.length === 0) return;
-    const { contentRect } = entries[0];
-    setDimensions({
-      width: contentRect.width,
-      height: contentRect.height,
-    });
+  const {
+    layout,
+    setLayout,
+    toggleWindow,
+    areAllWindowsOpen,
+    openedWindows,
+    updateOpenWindows,
+  } = useWindowManagerLayout({
+    initialLayout,
+    contentMap,
   });
 
   return (
-    <Full ref={containerRef}>
-      <Box
-        sx={{
-          width: `${dimensions.width}px`,
-          height: `${dimensions.height}px`,
-        }}
-      >
-        <Mosaic<string>
-          renderTile={(id, path) => (
-            <Window
-              id={id}
-              path={path}
-              totalWindowCount={3}
-              content={contentMap[id]}
-              isResizing={isResizing}
-            />
-          )}
-          initialValue={initialValue}
-          value={value}
-          zeroStateView={<CustomZeroStateView />}
-          onChange={handleChange}
-        />
-      </Box>
-    </Full>
-  );
-}
+    <Layout ref={layoutRef}>
+      <Content>
+        {isTiling ? (
+          <Layout>
+            <Content>
+              <WindowManagerBase
+                initialLayout={layout || initialLayout}
+                contentMap={contentMap}
+                onLayoutChange={(newLayout) => {
+                  setLayout(newLayout);
+                  updateOpenWindows(newLayout); // Update open windows when layout changes
 
-function CustomZeroStateView() {
-  return (
-    <div style={{ textAlign: "center", padding: "20px", color: "#fff" }}>
-      <h2>No windows open</h2>
-      <p>Use the controls to open new windows.</p>
-    </div>
+                  // TODO: Remove
+                  customLogger.debug({ newLayout });
+                }}
+              />
+            </Content>
+            {!areAllWindowsOpen && (
+              <Footer>
+                <Box sx={{ overflow: "auto" }}>
+                  {/* Dynamically generate buttons based on contentMap */}
+                  <ToggleButtonGroup
+                    value={Array.from(openedWindows)} // Convert openWindows to array
+                    aria-label="window selection"
+                    sx={{ float: "right" }}
+                  >
+                    {Object.keys(contentMap).map((key) => {
+                      if (openedWindows.has(key)) {
+                        return null;
+                      }
+
+                      return (
+                        <ToggleButton
+                          key={key}
+                          value={key}
+                          disabled={openedWindows.has(key)} // Disable button if the window is open
+                          onClick={() => toggleWindow(key)} // Toggle window on click
+                        >
+                          {key}
+                        </ToggleButton>
+                      );
+                    })}
+                  </ToggleButtonGroup>
+                </Box>
+              </Footer>
+            )}
+          </Layout>
+        ) : (
+          <Scrollable>
+            {Object.entries(contentMap).map(([tileName, tileView], idx) => (
+              <React.Fragment key={idx}>
+                <Typography variant="h6" sx={{ padding: 1 }}>
+                  {tileName}
+                </Typography>
+                {tileView}
+              </React.Fragment>
+            ))}
+          </Scrollable>
+        )}
+      </Content>
+    </Layout>
   );
 }

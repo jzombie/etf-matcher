@@ -3,6 +3,7 @@ use crate::utils::shard::query_shard_for_id;
 use crate::DataURL;
 use crate::JsValue;
 use serde::{Deserialize, Deserializer, Serialize};
+use std::default::Default;
 
 // TODO: Move to a utility (also search for `from_numeric_to_bool`)
 fn deserialize_is_current<'de, D>(deserializer: D) -> Result<Option<bool>, D::Error>
@@ -17,7 +18,28 @@ where
     })
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+macro_rules! accumulate_fields {
+    ($accumulated:expr, $detail:expr, $weight:expr, { $($field:ident),* }) => {
+        $(
+            $accumulated.$field = Some(
+                $accumulated.$field.unwrap_or(0.0) + $detail.$field.unwrap_or(0.0) * $weight
+            );
+        )*
+    };
+}
+
+macro_rules! finalize_accumulated_fields {
+    ($accumulated:expr, $total_weight:expr, { $($field:ident),* }) => {
+        if $total_weight > 0.0 {
+            $(
+                $accumulated.$field = $accumulated.$field.map(|total| total / $total_weight);
+            )*
+        }
+    };
+}
+
+// TODO: Very important, add cash growth metric, and more metrics in general
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Ticker10KDetail {
     pub ticker_id: TickerId,
     //
@@ -108,7 +130,7 @@ impl Ticker10KDetail {
     pub async fn get_ticker_10k_detail_by_ticker_id(
         ticker_id: TickerId,
     ) -> Result<Ticker10KDetail, JsValue> {
-        let url: &str = DataURL::Ticker10KDetailShardIndex.value();
+        let url: &str = &DataURL::Ticker10KDetailShardIndex.value();
         let mut ticker_10k_detail: Ticker10KDetail =
             query_shard_for_id(url, &ticker_id, |ticker_10k_detail: &Ticker10KDetail| {
                 Some(&ticker_10k_detail.ticker_id)
@@ -119,5 +141,161 @@ impl Ticker10KDetail {
         ticker_10k_detail.are_financials_current = ticker_10k_detail.is_current;
 
         Ok(ticker_10k_detail)
+    }
+
+    pub async fn get_weighted_ticker_10k_detail_by_ticker_ids(
+        ticker_weights: Vec<(TickerId, f64)>,
+    ) -> Result<Ticker10KDetail, JsValue> {
+        let url: &str = &DataURL::Ticker10KDetailShardIndex.value();
+        let mut accumulated_detail = Ticker10KDetail::default();
+        let mut total_weight = 0.0;
+
+        for (ticker_id, weight) in ticker_weights {
+            if let Some(detail) =
+                query_shard_for_id(url, &ticker_id, |ticker_10k_detail: &Ticker10KDetail| {
+                    Some(&ticker_10k_detail.ticker_id)
+                })
+                .await?
+            {
+                accumulate_fields!(accumulated_detail, detail, weight, {
+                    revenue_current,
+                    revenue_1_yr,
+                    revenue_2_yr,
+                    revenue_3_yr,
+                    revenue_4_yr,
+                    //
+                    gross_profit_current,
+                    gross_profit_1_yr,
+                    gross_profit_2_yr,
+                    gross_profit_3_yr,
+                    gross_profit_4_yr,
+                    //
+                    operating_income_current,
+                    operating_income_1_yr,
+                    operating_income_2_yr,
+                    operating_income_3_yr,
+                    operating_income_4_yr,
+                    //
+                    net_income_current,
+                    net_income_1_yr,
+                    net_income_2_yr,
+                    net_income_3_yr,
+                    net_income_4_yr,
+                    //
+                    total_assets_current,
+                    total_assets_1_yr,
+                    total_assets_2_yr,
+                    total_assets_3_yr,
+                    total_assets_4_yr,
+                    //
+                    total_liabilities_current,
+                    total_liabilities_1_yr,
+                    total_liabilities_2_yr,
+                    total_liabilities_3_yr,
+                    total_liabilities_4_yr,
+                    //
+                    total_stockholders_equity_current,
+                    total_stockholders_equity_1_yr,
+                    total_stockholders_equity_2_yr,
+                    total_stockholders_equity_3_yr,
+                    total_stockholders_equity_4_yr,
+                    //
+                    operating_cash_flow_current,
+                    operating_cash_flow_1_yr,
+                    operating_cash_flow_2_yr,
+                    operating_cash_flow_3_yr,
+                    operating_cash_flow_4_yr,
+                    //
+                    net_cash_provided_by_operating_activities_current,
+                    net_cash_provided_by_operating_activities_1_yr,
+                    net_cash_provided_by_operating_activities_2_yr,
+                    net_cash_provided_by_operating_activities_3_yr,
+                    net_cash_provided_by_operating_activities_4_yr,
+                    //
+                    net_cash_used_for_investing_activities_current,
+                    net_cash_used_for_investing_activities_1_yr,
+                    net_cash_used_for_investing_activities_2_yr,
+                    net_cash_used_for_investing_activities_3_yr,
+                    net_cash_used_for_investing_activities_4_yr,
+                    //
+                    net_cash_used_provided_by_financing_activities_current,
+                    net_cash_used_provided_by_financing_activities_1_yr,
+                    net_cash_used_provided_by_financing_activities_2_yr,
+                    net_cash_used_provided_by_financing_activities_3_yr,
+                    net_cash_used_provided_by_financing_activities_4_yr
+                });
+                total_weight += weight;
+            }
+        }
+
+        finalize_accumulated_fields!(accumulated_detail, total_weight, {
+            revenue_current,
+            revenue_1_yr,
+            revenue_2_yr,
+            revenue_3_yr,
+            revenue_4_yr,
+            //
+            gross_profit_current,
+            gross_profit_1_yr,
+            gross_profit_2_yr,
+            gross_profit_3_yr,
+            gross_profit_4_yr,
+            //
+            operating_income_current,
+            operating_income_1_yr,
+            operating_income_2_yr,
+            operating_income_3_yr,
+            operating_income_4_yr,
+            //
+            net_income_current,
+            net_income_1_yr,
+            net_income_2_yr,
+            net_income_3_yr,
+            net_income_4_yr,
+            //
+            total_assets_current,
+            total_assets_1_yr,
+            total_assets_2_yr,
+            total_assets_3_yr,
+            total_assets_4_yr,
+            //
+            total_liabilities_current,
+            total_liabilities_1_yr,
+            total_liabilities_2_yr,
+            total_liabilities_3_yr,
+            total_liabilities_4_yr,
+            //
+            total_stockholders_equity_current,
+            total_stockholders_equity_1_yr,
+            total_stockholders_equity_2_yr,
+            total_stockholders_equity_3_yr,
+            total_stockholders_equity_4_yr,
+            //
+            operating_cash_flow_current,
+            operating_cash_flow_1_yr,
+            operating_cash_flow_2_yr,
+            operating_cash_flow_3_yr,
+            operating_cash_flow_4_yr,
+            //
+            net_cash_provided_by_operating_activities_current,
+            net_cash_provided_by_operating_activities_1_yr,
+            net_cash_provided_by_operating_activities_2_yr,
+            net_cash_provided_by_operating_activities_3_yr,
+            net_cash_provided_by_operating_activities_4_yr,
+            //
+            net_cash_used_for_investing_activities_current,
+            net_cash_used_for_investing_activities_1_yr,
+            net_cash_used_for_investing_activities_2_yr,
+            net_cash_used_for_investing_activities_3_yr,
+            net_cash_used_for_investing_activities_4_yr,
+            //
+            net_cash_used_provided_by_financing_activities_current,
+            net_cash_used_provided_by_financing_activities_1_yr,
+            net_cash_used_provided_by_financing_activities_2_yr,
+            net_cash_used_provided_by_financing_activities_3_yr,
+            net_cash_used_provided_by_financing_activities_4_yr
+        });
+
+        Ok(accumulated_detail)
     }
 }

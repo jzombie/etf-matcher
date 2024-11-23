@@ -21,13 +21,13 @@ export default function EncodedImage({
   style,
   ...rest
 }: EncodedImageProps) {
-  const { isLoading, base64, hasError } = useEncodedImage(encSrc);
+  const { isLoading, base64, error } = useEncodedImage(encSrc);
 
   if (isLoading) {
     return <CircularProgress style={style} className={className} />;
   }
 
-  if (hasError) {
+  if (error) {
     return <ErrorIcon color="error" />;
   }
 

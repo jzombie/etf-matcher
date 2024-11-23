@@ -5,8 +5,9 @@ import Scrollable from "@layoutKit/Scrollable";
 import BucketManager from "@components/BucketManager";
 import FullContainer from "@components/FullContainer";
 
-import usePageTitleSetter from "@utils/usePageTitleSetter";
+import usePageTitleSetter from "@hooks/usePageTitleSetter";
 
+// Note: This is a collection of portfolios; for a specific portfolios, see `TickerBucketPage`
 export default function PortfoliosPage() {
   usePageTitleSetter("Portfolios");
 

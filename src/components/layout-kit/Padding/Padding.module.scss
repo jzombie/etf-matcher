@@ -1,3 +1,7 @@
 .padding {
   padding: 1em;
+
+  &.half {
+    padding: 0.5em;
+  }
 }

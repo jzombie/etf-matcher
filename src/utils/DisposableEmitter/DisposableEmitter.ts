@@ -22,6 +22,26 @@ export default class DisposableEmitter extends EventEmitter {
    * Returns a function that can be called to unregister the dispose function.
    */
   registerDisposeFunction(disposeFunction: () => void): () => void {
+    // Validate that the disposeFunction is a function
+    if (typeof disposeFunction !== "function") {
+      throw new TypeError(
+        `disposeFunction must be a function, received ${typeof disposeFunction}.`,
+      );
+    }
+
+    // Prevent duplicate registrations
+    if (this._disposeFunctions.includes(disposeFunction)) {
+      customLogger.warn(
+        "Attempted to register a dispose function that is already registered.",
+      );
+      return () => {
+        this._disposeFunctions = this._disposeFunctions.filter(
+          (fn) => fn !== disposeFunction,
+        );
+      };
+    }
+
+    // Register the dispose function
     this._disposeFunctions.push(disposeFunction);
 
     // Return a function to unregister the dispose function
@@ -109,6 +129,10 @@ export default class DisposableEmitter extends EventEmitter {
   }
 
   private _doDispose() {
+    if (this._isDisposed) {
+      return;
+    }
+
     this._disposeFunctions.forEach((fn) => fn());
     this._disposeFunctions = [];
     this.removeAllListeners();
@@ -125,6 +149,14 @@ export default class DisposableEmitter extends EventEmitter {
     this._timeouts = [];
     this._intervals = [];
 
+    // Prevent methods from being called after disposal
+    for (const key of Object.getOwnPropertyNames(Object.getPrototypeOf(this))) {
+      const property = this[key as keyof this];
+      if (typeof property === "function" && key !== "constructor") {
+        (this[key as keyof this] as unknown) = this._createNullifiedMethod(key);
+      }
+    }
+
     this._isDisposed = true;
   }
 
@@ -133,5 +165,16 @@ export default class DisposableEmitter extends EventEmitter {
    */
   get isDisposed(): boolean {
     return this._isDisposed;
+  }
+
+  /**
+   * Creates a nullified method that logs a warning with the method name.
+   */
+  private _createNullifiedMethod(methodName: string) {
+    return () => {
+      customLogger.warn(
+        `The method "${methodName}" cannot be called on a disposed emitter.`,
+      );
+    };
   }
 }

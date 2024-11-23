@@ -17,6 +17,7 @@ import {
 import TickerBucketImportExportService from "@services/TickerBucketImportExportService";
 import {
   DEFAULT_TICKER_TAPE_TICKERS,
+  DEFAULT_TICKER_VECTOR_CONFIG_KEY,
   INDEXED_DB_PERSISTENCE_KEYS,
   MAX_RECENTLY_VIEWED_ITEMS,
   MIN_TICKER_BUCKET_NAME_LENGTH,
@@ -77,6 +78,44 @@ export const multiBucketInstancesAllowed: Readonly<TickerBucket["type"][]> = [
   "portfolio",
 ];
 
+const DEFAULT_TICKER_BUCKETS: TickerBucket[] = [
+  // Note: The following `UUID`s are created at each store initialization,
+  // but are replaced if an existing session has loaded via IndexedDB.
+  // See: `_restorePersistentSession` in this class.
+  {
+    uuid: uuidv4(),
+    name: "My Portfolio",
+    tickers: [],
+    type: "portfolio",
+    description: "Default portfolio",
+    isUserConfigurable: true,
+  },
+  {
+    uuid: uuidv4(),
+    name: "My Watchlist",
+    tickers: [],
+    type: "watchlist",
+    description: "Default watchlist",
+    isUserConfigurable: true,
+  },
+  {
+    uuid: uuidv4(),
+    name: "My Ticker Tape",
+    tickers: [],
+    type: "ticker_tape",
+    description: "Ticker tape",
+    isUserConfigurable: true,
+  },
+  {
+    uuid: uuidv4(),
+    name: "My Recently Viewed",
+    tickers: [],
+    type: "recently_viewed",
+    description: "Recently viewed tickers",
+    isUserConfigurable: false,
+  },
+];
+
 export type StoreStateProps = {
   isHTMLJSVersionSynced: boolean;
   isIndexedDBReady: boolean;
@@ -104,6 +143,7 @@ export type StoreStateProps = {
   latestCacheOpenedRequestPathName: string | null;
   subscribedMQTTRoomNames: string[];
   uiErrors: Error[];
+  preferredTickerVectorConfigKey: string;
 };
 
 export type IndexedDBPersistenceProps = {
@@ -112,12 +152,20 @@ export type IndexedDBPersistenceProps = {
 
 // TODO: Determine exportable props for MultiMQTTRoomService (similar to IndexedDBPersistenceProps)
 
-// TODO: This should be a singleton
 class Store extends ReactStateEmitter<StoreStateProps> {
   private _indexedDBService: IndexedDBService<IndexedDBPersistenceProps>;
   private _multiMQTTRoomService: MultiMQTTRoomService;
   private _tickerBucketImportExportService: TickerBucketImportExportService;
+
+  private static _instance: Store;
+
   constructor() {
+    if (Store._instance) {
+      throw new Error(
+        "Store instance already created. Use the existing instance.",
+      );
+    }
+
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
     super({
       isHTMLJSVersionSynced: detectHTMLJSVersionSync(),
@@ -131,43 +179,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
       isDirtyState: false,
       visibleTickerIds: [],
       isSearchModalOpen: false,
-      tickerBuckets: [
-        // Note: The following `UUID`s are created at each store initialization,
-        // but are replaced if an existing session has loaded via IndexedDB.
-        // See: `_restorePersistentSession` in this class.
-        {
-          uuid: uuidv4(),
-          name: "My Portfolio",
-          tickers: [],
-          type: "portfolio",
-          description: "Default portfolio",
-          isUserConfigurable: true,
-        },
-        {
-          uuid: uuidv4(),
-          name: "My Watchlist",
-          tickers: [],
-          type: "watchlist",
-          description: "Default watchlist",
-          isUserConfigurable: true,
-        },
-        {
-          uuid: uuidv4(),
-          name: "My Ticker Tape",
-          tickers: [],
-          type: "ticker_tape",
-          description: "Ticker tape",
-          isUserConfigurable: true,
-        },
-        {
-          uuid: uuidv4(),
-          name: "My Recently Viewed",
-          tickers: [],
-          type: "recently_viewed",
-          description: "Recently viewed tickers",
-          isUserConfigurable: false,
-        },
-      ],
+      tickerBuckets: DEFAULT_TICKER_BUCKETS,
       isProfilingCacheOverlayOpen: false,
       cacheProfilerWaitTime: 500,
       cacheDetails: [],
@@ -177,7 +189,10 @@ class Store extends ReactStateEmitter<StoreStateProps> {
       latestCacheOpenedRequestPathName: null,
       subscribedMQTTRoomNames: [],
       uiErrors: [],
+      preferredTickerVectorConfigKey: DEFAULT_TICKER_VECTOR_CONFIG_KEY,
     });
+
+    Store._instance = this;
 
     // TODO: Poll for data build info once every "x" to ensure the data is always running the latest version
     this._syncDataBuildInfo();
@@ -736,6 +751,12 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     if (tickerBucketsOfType.length) {
       return tickerBucketsOfType[0];
     }
+  }
+
+  getTickerBucketsWithTicker(tickerId: number): TickerBucket[] {
+    return this.state.tickerBuckets.filter((bucket) =>
+      bucket.tickers.some((ticker) => ticker.tickerId === tickerId),
+    );
   }
 
   async removeCacheEntry(key: string): Promise<void> {

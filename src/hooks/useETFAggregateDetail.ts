@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import type { RustServiceETFAggregateDetail } from "@services/RustService";
 import { fetchETFAggregateDetail } from "@services/RustService";
@@ -6,7 +6,7 @@ import { fetchETFAggregateDetail } from "@services/RustService";
 import customLogger from "@utils/customLogger";
 
 import useAppErrorBoundary from "./useAppErrorBoundary";
-import useStableCurrentRef from "./useStableCurrentRef";
+import usePromise from "./usePromise";
 
 export type ETFAggregateDetailRequestProps = {
   tickerId?: number;
@@ -19,46 +19,28 @@ export default function useETFAggregateDetail({
   onLoad,
   shouldLoad = true,
 }: ETFAggregateDetailRequestProps) {
-  const onLoadStableCurrentRef = useStableCurrentRef(onLoad);
-
-  const [isLoadingETFAggregateDetail, setIsLoadingETFAggregateDetail] =
-    useState<boolean>(false);
-  const [etfAggregateDetail, setETFAggregateDetail] = useState<
-    RustServiceETFAggregateDetail | undefined
-  >(undefined);
-  const [etfAggregateDetailError, setETFAggregateDetailError] = useState<
-    Error | unknown
-  >(undefined);
-
   const { triggerUIError } = useAppErrorBoundary();
 
+  const {
+    data: etfAggregateDetail,
+    isPending: isLoadingETFAggregateDetail,
+    error: etfAggregateDetailError,
+    execute,
+  } = usePromise<RustServiceETFAggregateDetail, [number]>({
+    fn: fetchETFAggregateDetail,
+    onLoad,
+    onError: (err) => {
+      triggerUIError(new Error("Error fetching ETF aggregate detail"));
+      customLogger.error(err);
+    },
+    autoExecute: false,
+  });
+
   useEffect(() => {
-    if (!tickerId || !shouldLoad) {
-      setETFAggregateDetailError(null);
-      setIsLoadingETFAggregateDetail(false);
-      return;
+    if (tickerId && shouldLoad) {
+      execute(tickerId);
     }
-
-    setETFAggregateDetailError(null);
-    setIsLoadingETFAggregateDetail(true);
-
-    fetchETFAggregateDetail(tickerId)
-      .then((tickerDetail) => {
-        setETFAggregateDetail(tickerDetail);
-
-        if (typeof onLoadStableCurrentRef.current === "function") {
-          onLoadStableCurrentRef.current(tickerDetail);
-        }
-      })
-      .catch((err) => {
-        setETFAggregateDetailError(err);
-        triggerUIError(new Error("Error fetching ETF aggregate detail"));
-        customLogger.error(err);
-      })
-      .finally(() => {
-        setIsLoadingETFAggregateDetail(false);
-      });
-  }, [onLoadStableCurrentRef, tickerId, triggerUIError, shouldLoad]);
+  }, [tickerId, shouldLoad, execute]);
 
   return {
     isLoadingETFAggregateDetail,

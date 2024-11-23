@@ -6,6 +6,7 @@ import NotFoundPage from "@pages/NotFound.page";
 import PortfoliosPage from "@pages/Portfolios.page";
 import SearchResultsPage from "@pages/SearchResults.page";
 import SettingsPage from "@pages/Settings.page";
+import TickerBucketPage from "@pages/TickerBucket.page";
 import WatchlistsPage from "@pages/Watchlists.page";
 import TickerBucketImportExportProvider from "@providers/TickerBucketImportExportProvider";
 import { RouteObject, createBrowserRouter } from "react-router-dom";
@@ -39,12 +40,24 @@ export const routes: RouteObject[] = [
         element: <SearchResultsPage />,
       },
       {
+        // All portfolios
         path: "portfolios",
         element: <PortfoliosPage />,
       },
       {
+        // A specific portfolio
+        path: "portfolios/:bucketName",
+        element: <TickerBucketPage bucketType="portfolio" />,
+      },
+      {
+        // All watchlists
         path: "watchlists",
         element: <WatchlistsPage />,
+      },
+      {
+        // A specific watchlist
+        path: "watchlists/:bucketName",
+        element: <TickerBucketPage bucketType="watchlist" />,
       },
       {
         path: "settings",

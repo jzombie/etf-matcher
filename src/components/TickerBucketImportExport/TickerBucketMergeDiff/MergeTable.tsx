@@ -12,7 +12,7 @@ import MergeTableRow from "./MergeTable.Row";
 import type {
   TickerBucketChangeActionTypes,
   TickerDiff,
-} from "./useBucketChangeOverview";
+} from "./hooks/useBucketChangeOverview";
 
 // Component to display the ticker table, color-coded by action type (added, updated, unchanged)
 export type MergeTableProps = {

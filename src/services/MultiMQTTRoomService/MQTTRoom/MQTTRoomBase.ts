@@ -7,6 +7,11 @@ import validateTopic from "../validateTopic";
 import { EnvelopeType, PostMessageStructKey } from "./MQTTRoom.sharedBindings";
 import { MQTTRoomEvents, SendOptions } from "./MQTTRoom.sharedBindings";
 
+type MessagePromise<T> = {
+  resolve: (value: T | PromiseLike<T>) => void;
+  reject: (reason?: unknown) => void;
+};
+
 // TODO: Extend `DisposableEmitter` instead?
 /**
  * `MQTTRoomBase` is an abstract class that manages MQTT room connections.
@@ -28,10 +33,12 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
   })();
 
   private static _messageCounter = 0;
-  private static _messagePromisesMap = new Map<
-    number,
-    { resolve: CallableFunction; reject: CallableFunction }
-  >();
+
+  // Note: `any` is used in this declaration because the type is set dynamically and
+  // `unknown` is problematic to work with in this context.
+  //
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private static _messagePromisesMap = new Map<number, MessagePromise<any>>();
 
   private static _roomMap: Map<MQTTRoomBase["_peerId"], MQTTRoomBase> =
     new Map();
@@ -39,6 +46,8 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
   private _peerId!: string;
   private _isConnecting: boolean = false;
   private _isConnected: boolean = false;
+
+  private _isClosing: boolean = false;
 
   private _brokerURL!: string;
   private _roomName!: string;
@@ -129,10 +138,15 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
     this._pushStateOperation("send");
 
     if (Buffer.isBuffer(data)) {
-      data = {
-        type: "Buffer",
-        data: Array.from(data),
-      };
+      // If the data is a Buffer, serialize it using the toJSON() method.
+      // The toJSON() method returns an object with the following structure:
+      // {
+      //   type: 'Buffer',  // This indicates that the object represents a serialized Buffer.
+      //   data: [ ... ]    // This is an array of the buffer's bytes.
+      // }
+      // This serialized format is efficient for transferring the buffer data
+      // across threads or processes, such as to a worker.
+      data = data.toJSON();
     }
 
     try {
@@ -154,7 +168,11 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
     const messageId = MQTTRoomBase._messageCounter++;
 
     return new Promise<T>((resolve, reject) => {
-      MQTTRoomBase._messagePromisesMap.set(messageId, { resolve, reject });
+      // Set the promise in the map with the correct type
+      MQTTRoomBase._messagePromisesMap.set(messageId, {
+        resolve,
+        reject,
+      } as MessagePromise<T>);
 
       MQTTRoomBase._worker.postMessage({ functionName, args, messageId });
 
@@ -179,7 +197,7 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
         }
       };
 
-      const wrappedResolve = (value: T) => {
+      const wrappedResolve = (value: T | PromiseLike<T>) => {
         cleanup();
         resolve(value);
 
@@ -195,10 +213,11 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
         MQTTRoomBase._messagePromisesMap.delete(messageId);
       };
 
+      // Update the map with wrapped resolve and reject
       MQTTRoomBase._messagePromisesMap.set(messageId, {
         resolve: wrappedResolve,
         reject: wrappedReject,
-      });
+      } as MessagePromise<T>);
     });
   }
 
@@ -255,6 +274,13 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
   }
 
   async close(reason?: unknown) {
+    // Prevent double closing
+    if (this._isClosing) {
+      return;
+    }
+
+    this._isClosing = true;
+
     if (reason) {
       customLogger.debug("Proceeding to close due to reason:", reason);
     }
@@ -265,12 +291,14 @@ export default abstract class MQTTRoomBase extends EventEmitter<MQTTRoomEvents> 
     this._setConnectionState(false); // `ion`
 
     try {
-      await MQTTRoomBase._callMQTTRoomWorker("close", [this._peerId]);
+      if (this._peerId) {
+        await MQTTRoomBase._callMQTTRoomWorker("close", [this._peerId]);
+      }
     } catch (err) {
-      // This error is expected if the room has already been closed in the worker.
-      //
-      // This condition may occur if the worker previously experienced an error
-      // which would cause it to close the room.
+      customLogger.error(
+        "Error closing room in worker",
+        err instanceof Error ? err.message : err,
+      );
     }
 
     this.emit("close");

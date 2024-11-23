@@ -117,6 +117,8 @@ export default function BucketForm({
     } catch (err) {
       if (err instanceof TickerBucketNameError) {
         setNameError(err.message);
+
+        // TODO: Trigger UI error instead
         showNotification(err.message, "error");
       }
     }

@@ -2,6 +2,9 @@ import type { RustServiceTickerDetail } from "@services/RustService";
 
 import customLogger from "@utils/customLogger";
 
+// TODO: Modify for third-party service rendering. For example, the current implementation
+// is specific to `TradingView`.
+//
 // Converts a symbol detail object into a formatted symbol with exchange identifier
 export default function formatSymbolWithExchange(
   tickerDetail: RustServiceTickerDetail,

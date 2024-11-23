@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 
 import type {
   RustServiceCosineSimilarityResult,
@@ -16,6 +16,7 @@ import {
 import type { TickerBucket } from "@src/store";
 
 import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
+import usePromise from "@hooks/usePromise";
 
 import customLogger from "@utils/customLogger";
 
@@ -34,81 +35,30 @@ export type RustServiceTickerDetailWithCosineSimilarity =
   };
 
 export type TickerVectorQueryProps = {
+  tickerVectorConfigKey: string;
   queryMode: "ticker-detail" | "bucket";
   query: RustServiceTickerDetail | TickerBucket;
 };
 
 export default function useTickerVectorQuery({
+  tickerVectorConfigKey,
   queryMode,
   query,
 }: TickerVectorQueryProps) {
   const { triggerUIError } = useAppErrorBoundary();
 
-  const [isLoadingEuclidean, _setIsLoadingEuclidean] = useState(false);
-  const [resultsEuclidean, _setResultsEuclidean] = useState<
-    RustServiceTickerDetailWithEuclideanDistance[]
-  >([]);
-  const [errorEuclidean, _setErrorEuclidean] = useState<string | null>(null);
-
-  const [isLoadingCosine, _setIsLoadingCosine] = useState(false);
-  const [resultsCosine, _setResultsCosine] = useState<
-    RustServiceTickerDetailWithCosineSimilarity[]
-  >([]);
-  const [errorCosine, _setErrorCosine] = useState<string | null>(null);
-
   const queryName = useMemo(() => {
     switch (queryMode) {
       case "ticker-detail":
         return (query as RustServiceTickerDetail).symbol;
-
       case "bucket":
         return (query as TickerBucket).name;
-
       default:
         throw new Error(`Unhandled queryMode: ${queryMode}`);
     }
   }, [queryMode, query]);
 
-  // Utility function to handle common fetching logic
-  const _fetchData = useCallback(
-    async <T, R, M>(
-      fetchFunction: (id: T) => Promise<R[]>,
-      mapFunction: (item: R) => Promise<M>,
-      setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-      setResults: React.Dispatch<React.SetStateAction<M[]>>,
-      setError: React.Dispatch<React.SetStateAction<string | null>>,
-      id: T,
-    ) => {
-      setLoading(true);
-      try {
-        const items = await fetchFunction(id);
-        const detailPromises = items.map(mapFunction);
-        const settledDetails = await Promise.allSettled(detailPromises);
-
-        const fulfilledDetails = settledDetails
-          .filter(
-            (result): result is PromiseFulfilledResult<Awaited<M>> =>
-              result.status === "fulfilled",
-          )
-          .map((result) => result.value);
-
-        setResults(fulfilledDetails);
-      } catch (error) {
-        const uiErrorMessage = "Error fetching vector query data";
-
-        triggerUIError(new Error(uiErrorMessage));
-        customLogger.error(error);
-        setError(uiErrorMessage);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [triggerUIError],
-  );
-
-  const fetchTickerDetailWithETFExpenseRatio: (
-    tickerId: number,
-  ) => Promise<RustServiceTickerDetailWithETFExpenseRatio> = useCallback(
+  const fetchTickerDetailWithETFExpenseRatio = useCallback(
     async (tickerId: number) => {
       const tickerDetail = await fetchTickerDetail(tickerId);
       let etf_expense_ratio = null;
@@ -123,86 +73,135 @@ export default function useTickerVectorQuery({
     [],
   );
 
-  const fetchEuclidean = useCallback(() => {
-    const mapFn = async (item: RustServiceTickerDistance) => {
-      const detail = await fetchTickerDetailWithETFExpenseRatio(item.ticker_id);
-
-      return { ...detail, distance: item.distance };
-    };
-
+  const fetchEuclideanData = useCallback(async () => {
+    let items;
     if (queryMode === "ticker-detail") {
-      const fetchFn = fetchEuclideanByTicker;
-      const tickerId = (query as RustServiceTickerDetail).ticker_id;
-
-      _fetchData(
-        fetchFn,
-        mapFn,
-        _setIsLoadingEuclidean,
-        _setResultsEuclidean,
-        _setErrorEuclidean,
-        tickerId,
-      );
+      const id = (query as RustServiceTickerDetail).ticker_id;
+      items = await fetchEuclideanByTicker(tickerVectorConfigKey, id);
     } else {
-      const fetchFn = fetchEuclideanByTickerBucket;
-      const tickerBucket = query as TickerBucket;
-
-      _fetchData(
-        fetchFn,
-        mapFn,
-        _setIsLoadingEuclidean,
-        _setResultsEuclidean,
-        _setErrorEuclidean,
-        tickerBucket,
-      );
+      const id = query as TickerBucket;
+      items = await fetchEuclideanByTickerBucket(tickerVectorConfigKey, id);
     }
-  }, [queryMode, fetchTickerDetailWithETFExpenseRatio, query, _fetchData]);
 
-  const fetchCosine = useCallback(() => {
-    const mapFn = async (item: RustServiceCosineSimilarityResult) => {
-      const detail = await fetchTickerDetailWithETFExpenseRatio(item.ticker_id);
+    // Fetch each detail and add distance, catching errors on a per-item basis
+    const detailPromises = items.map(
+      async (item: RustServiceTickerDistance) => {
+        try {
+          const detail = await fetchTickerDetailWithETFExpenseRatio(
+            item.ticker_id,
+          );
+          return {
+            ...detail,
+            distance: item.distance,
+          } as RustServiceTickerDetailWithEuclideanDistance;
+        } catch (error) {
+          customLogger.error("Error fetching Euclidean detail", error);
+          return null; // Mark as null if there was an error
+        }
+      },
+    );
 
-      return {
-        ...detail,
-        cosineSimilarityScore: item.similarity_score,
-      };
-    };
+    // Await allSettled, filter out nulls, and narrow types for only fulfilled results
+    const results = await Promise.allSettled(detailPromises);
+    return results
+      .filter(
+        (
+          result,
+        ): result is PromiseFulfilledResult<RustServiceTickerDetailWithEuclideanDistance> =>
+          result.status === "fulfilled" && result.value !== null,
+      )
+      .map((result) => result.value);
+  }, [
+    queryMode,
+    query,
+    tickerVectorConfigKey,
+    fetchTickerDetailWithETFExpenseRatio,
+  ]);
 
+  const fetchCosineData = useCallback(async () => {
+    let items;
     if (queryMode === "ticker-detail") {
-      const fetchFn = fetchCosineByTicker;
-      const tickerId = (query as RustServiceTickerDetail).ticker_id;
-
-      _fetchData(
-        fetchFn,
-        mapFn,
-        _setIsLoadingCosine,
-        _setResultsCosine,
-        _setErrorCosine,
-        tickerId,
-      );
+      const id = (query as RustServiceTickerDetail).ticker_id;
+      items = await fetchCosineByTicker(tickerVectorConfigKey, id);
     } else {
-      const fetchFn = fetchCosineByTickerBucket;
-      const tickerBucket = query as TickerBucket;
-
-      _fetchData(
-        fetchFn,
-        mapFn,
-        _setIsLoadingCosine,
-        _setResultsCosine,
-        _setErrorCosine,
-        tickerBucket,
-      );
+      const id = query as TickerBucket;
+      items = await fetchCosineByTickerBucket(tickerVectorConfigKey, id);
     }
-  }, [queryMode, fetchTickerDetailWithETFExpenseRatio, query, _fetchData]);
+
+    // Fetch each detail and add cosine similarity, catching errors on a per-item basis
+    const detailPromises = items.map(
+      async (item: RustServiceCosineSimilarityResult) => {
+        try {
+          const detail = await fetchTickerDetailWithETFExpenseRatio(
+            item.ticker_id,
+          );
+          return {
+            ...detail,
+            cosineSimilarityScore: item.similarity_score,
+          } as RustServiceTickerDetailWithCosineSimilarity;
+        } catch (error) {
+          customLogger.error("Error fetching Cosine detail", error);
+          return null; // Mark as null if there was an error
+        }
+      },
+    );
+
+    // Await allSettled, filter out nulls, and narrow types for only fulfilled results
+    const results = await Promise.allSettled(detailPromises);
+    return results
+      .filter(
+        (
+          result,
+        ): result is PromiseFulfilledResult<RustServiceTickerDetailWithCosineSimilarity> =>
+          result.status === "fulfilled" && result.value !== null,
+      )
+      .map((result) => result.value);
+  }, [
+    queryMode,
+    query,
+    tickerVectorConfigKey,
+    fetchTickerDetailWithETFExpenseRatio,
+  ]);
+
+  const {
+    data: resultsEuclidean,
+    isPending: isLoadingEuclidean,
+    error: errorEuclidean,
+    execute: executeEuclidean,
+  } = usePromise<RustServiceTickerDetailWithEuclideanDistance[]>({
+    fn: fetchEuclideanData,
+    onError: (error) => {
+      customLogger.error(error);
+
+      triggerUIError(new Error("Error when trying to load euclidean data"));
+    },
+    autoExecute: false,
+  });
+
+  const {
+    data: resultsCosine,
+    isPending: isLoadingCosine,
+    error: errorCosine,
+    execute: executeCosine,
+  } = usePromise<RustServiceTickerDetailWithCosineSimilarity[]>({
+    fn: fetchCosineData,
+    onError: (error) => {
+      customLogger.error(error);
+
+      triggerUIError(new Error("Error when trying to load cosine data"));
+    },
+    autoExecute: false,
+  });
 
   return {
     queryName,
     //
-    fetchEuclidean,
+    fetchEuclidean: executeEuclidean,
     isLoadingEuclidean,
     resultsEuclidean,
     errorEuclidean,
     //
-    fetchCosine,
+    fetchCosine: executeCosine,
     isLoadingCosine,
     resultsCosine,
     errorCosine,

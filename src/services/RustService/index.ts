@@ -1,5 +1,5 @@
-// TODO: Move this into `services` directory
 import callRustService, { subscribe } from "./callRustService";
+import { fetchAllMajorSectors } from "./lib/allMajorSectors";
 import {
   clearCache,
   fetchCacheDetails,
@@ -7,23 +7,30 @@ import {
   preloadSearchCache,
   removeCacheEntry,
 } from "./lib/cache";
+import { fetchDataBuildInfo } from "./lib/dataBuildInfo";
+import { fetchETFAggregateDetail } from "./lib/etfAggregateDetail";
 import {
   fetchETFHoldersAggregateDetail,
   fetchETFHoldingWeight,
   fetchETFHoldings,
 } from "./lib/etfHoldings";
-import fetchAllMajorSectors from "./lib/fetchAllMajorSectors";
-import fetchDataBuildInfo from "./lib/fetchDataBuildInfo";
-import fetchETFAggregateDetail from "./lib/fetchETFAggregateDetail";
-import fetchImageInfo from "./lib/fetchImageInfo";
-import fetchSymbolAndExchange from "./lib/fetchSymbolAndExchange";
-import fetchTicker10KDetail from "./lib/fetchTicker10KDetail";
-import fetchTickerDetail from "./lib/fetchTickerDetail";
-import fetchTickerId from "./lib/fetchTickerId";
-import generateQRCode from "./lib/generateQRCode";
+import { fetchImageInfo } from "./lib/imageInfo";
+import { fetchLevenshteinDistance } from "./lib/levenshteinDistance";
+import { generateQRCode } from "./lib/qrCode";
 import searchTickers from "./lib/searchTickers";
+import { fetchSymbolAndExchange } from "./lib/symbolAndExchange";
+import {
+  fetchTicker10KDetail,
+  fetchWeightedTicker10KDetail,
+} from "./lib/ticker10KDetail";
 import { csvToTickerBuckets, tickerBucketsToCSV } from "./lib/tickerBuckets";
 import {
+  fetchTickerDetail,
+  fetchWeightedTickerSectorDistribution,
+} from "./lib/tickerDetail";
+import { fetchTickerId } from "./lib/tickerId";
+import {
+  fetchAllTickerVectorConfigs,
   fetchCosineByTicker,
   fetchCosineByTickerBucket,
   fetchEuclideanByTicker,
@@ -34,16 +41,18 @@ import type {
   RustServiceCosineSimilarityResult,
   RustServiceDataBuildInfo,
   RustServiceETFAggregateDetail,
-  RustServiceETFHoldingTickerResponse,
-  RustServiceETFHoldingWeightResponse,
+  RustServiceETFHoldingTicker,
+  RustServiceETFHoldingWeight,
   RustServiceImageInfo,
   RustServicePaginatedResults,
   RustServiceTicker10KDetail,
   RustServiceTickerDetail,
   RustServiceTickerDistance,
   RustServiceTickerSearchResult,
-  RustServiceTickerWithQuantity,
-} from "./types";
+  RustServiceTickerVectorConfig,
+  RustServiceTickerWeightedSectorDistribution,
+  RustServiceTickerWithWeight,
+} from "./rustServiceTypes";
 import { NotifierEvent } from "./workerMainBindings";
 
 export default callRustService;
@@ -57,18 +66,21 @@ export type {
   RustServiceTickerDetail,
   RustServiceETFAggregateDetail,
   RustServiceTicker10KDetail,
-  RustServiceETFHoldingWeightResponse,
-  RustServiceETFHoldingTickerResponse,
+  RustServiceETFHoldingWeight,
+  RustServiceETFHoldingTicker,
   RustServiceCacheDetail,
   RustServiceImageInfo,
+  RustServiceTickerVectorConfig,
+  RustServiceTickerWeightedSectorDistribution,
   RustServiceTickerDistance,
   RustServiceCosineSimilarityResult,
-  RustServiceTickerWithQuantity,
+  RustServiceTickerWithWeight,
 };
 
 export {
   removeCacheEntry,
   clearCache,
+  fetchAllTickerVectorConfigs,
   fetchCosineByTicker,
   fetchCosineByTickerBucket,
   fetchEuclideanByTicker,
@@ -85,10 +97,13 @@ export {
   fetchETFHoldingWeight,
   fetchETFHoldersAggregateDetail,
   fetchTickerDetail,
+  fetchWeightedTickerSectorDistribution,
   fetchTicker10KDetail,
+  fetchWeightedTicker10KDetail,
   fetchSymbolAndExchange,
   fetchETFAggregateDetail,
   fetchAllMajorSectors,
   tickerBucketsToCSV,
   csvToTickerBuckets,
+  fetchLevenshteinDistance,
 };

@@ -170,4 +170,88 @@ describe("DisposableEmitter", () => {
     // Ensure the dispose function is not called after being unregistered
     expect(disposeFn).not.toHaveBeenCalled();
   });
+
+  it("should throw a TypeError if the dispose function is not a function", () => {
+    const emitter = new DisposableEmitter();
+
+    expect(() => {
+      emitter.registerDisposeFunction(null as any);
+    }).toThrowError(TypeError);
+
+    expect(() => {
+      emitter.registerDisposeFunction(123 as any);
+    }).toThrowError("disposeFunction must be a function");
+  });
+
+  it("should prevent duplicate dispose function registrations", () => {
+    const emitter = new DisposableEmitter();
+
+    const disposeFn = vi.fn();
+    const unregister = emitter.registerDisposeFunction(disposeFn);
+
+    // Register the same function again
+    const unregisterDuplicate = emitter.registerDisposeFunction(disposeFn);
+
+    // Dispose the emitter
+    emitter.dispose();
+
+    // Ensure the dispose function is called only once
+    expect(disposeFn).toHaveBeenCalledTimes(1);
+
+    // Ensure both unregister functions work
+    unregister();
+    unregisterDuplicate();
+  });
+
+  it("should not perform any actions if dispose is called multiple times", () => {
+    const emitter = new DisposableEmitter();
+
+    const disposeFn = vi.fn();
+    emitter.registerDisposeFunction(disposeFn);
+
+    // Call dispose for the first time
+    emitter.dispose();
+
+    // Call dispose again
+    emitter.dispose();
+
+    // Ensure the dispose function is only called once
+    expect(disposeFn).toHaveBeenCalledTimes(1);
+
+    // Ensure the emitter is still marked as disposed
+    expect(emitter.isDisposed).toBe(true);
+  });
+
+  it("should log a warning when any method is called after disposal", () => {
+    const emitter = new DisposableEmitter();
+
+    // Spy on the customLogger.warn method
+    const warnSpy = vi.spyOn(customLogger, "warn").mockImplementation(() => {});
+
+    // Dispose the emitter
+    emitter.dispose();
+
+    // List of methods to test
+    const methodsToTest = [
+      "setTimeout",
+      "setInterval",
+      "clearTimeout",
+      "clearInterval",
+      "registerDisposeFunction",
+      "dispose",
+    ];
+
+    methodsToTest.forEach((methodName) => {
+      // Attempt to call each method
+      (emitter as any)[methodName]();
+
+      // Check that the warning was logged with the correct message
+      expect(warnSpy).toHaveBeenCalledWith(
+        `The method "${methodName}" cannot be called on a disposed emitter.`,
+      );
+    });
+
+    // Restore the original warn method
+    warnSpy.mockRestore();
+  });
 });

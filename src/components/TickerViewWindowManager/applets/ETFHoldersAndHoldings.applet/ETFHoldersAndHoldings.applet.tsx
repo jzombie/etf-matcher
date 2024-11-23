@@ -5,29 +5,26 @@ import LayersIcon from "@mui/icons-material/Layers";
 import { Box, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
 import Layout, { Content, Header } from "@layoutKit/Layout";
-import type { RustServiceTickerDetail } from "@services/RustService";
 
-import TickerDetailAppletWrap from "@components/TickerViewWindowManager/components/TickerDetailAppletWrap";
 import Transition from "@components/Transition";
 
+import TickerViewWindowManagerAppletWrap, {
+  TickerViewWindowManagerAppletWrapProps,
+} from "../../components/TickerViewWindowManager.AppletWrap";
 import ETFHolderSelectableGrid from "./ETFHolderSelectableGrid";
 import ETFHoldingSelectableGrid from "./ETFHoldingSelectableGrid";
 
 const DISPLAY_MODES = ["holders", "holdings"] as const;
 type DisplayMode = (typeof DISPLAY_MODES)[number];
 
-export type ETFHoldersAndHoldingsAppletProps = {
-  tickerDetail?: RustServiceTickerDetail;
-  isLoadingTickerDetail: boolean;
-  tickerDetailError?: Error | unknown;
-  isTiling: boolean;
-};
+export type ETFHoldersAndHoldingsAppletProps = Omit<
+  TickerViewWindowManagerAppletWrapProps,
+  "children"
+>;
 
 export default function ETFHoldersAndHoldingsApplet({
   tickerDetail,
-  isLoadingTickerDetail,
-  tickerDetailError,
-  isTiling,
+  ...rest
 }: ETFHoldersAndHoldingsAppletProps) {
   const [displayMode, setDisplayMode] = useState<DisplayMode>("holders");
   const previousDisplayModeRef = useRef<DisplayMode>("holders");
@@ -70,12 +67,7 @@ export default function ETFHoldersAndHoldingsApplet({
   }
 
   return (
-    <TickerDetailAppletWrap
-      tickerDetail={tickerDetail}
-      isLoadingTickerDetail={isLoadingTickerDetail}
-      tickerDetailError={tickerDetailError}
-      isTiling={isTiling}
-    >
+    <TickerViewWindowManagerAppletWrap tickerDetail={tickerDetail} {...rest}>
       <>
         {tickerDetail && (
           <Layout>
@@ -111,6 +103,6 @@ export default function ETFHoldersAndHoldingsApplet({
           </Layout>
         )}
       </>
-    </TickerDetailAppletWrap>
+    </TickerViewWindowManagerAppletWrap>
   );
 }

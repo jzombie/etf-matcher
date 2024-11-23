@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 
 import { To, useLocation, useNavigate } from "react-router-dom";
 
-import usePageTitleSetter from "@utils/usePageTitleSetter";
+import usePageTitleSetter from "@hooks/usePageTitleSetter";
 
 export default function NotFoundPage() {
   usePageTitleSetter("Not Found");

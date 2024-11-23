@@ -23,12 +23,12 @@ import SelectableGrid from "@components/SelectableGrid";
 import TickerViewWindowManager from "@components/TickerViewWindowManager";
 import Transition from "@components/Transition";
 
+import usePageTitleSetter from "@hooks/usePageTitleSetter";
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
 import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
-import usePageTitleSetter from "@utils/usePageTitleSetter";
 
-import useSearchResultsURLState from "./useSearchResultsURLState";
+import useSearchResultsURLState from "./hooks/useSearchResultsURLState";
 
 export default function SearchResultsPage() {
   const {
@@ -177,7 +177,7 @@ export default function SearchResultsPage() {
         // hiding header if exact match is enabled and the user is viewing a symbol
       }
       <Header ref={headerRef}>
-        <Padding>
+        <Padding half>
           <Box
             display="flex"
             alignItems="center"

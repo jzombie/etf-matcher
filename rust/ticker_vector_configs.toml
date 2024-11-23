@@ -1,0 +1,50 @@
+# TODO: Add number of features used for training
+
+[ticker_vector_config.default]
+path = "r5-5-10-20yr(rev-2).financial_vectors.tenq.bin"
+description = "`r5` (extended training); 20 years of 10-Q statements, with additional key metrics"
+proto_noteboook = "r5-5-10-20yr.etf-matcher-10-Q-key-metrics-vectors-lstm-parallel"
+last_training_time = "2024-10-20T12:00:00Z"
+vector_dimensions = 128
+training_sequence_length = 80
+training_data_sources = ["10-Q", "key metrics"]
+
+
+[ticker_vector_config.r5]
+path = "r5-5-10-20yr.financial_vectors.tenq.bin"
+description = "Original `r5`; 20 years of 10-Q statements, with additional key metrics"
+proto_noteboook = "r5-5-10-20yr.etf-matcher-10-Q-key-metrics-vectors-lstm-parallel"
+last_training_time = "2024-10-14T12:00:00Z"
+vector_dimensions = 128
+training_sequence_length = 80
+training_data_sources = ["10-Q", "key metrics"]
+
+
+[ticker_vector_config.price-value-composite-prelim]
+path = "price-value-composite-prelim.financial_vectors.tenq.bin"
+proto_noteboook = "price-value-composite-10-Q-key-metrics-autoencoder-lstm"
+description = "Preliminary Price Value Autoencoder"
+last_training_time = "2024-11-01T12:00:00Z"
+vector_dimensions = 256
+training_sequence_length = 80
+training_data_sources = ["10-Q", "key metrics"]
+
+
+[ticker_vector_config.v2-d-fat-skippy]
+path = "v2-d-fat-skippy-preliminary.price-value-attention-composite.financial_vectors.tenq.bin"
+proto_noteboook = "v2-d-fat-skippy.price-value-attention-composite-10-Q-key-metrics-autoencoder-lstm"
+description = "Preliminary Price Value Autoencoder w/ pct_change metrics (not fully trained); Trial #0143"
+last_training_time = "2024-11-15T12:00:00Z"
+vector_dimensions = 432
+training_sequence_length = 80
+training_data_sources = ["10-Q", "key metrics"]
+
+
+[ticker_vector_config.v3-price-value-composite]
+path = "v3.price-value-composite-10-Q-key-metrics-autoencoder.financial_vectors.tenq.bin"
+proto_noteboook = "v3.price-value-composite-10-Q-key-metrics-autoencoder-lstm"
+description = "Price Value Composite Autoencoder w/ pct_change metrics (fully trained); Trial #0143"
+last_training_time = "2024-11-18T12:00:00Z"
+vector_dimensions = 368
+training_sequence_length = 80
+training_data_sources = ["10-Q", "key metrics"]

@@ -84,22 +84,46 @@ impl TickerBucket {
             .await
             .map_err(|err| JsValue::from_str(&format!("Failed to fetch tickers: {:?}", err)))?;
 
-        let mut ticker_map = HashMap::new();
+        // Collect all exchange IDs
+        let exchange_ids: Vec<u32> = all_tickers
+            .iter()
+            .filter_map(|ticker| ticker.exchange_id)
+            .collect();
+
+        // Fetch all exchange short names in a batch
+        let mut exchange_short_names = Vec::new();
+
+        for &exchange_id in &exchange_ids {
+            match ExchangeById::get_short_name_by_exchange_id(exchange_id).await {
+                Ok(short_name) => exchange_short_names.push(short_name),
+                Err(err) => {
+                    return Err(JsValue::from_str(&format!(
+                        "Failed to fetch exchange name for ID {}: {:?}",
+                        exchange_id, err
+                    )))
+                }
+            }
+        }
+
+        // Create a mapping from exchange_id to exchange_short_name
+        let exchange_short_name_map: HashMap<u32, String> = exchange_ids
+            .into_iter()
+            .zip(exchange_short_names.into_iter())
+            .collect();
+
+        // Create a map to associate symbols and exchange short names with ticker IDs
+        let mut ticker_map: HashMap<(String, String), TickerId> = HashMap::new();
         for ticker in all_tickers {
-            let exchange_short_name = match ticker.exchange_id {
-                Some(exchange_id) => ExchangeById::get_short_name_by_exchange_id(exchange_id)
-                    .await
-                    .ok(),
-                None => None,
-            };
-            ticker_map.insert(
-                ticker.symbol.clone(),
-                (ticker.ticker_id, exchange_short_name),
-            );
+            let exchange_short_name = ticker
+                .exchange_id
+                .and_then(|id| exchange_short_name_map.get(&id).cloned())
+                .unwrap_or_default();
+
+            let key = (ticker.symbol.clone(), exchange_short_name.clone());
+            ticker_map.insert(key, ticker.ticker_id);
         }
 
         let mut rdr = csv::Reader::from_reader(csv_data.as_bytes());
-
         let headers = rdr
             .headers()
             .map_err(|err| JsValue::from_str(&format!("Failed to read CSV headers: {:?}", err)))?
@@ -131,6 +155,9 @@ impl TickerBucket {
 
             let symbol =
                 TickerBucket::get_field_by_name(&record, &headers, CSV_HEADER_TICKER_SYMBOL)?;
+            let exchange_short_name =
+                TickerBucket::get_field_by_name(&record, &headers, CSV_HEADER_TICKER_EXCHANGE)?
+                    .to_string();
             let quantity =
                 TickerBucket::get_field_by_name(&record, &headers, CSV_HEADER_TICKER_QUANTITY)?
                     .parse::<f32>()
@@ -138,17 +165,14 @@ impl TickerBucket {
                         JsValue::from_str(&format!("Failed to parse quantity: {:?}", err))
                     })?;
 
-            // Normalize `ticker_id` and `exchange_short_name` with what's already in the system, in case these have been changed.
-            // FIXME: This relates to this ticket: https://linear.app/zenosmosis/issue/ZEN-86/implement-auto-reindex-strategy
-            // and this handling should be refactored accordingly. A caveat with this current approach is that IF the same
-            // symbol were to be present on multiple exchanges, this would not work out well, but currently being limited to
-            // U.S. exchanges, that shouldn't pose a problem.
-            let (ticker_id, exchange_short_name) = match ticker_map.get(symbol) {
-                Some((id, exchange)) => (*id, exchange.clone()),
+            // Use the symbol and exchange_short_name as the key for direct lookup
+            let key = (symbol.to_string(), exchange_short_name.clone());
+            let ticker_id = match ticker_map.get(&key) {
+                Some(&id) => id,
                 None => {
                     return Err(JsValue::from_str(&format!(
-                        "Error: Ticker symbol {} not found in the system",
-                        symbol
+                        "Error: Ticker symbol {} with exchange {} not found in the system",
+                        symbol, exchange_short_name
                     )))
                 }
             };
@@ -156,7 +180,7 @@ impl TickerBucket {
             let ticker = TickerBucketTicker {
                 ticker_id,
                 symbol: symbol.to_string(),
-                exchange_short_name,
+                exchange_short_name: Some(exchange_short_name),
                 quantity,
             };
 

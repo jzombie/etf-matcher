@@ -17,17 +17,15 @@ pub mod ticker_vector_analysis;
 
 pub use data_build_info::DataBuildInfo;
 pub use data_url::DataURL;
-pub use etf_aggregate_detail::{ETFAggregateDetail, ETFAggregateDetailResponse};
-pub use etf_holding_ticker::{
-    ETFHoldingTicker, ETFHoldingTickerResponse, ETFHoldingWeightResponse,
-};
+pub use etf_aggregate_detail::ETFAggregateDetail;
+pub use etf_holding_ticker::{ETFHoldingTicker, ETFHoldingWeight};
 pub use exchange_by_id::ExchangeById;
 pub use industry_by_id::IndustryById;
 pub use paginated_results::PaginatedResults;
 pub use sector_by_id::SectorById;
 pub use ticker_10k_detail::Ticker10KDetail;
 pub use ticker_bucket::TickerBucket;
-pub use ticker_detail::{TickerDetail, TickerDetailResponse};
+pub use ticker_detail::TickerDetail;
 pub use ticker_etf_holder::TickerETFHolder;
 pub use ticker_search::{TickerSearch, TickerSearchResult};
 // pub use ticker_by_id::TickerById;

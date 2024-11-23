@@ -1,31 +1,22 @@
 import React from "react";
 
-import { RustServiceTickerDetail } from "@services/RustService";
-
-import TickerDetailAppletWrap from "../../components/TickerDetailAppletWrap";
+import TickerViewWindowManagerAppletWrap, {
+  TickerViewWindowManagerAppletWrapProps,
+} from "../../components/TickerViewWindowManager.AppletWrap";
 import FinancialChartsGrid from "./FinancialChartsGrid";
 
-export type TickerFundamentalsAppletProps = {
-  tickerDetail?: RustServiceTickerDetail;
-  isLoadingTickerDetail: boolean;
-  tickerDetailError?: Error | unknown;
-  isTiling: boolean;
-};
+export type TickerFundamentalsAppletProps = Omit<
+  TickerViewWindowManagerAppletWrapProps,
+  "children"
+>;
 
 export default function TickerFundamentalsApplet({
   tickerDetail,
-  isLoadingTickerDetail,
-  tickerDetailError,
-  isTiling,
+  ...rest
 }: TickerFundamentalsAppletProps) {
   return (
-    <TickerDetailAppletWrap
-      tickerDetail={tickerDetail}
-      isLoadingTickerDetail={isLoadingTickerDetail}
-      tickerDetailError={tickerDetailError}
-      isTiling={isTiling}
-    >
+    <TickerViewWindowManagerAppletWrap tickerDetail={tickerDetail} {...rest}>
       {tickerDetail && <FinancialChartsGrid tickerDetail={tickerDetail} />}
-    </TickerDetailAppletWrap>
+    </TickerViewWindowManagerAppletWrap>
   );
 }
