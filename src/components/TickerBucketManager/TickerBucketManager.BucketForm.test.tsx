@@ -91,7 +91,7 @@ describe("TickerBucketForm", () => {
   it('should not render TickerQuantityFields if bucketType is "watchlist" and disableTickerQuantityFields is true', () => {
     render(
       <TickerBucketForm
-        bucketType="portfolio"
+        bucketType="watchlist"
         disableTickerQuantityFields={true}
       />,
     );
