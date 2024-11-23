@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutlined";
 import CheckBoxIcon from "@mui/icons-material/CheckBoxOutlineBlank";
@@ -9,8 +9,10 @@ import { Box, IconButton, Typography } from "@mui/material";
 import Layout, { Aside, Content, Footer } from "@layoutKit/Layout";
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
+import type { RustServiceTickerSearchResult } from "@services/RustService";
 
 import Section from "@components/Section";
+import TickerSearchModal from "@components/TickerSearchModal";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
@@ -52,6 +54,8 @@ export default function MultiTickerManagerApplet({
   } = useTickerSelectionManagerContext();
 
   const navigateToSymbol = useTickerSymbolNavigation();
+
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState<boolean>(false);
 
   return (
     <TickerBucketViewWindowManagerAppletWrap
@@ -97,12 +101,8 @@ export default function MultiTickerManagerApplet({
 
                 {/* Add Child Bucket Icon */}
                 <IconButton
-                  onClick={() => {
-                    // TODO: Implement
-                    customLogger.log("Add child item action triggered");
-                  }}
-                  // TODO: Implement
-                  disabled={true}
+                  onClick={() => setIsSearchModalOpen(true)}
+                  disabled={isSearchModalOpen}
                   title="Add New Ticker or Group"
                 >
                   <AddCircleOutlineIcon fontSize="large" />
@@ -173,6 +173,14 @@ export default function MultiTickerManagerApplet({
           </Box>
         </Footer>
       </Layout>
+      {/* Ticker Search Modal */}
+      <TickerSearchModal
+        open={isSearchModalOpen}
+        onSelectTicker={(tickerSearchResult: RustServiceTickerSearchResult) => {
+          customLogger.warn("TODO: Handle", { tickerSearchResult });
+        }}
+        onCancel={() => setIsSearchModalOpen(false)}
+      />
     </TickerBucketViewWindowManagerAppletWrap>
   );
 }

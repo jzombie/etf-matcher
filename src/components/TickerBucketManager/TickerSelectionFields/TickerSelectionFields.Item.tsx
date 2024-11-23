@@ -241,7 +241,7 @@ export default function TickerSelectionFieldsItem({
         )}
       </Grid2>
 
-      {/* Search Modal */}
+      {/* Ticker Search Modal */}
       <TickerSearchModal
         open={isSearchModalOpen}
         onSelectTicker={handleSelectTicker}
