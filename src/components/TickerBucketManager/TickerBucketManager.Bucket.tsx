@@ -22,8 +22,8 @@ import {
   getTickerBucketLink,
 } from "@utils/tickerBucketLinkUtils";
 
-import BucketTicker from "./TickerBucketManager.Bucket.Ticker";
-import BucketForm from "./TickerBucketManager.BucketForm";
+import TickerBucketTicker from "./TickerBucketManager.Bucket.Ticker";
+import TickerBucketForm from "./TickerBucketManager.BucketForm";
 
 export type TickerBucketProps = {
   tickerBucket: TickerBucket;
@@ -123,7 +123,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
             )}
             {isEditing && (
               <ScrollTo>
-                <BucketForm
+                <TickerBucketForm
                   bucketType={tickerBucket.type}
                   existingBucket={tickerBucket}
                   onClose={handleFormClose}
@@ -157,7 +157,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                             <UnstyledUL>
                               {tickerBucket.tickers.map((bucketTicker) => (
                                 <UnstyledLI key={bucketTicker.tickerId}>
-                                  <BucketTicker
+                                  <TickerBucketTicker
                                     bucketTicker={bucketTicker}
                                     tickerBucket={tickerBucket}
                                   />

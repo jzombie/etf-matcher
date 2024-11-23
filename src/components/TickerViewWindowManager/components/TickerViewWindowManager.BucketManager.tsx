@@ -24,7 +24,7 @@ import { Link } from "react-router-dom";
 
 import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
 import DialogModal from "@components/DialogModal";
-import BucketForm from "@components/TickerBucketManager/TickerBucketManager.BucketForm";
+import TickerBucketForm from "@components/TickerBucketManager/TickerBucketManager.BucketForm";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
@@ -257,7 +257,7 @@ export default function TickerViewWindowManagerBucketManager({
           {isShowingBucketForm && selectedBucketType && (
             <>
               <hr />
-              <BucketForm
+              <TickerBucketForm
                 bucketType={selectedBucketType}
                 onCancel={handleCloseBucketDialog}
                 onClose={() => setIsShowingBucketForm(false)}
