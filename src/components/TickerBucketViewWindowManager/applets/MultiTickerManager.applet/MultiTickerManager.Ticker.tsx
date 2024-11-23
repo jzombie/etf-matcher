@@ -138,7 +138,7 @@ export default function MultiTickerManagerTicker({
             disabled={isDisabled}
             onChange={(evt, val) => {
               if (!tickerBucketTicker) {
-                customLogger.warn(
+                customLogger.error(
                   "`tickerBucketTicker` is not available and cannot be adjusted",
                 );
                 return;
