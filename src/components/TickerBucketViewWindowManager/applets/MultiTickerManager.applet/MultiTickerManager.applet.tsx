@@ -10,6 +10,8 @@ import Layout, { Aside, Content, Footer } from "@layoutKit/Layout";
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
+import Section from "@components/Section";
+
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
 import customLogger from "@utils/customLogger";
@@ -117,32 +119,33 @@ export default function MultiTickerManagerApplet({
               const isDisabled = !tickerBucketTicker;
 
               return (
-                <MultiTickerManagerTicker
-                  key={tickerDetail.ticker_id}
-                  adjustedTickerBucket={adjustedTickerBucket}
-                  tickerDetail={tickerDetail}
-                  // TODO: Memoize
-                  onSelectOrModify={(adjustedTicker) => {
-                    // Note: I experimented with throttling here and the performance
-                    // tradeoff didn't seem worth it
-                    debounceWithKey(
-                      `$multi-ticker-select-${adjustedTicker.tickerId}}`,
-                      () => {
-                        selectTicker(adjustedTicker);
-                      },
-                      TICKER_QUANTITY_ADJUST_DEBOUNCE_TIME,
-                    );
-                  }}
-                  // TODO: Memoize
-                  onDeselect={() => deselectTicker(tickerDetail.ticker_id)}
-                  onDelete={() => alert("TODO: Implement `onDelete`")}
-                  onNavigate={() => navigateToSymbol(tickerDetail.symbol)}
-                  // TODO: Don't hardcode
-                  minWeight={0.001}
-                  maxWeight={10000000000}
-                  selected={isSelected}
-                  disabled={isDisabled}
-                />
+                <Section key={tickerDetail.ticker_id} mx={1} my={1} ml={0}>
+                  <MultiTickerManagerTicker
+                    adjustedTickerBucket={adjustedTickerBucket}
+                    tickerDetail={tickerDetail}
+                    // TODO: Memoize
+                    onSelectOrModify={(adjustedTicker) => {
+                      // Note: I experimented with throttling here and the performance
+                      // tradeoff didn't seem worth it
+                      debounceWithKey(
+                        `$multi-ticker-select-${adjustedTicker.tickerId}}`,
+                        () => {
+                          selectTicker(adjustedTicker);
+                        },
+                        TICKER_QUANTITY_ADJUST_DEBOUNCE_TIME,
+                      );
+                    }}
+                    // TODO: Memoize
+                    onDeselect={() => deselectTicker(tickerDetail.ticker_id)}
+                    onDelete={() => alert("TODO: Implement `onDelete`")}
+                    onNavigate={() => navigateToSymbol(tickerDetail.symbol)}
+                    // TODO: Don't hardcode
+                    minWeight={0.001}
+                    maxWeight={10000000000}
+                    selected={isSelected}
+                    disabled={isDisabled}
+                  />
+                </Section>
               );
             })}
           </Scrollable>
