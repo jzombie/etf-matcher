@@ -56,10 +56,12 @@ export default function TickerVectorQueryTableCosine({
 
   // Auto-fetch
   useEffect(() => {
-    if (query && fetchCosine) {
+    // Note: `tickerVectorConfigKey` is used here ensure this refetches when it
+    // changes
+    if (tickerVectorConfigKey && query && fetchCosine) {
       fetchCosine();
     }
-  }, [fetchCosine, query]);
+  }, [tickerVectorConfigKey, fetchCosine, query]);
 
   if (isLoading) {
     return (

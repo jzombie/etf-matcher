@@ -8,6 +8,7 @@ import { TickerBucket } from "@src/store";
 import customLogger from "@src/utils/customLogger";
 
 import Section from "@components/Section";
+import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
 
 import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import { useNotification } from "@hooks/useNotification";
@@ -57,9 +58,11 @@ export default function TickerBucketList({
   );
 
   return (
-    <ul style={{ listStyle: "none", padding: 0 }}>
+    <UnstyledUL>
       {sortedTickerBuckets.map((tickerBucket, idx) => (
-        <li key={idx}>
+        <UnstyledLI key={idx}>
+          &nbsp;{" "}
+          {/* FIXME: The `&nbsp;` is an intentional workaround to "activate" the vertical padded sections.  */}
           <Section>
             {
               // TODO: Use dedicated icon, per bucket type, and use the same icon determination logic in the header
@@ -117,8 +120,8 @@ export default function TickerBucketList({
               </Button>
             )}
           </Section>
-        </li>
+        </UnstyledLI>
       ))}
-    </ul>
+    </UnstyledUL>
   );
 }

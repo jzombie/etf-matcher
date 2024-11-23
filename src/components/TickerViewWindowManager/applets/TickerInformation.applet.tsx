@@ -1,55 +1,66 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 
 import { Box, Divider, Link, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
-import {
-  RustServiceETFAggregateDetail,
-  RustServiceTickerDetail,
-} from "@services/RustService";
+import { Link as ReactRouterLink } from "react-router-dom";
 
 import EncodedImage from "@components/EncodedImage";
 
+import useFormattedSectorAndIndustry from "@hooks/useFormattedSectorAndIndustry";
+import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
+
 import getSymbolThirdPartyLink from "@utils/string/getSymbolThirdPartyLink";
+import {
+  formatTickerBucketPageTitle,
+  getTickerBucketLink,
+} from "@utils/tickerBucketLinkUtils";
 
-import TickerViewWindowManagerBucketManager from "../TickerViewWindowManager.BucketManager";
-import ETFAggregateDetailAppletWrap from "../components/ETFAggregateDetailAppletWrap";
+import TickerViewWindowManagerAppletWrap, {
+  TickerViewWindowManagerAppletWrapProps,
+} from "../components/TickerViewWindowManager.AppletWrap";
+import TickerViewWindowManagerBucketManager from "../components/TickerViewWindowManager.BucketManager";
 
-export type TickerInformationAppletProps = {
-  tickerDetail?: RustServiceTickerDetail | null;
-  isLoadingTickerDetail: boolean;
-  tickerDetailError?: Error | unknown;
-  etfAggregateDetail?: RustServiceETFAggregateDetail | null;
-  isLoadingETFAggregateDetail: boolean;
-  etfAggregateDetailError?: Error | unknown;
-  isTiling: boolean;
-};
+export type TickerInformationAppletProps = Omit<
+  TickerViewWindowManagerAppletWrapProps,
+  "children"
+>;
 
 export default function TickerInformationApplet({
   tickerDetail,
-  isLoadingTickerDetail,
-  tickerDetailError,
   etfAggregateDetail,
-  isLoadingETFAggregateDetail,
-  etfAggregateDetailError,
   isTiling,
+  ...rest
 }: TickerInformationAppletProps) {
   const { formattedSector, formattedIndustry } = useFormattedSectorAndIndustry(
     tickerDetail,
     etfAggregateDetail,
   );
 
+  const { tickerBuckets } = useStoreStateReader("tickerBuckets");
+
+  const linkableTickerBuckets = useMemo(() => {
+    // Note: `tickerBuckets` is used as a dependency to ensure this hook
+    // re-renders when they have changed
+    if (tickerBuckets && tickerDetail) {
+      return store
+        .getTickerBucketsWithTicker(tickerDetail?.ticker_id)
+        .filter((tickerBucket) =>
+          ["portfolio", "watchlist"].includes(tickerBucket.type),
+        );
+    }
+
+    return [];
+  }, [tickerDetail, tickerBuckets]);
+
   return (
-    <ETFAggregateDetailAppletWrap
+    <TickerViewWindowManagerAppletWrap
       tickerDetail={tickerDetail}
-      isLoadingTickerDetail={isLoadingTickerDetail}
-      tickerDetailError={tickerDetailError}
       etfAggregateDetail={etfAggregateDetail}
-      isLoadingETFAggregateDetail={isLoadingETFAggregateDetail}
-      etfAggregateDetailError={etfAggregateDetailError}
       isTiling={isTiling}
+      {...rest}
     >
       <Scrollable style={{ textAlign: "center" }}>
         <Padding>
@@ -132,17 +143,72 @@ export default function TickerInformationApplet({
                 >
                   google.com
                 </Link>
+                {
+                  // TODO: Add `TradingView` link
+                }
               </Box>
+              {linkableTickerBuckets.length > 0 && (
+                <>
+                  <Divider sx={{ my: 2 }} />
+                  <Box sx={{ fontSize: ".8rem" }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: "bold" }}
+                      gutterBottom
+                    >
+                      Associated Bucket
+                      {linkableTickerBuckets.length !== 1 ? "s" : ""}
+                    </Typography>
+                    {linkableTickerBuckets.map((tickerBucket) => (
+                      <ReactRouterLink
+                        key={tickerBucket.uuid}
+                        to={getTickerBucketLink(tickerBucket)}
+                        style={{ margin: 2 }}
+                      >
+                        {formatTickerBucketPageTitle(tickerBucket)}
+                      </ReactRouterLink>
+                    ))}
+                    {/* <Link
+                  sx={{ mx: 0.5 }}
+                  href={getSymbolThirdPartyLink({
+                    tickerSymbol: tickerDetail?.symbol,
+                    companyName: tickerDetail?.company_name,
+                    isETF: tickerDetail?.is_etf,
+                    provider: "stockanalysis.com",
+                  })}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`View ${tickerDetail?.symbol} on stockanalysis.com`}
+                >
+                  stockanalysis.com
+                </Link>
+                <Link
+                  sx={{ mx: 0.5 }}
+                  href={getSymbolThirdPartyLink({
+                    tickerSymbol: tickerDetail?.symbol,
+                    companyName: tickerDetail?.company_name,
+                    isETF: tickerDetail?.is_etf,
+                    provider: "google.com",
+                  })}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`View ${tickerDetail?.symbol} on stockanalysis.com`}
+                >
+                  google.com
+                </Link> */}
+                  </Box>
+                </>
+              )}
             </>
 
-            // TODO: Add ability to copy the symbol to clipboard (refactor current implemention in `SettingsManager`)
+            // TODO: Add ability to copy the symbol to clipboard (search for `copySymbolsToClipboard` and refactor)
           )}
         </Padding>
       </Scrollable>
       {!isTiling && tickerDetail && (
         <TickerViewWindowManagerBucketManager tickerDetail={tickerDetail} />
       )}
-    </ETFAggregateDetailAppletWrap>
+    </TickerViewWindowManagerAppletWrap>
   );
 }
 
@@ -184,61 +250,4 @@ function InfoItem({
       </Typography>
     </Box>
   );
-}
-
-function useFormattedSectorAndIndustry(
-  tickerDetail?: RustServiceTickerDetail | null,
-  etfAggregateDetail?: RustServiceETFAggregateDetail | null,
-) {
-  const formatDetail = useCallback(
-    (baseEntity?: string, topEntity?: string): JSX.Element => {
-      // If both are missing, return "N/A"
-      if (!baseEntity && !topEntity) {
-        return <>N/A</>;
-      }
-
-      // If baseDetail is missing, but aggregateDetail is present, use aggregateDetail
-      if (!baseEntity) {
-        return <>{topEntity}</>;
-      }
-
-      // If both are present, format them together
-      if (topEntity) {
-        return (
-          <>
-            {baseEntity}
-            <br />({topEntity})
-          </>
-        );
-      }
-
-      // Otherwise, just return baseEntity
-      return <>{baseEntity}</>;
-    },
-    [],
-  );
-
-  const formattedSector = useMemo(() => {
-    return formatDetail(
-      tickerDetail?.sector_name,
-      etfAggregateDetail?.top_pct_sector_name,
-    );
-  }, [
-    formatDetail,
-    tickerDetail?.sector_name,
-    etfAggregateDetail?.top_pct_sector_name,
-  ]);
-
-  const formattedIndustry = useMemo(() => {
-    return formatDetail(
-      tickerDetail?.industry_name,
-      etfAggregateDetail?.top_pct_industry_name,
-    );
-  }, [
-    formatDetail,
-    tickerDetail?.industry_name,
-    etfAggregateDetail?.top_pct_industry_name,
-  ]);
-
-  return { formattedSector, formattedIndustry };
 }

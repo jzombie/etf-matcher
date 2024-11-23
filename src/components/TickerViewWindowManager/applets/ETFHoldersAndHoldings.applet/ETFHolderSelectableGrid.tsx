@@ -14,6 +14,7 @@ import type {
   RustServicePaginatedResults,
   RustServiceTickerDetail,
 } from "@services/RustService";
+import { DEFAULT_CURRENCY_CODE } from "@src/constants";
 
 import EncodedImage from "@components/EncodedImage";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
@@ -155,7 +156,7 @@ export default function ETFHolderSelectableGrid({
                       Top Sector Market Value:{" "}
                       {holder.top_sector_market_value
                         ? formatCurrency(
-                            holder.currency_code,
+                            holder.currency_code || DEFAULT_CURRENCY_CODE,
                             holder.top_sector_market_value,
                           )
                         : "N/A"}

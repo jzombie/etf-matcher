@@ -2,8 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
-import customLogger from "@utils/customLogger";
-
 // TODO: Reference https://developers.raycast.com/utilities/react-hooks/usepromise
 //for possibile improvements to use `AbortController`.
 
@@ -35,6 +33,7 @@ type UsePromiseProps<T, A extends unknown[] = []> = {
  * - `error`: The error returned by the promise, or null if not yet rejected.
  * - `execute`: A function to manually execute the promise with specific arguments.
  *
+ * TODO: Consider changing the following behavior, with a config flag.
  * Note: The `autoExecuteProps` are only used for the initial auto-execute.
  * Changing them does not trigger a re-evaluation. To re-evaluate, call the `execute` function explicitly.
  */
@@ -91,6 +90,9 @@ export default function usePromise<T, A extends unknown[] = []>({
         })
         .catch((error) => {
           if (pendingPromiseRef.current === newPromise) {
+            // Clear data on error
+            setData(null);
+
             setError(error);
             if (onError) {
               onError(error);
@@ -116,5 +118,11 @@ export default function usePromise<T, A extends unknown[] = []>({
     }
   }, [autoExecute, stableAutoExecuteProps, execute]);
 
-  return { data, isPending, error, execute };
+  const reset = useCallback(() => {
+    setData(null);
+    setIsPending(false);
+    setError(null);
+  }, []);
+
+  return { data, isPending, error, execute, reset };
 }

@@ -1,26 +1,26 @@
 import callRustService from "../callRustService";
 import type {
   RustServiceETFAggregateDetail,
-  RustServiceETFHoldingTickerResponse,
-  RustServiceETFHoldingWeightResponse,
+  RustServiceETFHoldingTicker,
+  RustServiceETFHoldingWeight,
   RustServicePaginatedResults,
-} from "../types";
+} from "../rustServiceTypes";
 
 export async function fetchETFHoldings(
   tickerId: number,
   page: number = 1,
   pageSize: number = 20,
-): Promise<RustServicePaginatedResults<RustServiceETFHoldingTickerResponse>> {
+): Promise<RustServicePaginatedResults<RustServiceETFHoldingTicker>> {
   return callRustService<
-    RustServicePaginatedResults<RustServiceETFHoldingTickerResponse>
+    RustServicePaginatedResults<RustServiceETFHoldingTicker>
   >("get_etf_holdings_by_etf_ticker_id", [tickerId, page, pageSize]);
 }
 
 export async function fetchETFHoldingWeight(
   etfTickerId: number,
   holdingTickerId: number,
-): Promise<RustServiceETFHoldingWeightResponse> {
-  return callRustService<RustServiceETFHoldingWeightResponse>(
+): Promise<RustServiceETFHoldingWeight> {
+  return callRustService<RustServiceETFHoldingWeight>(
     "get_etf_holding_weight",
     [etfTickerId, holdingTickerId],
   );

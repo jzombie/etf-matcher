@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import {
   Button,
@@ -13,6 +13,7 @@ import {
 
 import { RustServiceTickerVectorConfig } from "@services/RustService";
 
+import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useTickerVectorConfigs from "@hooks/useTickerVectorConfigs";
 
 import DialogModal, { DialogModalProps } from "./DialogModal";
@@ -34,6 +35,9 @@ export default function TickerVectorConfigSelectorDialogModal({
   title = "Select a Model Configuration",
   ...rest
 }: TickerVectorConfigSelectorDialogModalProps) {
+  const onSelectStableRef = useStableCurrentRef(onSelect);
+  const onCloseStableRef = useStableCurrentRef(onClose);
+
   const { tickerVectorConfigs } = useTickerVectorConfigs();
 
   // The use `useState` instead of `useRef` is because we want to trigger a
@@ -53,6 +57,21 @@ export default function TickerVectorConfigSelectorDialogModal({
     }
   }, [selectedListItemElement, isOpen]);
 
+  const handleSelect = useCallback(
+    (tickerVectorConfig: RustServiceTickerVectorConfig) => {
+      const onSelect = onSelectStableRef.current;
+      const onClose = onCloseStableRef.current;
+
+      onSelect(tickerVectorConfig);
+
+      if (typeof onClose === "function") {
+        // Close modal on select
+        onClose();
+      }
+    },
+    [onSelectStableRef, onCloseStableRef],
+  );
+
   // TODO: Enable keyboard navigation
 
   return (
@@ -67,7 +86,7 @@ export default function TickerVectorConfigSelectorDialogModal({
               return (
                 <ListItem
                   key={tickerVectorConfig.key}
-                  onClick={() => onSelect(tickerVectorConfig)}
+                  onClick={() => handleSelect(tickerVectorConfig)}
                   role="button"
                   aria-selected={isSelected}
                   ref={(el) => isSelected && setSelectedListItemElement(el)}

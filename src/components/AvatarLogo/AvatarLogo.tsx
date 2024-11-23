@@ -20,6 +20,7 @@ export type AvatarLogoProps = Omit<AvatarProps, "src"> & {
   title?: AvatarProps["title"];
   className?: AvatarProps["className"];
   style?: AvatarProps["style"];
+  disabled?: boolean;
 };
 
 export default function AvatarLogo({
@@ -27,6 +28,7 @@ export default function AvatarLogo({
   title,
   className,
   style,
+  disabled: isDisabled = false,
   ...rest
 }: AvatarLogoProps) {
   const logoBgColor = useImageBackgroundColor(tickerDetail?.logo_filename);
@@ -39,6 +41,10 @@ export default function AvatarLogo({
   const mergedStyle = logoBgColor
     ? { ...style, borderColor: logoBgColor, borderStyle: "solid" }
     : style;
+
+  const disabledStyle = isDisabled
+    ? { filter: "grayscale(100%)", ...mergedStyle }
+    : mergedStyle;
 
   if (isLoading) {
     return <CircularProgress style={style} className={className} />;
@@ -55,7 +61,7 @@ export default function AvatarLogo({
         {...rest}
         className={clsx(styles.avatar_logo, className)}
         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAgEBAYQ7hTQAAAAASUVORK5CYII=" // 1x1 pixel image to prevent default background
-        style={{ backgroundColor: "#b0b0b0", ...style }} // Gray circle
+        style={{ backgroundColor: "#b0b0b0", ...disabledStyle }} // Gray circle
       />
     );
   }
@@ -66,7 +72,7 @@ export default function AvatarLogo({
       title={title || `${tickerDetail.symbol} logo`}
       src={base64 ? `data:image/png;base64,${base64}` : noImageAvailable}
       className={clsx(styles.avatar_logo, className)}
-      style={mergedStyle}
+      style={disabledStyle}
       slotProps={{
         img: {
           onError: (e: { currentTarget: { src: string } }) =>

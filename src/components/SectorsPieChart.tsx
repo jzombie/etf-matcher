@@ -19,6 +19,7 @@ export type SectorsPieChartProps = {
   }>;
 };
 
+// TODO: Use consistent colors, regardless of sector allocations
 export default function SectorsPieChart({
   majorSectorDistribution,
 }: SectorsPieChartProps) {

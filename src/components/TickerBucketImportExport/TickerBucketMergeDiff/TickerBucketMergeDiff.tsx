@@ -5,7 +5,7 @@ import { Box, Typography } from "@mui/material";
 import type { TickerBucket } from "@src/store";
 
 import MergeTable from "./MergeTable";
-import useBucketChangeOverview from "./useBucketChangeOverview";
+import useBucketChangeOverview from "./hooks/useBucketChangeOverview";
 
 export type TickerBucketMergeDiffProps = {
   currentBucket?: TickerBucket;

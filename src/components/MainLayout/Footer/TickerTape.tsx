@@ -1,12 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { fetchTickerDetail } from "@services/RustService";
-import { TRADING_VIEW_COPYRIGHT_STYLES } from "@src/constants";
 import type { TickerBucket } from "@src/store";
-import {
-  TickerTape as LibTickerTape,
+
+import LibTickerTape, {
   TickerTapeSymbol,
-} from "react-ts-tradingview-widgets";
+} from "@components/vendor/tradingview/TickerTape";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
@@ -66,11 +65,5 @@ export default function TickerTape() {
     return null;
   }
 
-  return (
-    <LibTickerTape
-      colorTheme="dark"
-      copyrightStyles={TRADING_VIEW_COPYRIGHT_STYLES}
-      symbols={tickerTapeSymbols}
-    />
-  );
+  return <LibTickerTape symbols={tickerTapeSymbols} />;
 }

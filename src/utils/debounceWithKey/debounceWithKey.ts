@@ -1,21 +1,21 @@
 const debounceMap: { [key: string]: ReturnType<typeof setTimeout> | null } = {};
 
-interface DebouncedFunction<T extends (...args: unknown[]) => void> {
+export interface DebouncedFn<T extends (...args: unknown[]) => void> {
   (...args: Parameters<T>): void;
   clear: () => void;
 }
 
 export default function debounceWithKey<T extends (...args: unknown[]) => void>(
   key: string,
-  func: T,
+  fn: T,
   wait: number,
-  autoInvoke: boolean = true,
+  autoExecute: boolean = true,
   ...args: Parameters<T>
-): DebouncedFunction<T> {
-  function debouncedFunction(this: unknown, ...innerArgs: Parameters<T>): void {
+): DebouncedFn<T> {
+  function debouncedFn(this: unknown, ...innerArgs: Parameters<T>): void {
     const later = () => {
       debounceMap[key] = null;
-      func.apply(this, innerArgs.length ? innerArgs : args);
+      fn.apply(this, innerArgs.length ? innerArgs : args);
     };
 
     if (debounceMap[key]) {
@@ -25,16 +25,16 @@ export default function debounceWithKey<T extends (...args: unknown[]) => void>(
     debounceMap[key] = setTimeout(later, wait);
   }
 
-  debouncedFunction.clear = () => {
+  debouncedFn.clear = () => {
     if (debounceMap[key]) {
       clearTimeout(debounceMap[key] as ReturnType<typeof setTimeout>);
       debounceMap[key] = null;
     }
   };
 
-  if (autoInvoke) {
-    debouncedFunction(...args);
+  if (autoExecute) {
+    debouncedFn(...args);
   }
 
-  return debouncedFunction as DebouncedFunction<T>;
+  return debouncedFn as DebouncedFn<T>;
 }

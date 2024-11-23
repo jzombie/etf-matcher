@@ -1,32 +1,26 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ShowChartIcon from "@mui/icons-material/ShowChart";
-import StraightenIcon from "@mui/icons-material/Straighten";
-import {
-  Box,
-  Button,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 
 import Padding from "@layoutKit/Padding";
-import { SIMILARITY_MATCHES_NOTICE } from "@src/constants";
 import store, { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucket } from "@src/store";
+import { Link } from "react-router-dom";
 
 import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
 import ScrollTo from "@components/ScrollTo";
 import SearchModalButton from "@components/SearchModalButton";
 import Section from "@components/Section";
-import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
 import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
 
-import useStoreStateReader from "@hooks/useStoreStateReader";
+import {
+  formatTickerBucketPageTitle,
+  getTickerBucketLink,
+} from "@utils/tickerBucketLinkUtils";
 
 import BucketTicker from "./BucketManager.Bucket.Ticker";
 import BucketForm from "./BucketManager.BucketForm";
@@ -65,24 +59,14 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
     setIsCollapsed(false);
   }, []);
 
-  const [alignment, setAlignment] = useState<"euclidean" | "cosine">(
-    "euclidean",
+  const tickerBucketLink = useMemo(
+    () => getTickerBucketLink(tickerBucket),
+    [tickerBucket],
   );
 
-  const handleAlignment = useCallback(
-    (
-      event: React.MouseEvent<HTMLElement>,
-      newAlignment: "euclidean" | "cosine" | null,
-    ) => {
-      if (newAlignment !== null) {
-        setAlignment(newAlignment);
-      }
-    },
-    [],
-  );
-
-  const { preferredTickerVectorConfigKey } = useStoreStateReader(
-    "preferredTickerVectorConfigKey",
+  const formattedTickerBucketPageTitle = useMemo(
+    () => formatTickerBucketPageTitle(tickerBucket),
+    [tickerBucket],
   );
 
   return (
@@ -180,59 +164,6 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                                 </UnstyledLI>
                               ))}
                             </UnstyledUL>
-
-                            {
-                              // TODO: I'm holding off on adding model config selectio here
-                              // (including adding in PCA radial charts), and will instead be
-                              // re-using the ticker detail window management for this view.
-                              // Related issue: https://linear.app/zenosmosis/issue/ZEN-128/re-use-tickerdetail-layouts-for-bucket-views
-                            }
-                            <Box>
-                              <Typography variant="h6">
-                                &quot;{tickerBucket.name}&quot; Similarity
-                                Matches
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                color="textSecondary"
-                                fontStyle="italic"
-                              >
-                                {SIMILARITY_MATCHES_NOTICE}
-                              </Typography>
-                              <ToggleButtonGroup
-                                value={alignment}
-                                exclusive
-                                onChange={handleAlignment}
-                                aria-label="distance metric"
-                                sx={{ float: "right" }}
-                                size="small"
-                              >
-                                <ToggleButton
-                                  value="euclidean"
-                                  aria-label="euclidean"
-                                >
-                                  <StraightenIcon />
-                                  Euclidean
-                                </ToggleButton>
-                                <ToggleButton
-                                  value="cosine"
-                                  aria-label="cosine"
-                                >
-                                  <ShowChartIcon />
-                                  Cosine
-                                </ToggleButton>
-                              </ToggleButtonGroup>
-                              <TickerVectorQueryTable
-                                tickerVectorConfigKey={
-                                  preferredTickerVectorConfigKey
-                                }
-                                queryMode="bucket"
-                                query={tickerBucket}
-                                // FIXME: The key is used to update the bucket as holdings are changed; This could be improved
-                                key={JSON.stringify(tickerBucket)}
-                                alignment={alignment}
-                              />
-                            </Box>
                           </>
                         )}
                       </Box>
@@ -256,6 +187,11 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                 </>
               )}
             </>
+            {tickerBucket.tickers.length > 0 && (
+              <Link to={tickerBucketLink}>
+                Go to &quot;{formattedTickerBucketPageTitle}&quot; page
+              </Link>
+            )}
           </Section>
         </Padding>
       </ScrollTo>

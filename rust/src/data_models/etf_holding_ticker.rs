@@ -5,7 +5,7 @@ use crate::{DataURL, PaginatedResults, TickerDetail};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ETFHoldingTicker {
+pub struct ETFHoldingTickerRaw {
     pub etf_ticker_id: TickerId,
     pub holdings_json: String,
 }
@@ -18,9 +18,8 @@ struct ETFHoldingTickerJSON {
     pub holding_percentage: f32,
 }
 
-// TODO: Rename without `Response` suffix. Rename original.
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ETFHoldingTickerResponse {
+pub struct ETFHoldingTicker {
     pub holding_ticker_id: TickerId,
     pub holding_symbol: String,
     pub holding_market_value: f32,
@@ -32,9 +31,8 @@ pub struct ETFHoldingTickerResponse {
     pub is_etf: bool,
 }
 
-// TODO: Rename without `Response` suffix. Rename original.
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ETFHoldingWeightResponse {
+pub struct ETFHoldingWeight {
     pub etf_ticker_id: TickerId,
     pub holding_ticker_id: TickerId,
     pub holding_market_value: f32,
@@ -46,11 +44,11 @@ impl ETFHoldingTicker {
         etf_ticker_id: TickerId,
         page: usize,
         page_size: usize,
-    ) -> Result<PaginatedResults<ETFHoldingTickerResponse>, JsValue> {
+    ) -> Result<PaginatedResults<ETFHoldingTicker>, JsValue> {
         let url: &str = &DataURL::ETFHoldingTickersShardIndex.value();
 
         // Query shard for the ETF ticker ID
-        let holdings = query_shard_for_id(url, &etf_ticker_id, |detail: &ETFHoldingTicker| {
+        let holdings = query_shard_for_id(url, &etf_ticker_id, |detail: &ETFHoldingTickerRaw| {
             Some(&detail.etf_ticker_id)
         })
         .await?
@@ -70,7 +68,7 @@ impl ETFHoldingTicker {
         for holding in etf_holdings {
             match TickerDetail::get_ticker_detail(holding.holding_ticker_id).await {
                 Ok(ticker_detail) => {
-                    detailed_holdings.push(ETFHoldingTickerResponse {
+                    detailed_holdings.push(ETFHoldingTicker {
                         holding_ticker_id: holding.holding_ticker_id,
                         holding_symbol: ticker_detail.symbol,
                         holding_market_value: holding.holding_market_value,
@@ -102,11 +100,11 @@ impl ETFHoldingTicker {
     pub async fn get_etf_holding_weight(
         etf_ticker_id: TickerId,
         holding_ticker_id: TickerId,
-    ) -> Result<ETFHoldingWeightResponse, JsValue> {
+    ) -> Result<ETFHoldingWeight, JsValue> {
         let url: &str = &DataURL::ETFHoldingTickersShardIndex.value();
 
         // Query shard for the ETF ticker ID
-        let holdings = query_shard_for_id(url, &etf_ticker_id, |detail: &ETFHoldingTicker| {
+        let holdings = query_shard_for_id(url, &etf_ticker_id, |detail: &ETFHoldingTickerRaw| {
             Some(&detail.etf_ticker_id)
         })
         .await?
@@ -127,7 +125,7 @@ impl ETFHoldingTicker {
                 ))
             })?;
 
-        Ok(ETFHoldingWeightResponse {
+        Ok(ETFHoldingWeight {
             etf_ticker_id,
             holding_ticker_id: holding.holding_ticker_id,
             holding_market_value: holding.holding_market_value,

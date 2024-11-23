@@ -1,5 +1,5 @@
 import callRustService from "../callRustService";
-import type { RustServiceCacheDetail } from "../types";
+import type { RustServiceCacheDetail } from "../rustServiceTypes";
 
 export async function preloadSearchCache(): Promise<void> {
   return callRustService("preload_symbol_search_cache");
