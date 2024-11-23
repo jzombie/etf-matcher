@@ -53,7 +53,7 @@ export default function MultiTickerSimilaritySearchApplet({
     setIsTickerVectorConfigSelectorDialogOpen,
   ] = useState(false);
 
-  const { adjustedTickerBucket } = useTickerSelectionManagerContext();
+  const { filteredTickerBucket } = useTickerSelectionManagerContext();
 
   const {
     preferredTickerVectorConfigKey,
@@ -63,10 +63,10 @@ export default function MultiTickerSimilaritySearchApplet({
 
   const { data: tickerDistances, execute: fetchTickerDistances } = usePromise<
     RustServiceTickerDistance[],
-    [tickerVectorConfigKey: string, adjustedTickerBucket: TickerBucket]
+    [tickerVectorConfigKey: string, filteredTickerBucket: TickerBucket]
   >({
-    fn: (tickerVectorConfigKey, adjustedTickerBucket) =>
-      fetchEuclideanByTickerBucket(tickerVectorConfigKey, adjustedTickerBucket),
+    fn: (tickerVectorConfigKey, filteredTickerBucket) =>
+      fetchEuclideanByTickerBucket(tickerVectorConfigKey, filteredTickerBucket),
     onError: (err) => {
       customLogger.error(err);
       triggerUIError(new Error("Could not fetch PCA similarity results"));
@@ -75,15 +75,15 @@ export default function MultiTickerSimilaritySearchApplet({
   });
 
   useEffect(() => {
-    if (preferredTickerVectorConfigKey && adjustedTickerBucket) {
+    if (preferredTickerVectorConfigKey && filteredTickerBucket) {
       fetchTickerDistances(
         preferredTickerVectorConfigKey,
-        adjustedTickerBucket,
+        filteredTickerBucket,
       );
     }
   }, [
     preferredTickerVectorConfigKey,
-    adjustedTickerBucket,
+    filteredTickerBucket,
     fetchTickerDistances,
   ]);
 
@@ -100,6 +100,7 @@ export default function MultiTickerSimilaritySearchApplet({
     [displayMode],
   );
 
+  // TODO: Handle
   const getDirection = useCallback(() => {
     const prevIndex = DISPLAY_MODES.indexOf(previousModeRef.current);
     const currentIndex = DISPLAY_MODES.indexOf(displayMode);
@@ -168,7 +169,7 @@ export default function MultiTickerSimilaritySearchApplet({
             <Scrollable>
               <TickerVectorQueryTable
                 queryMode="bucket"
-                query={adjustedTickerBucket}
+                query={filteredTickerBucket}
                 alignment={displayMode}
                 tickerVectorConfigKey={preferredTickerVectorConfigKey}
               />

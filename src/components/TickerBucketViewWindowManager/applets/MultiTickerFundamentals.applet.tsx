@@ -30,13 +30,13 @@ export default function MultiTickerFundamentalsApplet({
   const [multiTickerFinancialDetail, setMultiTickerFinancialDetail] =
     useState<RustServiceTicker10KDetail | null>(null);
 
-  const { selectedTickers } = useTickerSelectionManagerContext();
+  const { filteredTickerBucket } = useTickerSelectionManagerContext();
 
   useEffect(() => {
-    fetchWeightedTicker10KDetail(selectedTickers).then(
+    fetchWeightedTicker10KDetail(filteredTickerBucket.tickers).then(
       setMultiTickerFinancialDetail,
     );
-  }, [selectedTickers]);
+  }, [filteredTickerBucket]);
 
   return (
     <TickerBucketViewWindowManagerAppletWrap

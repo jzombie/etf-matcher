@@ -17,8 +17,9 @@ import TickerWeightSelector from "./MultiTickerManager.TickerWeightSelector";
 export type MultiTickerManagerTickerProps = {
   adjustedTickerBucket: TickerBucket;
   tickerDetail: RustServiceTickerDetail;
-  onSelectOrModify: (adjustedTicker: TickerBucketTicker) => void;
+  onSelect: () => void;
   onDeselect: () => void;
+  onAdjust: (adjustedTicker: TickerBucketTicker) => void;
   onDelete: () => void;
   onNavigate: () => void;
   minWeight: number;
@@ -30,8 +31,9 @@ export type MultiTickerManagerTickerProps = {
 export default function MultiTickerManagerTicker({
   adjustedTickerBucket,
   tickerDetail,
-  onSelectOrModify,
+  onSelect,
   onDeselect,
+  onAdjust,
   onDelete,
   onNavigate,
   minWeight,
@@ -58,14 +60,7 @@ export default function MultiTickerManagerTicker({
         <Checkbox
           checked={isSelected}
           onChange={(evt) => {
-            evt.target.checked
-              ? onSelectOrModify({
-                  tickerId: tickerDetail.ticker_id,
-                  exchangeShortName: tickerDetail.exchange_short_name,
-                  symbol: tickerDetail.symbol,
-                  quantity: 1,
-                })
-              : onDeselect();
+            evt.target.checked ? onSelect() : onDeselect();
           }}
         />
 
@@ -161,7 +156,7 @@ export default function MultiTickerManagerTicker({
                 return;
               }
 
-              onSelectOrModify({
+              onAdjust({
                 ...tickerBucketTicker,
                 quantity: val,
               });

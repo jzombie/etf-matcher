@@ -28,7 +28,7 @@ export default function MultiTickerSectorAllocationApplet({
   isTiling,
   ...rest
 }: MultiTickerSectorAllocationAppletProps) {
-  const { adjustedTickerBucket } = useTickerSelectionManagerContext();
+  const { filteredTickerBucket } = useTickerSelectionManagerContext();
 
   const {
     data: distribution,
@@ -43,12 +43,12 @@ export default function MultiTickerSectorAllocationApplet({
   });
 
   useEffect(() => {
-    if (adjustedTickerBucket) {
+    if (filteredTickerBucket) {
       executeFetchWeightedTickerSectorDistribution(
-        adjustedTickerBucket.tickers,
+        filteredTickerBucket.tickers,
       );
     }
-  }, [adjustedTickerBucket, executeFetchWeightedTickerSectorDistribution]);
+  }, [filteredTickerBucket, executeFetchWeightedTickerSectorDistribution]);
 
   return (
     <TickerBucketViewWindowManagerAppletWrap

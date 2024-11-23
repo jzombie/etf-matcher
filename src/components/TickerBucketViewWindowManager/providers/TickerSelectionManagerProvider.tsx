@@ -11,21 +11,24 @@ import store, { TickerBucket, TickerBucketTicker } from "@src/store";
 import deepEqual from "@utils/deepEqual";
 
 export type TickerSelectionManagerContextType = {
-  selectedTickers: TickerBucketTicker[];
-  selectTicker: (ticker: TickerBucketTicker) => void;
-  deselectTicker: (tickerId: number) => void;
-  clearTickers: () => void;
+  selectedTickerIds: number[];
+  selectTickerId: (tickerId: number) => void;
+  deselectTickerId: (tickerId: number) => void;
+  clearSelectedTickerIds: () => void;
+  adjustTicker: (adjustedTicker: TickerBucketTicker) => void;
   adjustedTickerBucket: TickerBucket;
-  save: () => void;
-  isSaved: boolean;
+  filteredTickerBucket: TickerBucket;
+  saveTickerBucket: () => void;
+  isTickerBucketSaved: boolean;
 };
 
 // Set up the default value with empty functions and an empty array for selected tickers
 const DEFAULT_CONTEXT_VALUE: TickerSelectionManagerContextType = {
-  selectedTickers: [],
-  selectTicker: () => {},
-  deselectTicker: () => {},
-  clearTickers: () => {},
+  selectedTickerIds: [],
+  selectTickerId: () => {},
+  deselectTickerId: () => {},
+  clearSelectedTickerIds: () => {},
+  adjustTicker: () => {},
   adjustedTickerBucket: {
     uuid: "N/A",
     name: "N/A",
@@ -34,8 +37,16 @@ const DEFAULT_CONTEXT_VALUE: TickerSelectionManagerContextType = {
     description: "N/A",
     isUserConfigurable: true,
   },
-  save: () => {},
-  isSaved: true,
+  filteredTickerBucket: {
+    uuid: "N/A",
+    name: "N/A",
+    tickers: [],
+    type: "watchlist",
+    description: "N/A",
+    isUserConfigurable: true,
+  },
+  saveTickerBucket: () => {},
+  isTickerBucketSaved: true,
 };
 
 // Create the context with the specified type and default value
@@ -51,69 +62,91 @@ export default function TickerSelectionManagerProvider({
   children,
   tickerBucket,
 }: TickerSelectionManagerProviderProps) {
-  const [selectedTickers, setSelectedTickers] = useState<TickerBucketTicker[]>(
-    () => tickerBucket.tickers,
+  const [selectedTickerIds, setSelectedTickerIds] = useState<number[]>(() =>
+    tickerBucket.tickers.map((ticker) => ticker.tickerId),
   );
 
-  const adjustedTickerBucket = useMemo(
-    () => ({
-      ...tickerBucket,
-      tickers: selectedTickers,
-    }),
-    [tickerBucket, selectedTickers],
-  );
+  const [adjustedTickerBucket, setAdjustedTickerBucket] =
+    useState<TickerBucket>(tickerBucket);
 
-  const isSaved = useMemo(
+  const adjustTicker = useCallback((adjustedTicker: TickerBucketTicker) => {
+    setAdjustedTickerBucket((prev) => {
+      // Find the index of the ticker to adjust
+      const tickerIndex = prev.tickers.findIndex(
+        (ticker) => ticker.tickerId === adjustedTicker.tickerId,
+      );
+
+      if (tickerIndex === -1) {
+        // If the ticker is not found, add it to the array
+        return {
+          ...prev,
+          tickers: [...prev.tickers, adjustedTicker],
+        };
+      }
+
+      // If the ticker exists, update it
+      const updatedTickers = [...prev.tickers];
+      updatedTickers[tickerIndex] = adjustedTicker;
+
+      return {
+        ...prev,
+        tickers: updatedTickers,
+      };
+    });
+  }, []);
+
+  const filteredTickerBucket = useMemo(() => {
+    const filteredTickers = adjustedTickerBucket.tickers.filter((ticker) =>
+      selectedTickerIds.includes(ticker.tickerId),
+    );
+
+    return {
+      ...adjustedTickerBucket,
+      tickers: filteredTickers,
+    };
+  }, [adjustedTickerBucket, selectedTickerIds]);
+
+  const isTickerBucketSaved = useMemo(
     () => deepEqual(tickerBucket, adjustedTickerBucket),
     [tickerBucket, adjustedTickerBucket],
   );
 
-  const handleSave = useCallback(
+  const saveTickerBucket = useCallback(
     () => store.updateTickerBucket(tickerBucket, adjustedTickerBucket),
     [tickerBucket, adjustedTickerBucket],
   );
 
-  // TODO: Rename so this conveys the weight can be updated as well
-  const selectTicker = useCallback((newTicker: TickerBucketTicker) => {
-    setSelectedTickers((prevTickers) => {
-      const existingTicker = prevTickers.find(
-        (ticker) => ticker.tickerId === newTicker.tickerId,
-      );
-
-      if (existingTicker) {
-        // If ticker is already selected, update the quantity
-        return prevTickers.map((ticker) =>
-          ticker.tickerId === newTicker.tickerId
-            ? { ...ticker, quantity: newTicker.quantity }
-            : ticker,
-        );
-      } else {
-        // If ticker is not selected, add it to the list
-        return [...prevTickers, newTicker];
+  const selectTickerId = useCallback((tickerId: number) => {
+    setSelectedTickerIds((prevTickerIds) => {
+      if (prevTickerIds.includes(tickerId)) {
+        return prevTickerIds; // Avoid unnecessary re-renders
       }
+      return [...prevTickerIds, tickerId];
     });
   }, []);
 
-  const deselectTicker = useCallback((tickerId: number) => {
-    setSelectedTickers((prevTickers) =>
-      prevTickers.filter((ticker) => ticker.tickerId !== tickerId),
+  const deselectTickerId = useCallback((tickerId: number) => {
+    setSelectedTickerIds((prevTickerIds) =>
+      prevTickerIds.filter((prevTickerId) => prevTickerId !== tickerId),
     );
   }, []);
 
-  const clearTickers = useCallback(() => {
-    setSelectedTickers([]);
+  const clearSelectedTickerIds = useCallback(() => {
+    setSelectedTickerIds([]);
   }, []);
 
   return (
     <TickerSelectionManagerContext.Provider
       value={{
-        selectedTickers,
-        selectTicker,
-        deselectTicker,
-        clearTickers,
+        selectedTickerIds,
+        selectTickerId,
+        deselectTickerId,
+        clearSelectedTickerIds,
+        adjustTicker,
         adjustedTickerBucket,
-        save: handleSave,
-        isSaved,
+        filteredTickerBucket,
+        saveTickerBucket,
+        isTickerBucketSaved,
       }}
     >
       {children}

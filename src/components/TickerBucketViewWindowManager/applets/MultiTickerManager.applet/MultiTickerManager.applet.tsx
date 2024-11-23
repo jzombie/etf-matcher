@@ -36,12 +36,14 @@ export default function MultiTickerManagerApplet({
   ...rest
 }: MultiTickerManagerAppletProps) {
   const {
-    selectTicker,
-    deselectTicker,
-    selectedTickers,
+    selectTickerId,
+    deselectTickerId,
+    selectedTickerIds,
+    adjustTicker,
     adjustedTickerBucket,
-    save,
-    isSaved,
+    filteredTickerBucket,
+    saveTickerBucket,
+    isTickerBucketSaved,
   } = useTickerSelectionManagerContext();
 
   const navigateToSymbol = useTickerSymbolNavigation();
@@ -62,7 +64,10 @@ export default function MultiTickerManagerApplet({
                 gap={2}
               >
                 {/* Save / Commit Icon */}
-                <IconButton onClick={save} disabled={isSaved}>
+                <IconButton
+                  onClick={saveTickerBucket}
+                  disabled={isTickerBucketSaved}
+                >
                   <SaveIcon fontSize="large" />
                 </IconButton>
 
@@ -103,32 +108,31 @@ export default function MultiTickerManagerApplet({
           </Aside>
           <Scrollable>
             {multiTickerDetails?.map((tickerDetail) => {
-              const tickerBucketTicker = adjustedTickerBucket.tickers.find(
-                (tickerBucketTicker) =>
-                  tickerBucketTicker.tickerId === tickerDetail.ticker_id,
+              const isSelected = selectedTickerIds.some(
+                (tickerId) => tickerId === tickerDetail.ticker_id,
               );
 
-              const isSelected = selectedTickers.some(
-                (ticker) => ticker.tickerId === tickerDetail.ticker_id,
+              const isDisabled = !filteredTickerBucket.tickers.find(
+                (filteredTicker) =>
+                  filteredTicker.tickerId === tickerDetail.ticker_id,
               );
-
-              const isDisabled = !tickerBucketTicker;
 
               return (
                 <Section key={tickerDetail.ticker_id} mx={1} my={1} ml={0}>
                   <MultiTickerManagerTicker
                     adjustedTickerBucket={adjustedTickerBucket}
                     tickerDetail={tickerDetail}
-                    onSelectOrModify={(adjustedTicker) => {
+                    onSelect={() => selectTickerId(tickerDetail.ticker_id)}
+                    onDeselect={() => deselectTickerId(tickerDetail.ticker_id)}
+                    onAdjust={(adjustedTicker) => {
                       debounceWithKey(
                         `$multi-ticker-select-${adjustedTicker.tickerId}}`,
                         () => {
-                          selectTicker(adjustedTicker);
+                          adjustTicker(adjustedTicker);
                         },
                         TICKER_QUANTITY_ADJUST_DEBOUNCE_TIME,
                       );
                     }}
-                    onDeselect={() => deselectTicker(tickerDetail.ticker_id)}
                     onDelete={() => alert("TODO: Implement `onDelete`")}
                     onNavigate={() => navigateToSymbol(tickerDetail.symbol)}
                     minWeight={0.001}
