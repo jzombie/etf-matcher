@@ -44,6 +44,7 @@ export default function MultiTickerManagerApplet({
     areAllTickersSelected,
     areNoTickersSelected,
     adjustTicker,
+    removeTickerWithId,
     adjustedTickerBucket,
     filteredTickerBucket,
     saveTickerBucket,
@@ -110,6 +111,14 @@ export default function MultiTickerManagerApplet({
           </Aside>
           <Scrollable>
             {multiTickerDetails?.map((tickerDetail) => {
+              const isDeleted = !adjustedTickerBucket.tickers
+                .map((ticker) => ticker.tickerId)
+                .includes(tickerDetail.ticker_id);
+
+              if (isDeleted) {
+                return;
+              }
+
               const isSelected = selectedTickerIds.some(
                 (tickerId) => tickerId === tickerDetail.ticker_id,
               );
@@ -127,6 +136,8 @@ export default function MultiTickerManagerApplet({
                     onSelect={() => selectTickerId(tickerDetail.ticker_id)}
                     onDeselect={() => deselectTickerId(tickerDetail.ticker_id)}
                     onAdjust={(adjustedTicker) => {
+                      // Note: I experimented with throttling, but the UI update
+                      // performance tradeoff wasn't worth it at the time
                       debounceWithKey(
                         `$multi-ticker-select-${adjustedTicker.tickerId}}`,
                         () => {
@@ -135,7 +146,12 @@ export default function MultiTickerManagerApplet({
                         TICKER_QUANTITY_ADJUST_DEBOUNCE_TIME,
                       );
                     }}
-                    onDelete={() => alert("TODO: Implement `onDelete`")}
+                    onDelete={() => {
+                      // TODO: Prompt for confirmation before deleting
+                      removeTickerWithId(tickerDetail.ticker_id);
+
+                      // TODO: Auto-save after deleting?
+                    }}
                     onNavigate={() => navigateToSymbol(tickerDetail.symbol)}
                     minWeight={0.001}
                     maxWeight={10000000000}

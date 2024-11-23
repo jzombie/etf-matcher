@@ -19,6 +19,7 @@ export type TickerSelectionManagerContextType = {
   areAllTickersSelected: boolean;
   areNoTickersSelected: boolean;
   adjustTicker: (adjustedTicker: TickerBucketTicker) => void;
+  removeTickerWithId: (tickerId: number) => void;
   adjustedTickerBucket: TickerBucket;
   // `filteredTickerBucket` is the `adjustedTickerBucket` with deselected tickers filtered out
   filteredTickerBucket: TickerBucket;
@@ -36,6 +37,7 @@ const DEFAULT_CONTEXT_VALUE: TickerSelectionManagerContextType = {
   areAllTickersSelected: true,
   areNoTickersSelected: false,
   adjustTicker: () => {},
+  removeTickerWithId: () => {},
   adjustedTickerBucket: {
     uuid: "N/A",
     name: "N/A",
@@ -100,6 +102,15 @@ export default function TickerSelectionManagerProvider({
         tickers: updatedTickers,
       };
     });
+  }, []);
+
+  const removeTickerWithId = useCallback((tickerId: number) => {
+    setAdjustedTickerBucket((prev) => ({
+      ...prev,
+      tickers: prev.tickers.filter(
+        (prevTicker) => prevTicker.tickerId != tickerId,
+      ),
+    }));
   }, []);
 
   const filteredTickerBucket = useMemo(() => {
@@ -167,6 +178,7 @@ export default function TickerSelectionManagerProvider({
         areAllTickersSelected,
         areNoTickersSelected,
         adjustTicker,
+        removeTickerWithId,
         adjustedTickerBucket,
         filteredTickerBucket,
         saveTickerBucket,
