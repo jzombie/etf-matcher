@@ -15,7 +15,7 @@ import { useNotification } from "@hooks/useNotification";
 
 import TickerQuantityFields from "./TickerQuantityFields";
 
-export type BucketFormProps = {
+export type TickerBucketFormProps = {
   bucketType: TickerBucket["type"];
   existingBucket?: TickerBucket;
   onClose?: () => void;
@@ -23,13 +23,13 @@ export type BucketFormProps = {
   disableTickerQuantityFields?: boolean;
 };
 
-export default function BucketForm({
+export default function TickerBucketForm({
   bucketType,
   existingBucket,
   onClose,
   onCancel,
   disableTickerQuantityFields = false,
-}: BucketFormProps) {
+}: TickerBucketFormProps) {
   const initialBucketName = useMemo(
     () => existingBucket?.name,
     [existingBucket],

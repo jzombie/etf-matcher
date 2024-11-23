@@ -41,15 +41,15 @@ const InfoItem = ({
   </Box>
 );
 
-export type BucketTickerProps = {
+export type TickerBucketTickerProps = {
   bucketTicker: TickerBucketTicker;
   tickerBucket: TickerBucket;
 };
 
-export default function BucketTicker({
+export default function TickerBucketTicker({
   bucketTicker,
   tickerBucket,
-}: BucketTickerProps) {
+}: TickerBucketTickerProps) {
   const { isLoadingTickerDetail, tickerDetail, tickerDetailError } =
     useTickerDetail(bucketTicker.tickerId);
 

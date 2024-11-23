@@ -7,7 +7,7 @@ import { vi } from "vitest";
 
 import TickerQuantityFieldsItem, {
   TickerQuantityFieldsItemProps,
-} from "@components/BucketManager/TickerQuantityFields/TickerQuantityFields.Item";
+} from "@components/TickerBucketManager/TickerQuantityFields/TickerQuantityFields.Item";
 
 import { render } from "../../../../test/customRender";
 

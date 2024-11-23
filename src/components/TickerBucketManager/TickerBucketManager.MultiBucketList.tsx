@@ -6,7 +6,7 @@ import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
 
 import useStoreStateReader from "@hooks/useStoreStateReader";
 
-import TickerBucketView from "./BucketManager.Bucket";
+import TickerBucketView from "./TickerBucketManager.Bucket";
 
 export type MultiBucketListProps = {
   bucketType: TickerBucket["type"];

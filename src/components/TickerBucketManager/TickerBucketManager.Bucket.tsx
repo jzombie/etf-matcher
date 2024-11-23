@@ -22,8 +22,8 @@ import {
   getTickerBucketLink,
 } from "@utils/tickerBucketLinkUtils";
 
-import BucketTicker from "./BucketManager.Bucket.Ticker";
-import BucketForm from "./BucketManager.BucketForm";
+import BucketTicker from "./TickerBucketManager.Bucket.Ticker";
+import BucketForm from "./TickerBucketManager.BucketForm";
 
 export type TickerBucketProps = {
   tickerBucket: TickerBucket;

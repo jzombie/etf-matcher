@@ -22,9 +22,9 @@ import {
 import type { TickerBucket } from "@src/store";
 import { Link } from "react-router-dom";
 
-import BucketForm from "@components/BucketManager/BucketManager.BucketForm";
 import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
 import DialogModal from "@components/DialogModal";
+import BucketForm from "@components/TickerBucketManager/TickerBucketManager.BucketForm";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
