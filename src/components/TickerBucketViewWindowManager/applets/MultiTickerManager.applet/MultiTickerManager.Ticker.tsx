@@ -1,7 +1,8 @@
 import React from "react";
 
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import LinkIcon from "@mui/icons-material/Link";
-import { Box } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 
 import type { RustServiceTickerDetail } from "@services/RustService";
@@ -11,8 +12,6 @@ import AvatarLogo from "@components/AvatarLogo";
 
 import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 
-import customLogger from "@utils/customLogger";
-
 import TickerWeightSelector from "./MultiTickerManager.TickerWeightSelector";
 
 export type MultiTickerManagerTickerProps = {
@@ -20,6 +19,7 @@ export type MultiTickerManagerTickerProps = {
   tickerDetail: RustServiceTickerDetail;
   onSelectOrModify: (adjustedTicker: TickerBucketTicker) => void;
   onDeselect: () => void;
+  onDelete: () => void;
   onNavigate: () => void;
   minWeight: number;
   maxWeight: number;
@@ -32,6 +32,7 @@ export default function MultiTickerManagerTicker({
   tickerDetail,
   onSelectOrModify,
   onDeselect,
+  onDelete,
   onNavigate,
   minWeight,
   maxWeight,
@@ -73,6 +74,7 @@ export default function MultiTickerManagerTicker({
           style={{ marginRight: 8 }}
           disabled={isDisabled}
         />
+
         <Box>
           <Box display="flex" alignItems="center">
             <Box display="flex" alignItems="center" marginRight={1}>
@@ -125,6 +127,15 @@ export default function MultiTickerManagerTicker({
             {tickerDetail.company_name}
           </Box>
         </Box>
+
+        {/* Placeholder Delete Icon */}
+        <IconButton
+          aria-label="Delete Ticker"
+          sx={{ marginLeft: "auto", color: "error.main" }}
+          onClick={onDelete}
+        >
+          <DeleteOutlineIcon />
+        </IconButton>
       </Box>
       <Box
         sx={{

@@ -135,6 +135,7 @@ export default function MultiTickerManagerApplet({
                   }}
                   // TODO: Memoize
                   onDeselect={() => deselectTicker(tickerDetail.ticker_id)}
+                  onDelete={() => alert("TODO: Implement `onDelete`")}
                   onNavigate={() => navigateToSymbol(tickerDetail.symbol)}
                   // TODO: Don't hardcode
                   minWeight={0.001}
