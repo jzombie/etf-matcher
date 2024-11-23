@@ -6,7 +6,9 @@ import React, {
   useState,
 } from "react";
 
-import { TickerBucket, TickerBucketTicker } from "@src/store";
+import store, { TickerBucket, TickerBucketTicker } from "@src/store";
+
+import deepEqual from "@utils/deepEqual";
 
 export type TickerSelectionManagerContextType = {
   selectedTickers: TickerBucketTicker[];
@@ -14,10 +16,12 @@ export type TickerSelectionManagerContextType = {
   deselectTicker: (tickerId: number) => void;
   clearTickers: () => void;
   adjustedTickerBucket: TickerBucket;
+  save: () => void;
+  isSaved: boolean;
 };
 
 // Set up the default value with empty functions and an empty array for selected tickers
-const defaultContextValue: TickerSelectionManagerContextType = {
+const DEFAULT_CONTEXT_VALUE: TickerSelectionManagerContextType = {
   selectedTickers: [],
   selectTicker: () => {},
   deselectTicker: () => {},
@@ -30,11 +34,13 @@ const defaultContextValue: TickerSelectionManagerContextType = {
     description: "N/A",
     isUserConfigurable: true,
   },
+  save: () => {},
+  isSaved: true,
 };
 
 // Create the context with the specified type and default value
 export const TickerSelectionManagerContext =
-  createContext<TickerSelectionManagerContextType>(defaultContextValue);
+  createContext<TickerSelectionManagerContextType>(DEFAULT_CONTEXT_VALUE);
 
 export type TickerSelectionManagerProviderProps = {
   children: ReactNode;
@@ -55,6 +61,16 @@ export default function TickerSelectionManagerProvider({
       tickers: selectedTickers,
     }),
     [tickerBucket, selectedTickers],
+  );
+
+  const isSaved = useMemo(
+    () => deepEqual(tickerBucket, adjustedTickerBucket),
+    [tickerBucket, adjustedTickerBucket],
+  );
+
+  const handleSave = useCallback(
+    () => store.updateTickerBucket(tickerBucket, adjustedTickerBucket),
+    [tickerBucket, adjustedTickerBucket],
   );
 
   // TODO: Rename so this conveys the weight can be updated as well
@@ -96,6 +112,8 @@ export default function TickerSelectionManagerProvider({
         deselectTicker,
         clearTickers,
         adjustedTickerBucket,
+        save: handleSave,
+        isSaved,
       }}
     >
       {children}

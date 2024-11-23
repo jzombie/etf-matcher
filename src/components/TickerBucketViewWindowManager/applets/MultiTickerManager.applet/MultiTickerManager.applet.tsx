@@ -4,7 +4,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutlined";
 import CheckBoxIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlined";
 import SaveIcon from "@mui/icons-material/SaveOutlined";
-import { Box, Typography } from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
 
 import Layout, { Aside, Content, Footer } from "@layoutKit/Layout";
 import Padding from "@layoutKit/Padding";
@@ -40,12 +40,9 @@ export default function MultiTickerManagerApplet({
     deselectTicker,
     selectedTickers,
     adjustedTickerBucket,
+    save,
+    isSaved,
   } = useTickerSelectionManagerContext();
-
-  // TODO: Remove
-  useEffect(() => {
-    customLogger.debug({ multiTickerDetails, adjustedTickerBucket });
-  }, [multiTickerDetails, adjustedTickerBucket]);
 
   const navigateToSymbol = useTickerSymbolNavigation();
 
@@ -65,43 +62,42 @@ export default function MultiTickerManagerApplet({
                 gap={2}
               >
                 {/* Save / Commit Icon */}
-                <SaveIcon
-                  fontSize="large"
-                  style={{ cursor: "pointer" }}
+                <IconButton onClick={save} disabled={isSaved}>
+                  <SaveIcon fontSize="large" />
+                </IconButton>
+
+                {/* Select All Icon */}
+                <IconButton
                   onClick={() => {
-                    // TODO: Add save/commit functionality here
-                    customLogger.log("Commit/Save action triggered");
-                  }}
-                />
-                {
-                  // TODO: Dynamically switch between `CheckBoxIcon` depending if `all`, `none`, or `some` are selected
-                }
-                {/* Select / Unselect All Icon */}
-                <CheckBoxIcon
-                  fontSize="large"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => {
-                    // TODO: Add select-all functionality here
+                    // TODO: Implement
                     customLogger.log("Select all action triggered");
                   }}
-                />
-                <CheckBoxOutlineBlankIcon
-                  fontSize="large"
-                  style={{ cursor: "pointer" }}
+                  // disabled={isDisabled}
+                >
+                  <CheckBoxIcon fontSize="large" />
+                </IconButton>
+
+                {/* Unselect All Icon */}
+                <IconButton
                   onClick={() => {
-                    // TODO: Add unselect-all functionality here
+                    // TODO: Implement
                     customLogger.log("Unselect all action triggered");
                   }}
-                />
+                  // disabled={isDisabled}
+                >
+                  <CheckBoxOutlineBlankIcon fontSize="large" />
+                </IconButton>
+
                 {/* Add Child Bucket Icon */}
-                <AddCircleOutlineIcon
-                  fontSize="large"
-                  style={{ cursor: "pointer" }}
+                <IconButton
                   onClick={() => {
-                    // TODO: Add add-ticker/add-child-bucket functionality here
+                    // TODO: Implement
                     customLogger.log("Add child item action triggered");
                   }}
-                />
+                  // disabled={isDisabled}
+                >
+                  <AddCircleOutlineIcon fontSize="large" />
+                </IconButton>
               </Box>
             </Padding>
           </Aside>
@@ -123,10 +119,7 @@ export default function MultiTickerManagerApplet({
                   <MultiTickerManagerTicker
                     adjustedTickerBucket={adjustedTickerBucket}
                     tickerDetail={tickerDetail}
-                    // TODO: Memoize
                     onSelectOrModify={(adjustedTicker) => {
-                      // Note: I experimented with throttling here and the performance
-                      // tradeoff didn't seem worth it
                       debounceWithKey(
                         `$multi-ticker-select-${adjustedTicker.tickerId}}`,
                         () => {
@@ -135,11 +128,9 @@ export default function MultiTickerManagerApplet({
                         TICKER_QUANTITY_ADJUST_DEBOUNCE_TIME,
                       );
                     }}
-                    // TODO: Memoize
                     onDeselect={() => deselectTicker(tickerDetail.ticker_id)}
                     onDelete={() => alert("TODO: Implement `onDelete`")}
                     onNavigate={() => navigateToSymbol(tickerDetail.symbol)}
-                    // TODO: Don't hardcode
                     minWeight={0.001}
                     maxWeight={10000000000}
                     selected={isSelected}
