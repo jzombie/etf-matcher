@@ -100,12 +100,12 @@ export default function MultiTickerSimilaritySearchApplet({
     [displayMode],
   );
 
-  // TODO: Handle
-  const getDirection = useCallback(() => {
-    const prevIndex = DISPLAY_MODES.indexOf(previousModeRef.current);
-    const currentIndex = DISPLAY_MODES.indexOf(displayMode);
-    return currentIndex > prevIndex ? "left" : "right";
-  }, [displayMode]);
+  // TODO: Handle (used for `Transition` view direction)
+  // const getDirection = useCallback(() => {
+  //   const prevIndex = DISPLAY_MODES.indexOf(previousModeRef.current);
+  //   const currentIndex = DISPLAY_MODES.indexOf(displayMode);
+  //   return currentIndex > prevIndex ? "left" : "right";
+  // }, [displayMode]);
 
   // TODO: Remove hardcoding
   const shouldShowLabels = true;
