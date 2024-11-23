@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { MosaicNode, MosaicParent } from "react-mosaic-component";
 
@@ -15,7 +15,9 @@ export default function useWindowManagerLayout({
   contentMap,
 }: UseWindowManagerLayoutProps) {
   // Track layout, open windows, saved layouts, and split percentages
-  const [layout, setLayout] = useState<MosaicNode<string> | null>(null);
+  const [layout, setLayout] = useState<MosaicNode<string> | null>(
+    initialLayout,
+  );
   const [openedWindows, setOpenedWindows] = useState<Set<string>>(new Set());
   const [savedLayouts, setSavedLayouts] = useState<
     Record<string, MosaicNode<string>>
@@ -24,7 +26,7 @@ export default function useWindowManagerLayout({
     Record<string, number>
   >({});
 
-  // Update open windows based on the current layout
+  // Update opened windows based on the given layout
   const updateOpenWindows = useCallback((layout: MosaicNode<string> | null) => {
     const findOpenWindows = (node: MosaicNode<string> | null): string[] => {
       if (!node) return [];
@@ -38,6 +40,11 @@ export default function useWindowManagerLayout({
     const openWindowSet = new Set(findOpenWindows(layout));
     setOpenedWindows(openWindowSet);
   }, []);
+
+  // Auto-update opened windows tracking
+  useEffect(() => {
+    updateOpenWindows(layout);
+  }, [layout, updateOpenWindows]);
 
   // Toggle window open/close
   const toggleWindow = useCallback(
@@ -80,13 +87,10 @@ export default function useWindowManagerLayout({
     [openedWindows, savedLayouts, splitPercentages],
   );
 
-  useEffect(() => {
-    setLayout(initialLayout);
-    updateOpenWindows(initialLayout); // Initialize open windows
-  }, [contentMap, initialLayout, updateOpenWindows]);
-
-  const areAllWindowsOpen =
-    Array.from(openedWindows).length === Object.values(contentMap).length;
+  const areAllWindowsOpen = useMemo(
+    () => Array.from(openedWindows).length === Object.values(contentMap).length,
+    [openedWindows, contentMap],
+  );
 
   return {
     layout,
