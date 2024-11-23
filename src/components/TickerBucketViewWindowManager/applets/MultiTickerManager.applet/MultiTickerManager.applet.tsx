@@ -1,7 +1,13 @@
 import React, { useEffect } from "react";
 
-import Center from "@layoutKit/Center";
-import Layout, { Aside, Content, Footer, Header } from "@layoutKit/Layout";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutlined";
+import CheckBoxIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlined";
+import SaveIcon from "@mui/icons-material/SaveOutlined";
+import { Box, Typography } from "@mui/material";
+
+import Layout, { Aside, Content, Footer } from "@layoutKit/Layout";
+import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
@@ -47,17 +53,55 @@ export default function MultiTickerManagerApplet({
       {...rest}
     >
       <Layout>
-        <Header>
-          <Aside>to the side</Aside>
-          <Content style={{ textAlign: "center" }}>Hello</Content>
-          <Aside>to the side</Aside>
-        </Header>
         <Content>
-          <Aside style={{ border: "1px yellow solid" }}>
-            <Center>test</Center>
-          </Aside>
-          <Aside style={{ border: "1px yellow solid" }}>
-            <Center>test</Center>
+          <Aside>
+            <Padding>
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                gap={2}
+              >
+                {/* Save / Commit Icon */}
+                <SaveIcon
+                  fontSize="large"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    // TODO: Add save/commit functionality here
+                    customLogger.log("Commit/Save action triggered");
+                  }}
+                />
+                {
+                  // TODO: Dynamically switch between `CheckBoxIcon` depending if `all`, `none`, or `some` are selected
+                }
+                {/* Select / Unselect All Icon */}
+                <CheckBoxIcon
+                  fontSize="large"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    // TODO: Add select-all functionality here
+                    customLogger.log("Select all action triggered");
+                  }}
+                />
+                <CheckBoxOutlineBlankIcon
+                  fontSize="large"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    // TODO: Add unselect-all functionality here
+                    customLogger.log("Unselect all action triggered");
+                  }}
+                />
+                {/* Add Child Bucket Icon */}
+                <AddCircleOutlineIcon
+                  fontSize="large"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    // TODO: Add add-ticker/add-child-bucket functionality here
+                    customLogger.log("Add child item action triggered");
+                  }}
+                />
+              </Box>
+            </Padding>
           </Aside>
           <Scrollable>
             {multiTickerDetails?.map((tickerDetail) => {
@@ -101,13 +145,14 @@ export default function MultiTickerManagerApplet({
               );
             })}
           </Scrollable>
-          <Aside style={{ border: "1px yellow solid" }}>
-            <Center>test</Center>
-          </Aside>
         </Content>
         <Footer>
-          <Content>Hello</Content>
-          <Aside>to the side</Aside>
+          <Box sx={{ textAlign: "center" }}>
+            <Typography variant="body2" sx={{ fontStyle: "italic" }}>
+              {adjustedTickerBucket.tickers.length} item
+              {adjustedTickerBucket.tickers.length !== 1 ? "s" : ""} selected
+            </Typography>
+          </Box>
         </Footer>
       </Layout>
     </TickerBucketViewWindowManagerAppletWrap>
