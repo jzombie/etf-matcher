@@ -71,7 +71,8 @@ describe("Padding Component", () => {
           class="padding half"
         >
           <span>
-            Test Content</span>
+            Test Content
+          </span>
         </section>
       </DocumentFragment>
     `);
