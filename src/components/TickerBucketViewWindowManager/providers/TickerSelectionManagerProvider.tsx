@@ -20,6 +20,7 @@ export type TickerSelectionManagerContextType = {
   areNoTickersSelected: boolean;
   adjustTicker: (adjustedTicker: TickerBucketTicker) => void;
   adjustedTickerBucket: TickerBucket;
+  // `filteredTickerBucket` is the `adjustedTickerBucket` with deselected tickers filtered out
   filteredTickerBucket: TickerBucket;
   saveTickerBucket: () => void;
   isTickerBucketSaved: boolean;
