@@ -46,6 +46,7 @@ export default function MultiTickerManagerApplet({
     areAllTickersSelected,
     areNoTickersSelected,
     adjustTicker,
+    addSearchResultTicker,
     removeTickerWithId,
     adjustedTickerBucket,
     filteredTickerBucket,
@@ -173,12 +174,11 @@ export default function MultiTickerManagerApplet({
           </Box>
         </Footer>
       </Layout>
+
       {/* Ticker Search Modal */}
       <TickerSearchModal
         open={isSearchModalOpen}
-        onSelectTicker={(tickerSearchResult: RustServiceTickerSearchResult) => {
-          customLogger.warn("TODO: Handle", { tickerSearchResult });
-        }}
+        onSelectTicker={addSearchResultTicker}
         onCancel={() => setIsSearchModalOpen(false)}
       />
     </TickerBucketViewWindowManagerAppletWrap>
