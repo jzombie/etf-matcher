@@ -9,6 +9,8 @@ import { TickerBucket, TickerBucketTicker } from "@src/store";
 
 import AvatarLogo from "@components/AvatarLogo";
 
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
+
 import customLogger from "@utils/customLogger";
 
 import TickerWeightSelector from "./MultiTickerManager.TickerWeightSelector";
@@ -36,6 +38,8 @@ export default function MultiTickerManagerTicker({
   selected: isSelected,
   disabled: isDisabled,
 }: MultiTickerManagerTickerProps) {
+  const { triggerUIError } = useAppErrorBoundary();
+
   const tickerBucketTicker = adjustedTickerBucket.tickers.find(
     (tickerBucketTicker) =>
       tickerBucketTicker.tickerId === tickerDetail.ticker_id,
@@ -138,8 +142,10 @@ export default function MultiTickerManagerTicker({
             disabled={isDisabled}
             onChange={(evt, val) => {
               if (!tickerBucketTicker) {
-                customLogger.error(
-                  "`tickerBucketTicker` is not available and cannot be adjusted",
+                triggerUIError(
+                  new Error(
+                    "`tickerBucketTicker` is not available and cannot be adjusted",
+                  ),
                 );
                 return;
               }
