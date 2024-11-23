@@ -11,14 +11,16 @@ import type { TickerBucket } from "@src/store";
 
 import Section from "@components/Section";
 
-import BucketForm from "./BucketManager.BucketForm";
-import MultiBucketList from "./BucketManager.MultiBucketList";
+import TickerBucketForm from "./TickerBucketManager.BucketForm";
+import TickerMultiBucketList from "./TickerBucketManager.MultiBucketList";
 
-export type BucketManagerProps = {
+export type TickerBucketManagerProps = {
   bucketType: TickerBucket["type"];
 };
 
-export default function BucketManager({ bucketType }: BucketManagerProps) {
+export default function TickerBucketManager({
+  bucketType,
+}: TickerBucketManagerProps) {
   const [isAddingNewTickerBucket, setIsAddingNewTickerBucket] =
     useState<boolean>(false);
 
@@ -47,12 +49,12 @@ export default function BucketManager({ bucketType }: BucketManagerProps) {
           </Button>
 
           {isAddingNewTickerBucket && (
-            <BucketForm bucketType={bucketType} onClose={handleCancel} />
+            <TickerBucketForm bucketType={bucketType} onClose={handleCancel} />
           )}
         </Section>
       </Padding>
 
-      <MultiBucketList bucketType={bucketType} />
+      <TickerMultiBucketList bucketType={bucketType} />
     </>
   );
 }
