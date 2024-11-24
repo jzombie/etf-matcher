@@ -157,6 +157,7 @@ export default function MultiTickerManagerApplet({
                       // TODO: Auto-save after deleting?
                     }}
                     onNavigate={() => navigateToSymbol(tickerDetail.symbol)}
+                    // TODO: Base on dynamic ranges
                     minWeight={0.001}
                     maxWeight={10000000000}
                     selected={isSelected}
