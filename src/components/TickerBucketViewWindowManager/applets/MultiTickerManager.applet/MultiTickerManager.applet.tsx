@@ -114,8 +114,7 @@ export default function MultiTickerManagerApplet({
             </Padding>
           </Aside>
           <Scrollable>
-            {// TODO: This should be based on the adjustedTickerBucket so that it can account for new symbols
-            adjustedTickerDetails?.map((tickerDetail) => {
+            {adjustedTickerDetails?.map((tickerDetail) => {
               const isDeleted = !adjustedTickerBucket.tickers
                 .map((ticker) => ticker.tickerId)
                 .includes(tickerDetail.ticker_id);
