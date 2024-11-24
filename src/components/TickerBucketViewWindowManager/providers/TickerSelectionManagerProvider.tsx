@@ -187,6 +187,11 @@ export default function TickerSelectionManagerProvider({
           quantity: 1,
         };
 
+        // Automatically select new ticker id
+        setSelectedTickerIds((prev) => [
+          ...new Set([...prev, searchResultTicker.ticker_id]),
+        ]);
+
         return {
           ...prev,
           tickers: [...prev.tickers, newTicker],
@@ -242,16 +247,18 @@ export default function TickerSelectionManagerProvider({
   }, []);
 
   const selectAllTickerIds = useCallback(() => {
-    setSelectedTickerIds(tickerBucket.tickers.map((ticker) => ticker.tickerId));
-  }, [tickerBucket]);
+    setSelectedTickerIds(
+      adjustedTickerBucket.tickers.map((ticker) => ticker.tickerId),
+    );
+  }, [adjustedTickerBucket]);
 
   const clearSelectedTickerIds = useCallback(() => {
     setSelectedTickerIds([]);
   }, []);
 
   const areAllTickersSelected = useMemo(
-    () => selectedTickerIds.length === tickerBucket.tickers.length,
-    [selectedTickerIds, tickerBucket.tickers.length],
+    () => selectedTickerIds.length === adjustedTickerBucket.tickers.length,
+    [selectedTickerIds, adjustedTickerBucket.tickers.length],
   );
 
   const areNoTickersSelected = useMemo(
