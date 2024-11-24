@@ -3,6 +3,8 @@ import React from "react";
 import { Alert } from "@mui/material";
 
 import Center from "@layoutKit/Center";
+import Cover from "@layoutKit/Cover";
+import Full from "@layoutKit/Full";
 import { RustServiceTickerDetail } from "@services/RustService";
 
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
@@ -24,15 +26,6 @@ export default function MultiTickerDetailsAppletWrap({
   adjustedTickerDetailsError,
   children,
 }: MultiTickerDetailsAppletWrapProps) {
-  if (isLoadingAdjustedTickerDetails) {
-    // FIXME: Don't use `Center` if not tiling?
-    return (
-      <Center>
-        <NetworkProgressIndicator />
-      </Center>
-    );
-  }
-
   if (adjustedTickerDetailsError) {
     return (
       <Alert severity="error">
@@ -41,7 +34,17 @@ export default function MultiTickerDetailsAppletWrap({
     );
   }
 
-  if (adjustedTickerDetails) {
-    return <>{children}</>;
-  }
+  return (
+    <Full>
+      {adjustedTickerDetails && <>{children}</>}
+      <Cover clickThrough>
+        {isLoadingAdjustedTickerDetails && (
+          // FIXME: Don't use `Center` if not tiling?
+          <Center>
+            <NetworkProgressIndicator />
+          </Center>
+        )}
+      </Cover>
+    </Full>
+  );
 }

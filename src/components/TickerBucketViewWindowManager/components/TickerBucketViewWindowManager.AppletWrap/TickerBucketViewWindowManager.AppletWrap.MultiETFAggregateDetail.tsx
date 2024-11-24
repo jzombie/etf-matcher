@@ -3,6 +3,8 @@ import React from "react";
 import { Alert } from "@mui/material";
 
 import Center from "@layoutKit/Center";
+import Cover from "@layoutKit/Cover";
+import Full from "@layoutKit/Full";
 import { RustServiceETFAggregateDetail } from "@services/RustService";
 
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
@@ -24,15 +26,6 @@ export default function MultiETFAggregateDetailAppletWrap({
   adjustedETFAggregateDetailsError,
   children,
 }: MultiETFAggregateDetailAppletWrapProps) {
-  if (isLoadingAdjustedETFAggregateDetails) {
-    return (
-      // FIXME: Don't use `Center` if not tiling?
-      <Center>
-        <NetworkProgressIndicator />
-      </Center>
-    );
-  }
-
   if (adjustedETFAggregateDetailsError) {
     return (
       <Alert severity="error">
@@ -42,7 +35,17 @@ export default function MultiETFAggregateDetailAppletWrap({
     );
   }
 
-  if (adjustedETFAggregateDetails) {
-    return <>{children}</>;
-  }
+  return (
+    <Full>
+      {adjustedETFAggregateDetails && <>{children}</>}
+      <Cover clickThrough>
+        {isLoadingAdjustedETFAggregateDetails && (
+          // FIXME: Don't use `Center` if not tiling?
+          <Center>
+            <NetworkProgressIndicator />
+          </Center>
+        )}
+      </Cover>
+    </Full>
+  );
 }
