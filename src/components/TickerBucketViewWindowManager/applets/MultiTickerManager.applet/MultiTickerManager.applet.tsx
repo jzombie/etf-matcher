@@ -9,14 +9,12 @@ import { Box, IconButton, Typography } from "@mui/material";
 import Layout, { Aside, Content, Footer } from "@layoutKit/Layout";
 import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
-import type { RustServiceTickerSearchResult } from "@services/RustService";
 
 import Section from "@components/Section";
 import TickerSearchModal from "@components/TickerSearchModal";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
-import customLogger from "@utils/customLogger";
 import debounceWithKey from "@utils/debounceWithKey";
 
 import TickerBucketViewWindowManagerAppletWrap, {
@@ -34,7 +32,7 @@ export type MultiTickerManagerAppletProps = Omit<
 const TICKER_QUANTITY_ADJUST_DEBOUNCE_TIME = 250;
 
 export default function MultiTickerManagerApplet({
-  multiTickerDetails,
+  adjustedTickerDetails,
   ...rest
 }: MultiTickerManagerAppletProps) {
   const {
@@ -60,7 +58,7 @@ export default function MultiTickerManagerApplet({
 
   return (
     <TickerBucketViewWindowManagerAppletWrap
-      multiTickerDetails={multiTickerDetails}
+      adjustedTickerDetails={adjustedTickerDetails}
       {...rest}
     >
       <Layout>
@@ -81,6 +79,10 @@ export default function MultiTickerManagerApplet({
                 >
                   <SaveIcon fontSize="large" />
                 </IconButton>
+
+                {
+                  // TODO: Add `Cancel` button
+                }
 
                 {/* Select All Icon */}
                 <IconButton
@@ -112,7 +114,8 @@ export default function MultiTickerManagerApplet({
             </Padding>
           </Aside>
           <Scrollable>
-            {multiTickerDetails?.map((tickerDetail) => {
+            {// TODO: This should be based on the adjustedTickerBucket so that it can account for new symbols
+            adjustedTickerDetails?.map((tickerDetail) => {
               const isDeleted = !adjustedTickerBucket.tickers
                 .map((ticker) => ticker.tickerId)
                 .includes(tickerDetail.ticker_id);

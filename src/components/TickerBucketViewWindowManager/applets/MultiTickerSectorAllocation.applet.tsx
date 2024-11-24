@@ -24,7 +24,6 @@ export type MultiTickerSectorAllocationAppletProps = Omit<
 >;
 
 export default function MultiTickerSectorAllocationApplet({
-  formattedSymbolsWithExchange,
   isTiling,
   ...rest
 }: MultiTickerSectorAllocationAppletProps) {
@@ -51,11 +50,7 @@ export default function MultiTickerSectorAllocationApplet({
   }, [filteredTickerBucket, executeFetchWeightedTickerSectorDistribution]);
 
   return (
-    <TickerBucketViewWindowManagerAppletWrap
-      isTiling={isTiling}
-      formattedSymbolsWithExchange={formattedSymbolsWithExchange}
-      {...rest}
-    >
+    <TickerBucketViewWindowManagerAppletWrap isTiling={isTiling} {...rest}>
       {distribution && (
         <AutoScaler>
           <Box sx={{ width: 500, height: 320 }}>

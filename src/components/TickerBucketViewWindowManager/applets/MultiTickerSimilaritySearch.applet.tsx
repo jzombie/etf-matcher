@@ -43,7 +43,6 @@ const DISPLAY_MODES = ["radial", "euclidean", "cosine"] as const;
 type DisplayMode = (typeof DISPLAY_MODES)[number];
 
 export default function MultiTickerSimilaritySearchApplet({
-  multiTickerDetails,
   ...rest
 }: MultiTickerSimilaritySearchAppletProps) {
   const { triggerUIError } = useAppErrorBoundary();
@@ -115,10 +114,7 @@ export default function MultiTickerSimilaritySearchApplet({
   }
 
   return (
-    <TickerBucketViewWindowManagerAppletWrap
-      multiTickerDetails={multiTickerDetails}
-      {...rest}
-    >
+    <TickerBucketViewWindowManagerAppletWrap {...rest}>
       <Layout>
         <Header>
           <Box sx={{ textAlign: "center" }}>

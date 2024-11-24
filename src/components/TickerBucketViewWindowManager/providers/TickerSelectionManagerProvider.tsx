@@ -6,10 +6,18 @@ import React, {
   useState,
 } from "react";
 
-import type { RustServiceTickerSearchResult } from "@services/RustService";
+import type {
+  RustServiceETFAggregateDetail,
+  RustServiceTickerDetail,
+  RustServiceTickerSearchResult,
+} from "@services/RustService";
 import store, { TickerBucket, TickerBucketTicker } from "@src/store";
 
+import useMultiETFAggregateDetail from "@hooks/useMultiETFAggregateDetail";
+import useMultiTickerDetail from "@hooks/useMultiTickerDetail";
+
 import deepEqual from "@utils/deepEqual";
+import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
 export type TickerSelectionManagerContextType = {
   selectedTickerIds: number[];
@@ -29,6 +37,14 @@ export type TickerSelectionManagerContextType = {
   filteredTickerBucket: TickerBucket;
   saveTickerBucket: () => void;
   isTickerBucketSaved: boolean;
+  //
+  isLoadingAdjustedTickerDetails: boolean;
+  adjustedTickerDetails: RustServiceTickerDetail[] | null;
+  adjustedTickerDetailsError: Error | null;
+  isLoadingAdjustedETFAggregateDetails: boolean;
+  adjustedETFAggregateDetails: RustServiceETFAggregateDetail[] | null;
+  adjustedETFAggregateDetailsError: Error | null;
+  formattedAdjustedSymbolsWithExchange?: string[] | null;
 };
 
 // Set up the default value with empty functions and an empty array for selected tickers
@@ -61,6 +77,14 @@ const DEFAULT_CONTEXT_VALUE: TickerSelectionManagerContextType = {
   },
   saveTickerBucket: () => {},
   isTickerBucketSaved: true,
+  //
+  isLoadingAdjustedTickerDetails: false,
+  adjustedTickerDetails: null,
+  adjustedTickerDetailsError: null,
+  isLoadingAdjustedETFAggregateDetails: false,
+  adjustedETFAggregateDetails: null,
+  adjustedETFAggregateDetailsError: null,
+  formattedAdjustedSymbolsWithExchange: null,
 };
 
 // Create the context with the specified type and default value
@@ -82,6 +106,38 @@ export default function TickerSelectionManagerProvider({
 
   const [adjustedTickerBucket, setAdjustedTickerBucket] =
     useState<TickerBucket>(tickerBucket);
+
+  const adjustedTickerIds = useMemo(
+    () => adjustedTickerBucket.tickers.map((ticker) => ticker.tickerId),
+    [adjustedTickerBucket],
+  );
+  const {
+    isLoading: isLoadingAdjustedTickerDetails,
+    multiTickerDetails: adjustedTickerDetails,
+    error: adjustedTickerDetailsError,
+  } = useMultiTickerDetail(adjustedTickerIds);
+
+  const adjustedETFTickerIds = useMemo(
+    () =>
+      adjustedTickerDetails
+        ?.filter((ticker) => ticker.is_etf)
+        .map((ticker) => ticker.ticker_id) || [],
+    [adjustedTickerDetails],
+  );
+
+  const {
+    isLoading: isLoadingAdjustedETFAggregateDetails,
+    multiETFAggregateDetails: adjustedETFAggregateDetails,
+    error: adjustedETFAggregateDetailsError,
+  } = useMultiETFAggregateDetail(adjustedETFTickerIds);
+
+  const formattedAdjustedSymbolsWithExchange = useMemo(
+    () =>
+      adjustedTickerDetails?.map((tickerDetail) =>
+        formatSymbolWithExchange(tickerDetail),
+      ),
+    [adjustedTickerDetails],
+  );
 
   const adjustTicker = useCallback((adjustedTicker: TickerBucketTicker) => {
     setAdjustedTickerBucket((prev) => {
@@ -220,6 +276,14 @@ export default function TickerSelectionManagerProvider({
         filteredTickerBucket,
         saveTickerBucket,
         isTickerBucketSaved,
+        //
+        isLoadingAdjustedTickerDetails,
+        adjustedTickerDetails,
+        adjustedTickerDetailsError,
+        isLoadingAdjustedETFAggregateDetails,
+        adjustedETFAggregateDetails,
+        adjustedETFAggregateDetailsError,
+        formattedAdjustedSymbolsWithExchange,
       }}
     >
       {children}

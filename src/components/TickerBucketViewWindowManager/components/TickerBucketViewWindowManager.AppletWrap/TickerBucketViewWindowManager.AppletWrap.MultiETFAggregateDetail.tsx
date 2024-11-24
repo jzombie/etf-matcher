@@ -11,20 +11,20 @@ import type { TickerBucketViewWindowManagerCommonProps } from "../../types";
 
 export type MultiETFAggregateDetailAppletWrapProps =
   TickerBucketViewWindowManagerCommonProps & {
-    multiETFAggregateDetails?: RustServiceETFAggregateDetail[] | null;
-    isLoadingMultiETFAggregateDetails: boolean;
-    multiETFAggregateDetailsError?: Error | unknown;
+    adjustedETFAggregateDetails?: RustServiceETFAggregateDetail[] | null;
+    isLoadingAdjustedETFAggregateDetails: boolean;
+    adjustedETFAggregateDetailsError?: Error | null;
     children: React.ReactNode;
   };
 
 // TODO: Render loading indicator
 export default function MultiETFAggregateDetailAppletWrap({
-  multiETFAggregateDetails,
-  isLoadingMultiETFAggregateDetails,
-  multiETFAggregateDetailsError,
+  adjustedETFAggregateDetails,
+  isLoadingAdjustedETFAggregateDetails,
+  adjustedETFAggregateDetailsError,
   children,
 }: MultiETFAggregateDetailAppletWrapProps) {
-  if (isLoadingMultiETFAggregateDetails) {
+  if (isLoadingAdjustedETFAggregateDetails) {
     return (
       // FIXME: Don't use `Center` if not tiling?
       <Center>
@@ -33,7 +33,7 @@ export default function MultiETFAggregateDetailAppletWrap({
     );
   }
 
-  if (multiETFAggregateDetailsError) {
+  if (adjustedETFAggregateDetailsError) {
     return (
       <Alert severity="error">
         Could not load ETF aggregate detail at this time. Please try again
@@ -42,7 +42,7 @@ export default function MultiETFAggregateDetailAppletWrap({
     );
   }
 
-  if (multiETFAggregateDetails) {
+  if (adjustedETFAggregateDetails) {
     return <>{children}</>;
   }
 }

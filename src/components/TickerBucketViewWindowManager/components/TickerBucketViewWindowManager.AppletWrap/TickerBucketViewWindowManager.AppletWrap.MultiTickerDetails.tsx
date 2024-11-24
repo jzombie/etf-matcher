@@ -11,20 +11,20 @@ import type { TickerBucketViewWindowManagerCommonProps } from "../../types";
 
 export type MultiTickerDetailsAppletWrapProps =
   TickerBucketViewWindowManagerCommonProps & {
-    multiTickerDetails?: RustServiceTickerDetail[] | null;
-    isLoadingMultiTickerDetails: boolean;
-    multiTickerDetailsError?: Error | unknown;
+    adjustedTickerDetails?: RustServiceTickerDetail[] | null;
+    isLoadingAdjustedTickerDetails: boolean;
+    adjustedTickerDetailsError?: Error | null;
     children: React.ReactNode;
   };
 
 // TODO: Render loading indicator
 export default function MultiTickerDetailsAppletWrap({
-  multiTickerDetails,
-  isLoadingMultiTickerDetails,
-  multiTickerDetailsError,
+  adjustedTickerDetails,
+  isLoadingAdjustedTickerDetails,
+  adjustedTickerDetailsError,
   children,
 }: MultiTickerDetailsAppletWrapProps) {
-  if (isLoadingMultiTickerDetails) {
+  if (isLoadingAdjustedTickerDetails) {
     // FIXME: Don't use `Center` if not tiling?
     return (
       <Center>
@@ -33,7 +33,7 @@ export default function MultiTickerDetailsAppletWrap({
     );
   }
 
-  if (multiTickerDetailsError) {
+  if (adjustedTickerDetailsError) {
     return (
       <Alert severity="error">
         Could not load ticker detail at this time. Please try again later.
@@ -41,7 +41,7 @@ export default function MultiTickerDetailsAppletWrap({
     );
   }
 
-  if (multiTickerDetails) {
+  if (adjustedTickerDetails) {
     return <>{children}</>;
   }
 }

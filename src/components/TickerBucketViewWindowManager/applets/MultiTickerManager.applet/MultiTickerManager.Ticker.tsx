@@ -52,7 +52,7 @@ export default function MultiTickerManagerTicker({
     <Box
       key={tickerDetail.ticker_id}
       display="flex"
-      flexDirection="column" // Updated to stack slider vertically
+      flexDirection="column"
       alignItems="start"
       padding={1}
     >
