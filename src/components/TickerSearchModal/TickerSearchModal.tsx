@@ -42,6 +42,7 @@ export type TickerSearchModalProps = Omit<DialogModalProps, "children"> & {
   onSelectTicker?: (searchResult: RustServiceTickerSearchResult) => void;
   onCancel?: () => void;
   disabledTickerIds?: number[];
+  searchButtonAriaLabel?: string;
 };
 
 // TODO: Implement `initialValue`
@@ -52,6 +53,7 @@ export default function TickerSearchModal({
   onSelectTicker,
   onCancel,
   disabledTickerIds = [],
+  searchButtonAriaLabel = "Ticker Search",
 }: TickerSearchModalProps) {
   const { triggerUIError } = useAppErrorBoundary();
   const [error, setError] = useState<string | null>(null);
@@ -266,7 +268,7 @@ export default function TickerSearchModal({
             input: {
               startAdornment: (
                 <IconButton>
-                  <SearchIcon />
+                  <SearchIcon aria-label={searchButtonAriaLabel} />
                 </IconButton>
               ),
             },
