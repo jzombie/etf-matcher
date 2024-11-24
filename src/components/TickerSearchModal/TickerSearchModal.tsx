@@ -293,15 +293,12 @@ export default function TickerSearchModal({
         )}
 
         <List>
-          {searchResults.map((searchResult, idx) => {
-            const isDisabled = disabledTickerIds?.includes(
-              searchResult.ticker_id,
-            );
-            if (isDisabled) {
-              return;
-            }
-
-            return (
+          {searchResults
+            .filter(
+              (searchResult) =>
+                !disabledTickerIds?.includes(searchResult.ticker_id),
+            )
+            .map((searchResult, idx) => (
               <ButtonBase
                 key={idx}
                 onClick={(_) => handleOk(_, searchResult.symbol, searchResult)}
@@ -349,8 +346,7 @@ export default function TickerSearchModal({
                   />
                 </ListItem>
               </ButtonBase>
-            );
-          })}
+            ))}
         </List>
       </DialogContent>
       {
