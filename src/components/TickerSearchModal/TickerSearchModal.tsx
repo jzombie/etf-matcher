@@ -262,13 +262,14 @@ export default function TickerSearchModal({
           value={searchQuery}
           error={Boolean(error)}
           helperText={error}
-          // TODO: Fix deprecated prop
-          InputProps={{
-            startAdornment: (
-              <IconButton>
-                <SearchIcon />
-              </IconButton>
-            ),
+          slotProps={{
+            input: {
+              startAdornment: (
+                <IconButton>
+                  <SearchIcon />
+                </IconButton>
+              ),
+            },
           }}
         />
       </DialogTitle>
