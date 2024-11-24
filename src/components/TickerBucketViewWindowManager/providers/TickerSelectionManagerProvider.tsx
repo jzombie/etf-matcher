@@ -265,33 +265,59 @@ export default function TickerSelectionManagerProvider({
     [selectedTickerIds],
   );
 
+  const contextValue = useMemo(
+    () => ({
+      selectedTickerIds,
+      selectTickerId,
+      deselectTickerId,
+      selectAllTickerIds,
+      clearSelectedTickerIds,
+      areAllTickersSelected,
+      areNoTickersSelected,
+      adjustTicker,
+      addSearchResultTicker,
+      removeTickerWithId,
+      adjustedTickerBucket,
+      filteredTickerBucket,
+      saveTickerBucket,
+      isTickerBucketSaved,
+      //
+      isLoadingAdjustedTickerDetails,
+      adjustedTickerDetails,
+      adjustedTickerDetailsError,
+      isLoadingAdjustedETFAggregateDetails,
+      adjustedETFAggregateDetails,
+      adjustedETFAggregateDetailsError,
+      formattedAdjustedSymbolsWithExchange,
+    }),
+    [
+      selectedTickerIds,
+      selectTickerId,
+      deselectTickerId,
+      selectAllTickerIds,
+      clearSelectedTickerIds,
+      areAllTickersSelected,
+      areNoTickersSelected,
+      adjustTicker,
+      addSearchResultTicker,
+      removeTickerWithId,
+      adjustedTickerBucket,
+      filteredTickerBucket,
+      saveTickerBucket,
+      isTickerBucketSaved,
+      //
+      isLoadingAdjustedTickerDetails,
+      adjustedTickerDetails,
+      adjustedTickerDetailsError,
+      isLoadingAdjustedETFAggregateDetails,
+      adjustedETFAggregateDetails,
+      adjustedETFAggregateDetailsError,
+      formattedAdjustedSymbolsWithExchange,
+    ],
+  );
+
   return (
-    <TickerSelectionManagerContext.Provider
-      value={{
-        selectedTickerIds,
-        selectTickerId,
-        deselectTickerId,
-        selectAllTickerIds,
-        clearSelectedTickerIds,
-        areAllTickersSelected,
-        areNoTickersSelected,
-        adjustTicker,
-        addSearchResultTicker,
-        removeTickerWithId,
-        adjustedTickerBucket,
-        filteredTickerBucket,
-        saveTickerBucket,
-        isTickerBucketSaved,
-        //
-        isLoadingAdjustedTickerDetails,
-        adjustedTickerDetails,
-        adjustedTickerDetailsError,
-        isLoadingAdjustedETFAggregateDetails,
-        adjustedETFAggregateDetails,
-        adjustedETFAggregateDetailsError,
-        formattedAdjustedSymbolsWithExchange,
-      }}
-    >
+    <TickerSelectionManagerContext.Provider value={contextValue}>
       {children}
     </TickerSelectionManagerContext.Provider>
   );
