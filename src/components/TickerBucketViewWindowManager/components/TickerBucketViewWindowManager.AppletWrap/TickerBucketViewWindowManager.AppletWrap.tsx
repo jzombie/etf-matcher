@@ -12,33 +12,35 @@ export type TickerBucketViewWindowManagerAppletWrapProps =
 
 export default function TickerBucketViewWindowManagerAppletWrap({
   tickerBucketType,
-  multiTickerDetails,
-  isLoadingMultiTickerDetails,
-  multiTickerDetailsError,
-  multiETFAggregateDetails,
-  isLoadingMultiETFAggregateDetails,
-  multiETFAggregateDetailsError,
+  adjustedTickerDetails,
+  isLoadingAdjustedTickerDetails,
+  adjustedTickerDetailsError,
+  adjustedETFAggregateDetails,
+  isLoadingAdjustedETFAggregateDetails,
+  adjustedETFAggregateDetailsError,
   isTiling,
   children,
 }: TickerBucketViewWindowManagerAppletWrapProps) {
   return (
     <MultiTickerDetailsAppletWrap
       tickerBucketType={tickerBucketType}
-      multiTickerDetails={multiTickerDetails}
-      isLoadingMultiTickerDetails={isLoadingMultiTickerDetails}
-      multiTickerDetailsError={multiTickerDetailsError}
+      adjustedTickerDetails={adjustedTickerDetails}
+      isLoadingAdjustedTickerDetails={isLoadingAdjustedTickerDetails}
+      adjustedTickerDetailsError={adjustedTickerDetailsError}
       isTiling={isTiling}
     >
-      {multiTickerDetails && (
+      {adjustedTickerDetails && (
         <>
-          {multiTickerDetails.some((ticker) => ticker.is_etf) ? (
+          {adjustedTickerDetails.some((ticker) => ticker.is_etf) ? (
             <MultiETFAggregateDetailAppletWrap
               tickerBucketType={tickerBucketType}
-              multiETFAggregateDetails={multiETFAggregateDetails}
-              isLoadingMultiETFAggregateDetails={
-                isLoadingMultiETFAggregateDetails
+              adjustedETFAggregateDetails={adjustedETFAggregateDetails}
+              isLoadingAdjustedETFAggregateDetails={
+                isLoadingAdjustedETFAggregateDetails
               }
-              multiETFAggregateDetailsError={multiETFAggregateDetailsError}
+              adjustedETFAggregateDetailsError={
+                adjustedETFAggregateDetailsError
+              }
               isTiling={isTiling}
             >
               {children}

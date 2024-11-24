@@ -63,36 +63,22 @@ describe("TickerBucketForm", () => {
     expect(screen.getByLabelText(/Description/i)).toBeInTheDocument();
   });
 
-  it('should render TickerQuantityFields if bucketType is "portfolio" and disableTickerQuantityFields is false', () => {
+  it('should render TickerSelectionFields if bucketType is "portfolio" and disableTickerSelectionFields is false', () => {
     render(
       <TickerBucketForm
         bucketType="portfolio"
-        disableTickerQuantityFields={false}
+        disableTickerSelectionFields={false}
       />,
     );
 
     expect(screen.getByText(/Add Additional Symbol/i)).toBeInTheDocument();
   });
 
-  it("should not render TickerQuantityFields if disableTickerQuantityFields is true", () => {
+  it("should not render TickerSelectionFields if disableTickerSelectionFields is true", () => {
     render(
       <TickerBucketForm
         bucketType="portfolio"
-        disableTickerQuantityFields={true}
-      />,
-    );
-
-    const element = screen.queryByText(/Add Additional Symbol/i);
-
-    // Then, check the element's presence
-    expect(element).not.toBeInTheDocument();
-  });
-
-  it('should not render TickerQuantityFields if bucketType is "watchlist" and disableTickerQuantityFields is true', () => {
-    render(
-      <TickerBucketForm
-        bucketType="watchlist"
-        disableTickerQuantityFields={true}
+        disableTickerSelectionFields={true}
       />,
     );
 

@@ -13,7 +13,7 @@ export type ETFAggregateDetailAppletWrapProps =
   TickerViewWindowManagerCommonProps & {
     etfAggregateDetail?: RustServiceETFAggregateDetail | null;
     isLoadingETFAggregateDetail: boolean;
-    etfAggregateDetailError?: Error | unknown;
+    etfAggregateDetailError?: Error | null;
     children: React.ReactNode;
   };
 

@@ -11,16 +11,16 @@ import store, {
 } from "@src/store";
 import type { TickerBucket, TickerBucketTicker } from "@src/store";
 
-import { useNotification } from "@hooks/useNotification";
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 
-import TickerQuantityFields from "./TickerQuantityFields";
+import TickerSelectionFields from "./TickerSelectionFields";
 
 export type TickerBucketFormProps = {
   bucketType: TickerBucket["type"];
   existingBucket?: TickerBucket;
   onClose?: () => void;
   onCancel?: () => void;
-  disableTickerQuantityFields?: boolean;
+  disableTickerSelectionFields?: boolean;
 };
 
 export default function TickerBucketForm({
@@ -28,8 +28,10 @@ export default function TickerBucketForm({
   existingBucket,
   onClose,
   onCancel,
-  disableTickerQuantityFields = false,
+  disableTickerSelectionFields = false,
 }: TickerBucketFormProps) {
+  const { triggerUIError } = useAppErrorBoundary();
+
   const initialBucketName = useMemo(
     () => existingBucket?.name,
     [existingBucket],
@@ -48,8 +50,6 @@ export default function TickerBucketForm({
   >(undefined);
 
   const [nameError, setNameError] = useState<string | null>(null);
-
-  const { showNotification } = useNotification();
 
   // Validate name as it is typed
   useEffect(() => {
@@ -118,8 +118,8 @@ export default function TickerBucketForm({
       if (err instanceof TickerBucketNameError) {
         setNameError(err.message);
 
-        // TODO: Trigger UI error instead
-        showNotification(err.message, "error");
+        // Note: Intentionally routing the error message to the UI in this case
+        triggerUIError(err);
       }
     }
   }, [
@@ -129,7 +129,7 @@ export default function TickerBucketForm({
     explicitTickers,
     existingBucket,
     onClose,
-    showNotification,
+    triggerUIError,
   ]);
 
   const handleCancel = useCallback(() => {
@@ -193,8 +193,8 @@ export default function TickerBucketForm({
             {isShowingDescription ? "Hide" : "Show"} Description Field
           </Button>
 
-          {!disableTickerQuantityFields && (
-            <TickerQuantityFields
+          {!disableTickerSelectionFields && (
+            <TickerSelectionFields
               tickerBucket={existingBucket}
               onSaveableStateChange={(isSaveable) =>
                 setIsPortfolioSaveBlocked(!isSaveable)

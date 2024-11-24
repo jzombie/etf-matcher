@@ -3,6 +3,8 @@ import React from "react";
 import { Alert } from "@mui/material";
 
 import Center from "@layoutKit/Center";
+import Cover from "@layoutKit/Cover";
+import Full from "@layoutKit/Full";
 import { RustServiceTickerDetail } from "@services/RustService";
 
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
@@ -11,29 +13,20 @@ import type { TickerBucketViewWindowManagerCommonProps } from "../../types";
 
 export type MultiTickerDetailsAppletWrapProps =
   TickerBucketViewWindowManagerCommonProps & {
-    multiTickerDetails?: RustServiceTickerDetail[] | null;
-    isLoadingMultiTickerDetails: boolean;
-    multiTickerDetailsError?: Error | unknown;
+    adjustedTickerDetails?: RustServiceTickerDetail[] | null;
+    isLoadingAdjustedTickerDetails: boolean;
+    adjustedTickerDetailsError?: Error | null;
     children: React.ReactNode;
   };
 
 // TODO: Render loading indicator
 export default function MultiTickerDetailsAppletWrap({
-  multiTickerDetails,
-  isLoadingMultiTickerDetails,
-  multiTickerDetailsError,
+  adjustedTickerDetails,
+  isLoadingAdjustedTickerDetails,
+  adjustedTickerDetailsError,
   children,
 }: MultiTickerDetailsAppletWrapProps) {
-  if (isLoadingMultiTickerDetails) {
-    // FIXME: Don't use `Center` if not tiling?
-    return (
-      <Center>
-        <NetworkProgressIndicator />
-      </Center>
-    );
-  }
-
-  if (multiTickerDetailsError) {
+  if (adjustedTickerDetailsError) {
     return (
       <Alert severity="error">
         Could not load ticker detail at this time. Please try again later.
@@ -41,7 +34,17 @@ export default function MultiTickerDetailsAppletWrap({
     );
   }
 
-  if (multiTickerDetails) {
-    return <>{children}</>;
-  }
+  return (
+    <Full>
+      {adjustedTickerDetails && <>{children}</>}
+      <Cover clickThrough>
+        {isLoadingAdjustedTickerDetails && (
+          // FIXME: Don't use `Center` if not tiling?
+          <Center>
+            <NetworkProgressIndicator />
+          </Center>
+        )}
+      </Cover>
+    </Full>
+  );
 }

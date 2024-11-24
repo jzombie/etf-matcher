@@ -1,5 +1,5 @@
 export type TickerBucketViewWindowManagerCommonProps = {
   tickerBucketType: string;
-  formattedSymbolsWithExchange?: string[] | null;
+  formattedAdjustedSymbolsWithExchange?: string[] | null;
   isTiling: boolean;
 };

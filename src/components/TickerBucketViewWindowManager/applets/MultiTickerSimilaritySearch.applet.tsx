@@ -43,7 +43,6 @@ const DISPLAY_MODES = ["radial", "euclidean", "cosine"] as const;
 type DisplayMode = (typeof DISPLAY_MODES)[number];
 
 export default function MultiTickerSimilaritySearchApplet({
-  multiTickerDetails,
   ...rest
 }: MultiTickerSimilaritySearchAppletProps) {
   const { triggerUIError } = useAppErrorBoundary();
@@ -100,12 +99,12 @@ export default function MultiTickerSimilaritySearchApplet({
     [displayMode],
   );
 
-  // TODO: Handle
-  const getDirection = useCallback(() => {
-    const prevIndex = DISPLAY_MODES.indexOf(previousModeRef.current);
-    const currentIndex = DISPLAY_MODES.indexOf(displayMode);
-    return currentIndex > prevIndex ? "left" : "right";
-  }, [displayMode]);
+  // TODO: Handle (used for `Transition` view direction)
+  // const getDirection = useCallback(() => {
+  //   const prevIndex = DISPLAY_MODES.indexOf(previousModeRef.current);
+  //   const currentIndex = DISPLAY_MODES.indexOf(displayMode);
+  //   return currentIndex > prevIndex ? "left" : "right";
+  // }, [displayMode]);
 
   // TODO: Remove hardcoding
   const shouldShowLabels = true;
@@ -115,10 +114,7 @@ export default function MultiTickerSimilaritySearchApplet({
   }
 
   return (
-    <TickerBucketViewWindowManagerAppletWrap
-      multiTickerDetails={multiTickerDetails}
-      {...rest}
-    >
+    <TickerBucketViewWindowManagerAppletWrap {...rest}>
       <Layout>
         <Header>
           <Box sx={{ textAlign: "center" }}>

@@ -5,16 +5,16 @@ import { fireEvent, screen } from "@testing-library/react";
 import { TickerBucketTicker } from "@src/store";
 import { vi } from "vitest";
 
-import TickerQuantityFieldsItem, {
-  TickerQuantityFieldsItemProps,
-} from "@components/TickerBucketManager/TickerQuantityFields/TickerQuantityFields.Item";
+import TickerSelectionFieldsItem, {
+  TickerSelectionFieldsItemProps,
+} from "@components/TickerBucketManager/TickerSelectionFields/TickerSelectionFields.Item";
 
 import { render } from "../../../../test/customRender";
 
 const renderComponent = (
-  props: Partial<TickerQuantityFieldsItemProps> = {},
+  props: Partial<TickerSelectionFieldsItemProps> = {},
 ) => {
-  const defaultProps: TickerQuantityFieldsItemProps = {
+  const defaultProps: TickerSelectionFieldsItemProps = {
     existingBucketTickers: [],
     onUpdate: vi.fn(),
     onDelete: vi.fn(),
@@ -22,7 +22,7 @@ const renderComponent = (
     onErrorStateChange: vi.fn(),
     omitShares: false,
   };
-  return render(<TickerQuantityFieldsItem {...defaultProps} {...props} />);
+  return render(<TickerSelectionFieldsItem {...defaultProps} {...props} />);
 };
 
 vi.mock("@components/DeleteEntityDialogModal", () => ({
@@ -36,7 +36,7 @@ vi.mock("@components/DeleteEntityDialogModal", () => ({
     ) : null,
 }));
 
-describe("TickerQuantityFieldsItem", () => {
+describe("TickerSelectionFieldsItem", () => {
   it("should render the component", () => {
     renderComponent();
     expect(screen.getByLabelText(/symbol/i)).toBeInTheDocument();
@@ -116,7 +116,7 @@ describe("TickerQuantityFieldsItem", () => {
     const onUpdate = vi.fn();
 
     render(
-      <TickerQuantityFieldsItem
+      <TickerSelectionFieldsItem
         onUpdate={onUpdate}
         existingBucketTickers={[]}
         onErrorStateChange={vi.fn()}
@@ -138,7 +138,7 @@ describe("TickerQuantityFieldsItem", () => {
     const onUpdate = vi.fn();
 
     render(
-      <TickerQuantityFieldsItem
+      <TickerSelectionFieldsItem
         onUpdate={onUpdate}
         initialBucketTicker={{
           tickerId: 1,
