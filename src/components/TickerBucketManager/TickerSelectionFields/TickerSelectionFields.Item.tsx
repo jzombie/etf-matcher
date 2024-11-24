@@ -170,6 +170,11 @@ export default function TickerSelectionFieldsItem({
 
   const isDeleteButtonDisabled = !bucketTicker && !existingBucketTickers.length;
 
+  const disabledSearchTickerIds = useMemo(
+    () => existingBucketTickers.map((ticker) => ticker.tickerId),
+    [existingBucketTickers],
+  );
+
   return (
     <>
       {/** Company Logo */}
@@ -246,6 +251,7 @@ export default function TickerSelectionFieldsItem({
         open={isSearchModalOpen}
         onSelectTicker={handleSelectTicker}
         onCancel={() => setIsSearchModalOpen(false)}
+        disabledTickerIds={disabledSearchTickerIds}
       />
 
       {/* Delete Confirmation Dialog */}

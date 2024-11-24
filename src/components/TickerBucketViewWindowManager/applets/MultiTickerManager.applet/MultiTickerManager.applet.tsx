@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutlined";
 import CheckBoxIcon from "@mui/icons-material/CheckBoxOutlineBlank";
@@ -55,6 +55,11 @@ export default function MultiTickerManagerApplet({
   const navigateToSymbol = useTickerSymbolNavigation();
 
   const [isSearchModalOpen, setIsSearchModalOpen] = useState<boolean>(false);
+
+  const disabledSearchTickerIds = useMemo(
+    () => adjustedTickerDetails?.map((tickerDetail) => tickerDetail.ticker_id),
+    [adjustedTickerDetails],
+  );
 
   return (
     <TickerBucketViewWindowManagerAppletWrap
@@ -183,6 +188,7 @@ export default function MultiTickerManagerApplet({
         open={isSearchModalOpen}
         onSelectTicker={addSearchResultTicker}
         onCancel={() => setIsSearchModalOpen(false)}
+        disabledTickerIds={disabledSearchTickerIds}
       />
     </TickerBucketViewWindowManagerAppletWrap>
   );
