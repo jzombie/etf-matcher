@@ -165,7 +165,6 @@ export default function TickerSelectionManagerProvider({
     });
   }, []);
 
-  // TODO: Build out
   const addSearchResultTicker = useCallback(
     (searchResultTicker: RustServiceTickerSearchResult) => {
       setAdjustedTickerBucket((prev) => {
