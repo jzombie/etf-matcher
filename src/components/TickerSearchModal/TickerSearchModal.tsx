@@ -2,6 +2,7 @@ import React, {
   SyntheticEvent,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -252,6 +253,14 @@ export default function TickerSearchModal({
     },
   });
 
+  const filteredResults = useMemo(
+    () =>
+      searchResults.filter(
+        (searchResult) => !disabledTickerIds?.includes(searchResult.ticker_id),
+      ),
+    [searchResults, disabledTickerIds],
+  );
+
   return (
     <DialogModal open={isOpen} onClose={handleClose} staticHeight>
       <DialogTitle>
@@ -295,60 +304,55 @@ export default function TickerSearchModal({
         )}
 
         <List>
-          {searchResults
-            .filter(
-              (searchResult) =>
-                !disabledTickerIds?.includes(searchResult.ticker_id),
-            )
-            .map((searchResult, idx) => (
-              <ButtonBase
-                key={idx}
-                onClick={(_) => handleOk(_, searchResult.symbol, searchResult)}
+          {filteredResults.map((searchResult, idx) => (
+            <ButtonBase
+              key={searchResult.ticker_id}
+              onClick={(_) => handleOk(_, searchResult.symbol, searchResult)}
+              sx={{
+                display: "block",
+                width: "100%",
+                "&:hover": {
+                  backgroundColor: "rgba(255,255,255,.1)",
+                },
+              }}
+            >
+              <ListItem
+                id={`search-result-${idx}`}
                 sx={{
-                  display: "block",
-                  width: "100%",
-                  "&:hover": {
-                    backgroundColor: "rgba(255,255,255,.1)",
-                  },
+                  backgroundColor:
+                    idx === selectedIndex
+                      ? "rgba(255,255,255,.2)"
+                      : "transparent",
+                  padding: "5px",
+                  overflow: "auto",
                 }}
               >
-                <ListItem
-                  id={`search-result-${idx}`}
-                  sx={{
-                    backgroundColor:
-                      idx === selectedIndex
-                        ? "rgba(255,255,255,.2)"
-                        : "transparent",
-                    padding: "5px",
-                    overflow: "auto",
-                  }}
-                >
-                  <ListItemIcon>
-                    <EncodedImage
-                      key={searchResult.logo_filename}
-                      encSrc={searchResult.logo_filename}
-                      style={{ width: 50, height: 50 }}
-                    />
-                  </ListItemIcon>
-                  <ListItemText
-                    sx={{ marginLeft: 1 }}
-                    primary={
-                      <div style={{ overflow: "auto" }}>
-                        {searchResult.symbol}
-                        <span style={{ float: "right", opacity: 0.2 }}>
-                          {searchResult.exchange_short_name}
-                        </span>
-                      </div>
-                    }
-                    secondary={
-                      <Typography variant="body2" color="textSecondary">
-                        {searchResult.company_name}
-                      </Typography>
-                    }
+                <ListItemIcon>
+                  <EncodedImage
+                    key={searchResult.logo_filename}
+                    encSrc={searchResult.logo_filename}
+                    style={{ width: 50, height: 50 }}
                   />
-                </ListItem>
-              </ButtonBase>
-            ))}
+                </ListItemIcon>
+                <ListItemText
+                  sx={{ marginLeft: 1 }}
+                  primary={
+                    <div style={{ overflow: "auto" }}>
+                      {searchResult.symbol}
+                      <span style={{ float: "right", opacity: 0.2 }}>
+                        {searchResult.exchange_short_name}
+                      </span>
+                    </div>
+                  }
+                  secondary={
+                    <Typography variant="body2" color="textSecondary">
+                      {searchResult.company_name}
+                    </Typography>
+                  }
+                />
+              </ListItem>
+            </ButtonBase>
+          ))}
         </List>
       </DialogContent>
       {
