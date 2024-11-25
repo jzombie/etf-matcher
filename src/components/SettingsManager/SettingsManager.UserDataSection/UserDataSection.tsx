@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 
-import { Button } from "@mui/material";
+import { Box, Button, FormControlLabel, Switch } from "@mui/material";
 
 import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
 import Section from "@components/Section";
@@ -13,23 +13,9 @@ import TickerBucketList from "./TickerBucketList";
 export default function UserDataSection() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const { tickerBuckets } = useStoreStateReader([
-    "isHTMLJSVersionSynced",
-    "isAppUnlocked",
-    "isIndexedDBReady",
-    "isProductionBuild",
-    "isRustInit",
-    "dataBuildTime",
-    "isDirtyState",
-    "visibleTickerIds",
-    "isOnline",
-    "isProfilingCacheOverlayOpen",
-    "isGAPageTrackingEnabled",
+  const { tickerBuckets, appThemeProps } = useStoreStateReader([
     "tickerBuckets",
-    "cacheDetails",
-    "cacheSize",
-    "rustServiceXHRRequestErrors",
-    "subscribedMQTTRoomNames",
+    "appThemeProps",
   ]);
 
   const handleOpenClearDataDialog = useCallback(() => {
@@ -56,6 +42,28 @@ export default function UserDataSection() {
         >
           Clear User Data
         </Button>
+
+        <Box my={4} sx={{ textAlign: "center" }}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={appThemeProps.fontMode === "reduced"}
+                onChange={(evt) =>
+                  store.setState({
+                    appThemeProps: {
+                      ...appThemeProps,
+                      fontMode: evt.target.checked ? "reduced" : "normal",
+                    },
+                  })
+                }
+                name="fontModeToggle"
+                color="primary"
+              />
+            }
+            label="Reduced Font Mode"
+          />
+        </Box>
+
         <h3>Buckets</h3>
         <TickerBucketList tickerBuckets={tickerBuckets} />
       </Section>

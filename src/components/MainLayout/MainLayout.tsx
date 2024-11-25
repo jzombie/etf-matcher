@@ -26,11 +26,13 @@ export default function MainLayout() {
     isRustInit,
     isProfilingCacheOverlayOpen,
     isIndexedDBReady,
+    appThemeProps,
   } = useStoreStateReader([
     "isAppUnlocked",
     "isRustInit",
     "isProfilingCacheOverlayOpen",
     "isIndexedDBReady",
+    "appThemeProps",
   ]);
 
   // TODO: Remove after https://linear.app/zenosmosis/issue/ZEN-86/implement-auto-reindex-strategy is implemented
@@ -97,7 +99,12 @@ export default function MainLayout() {
     <FullViewport>
       <Layout>
         <Header>
-          <HeaderMenu />
+          <HeaderMenu
+            // Note: The `key` is used to fix an issue where changing the theme
+            // prevents the active link indicator from lining up properly on
+            // desktop layouts
+            key={appThemeProps.fontMode}
+          />
         </Header>
 
         <Content>
