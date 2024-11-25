@@ -2,6 +2,7 @@ import React, {
   SyntheticEvent,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -41,16 +42,19 @@ export type TickerSearchModalProps = Omit<DialogModalProps, "children"> & {
   onSelectSearchQuery?: (searchQuery: string, isExact: boolean) => void;
   onSelectTicker?: (searchResult: RustServiceTickerSearchResult) => void;
   onCancel?: () => void;
+  disabledTickerIds?: number[];
+  searchButtonAriaLabel?: string;
 };
 
 // TODO: Implement `initialValue`
-// TODO: Implement ability to disable items (for the purposes of adding new tickers to an existing list)
 export default function TickerSearchModal({
   open: isOpen,
   onClose,
   onSelectSearchQuery,
   onSelectTicker,
   onCancel,
+  disabledTickerIds = [],
+  searchButtonAriaLabel = "Ticker Search",
 }: TickerSearchModalProps) {
   const { triggerUIError } = useAppErrorBoundary();
   const [error, setError] = useState<string | null>(null);
@@ -249,6 +253,14 @@ export default function TickerSearchModal({
     },
   });
 
+  const filteredResults = useMemo(
+    () =>
+      searchResults.filter(
+        (searchResult) => !disabledTickerIds?.includes(searchResult.ticker_id),
+      ),
+    [searchResults, disabledTickerIds],
+  );
+
   return (
     <DialogModal open={isOpen} onClose={handleClose} staticHeight>
       <DialogTitle>
@@ -261,12 +273,14 @@ export default function TickerSearchModal({
           value={searchQuery}
           error={Boolean(error)}
           helperText={error}
-          InputProps={{
-            startAdornment: (
-              <IconButton>
-                <SearchIcon />
-              </IconButton>
-            ),
+          slotProps={{
+            input: {
+              startAdornment: (
+                <IconButton>
+                  <SearchIcon aria-label={searchButtonAriaLabel} />
+                </IconButton>
+              ),
+            },
           }}
         />
       </DialogTitle>
@@ -290,9 +304,9 @@ export default function TickerSearchModal({
         )}
 
         <List>
-          {searchResults.map((searchResult, idx) => (
+          {filteredResults.map((searchResult, idx) => (
             <ButtonBase
-              key={idx}
+              key={searchResult.ticker_id}
               onClick={(_) => handleOk(_, searchResult.symbol, searchResult)}
               sx={{
                 display: "block",

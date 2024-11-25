@@ -12,7 +12,7 @@ import type { TickerViewWindowManagerCommonProps } from "../../types";
 export type TickerDetailAppletWrapProps = TickerViewWindowManagerCommonProps & {
   tickerDetail?: RustServiceTickerDetail | null;
   isLoadingTickerDetail: boolean;
-  tickerDetailError?: Error | unknown;
+  tickerDetailError?: Error | null;
   children: React.ReactNode;
 };
 

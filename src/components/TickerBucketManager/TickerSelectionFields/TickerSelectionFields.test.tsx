@@ -5,22 +5,22 @@ import { fireEvent, screen } from "@testing-library/react";
 import { TickerBucket, TickerBucketTicker } from "@src/store";
 import { vi } from "vitest";
 
-import TickerQuantityFields, {
-  TickerQuantityFieldsProps,
-} from "@components/BucketManager/TickerQuantityFields";
+import TickerSelectionFields, {
+  TickerSelectionFieldsProps,
+} from "@components/TickerBucketManager/TickerSelectionFields";
 
 import { render } from "../../../../test/customRender";
 
-const renderComponent = (props: Partial<TickerQuantityFieldsProps> = {}) => {
-  const defaultProps: TickerQuantityFieldsProps = {
+const renderComponent = (props: Partial<TickerSelectionFieldsProps> = {}) => {
+  const defaultProps: TickerSelectionFieldsProps = {
     onSaveableStateChange: vi.fn(),
     onDataChange: vi.fn(),
     omitShares: false,
   };
-  return render(<TickerQuantityFields {...defaultProps} {...props} />);
+  return render(<TickerSelectionFields {...defaultProps} {...props} />);
 };
 
-describe("TickerQuantityFields", () => {
+describe("TickerSelectionFields", () => {
   it("should render the add button", () => {
     renderComponent();
     expect(

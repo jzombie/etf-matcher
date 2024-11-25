@@ -18,7 +18,7 @@ const StyledBox = styled(Box)({
 });
 
 export default function MultiTickerHistoricalPriceChartApplet({
-  formattedSymbolsWithExchange,
+  formattedAdjustedSymbolsWithExchange,
   isTiling,
   ...rest
 }: MultiTickerHistoricalPriceChartAppletProps) {
@@ -28,10 +28,12 @@ export default function MultiTickerHistoricalPriceChartApplet({
   return (
     <TickerBucketViewWindowManagerAppletWrap
       isTiling={isTiling}
-      formattedSymbolsWithExchange={formattedSymbolsWithExchange}
+      formattedAdjustedSymbolsWithExchange={
+        formattedAdjustedSymbolsWithExchange
+      }
       {...rest}
     >
-      {formattedSymbolsWithExchange && (
+      {formattedAdjustedSymbolsWithExchange && (
         // FIXME: Callbacks are not supported in TradingView charts without using
         // their charting library directly:
         // https://www.tradingview.com/HTML5-stock-forex-bitcoin-charting-library/
@@ -47,8 +49,8 @@ export default function MultiTickerHistoricalPriceChartApplet({
         // that is easy to comprehend.
         <Container>
           <AdvancedRealTimeChart
-            symbol={formattedSymbolsWithExchange?.[0]}
-            watchlist={formattedSymbolsWithExchange}
+            symbol={formattedAdjustedSymbolsWithExchange?.[0]}
+            watchlist={formattedAdjustedSymbolsWithExchange}
           />
         </Container>
       )}

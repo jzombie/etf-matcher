@@ -3,82 +3,54 @@ import React, { useMemo } from "react";
 import type { TickerBucket } from "@src/store";
 import { MosaicNode } from "react-mosaic-component";
 
-import useMultiETFAggregateDetail from "@hooks/useMultiETFAggregateDetail";
-import useMultiTickerDetail from "@hooks/useMultiTickerDetail";
-
-import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
-
 import MultiTickerFundamentalsApplet from "../applets/MultiTickerFundamentals.applet";
 import MultiTickerHistoricalPriceChartApplet from "../applets/MultiTickerHistoricalPriceChart.applet";
 import MultiTickerManagerApplet from "../applets/MultiTickerManager.applet";
 import MultiTickerSectorAllocationApplet from "../applets/MultiTickerSectorAllocation.applet";
 import MultiTickerSimilaritySearchApplet from "../applets/MultiTickerSimilaritySearch.applet";
 import type { TickerBucketViewWindowManagerAppletWrapProps } from "../components/TickerBucketViewWindowManager.AppletWrap";
+import useTickerSelectionManagerContext from "./useTickerSelectionManagerContext";
 
 export default function useTickerBucketViewWindowManagerContent(
   tickerBucket: TickerBucket,
   isTiling: boolean,
 ) {
-  const tickerIds = useMemo(
-    () => tickerBucket.tickers.map((ticker) => ticker.tickerId),
-    [tickerBucket],
-  );
-  const {
-    isLoading: isLoadingMultiTickerDetails,
-    multiTickerDetails,
-    error: multiTickerDetailsError,
-  } = useMultiTickerDetail(tickerIds);
-
-  const etfTickerIds = useMemo(
-    () =>
-      multiTickerDetails
-        ?.filter((ticker) => ticker.is_etf)
-        .map((ticker) => ticker.ticker_id) || [],
-    [multiTickerDetails],
-  );
-
-  const {
-    isLoading: isLoadingMultiETFAggregateDetails,
-    multiETFAggregateDetails,
-    error: multiETFAggregateDetailsError,
-  } = useMultiETFAggregateDetail(etfTickerIds);
-
-  const formattedSymbolsWithExchange = useMemo(
-    () =>
-      multiTickerDetails?.map((tickerDetail) =>
-        formatSymbolWithExchange(tickerDetail),
-      ),
-    [multiTickerDetails],
-  );
-
   const tickerBucketType = useMemo(() => tickerBucket.type, [tickerBucket]);
 
-  // FIXME: The layout will be reset to `initialLayout` if these dependencies
-  // change. This may require some modification.
+  const {
+    isLoadingAdjustedTickerDetails,
+    adjustedTickerDetails,
+    adjustedTickerDetailsError,
+    isLoadingAdjustedETFAggregateDetails,
+    adjustedETFAggregateDetails,
+    adjustedETFAggregateDetailsError,
+    formattedAdjustedSymbolsWithExchange,
+  } = useTickerSelectionManagerContext();
+
   const commonProps: Omit<
     TickerBucketViewWindowManagerAppletWrapProps,
     "children"
   > = useMemo(
     () => ({
       tickerBucketType,
-      multiTickerDetails,
-      formattedSymbolsWithExchange,
-      isLoadingMultiTickerDetails,
-      multiTickerDetailsError,
-      multiETFAggregateDetails,
-      isLoadingMultiETFAggregateDetails,
-      multiETFAggregateDetailsError,
+      isLoadingAdjustedTickerDetails,
+      adjustedTickerDetails,
+      adjustedTickerDetailsError,
+      isLoadingAdjustedETFAggregateDetails,
+      adjustedETFAggregateDetails,
+      adjustedETFAggregateDetailsError,
+      formattedAdjustedSymbolsWithExchange,
       isTiling,
     }),
     [
       tickerBucketType,
-      multiTickerDetails,
-      formattedSymbolsWithExchange,
-      isLoadingMultiTickerDetails,
-      multiTickerDetailsError,
-      multiETFAggregateDetails,
-      isLoadingMultiETFAggregateDetails,
-      multiETFAggregateDetailsError,
+      isLoadingAdjustedTickerDetails,
+      adjustedTickerDetails,
+      adjustedTickerDetailsError,
+      isLoadingAdjustedETFAggregateDetails,
+      adjustedETFAggregateDetails,
+      adjustedETFAggregateDetailsError,
+      formattedAdjustedSymbolsWithExchange,
       isTiling,
     ],
   );

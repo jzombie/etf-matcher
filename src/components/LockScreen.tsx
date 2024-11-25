@@ -15,7 +15,7 @@ import Full from "@layoutKit/Full";
 import FullViewport from "@layoutKit/FullViewport";
 import Layout, { Content, Footer } from "@layoutKit/Layout";
 import Padding from "@layoutKit/Padding";
-import { INVESTMENT_DISCLAIMER, PROJECT_DESCRIPTION } from "@src/constants";
+import { PROJECT_DESCRIPTION } from "@src/constants";
 
 import getEnvVariable from "@utils/getEnvVariable";
 import formatLocalTime from "@utils/string/formatLocalTime";
@@ -122,13 +122,7 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
             </Center>
           </Content>
           <Footer>
-            <Typography
-              variant="body2"
-              sx={{ textAlign: "center" }}
-              mx={1}
-              mb={1}
-            >
-              {INVESTMENT_DISCLAIMER}
+            <Typography variant="body2" sx={{ textAlign: "center" }}>
               Build time: {formatLocalTime(buildTime)}
             </Typography>
           </Footer>

@@ -5,11 +5,11 @@ import { fireEvent, screen } from "@testing-library/react";
 import { TickerBucket } from "@src/store";
 import { v4 as uuidv4 } from "uuid";
 
-import BucketForm from "@components/BucketManager/BucketManager.BucketForm";
+import TickerBucketForm from "@components/TickerBucketManager/TickerBucketManager.BucketForm";
 
 import { render } from "../../../test/customRender";
 
-describe("BucketForm", () => {
+describe("TickerBucketForm", () => {
   const mockExistingBucket: TickerBucket = {
     uuid: uuidv4(),
     name: "Test Bucket",
@@ -21,7 +21,10 @@ describe("BucketForm", () => {
 
   it("should show the description field if existingBucket has a description", () => {
     render(
-      <BucketForm bucketType="portfolio" existingBucket={mockExistingBucket} />,
+      <TickerBucketForm
+        bucketType="portfolio"
+        existingBucket={mockExistingBucket}
+      />,
     );
 
     expect(screen.getByLabelText(/Description/i)).toBeInTheDocument();
@@ -33,7 +36,7 @@ describe("BucketForm", () => {
       description: "",
     };
     render(
-      <BucketForm
+      <TickerBucketForm
         bucketType="portfolio"
         existingBucket={mockBucketWithoutDescription}
       />,
@@ -44,7 +47,10 @@ describe("BucketForm", () => {
 
   it("should toggle the visibility of the description field when the button is clicked", () => {
     render(
-      <BucketForm bucketType="portfolio" existingBucket={mockExistingBucket} />,
+      <TickerBucketForm
+        bucketType="portfolio"
+        existingBucket={mockExistingBucket}
+      />,
     );
 
     const toggleButton = screen.getByText(/Hide Description Field/i);
@@ -57,28 +63,23 @@ describe("BucketForm", () => {
     expect(screen.getByLabelText(/Description/i)).toBeInTheDocument();
   });
 
-  it('should render TickerQuantityFields if bucketType is "portfolio" and disableTickerQuantityFields is false', () => {
+  it('should render TickerSelectionFields if bucketType is "portfolio" and disableTickerSelectionFields is false', () => {
     render(
-      <BucketForm bucketType="portfolio" disableTickerQuantityFields={false} />,
+      <TickerBucketForm
+        bucketType="portfolio"
+        disableTickerSelectionFields={false}
+      />,
     );
 
     expect(screen.getByText(/Add Additional Symbol/i)).toBeInTheDocument();
   });
 
-  it("should not render TickerQuantityFields if disableTickerQuantityFields is true", () => {
+  it("should not render TickerSelectionFields if disableTickerSelectionFields is true", () => {
     render(
-      <BucketForm bucketType="portfolio" disableTickerQuantityFields={true} />,
-    );
-
-    const element = screen.queryByText(/Add Additional Symbol/i);
-
-    // Then, check the element's presence
-    expect(element).not.toBeInTheDocument();
-  });
-
-  it('should not render TickerQuantityFields if bucketType is "watchlist" and disableTickerQuantityFields is true', () => {
-    render(
-      <BucketForm bucketType="portfolio" disableTickerQuantityFields={true} />,
+      <TickerBucketForm
+        bucketType="portfolio"
+        disableTickerSelectionFields={true}
+      />,
     );
 
     const element = screen.queryByText(/Add Additional Symbol/i);

@@ -1,8 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import type { RustServiceTickerDetail } from "@services/RustService";
 import { fetchTickerDetail } from "@services/RustService";
 
+import arraysEqual from "@utils/arraysEqual";
 import customLogger from "@utils/customLogger";
 
 import useAppErrorBoundary from "./useAppErrorBoundary";
@@ -13,6 +14,7 @@ export default function useMultiTickerDetail(
   onLoad?: (tickerDetails: RustServiceTickerDetail[]) => void,
 ) {
   const { triggerUIError } = useAppErrorBoundary();
+  const previousTickerIdsRef = useRef<number[]>([]);
 
   const fetchDetails = async (
     ids: number[],
@@ -65,11 +67,23 @@ export default function useMultiTickerDetail(
 
   // Auto-execute the promise when the tickerIds change
   useEffect(() => {
+    // Prevent unnecessary auto-execution if ticker values remain unchanged.
+    //
+    // This resolves an issue where a stable reference change for `tickerIds`
+    // would trigger execution, even if their underlying values were identical.
+    // By skipping redundant executions, this avoids excessive reloading
+    // in `TickerBucketViewWindowManager`.
+    if (arraysEqual(previousTickerIdsRef.current, tickerIds)) {
+      return;
+    }
+
     if (tickerIds.length > 0) {
       execute(tickerIds);
     } else {
       reset();
     }
+
+    previousTickerIdsRef.current = tickerIds;
   }, [tickerIds, execute, reset]);
 
   return { isLoading, multiTickerDetails, error };

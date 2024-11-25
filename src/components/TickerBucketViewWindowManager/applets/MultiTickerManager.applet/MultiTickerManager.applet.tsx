@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutlined";
+import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import CheckBoxIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlined";
 import SaveIcon from "@mui/icons-material/SaveOutlined";
@@ -11,10 +12,10 @@ import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
 import Section from "@components/Section";
+import TickerSearchModal from "@components/TickerSearchModal";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
-import customLogger from "@utils/customLogger";
 import debounceWithKey from "@utils/debounceWithKey";
 
 import TickerBucketViewWindowManagerAppletWrap, {
@@ -22,6 +23,8 @@ import TickerBucketViewWindowManagerAppletWrap, {
 } from "../../components/TickerBucketViewWindowManager.AppletWrap";
 import useTickerSelectionManagerContext from "../../hooks/useTickerSelectionManagerContext";
 import MultiTickerManagerTicker from "./MultiTickerManager.Ticker";
+
+const ICON_FONT_SIZE: "inherit" | "small" | "medium" | "large" = "medium";
 
 export type MultiTickerManagerAppletProps = Omit<
   TickerBucketViewWindowManagerAppletWrapProps,
@@ -32,7 +35,8 @@ export type MultiTickerManagerAppletProps = Omit<
 const TICKER_QUANTITY_ADJUST_DEBOUNCE_TIME = 250;
 
 export default function MultiTickerManagerApplet({
-  multiTickerDetails,
+  adjustedTickerDetails,
+  isTiling,
   ...rest
 }: MultiTickerManagerAppletProps) {
   const {
@@ -44,18 +48,30 @@ export default function MultiTickerManagerApplet({
     areAllTickersSelected,
     areNoTickersSelected,
     adjustTicker,
+    addSearchResultTicker,
     removeTickerWithId,
     adjustedTickerBucket,
     filteredTickerBucket,
     saveTickerBucket,
+    cancelTickerAdjustments,
     isTickerBucketSaved,
+    //
+    forceRefreshIndex,
   } = useTickerSelectionManagerContext();
 
   const navigateToSymbol = useTickerSymbolNavigation();
 
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState<boolean>(false);
+
+  const disabledSearchTickerIds = useMemo(
+    () => adjustedTickerDetails?.map((tickerDetail) => tickerDetail.ticker_id),
+    [adjustedTickerDetails],
+  );
+
   return (
     <TickerBucketViewWindowManagerAppletWrap
-      multiTickerDetails={multiTickerDetails}
+      adjustedTickerDetails={adjustedTickerDetails}
+      isTiling={isTiling}
       {...rest}
     >
       <Layout>
@@ -73,8 +89,22 @@ export default function MultiTickerManagerApplet({
                   onClick={saveTickerBucket}
                   disabled={isTickerBucketSaved}
                   title="Save"
+                  aria-label="Save ticker adjustments"
                 >
-                  <SaveIcon fontSize="large" />
+                  <SaveIcon fontSize={ICON_FONT_SIZE} />
+                </IconButton>
+
+                {/* Cancel Adjustments Icon */}
+                <IconButton
+                  onClick={cancelTickerAdjustments}
+                  disabled={isTickerBucketSaved} // Disable when adjustments are already saved
+                  title="Cancel Adjustments"
+                  aria-label="Cancel ticker adjustments"
+                >
+                  <CancelOutlinedIcon
+                    fontSize={ICON_FONT_SIZE}
+                    color={!isTickerBucketSaved ? "error" : "inherit"}
+                  />
                 </IconButton>
 
                 {/* Select All Icon */}
@@ -82,8 +112,9 @@ export default function MultiTickerManagerApplet({
                   onClick={selectAllTickerIds}
                   disabled={areAllTickersSelected}
                   title="Select All"
+                  aria-label="Select all tickers"
                 >
-                  <CheckBoxOutlineBlankIcon fontSize="large" />
+                  <CheckBoxOutlineBlankIcon fontSize={ICON_FONT_SIZE} />
                 </IconButton>
 
                 {/* Unselect All Icon */}
@@ -91,27 +122,25 @@ export default function MultiTickerManagerApplet({
                   onClick={clearSelectedTickerIds}
                   disabled={areNoTickersSelected}
                   title="Unselect All"
+                  aria-label="Unselect all tickers"
                 >
-                  <CheckBoxIcon fontSize="large" />
+                  <CheckBoxIcon fontSize={ICON_FONT_SIZE} />
                 </IconButton>
 
                 {/* Add Child Bucket Icon */}
                 <IconButton
-                  onClick={() => {
-                    // TODO: Implement
-                    customLogger.log("Add child item action triggered");
-                  }}
-                  // TODO: Implement
-                  disabled={true}
+                  onClick={() => setIsSearchModalOpen(true)}
+                  disabled={isSearchModalOpen}
                   title="Add New Ticker or Group"
+                  aria-label="Add new ticker or group"
                 >
-                  <AddCircleOutlineIcon fontSize="large" />
+                  <AddCircleOutlineIcon fontSize={ICON_FONT_SIZE} />
                 </IconButton>
               </Box>
             </Padding>
           </Aside>
           <Scrollable>
-            {multiTickerDetails?.map((tickerDetail) => {
+            {adjustedTickerDetails?.map((tickerDetail) => {
               const isDeleted = !adjustedTickerBucket.tickers
                 .map((ticker) => ticker.tickerId)
                 .includes(tickerDetail.ticker_id);
@@ -132,8 +161,10 @@ export default function MultiTickerManagerApplet({
               return (
                 <Section key={tickerDetail.ticker_id} mx={1} my={1} ml={0}>
                   <MultiTickerManagerTicker
+                    key={forceRefreshIndex}
                     adjustedTickerBucket={adjustedTickerBucket}
                     tickerDetail={tickerDetail}
+                    isTiling={isTiling}
                     onSelect={() => selectTickerId(tickerDetail.ticker_id)}
                     onDeselect={() => deselectTickerId(tickerDetail.ticker_id)}
                     onAdjust={(adjustedTicker) => {
@@ -148,12 +179,13 @@ export default function MultiTickerManagerApplet({
                       );
                     }}
                     onDelete={() => {
-                      // TODO: Prompt for confirmation before deleting
                       removeTickerWithId(tickerDetail.ticker_id);
 
-                      // TODO: Auto-save after deleting?
+                      // Auto-save
+                      saveTickerBucket();
                     }}
                     onNavigate={() => navigateToSymbol(tickerDetail.symbol)}
+                    // TODO: Base on dynamic ranges
                     minWeight={0.001}
                     maxWeight={10000000000}
                     selected={isSelected}
@@ -173,6 +205,14 @@ export default function MultiTickerManagerApplet({
           </Box>
         </Footer>
       </Layout>
+
+      {/* Ticker Search Modal */}
+      <TickerSearchModal
+        open={isSearchModalOpen}
+        onSelectTicker={addSearchResultTicker}
+        onCancel={() => setIsSearchModalOpen(false)}
+        disabledTickerIds={disabledSearchTickerIds}
+      />
     </TickerBucketViewWindowManagerAppletWrap>
   );
 }
