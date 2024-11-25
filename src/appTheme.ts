@@ -62,7 +62,7 @@ export default function useAppTheme({
                 "&:hover": {
                   backgroundColor: "rgba(255, 255, 255, 0.08)",
                 },
-                padding: isReducedFontMode ? "4px 8px" : undefined, // Smaller padding
+                padding: isReducedFontMode ? "2px 6px" : undefined, // Smaller padding
                 fontSize: isReducedFontMode ? "0.875rem" : undefined, // Smaller text size for buttons
               },
             },
@@ -195,10 +195,14 @@ export default function useAppTheme({
                 },
                 "& .MuiInputLabel-root": {
                   color: "#b0bec5", // Label color for input fields
+                  marginTop: isReducedFontMode ? 7 : 0,
+                  marginLeft: isReducedFontMode ? 7 : 0,
                 },
                 "&.Mui-disabled .MuiInputLabel-root": {
                   color: "#b0bec5", // Label color when disabled
                 },
+                fontSize: isReducedFontMode ? "0.875rem" : undefined, // Smaller input text
+                padding: isReducedFontMode ? "4px 8px" : undefined, // Smaller padding
               },
             },
           },
