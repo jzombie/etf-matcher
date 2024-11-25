@@ -156,10 +156,10 @@ export default function MultiTickerManagerApplet({
                       );
                     }}
                     onDelete={() => {
-                      // TODO: Prompt for confirmation before deleting
                       removeTickerWithId(tickerDetail.ticker_id);
 
-                      // TODO: Auto-save after deleting?
+                      // Auto-save
+                      saveTickerBucket();
                     }}
                     onNavigate={() => navigateToSymbol(tickerDetail.symbol)}
                     // TODO: Base on dynamic ranges

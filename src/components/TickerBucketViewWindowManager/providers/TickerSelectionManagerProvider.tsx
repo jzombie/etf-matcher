@@ -15,6 +15,7 @@ import store, { TickerBucket, TickerBucketTicker } from "@src/store";
 
 import useMultiETFAggregateDetail from "@hooks/useMultiETFAggregateDetail";
 import useMultiTickerDetail from "@hooks/useMultiTickerDetail";
+import useNotification from "@hooks/useNotification";
 
 import deepEqual from "@utils/deepEqual";
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
@@ -100,6 +101,8 @@ export default function TickerSelectionManagerProvider({
   children,
   tickerBucket,
 }: TickerSelectionManagerProviderProps) {
+  const { showNotification } = useNotification();
+
   const [selectedTickerIds, setSelectedTickerIds] = useState<number[]>(() =>
     tickerBucket.tickers.map((ticker) => ticker.tickerId),
   );
@@ -200,14 +203,28 @@ export default function TickerSelectionManagerProvider({
     [],
   );
 
-  const removeTickerWithId = useCallback((tickerId: number) => {
-    setAdjustedTickerBucket((prev) => ({
-      ...prev,
-      tickers: prev.tickers.filter(
-        (prevTicker) => prevTicker.tickerId != tickerId,
-      ),
-    }));
-  }, []);
+  const removeTickerWithId = useCallback(
+    (tickerId: number) => {
+      const symbol = adjustedTickerBucket.tickers.find(
+        (ticker) => ticker.tickerId === tickerId,
+      )?.symbol;
+
+      setAdjustedTickerBucket((prev) => ({
+        ...prev,
+        tickers: prev.tickers.filter(
+          (prevTicker) => prevTicker.tickerId != tickerId,
+        ),
+      }));
+
+      if (symbol) {
+        showNotification(
+          `"${symbol}" removed from "${adjustedTickerBucket.name}"`,
+          "warning",
+        );
+      }
+    },
+    [adjustedTickerBucket, showNotification],
+  );
 
   const filteredTickerBucket = useMemo(() => {
     const filteredTickers = adjustedTickerBucket.tickers.filter((ticker) =>
@@ -225,10 +242,11 @@ export default function TickerSelectionManagerProvider({
     [tickerBucket, adjustedTickerBucket],
   );
 
-  const saveTickerBucket = useCallback(
-    () => store.updateTickerBucket(tickerBucket, adjustedTickerBucket),
-    [tickerBucket, adjustedTickerBucket],
-  );
+  const saveTickerBucket = useCallback(() => {
+    store.updateTickerBucket(tickerBucket, adjustedTickerBucket);
+
+    showNotification(`"${adjustedTickerBucket.name}" saved`, "success");
+  }, [tickerBucket, adjustedTickerBucket, showNotification]);
 
   const selectTickerId = useCallback((tickerId: number) => {
     setSelectedTickerIds((prevTickerIds) => {
