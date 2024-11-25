@@ -87,6 +87,7 @@ export default function MultiTickerManagerApplet({
                   onClick={saveTickerBucket}
                   disabled={isTickerBucketSaved}
                   title="Save"
+                  aria-label="Save ticker adjustments"
                 >
                   <SaveIcon fontSize={ICON_FONT_SIZE} />
                 </IconButton>
@@ -96,6 +97,7 @@ export default function MultiTickerManagerApplet({
                   onClick={cancelTickerAdjustments}
                   disabled={isTickerBucketSaved} // Disable when adjustments are already saved
                   title="Cancel Adjustments"
+                  aria-label="Cancel ticker adjustments"
                 >
                   <CancelOutlinedIcon
                     fontSize={ICON_FONT_SIZE}
@@ -108,6 +110,7 @@ export default function MultiTickerManagerApplet({
                   onClick={selectAllTickerIds}
                   disabled={areAllTickersSelected}
                   title="Select All"
+                  aria-label="Select all tickers"
                 >
                   <CheckBoxOutlineBlankIcon fontSize={ICON_FONT_SIZE} />
                 </IconButton>
@@ -117,6 +120,7 @@ export default function MultiTickerManagerApplet({
                   onClick={clearSelectedTickerIds}
                   disabled={areNoTickersSelected}
                   title="Unselect All"
+                  aria-label="Unselect all tickers"
                 >
                   <CheckBoxIcon fontSize={ICON_FONT_SIZE} />
                 </IconButton>
@@ -126,6 +130,7 @@ export default function MultiTickerManagerApplet({
                   onClick={() => setIsSearchModalOpen(true)}
                   disabled={isSearchModalOpen}
                   title="Add New Ticker or Group"
+                  aria-label="Add new ticker or group"
                 >
                   <AddCircleOutlineIcon fontSize={ICON_FONT_SIZE} />
                 </IconButton>
