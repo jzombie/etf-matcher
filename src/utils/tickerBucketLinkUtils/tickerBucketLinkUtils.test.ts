@@ -1,6 +1,6 @@
 import * as RustService from "@services/RustService";
 import type { TickerBucket } from "@src/store";
-import { describe, expect, it, vi } from "vitest";
+import { MockInstance, describe, expect, it, vi } from "vitest";
 
 import {
   fetchClosestTickerBucketName,
@@ -52,13 +52,10 @@ describe("getTickerBucketLink", () => {
 });
 
 describe("fetchClosestTickerBucketName", () => {
-  type FetchLevenshteinDistanceMock = (
-    strA: string,
-    strB: string,
-  ) => Promise<number>;
-
-  // @ts-expect-error FIXME: TypeScript reports that it cannot find the `vi` namespace
-  let mockFetchLevenshteinDistance: vi.Mock<FetchLevenshteinDistanceMock>;
+  let mockFetchLevenshteinDistance: MockInstance<
+    [string, string],
+    Promise<number>
+  >;
 
   beforeEach(() => {
     mockFetchLevenshteinDistance = vi
