@@ -1,3 +1,5 @@
+// Note: This file is intentionally not in the `hooks` directory as it is only
+// intended to be used with the `App` component.
 import { useMemo } from "react";
 
 import { createTheme } from "@mui/material/styles";
