@@ -58,8 +58,6 @@ export default function MultiTickerManagerApplet({
     forceRefreshIndex,
   } = useTickerSelectionManagerContext();
 
-  console.log({ forceRefreshIndex });
-
   const navigateToSymbol = useTickerSymbolNavigation();
 
   const [isSearchModalOpen, setIsSearchModalOpen] = useState<boolean>(false);
