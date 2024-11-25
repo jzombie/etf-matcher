@@ -61,8 +61,10 @@ export default function TickerBucketList({
     <UnstyledUL>
       {sortedTickerBuckets.map((tickerBucket, idx) => (
         <UnstyledLI key={idx}>
-          &nbsp;{" "}
-          {/* FIXME: The `&nbsp;` is an intentional workaround to "activate" the vertical padded sections.  */}
+          {
+            // FIXME: The `&nbsp;` is an intentional workaround to "activate" the vertical padded sections.
+            idx > 0 ? <>&nbsp;</> : ""
+          }
           <Section>
             {
               // TODO: Use dedicated icon, per bucket type, and use the same icon determination logic in the header
