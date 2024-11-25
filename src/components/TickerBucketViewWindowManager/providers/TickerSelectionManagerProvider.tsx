@@ -212,7 +212,7 @@ export default function TickerSelectionManagerProvider({
       setAdjustedTickerBucket((prev) => ({
         ...prev,
         tickers: prev.tickers.filter(
-          (prevTicker) => prevTicker.tickerId != tickerId,
+          (prevTicker) => prevTicker.tickerId !== tickerId,
         ),
       }));
 
