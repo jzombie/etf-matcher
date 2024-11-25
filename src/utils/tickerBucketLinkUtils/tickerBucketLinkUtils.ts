@@ -2,7 +2,13 @@ import { fetchLevenshteinDistance } from "@services/RustService";
 import type { TickerBucket } from "@src/store";
 
 export function getTickerBucketLink(tickerBucket: TickerBucket): string {
-  return `/${tickerBucket.type}s/${tickerBucket.name.trim().toLowerCase().replace(/\s+/g, "-")}`;
+  const sanitizedBucketName = tickerBucket.name
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-");
+
+  // Encode the name to handle special characters like '/'
+  return `/${tickerBucket.type}s/${encodeURIComponent(sanitizedBucketName)}`;
 }
 
 export async function fetchClosestTickerBucketName(
