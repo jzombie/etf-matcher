@@ -43,6 +43,8 @@ export default function MultiTickerManagerTicker({
   selected: isSelected,
   disabled: isDisabled,
 }: MultiTickerManagerTickerProps) {
+  const { triggerUIError } = useAppErrorBoundary();
+
   const onDeleteStableRef = useStableCurrentRef(onDelete);
   const [isShowingDeleteModal, setIsShowingDeleteModal] =
     useState<boolean>(false);
@@ -54,8 +56,6 @@ export default function MultiTickerManagerTicker({
 
     setIsShowingDeleteModal(false);
   }, [onDeleteStableRef]);
-
-  const { triggerUIError } = useAppErrorBoundary();
 
   const tickerBucketTicker = adjustedTickerBucket.tickers.find(
     (tickerBucketTicker) =>
