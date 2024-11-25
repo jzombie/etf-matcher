@@ -36,6 +36,35 @@ pub struct OwnedTickerVectors {
 }
 
 impl OwnedTickerVectors {
+    pub async fn audit_missing_tickers(
+        ticker_vector_config_key: &str,
+        ticker_ids: &[TickerId],
+    ) -> Result<Vec<TickerId>, String> {
+        let owned_ticker_vectors = Self::get_all_ticker_vectors(ticker_vector_config_key).await?;
+        let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
+
+        let mut missing_tickers = Vec::new();
+
+        for &ticker_id in ticker_ids {
+            // Check if the ticker exists in the vector model
+            let exists = ticker_vectors
+                .vectors()
+                .and_then(|vectors| {
+                    vectors
+                        .iter()
+                        .any(|ticker_vector| ticker_vector.ticker_id() as TickerId == ticker_id)
+                        .then(|| ())
+                })
+                .is_some();
+
+            if !exists {
+                missing_tickers.push(ticker_id);
+            }
+        }
+
+        Ok(missing_tickers)
+    }
+
     async fn get_all_ticker_vectors(
         ticker_vector_config_key: &str,
     ) -> Result<OwnedTickerVectors, String> {
