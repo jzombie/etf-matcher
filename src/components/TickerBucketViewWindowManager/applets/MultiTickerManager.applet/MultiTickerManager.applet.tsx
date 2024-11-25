@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutlined";
+import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import CheckBoxIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlined";
 import SaveIcon from "@mui/icons-material/SaveOutlined";
@@ -22,6 +23,8 @@ import TickerBucketViewWindowManagerAppletWrap, {
 } from "../../components/TickerBucketViewWindowManager.AppletWrap";
 import useTickerSelectionManagerContext from "../../hooks/useTickerSelectionManagerContext";
 import MultiTickerManagerTicker from "./MultiTickerManager.Ticker";
+
+const ICON_FONT_SIZE: "inherit" | "small" | "medium" | "large" = "large";
 
 export type MultiTickerManagerAppletProps = Omit<
   TickerBucketViewWindowManagerAppletWrapProps,
@@ -49,8 +52,13 @@ export default function MultiTickerManagerApplet({
     adjustedTickerBucket,
     filteredTickerBucket,
     saveTickerBucket,
+    cancelTickerAdjustments,
     isTickerBucketSaved,
+    //
+    forceRefreshIndex,
   } = useTickerSelectionManagerContext();
+
+  console.log({ forceRefreshIndex });
 
   const navigateToSymbol = useTickerSymbolNavigation();
 
@@ -82,12 +90,20 @@ export default function MultiTickerManagerApplet({
                   disabled={isTickerBucketSaved}
                   title="Save"
                 >
-                  <SaveIcon fontSize="large" />
+                  <SaveIcon fontSize={ICON_FONT_SIZE} />
                 </IconButton>
 
-                {
-                  // TODO: Add `Cancel` button
-                }
+                {/* Cancel Adjustments Icon */}
+                <IconButton
+                  onClick={cancelTickerAdjustments}
+                  disabled={isTickerBucketSaved} // Disable when adjustments are already saved
+                  title="Cancel Adjustments"
+                >
+                  <CancelOutlinedIcon
+                    fontSize={ICON_FONT_SIZE}
+                    color={!isTickerBucketSaved ? "error" : "inherit"}
+                  />
+                </IconButton>
 
                 {/* Select All Icon */}
                 <IconButton
@@ -95,7 +111,7 @@ export default function MultiTickerManagerApplet({
                   disabled={areAllTickersSelected}
                   title="Select All"
                 >
-                  <CheckBoxOutlineBlankIcon fontSize="large" />
+                  <CheckBoxOutlineBlankIcon fontSize={ICON_FONT_SIZE} />
                 </IconButton>
 
                 {/* Unselect All Icon */}
@@ -104,7 +120,7 @@ export default function MultiTickerManagerApplet({
                   disabled={areNoTickersSelected}
                   title="Unselect All"
                 >
-                  <CheckBoxIcon fontSize="large" />
+                  <CheckBoxIcon fontSize={ICON_FONT_SIZE} />
                 </IconButton>
 
                 {/* Add Child Bucket Icon */}
@@ -113,7 +129,7 @@ export default function MultiTickerManagerApplet({
                   disabled={isSearchModalOpen}
                   title="Add New Ticker or Group"
                 >
-                  <AddCircleOutlineIcon fontSize="large" />
+                  <AddCircleOutlineIcon fontSize={ICON_FONT_SIZE} />
                 </IconButton>
               </Box>
             </Padding>
@@ -140,6 +156,7 @@ export default function MultiTickerManagerApplet({
               return (
                 <Section key={tickerDetail.ticker_id} mx={1} my={1} ml={0}>
                   <MultiTickerManagerTicker
+                    key={forceRefreshIndex}
                     adjustedTickerBucket={adjustedTickerBucket}
                     tickerDetail={tickerDetail}
                     onSelect={() => selectTickerId(tickerDetail.ticker_id)}
