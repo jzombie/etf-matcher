@@ -39,6 +39,7 @@ export type TickerSelectionManagerContextType = {
   // `filteredTickerBucket` is the `adjustedTickerBucket` with deselected tickers filtered out
   filteredTickerBucket: TickerBucket;
   saveTickerBucket: () => void;
+  cancelTickerAdjustments: () => void;
   isTickerBucketSaved: boolean;
   //
   isLoadingAdjustedTickerDetails: boolean;
@@ -48,6 +49,8 @@ export type TickerSelectionManagerContextType = {
   adjustedETFAggregateDetails: RustServiceETFAggregateDetail[] | null;
   adjustedETFAggregateDetailsError: Error | null;
   formattedAdjustedSymbolsWithExchange?: string[] | null;
+  //
+  forceRefreshIndex: number;
 };
 
 // Set up the default value with empty functions and an empty array for selected tickers
@@ -79,6 +82,7 @@ const DEFAULT_CONTEXT_VALUE: TickerSelectionManagerContextType = {
     isUserConfigurable: true,
   },
   saveTickerBucket: () => {},
+  cancelTickerAdjustments: () => {},
   isTickerBucketSaved: true,
   //
   isLoadingAdjustedTickerDetails: false,
@@ -88,6 +92,8 @@ const DEFAULT_CONTEXT_VALUE: TickerSelectionManagerContextType = {
   adjustedETFAggregateDetails: null,
   adjustedETFAggregateDetailsError: null,
   formattedAdjustedSymbolsWithExchange: null,
+  //
+  forceRefreshIndex: 0,
 };
 
 // Create the context with the specified type and default value
@@ -105,6 +111,12 @@ export default function TickerSelectionManagerProvider({
 }: TickerSelectionManagerProviderProps) {
   const { showNotification } = useNotification();
   const { triggerUIError } = useAppErrorBoundary();
+
+  const [forceRefreshIndex, setForceRefreshIndex] = useState<number>(0);
+
+  const forceRefresh = useCallback(() => {
+    setForceRefreshIndex((prev) => ++prev);
+  }, []);
 
   const [selectedTickerIds, setSelectedTickerIds] = useState<number[]>(() =>
     tickerBucket.tickers.map((ticker) => ticker.tickerId),
@@ -258,7 +270,6 @@ export default function TickerSelectionManagerProvider({
   const saveTickerBucket = useCallback(() => {
     try {
       store.updateTickerBucket(tickerBucket, adjustedTickerBucket);
-
       showNotification(`"${adjustedTickerBucket.name}" saved`, "success");
     } catch (err) {
       customLogger.error(err);
@@ -269,6 +280,28 @@ export default function TickerSelectionManagerProvider({
       );
     }
   }, [tickerBucket, adjustedTickerBucket, showNotification, triggerUIError]);
+
+  const cancelTickerAdjustments = useCallback(() => {
+    try {
+      setAdjustedTickerBucket(tickerBucket);
+
+      // Reset selected ticker IDs
+      //
+      // Resolves an issue where adding a ticker while all IDs were selected
+      // and then canceling would result in an incorrect state for selected IDs.
+      setSelectedTickerIds(
+        tickerBucket.tickers.map((ticker) => ticker.tickerId),
+      );
+
+      // This is needed to reset slider positions since they are not controlled by React
+      forceRefresh();
+
+      showNotification("Ticker adjustments canceled", "warning");
+    } catch (err) {
+      customLogger.error(err);
+      triggerUIError(new Error("Could not cancel ticker adjustments"));
+    }
+  }, [tickerBucket, forceRefresh, showNotification, triggerUIError]);
 
   const selectTickerId = useCallback((tickerId: number) => {
     setSelectedTickerIds((prevTickerIds) => {
@@ -320,6 +353,7 @@ export default function TickerSelectionManagerProvider({
       adjustedTickerBucket,
       filteredTickerBucket,
       saveTickerBucket,
+      cancelTickerAdjustments,
       isTickerBucketSaved,
       //
       isLoadingAdjustedTickerDetails,
@@ -329,6 +363,8 @@ export default function TickerSelectionManagerProvider({
       adjustedETFAggregateDetails,
       adjustedETFAggregateDetailsError,
       formattedAdjustedSymbolsWithExchange,
+      //
+      forceRefreshIndex,
     }),
     [
       selectedTickerIds,
@@ -344,6 +380,7 @@ export default function TickerSelectionManagerProvider({
       adjustedTickerBucket,
       filteredTickerBucket,
       saveTickerBucket,
+      cancelTickerAdjustments,
       isTickerBucketSaved,
       //
       isLoadingAdjustedTickerDetails,
@@ -353,6 +390,8 @@ export default function TickerSelectionManagerProvider({
       adjustedETFAggregateDetails,
       adjustedETFAggregateDetailsError,
       formattedAdjustedSymbolsWithExchange,
+      //
+      forceRefreshIndex,
     ],
   );
 
