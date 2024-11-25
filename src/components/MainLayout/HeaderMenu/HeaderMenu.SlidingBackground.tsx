@@ -3,6 +3,10 @@ import React, { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import { styled } from "@mui/system";
 
+import useStoreStateReader from "@hooks/useStoreStateReader";
+
+import consumeProp from "@utils/consumeProp";
+
 const nonForwardedProps = [
   "left",
   "top",
@@ -64,6 +68,8 @@ export default function SlidingBackground({
 }: SlidingBackgroundProps) {
   const [isResizing, setIsResizing] = useState(false);
 
+  const { appThemeProps } = useStoreStateReader("appThemeProps");
+
   const [backgroundProps, setBackgroundProps] = useState({
     left: 0,
     top: 0,
@@ -94,6 +100,9 @@ export default function SlidingBackground({
   }, []);
 
   useEffect(() => {
+    // Use the prop in a way that can't be optimized out
+    consumeProp(appThemeProps);
+
     const updateBackgroundPosition = () => {
       if (menuRef.current && selectedKey) {
         const selectedItem = menuRef.current.querySelector(
@@ -134,7 +143,7 @@ export default function SlidingBackground({
     return () => {
       window.removeEventListener("resize", updateBackgroundPosition);
     };
-  }, [menuRef, selectedKey, isResizing]);
+  }, [menuRef, selectedKey, isResizing, appThemeProps]);
 
   return <StyledSlidingBackground {...backgroundProps} />;
 }

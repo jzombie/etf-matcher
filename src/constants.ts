@@ -87,6 +87,7 @@ export const MQTT_SYNC_KEYS: readonly (keyof StoreStateProps)[] = [
 ] as const;
 
 export const INDEXED_DB_PERSISTENCE_KEYS: readonly (keyof StoreStateProps)[] = [
+  "appThemeProps",
   "tickerBuckets",
   "subscribedMQTTRoomNames",
   // TODO: Enable this once for sure this won't lead to a crash if the selected
