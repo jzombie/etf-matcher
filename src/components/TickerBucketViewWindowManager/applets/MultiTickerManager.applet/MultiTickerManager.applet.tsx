@@ -24,7 +24,7 @@ import TickerBucketViewWindowManagerAppletWrap, {
 import useTickerSelectionManagerContext from "../../hooks/useTickerSelectionManagerContext";
 import MultiTickerManagerTicker from "./MultiTickerManager.Ticker";
 
-const ICON_FONT_SIZE: "inherit" | "small" | "medium" | "large" = "large";
+const ICON_FONT_SIZE: "inherit" | "small" | "medium" | "large" = "medium";
 
 export type MultiTickerManagerAppletProps = Omit<
   TickerBucketViewWindowManagerAppletWrapProps,
