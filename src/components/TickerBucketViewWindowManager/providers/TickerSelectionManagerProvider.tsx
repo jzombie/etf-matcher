@@ -13,9 +13,12 @@ import type {
 } from "@services/RustService";
 import store, { TickerBucket, TickerBucketTicker } from "@src/store";
 
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import useMultiETFAggregateDetail from "@hooks/useMultiETFAggregateDetail";
 import useMultiTickerDetail from "@hooks/useMultiTickerDetail";
+import useNotification from "@hooks/useNotification";
 
+import customLogger from "@utils/customLogger";
 import deepEqual from "@utils/deepEqual";
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
@@ -100,6 +103,9 @@ export default function TickerSelectionManagerProvider({
   children,
   tickerBucket,
 }: TickerSelectionManagerProviderProps) {
+  const { showNotification } = useNotification();
+  const { triggerUIError } = useAppErrorBoundary();
+
   const [selectedTickerIds, setSelectedTickerIds] = useState<number[]>(() =>
     tickerBucket.tickers.map((ticker) => ticker.tickerId),
   );
@@ -200,14 +206,38 @@ export default function TickerSelectionManagerProvider({
     [],
   );
 
-  const removeTickerWithId = useCallback((tickerId: number) => {
-    setAdjustedTickerBucket((prev) => ({
-      ...prev,
-      tickers: prev.tickers.filter(
-        (prevTicker) => prevTicker.tickerId != tickerId,
-      ),
-    }));
-  }, []);
+  const removeTickerWithId = useCallback(
+    (tickerId: number) => {
+      const symbol = adjustedTickerBucket.tickers.find(
+        (ticker) => ticker.tickerId === tickerId,
+      )?.symbol;
+      try {
+        setAdjustedTickerBucket((prev) => ({
+          ...prev,
+          tickers: prev.tickers.filter(
+            (prevTicker) => prevTicker.tickerId !== tickerId,
+          ),
+        }));
+
+        if (symbol) {
+          showNotification(
+            `"${symbol}" removed from "${adjustedTickerBucket.name}"`,
+            "warning",
+          );
+        }
+      } catch (err) {
+        customLogger.error(err);
+
+        const formattedUIErrorSymbol = symbol ? `"${symbol}"` : "the ticker";
+        triggerUIError(
+          new Error(
+            `An error occurred when trying to remove ${formattedUIErrorSymbol} from "${adjustedTickerBucket.name}"`,
+          ),
+        );
+      }
+    },
+    [adjustedTickerBucket, showNotification, triggerUIError],
+  );
 
   const filteredTickerBucket = useMemo(() => {
     const filteredTickers = adjustedTickerBucket.tickers.filter((ticker) =>
@@ -225,10 +255,20 @@ export default function TickerSelectionManagerProvider({
     [tickerBucket, adjustedTickerBucket],
   );
 
-  const saveTickerBucket = useCallback(
-    () => store.updateTickerBucket(tickerBucket, adjustedTickerBucket),
-    [tickerBucket, adjustedTickerBucket],
-  );
+  const saveTickerBucket = useCallback(() => {
+    try {
+      store.updateTickerBucket(tickerBucket, adjustedTickerBucket);
+
+      showNotification(`"${adjustedTickerBucket.name}" saved`, "success");
+    } catch (err) {
+      customLogger.error(err);
+      triggerUIError(
+        new Error(
+          `An error occurred when trying to save "${adjustedTickerBucket.name}"`,
+        ),
+      );
+    }
+  }, [tickerBucket, adjustedTickerBucket, showNotification, triggerUIError]);
 
   const selectTickerId = useCallback((tickerId: number) => {
     setSelectedTickerIds((prevTickerIds) => {

@@ -11,7 +11,7 @@ import Section from "@components/Section";
 import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
 
 import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
-import { useNotification } from "@hooks/useNotification";
+import useNotification from "@hooks/useNotification";
 
 import TickerBucketItem from "./TickerBucketItem";
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import LinkIcon from "@mui/icons-material/Link";
@@ -9,8 +9,10 @@ import type { RustServiceTickerDetail } from "@services/RustService";
 import { TickerBucket, TickerBucketTicker } from "@src/store";
 
 import AvatarLogo from "@components/AvatarLogo";
+import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
 
 import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
+import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 import TickerWeightSelector from "./MultiTickerManager.TickerWeightSelector";
 
@@ -42,6 +44,18 @@ export default function MultiTickerManagerTicker({
   disabled: isDisabled,
 }: MultiTickerManagerTickerProps) {
   const { triggerUIError } = useAppErrorBoundary();
+
+  const onDeleteStableRef = useStableCurrentRef(onDelete);
+  const [isShowingDeleteModal, setIsShowingDeleteModal] =
+    useState<boolean>(false);
+
+  const handleDelete = useCallback(() => {
+    const onDelete = onDeleteStableRef.current;
+
+    onDelete();
+
+    setIsShowingDeleteModal(false);
+  }, [onDeleteStableRef]);
 
   const tickerBucketTicker = adjustedTickerBucket.tickers.find(
     (tickerBucketTicker) =>
@@ -127,7 +141,7 @@ export default function MultiTickerManagerTicker({
         <IconButton
           aria-label="Delete Ticker"
           sx={{ marginLeft: "auto", color: "error.main" }}
-          onClick={onDelete}
+          onClick={() => setIsShowingDeleteModal(true)}
         >
           <DeleteOutlineIcon />
         </IconButton>
@@ -167,6 +181,15 @@ export default function MultiTickerManagerTicker({
           />
         </Box>
       </Box>
+
+      <DeleteEntityDialogModal
+        open={isShowingDeleteModal}
+        onClose={() => setIsShowingDeleteModal(false)}
+        onCancel={() => setIsShowingDeleteModal(false)}
+        onDelete={handleDelete}
+        title={`Confirm Delete`}
+        content={`Are you sure you want to remove "${tickerDetail.symbol}" from "${adjustedTickerBucket.name}"?`}
+      />
     </Box>
   );
 }
