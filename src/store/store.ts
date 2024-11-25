@@ -173,7 +173,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
     super({
       appThemeProps: {
-        fontMode: "normal",
+        fontMode: "reduced",
       },
       isHTMLJSVersionSynced: detectHTMLJSVersionSync(),
       isIndexedDBReady: false,
