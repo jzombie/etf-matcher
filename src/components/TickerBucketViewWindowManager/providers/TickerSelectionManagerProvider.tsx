@@ -13,10 +13,12 @@ import type {
 } from "@services/RustService";
 import store, { TickerBucket, TickerBucketTicker } from "@src/store";
 
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import useMultiETFAggregateDetail from "@hooks/useMultiETFAggregateDetail";
 import useMultiTickerDetail from "@hooks/useMultiTickerDetail";
 import useNotification from "@hooks/useNotification";
 
+import customLogger from "@utils/customLogger";
 import deepEqual from "@utils/deepEqual";
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
@@ -102,6 +104,7 @@ export default function TickerSelectionManagerProvider({
   tickerBucket,
 }: TickerSelectionManagerProviderProps) {
   const { showNotification } = useNotification();
+  const { triggerUIError } = useAppErrorBoundary();
 
   const [selectedTickerIds, setSelectedTickerIds] = useState<number[]>(() =>
     tickerBucket.tickers.map((ticker) => ticker.tickerId),
@@ -243,10 +246,19 @@ export default function TickerSelectionManagerProvider({
   );
 
   const saveTickerBucket = useCallback(() => {
-    store.updateTickerBucket(tickerBucket, adjustedTickerBucket);
+    try {
+      store.updateTickerBucket(tickerBucket, adjustedTickerBucket);
 
-    showNotification(`"${adjustedTickerBucket.name}" saved`, "success");
-  }, [tickerBucket, adjustedTickerBucket, showNotification]);
+      showNotification(`"${adjustedTickerBucket.name}" saved`, "success");
+    } catch (err) {
+      customLogger.error(err);
+      triggerUIError(
+        new Error(
+          `An error occurred when trying to save "${adjustedTickerBucket.name}"`,
+        ),
+      );
+    }
+  }, [tickerBucket, adjustedTickerBucket, showNotification, triggerUIError]);
 
   const selectTickerId = useCallback((tickerId: number) => {
     setSelectedTickerIds((prevTickerIds) => {
