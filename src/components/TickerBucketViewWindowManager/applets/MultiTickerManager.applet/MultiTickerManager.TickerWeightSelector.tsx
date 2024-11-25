@@ -98,7 +98,7 @@ export default function TickerWeightSelector({
         sx={{
           display: "flex",
           alignItems: "center",
-          justifyContent: isTiling ? "right" : "left",
+          justifyContent: isTiling ? "flex-end" : "flex-start",
           flexWrap: "wrap",
           gap: 1,
         }}
