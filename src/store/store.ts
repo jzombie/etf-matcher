@@ -22,6 +22,7 @@ import {
   MAX_RECENTLY_VIEWED_ITEMS,
   MIN_TICKER_BUCKET_NAME_LENGTH,
 } from "@src/constants";
+import type { AppThemeFontMode } from "@src/theme";
 import { v4 as uuidv4 } from "uuid";
 
 import {
@@ -117,6 +118,9 @@ const DEFAULT_TICKER_BUCKETS: TickerBucket[] = [
 ];
 
 export type StoreStateProps = {
+  appThemeProps: {
+    fontMode: AppThemeFontMode;
+  };
   isHTMLJSVersionSynced: boolean;
   isIndexedDBReady: boolean;
   isAppUnlocked: boolean;
@@ -168,6 +172,9 @@ class Store extends ReactStateEmitter<StoreStateProps> {
 
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
     super({
+      appThemeProps: {
+        fontMode: "normal",
+      },
       isHTMLJSVersionSynced: detectHTMLJSVersionSync(),
       isIndexedDBReady: false,
       isAppUnlocked: false,

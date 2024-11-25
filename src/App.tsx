@@ -15,18 +15,22 @@ import "animate.css";
 import { RouterProvider } from "react-router-dom";
 
 import useGAPageTracking from "@hooks/useGAPageTracking";
+import useStoreStateReader from "@hooks/useStoreStateReader";
 
 import router from "./router";
-
-import { darkTheme } from "./theme";
+import useAppTheme from "./theme";
 
 export default function App() {
   useGAPageTracking();
 
+  const { appThemeProps } = useStoreStateReader("appThemeProps");
+
+  const appTheme = useAppTheme({ fontMode: appThemeProps.fontMode });
+
   return (
     <AppErrorBoundaryProvider>
       <MultiMQTTRoomProvider>
-        <ThemeProvider theme={darkTheme}>
+        <ThemeProvider theme={appTheme}>
           <CssBaseline />
           <NotificationProvider>
             <TickerContainerProvider>
