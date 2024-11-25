@@ -15,6 +15,7 @@ import {
   removeCacheEntry,
 } from "@services/RustService";
 import TickerBucketImportExportService from "@services/TickerBucketImportExportService";
+import type { AppThemeFontMode } from "@src/appTheme";
 import {
   DEFAULT_TICKER_TAPE_TICKERS,
   DEFAULT_TICKER_VECTOR_CONFIG_KEY,
@@ -22,7 +23,6 @@ import {
   MAX_RECENTLY_VIEWED_ITEMS,
   MIN_TICKER_BUCKET_NAME_LENGTH,
 } from "@src/constants";
-import type { AppThemeFontMode } from "@src/theme";
 import { v4 as uuidv4 } from "uuid";
 
 import {

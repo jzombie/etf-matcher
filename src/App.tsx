@@ -17,8 +17,8 @@ import { RouterProvider } from "react-router-dom";
 import useGAPageTracking from "@hooks/useGAPageTracking";
 import useStoreStateReader from "@hooks/useStoreStateReader";
 
+import useAppTheme from "./appTheme";
 import router from "./router";
-import useAppTheme from "./theme";
 
 export default function App() {
   useGAPageTracking();
