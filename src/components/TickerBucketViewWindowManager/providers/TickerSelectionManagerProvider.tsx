@@ -211,22 +211,32 @@ export default function TickerSelectionManagerProvider({
       const symbol = adjustedTickerBucket.tickers.find(
         (ticker) => ticker.tickerId === tickerId,
       )?.symbol;
+      try {
+        setAdjustedTickerBucket((prev) => ({
+          ...prev,
+          tickers: prev.tickers.filter(
+            (prevTicker) => prevTicker.tickerId !== tickerId,
+          ),
+        }));
 
-      setAdjustedTickerBucket((prev) => ({
-        ...prev,
-        tickers: prev.tickers.filter(
-          (prevTicker) => prevTicker.tickerId !== tickerId,
-        ),
-      }));
+        if (symbol) {
+          showNotification(
+            `"${symbol}" removed from "${adjustedTickerBucket.name}"`,
+            "warning",
+          );
+        }
+      } catch (err) {
+        customLogger.error(err);
 
-      if (symbol) {
-        showNotification(
-          `"${symbol}" removed from "${adjustedTickerBucket.name}"`,
-          "warning",
+        const formattedUIErrorSymbol = symbol ? `"${symbol}"` : "the ticker";
+        triggerUIError(
+          new Error(
+            `An error occurred when trying to remove ${formattedUIErrorSymbol} from "${adjustedTickerBucket.name}"`,
+          ),
         );
       }
     },
-    [adjustedTickerBucket, showNotification],
+    [adjustedTickerBucket, showNotification, triggerUIError],
   );
 
   const filteredTickerBucket = useMemo(() => {
