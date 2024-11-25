@@ -36,6 +36,7 @@ const TICKER_QUANTITY_ADJUST_DEBOUNCE_TIME = 250;
 
 export default function MultiTickerManagerApplet({
   adjustedTickerDetails,
+  isTiling,
   ...rest
 }: MultiTickerManagerAppletProps) {
   const {
@@ -70,6 +71,7 @@ export default function MultiTickerManagerApplet({
   return (
     <TickerBucketViewWindowManagerAppletWrap
       adjustedTickerDetails={adjustedTickerDetails}
+      isTiling={isTiling}
       {...rest}
     >
       <Layout>
@@ -162,6 +164,7 @@ export default function MultiTickerManagerApplet({
                     key={forceRefreshIndex}
                     adjustedTickerBucket={adjustedTickerBucket}
                     tickerDetail={tickerDetail}
+                    isTiling={isTiling}
                     onSelect={() => selectTickerId(tickerDetail.ticker_id)}
                     onDeselect={() => deselectTickerId(tickerDetail.ticker_id)}
                     onAdjust={(adjustedTicker) => {
