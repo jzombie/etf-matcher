@@ -98,7 +98,7 @@ export default function useAppTheme({
           MuiListItem: {
             styleOverrides: {
               root: {
-                "&$selected": {
+                "&.Mui-selected": {
                   backgroundColor: "rgba(255, 255, 255, 0.16)",
                   "&:hover": {
                     backgroundColor: "rgba(255, 255, 255, 0.16)",
