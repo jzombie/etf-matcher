@@ -15,6 +15,7 @@ import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
 
 type TickerWeightSeletorProps = Omit<BoxProps, "onChange"> & {
+  isTiling: boolean;
   min: number;
   max: number;
   onChange: (evt: Event, value: number) => void;
@@ -26,6 +27,7 @@ type TickerWeightSeletorProps = Omit<BoxProps, "onChange"> & {
 };
 
 export default function TickerWeightSelector({
+  isTiling,
   min,
   max,
   onChange,
@@ -96,7 +98,9 @@ export default function TickerWeightSelector({
         sx={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "flex-end",
+          justifyContent: isTiling ? "flex-end" : "flex-start",
+          flexWrap: "wrap",
+          gap: 1,
         }}
       >
         <InputLabel

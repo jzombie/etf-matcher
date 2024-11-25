@@ -19,6 +19,7 @@ import TickerWeightSelector from "./MultiTickerManager.TickerWeightSelector";
 export type MultiTickerManagerTickerProps = {
   adjustedTickerBucket: TickerBucket;
   tickerDetail: RustServiceTickerDetail;
+  isTiling: boolean;
   onSelect: () => void;
   onDeselect: () => void;
   onAdjust: (adjustedTicker: TickerBucketTicker) => void;
@@ -33,6 +34,7 @@ export type MultiTickerManagerTickerProps = {
 export default function MultiTickerManagerTicker({
   adjustedTickerBucket,
   tickerDetail,
+  isTiling,
   onSelect,
   onDeselect,
   onAdjust,
@@ -151,13 +153,13 @@ export default function MultiTickerManagerTicker({
           display: "flex",
           alignItems: "center",
           paddingTop: 1,
-          paddingLeft: 4,
           width: "100%",
         }}
       >
         <Box style={{ width: "100%" }}>
           <TickerWeightSelector
             mx={8}
+            isTiling={isTiling}
             tickerSymbol={tickerBucketTicker?.symbol}
             disabled={isDisabled}
             onChange={(evt, val) => {
