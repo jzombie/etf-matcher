@@ -63,7 +63,7 @@ export default function useAppTheme({
                   backgroundColor: "rgba(255, 255, 255, 0.08)",
                 },
                 padding: isReducedFontMode ? "2px 6px" : undefined, // Smaller padding
-                fontSize: isReducedFontMode ? "0.875rem" : undefined, // Smaller text size for buttons
+                fontSize: isReducedFontMode ? "0.775rem" : undefined, // Smaller text size for buttons
               },
             },
           },
