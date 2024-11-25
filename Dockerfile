@@ -1,5 +1,5 @@
 # Base image for building Rust projects
-FROM rust:1.79.0 AS rust-base
+FROM rust:1.82.0 AS rust-base
 
 # Tell `validate_docker_env.sh` that we're in a Docker build
 ARG DOCKER_BUILD=1
