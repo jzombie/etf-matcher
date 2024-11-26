@@ -70,6 +70,14 @@ export default function MultiTickerManagerApplet({
     [adjustedTickerDetails],
   );
 
+  const aggregateAuditErrorMessage = useMemo(() => {
+    if (!missingAuditedTickerVectorIds?.length) {
+      return;
+    }
+
+    return `${missingAuditedTickerVectorIds?.length} ticker${missingAuditedTickerVectorIds?.length !== 1 ? "s" : ""} ${missingAuditedTickerVectorIds?.length !== 1 ? "are" : "is"} missing in the ticker vectors. Please investigate.`;
+  }, [missingAuditedTickerVectorIds]);
+
   return (
     <TickerBucketViewWindowManagerAppletWrap
       adjustedTickerDetails={adjustedTickerDetails}
@@ -206,9 +214,33 @@ export default function MultiTickerManagerApplet({
         </Content>
         <Footer>
           <Box sx={{ textAlign: "center" }}>
-            <Typography variant="body2" sx={{ fontStyle: "italic" }}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontStyle: "italic",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               {adjustedTickerBucket.tickers.length} item
               {adjustedTickerBucket.tickers.length !== 1 ? "s" : ""} selected
+              {aggregateAuditErrorMessage && (
+                <Box
+                  component="span"
+                  sx={{
+                    marginLeft: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    color: "warning.main",
+                    fontSize: "inherit",
+                    cursor: "help",
+                  }}
+                  title={aggregateAuditErrorMessage}
+                >
+                  ⚠️
+                </Box>
+              )}
             </Typography>
           </Box>
         </Footer>
