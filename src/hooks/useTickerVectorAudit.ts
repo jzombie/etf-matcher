@@ -10,6 +10,7 @@ import usePromise from "./usePromise";
 
 export default function useTickerVectorAudit(
   tickerVectorConfigKey: string,
+  // Note: `queryTickerIds` represents the `query`, not `filtered results`
   queryTickerIds: number[],
 ) {
   const { triggerUIError } = useAppErrorBoundary();
