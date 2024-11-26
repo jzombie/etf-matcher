@@ -1,3 +1,4 @@
+// TODO: Include `Audit Mode` indicators here
 import React, { useMemo } from "react";
 
 import { MosaicNode } from "react-mosaic-component";
