@@ -30,7 +30,7 @@ pub struct TickerWithWeight {
 
 pub struct OwnedTickerVectors {
     #[allow(dead_code)]
-    /// Holds the raw data to ensure that `ticker_vectors` has a valid reference.
+    // Holds the raw data to ensure that `ticker_vectors` has a valid reference.
     data: Vec<u8>,
     ticker_vectors: TickerVectors<'static>,
 }

@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
-/// Note: This struct is placed here because it is used inside `build.rs` as well
-/// as during runtime.
+// Note: This struct is placed here because it is used inside `build.rs` as well
+// as during runtime.
 #[derive(Clone, Serialize, Deserialize)]
 pub struct TickerVectorConfig {
     pub key: &'static str,
