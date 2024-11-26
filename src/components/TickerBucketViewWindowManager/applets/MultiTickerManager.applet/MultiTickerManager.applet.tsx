@@ -223,8 +223,8 @@ export default function MultiTickerManagerApplet({
                 justifyContent: "center",
               }}
             >
-              {adjustedTickerBucket.tickers.length} item
-              {adjustedTickerBucket.tickers.length !== 1 ? "s" : ""} selected
+              {filteredTickerBucket.tickers.length} item
+              {filteredTickerBucket.tickers.length !== 1 ? "s" : ""} selected
               {aggregatedAuditErrorMessage && (
                 <Box
                   component="span"
