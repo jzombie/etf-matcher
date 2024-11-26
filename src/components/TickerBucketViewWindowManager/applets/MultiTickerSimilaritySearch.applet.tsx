@@ -118,96 +118,106 @@ export default function MultiTickerSimilaritySearchApplet({
 
   return (
     <TickerBucketViewWindowManagerAppletWrap {...rest}>
-      {missingAuditedTickerVectorIds?.length ? (
-        <Center>
-          <NoInformationAvailableAlert>
-            {missingAuditedTickerVectorIds.length} ticker
-            {missingAuditedTickerVectorIds.length !== 1 ? "s" : ""}{" "}
-            {missingAuditedTickerVectorIds.length !== 1 ? "are" : "is"}{" "}
-            preventing similarity search.
-          </NoInformationAvailableAlert>
-        </Center>
-      ) : (
-        <Layout>
-          <Header>
-            <Box sx={{ textAlign: "center" }}>
-              <ToggleButtonGroup
-                value={displayMode}
-                exclusive
-                onChange={handleDisplayModeChange}
-                aria-label="Similarity search toggle"
-                size="small"
-              >
-                <ToggleButton
-                  value="radial"
-                  aria-label="Radial chart"
-                  title="Radial chart"
-                >
-                  <DonutLargeIcon sx={{ mr: 0.5 }} />
-                  {shouldShowLabels && "Radial"}
-                </ToggleButton>
-                <ToggleButton
-                  value="euclidean"
-                  aria-label="Euclidean"
-                  title="Euclidean"
-                >
-                  <StraightenIcon sx={{ mr: 0.5 }} />
-                  {shouldShowLabels && "Euclidean"}
-                </ToggleButton>
-                <ToggleButton value="cosine" aria-label="Cosine" title="Cosine">
-                  <ShowChartIcon sx={{ mr: 0.5 }} />
-                  {shouldShowLabels && "Cosine"}
-                </ToggleButton>
-              </ToggleButtonGroup>
-              <IconButton
-                onClick={() => setIsTickerVectorConfigSelectorDialogOpen(true)}
-                aria-label="Select Model"
-                sx={{ ml: 1, mb: 1 }}
-              >
-                <SettingsIcon />
-              </IconButton>
-            </Box>
-          </Header>
+      <Layout>
+        {missingAuditedTickerVectorIds?.length ? (
           <Content>
-            {
-              // TODO: Finish adding other similarity search components
-            }
-            {displayMode === "radial" ? (
-              <TickerPCAScatterPlot tickerDistances={tickerDistances} />
-            ) : (
-              <Scrollable>
-                <TickerVectorQueryTable
-                  queryMode="bucket"
-                  query={filteredTickerBucket}
-                  alignment={displayMode}
-                  tickerVectorConfigKey={preferredTickerVectorConfigKey}
-                />
-              </Scrollable>
-            )}
+            <Center>
+              <NoInformationAvailableAlert>
+                {missingAuditedTickerVectorIds.length} ticker
+                {missingAuditedTickerVectorIds.length !== 1 ? "s" : ""}{" "}
+                {missingAuditedTickerVectorIds.length !== 1 ? "are" : "is"}{" "}
+                preventing similarity search (model:{" "}
+                {preferredTickerVectorConfigKey})
+              </NoInformationAvailableAlert>
+            </Center>
           </Content>
-          <Footer>
-            <Footer style={{ textAlign: "right" }}>
-              <Typography
-                variant="body2"
-                component="span"
-                sx={{ fontSize: ".8rem" }}
-              >
-                Using model:{" "}
-                <Link
-                  component="button"
-                  variant="body2"
+        ) : (
+          <>
+            <Header>
+              <Box sx={{ textAlign: "center" }}>
+                <ToggleButtonGroup
+                  value={displayMode}
+                  exclusive
+                  onChange={handleDisplayModeChange}
+                  aria-label="Similarity search toggle"
+                  size="small"
+                >
+                  <ToggleButton
+                    value="radial"
+                    aria-label="Radial chart"
+                    title="Radial chart"
+                  >
+                    <DonutLargeIcon sx={{ mr: 0.5 }} />
+                    {shouldShowLabels && "Radial"}
+                  </ToggleButton>
+                  <ToggleButton
+                    value="euclidean"
+                    aria-label="Euclidean"
+                    title="Euclidean"
+                  >
+                    <StraightenIcon sx={{ mr: 0.5 }} />
+                    {shouldShowLabels && "Euclidean"}
+                  </ToggleButton>
+                  <ToggleButton
+                    value="cosine"
+                    aria-label="Cosine"
+                    title="Cosine"
+                  >
+                    <ShowChartIcon sx={{ mr: 0.5 }} />
+                    {shouldShowLabels && "Cosine"}
+                  </ToggleButton>
+                </ToggleButtonGroup>
+                <IconButton
                   onClick={() =>
                     setIsTickerVectorConfigSelectorDialogOpen(true)
                   }
-                  sx={{ cursor: "pointer", color: "text.secondary" }}
+                  aria-label="Select Model"
+                  sx={{ ml: 1, mb: 1 }}
                 >
-                  {preferredTickerVectorConfigKey || "N/A"}
-                </Link>
-              </Typography>
-            </Footer>
+                  <SettingsIcon />
+                </IconButton>
+              </Box>
+            </Header>
+            <Content>
+              {
+                // TODO: Finish adding other similarity search components
+              }
+              {displayMode === "radial" ? (
+                <TickerPCAScatterPlot tickerDistances={tickerDistances} />
+              ) : (
+                <Scrollable>
+                  <TickerVectorQueryTable
+                    queryMode="bucket"
+                    query={filteredTickerBucket}
+                    alignment={displayMode}
+                    tickerVectorConfigKey={preferredTickerVectorConfigKey}
+                  />
+                </Scrollable>
+              )}
+            </Content>
+          </>
+        )}
+
+        <Footer>
+          <Footer style={{ textAlign: "right" }}>
+            <Typography
+              variant="body2"
+              component="span"
+              sx={{ fontSize: ".8rem" }}
+            >
+              Using model:{" "}
+              <Link
+                component="button"
+                variant="body2"
+                onClick={() => setIsTickerVectorConfigSelectorDialogOpen(true)}
+                sx={{ cursor: "pointer", color: "text.secondary" }}
+              >
+                {preferredTickerVectorConfigKey || "N/A"}
+              </Link>
+            </Typography>
           </Footer>
-        </Layout>
-      )}
+        </Footer>
+      </Layout>
 
       {preferredTickerVectorConfig && (
         <TickerVectorConfigSelectorDialogModal
