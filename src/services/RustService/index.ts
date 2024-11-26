@@ -30,6 +30,7 @@ import {
 } from "./lib/tickerDetail";
 import { fetchTickerId } from "./lib/tickerId";
 import {
+  auditMissingTickerVectors,
   fetchAllTickerVectorConfigs,
   fetchCosineByTicker,
   fetchCosineByTickerBucket,
@@ -81,6 +82,7 @@ export {
   removeCacheEntry,
   clearCache,
   fetchAllTickerVectorConfigs,
+  auditMissingTickerVectors,
   fetchCosineByTicker,
   fetchCosineByTickerBucket,
   fetchEuclideanByTicker,
