@@ -70,7 +70,7 @@ export default function MultiTickerManagerApplet({
     [adjustedTickerDetails],
   );
 
-  const aggregateAuditErrorMessage = useMemo(() => {
+  const aggregatedAuditErrorMessage = useMemo(() => {
     if (!missingAuditedTickerVectorIds?.length) {
       return;
     }
@@ -225,7 +225,7 @@ export default function MultiTickerManagerApplet({
             >
               {adjustedTickerBucket.tickers.length} item
               {adjustedTickerBucket.tickers.length !== 1 ? "s" : ""} selected
-              {aggregateAuditErrorMessage && (
+              {aggregatedAuditErrorMessage && (
                 <Box
                   component="span"
                   sx={{
@@ -236,7 +236,7 @@ export default function MultiTickerManagerApplet({
                     fontSize: "inherit",
                     cursor: "help",
                   }}
-                  title={aggregateAuditErrorMessage}
+                  title={aggregatedAuditErrorMessage}
                 >
                   ⚠️
                 </Box>
