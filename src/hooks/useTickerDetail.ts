@@ -26,7 +26,7 @@ export default function useTickerDetail(
       triggerUIError(new Error("Error fetching ticker detail"));
       customLogger.error({ tickerId, err });
     },
-    autoExecute: false,
+    initialAutoExecute: false,
   });
 
   useEffect(() => {

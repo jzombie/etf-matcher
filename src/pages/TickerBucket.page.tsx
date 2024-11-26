@@ -71,7 +71,7 @@ export default function TickerBucketPage({
       customLogger.error(err);
       triggerUIError(new Error("Could not parse ticker bucket from URL"));
     },
-    autoExecute: false,
+    initialAutoExecute: false,
   });
 
   useEffect(() => {

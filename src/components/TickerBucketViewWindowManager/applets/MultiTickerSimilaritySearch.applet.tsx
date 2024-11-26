@@ -70,7 +70,7 @@ export default function MultiTickerSimilaritySearchApplet({
       customLogger.error(err);
       triggerUIError(new Error("Could not fetch PCA similarity results"));
     },
-    autoExecute: false,
+    initialAutoExecute: false,
   });
 
   useEffect(() => {

@@ -38,7 +38,7 @@ export default function MultiTickerSectorAllocationApplet({
   >({
     fn: (tickerBucketTickers) =>
       fetchWeightedTickerSectorDistribution(tickerBucketTickers),
-    autoExecute: false,
+    initialAutoExecute: false,
   });
 
   useEffect(() => {

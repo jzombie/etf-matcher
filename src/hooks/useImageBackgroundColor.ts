@@ -12,7 +12,7 @@ export default function useImageBackgroundColor(
 ): string | null {
   const { data: imageInfo, execute } = usePromise<{ rgba: string }, [string]>({
     fn: fetchImageInfo,
-    autoExecute: false,
+    initialAutoExecute: false,
   });
 
   useEffect(() => {

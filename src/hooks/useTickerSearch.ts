@@ -102,7 +102,7 @@ export default function useTickerSearch(
         ? searchTickers(searchQuery, page, pageSize, onlyExactMatches)
         : Promise.resolve({ results: [], total_count: 0 });
     },
-    autoExecute: false,
+    initialAutoExecute: false,
     onLoad: ({ results, total_count }) => {
       _setSearchResults(results);
       _setTotalSearchResults(total_count);

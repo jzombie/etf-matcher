@@ -33,7 +33,7 @@ export default function useETFAggregateDetail({
       triggerUIError(new Error("Error fetching ETF aggregate detail"));
       customLogger.error(err);
     },
-    autoExecute: false,
+    initialAutoExecute: false,
   });
 
   useEffect(() => {

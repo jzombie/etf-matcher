@@ -13,7 +13,7 @@ export default function useEncodedImage(encSrc?: string) {
     [string]
   >({
     fn: (encSrc) => fetchImageInfo(encSrc),
-    autoExecute: false,
+    initialAutoExecute: false,
     onError: customLogger.error,
   });
 

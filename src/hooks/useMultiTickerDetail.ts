@@ -62,7 +62,7 @@ export default function useMultiTickerDetail(
     fn: fetchDetails,
     onLoad,
     onError: triggerUIError,
-    autoExecute: false,
+    initialAutoExecute: false,
   });
 
   // Auto-execute the promise when the tickerIds change

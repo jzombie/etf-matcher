@@ -123,7 +123,7 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
       customLogger.error(err);
       triggerUIError(new Error("Could not fetch PCA similarity results"));
     },
-    autoExecute: false,
+    initialAutoExecute: false,
   });
 
   const hashedTickerDistances = useObjectHash(tickerDistances);

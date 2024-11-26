@@ -32,7 +32,7 @@ export default function useTickerVectorConfigs() {
         new Error("Error when trying to load ticker vector configs"),
       );
     },
-    autoExecute: true,
+    initialAutoExecute: true,
   });
 
   const preferredTickerVectorConfig = useMemo(() => {
