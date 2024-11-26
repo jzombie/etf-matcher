@@ -56,6 +56,8 @@ export default function MultiTickerManagerApplet({
     cancelTickerAdjustments,
     isTickerBucketSaved,
     //
+    missingAuditedTickerVectorIds,
+    //
     forceRefreshIndex,
   } = useTickerSelectionManagerContext();
 
@@ -158,12 +160,18 @@ export default function MultiTickerManagerApplet({
                   filteredTicker.tickerId === tickerDetail.ticker_id,
               );
 
+              const isMissingInTickerVectors =
+                missingAuditedTickerVectorIds?.includes(
+                  tickerDetail.ticker_id,
+                ) || false;
+
               return (
                 <Section key={tickerDetail.ticker_id} mx={1} my={1} ml={0}>
                   <MultiTickerManagerTicker
                     key={forceRefreshIndex}
                     adjustedTickerBucket={adjustedTickerBucket}
                     tickerDetail={tickerDetail}
+                    isMissingInTickerVectors={isMissingInTickerVectors}
                     isTiling={isTiling}
                     onSelect={() => selectTickerId(tickerDetail.ticker_id)}
                     onDeselect={() => deselectTickerId(tickerDetail.ticker_id)}

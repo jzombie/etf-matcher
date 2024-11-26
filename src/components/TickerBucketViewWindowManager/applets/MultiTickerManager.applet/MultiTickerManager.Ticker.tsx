@@ -19,6 +19,7 @@ import TickerWeightSelector from "./MultiTickerManager.TickerWeightSelector";
 export type MultiTickerManagerTickerProps = {
   adjustedTickerBucket: TickerBucket;
   tickerDetail: RustServiceTickerDetail;
+  isMissingInTickerVectors: boolean;
   isTiling: boolean;
   onSelect: () => void;
   onDeselect: () => void;
@@ -34,6 +35,7 @@ export type MultiTickerManagerTickerProps = {
 export default function MultiTickerManagerTicker({
   adjustedTickerBucket,
   tickerDetail,
+  isMissingInTickerVectors,
   isTiling,
   onSelect,
   onDeselect,
@@ -96,6 +98,19 @@ export default function MultiTickerManagerTicker({
                 }}
               >
                 {tickerDetail.symbol}
+                {isMissingInTickerVectors && (
+                  <Box
+                    component="span"
+                    sx={{
+                      marginLeft: 1,
+                      color: "warning.main",
+                      cursor: "help",
+                    }}
+                    title="This ticker is missing in the ticker vectors. Adjust or investigate."
+                  >
+                    ⚠️
+                  </Box>
+                )}
               </Box>
               <Box fontSize="small" color="text.secondary">
                 {tickerDetail.exchange_short_name}
