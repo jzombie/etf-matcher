@@ -5,7 +5,6 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 import StraightenIcon from "@mui/icons-material/Straighten";
 import {
-  Alert,
   Box,
   IconButton,
   Link,
@@ -21,6 +20,7 @@ import { fetchEuclideanByTickerBucket } from "@services/RustService";
 import { RustServiceTickerDistance } from "@services/RustService";
 import { TickerBucket } from "@src/store";
 
+import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
 import TickerPCAScatterPlot from "@components/TickerPCAScatterPlot";
 import TickerVectorConfigSelectorDialogModal from "@components/TickerVectorConfigSelectorDialogModal";
 import TickerVectorQueryTable from "@components/TickerVectorQueryTable";
@@ -120,12 +120,12 @@ export default function MultiTickerSimilaritySearchApplet({
     <TickerBucketViewWindowManagerAppletWrap {...rest}>
       {missingAuditedTickerVectorIds?.length ? (
         <Center>
-          <Alert severity="warning">
+          <NoInformationAvailableAlert>
             {missingAuditedTickerVectorIds.length} ticker
             {missingAuditedTickerVectorIds.length !== 1 ? "s" : ""}{" "}
             {missingAuditedTickerVectorIds.length !== 1 ? "are" : "is"}{" "}
             preventing similarity search.
-          </Alert>
+          </NoInformationAvailableAlert>
         </Center>
       ) : (
         <Layout>
