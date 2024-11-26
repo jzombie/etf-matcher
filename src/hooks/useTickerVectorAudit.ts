@@ -5,12 +5,15 @@ import { auditMissingTickerVectors } from "@services/RustService";
 import arraysEqual from "@utils/arraysEqual";
 import customLogger from "@utils/customLogger";
 
+import useAppErrorBoundary from "./useAppErrorBoundary";
 import usePromise from "./usePromise";
 
 export default function useTickerVectorAudit(
   tickerVectorConfigKey: string,
   queryTickerIds: number[],
 ) {
+  const { triggerUIError } = useAppErrorBoundary();
+
   const prevTickerIdsRef = useRef<number[]>([]);
 
   const {
@@ -21,8 +24,12 @@ export default function useTickerVectorAudit(
   } = usePromise<number[], [string, number[]]>({
     fn: (tickerVectorConfigKey, queryTickerIds) =>
       auditMissingTickerVectors(tickerVectorConfigKey, queryTickerIds),
-    // TODO: Also route to UI error
-    onError: customLogger.error,
+    onError: (err) => {
+      customLogger.error(err);
+      triggerUIError(
+        new Error("An error occurred while auditing the ticker vectors"),
+      );
+    },
     initialAutoExecute: false,
   });
 
