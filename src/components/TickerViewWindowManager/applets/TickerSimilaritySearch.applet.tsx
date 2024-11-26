@@ -52,20 +52,40 @@ export type TickerSimilaritySearchAppletProps = Omit<
 
 export default function TickerSimilaritySearchApplet({
   tickerDetail,
+  missingAuditedTickerVectorIds,
+  isTickerVectorAuditPending,
   ...rest
 }: TickerSimilaritySearchAppletProps) {
   return (
-    <TickerViewWindowManagerAppletWrap tickerDetail={tickerDetail} {...rest}>
-      {tickerDetail && <ComponentWrap tickerDetail={tickerDetail} />}
+    <TickerViewWindowManagerAppletWrap
+      tickerDetail={tickerDetail}
+      missingAuditedTickerVectorIds={missingAuditedTickerVectorIds}
+      isTickerVectorAuditPending={isTickerVectorAuditPending}
+      {...rest}
+    >
+      {tickerDetail && (
+        <ComponentWrap
+          tickerDetail={tickerDetail}
+          missingAuditedTickerVectorIds={missingAuditedTickerVectorIds}
+          isTickerVectorAuditPending={isTickerVectorAuditPending}
+        />
+      )}
     </TickerViewWindowManagerAppletWrap>
   );
 }
 
 type ComponentWrapProps = {
   tickerDetail: RustServiceTickerDetail;
+  missingAuditedTickerVectorIds: TickerSimilaritySearchAppletProps["missingAuditedTickerVectorIds"];
+  isTickerVectorAuditPending: TickerSimilaritySearchAppletProps["isTickerVectorAuditPending"];
 };
 
-function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
+function ComponentWrap({
+  tickerDetail,
+  missingAuditedTickerVectorIds,
+  // TODO: Handle
+  // isTickerVectorAuditPending,
+}: ComponentWrapProps) {
   const [displayMode, setDisplayMode] = useState<DisplayMode>("radial");
   const previousModeRef = useRef<DisplayMode>("radial");
   const [
@@ -137,6 +157,7 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
     }
   }, [preferredTickerVectorConfigKey, tickerDetail, fetchTickerDistances]);
 
+  // TODO: Base on audit report?
   if (isLoadingFinancialDetail) {
     return (
       <Center>
@@ -145,81 +166,93 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
     );
   }
 
-  if (!financialDetail?.are_financials_current) {
-    return (
-      <Center>
-        <NoInformationAvailableAlert>
-          No current financial information for &quot;{tickerDetail.symbol}&quot;
-        </NoInformationAvailableAlert>
-      </Center>
-    );
-  }
+  // TODO: Use `NoInformationAvailableAlert`
 
   return (
     <>
       <Layout>
-        <Header>
-          <Box sx={{ textAlign: "center" }}>
-            <ToggleButtonGroup
-              value={displayMode}
-              exclusive
-              onChange={handleDisplayModeChange}
-              aria-label="Similarity search toggle"
-              size="small"
-            >
-              <ToggleButton
-                value="radial"
-                aria-label="Radial chart"
-                title="Radial chart"
-              >
-                <DonutLargeIcon sx={{ mr: 0.5 }} />
-                {shouldShowLabels && "Radial"}
-              </ToggleButton>
-              <ToggleButton
-                value="euclidean"
-                aria-label="Euclidean"
-                title="Euclidean"
-              >
-                <StraightenIcon sx={{ mr: 0.5 }} />
-                {shouldShowLabels && "Euclidean"}
-              </ToggleButton>
-              <ToggleButton value="cosine" aria-label="Cosine" title="Cosine">
-                <ShowChartIcon sx={{ mr: 0.5 }} />
-                {shouldShowLabels && "Cosine"}
-              </ToggleButton>
-            </ToggleButtonGroup>
-            <IconButton
-              onClick={() => setIsTickerVectorConfigSelectorDialogOpen(true)}
-              aria-label="Select Model"
-              sx={{ ml: 1, mb: 1 }}
-            >
-              <SettingsIcon />
-            </IconButton>
-          </Box>
-        </Header>
-        <Content ref={setContentElement}>
-          {preferredTickerVectorConfigKey && (
-            // Due to some of the child components of the`Transition` wrapper,
-            // it's being conditionally rendered for now.
-            <Transition
-              trigger={`${displayMode}-${preferredTickerVectorConfigKey}-${hashedTickerDistances}`}
-              direction={getDirection()}
-            >
-              {displayMode === "radial" ? (
-                <TickerPCAScatterPlot tickerDistances={tickerDistances} />
-              ) : (
-                <Scrollable>
-                  <TickerVectorQueryTable
-                    queryMode="ticker-detail"
-                    query={tickerDetail}
-                    alignment={displayMode}
-                    tickerVectorConfigKey={preferredTickerVectorConfigKey}
-                  />
-                </Scrollable>
+        {missingAuditedTickerVectorIds?.length ? (
+          <Content>
+            <Center>
+              <NoInformationAvailableAlert>
+                Similarity search is not available for &quot;
+                {tickerDetail.symbol}&quot;.
+              </NoInformationAvailableAlert>
+            </Center>
+          </Content>
+        ) : (
+          <>
+            <Header>
+              <Box sx={{ textAlign: "center" }}>
+                <ToggleButtonGroup
+                  value={displayMode}
+                  exclusive
+                  onChange={handleDisplayModeChange}
+                  aria-label="Similarity search toggle"
+                  size="small"
+                >
+                  <ToggleButton
+                    value="radial"
+                    aria-label="Radial chart"
+                    title="Radial chart"
+                  >
+                    <DonutLargeIcon sx={{ mr: 0.5 }} />
+                    {shouldShowLabels && "Radial"}
+                  </ToggleButton>
+                  <ToggleButton
+                    value="euclidean"
+                    aria-label="Euclidean"
+                    title="Euclidean"
+                  >
+                    <StraightenIcon sx={{ mr: 0.5 }} />
+                    {shouldShowLabels && "Euclidean"}
+                  </ToggleButton>
+                  <ToggleButton
+                    value="cosine"
+                    aria-label="Cosine"
+                    title="Cosine"
+                  >
+                    <ShowChartIcon sx={{ mr: 0.5 }} />
+                    {shouldShowLabels && "Cosine"}
+                  </ToggleButton>
+                </ToggleButtonGroup>
+                <IconButton
+                  onClick={() =>
+                    setIsTickerVectorConfigSelectorDialogOpen(true)
+                  }
+                  aria-label="Select Model"
+                  sx={{ ml: 1, mb: 1 }}
+                >
+                  <SettingsIcon />
+                </IconButton>
+              </Box>
+            </Header>
+            <Content ref={setContentElement}>
+              {preferredTickerVectorConfigKey && (
+                // Due to some of the child components of the`Transition` wrapper,
+                // it's being conditionally rendered for now.
+                <Transition
+                  trigger={`${displayMode}-${preferredTickerVectorConfigKey}-${hashedTickerDistances}`}
+                  direction={getDirection()}
+                >
+                  {displayMode === "radial" ? (
+                    <TickerPCAScatterPlot tickerDistances={tickerDistances} />
+                  ) : (
+                    <Scrollable>
+                      <TickerVectorQueryTable
+                        queryMode="ticker-detail"
+                        query={tickerDetail}
+                        alignment={displayMode}
+                        tickerVectorConfigKey={preferredTickerVectorConfigKey}
+                      />
+                    </Scrollable>
+                  )}
+                </Transition>
               )}
-            </Transition>
-          )}
-        </Content>
+            </Content>
+          </>
+        )}
+
         <Footer style={{ textAlign: "right" }}>
           <Typography
             variant="body2"

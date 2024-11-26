@@ -116,6 +116,8 @@ export default function MultiTickerSimilaritySearchApplet({
     return null;
   }
 
+  // TODO: Handle `isTickerVectorAuditPending`
+
   return (
     <TickerBucketViewWindowManagerAppletWrap {...rest}>
       <Layout>
@@ -127,7 +129,7 @@ export default function MultiTickerSimilaritySearchApplet({
                 {missingAuditedTickerVectorIds.length !== 1 ? "s" : ""}{" "}
                 {missingAuditedTickerVectorIds.length !== 1 ? "are" : "is"}{" "}
                 preventing similarity search (model:{" "}
-                {preferredTickerVectorConfigKey})
+                {preferredTickerVectorConfigKey}).
               </NoInformationAvailableAlert>
             </Center>
           </Content>
