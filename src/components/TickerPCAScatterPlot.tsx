@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Box, Divider, Typography } from "@mui/material";
 
 import AutoScaler from "@layoutKit/AutoScaler";
+import Center from "@layoutKit/Center";
 import {
   RustServiceTickerDetail,
   RustServiceTickerDistance,
@@ -23,6 +24,8 @@ import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 import customLogger from "@utils/customLogger";
 
 import AvatarLogo from "./AvatarLogo";
+import NetworkProgressIndicator from "./NetworkProgressIndicator";
+import NoInformationAvailableAlert from "./NoInformationAvailableAlert";
 
 const RADIAL_STROKE_COLOR = "#999";
 const RADIAL_FILL_COLOR = "none";
@@ -52,9 +55,13 @@ export default function TickerPCAScatterPlot({
   const [chartData, setChartData] = useState<ChartVectorDistance[] | null>(
     null,
   );
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  // TODO: Use `usePromise` instead
   useEffect(() => {
     if (tickerDistances) {
+      setIsLoading(true);
+
       Promise.allSettled(
         tickerDistances.map(async (item) => {
           const tickerDetail = await fetchTickerDetail(item.ticker_id);
@@ -64,13 +71,17 @@ export default function TickerPCAScatterPlot({
             pc2: item.translated_pca_coords[1],
           };
         }),
-      ).then((results) => {
-        // Filter out failed promises
-        const successfulResults = results
-          .filter((result) => result.status === "fulfilled")
-          .map((result) => result.value); // Extract the `value` from the fulfilled promises
-        setChartData(successfulResults);
-      });
+      )
+        .then((results) => {
+          // Filter out failed promises
+          const successfulResults = results
+            .filter((result) => result.status === "fulfilled")
+            .map((result) => result.value); // Extract the `value` from the fulfilled promises
+          setChartData(successfulResults);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     } else {
       setChartData(null);
     }
@@ -102,9 +113,22 @@ export default function TickerPCAScatterPlot({
     [chartData],
   );
 
+  if (isLoading) {
+    return (
+      <Center>
+        <NetworkProgressIndicator />
+      </Center>
+    );
+  }
+
   if (!chartData) {
-    // TODO: Render a loading indicator?
-    return null;
+    return (
+      <Center>
+        <NoInformationAvailableAlert>
+          No chart data available.
+        </NoInformationAvailableAlert>
+      </Center>
+    );
   }
 
   return (
@@ -242,8 +266,6 @@ function CustomTooltip({ active, payload }: TooltipProps<number, NameType>) {
       </Box>
     );
   }
-
-  return null;
 }
 
 type CustomPointProps = {
