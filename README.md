@@ -6,8 +6,8 @@ Source code for [ETFMatcher.com](https://etfmatcher.com), a utility that leverag
 
 - A Unix terminal shell (such as Bash or Zsh)
 - Docker version 26.1.3 (may work with earlier versions of Docker)
-- Data (data is not provided directly in this open-source repo; you may need to mock it yourself)
-- A compatible .env file (no documentation provided on what to use for this)
+- Proprietary `.bin` files used for stock analysis
+- A compatible .env file (no documentation provided)
 
 ### Optional
 
