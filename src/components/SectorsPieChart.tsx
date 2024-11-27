@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import { COLOR_WHEEL_COLORS } from "@src/constants";
 import {
   Cell,
   Legend,
@@ -11,6 +10,7 @@ import {
 } from "recharts";
 
 import customLogger from "@utils/customLogger";
+import getSectorColor from "@utils/string/getSectorColor";
 
 export type SectorsPieChartProps = {
   majorSectorDistribution: Array<{
@@ -18,19 +18,6 @@ export type SectorsPieChartProps = {
     weight: number;
   }>;
 };
-
-// TODO: Refactor
-//
-// Hash function constrained to the COLOR_WHEEL_COLORS array
-function hashSectorNameToColor(
-  name: string,
-  colors: readonly string[],
-): string {
-  const hash = name
-    .split("")
-    .reduce((hash, char) => hash + char.charCodeAt(0), 0);
-  return colors[hash % colors.length];
-}
 
 export default function SectorsPieChart({
   majorSectorDistribution,
@@ -99,10 +86,7 @@ export default function SectorsPieChart({
           labelLine={false} // Disable connecting lines for labels
         >
           {data.map((entry, index) => (
-            <Cell
-              key={`cell-${index}`}
-              fill={hashSectorNameToColor(entry.name, COLOR_WHEEL_COLORS)}
-            />
+            <Cell key={`cell-${index}`} fill={getSectorColor(entry.name)} />
           ))}
         </Pie>
         <Tooltip formatter={(value: number) => `${value.toFixed(2)}%`} />
