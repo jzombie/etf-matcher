@@ -1,6 +1,6 @@
 # ETF Matcher
 
-Source code for up and coming [ETFMatcher.com](https://etfmatcher.com), a platform designed to help users customize a virtual portfolio with potential fractional shares and find ETFs that closely match their investment goals.
+Source code for [ETFMatcher.com](https://etfmatcher.com), a utility that leverages machine learning to analyze financial disclosures, helping users customize virtual portfolios and discover ETFs tailored to their investment strategies.
 
 ## Requirements
 
