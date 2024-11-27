@@ -78,7 +78,10 @@ export default function SectorsPieChart({
     // Note: `AutoScaler` is used instead of `ResponsiveContainer` to better
     // control the layout with the app.
     <AutoScaler>
-      <PieChart width={500} height={200}>
+      {
+        // Note: These dimensions are used to maintain aspect ratio.
+      }
+      <PieChart width={500} height={320}>
         <Pie
           data={data}
           dataKey="value"
