@@ -33,6 +33,7 @@ import arraysEqual from "@utils/arraysEqual";
 import customLogger from "@utils/customLogger";
 import debounceWithKey from "@utils/debounceWithKey";
 import detectHTMLJSVersionSync from "@utils/detectHTMLJSVersionSync";
+import getCurrentUnixTime from "@utils/getCurrentUnixTime";
 import getIsProdEnv from "@utils/getIsProdEnv";
 
 import {
@@ -118,6 +119,7 @@ const DEFAULT_TICKER_BUCKETS: TickerBucket[] = [
 ];
 
 export type StoreStateProps = {
+  clientBootUnixTime: number;
   appThemeProps: {
     fontMode: AppThemeFontMode;
   };
@@ -172,6 +174,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
 
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
     super({
+      clientBootUnixTime: getCurrentUnixTime(),
       appThemeProps: {
         fontMode: "normal",
       },
@@ -487,6 +490,10 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     );
 
     return arraysEqual(initialTickerBucketUUIDs, currentTickerBucketUUIDs);
+  }
+
+  get clientUptime() {
+    return getCurrentUnixTime() - this.state.clientBootUnixTime;
   }
 
   /**
