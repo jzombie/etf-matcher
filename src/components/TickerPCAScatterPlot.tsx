@@ -125,7 +125,7 @@ export default function TickerPCAScatterPlot({
 
   return (
     // Note: `AutoScaler` is used instead of `ResponsiveContainer` to better
-    //control the layout with the app.
+    // control the layout with the app.
     <Full>
       <AutoScaler>
         <ScatterChart
