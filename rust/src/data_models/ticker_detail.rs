@@ -135,7 +135,7 @@ impl TickerDetail {
                                     }
                                 } else if let Some(top_sector_name) = etf_detail.top_pct_sector_name
                                 {
-                                    let top_sector_weight = etf_detail.top_pct_sector_weight; // Directly use the f32 value
+                                    let top_sector_weight = etf_detail.top_pct_sector_weight;
                                     let entry =
                                         sector_weights.entry(top_sector_name).or_insert(0.0);
 
