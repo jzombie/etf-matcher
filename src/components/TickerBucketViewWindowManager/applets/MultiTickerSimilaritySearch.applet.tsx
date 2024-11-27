@@ -54,8 +54,11 @@ export default function MultiTickerSimilaritySearchApplet({
     setIsTickerVectorConfigSelectorDialogOpen,
   ] = useState(false);
 
-  const { filteredTickerBucket, missingAuditedTickerVectorIds } =
-    useTickerSelectionManagerContext();
+  const {
+    filteredTickerBucket,
+    missingAuditedTickerVectorIds,
+    isTickerVectorAuditPending,
+  } = useTickerSelectionManagerContext();
 
   const {
     preferredTickerVectorConfigKey,
@@ -115,8 +118,6 @@ export default function MultiTickerSimilaritySearchApplet({
   if (!preferredTickerVectorConfigKey) {
     return null;
   }
-
-  // TODO: Handle `isTickerVectorAuditPending`
 
   return (
     <TickerBucketViewWindowManagerAppletWrap {...rest}>
@@ -181,21 +182,27 @@ export default function MultiTickerSimilaritySearchApplet({
               </Box>
             </Header>
             <Content>
+              {isTickerVectorAuditPending ? (
+                <Center>Performing audit...</Center>
+              ) : (
+                <>
+                  {displayMode === "radial" ? (
+                    <TickerPCAScatterPlot tickerDistances={tickerDistances} />
+                  ) : (
+                    <Scrollable>
+                      <TickerVectorQueryTable
+                        queryMode="bucket"
+                        query={filteredTickerBucket}
+                        alignment={displayMode}
+                        tickerVectorConfigKey={preferredTickerVectorConfigKey}
+                      />
+                    </Scrollable>
+                  )}
+                </>
+              )}
               {
                 // TODO: Finish adding other similarity search components
               }
-              {displayMode === "radial" ? (
-                <TickerPCAScatterPlot tickerDistances={tickerDistances} />
-              ) : (
-                <Scrollable>
-                  <TickerVectorQueryTable
-                    queryMode="bucket"
-                    query={filteredTickerBucket}
-                    alignment={displayMode}
-                    tickerVectorConfigKey={preferredTickerVectorConfigKey}
-                  />
-                </Scrollable>
-              )}
             </Content>
           </>
         )}

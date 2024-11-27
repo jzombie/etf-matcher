@@ -22,7 +22,6 @@ import {
 } from "@services/RustService";
 import { fetchEuclideanByTicker } from "@services/RustService";
 
-import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
 import TickerPCAScatterPlot from "@components/TickerPCAScatterPlot";
 import TickerVectorConfigSelectorDialogModal from "@components/TickerVectorConfigSelectorDialogModal";
@@ -33,7 +32,6 @@ import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import useElementSize from "@hooks/useElementSize";
 import useObjectHash from "@hooks/useObjectHash";
 import usePromise from "@hooks/usePromise";
-import useTicker10KDetail from "@hooks/useTicker10KDetail";
 import useTickerVectorConfigs from "@hooks/useTickerVectorConfigs";
 
 import customLogger from "@utils/customLogger";
@@ -83,8 +81,7 @@ type ComponentWrapProps = {
 function ComponentWrap({
   tickerDetail,
   missingAuditedTickerVectorIds,
-  // TODO: Handle
-  // isTickerVectorAuditPending,
+  isTickerVectorAuditPending,
 }: ComponentWrapProps) {
   const [displayMode, setDisplayMode] = useState<DisplayMode>("radial");
   const previousModeRef = useRef<DisplayMode>("radial");
@@ -116,10 +113,6 @@ function ComponentWrap({
     const currentIndex = DISPLAY_MODES.indexOf(displayMode);
     return currentIndex > prevIndex ? "left" : "right";
   }, [displayMode]);
-
-  // TODO: Handle error state
-  const { isLoading: isLoadingFinancialDetail, detail: financialDetail } =
-    useTicker10KDetail(tickerDetail.ticker_id);
 
   // Using `useState` for `contentElement` to ensure it triggers a re-render
   // when the element is set, allowing `useElementSize` to update immediately.
@@ -156,17 +149,6 @@ function ComponentWrap({
       );
     }
   }, [preferredTickerVectorConfigKey, tickerDetail, fetchTickerDistances]);
-
-  // TODO: Base on audit report?
-  if (isLoadingFinancialDetail) {
-    return (
-      <Center>
-        <NetworkProgressIndicator />
-      </Center>
-    );
-  }
-
-  // TODO: Use `NoInformationAvailableAlert`
 
   return (
     <>
@@ -228,26 +210,36 @@ function ComponentWrap({
               </Box>
             </Header>
             <Content ref={setContentElement}>
-              {preferredTickerVectorConfigKey && (
-                // Due to some of the child components of the`Transition` wrapper,
-                // it's being conditionally rendered for now.
-                <Transition
-                  trigger={`${displayMode}-${preferredTickerVectorConfigKey}-${hashedTickerDistances}`}
-                  direction={getDirection()}
-                >
-                  {displayMode === "radial" ? (
-                    <TickerPCAScatterPlot tickerDistances={tickerDistances} />
-                  ) : (
-                    <Scrollable>
-                      <TickerVectorQueryTable
-                        queryMode="ticker-detail"
-                        query={tickerDetail}
-                        alignment={displayMode}
-                        tickerVectorConfigKey={preferredTickerVectorConfigKey}
-                      />
-                    </Scrollable>
+              {isTickerVectorAuditPending ? (
+                <Center>Performing audit...</Center>
+              ) : (
+                <>
+                  {preferredTickerVectorConfigKey && (
+                    // Due to some of the child components of the`Transition` wrapper,
+                    // it's being conditionally rendered for now.
+                    <Transition
+                      trigger={`${displayMode}-${preferredTickerVectorConfigKey}-${hashedTickerDistances}`}
+                      direction={getDirection()}
+                    >
+                      {displayMode === "radial" ? (
+                        <TickerPCAScatterPlot
+                          tickerDistances={tickerDistances}
+                        />
+                      ) : (
+                        <Scrollable>
+                          <TickerVectorQueryTable
+                            queryMode="ticker-detail"
+                            query={tickerDetail}
+                            alignment={displayMode}
+                            tickerVectorConfigKey={
+                              preferredTickerVectorConfigKey
+                            }
+                          />
+                        </Scrollable>
+                      )}
+                    </Transition>
                   )}
-                </Transition>
+                </>
               )}
             </Content>
           </>
