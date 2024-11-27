@@ -179,6 +179,13 @@ impl TickerDetail {
             }
         }
 
+        // Check for total_weight being zero to prevent division by zero
+        if total_weight == 0.0 {
+            return Err(JsValue::from_str(
+                "Total weight is zero; cannot normalize weights.",
+            ));
+        }
+
         // Normalize weights
         let normalized_weights: Vec<TickerWeightedSectorDistribution> = sector_weights
             .into_iter()
