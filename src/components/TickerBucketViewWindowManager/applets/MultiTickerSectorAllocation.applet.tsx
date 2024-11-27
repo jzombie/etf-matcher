@@ -11,7 +11,10 @@ import type { TickerBucketTicker } from "@src/store";
 
 import SectorsPieChart from "@components/SectorsPieChart";
 
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import usePromise from "@hooks/usePromise";
+
+import customLogger from "@utils/customLogger";
 
 import TickerBucketViewWindowManagerAppletWrap, {
   TickerBucketViewWindowManagerAppletWrapProps,
@@ -27,6 +30,8 @@ export default function MultiTickerSectorAllocationApplet({
   isTiling,
   ...rest
 }: MultiTickerSectorAllocationAppletProps) {
+  const { triggerUIError } = useAppErrorBoundary();
+
   const { filteredTickerBucket } = useTickerSelectionManagerContext();
 
   const {
@@ -38,6 +43,12 @@ export default function MultiTickerSectorAllocationApplet({
   >({
     fn: (tickerBucketTickers) =>
       fetchWeightedTickerSectorDistribution(tickerBucketTickers),
+    onError: (err) => {
+      customLogger.error(err);
+      triggerUIError(
+        new Error("Could not fetch sector allocation distribution"),
+      );
+    },
     initialAutoExecute: false,
   });
 
