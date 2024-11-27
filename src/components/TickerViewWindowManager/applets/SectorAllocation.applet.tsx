@@ -74,14 +74,9 @@ export default function SectorAllocationApplet({
       <>
         {majorSectorDistribution ? (
           <AutoScaler>
-            {
-              // Note: The 500x320 is used solely for aspect ratio.
-            }
-            <Box sx={{ width: 500, height: 320 }}>
-              <SectorsPieChart
-                majorSectorDistribution={majorSectorDistribution}
-              />
-            </Box>
+            <SectorsPieChart
+              majorSectorDistribution={majorSectorDistribution}
+            />
           </AutoScaler>
         ) : (
           <Center>
