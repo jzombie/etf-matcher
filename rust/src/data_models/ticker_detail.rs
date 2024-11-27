@@ -8,6 +8,7 @@ use crate::JsValue;
 use crate::SectorById;
 use serde::{Deserialize, Deserializer, Serialize};
 use std::collections::HashMap;
+use web_sys::console;
 
 // TODO: Move to a utility (also search for `deserialize_is_current`)
 // Custom deserialization function to convert Option<i32> to Option<bool>
@@ -111,40 +112,80 @@ impl TickerDetail {
         let mut sector_weights: HashMap<String, f64> = HashMap::new();
         let mut total_weight = 0.0;
 
-        for (ticker_id, weight) in ticker_weights {
+        for (ticker_id, weight) in &ticker_weights {
             total_weight += weight;
 
             // Determine if the ticker is an ETF
-            if let Ok(ticker_detail) = TickerDetail::get_ticker_detail(ticker_id).await {
-                if ticker_detail.is_etf {
-                    // Fetch ETF aggregate detail for major sector distribution
-                    if let Ok(etf_detail) =
-                        ETFAggregateDetail::get_etf_aggregate_detail_by_ticker_id(ticker_id).await
-                    {
-                        if let Some(major_sector_distribution) =
-                            etf_detail.major_sector_distribution
+            match TickerDetail::get_ticker_detail(*ticker_id).await {
+                Ok(ticker_detail) => {
+                    if ticker_detail.is_etf {
+                        // Fetch ETF aggregate detail for major sector distribution
+                        match ETFAggregateDetail::get_etf_aggregate_detail_by_ticker_id(*ticker_id)
+                            .await
                         {
-                            for sector_weight in major_sector_distribution {
-                                let entry = sector_weights
-                                    .entry(sector_weight.major_sector_name.clone())
-                                    .or_insert(0.0);
-                                *entry += weight * sector_weight.weight as f64;
+                            Ok(etf_detail) => {
+                                if let Some(major_sector_distribution) =
+                                    etf_detail.major_sector_distribution
+                                {
+                                    for sector_weight in major_sector_distribution {
+                                        let entry = sector_weights
+                                            .entry(sector_weight.major_sector_name)
+                                            .or_insert(0.0);
+                                        *entry += weight * sector_weight.weight as f64;
+                                    }
+                                } else if let Some(top_sector_name) = etf_detail.top_pct_sector_name
+                                {
+                                    let top_sector_weight = etf_detail.top_pct_sector_weight;
+                                    let entry =
+                                        sector_weights.entry(top_sector_name).or_insert(0.0);
+
+                                    // Use top_sector_weight directly
+                                    *entry += weight * top_sector_weight as f64;
+                                } else {
+                                    console::warn_1(&"No major sector distribution or fallback sector info found.".into());
+                                }
                             }
+                            // Note: Errors are logged here to capture issues with fetching ETF aggregate details,
+                            // but they do not interrupt processing. The function continues to process other tickers.
+                            Err(err) => console::error_1(
+                                &format!(
+                                    "Failed to fetch ETF aggregate detail for ticker ID {}: {:?}",
+                                    ticker_id, err
+                                )
+                                .into(),
+                            ),
+                        }
+                    } else {
+                        // Note: I considered including the `sector_name` for non-ETF tickers in the
+                        // distribution. This is often `Financial Services`, but doing so tends to
+                        // skew the distribution significantly. If deciding to proceed with this
+                        // approach, ensure the following logic is placed outside the current `else`
+                        // block.
+                        if let Some(sector_name) = ticker_detail.sector_name {
+                            let entry = sector_weights.entry(sector_name).or_insert(0.0);
+                            *entry += weight;
+                        } else {
+                            console::warn_1(
+                                &format!("Ticker ID {} does not have a sector name.", ticker_id)
+                                    .into(),
+                            );
                         }
                     }
-                } else {
-                    // For non-ETFs, use the sector name from ticker detail
-                    if let Some(sector_name) = ticker_detail.sector_name {
-                        let entry = sector_weights.entry(sector_name).or_insert(0.0);
-                        *entry += weight;
-                    }
                 }
-            } else {
-                return Err(JsValue::from_str(&format!(
-                    "Failed to fetch details for ticker ID: {}",
-                    ticker_id
-                )));
+                Err(_err) => {
+                    return Err(JsValue::from_str(&format!(
+                        "Failed to fetch details for ticker ID: {}",
+                        ticker_id
+                    )));
+                }
             }
+        }
+
+        // Check for total_weight being zero to prevent division by zero
+        if total_weight == 0.0 {
+            return Err(JsValue::from_str(
+                "Total weight is zero; cannot normalize weights.",
+            ));
         }
 
         // Normalize weights

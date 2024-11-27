@@ -30,7 +30,7 @@ export default function MultiTickerSectorAllocationApplet({
   const { filteredTickerBucket } = useTickerSelectionManagerContext();
 
   const {
-    data: distribution,
+    data: majorSectorDistribution,
     execute: executeFetchWeightedTickerSectorDistribution,
   } = usePromise<
     RustServiceTickerWeightedSectorDistribution,
@@ -51,10 +51,12 @@ export default function MultiTickerSectorAllocationApplet({
 
   return (
     <TickerBucketViewWindowManagerAppletWrap isTiling={isTiling} {...rest}>
-      {distribution && (
+      {majorSectorDistribution && (
         <AutoScaler>
           <Box sx={{ width: 500, height: 320 }}>
-            <SectorsPieChart majorSectorDistribution={distribution} />
+            <SectorsPieChart
+              majorSectorDistribution={majorSectorDistribution}
+            />
           </Box>
         </AutoScaler>
       )}
