@@ -19,7 +19,19 @@ export type SectorsPieChartProps = {
   }>;
 };
 
-// TODO: Use consistent colors, regardless of sector allocations
+// TODO: Refactor
+//
+// Hash function constrained to the COLOR_WHEEL_COLORS array
+function hashSectorNameToColor(
+  name: string,
+  colors: readonly string[],
+): string {
+  const hash = name
+    .split("")
+    .reduce((hash, char) => hash + char.charCodeAt(0), 0);
+  return colors[hash % colors.length];
+}
+
 export default function SectorsPieChart({
   majorSectorDistribution,
 }: SectorsPieChartProps) {
@@ -89,7 +101,7 @@ export default function SectorsPieChart({
           {data.map((entry, index) => (
             <Cell
               key={`cell-${index}`}
-              fill={COLOR_WHEEL_COLORS[index % COLOR_WHEEL_COLORS.length]}
+              fill={hashSectorNameToColor(entry.name, COLOR_WHEEL_COLORS)}
             />
           ))}
         </Pie>
