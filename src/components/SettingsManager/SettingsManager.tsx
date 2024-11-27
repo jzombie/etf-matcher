@@ -14,6 +14,7 @@ import Padding from "@layoutKit/Padding";
 import LazyRender from "@components/LazyRender";
 import Section from "@components/Section";
 import SharedSessionManager from "@components/SettingsManager/SharedSessionManager";
+import Timer from "@components/Timer";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 
@@ -33,7 +34,6 @@ export default function SettingsManager() {
     isRustInit,
     dataBuildTime,
     isDirtyState,
-    visibleTickerIds,
     isOnline,
     isProfilingCacheOverlayOpen,
     isGAPageTrackingEnabled,
@@ -49,7 +49,6 @@ export default function SettingsManager() {
     "isRustInit",
     "dataBuildTime",
     "isDirtyState",
-    "visibleTickerIds",
     "isOnline",
     "isProfilingCacheOverlayOpen",
     "isGAPageTrackingEnabled",
@@ -215,9 +214,8 @@ export default function SettingsManager() {
           {" | "}
           {isIndexedDBReady ? "IndexedDB Ready" : "IndexedDB Not Ready"}
           {" | "}
-          Subscribed MQTT rooms: {subscribedMQTTRoomNames.length}
-          {" | "}
-          {visibleTickerIds?.toString()}
+          Subscribed MQTT Rooms: {subscribedMQTTRoomNames.length}
+          {" | "} Client Uptime: <Timer onTick={() => store.clientUptime} />
         </Typography>
       </Padding>
     </>
