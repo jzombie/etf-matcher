@@ -64,11 +64,7 @@ export default function MultiTickerSectorAllocationApplet({
     <TickerBucketViewWindowManagerAppletWrap isTiling={isTiling} {...rest}>
       {majorSectorDistribution && (
         <AutoScaler>
-          <Box sx={{ width: 500, height: 320 }}>
-            <SectorsPieChart
-              majorSectorDistribution={majorSectorDistribution}
-            />
-          </Box>
+          <SectorsPieChart majorSectorDistribution={majorSectorDistribution} />
         </AutoScaler>
       )}
     </TickerBucketViewWindowManagerAppletWrap>
