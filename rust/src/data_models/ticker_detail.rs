@@ -145,6 +145,8 @@ impl TickerDetail {
                                     console::warn_1(&"No major sector distribution or fallback sector info found.".into());
                                 }
                             }
+                            // Note: Errors are logged here to capture issues with fetching ETF aggregate details,
+                            // but they do not interrupt processing. The function continues to process other tickers.
                             Err(err) => console::error_1(
                                 &format!(
                                     "Failed to fetch ETF aggregate detail for ticker ID {}: {:?}",
