@@ -175,7 +175,7 @@ export default function useTickerVectorQuery({
 
       triggerUIError(new Error("Error when trying to load euclidean data"));
     },
-    autoExecute: false,
+    initialAutoExecute: false,
   });
 
   const {
@@ -190,7 +190,7 @@ export default function useTickerVectorQuery({
 
       triggerUIError(new Error("Error when trying to load cosine data"));
     },
-    autoExecute: false,
+    initialAutoExecute: false,
   });
 
   return {

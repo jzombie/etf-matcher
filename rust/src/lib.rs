@@ -239,6 +239,36 @@ pub async fn get_all_major_sectors() -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
+pub async fn audit_missing_ticker_vectors(
+    ticker_vector_config_key: &str,
+    ticker_ids_js: JsValue,
+) -> Result<JsValue, JsValue> {
+    // Deserialize the input `JsValue` into a vector of TickerId
+    let ticker_ids: Vec<TickerId> = from_value(ticker_ids_js).map_err(|err| {
+        JsValue::from_str(&format!(
+            "Failed to deserialize ticker IDs from input: {}",
+            err
+        ))
+    })?;
+
+    // Perform the audit to find missing tickers
+    let missing_tickers = ticker_vector_analysis::OwnedTickerVectors::audit_missing_tickers(
+        ticker_vector_config_key,
+        &ticker_ids,
+    )
+    .await
+    .map_err(|err| JsValue::from_str(&format!("Failed to audit missing tickers: {}", err)))?;
+
+    // Serialize the missing tickers to `JsValue`
+    to_value(&missing_tickers).map_err(|err| {
+        JsValue::from_str(&format!(
+            "Failed to serialize missing tickers to JsValue: {}",
+            err
+        ))
+    })
+}
+
+#[wasm_bindgen]
 pub async fn get_euclidean_by_ticker(
     ticker_vector_config_key: &str,
     ticker_id: TickerId,

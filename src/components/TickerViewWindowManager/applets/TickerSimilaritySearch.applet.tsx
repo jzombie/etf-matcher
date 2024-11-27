@@ -22,7 +22,6 @@ import {
 } from "@services/RustService";
 import { fetchEuclideanByTicker } from "@services/RustService";
 
-import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
 import TickerPCAScatterPlot from "@components/TickerPCAScatterPlot";
 import TickerVectorConfigSelectorDialogModal from "@components/TickerVectorConfigSelectorDialogModal";
@@ -33,7 +32,6 @@ import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import useElementSize from "@hooks/useElementSize";
 import useObjectHash from "@hooks/useObjectHash";
 import usePromise from "@hooks/usePromise";
-import useTicker10KDetail from "@hooks/useTicker10KDetail";
 import useTickerVectorConfigs from "@hooks/useTickerVectorConfigs";
 
 import customLogger from "@utils/customLogger";
@@ -52,20 +50,39 @@ export type TickerSimilaritySearchAppletProps = Omit<
 
 export default function TickerSimilaritySearchApplet({
   tickerDetail,
+  missingAuditedTickerVectorIds,
+  isTickerVectorAuditPending,
   ...rest
 }: TickerSimilaritySearchAppletProps) {
   return (
-    <TickerViewWindowManagerAppletWrap tickerDetail={tickerDetail} {...rest}>
-      {tickerDetail && <ComponentWrap tickerDetail={tickerDetail} />}
+    <TickerViewWindowManagerAppletWrap
+      tickerDetail={tickerDetail}
+      missingAuditedTickerVectorIds={missingAuditedTickerVectorIds}
+      isTickerVectorAuditPending={isTickerVectorAuditPending}
+      {...rest}
+    >
+      {tickerDetail && (
+        <ComponentWrap
+          tickerDetail={tickerDetail}
+          missingAuditedTickerVectorIds={missingAuditedTickerVectorIds}
+          isTickerVectorAuditPending={isTickerVectorAuditPending}
+        />
+      )}
     </TickerViewWindowManagerAppletWrap>
   );
 }
 
 type ComponentWrapProps = {
   tickerDetail: RustServiceTickerDetail;
+  missingAuditedTickerVectorIds: TickerSimilaritySearchAppletProps["missingAuditedTickerVectorIds"];
+  isTickerVectorAuditPending: TickerSimilaritySearchAppletProps["isTickerVectorAuditPending"];
 };
 
-function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
+function ComponentWrap({
+  tickerDetail,
+  missingAuditedTickerVectorIds,
+  isTickerVectorAuditPending,
+}: ComponentWrapProps) {
   const [displayMode, setDisplayMode] = useState<DisplayMode>("radial");
   const previousModeRef = useRef<DisplayMode>("radial");
   const [
@@ -97,10 +114,6 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
     return currentIndex > prevIndex ? "left" : "right";
   }, [displayMode]);
 
-  // TODO: Handle error state
-  const { isLoading: isLoadingFinancialDetail, detail: financialDetail } =
-    useTicker10KDetail(tickerDetail.ticker_id);
-
   // Using `useState` for `contentElement` to ensure it triggers a re-render
   // when the element is set, allowing `useElementSize` to update immediately.
   //
@@ -123,7 +136,7 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
       customLogger.error(err);
       triggerUIError(new Error("Could not fetch PCA similarity results"));
     },
-    autoExecute: false,
+    initialAutoExecute: false,
   });
 
   const hashedTickerDistances = useObjectHash(tickerDistances);
@@ -137,89 +150,101 @@ function ComponentWrap({ tickerDetail }: ComponentWrapProps) {
     }
   }, [preferredTickerVectorConfigKey, tickerDetail, fetchTickerDistances]);
 
-  if (isLoadingFinancialDetail) {
-    return (
-      <Center>
-        <NetworkProgressIndicator />
-      </Center>
-    );
-  }
-
-  if (!financialDetail?.are_financials_current) {
-    return (
-      <Center>
-        <NoInformationAvailableAlert>
-          No current financial information for &quot;{tickerDetail.symbol}&quot;
-        </NoInformationAvailableAlert>
-      </Center>
-    );
-  }
-
   return (
     <>
       <Layout>
-        <Header>
-          <Box sx={{ textAlign: "center" }}>
-            <ToggleButtonGroup
-              value={displayMode}
-              exclusive
-              onChange={handleDisplayModeChange}
-              aria-label="Similarity search toggle"
-              size="small"
-            >
-              <ToggleButton
-                value="radial"
-                aria-label="Radial chart"
-                title="Radial chart"
-              >
-                <DonutLargeIcon sx={{ mr: 0.5 }} />
-                {shouldShowLabels && "Radial"}
-              </ToggleButton>
-              <ToggleButton
-                value="euclidean"
-                aria-label="Euclidean"
-                title="Euclidean"
-              >
-                <StraightenIcon sx={{ mr: 0.5 }} />
-                {shouldShowLabels && "Euclidean"}
-              </ToggleButton>
-              <ToggleButton value="cosine" aria-label="Cosine" title="Cosine">
-                <ShowChartIcon sx={{ mr: 0.5 }} />
-                {shouldShowLabels && "Cosine"}
-              </ToggleButton>
-            </ToggleButtonGroup>
-            <IconButton
-              onClick={() => setIsTickerVectorConfigSelectorDialogOpen(true)}
-              aria-label="Select Model"
-              sx={{ ml: 1, mb: 1 }}
-            >
-              <SettingsIcon />
-            </IconButton>
-          </Box>
-        </Header>
-        <Content ref={setContentElement}>
-          {preferredTickerVectorConfigKey && (
-            // Due to some of the child components of the`Transition` wrapper,
-            // it's being conditionally rendered for now.
-            <Transition
-              trigger={`${displayMode}-${preferredTickerVectorConfigKey}-${hashedTickerDistances}`}
-              direction={getDirection()}
-            >
-              {displayMode === "radial" ? (
-                <TickerPCAScatterPlot tickerDistances={tickerDistances} />
+        {missingAuditedTickerVectorIds?.length ? (
+          <Content>
+            <Center>
+              <NoInformationAvailableAlert>
+                Similarity search is not available for &quot;
+                {tickerDetail.symbol}&quot;.
+              </NoInformationAvailableAlert>
+            </Center>
+          </Content>
+        ) : (
+          <>
+            <Header>
+              <Box sx={{ textAlign: "center" }}>
+                <ToggleButtonGroup
+                  value={displayMode}
+                  exclusive
+                  onChange={handleDisplayModeChange}
+                  aria-label="Similarity search toggle"
+                  size="small"
+                >
+                  <ToggleButton
+                    value="radial"
+                    aria-label="Radial chart"
+                    title="Radial chart"
+                  >
+                    <DonutLargeIcon sx={{ mr: 0.5 }} />
+                    {shouldShowLabels && "Radial"}
+                  </ToggleButton>
+                  <ToggleButton
+                    value="euclidean"
+                    aria-label="Euclidean"
+                    title="Euclidean"
+                  >
+                    <StraightenIcon sx={{ mr: 0.5 }} />
+                    {shouldShowLabels && "Euclidean"}
+                  </ToggleButton>
+                  <ToggleButton
+                    value="cosine"
+                    aria-label="Cosine"
+                    title="Cosine"
+                  >
+                    <ShowChartIcon sx={{ mr: 0.5 }} />
+                    {shouldShowLabels && "Cosine"}
+                  </ToggleButton>
+                </ToggleButtonGroup>
+                <IconButton
+                  onClick={() =>
+                    setIsTickerVectorConfigSelectorDialogOpen(true)
+                  }
+                  aria-label="Select Model"
+                  sx={{ ml: 1, mb: 1 }}
+                >
+                  <SettingsIcon />
+                </IconButton>
+              </Box>
+            </Header>
+            <Content ref={setContentElement}>
+              {isTickerVectorAuditPending ? (
+                <Center>Performing audit...</Center>
               ) : (
-                <Scrollable>
-                  <TickerVectorQueryTable
-                    queryMode="ticker-detail"
-                    query={tickerDetail}
-                    alignment={displayMode}
-                    tickerVectorConfigKey={preferredTickerVectorConfigKey}
-                  />
-                </Scrollable>
+                <>
+                  {preferredTickerVectorConfigKey && (
+                    // Due to some of the child components of the`Transition` wrapper,
+                    // it's being conditionally rendered for now.
+                    <Transition
+                      trigger={`${displayMode}-${preferredTickerVectorConfigKey}-${hashedTickerDistances}`}
+                      direction={getDirection()}
+                    >
+                      {displayMode === "radial" ? (
+                        <TickerPCAScatterPlot
+                          tickerDistances={tickerDistances}
+                        />
+                      ) : (
+                        <Scrollable>
+                          <TickerVectorQueryTable
+                            queryMode="ticker-detail"
+                            query={tickerDetail}
+                            alignment={displayMode}
+                            tickerVectorConfigKey={
+                              preferredTickerVectorConfigKey
+                            }
+                          />
+                        </Scrollable>
+                      )}
+                    </Transition>
+                  )}
+                </>
               )}
-            </Transition>
-          )}
-        </Content>
+            </Content>
+          </>
+        )}
+
         <Footer style={{ textAlign: "right" }}>
           <Typography
             variant="body2"

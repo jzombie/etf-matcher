@@ -16,7 +16,7 @@ export default function useTicker10KDetail(tickerId: number) {
   } = usePromise<RustServiceTicker10KDetail, [is: number]>({
     fn: (id) => fetchTicker10KDetail(id),
     onError: customLogger.error,
-    autoExecute: false,
+    initialAutoExecute: false,
   });
 
   useEffect(() => {

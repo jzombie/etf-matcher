@@ -56,6 +56,8 @@ export default function MultiTickerManagerApplet({
     cancelTickerAdjustments,
     isTickerBucketSaved,
     //
+    missingAuditedTickerVectorIds,
+    //
     forceRefreshIndex,
   } = useTickerSelectionManagerContext();
 
@@ -67,6 +69,14 @@ export default function MultiTickerManagerApplet({
     () => adjustedTickerDetails?.map((tickerDetail) => tickerDetail.ticker_id),
     [adjustedTickerDetails],
   );
+
+  const aggregatedAuditErrorMessage = useMemo(() => {
+    if (!missingAuditedTickerVectorIds?.length) {
+      return;
+    }
+
+    return `${missingAuditedTickerVectorIds?.length} ticker${missingAuditedTickerVectorIds?.length !== 1 ? "s" : ""} ${missingAuditedTickerVectorIds?.length !== 1 ? "are" : "is"} missing in the ticker vectors. Please investigate.`;
+  }, [missingAuditedTickerVectorIds]);
 
   return (
     <TickerBucketViewWindowManagerAppletWrap
@@ -158,12 +168,18 @@ export default function MultiTickerManagerApplet({
                   filteredTicker.tickerId === tickerDetail.ticker_id,
               );
 
+              const isMissingInTickerVectors =
+                missingAuditedTickerVectorIds?.includes(
+                  tickerDetail.ticker_id,
+                ) || false;
+
               return (
                 <Section key={tickerDetail.ticker_id} mx={1} my={1} ml={0}>
                   <MultiTickerManagerTicker
                     key={forceRefreshIndex}
                     adjustedTickerBucket={adjustedTickerBucket}
                     tickerDetail={tickerDetail}
+                    isMissingInTickerVectors={isMissingInTickerVectors}
                     isTiling={isTiling}
                     onSelect={() => selectTickerId(tickerDetail.ticker_id)}
                     onDeselect={() => deselectTickerId(tickerDetail.ticker_id)}
@@ -198,9 +214,33 @@ export default function MultiTickerManagerApplet({
         </Content>
         <Footer>
           <Box sx={{ textAlign: "center" }}>
-            <Typography variant="body2" sx={{ fontStyle: "italic" }}>
-              {adjustedTickerBucket.tickers.length} item
-              {adjustedTickerBucket.tickers.length !== 1 ? "s" : ""} selected
+            <Typography
+              variant="body2"
+              sx={{
+                fontStyle: "italic",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {filteredTickerBucket.tickers.length} item
+              {filteredTickerBucket.tickers.length !== 1 ? "s" : ""} selected
+              {aggregatedAuditErrorMessage && (
+                <Box
+                  component="span"
+                  sx={{
+                    marginLeft: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    color: "warning.main",
+                    fontSize: "inherit",
+                    cursor: "help",
+                  }}
+                  title={aggregatedAuditErrorMessage}
+                >
+                  ⚠️
+                </Box>
+              )}
             </Typography>
           </Box>
         </Footer>

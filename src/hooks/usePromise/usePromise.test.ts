@@ -11,7 +11,7 @@ describe("usePromise", () => {
     const { result } = renderHook(() =>
       usePromise({
         fn: () => Promise.resolve("data"),
-        autoExecute: false,
+        initialAutoExecute: false,
       }),
     );
 
@@ -25,7 +25,7 @@ describe("usePromise", () => {
     const { result } = renderHook(() =>
       usePromise({
         fn,
-        autoExecute: false,
+        initialAutoExecute: false,
       }),
     );
 
@@ -47,7 +47,7 @@ describe("usePromise", () => {
     const { result } = renderHook(() =>
       usePromise({
         fn,
-        autoExecute: false,
+        initialAutoExecute: false,
       }),
     );
 
@@ -64,12 +64,12 @@ describe("usePromise", () => {
     });
   });
 
-  it("should auto-execute promise if autoExecute is true", async () => {
+  it("should auto-execute promise if initialAutoExecute is true", async () => {
     const fn = vi.fn(() => Promise.resolve("data"));
     const { result } = renderHook(() =>
       usePromise({
         fn,
-        autoExecute: true,
+        initialAutoExecute: true,
       }),
     );
 
@@ -89,7 +89,7 @@ describe("usePromise", () => {
       usePromise({
         fn,
         onLoad,
-        autoExecute: true,
+        initialAutoExecute: true,
       }),
     );
 
@@ -105,7 +105,7 @@ describe("usePromise", () => {
       usePromise({
         fn,
         onError,
-        autoExecute: true,
+        initialAutoExecute: true,
       }),
     );
 
@@ -128,7 +128,7 @@ describe("usePromise", () => {
     const { result } = renderHook(() =>
       usePromise({
         fn: () => fn(callArg), // Initial call with argument 1
-        autoExecute: false,
+        initialAutoExecute: false,
       }),
     );
 
@@ -165,7 +165,7 @@ describe("usePromise", () => {
     const { result } = renderHook(() =>
       usePromise({
         fn,
-        autoExecute: false,
+        initialAutoExecute: false,
       }),
     );
 
@@ -184,15 +184,15 @@ describe("usePromise", () => {
     expect(fn).toHaveBeenCalledWith("test", 42);
   });
 
-  it("should auto-execute promise with autoExecuteProps if autoExecute is true", async () => {
+  it("should auto-execute promise with initialAutoExecuteProps if initialAutoExecute is true", async () => {
     const fn = vi.fn((arg1: string, arg2: number) =>
       Promise.resolve(`data-${arg1}-${arg2}`),
     );
     const { result } = renderHook(() =>
       usePromise({
         fn,
-        autoExecute: true,
-        autoExecuteProps: ["auto", 99],
+        initialAutoExecute: true,
+        initialAutoExecuteProps: ["auto", 99],
       }),
     );
 
@@ -207,13 +207,13 @@ describe("usePromise", () => {
     expect(fn).toHaveBeenCalledWith("auto", 99);
   });
 
-  it("should not auto-execute if autoExecute is false, even with autoExecuteProps", () => {
+  it("should not auto-execute if initialAutoExecute is false, even with initialAutoExecuteProps", () => {
     const fn = vi.fn();
     renderHook(() =>
       usePromise({
         fn,
-        autoExecute: false,
-        autoExecuteProps: ["auto", 99],
+        initialAutoExecute: false,
+        initialAutoExecuteProps: ["auto", 99],
       }),
     );
 
@@ -225,7 +225,7 @@ describe("usePromise", () => {
     const { result } = renderHook(() =>
       usePromise({
         fn,
-        autoExecute: false,
+        initialAutoExecute: false,
       }),
     );
 
@@ -257,7 +257,7 @@ describe("usePromise", () => {
     const { result } = renderHook(() =>
       usePromise({
         fn,
-        autoExecute: false,
+        initialAutoExecute: false,
       }),
     );
 

@@ -31,6 +31,17 @@ export async function fetchAllTickerVectorConfigs(): Promise<
   }));
 }
 
+// Used for "audit mode"
+export async function auditMissingTickerVectors(
+  tickerVectorConfigKey: string,
+  tickerIds: number[],
+): Promise<number[]> {
+  return callRustService<number[]>("audit_missing_ticker_vectors", [
+    tickerVectorConfigKey,
+    tickerIds,
+  ]);
+}
+
 export async function fetchCosineByTicker(
   tickerVectorConfigKey: string,
   tickerId: number,

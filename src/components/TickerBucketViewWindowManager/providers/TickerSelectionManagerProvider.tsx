@@ -17,6 +17,8 @@ import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
 import useMultiETFAggregateDetail from "@hooks/useMultiETFAggregateDetail";
 import useMultiTickerDetail from "@hooks/useMultiTickerDetail";
 import useNotification from "@hooks/useNotification";
+import useStoreStateReader from "@hooks/useStoreStateReader";
+import useTickerVectorAudit from "@hooks/useTickerVectorAudit";
 
 import customLogger from "@utils/customLogger";
 import deepEqual from "@utils/deepEqual";
@@ -49,6 +51,9 @@ export type TickerSelectionManagerContextType = {
   adjustedETFAggregateDetails: RustServiceETFAggregateDetail[] | null;
   adjustedETFAggregateDetailsError: Error | null;
   formattedAdjustedSymbolsWithExchange?: string[] | null;
+  //
+  missingAuditedTickerVectorIds?: number[] | null;
+  isTickerVectorAuditPending: boolean;
   //
   forceRefreshIndex: number;
 };
@@ -93,6 +98,9 @@ const DEFAULT_CONTEXT_VALUE: TickerSelectionManagerContextType = {
   adjustedETFAggregateDetailsError: null,
   formattedAdjustedSymbolsWithExchange: null,
   //
+  missingAuditedTickerVectorIds: null,
+  isTickerVectorAuditPending: false,
+  //
   forceRefreshIndex: 0,
 };
 
@@ -109,6 +117,10 @@ export default function TickerSelectionManagerProvider({
   children,
   tickerBucket,
 }: TickerSelectionManagerProviderProps) {
+  const { preferredTickerVectorConfigKey } = useStoreStateReader(
+    "preferredTickerVectorConfigKey",
+  );
+
   const { showNotification } = useNotification();
   const { triggerUIError } = useAppErrorBoundary();
 
@@ -338,6 +350,11 @@ export default function TickerSelectionManagerProvider({
     [selectedTickerIds],
   );
 
+  const {
+    missingTickerIds: missingAuditedTickerVectorIds,
+    isAuditPending: isTickerVectorAuditPending,
+  } = useTickerVectorAudit(preferredTickerVectorConfigKey, selectedTickerIds);
+
   const contextValue = useMemo(
     () => ({
       selectedTickerIds,
@@ -363,6 +380,9 @@ export default function TickerSelectionManagerProvider({
       adjustedETFAggregateDetails,
       adjustedETFAggregateDetailsError,
       formattedAdjustedSymbolsWithExchange,
+      //
+      missingAuditedTickerVectorIds,
+      isTickerVectorAuditPending,
       //
       forceRefreshIndex,
     }),
@@ -390,6 +410,9 @@ export default function TickerSelectionManagerProvider({
       adjustedETFAggregateDetails,
       adjustedETFAggregateDetailsError,
       formattedAdjustedSymbolsWithExchange,
+      //
+      missingAuditedTickerVectorIds,
+      isTickerVectorAuditPending,
       //
       forceRefreshIndex,
     ],

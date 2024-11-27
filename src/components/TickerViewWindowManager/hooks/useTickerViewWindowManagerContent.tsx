@@ -3,7 +3,9 @@ import React, { useMemo } from "react";
 import { MosaicNode } from "react-mosaic-component";
 
 import useETFAggregateDetail from "@hooks/useETFAggregateDetail";
+import useStoreStateReader from "@hooks/useStoreStateReader";
 import useTickerDetail from "@hooks/useTickerDetail";
+import useTickerVectorAudit from "@hooks/useTickerVectorAudit";
 
 import ETFHoldersAndHoldingsApplet from "../applets/ETFHoldersAndHoldings.applet";
 import HistoricalPriceChartApplet from "../applets/HistoricalPriceChart.applet";
@@ -31,6 +33,15 @@ export default function useTickerViewWindowManagerContent(
     shouldLoad: isETF,
   });
 
+  const { preferredTickerVectorConfigKey } = useStoreStateReader(
+    "preferredTickerVectorConfigKey",
+  );
+
+  const {
+    missingTickerIds: missingAuditedTickerVectorIds,
+    isAuditPending: isTickerVectorAuditPending,
+  } = useTickerVectorAudit(preferredTickerVectorConfigKey, [tickerId]);
+
   // Common props for all applets
   const commonProps: Omit<TickerViewWindowManagerAppletWrapProps, "children"> =
     useMemo(
@@ -41,6 +52,10 @@ export default function useTickerViewWindowManagerContent(
         etfAggregateDetail,
         isLoadingETFAggregateDetail,
         etfAggregateDetailError,
+        //
+        missingAuditedTickerVectorIds,
+        isTickerVectorAuditPending,
+        //
         isTiling,
       }),
       [
@@ -50,6 +65,10 @@ export default function useTickerViewWindowManagerContent(
         etfAggregateDetail,
         isLoadingETFAggregateDetail,
         etfAggregateDetailError,
+        //
+        missingAuditedTickerVectorIds,
+        isTickerVectorAuditPending,
+        //
         isTiling,
       ],
     );

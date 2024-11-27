@@ -1,8 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 
 import { Box, Divider, Typography } from "@mui/material";
 
 import AutoScaler from "@layoutKit/AutoScaler";
+import Center from "@layoutKit/Center";
+import Cover from "@layoutKit/Cover";
+import Full from "@layoutKit/Full";
 import {
   RustServiceTickerDetail,
   RustServiceTickerDistance,
@@ -18,11 +21,14 @@ import {
 } from "recharts";
 import { NameType } from "recharts/types/component/DefaultTooltipContent";
 
+import usePromise from "@hooks/usePromise";
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
 import customLogger from "@utils/customLogger";
 
 import AvatarLogo from "./AvatarLogo";
+import NetworkProgressIndicator from "./NetworkProgressIndicator";
+import NoInformationAvailableAlert from "./NoInformationAvailableAlert";
 
 const RADIAL_STROKE_COLOR = "#999";
 const RADIAL_FILL_COLOR = "none";
@@ -48,14 +54,13 @@ export type TickerPCAScatterPlotProps = {
 export default function TickerPCAScatterPlot({
   tickerDistances,
 }: TickerPCAScatterPlotProps) {
-  // TODO: Handle loading and error states (possibly refactor to `usePromise` for this)
-  const [chartData, setChartData] = useState<ChartVectorDistance[] | null>(
-    null,
-  );
-
-  useEffect(() => {
-    if (tickerDistances) {
-      Promise.allSettled(
+  const {
+    data: chartData,
+    isPending: isLoading,
+    execute: executeFetchDetail,
+  } = usePromise<ChartVectorDistance[] | null, [RustServiceTickerDistance[]]>({
+    fn: (tickerDistances) => {
+      return Promise.allSettled(
         tickerDistances.map(async (item) => {
           const tickerDetail = await fetchTickerDetail(item.ticker_id);
           return {
@@ -69,12 +74,18 @@ export default function TickerPCAScatterPlot({
         const successfulResults = results
           .filter((result) => result.status === "fulfilled")
           .map((result) => result.value); // Extract the `value` from the fulfilled promises
-        setChartData(successfulResults);
+
+        return successfulResults;
       });
-    } else {
-      setChartData(null);
+    },
+    initialAutoExecute: false,
+  });
+
+  useEffect(() => {
+    if (tickerDistances) {
+      executeFetchDetail(tickerDistances);
     }
-  }, [tickerDistances]);
+  }, [tickerDistances, executeFetchDetail]);
 
   const navigateToSymbol = useTickerSymbolNavigation();
 
@@ -103,49 +114,61 @@ export default function TickerPCAScatterPlot({
   );
 
   if (!chartData) {
-    // TODO: Render a loading indicator?
-    return null;
+    return (
+      <Center>
+        <NoInformationAvailableAlert>
+          No chart data available.
+        </NoInformationAvailableAlert>
+      </Center>
+    );
   }
 
   return (
     // Note: `AutoScaler` is used instead of `ResponsiveContainer` to better
-    //control the layout with the app.
-    //
-    // FIXME: Hardcoding the height may need to be revisited.
-    <AutoScaler style={{ height: 300 }}>
-      <ScatterChart
-        margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-        width={400}
-        height={400}
-      >
-        <XAxis
-          type="number"
-          dataKey="pc1"
-          domain={[-maxValue, maxValue]}
-          name="PC1"
-          hide
-        />
-        <YAxis
-          type="number"
-          dataKey="pc2"
-          domain={[-maxValue, maxValue]}
-          name="PC2"
-          hide
-        />
-        {renderRadialOverlay()}
-        <Tooltip
-          content={<CustomTooltip />}
-          cursor={{ strokeDasharray: "3 3" }}
-        />
-        <Scatter
-          name="10-K Proximity Tickers"
-          data={chartData}
-          fill="#8884d8"
-          onClick={handleClick}
-          shape={CustomPoint}
-        />
-      </ScatterChart>
-    </AutoScaler>
+    // control the layout with the app.
+    <Full>
+      <AutoScaler>
+        <ScatterChart
+          margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+          width={400}
+          height={400}
+        >
+          <XAxis
+            type="number"
+            dataKey="pc1"
+            domain={[-maxValue, maxValue]}
+            name="PC1"
+            hide
+          />
+          <YAxis
+            type="number"
+            dataKey="pc2"
+            domain={[-maxValue, maxValue]}
+            name="PC2"
+            hide
+          />
+          {renderRadialOverlay()}
+          <Tooltip
+            content={<CustomTooltip />}
+            cursor={{ strokeDasharray: "3 3" }}
+          />
+          <Scatter
+            name="10-K Proximity Tickers"
+            data={chartData}
+            fill="#8884d8"
+            onClick={handleClick}
+            shape={CustomPoint}
+          />
+        </ScatterChart>
+      </AutoScaler>
+      <Cover clickThrough>
+        {isLoading && (
+          <Center>
+            <NetworkProgressIndicator />
+          </Center>
+        )}
+      </Cover>
+    </Full>
   );
 }
 
@@ -242,8 +265,6 @@ function CustomTooltip({ active, payload }: TooltipProps<number, NameType>) {
       </Box>
     );
   }
-
-  return null;
 }
 
 type CustomPointProps = {

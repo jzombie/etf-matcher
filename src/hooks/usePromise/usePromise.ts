@@ -9,10 +9,13 @@ type UsePromiseProps<T, A extends unknown[] = []> = {
   fn: (...args: A) => Promise<T>;
   onLoad?: (data: T) => void;
   onError?: (error: Error) => void;
-  autoExecute: boolean;
-  autoExecuteProps?: A;
+  initialAutoExecute: boolean;
+  initialAutoExecuteProps?: A;
 };
 
+// TODO: Add an optional `autoExecuteProps` property which automatically executes
+// whenever they change. It should conflict with `initialAutoExecuteProps`,
+// erroring if they are both used together.
 /**
  * This hook provides a convenient way to handle asynchronous operations
  * with built-in state management for `pending`, `success`, and `error` states.
@@ -24,35 +27,33 @@ type UsePromiseProps<T, A extends unknown[] = []> = {
  * @param {(...args: A) => Promise<T>} props.fn - The function that returns a promise.
  * @param {(data: T) => void} [props.onLoad] - Optional callback invoked when the promise resolves successfully.
  * @param {(error: Error) => void} [props.onError] - Optional callback invoked when the promise is rejected.
- * @param {boolean} props.autoExecute - If true, the promise function is automatically executed on mount.
- * @param {A} [props.autoExecuteProps] - The arguments to use for the initial auto-execute. These are only evaluated once on the initial auto-execute and do not trigger re-evaluation if changed.
+ * @param {boolean} props.initialAutoExecute - If true, the promise function is automatically executed on mount.
+ * @param {A} [props.initialAutoExecuteProps] - The arguments to use for the initial auto-execute. These are only evaluated once on the initial auto-execute and do not trigger re-evaluation if changed.
  *
  * @returns {{ data: T | null, isPending: boolean, error: Error | null, execute: (...args: A) => void }}
  * - `data`: The data returned by the promise, or null if not yet resolved.
  * - `isPending`: A boolean indicating if the promise is currently pending.
  * - `error`: The error returned by the promise, or null if not yet rejected.
  * - `execute`: A function to manually execute the promise with specific arguments.
- *
- * TODO: Consider changing the following behavior, with a config flag.
- * Note: The `autoExecuteProps` are only used for the initial auto-execute.
- * Changing them does not trigger a re-evaluation. To re-evaluate, call the `execute` function explicitly.
  */
 export default function usePromise<T, A extends unknown[] = []>({
   fn,
   onLoad,
   onError,
-  autoExecute,
-  autoExecuteProps,
+  initialAutoExecute,
+  initialAutoExecuteProps,
 }: UsePromiseProps<T, A>) {
   const [data, setData] = useState<T | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const hasAutoExecutedRef = useRef(false);
+  const hasinitialAutoExecutedRef = useRef(false);
   const pendingPromiseRef = useRef<Promise<T> | null>(null);
   // const hasLoggedWarningRef = useRef(false);
 
-  const stableAutoExecuteProps = useStableCurrentRef(autoExecuteProps);
+  const stableInitialAutoExecuteProps = useStableCurrentRef(
+    initialAutoExecuteProps,
+  );
   const onLoadStableRef = useStableCurrentRef(onLoad);
   const fnStableRef = useStableCurrentRef(fn);
   const onErrorStableRef = useStableCurrentRef(onError);
@@ -110,13 +111,13 @@ export default function usePromise<T, A extends unknown[] = []>({
   );
 
   useEffect(() => {
-    if (autoExecute && !hasAutoExecutedRef.current) {
-      const autoExecuteProps = stableAutoExecuteProps.current;
+    if (initialAutoExecute && !hasinitialAutoExecutedRef.current) {
+      const initialAutoExecuteProps = stableInitialAutoExecuteProps.current;
 
-      execute(...(autoExecuteProps || ([] as unknown as A)));
-      hasAutoExecutedRef.current = true;
+      execute(...(initialAutoExecuteProps || ([] as unknown as A)));
+      hasinitialAutoExecutedRef.current = true;
     }
-  }, [autoExecute, stableAutoExecuteProps, execute]);
+  }, [initialAutoExecute, stableInitialAutoExecuteProps, execute]);
 
   const reset = useCallback(() => {
     setData(null);
