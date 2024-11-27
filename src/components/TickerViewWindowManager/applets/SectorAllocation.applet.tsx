@@ -1,13 +1,22 @@
-import React, { useMemo } from "react";
+import React, { useEffect } from "react";
 
 import { Box } from "@mui/material";
 
 import AutoScaler from "@layoutKit/AutoScaler";
 import Center from "@layoutKit/Center";
-import type { RustServiceETFAggregateDetail } from "@services/RustService";
+import {
+  RustServiceTickerDetail,
+  RustServiceTickerWeightedSectorDistribution,
+  fetchWeightedTickerSectorDistribution,
+} from "@services/RustService";
 
 import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
 import SectorsPieChart from "@components/SectorsPieChart";
+
+import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
+import usePromise from "@hooks/usePromise";
+
+import customLogger from "@utils/customLogger";
 
 import TickerViewWindowManagerAppletWrap, {
   TickerViewWindowManagerAppletWrapProps,
@@ -23,22 +32,38 @@ export default function SectorAllocationApplet({
   etfAggregateDetail,
   ...rest
 }: SectorAllocationAppletProps) {
-  const distribution: RustServiceETFAggregateDetail["major_sector_distribution"] =
-    useMemo(() => {
-      if (etfAggregateDetail?.major_sector_distribution) {
-        return etfAggregateDetail?.major_sector_distribution;
-      } else if (tickerDetail?.sector_name) {
-        return [
-          {
-            major_sector_name: tickerDetail.sector_name,
-            weight: 1,
-          },
-        ];
-      }
-    }, [
-      etfAggregateDetail?.major_sector_distribution,
-      tickerDetail?.sector_name,
-    ]);
+  const { triggerUIError } = useAppErrorBoundary();
+
+  const {
+    data: majorSectorDistribution,
+    execute: executeFetchWeightedTickerSectorDistribution,
+  } = usePromise<
+    RustServiceTickerWeightedSectorDistribution,
+    [RustServiceTickerDetail]
+  >({
+    fn: (tickerDetail) =>
+      fetchWeightedTickerSectorDistribution([
+        {
+          tickerId: tickerDetail.ticker_id,
+          symbol: tickerDetail.symbol,
+          // Explicitly hardcode to 1 for single-ticker mode
+          quantity: 1,
+        },
+      ]),
+    onError: (err) => {
+      customLogger.error(err);
+      triggerUIError(
+        new Error("Could not fetch sector allocation distribution"),
+      );
+    },
+    initialAutoExecute: false,
+  });
+
+  useEffect(() => {
+    if (tickerDetail) {
+      executeFetchWeightedTickerSectorDistribution(tickerDetail);
+    }
+  }, [tickerDetail, executeFetchWeightedTickerSectorDistribution]);
 
   return (
     <TickerViewWindowManagerAppletWrap
@@ -47,10 +72,12 @@ export default function SectorAllocationApplet({
       {...rest}
     >
       <>
-        {distribution ? (
+        {majorSectorDistribution ? (
           <AutoScaler>
             <Box sx={{ width: 500, height: 320 }}>
-              <SectorsPieChart majorSectorDistribution={distribution} />
+              <SectorsPieChart
+                majorSectorDistribution={majorSectorDistribution}
+              />
             </Box>
           </AutoScaler>
         ) : (
