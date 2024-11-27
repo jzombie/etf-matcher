@@ -1,16 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import {
-  Cell,
-  Legend,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-} from "recharts";
+import AutoScaler from "@layoutKit/AutoScaler";
+import Center from "@layoutKit/Center";
+import { Cell, Legend, Pie, PieChart, Tooltip } from "recharts";
 
 import customLogger from "@utils/customLogger";
 import getSectorColor from "@utils/string/getSectorColor";
+
+import NoInformationAvailableAlert from "./NoInformationAvailableAlert";
 
 export type SectorsPieChartProps = {
   majorSectorDistribution: Array<{
@@ -68,13 +65,18 @@ export default function SectorsPieChart({
   }, []);
 
   if (!data.length) {
-    return null;
+    return (
+      <Center>
+        <NoInformationAvailableAlert>
+          No sector allocation information available.
+        </NoInformationAvailableAlert>
+      </Center>
+    );
   }
 
   return (
-    // TODO: Don't hardcode `320`.  It's just here for now.
-    <ResponsiveContainer width="100%" height={320}>
-      <PieChart>
+    <AutoScaler>
+      <PieChart width={500} height={200}>
         <Pie
           data={data}
           dataKey="value"
@@ -99,6 +101,6 @@ export default function SectorsPieChart({
           }}
         />
       </PieChart>
-    </ResponsiveContainer>
+    </AutoScaler>
   );
 }
