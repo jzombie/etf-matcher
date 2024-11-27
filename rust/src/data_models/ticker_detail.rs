@@ -154,6 +154,11 @@ impl TickerDetail {
                             ),
                         }
                     } else {
+                        // Note: I considered including the `sector_name` for non-ETF tickers in the
+                        // distribution. This is often `Financial Services`, but doing so tends to
+                        // skew the distribution significantly. If deciding to proceed with this
+                        // approach, ensure the following logic is placed outside the current `else`
+                        // block.
                         if let Some(sector_name) = ticker_detail.sector_name {
                             let entry = sector_weights.entry(sector_name).or_insert(0.0);
                             *entry += weight;
