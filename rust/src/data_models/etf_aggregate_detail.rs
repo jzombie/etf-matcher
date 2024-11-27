@@ -72,9 +72,9 @@ pub struct ETFAggregateDetailRaw {
     pub top_market_value_industry_id: Option<IndustryId>,
     pub top_sector_market_value: f64,
     pub currency_code: Option<String>,
-    pub top_pct_sector_id: Option<SectorId>,
-    pub top_pct_industry_id: Option<IndustryId>,
-    pub top_pct_sector_weight: f32,
+    pub top_pct_sector_id: Option<SectorId>, // TODO: Remove from here and from datafeed; obtain from `major_sector_distribution`
+    pub top_pct_industry_id: Option<IndustryId>, // TODO: Remove from here and from datafeed; obtain from `major_sector_distribution`
+    pub top_pct_sector_weight: f32, // TODO: Remove from here and from datafeed; obtain from `major_sector_distribution`
     //
     pub major_sector_distribution: Option<String>,
 }
@@ -90,9 +90,9 @@ pub struct ETFAggregateDetail {
     pub top_market_value_industry_name: Option<String>,
     pub top_sector_market_value: f64,
     pub currency_code: Option<String>,
-    pub top_pct_sector_name: Option<String>,
-    pub top_pct_industry_name: Option<String>,
-    pub top_pct_sector_weight: f32,
+    pub top_pct_sector_name: Option<String>, // TODO: Remove from here and from datafeed; obtain from `major_sector_distribution`
+    pub top_pct_industry_name: Option<String>, // TODO: Remove from here and from datafeed; obtain from `major_sector_distribution`
+    pub top_pct_sector_weight: f32, // TODO: Remove from here and from datafeed; obtain from `major_sector_distribution`
     //
     pub major_sector_distribution: Option<Vec<TickerWeightedSectorDistribution>>,
     //
