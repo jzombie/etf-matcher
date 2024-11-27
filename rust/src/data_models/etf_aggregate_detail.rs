@@ -90,9 +90,9 @@ pub struct ETFAggregateDetail {
     pub top_market_value_industry_name: Option<String>,
     pub top_sector_market_value: f64,
     pub currency_code: Option<String>,
-    pub top_pct_sector_name: Option<String>, // TODO: Remove from here and from datafeed; obtain from `major_sector_distribution`
-    pub top_pct_industry_name: Option<String>, // TODO: Remove from here and from datafeed; obtain from `major_sector_distribution`
-    pub top_pct_sector_weight: f32, // TODO: Remove from here and from datafeed; obtain from `major_sector_distribution`
+    pub top_pct_sector_name: Option<String>,
+    pub top_pct_industry_name: Option<String>,
+    pub top_pct_sector_weight: f32,
     //
     pub major_sector_distribution: Option<Vec<TickerWeightedSectorDistribution>>,
     //
@@ -139,6 +139,7 @@ impl ETFAggregateDetail {
                 None => None,
             };
 
+        // TODO: Calculate from `major_sector_distribution`
         let top_pct_sector_name = match etf_aggregate_detail_raw.top_pct_sector_id {
             Some(top_pct_sector_id) => SectorById::get_sector_name_with_id(top_pct_sector_id)
                 .await
@@ -146,6 +147,7 @@ impl ETFAggregateDetail {
             None => None,
         };
 
+        // TODO: Calculate from `major_sector_distribution`
         let top_pct_industry_name = match etf_aggregate_detail_raw.top_pct_industry_id {
             Some(top_pct_industry_id) => {
                 IndustryById::get_industry_name_with_id(top_pct_industry_id)
@@ -154,6 +156,9 @@ impl ETFAggregateDetail {
             }
             None => None,
         };
+
+        // TODO: Calculate from `major_sector_distribution`
+        let top_pct_sector_weight = etf_aggregate_detail_raw.top_pct_sector_weight;
 
         let ticker_raw_search_result = TickerSearch::get_raw_result_with_id(ticker_id).await?;
         let logo_filename = extract_logo_filename(
@@ -196,7 +201,7 @@ impl ETFAggregateDetail {
             currency_code: etf_aggregate_detail_raw.currency_code,
             top_pct_sector_name,
             top_pct_industry_name,
-            top_pct_sector_weight: etf_aggregate_detail_raw.top_pct_sector_weight,
+            top_pct_sector_weight,
             //
             major_sector_distribution,
             //
