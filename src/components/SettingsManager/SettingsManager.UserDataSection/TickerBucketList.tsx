@@ -6,7 +6,7 @@ import { Typography } from "@mui/material";
 import { TickerBucket } from "@src/store";
 
 import Section from "@components/Section";
-import SymbolsCopyButton from "@components/SymbolsCopyButton";
+import TickerSymbolsCopyButton from "@components/TickerSymbolsCopyButton";
 import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
 
 import TickerBucketItem from "./TickerBucketItem";
@@ -74,7 +74,7 @@ export default function TickerBucketList({
               ))}
             </div>
             {tickerBucket.tickers.length > 0 && (
-              <SymbolsCopyButton
+              <TickerSymbolsCopyButton
                 tickerSymbols={tickerBucket.tickers.map(
                   (ticker) => ticker.symbol,
                 )}

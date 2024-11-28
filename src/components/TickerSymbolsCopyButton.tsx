@@ -5,25 +5,25 @@ import { Button, ButtonProps } from "@mui/material";
 
 import useClipboard from "@hooks/useClipboard";
 
-export type SymbolsCopyButtonProps = Omit<
+export type TickerSymbolsCopyButtonProps = Omit<
   ButtonProps,
   "children" | "onClick"
 > & {
   tickerSymbols: string[];
 };
 
-export default function SymbolsCopyButton({
+export default function TickerSymbolsCopyButton({
   tickerSymbols,
   variant = "contained",
   size = "small",
   startIcon = <ContentCopyIcon />,
   ...rest
-}: SymbolsCopyButtonProps) {
-  const { isClipboardAvailable, copySymbols } = useClipboard();
+}: TickerSymbolsCopyButtonProps) {
+  const { isClipboardAvailable, copyTickerSymbols } = useClipboard();
 
-  const handleCopySymbols = useCallback(
-    () => copySymbols(tickerSymbols),
-    [tickerSymbols, copySymbols],
+  const handleCopyTickerSymbols = useCallback(
+    () => copyTickerSymbols(tickerSymbols),
+    [tickerSymbols, copyTickerSymbols],
   );
 
   return (
@@ -31,7 +31,7 @@ export default function SymbolsCopyButton({
       variant={variant}
       size={size}
       startIcon={startIcon}
-      onClick={handleCopySymbols}
+      onClick={handleCopyTickerSymbols}
       disabled={!isClipboardAvailable}
       {...rest}
     >

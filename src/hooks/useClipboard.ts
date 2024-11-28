@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import copySymbols from "@utils/clipboard/copySymbols";
+import copyTickerSymbols from "@utils/clipboard/copyTickerSymbols";
 import getIsClipboardAvailable from "@utils/clipboard/getisClipboardAvailable";
 import customLogger from "@utils/customLogger";
 
@@ -14,7 +14,7 @@ export default function useClipboard() {
 
   const isClipboardAvailable = useMemo(() => getIsClipboardAvailable(), []);
 
-  const { execute: executeCopySymbols } = usePromise<void, [string[]]>({
+  const { execute: executeCopyTickerSymbols } = usePromise<void, [string[]]>({
     fn: (symbols) => {
       if (!isClipboardAvailable) {
         const uiError = new Error("Clipboard API not available");
@@ -22,7 +22,7 @@ export default function useClipboard() {
         throw uiError;
       }
 
-      const ret = copySymbols(symbols);
+      const ret = copyTickerSymbols(symbols);
       showNotification(
         `${symbols.length} symbol${symbols.length !== 1 ? "s" : ""} copied to clipboard`,
         "success",
@@ -39,6 +39,6 @@ export default function useClipboard() {
 
   return {
     isClipboardAvailable,
-    copySymbols: executeCopySymbols,
+    copyTickerSymbols: executeCopyTickerSymbols,
   };
 }
