@@ -52,6 +52,7 @@ export type RustServiceETFAggregateDetail = {
   top_market_value_industry_name?: string;
   top_sector_market_value?: number;
   currency_code?: string;
+  logo_filename?: string;
   //
   major_sector_distribution?: {
     major_sector_name: string;
@@ -61,8 +62,6 @@ export type RustServiceETFAggregateDetail = {
   top_pct_sector_name?: string;
   top_pct_sector_weight?: number;
   top_pct_industry_name?: string;
-  //
-  logo_filename?: string;
 };
 
 export type RustServiceTicker10KDetail = {

@@ -98,13 +98,13 @@ pub struct ETFAggregateDetail {
     pub top_market_value_industry_name: Option<String>,
     pub top_sector_market_value: f64,
     pub currency_code: Option<String>,
+    pub logo_filename: Option<String>,
     //
     pub major_sector_distribution: Option<Vec<TickerWeightedSectorDistribution>>,
     //
     pub top_pct_sector_name: Option<String>,
     pub top_pct_sector_weight: f32,
     pub top_pct_industry_name: Option<String>,
-    pub logo_filename: Option<String>,
 }
 
 impl ETFAggregateDetail {
@@ -214,13 +214,13 @@ impl ETFAggregateDetail {
             top_market_value_industry_name,
             top_sector_market_value: etf_aggregate_detail_raw.top_sector_market_value,
             currency_code: etf_aggregate_detail_raw.currency_code,
+            logo_filename,
             //
             major_sector_distribution,
             //
             top_pct_sector_name,
             top_pct_sector_weight,
             top_pct_industry_name,
-            logo_filename,
         };
 
         Ok(response)
