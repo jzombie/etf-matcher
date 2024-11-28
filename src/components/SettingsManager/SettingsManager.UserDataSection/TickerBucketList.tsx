@@ -1,15 +1,13 @@
 import React, { useMemo } from "react";
 
 import AssessmentIcon from "@mui/icons-material/Assessment";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import { Button, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 
 import { TickerBucket } from "@src/store";
 
 import Section from "@components/Section";
+import SymbolsCopyButton from "@components/SymbolsCopyButton";
 import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
-
-import useClipboard from "@hooks/useClipboard";
 
 import TickerBucketItem from "./TickerBucketItem";
 
@@ -25,8 +23,6 @@ export default function TickerBucketList({
     () => [...tickerBuckets].sort((a, b) => a.type.localeCompare(b.type)),
     [tickerBuckets],
   );
-
-  const { copySymbols } = useClipboard();
 
   return (
     <UnstyledUL>
@@ -78,19 +74,11 @@ export default function TickerBucketList({
               ))}
             </div>
             {tickerBucket.tickers.length > 0 && (
-              <Button
-                variant="contained"
-                size="small"
-                startIcon={<ContentCopyIcon />}
-                onClick={() =>
-                  copySymbols(
-                    tickerBucket.tickers.map((ticker) => ticker.symbol),
-                  )
-                }
-                sx={{ mt: 1 }}
-              >
-                Copy Symbols
-              </Button>
+              <SymbolsCopyButton
+                tickerSymbols={tickerBucket.tickers.map(
+                  (ticker) => ticker.symbol,
+                )}
+              />
             )}
           </Section>
         </UnstyledLI>
