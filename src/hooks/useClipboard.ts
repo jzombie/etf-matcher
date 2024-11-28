@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
 import copyTickerSymbols from "@utils/clipboard/copyTickerSymbols";
-import getIsClipboardAvailable from "@utils/clipboard/getisClipboardAvailable";
+import getIsClipboardAvailable from "@utils/clipboard/getIsClipboardAvailable";
 import customLogger from "@utils/customLogger";
 
 import useAppErrorBoundary from "./useAppErrorBoundary";
