@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutlined";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
@@ -7,7 +7,7 @@ import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlined";
 import SaveIcon from "@mui/icons-material/SaveOutlined";
 import { Box, IconButton } from "@mui/material";
 
-import customLogger from "@utils/customLogger";
+import TickerSymbolExtractorSelectorDialogModal from "@components/TickerSymbolExtractorSelectorDialogModal";
 
 const ICON_FONT_SIZE: "inherit" | "small" | "medium" | "large" = "medium";
 
@@ -34,6 +34,9 @@ export default function MultiTickerManagerAsideNav({
   onOpenSearchModal,
   isSearchModalOpen,
 }: MultiTickerManagerAsideNavProps) {
+  // TODO: Remove
+  const [isShowingTempModal, setIsShowingTempModal] = useState(false);
+
   return (
     <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
       {/* Save / Commit Icon */}
@@ -94,14 +97,22 @@ export default function MultiTickerManagerAsideNav({
       }
       <IconButton
         onClick={() => {
-          // TODO: Implement
-          customLogger.debug("Temporary button clicked");
+          setIsShowingTempModal(true);
         }}
+        disabled={isShowingTempModal}
         title="Temporary Action"
         aria-label="Temporary action"
       >
         <AddCircleOutlineIcon fontSize={ICON_FONT_SIZE} color="secondary" />
       </IconButton>
+
+      {
+        // TODO: Remove
+      }
+      <TickerSymbolExtractorSelectorDialogModal
+        open={isShowingTempModal}
+        onClose={() => setIsShowingTempModal(false)}
+      />
     </Box>
   );
 }

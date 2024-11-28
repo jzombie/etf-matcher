@@ -87,3 +87,45 @@ pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<Ti
 
     Err(JsValue::from_str("Symbol not found"))
 }
+
+/// Extracts ticker IDs from a given text.
+///
+/// This function splits the input text into words and checks if each word matches
+/// any stock symbol in the preloaded cache.
+///
+/// # Arguments
+/// * `text` - The input text containing potential stock symbols.
+///
+/// # Returns
+/// A vector of extracted ticker IDs.
+pub async fn extract_ticker_ids_from_text(text: &str) -> Result<Vec<u32>, JsValue> {
+    // Ensure the cache is preloaded
+    if SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE
+        .lock()
+        .unwrap()
+        .is_empty()
+    {
+        preload_symbol_and_exchange_cache().await?;
+    }
+
+    // Extract ticker IDs from text
+    let cache = SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE.lock().unwrap();
+    let mut extracted_ticker_ids = Vec::new();
+
+    for word in text.split_whitespace() {
+        // Normalize the word (e.g., remove punctuation and uppercase)
+        let cleaned_word = word
+            .trim_matches(|c: char| !c.is_alphanumeric())
+            .to_uppercase();
+
+        // Find matching ticker ID
+        if let Some((&ticker_id, _)) = cache
+            .iter()
+            .find(|(_, (symbol, _))| *symbol == cleaned_word)
+        {
+            extracted_ticker_ids.push(ticker_id);
+        }
+    }
+
+    Ok(extracted_ticker_ids)
+}
