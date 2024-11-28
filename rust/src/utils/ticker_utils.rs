@@ -1,5 +1,6 @@
 use lazy_static::lazy_static;
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::sync::Mutex;
 // use serde::{Deserialize, Serialize};
 use crate::data_models::{DataURL, ExchangeById, TickerSearch};
@@ -110,7 +111,7 @@ pub async fn extract_ticker_ids_from_text(text: &str) -> Result<Vec<u32>, JsValu
 
     // Extract ticker IDs from text
     let cache = SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE.lock().unwrap();
-    let mut extracted_ticker_ids = Vec::new();
+    let mut unique_ticker_ids = HashSet::new();
 
     for word in text.split_whitespace() {
         // Normalize the word (e.g., remove punctuation and uppercase)
@@ -123,9 +124,10 @@ pub async fn extract_ticker_ids_from_text(text: &str) -> Result<Vec<u32>, JsValu
             .iter()
             .find(|(_, (symbol, _))| *symbol == cleaned_word)
         {
-            extracted_ticker_ids.push(ticker_id);
+            unique_ticker_ids.insert(ticker_id);
         }
     }
 
-    Ok(extracted_ticker_ids)
+    // Convert the HashSet into a Vec
+    Ok(unique_ticker_ids.into_iter().collect())
 }
