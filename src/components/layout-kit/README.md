@@ -40,7 +40,7 @@ Despite their maturity and reliability, they have not yet been migrated to their
    Vertically and horizontally centers its children, useful for creating focus areas or loading screens.
 
 8. **`Cover`**  
-   Overlays a full-screen element on top of the parent view. Supports click-through functionality for specific use cases.
+   Overlays a `Full` element on top of the parent view, with equal dimensions and positioning of the parent. Supports click-through functionality for specific use cases (such as overlaying watermarks, etc.)
 
 9. **`Scrollable`**  
    Enables horizontal and vertical scrolling with optional reset behavior.
