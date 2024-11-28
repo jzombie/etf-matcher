@@ -8,9 +8,9 @@ import SaveIcon from "@mui/icons-material/SaveOutlined";
 import { Box, IconButton, Typography } from "@mui/material";
 
 import Layout, { Aside, Content, Footer } from "@layoutKit/Layout";
-import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 
+import Padding from "@components/Padding";
 import Section from "@components/Section";
 import TickerSearchModal from "@components/TickerSearchModal";
 

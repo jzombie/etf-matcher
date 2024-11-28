@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 
 import { Box, Typography } from "@mui/material";
 
-import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 import {
   RustServiceTicker10KDetail,
@@ -12,6 +11,7 @@ import {
 import FinancialBarLineChart, {
   createChartData,
 } from "@components/FinancialBarLineChart";
+import Padding from "@components/Padding";
 
 import TickerBucketViewWindowManagerAppletWrap, {
   TickerBucketViewWindowManagerAppletWrapProps,

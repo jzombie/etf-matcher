@@ -7,10 +7,10 @@ import Cover from "@layoutKit/Cover";
 import Full from "@layoutKit/Full";
 import FullViewport from "@layoutKit/FullViewport";
 import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
-import Padding from "@layoutKit/Padding";
 import { Outlet } from "react-router-dom";
 
 import LockScreen from "@components/LockScreen";
+import Padding from "@components/Padding";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 

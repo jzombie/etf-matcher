@@ -4,10 +4,10 @@ import { Typography } from "@mui/material";
 
 import Center from "@layoutKit/Center";
 import Layout, { Content, Header } from "@layoutKit/Layout";
-import Padding from "@layoutKit/Padding";
 import type { TickerBucket } from "@src/store";
 import { useNavigate, useParams } from "react-router-dom";
 
+import Padding from "@components/Padding";
 import TickerBucketViewWindowManager from "@components/TickerBucketViewWindowManager";
 
 import useAppErrorBoundary from "@hooks/useAppErrorBoundary";

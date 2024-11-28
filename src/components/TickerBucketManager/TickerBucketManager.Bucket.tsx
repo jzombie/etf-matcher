@@ -6,12 +6,12 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Box, Button, Typography } from "@mui/material";
 
-import Padding from "@layoutKit/Padding";
 import store, { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucket } from "@src/store";
 import { Link } from "react-router-dom";
 
 import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
+import Padding from "@components/Padding";
 import ScrollTo from "@components/ScrollTo";
 import SearchModalButton from "@components/SearchModalButton";
 import Section from "@components/Section";

@@ -9,9 +9,8 @@ import {
   Typography,
 } from "@mui/material";
 
-import Padding from "@layoutKit/Padding";
-
 import LazyRender from "@components/LazyRender";
+import Padding from "@components/Padding";
 import Section from "@components/Section";
 import SharedSessionManager from "@components/SettingsManager/SharedSessionManager";
 import Timer from "@components/Timer";

@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 
 import { Box, BoxProps } from "@mui/material";
 
-import Padding from "@layoutKit/Padding";
+import Padding from "@components/Padding";
 
 type SectionProps = BoxProps & {
   children: ReactNode;

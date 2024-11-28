@@ -12,12 +12,12 @@ import {
 
 import Center from "@layoutKit/Center";
 import Layout, { Content, Header } from "@layoutKit/Layout";
-import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 import type { RustServiceTickerSearchResult } from "@services/RustService";
 
 import AvatarLogo from "@components/AvatarLogo";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
+import Padding from "@components/Padding";
 import SearchModalButton from "@components/SearchModalButton";
 import SelectableGrid from "@components/SelectableGrid";
 import TickerViewWindowManager from "@components/TickerViewWindowManager";

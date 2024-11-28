@@ -6,7 +6,6 @@ import Center from "@layoutKit/Center";
 import Cover from "@layoutKit/Cover";
 import Full from "@layoutKit/Full";
 import Layout, { Content, Footer } from "@layoutKit/Layout";
-import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 import { fetchETFHoldersAggregateDetail } from "@services/RustService";
 import type {
@@ -19,6 +18,7 @@ import { DEFAULT_CURRENCY_CODE } from "@src/constants";
 import EncodedImage from "@components/EncodedImage";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
+import Padding from "@components/Padding";
 import SelectableGrid, { SelectableGridItem } from "@components/SelectableGrid";
 import Transition from "@components/Transition";
 

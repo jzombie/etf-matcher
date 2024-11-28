@@ -5,10 +5,10 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { Button } from "@mui/material";
 
-import Padding from "@layoutKit/Padding";
 import { tickerBucketDefaultNames } from "@src/store";
 import type { TickerBucket } from "@src/store";
 
+import Padding from "@components/Padding";
 import Section from "@components/Section";
 
 import TickerBucketForm from "./TickerBucketManager.BucketForm";
