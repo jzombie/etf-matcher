@@ -1,16 +1,13 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 
-import { COLOR_WHEEL_COLORS } from "@src/constants";
-import {
-  Cell,
-  Legend,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-} from "recharts";
+import AutoScaler from "@layoutKit/AutoScaler";
+import Center from "@layoutKit/Center";
+import { Cell, Pie, PieChart, Tooltip } from "recharts";
 
 import customLogger from "@utils/customLogger";
+import getSectorColor from "@utils/string/getSectorColor";
+
+import NoInformationAvailableAlert from "./NoInformationAvailableAlert";
 
 export type SectorsPieChartProps = {
   majorSectorDistribution: Array<{
@@ -19,7 +16,14 @@ export type SectorsPieChartProps = {
   }>;
 };
 
-// TODO: Use consistent colors, regardless of sector allocations
+type PieLabelProps = {
+  name: string;
+  percent: number;
+  cx: number;
+  x: number;
+  y: number;
+};
+
 export default function SectorsPieChart({
   majorSectorDistribution,
 }: SectorsPieChartProps) {
@@ -37,72 +41,69 @@ export default function SectorsPieChart({
     customLogger.debug("Pie Chart Data: ", data);
   }, [data]);
 
-  // Define legend layout based on screen size
-  const getLegendLayout = () => {
-    if (window.innerWidth < 768) {
-      return {
-        layout: "horizontal" as const,
-        verticalAlign: "bottom" as const,
-        align: "center" as const,
-      };
-    }
-    return {
-      layout: "vertical" as const,
-      verticalAlign: "middle" as const,
-      align: "right" as const,
-    };
-  };
+  const renderLabel = useCallback(
+    ({ name: sectorName, cx, x, y }: PieLabelProps) => {
+      const maxAllowedLabelWidth = 80; // Maximum width for the label in pixels
+      const charWidthEstimate = 8; // Approximate width of a character in pixels
 
-  const [legendLayout, setLegendLayout] = useState(getLegendLayout());
+      // Calculate the maximum number of characters allowed based on the width
+      const maxCharsAllowed = Math.floor(
+        maxAllowedLabelWidth / charWidthEstimate,
+      );
 
-  // Update the legend layout when the window is resized
-  useEffect(() => {
-    const handleResize = () => {
-      setLegendLayout(getLegendLayout());
-    };
+      // Truncate the sector name if it exceeds the maximum character count
+      const truncatedText =
+        sectorName.length > maxCharsAllowed
+          ? `${sectorName.slice(0, maxCharsAllowed)}...`
+          : sectorName;
 
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+      return (
+        <text
+          x={x}
+          y={y}
+          textAnchor={x > cx ? "start" : "end"} // Adjust text alignment
+          dominantBaseline="central"
+          style={{
+            fontSize: "14px",
+            fill: getSectorColor(sectorName), // Use sector-specific color
+          }}
+        >
+          {truncatedText}
+        </text>
+      );
+    },
+    [],
+  );
 
   if (!data.length) {
-    return null;
+    return (
+      <Center>
+        <NoInformationAvailableAlert>
+          No sector allocation information available.
+        </NoInformationAvailableAlert>
+      </Center>
+    );
   }
 
   return (
-    // TODO: Don't hardcode `320`.  It's just here for now.
-    <ResponsiveContainer width="100%" height={320}>
-      <PieChart>
+    <AutoScaler>
+      <PieChart width={400} height={320}>
         <Pie
           data={data}
           dataKey="value"
           nameKey="name"
-          cx={legendLayout.layout === "horizontal" ? "50%" : "55%"}
+          cx="50%"
           cy="50%"
           outerRadius={90}
           innerRadius={50}
-          labelLine={false} // Disable connecting lines for labels
+          label={renderLabel}
         >
           {data.map((entry, index) => (
-            <Cell
-              key={`cell-${index}`}
-              fill={COLOR_WHEEL_COLORS[index % COLOR_WHEEL_COLORS.length]}
-            />
+            <Cell key={`cell-${index}`} fill={getSectorColor(entry.name)} />
           ))}
         </Pie>
         <Tooltip formatter={(value: number) => `${value.toFixed(2)}%`} />
-        <Legend
-          layout={legendLayout.layout}
-          verticalAlign={legendLayout.verticalAlign}
-          align={legendLayout.align}
-          wrapperStyle={{
-            paddingLeft: legendLayout.layout === "vertical" ? "20px" : "0px",
-          }}
-        />
       </PieChart>
-    </ResponsiveContainer>
+    </AutoScaler>
   );
 }

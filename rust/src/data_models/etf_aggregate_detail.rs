@@ -11,6 +11,16 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 impl TickerWeightedSectorDistribution {
+    /// This function parses a JSON string representing the "major sector distribution",
+    /// where the keys are Sector IDs and the values are their respective weights.
+    /// It then maps the Sector IDs to their corresponding Sector Names and constructs
+    /// a vector of `TickerWeightedSectorDistribution` objects.
+    ///
+    /// The process involves:
+    /// - Parsing the JSON string into a map of Sector IDs to weights.
+    /// - Validating the weights are within the valid `f32` range.
+    /// - Asynchronously resolving each Sector ID to its corresponding Sector Name.
+    /// - Returning a vector of the resolved sector names and their weights.
     async fn parse_major_sector_distribution(
         json_str: &str,
     ) -> Result<Vec<TickerWeightedSectorDistribution>, String> {
@@ -72,9 +82,7 @@ pub struct ETFAggregateDetailRaw {
     pub top_market_value_industry_id: Option<IndustryId>,
     pub top_sector_market_value: f64,
     pub currency_code: Option<String>,
-    pub top_pct_sector_id: Option<SectorId>,
     pub top_pct_industry_id: Option<IndustryId>,
-    pub top_pct_sector_weight: f32,
     //
     pub major_sector_distribution: Option<String>,
 }
@@ -90,13 +98,13 @@ pub struct ETFAggregateDetail {
     pub top_market_value_industry_name: Option<String>,
     pub top_sector_market_value: f64,
     pub currency_code: Option<String>,
-    pub top_pct_sector_name: Option<String>,
-    pub top_pct_industry_name: Option<String>,
-    pub top_pct_sector_weight: f32,
+    pub logo_filename: Option<String>,
     //
     pub major_sector_distribution: Option<Vec<TickerWeightedSectorDistribution>>,
     //
-    pub logo_filename: Option<String>,
+    pub top_pct_sector_name: Option<String>,
+    pub top_pct_sector_weight: f32,
+    pub top_pct_industry_name: Option<String>,
 }
 
 impl ETFAggregateDetail {
@@ -139,22 +147,6 @@ impl ETFAggregateDetail {
                 None => None,
             };
 
-        let top_pct_sector_name = match etf_aggregate_detail_raw.top_pct_sector_id {
-            Some(top_pct_sector_id) => SectorById::get_sector_name_with_id(top_pct_sector_id)
-                .await
-                .ok(),
-            None => None,
-        };
-
-        let top_pct_industry_name = match etf_aggregate_detail_raw.top_pct_industry_id {
-            Some(top_pct_industry_id) => {
-                IndustryById::get_industry_name_with_id(top_pct_industry_id)
-                    .await
-                    .ok()
-            }
-            None => None,
-        };
-
         let ticker_raw_search_result = TickerSearch::get_raw_result_with_id(ticker_id).await?;
         let logo_filename = extract_logo_filename(
             ticker_raw_search_result.logo_filename.as_deref(),
@@ -184,6 +176,34 @@ impl ETFAggregateDetail {
                 None => None,
             };
 
+        let (top_pct_sector_name, top_pct_sector_weight) = match &major_sector_distribution {
+            Some(distribution) if !distribution.is_empty() => {
+                // Find the sector with the highest weight
+                if let Some(max_sector) = distribution.iter().max_by(|a, b| {
+                    a.weight
+                        .partial_cmp(&b.weight)
+                        .unwrap_or(std::cmp::Ordering::Equal)
+                }) {
+                    (
+                        Some(max_sector.major_sector_name.clone()),
+                        max_sector.weight as f32,
+                    )
+                } else {
+                    (None, 0.0)
+                }
+            }
+            _ => (None, 0.0),
+        };
+
+        let top_pct_industry_name = match etf_aggregate_detail_raw.top_pct_industry_id {
+            Some(top_pct_industry_id) => {
+                IndustryById::get_industry_name_with_id(top_pct_industry_id)
+                    .await
+                    .ok()
+            }
+            None => None,
+        };
+
         let response = ETFAggregateDetail {
             ticker_id: etf_aggregate_detail_raw.ticker_id,
             etf_symbol,
@@ -194,13 +214,13 @@ impl ETFAggregateDetail {
             top_market_value_industry_name,
             top_sector_market_value: etf_aggregate_detail_raw.top_sector_market_value,
             currency_code: etf_aggregate_detail_raw.currency_code,
-            top_pct_sector_name,
-            top_pct_industry_name,
-            top_pct_sector_weight: etf_aggregate_detail_raw.top_pct_sector_weight,
+            logo_filename,
             //
             major_sector_distribution,
             //
-            logo_filename,
+            top_pct_sector_name,
+            top_pct_sector_weight,
+            top_pct_industry_name,
         };
 
         Ok(response)

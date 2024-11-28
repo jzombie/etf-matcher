@@ -1,13 +1,13 @@
 # ETF Matcher
 
-Source code for up and coming [ETFMatcher.com](https://etfmatcher.com), a platform designed to help users customize a virtual portfolio with potential fractional shares and find ETFs that closely match their investment goals.
+Source code for [ETFMatcher.com](https://etfmatcher.com), a utility that leverages machine learning to analyze financial disclosures, helping users customize virtual portfolios and discover ETFs tailored to their investment strategies.
 
-## Requirements
+## Build Requirements
 
 - A Unix terminal shell (such as Bash or Zsh)
 - Docker version 26.1.3 (may work with earlier versions of Docker)
-- Data (data is not provided directly in this open-source repo; you may need to mock it yourself)
-- A compatible .env file (no documentation provided on what to use for this)
+- Proprietary `.bin` files used for stock analysis
+- A compatible `.env` file (details not provided)
 
 ### Optional
 

@@ -11,6 +11,7 @@ export function getTickerBucketLink(tickerBucket: TickerBucket): string {
   return `/${tickerBucket.type}s/${encodeURIComponent(sanitizedBucketName)}`;
 }
 
+// TODO: Implement max distance threshold (https://linear.app/zenosmosis/issue/ZEN-161/implement-max-distance-threshold-for-fetching-closest-ticker-bucket)
 export async function fetchClosestTickerBucketName(
   candidateBucketName: string,
   bucketType: string,

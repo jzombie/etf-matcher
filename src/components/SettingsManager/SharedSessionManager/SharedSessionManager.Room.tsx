@@ -1,6 +1,11 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
-import { Devices, ExitToApp, QrCode, Sync } from "@mui/icons-material";
+import {
+  Devices as DevicesIcon,
+  ExitToApp as ExitToAppIcon,
+  QrCode as QrCodeIcon,
+  Sync as SyncIcon,
+} from "@mui/icons-material";
 import {
   Alert,
   Box,
@@ -9,14 +14,16 @@ import {
   CardContent,
   CircularProgress,
   Grid2,
+  TextField,
   Typography,
 } from "@mui/material";
 
 import AutoScaler from "@layoutKit/AutoScaler";
 import { MQTTRoom, MQTTRoomEvents } from "@services/MultiMQTTRoomService";
 import { useMultiMQTTRoomContext } from "@services/MultiMQTTRoomService/react";
-import { generateQRCode as libGenerateQRCode } from "@services/RustService";
 
+import QRCode from "@components/QRCode";
+import Section from "@components/Section";
 import Timer from "@components/Timer";
 
 import useEventRefresh from "@hooks/useEventRefresh";
@@ -88,6 +95,12 @@ function RoomControls({ room }: RoomControlsProps) {
   const { disconnectFromRoom } = useMultiMQTTRoomContext();
   const { getRoomShareURL } = useSharedSessionManagerContext();
 
+  const roomShareURL = useMemo(
+    () => getRoomShareURL(room),
+    [room, getRoomShareURL],
+  );
+
+  // Refresh this component when these properties change
   useEventRefresh<MQTTRoomEvents>(room, [
     "peersupdate",
     "syncupdate",
@@ -95,20 +108,12 @@ function RoomControls({ room }: RoomControlsProps) {
     "connectionstateupdate",
   ]);
 
-  const [qrCode, setQRCode] = useState<string | null>("");
+  const [isShowingQRCode, setIsShowingQRCode] = useState<boolean>(false);
 
-  const generateQRCode = useCallback(() => {
-    const roomShareURL = getRoomShareURL(room);
-    libGenerateQRCode(roomShareURL).then(setQRCode);
-  }, [getRoomShareURL, room]);
-
-  const toggleQRCode = useCallback(() => {
-    if (qrCode) {
-      setQRCode(null);
-    } else {
-      generateQRCode();
-    }
-  }, [qrCode, generateQRCode]);
+  const toggleQRCode = useCallback(
+    () => setIsShowingQRCode((prev) => !prev),
+    [],
+  );
 
   return (
     <>
@@ -129,7 +134,7 @@ function RoomControls({ room }: RoomControlsProps) {
           onClick={() => disconnectFromRoom(room.roomName)}
           color="secondary"
           variant="outlined"
-          startIcon={<ExitToApp />}
+          startIcon={<ExitToAppIcon />}
           sx={{ flexGrow: 1 }}
           disabled={!room.isConnected}
         >
@@ -138,22 +143,41 @@ function RoomControls({ room }: RoomControlsProps) {
         <Button
           onClick={toggleQRCode}
           variant="outlined"
-          startIcon={<QrCode />}
+          startIcon={<QrCodeIcon />}
           sx={{ flexGrow: 1 }}
         >
-          {!qrCode ? "Generate" : "Hide"} QR Code
+          {!isShowingQRCode ? "Show" : "Hide"} QR Code
         </Button>
       </Box>
-      {qrCode && (
-        <div>
-          <Typography variant="body2" sx={{ marginBottom: 2 }}>
-            Scan this QR code from another device to synchronize its state with
-            this device.
-          </Typography>
-          <AutoScaler style={{ width: 150, height: 150, marginBottom: "1rem" }}>
-            <div dangerouslySetInnerHTML={{ __html: qrCode }} />
-          </AutoScaler>
-        </div>
+      {isShowingQRCode && (
+        <Section mb={1}>
+          <Box sx={{ textAlign: "center" }}>
+            <Typography variant="body2" sx={{ marginBottom: 2 }}>
+              Scan this QR code from another device to synchronize its state
+              with this device.
+            </Typography>
+            <Box sx={{ height: 250 }} mb={2}>
+              <AutoScaler>
+                <QRCode data={roomShareURL} />
+              </AutoScaler>
+            </Box>
+            <TextField
+              multiline
+              value={roomShareURL}
+              fullWidth
+              variant="outlined"
+              slotProps={{
+                input: {
+                  readOnly: true,
+                },
+              }}
+              rows={2}
+            />
+            {
+              // TODO: Add button to copy this URL
+            }
+          </Box>
+        </Section>
       )}
       {room.isConnecting && (
         <Box sx={{ textAlign: "center" }}>
@@ -164,7 +188,7 @@ function RoomControls({ room }: RoomControlsProps) {
         <Grid2 container spacing={2}>
           <Grid2 size={{ xs: 12, sm: 6 }}>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Devices sx={{ mr: 1 }} />
+              <DevicesIcon sx={{ mr: 1 }} />
               <Typography variant="body2">
                 Currently connected devices: {room.peers.length + 1}
               </Typography>
@@ -172,7 +196,7 @@ function RoomControls({ room }: RoomControlsProps) {
           </Grid2>
           <Grid2 size={{ xs: 12, sm: 6 }}>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Sync sx={{ mr: 1 }} />
+              <SyncIcon sx={{ mr: 1 }} />
               <Typography variant="body2">
                 In sync: {room.isInSync ? "yes" : "no"}
               </Typography>

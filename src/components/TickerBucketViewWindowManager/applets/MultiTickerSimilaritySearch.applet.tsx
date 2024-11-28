@@ -175,7 +175,7 @@ export default function MultiTickerSimilaritySearchApplet({
                     setIsTickerVectorConfigSelectorDialogOpen(true)
                   }
                   aria-label="Select Model"
-                  sx={{ ml: 1, mb: 1 }}
+                  sx={{ ml: 1, mt: -3 }}
                 >
                   <SettingsIcon />
                 </IconButton>
