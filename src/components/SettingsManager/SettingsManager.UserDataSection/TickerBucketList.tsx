@@ -1,17 +1,15 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { Button, Typography } from "@mui/material";
 
 import { TickerBucket } from "@src/store";
-import customLogger from "@src/utils/customLogger";
 
 import Section from "@components/Section";
 import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
 
-import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
-import useNotification from "@hooks/useNotification";
+import useClipboard from "@hooks/useClipboard";
 
 import TickerBucketItem from "./TickerBucketItem";
 
@@ -28,34 +26,7 @@ export default function TickerBucketList({
     [tickerBuckets],
   );
 
-  const { triggerUIError } = useAppErrorBoundary();
-
-  const { showNotification } = useNotification();
-
-  // TODO: Refactor to use a shared clipboard utility
-  const copySymbolsToClipboard = useCallback(
-    (symbols: string[]) => {
-      const symbolsText = symbols.join(", ");
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(symbolsText).then(
-          () => {
-            showNotification(
-              `${symbols.length} symbol${symbols.length !== 1 ? "s" : ""} copied to clipboard`,
-              "success",
-            );
-          },
-          (err) => {
-            customLogger.error(err);
-            triggerUIError(new Error("Failed to copy symbols"));
-          },
-        );
-      } else {
-        customLogger.error("Clipboard API not supported");
-        triggerUIError(new Error("Clipboard API not supported"));
-      }
-    },
-    [showNotification, triggerUIError],
-  );
+  const { copySymbols } = useClipboard();
 
   return (
     <UnstyledUL>
@@ -112,7 +83,7 @@ export default function TickerBucketList({
                 size="small"
                 startIcon={<ContentCopyIcon />}
                 onClick={() =>
-                  copySymbolsToClipboard(
+                  copySymbols(
                     tickerBucket.tickers.map((ticker) => ticker.symbol),
                   )
                 }
