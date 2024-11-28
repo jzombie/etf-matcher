@@ -1,7 +1,5 @@
 import React, { useEffect } from "react";
 
-import { Box } from "@mui/material";
-
 import AutoScaler from "@layoutKit/AutoScaler";
 import {
   RustServiceTickerWeightedSectorDistribution,
