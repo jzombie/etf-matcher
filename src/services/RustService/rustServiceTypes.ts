@@ -62,8 +62,6 @@ export type RustServiceETFAggregateDetail = {
   }[];
   //
   logo_filename?: string;
-  //
-  are_financials_current: boolean;
 };
 
 export type RustServiceTicker10KDetail = {
