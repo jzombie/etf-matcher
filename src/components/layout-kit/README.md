@@ -17,7 +17,7 @@ Despite their maturity and reliability, they have not yet been migrated to their
 ### Core Layout Components
 
 1. **`Layout`**  
-   A container for the overall structure of your application. Supports children such as `Header`, `Content`, `Footer`, and `Aside`.
+  A container for organizing your application's layout. Supports children such as `Header`, `Content`, `Footer`, and `Aside`.
 
 2. **`Header`**  
    Represents the top section of the layout, typically used for navigation or branding.
