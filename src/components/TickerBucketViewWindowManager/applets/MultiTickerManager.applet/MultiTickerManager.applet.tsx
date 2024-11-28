@@ -13,6 +13,7 @@ import Scrollable from "@layoutKit/Scrollable";
 import Padding from "@components/Padding";
 import Section from "@components/Section";
 import TickerSearchModal from "@components/TickerSearchModal";
+import TickerSymbolsCopyButton from "@components/TickerSymbolsCopyButton";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
@@ -213,7 +214,7 @@ export default function MultiTickerManagerApplet({
           </Scrollable>
         </Content>
         <Footer>
-          <Box sx={{ textAlign: "center" }}>
+          <Aside>
             <Typography
               variant="body2"
               sx={{
@@ -242,7 +243,20 @@ export default function MultiTickerManagerApplet({
                 </Box>
               )}
             </Typography>
-          </Box>
+          </Aside>
+          <Content>
+            {
+              // Intentionally empty
+              " "
+            }
+          </Content>
+          <Aside>
+            <TickerSymbolsCopyButton
+              tickerSymbols={filteredTickerBucket.tickers.map(
+                (ticker) => ticker.symbol,
+              )}
+            />
+          </Aside>
         </Footer>
       </Layout>
 

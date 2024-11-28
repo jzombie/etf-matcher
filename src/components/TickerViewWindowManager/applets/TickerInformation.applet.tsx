@@ -8,6 +8,7 @@ import { Link as ReactRouterLink } from "react-router-dom";
 
 import EncodedImage from "@components/EncodedImage";
 import Padding from "@components/Padding";
+import TickerSymbolsCopyButton from "@components/TickerSymbolsCopyButton";
 
 import useFormattedSectorAndIndustry from "@hooks/useFormattedSectorAndIndustry";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
@@ -104,6 +105,11 @@ export default function TickerInformationApplet({
               // TODO: Add asset class, etc.
             }
           </InfoWrapper>
+          {tickerDetail?.symbol && (
+            <Box sx={{ textAlign: "center" }} mb={2}>
+              <TickerSymbolsCopyButton tickerSymbols={[tickerDetail.symbol]} />
+            </Box>
+          )}
           {tickerDetail && (
             <>
               <Divider sx={{ mb: 2 }} />
