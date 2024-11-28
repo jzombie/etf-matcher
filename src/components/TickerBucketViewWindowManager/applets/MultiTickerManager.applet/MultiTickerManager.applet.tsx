@@ -244,7 +244,12 @@ export default function MultiTickerManagerApplet({
               )}
             </Typography>
           </Aside>
-          <Content> </Content>
+          <Content>
+            {
+              // Intentionally empty
+              " "
+            }
+          </Content>
           <Aside>
             <TickerSymbolsCopyButton
               tickerSymbols={filteredTickerBucket.tickers.map(
