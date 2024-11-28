@@ -228,12 +228,16 @@ impl TickerSearch {
                     None
                 };
 
+                // Use `extract_logo_filename` to get the actual filename
+                let logo_filename =
+                    extract_logo_filename(raw_result.logo_filename.as_deref(), &raw_result.symbol);
+
                 results.push(TickerSearchResult {
                     ticker_id: raw_result.ticker_id,
                     symbol: raw_result.symbol,
                     exchange_short_name,
                     company_name: raw_result.company_name,
-                    logo_filename: raw_result.logo_filename,
+                    logo_filename,
                 });
             }
         }
