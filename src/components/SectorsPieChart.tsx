@@ -88,7 +88,6 @@ export default function SectorsPieChart({
               </text>
             );
           }}
-          // labelStyle={{ fontSize: "12px", fill: "#333" }} // Optional: Customize label style
         >
           {data.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={getSectorColor(entry.name)} />
