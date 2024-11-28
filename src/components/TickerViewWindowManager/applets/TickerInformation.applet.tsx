@@ -3,11 +3,11 @@ import React, { useMemo } from "react";
 import { Box, Divider, Link, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 
-import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 import { Link as ReactRouterLink } from "react-router-dom";
 
 import EncodedImage from "@components/EncodedImage";
+import Padding from "@components/Padding";
 
 import useFormattedSectorAndIndustry from "@hooks/useFormattedSectorAndIndustry";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";

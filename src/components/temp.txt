@@ -1,0 +1,1725 @@
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/AutoScaler/AutoScaler.module.scss
+-------------------------------------
+.auto_scaler {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  .content_wrap {
+    display: inline-block;
+    text-align: center;
+
+    -webkit-transform-origin: center center;
+    transform-origin: center center;
+  }
+}
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/AutoScaler/AutoScaler.test.tsx
+-------------------------------------
+import React from "react";
+
+import { render } from "@testing-library/react";
+
+import { describe, expect, test } from "vitest";
+
+import AutoScaler from "./AutoScaler";
+
+describe("AutoScaler", () => {
+  test("matches default snapshot", () => {
+    const view = render(
+      <AutoScaler>
+        <div style={{ width: 500, height: 500 }}>AutoScaler child</div>
+      </AutoScaler>,
+    );
+
+    expect(view.asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="full auto_scaler"
+        >
+          <div
+            class="content_wrap"
+            style="visibility: hidden;"
+          >
+            <div
+              style="width: 500px; height: 500px;"
+            >
+              AutoScaler child
+            </div>
+          </div>
+        </div>
+      </DocumentFragment>
+    `);
+  });
+
+  test("matches snapshot with enlargement enabled", () => {
+    const view = render(
+      <AutoScaler enlargeable={true}>
+        <div style={{ width: 500, height: 500 }}>AutoScaler child</div>
+      </AutoScaler>,
+    );
+
+    expect(view.asFragment()).toMatchInlineSnapshot(`
+        <DocumentFragment>
+          <div
+            class="full auto_scaler"
+          >
+            <div
+              class="content_wrap"
+              style="visibility: hidden;"
+            >
+              <div
+                style="width: 500px; height: 500px;"
+              >
+                AutoScaler child
+              </div>
+            </div>
+          </div>
+        </DocumentFragment>
+      `);
+  });
+
+  test("matches snapshot with enlargement disabled", () => {
+    const view = render(
+      <AutoScaler enlargeable={false}>
+        <div style={{ width: 500, height: 500 }}>AutoScaler child</div>
+      </AutoScaler>,
+    );
+
+    expect(view.asFragment()).toMatchInlineSnapshot(`
+    <DocumentFragment>
+      <div
+        class="full auto_scaler"
+      >
+        <div
+          class="content_wrap"
+          style="visibility: hidden;"
+        >
+          <div
+            style="width: 500px; height: 500px;"
+          >
+            AutoScaler child
+          </div>
+        </div>
+      </div>
+    </DocumentFragment>
+  `);
+  });
+});
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/AutoScaler/AutoScaler.tsx
+-------------------------------------
+import React, { useEffect, useRef } from "react";
+
+import classNames from "clsx";
+
+import Full, { FullProps } from "../Full";
+import styles from "./AutoScaler.module.scss";
+
+export type AutoScalerProps = FullProps & {
+  // Determines if the scaled element should scale larger than 1x (otherwise it
+  // can only be shrunk and restored to its original size
+  enlargeable?: boolean;
+};
+
+/**
+ * The AutoScaler component automatically applies CSS transform scaling to
+ * children to prevent the children from overflowing their parent node.
+ *
+ * Useful for videos and canvases, where the resolution is a fixed size and
+ * should not change.
+ *
+ * Caveats:
+ *  - Rotated children may still have their edges overflow the parent
+ *  - This does not work for absolutely positioned children
+ */
+export default function AutoScaler({
+  children,
+  className,
+  enlargeable = false,
+  ...rest
+}: AutoScalerProps) {
+  const outerWrapRef = useRef<HTMLDivElement>(null);
+  const innerWrapRef = useRef<HTMLDivElement>(null);
+
+  // Handle scaling
+  useEffect(() => {
+    const outerWrap = outerWrapRef.current;
+    const innerWrap = innerWrapRef.current;
+
+    if (outerWrap && innerWrap) {
+      let outerWrapSize = {
+        width: 0,
+        height: 0,
+      };
+      let innerWrapSize = {
+        width: 0,
+        height: 0,
+      };
+
+      // This is uesd w/ visibility below to try to reduce position defects
+      // when first rendering
+      innerWrap.style.visibility = "hidden";
+
+      const ro = new ResizeObserver((entries: ResizeObserverEntry[]) => {
+        window.requestAnimationFrame(() => {
+          for (const entry of entries) {
+            const size = {
+              width: (entry.target as HTMLDivElement).offsetWidth,
+              height: (entry.target as HTMLDivElement).offsetHeight,
+            };
+
+            if (entry.target === outerWrap) {
+              outerWrapSize = size;
+            } else {
+              innerWrapSize = size;
+            }
+          }
+
+          // Determine against all available space
+          const maxScaleX = outerWrapSize.width / innerWrapSize.width;
+          const maxScaleY = outerWrapSize.height / innerWrapSize.height;
+
+          let scale = Math.min(maxScaleX, maxScaleY);
+
+          if (!enlargeable && scale > 1) {
+            scale = 1;
+          }
+
+          innerWrap.style.transform = `scale(${scale}, ${scale})`;
+
+          if (innerWrap.style.visibility === "hidden") {
+            queueMicrotask(() => {
+              innerWrap.style.visibility = "visible";
+            });
+          }
+        });
+      });
+
+      ro.observe(outerWrap);
+      ro.observe(innerWrap);
+
+      return function unmount() {
+        ro.unobserve(outerWrap);
+        ro.unobserve(innerWrap);
+      };
+    }
+  }, [enlargeable]);
+
+  return (
+    <Full
+      {...rest}
+      ref={outerWrapRef}
+      className={classNames(styles.auto_scaler, className)}
+    >
+      <div ref={innerWrapRef} className={styles.content_wrap}>
+        {children}
+      </div>
+    </Full>
+  );
+}
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/AutoScaler/index.tsx
+-------------------------------------
+import AutoScaler, { AutoScalerProps } from "./AutoScaler";
+
+export default AutoScaler;
+export type { AutoScalerProps };
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Center/Center.module.scss
+-------------------------------------
+.center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+
+  .content_wrap {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+}
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Center/Center.test.tsx
+-------------------------------------
+import React from "react";
+
+import "@testing-library/jest-dom";
+import { render } from "@testing-library/react";
+
+import { describe, expect, it } from "vitest";
+
+import Center from "./Center";
+
+describe("Center Component", () => {
+  it("renders children correctly", () => {
+    const { getByText, asFragment } = render(
+      <Center>
+        <span>Test Content</span>
+      </Center>,
+    );
+    expect(getByText("Test Content")).toBeInTheDocument();
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="center"
+        >
+          <div
+            class="content_wrap"
+          >
+            <span>
+              Test Content
+            </span>
+          </div>
+        </div>
+      </DocumentFragment>
+    `);
+  });
+
+  it("applies custom className", () => {
+    const { container, asFragment } = render(
+      <Center className="custom-class">
+        <span>Test Content</span>
+      </Center>,
+    );
+    expect(container.firstChild).toHaveClass("custom-class");
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="center custom-class"
+        >
+          <div
+            class="content_wrap"
+          >
+            <span>
+              Test Content
+            </span>
+          </div>
+        </div>
+      </DocumentFragment>
+    `);
+  });
+
+  it("forwards ref correctly", () => {
+    const ref = React.createRef<HTMLDivElement>();
+    render(
+      <Center ref={ref}>
+        <span>Test Content</span>
+      </Center>,
+    );
+    expect(ref.current).toBeInstanceOf(HTMLDivElement);
+  });
+});
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Center/Center.tsx
+-------------------------------------
+import React, { HTMLAttributes, forwardRef } from "react";
+
+import clsx from "clsx";
+
+import styles from "./Center.module.scss";
+
+export type CenterProps = HTMLAttributes<HTMLDivElement> & {
+  children: React.ReactNode;
+  className?: string;
+};
+
+/**
+ * The Center component vertically and horizontally centers the child
+ * components.
+ */
+const Center = forwardRef<HTMLDivElement, CenterProps>(
+  ({ children, className, ...rest }, ref) => {
+    return (
+      <div ref={ref} className={clsx(styles.center, className)} {...rest}>
+        <div className={styles.content_wrap}>{children}</div>
+      </div>
+    );
+  },
+);
+
+Center.displayName = "Center";
+
+export default Center;
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Center/index.tsx
+-------------------------------------
+import Center, { CenterProps } from "./Center";
+
+export default Center;
+export type { CenterProps };
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Cover/Cover.module.scss
+-------------------------------------
+.cover {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+}
+
+.clickThrough {
+  pointer-events: none;
+}
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Cover/Cover.test.tsx
+-------------------------------------
+import React from "react";
+
+import "@testing-library/jest-dom";
+import { render } from "@testing-library/react";
+
+import { describe, expect, it } from "vitest";
+
+import Cover from "./Cover";
+
+describe("Cover Component", () => {
+  it("renders children correctly", () => {
+    const { getByText, asFragment } = render(
+      <Cover>
+        <span>Test Content</span>
+      </Cover>,
+    );
+    expect(getByText("Test Content")).toBeInTheDocument();
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="full cover"
+        >
+          <span>
+            Test Content
+          </span>
+        </div>
+      </DocumentFragment>
+    `);
+  });
+
+  it("applies custom className", () => {
+    const { container, asFragment } = render(
+      <Cover className="custom-class">
+        <span>Test Content</span>
+      </Cover>,
+    );
+    expect(container.firstChild).toHaveClass("custom-class");
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="full cover custom-class"
+        >
+          <span>
+            Test Content
+          </span>
+        </div>
+      </DocumentFragment>
+    `);
+  });
+
+  it("allows click through when clickThrough prop is true", () => {
+    const { container } = render(
+      <Cover clickThrough>
+        <span>Test Content</span>
+      </Cover>,
+    );
+    expect(container.firstChild).toHaveClass("clickThrough");
+  });
+
+  it("does not allow click through when clickThrough prop is false", () => {
+    const { container } = render(
+      <Cover clickThrough={false}>
+        <span>Test Content</span>
+      </Cover>,
+    );
+    expect(container.firstChild).not.toHaveClass("clickThrough");
+  });
+
+  it("forwards ref correctly", () => {
+    const ref = React.createRef<HTMLDivElement>();
+    render(
+      <Cover ref={ref}>
+        <span>Test Content</span>
+      </Cover>,
+    );
+    expect(ref.current).toBeInstanceOf(HTMLDivElement);
+  });
+});
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Cover/Cover.tsx
+-------------------------------------
+import React, { HTMLAttributes, forwardRef } from "react";
+
+import clsx from "clsx";
+
+import Full from "../Full";
+import styles from "./Cover.module.scss";
+
+export type CoverProps = HTMLAttributes<HTMLDivElement> & {
+  children?: React.ReactNode;
+  className?: string;
+  clickThrough?: boolean;
+};
+
+/**
+ * The Cover component overlays a Full element on top of the parent view.
+ */
+const Cover = forwardRef<HTMLDivElement, CoverProps>(
+  ({ children, className, clickThrough = false, ...rest }, ref) => {
+    return (
+      <Full
+        ref={ref}
+        className={clsx(styles.cover, className, {
+          [styles.clickThrough]: clickThrough,
+        })}
+        {...rest}
+      >
+        {children}
+      </Full>
+    );
+  },
+);
+
+Cover.displayName = "Cover";
+
+export default Cover;
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Cover/index.tsx
+-------------------------------------
+import Cover, { CoverProps } from "./Cover";
+
+export default Cover;
+export type { CoverProps };
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Full/Full.module.scss
+-------------------------------------
+.full {
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+// TODO: Remove? This breaks `Center` layouts, forcing them to not fill up the
+// vertical space. If this needs to be reintroduced, make it a user-configurable
+// parameter for `Full`.
+//
+/* Ensure children of .full do not flex (grow or shrink) within the flex container.
+   This prevents them from stretching or compressing to fill the available space,
+   allowing them to maintain their intrinsic sizes and behave more predictably
+   within the flexbox layout. Useful for preventing layout shifts and ensuring 
+   that content does not overflow unexpectedly. */
+// .full > * {
+//   flex: 0 0 auto;
+// }
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Full/Full.test.tsx
+-------------------------------------
+import React from "react";
+
+import "@testing-library/jest-dom";
+import { render } from "@testing-library/react";
+
+import { describe, expect, it } from "vitest";
+
+import Full from "./Full";
+
+describe("Full Component", () => {
+  it("renders children correctly", () => {
+    const { getByText, asFragment } = render(
+      <Full>
+        <span>Test Content</span>
+      </Full>,
+    );
+    expect(getByText("Test Content")).toBeInTheDocument();
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="full"
+        >
+          <span>
+            Test Content
+          </span>
+        </div>
+      </DocumentFragment>
+    `);
+  });
+
+  it("applies custom className", () => {
+    const { container, asFragment } = render(
+      <Full className="custom-class">
+        <span>Test Content</span>
+      </Full>,
+    );
+    expect(container.firstChild).toHaveClass("custom-class");
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="full custom-class"
+        >
+          <span>
+            Test Content
+          </span>
+        </div>
+      </DocumentFragment>
+    `);
+  });
+
+  it("forwards ref correctly", () => {
+    const ref = React.createRef<HTMLDivElement>();
+    render(
+      <Full ref={ref}>
+        <span>Test Content</span>
+      </Full>,
+    );
+    expect(ref.current).toBeInstanceOf(HTMLDivElement);
+  });
+});
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Full/Full.tsx
+-------------------------------------
+import React, { HTMLAttributes, forwardRef } from "react";
+
+import clsx from "clsx";
+
+import styles from "./Full.module.scss";
+
+export type FullProps = HTMLAttributes<HTMLDivElement> & {
+  children: React.ReactNode;
+  className?: string;
+};
+
+const Full = forwardRef<HTMLDivElement, FullProps>(
+  ({ children, className, ...rest }, ref) => {
+    return (
+      <div className={clsx(styles.full, className)} ref={ref} {...rest}>
+        {children}
+      </div>
+    );
+  },
+);
+
+Full.displayName = "Full";
+
+export default Full;
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Full/index.tsx
+-------------------------------------
+import Full, { FullProps } from "./Full";
+
+export default Full;
+export type { FullProps };
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/FullViewport/FullViewport.module.scss
+-------------------------------------
+.full_viewport {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+
+  .content_wrap {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+    // TODO: Enable via configuration or by default?
+    //
+    // Use GPU acceleration
+    //
+    // Applying a 3D transform, even a trivial one like `translateZ(0)`,
+    // forces the browser to create a new rendering layer for the element.
+    // This triggers GPU acceleration, making the rendering of this element
+    // more efficient, especially for animations and transitions.
+    // By doing this, we offload some of the processing to the GPU,
+    // which can handle these tasks more efficiently than the CPU.
+    // This can lead to smoother animations and improved performance,
+    // particularly in complex layouts or when multiple elements are animated.
+    // transform: translateZ(0);
+
+    min-height: 100vh;
+    max-height: 100vh;
+    min-width: 100vw;
+    max-width: 100vw;
+    &.dvh {
+      min-height: 100dvh;
+      max-height: 100dvh;
+      min-width: 100dvw;
+      max-width: 100dvw;
+    }
+  }
+}
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/FullViewport/FullViewport.test.tsx
+-------------------------------------
+import React from "react";
+
+import "@testing-library/jest-dom";
+import { render } from "@testing-library/react";
+
+import { describe, expect, it } from "vitest";
+
+import FullViewport from "./FullViewport";
+
+describe("FullViewport Component", () => {
+  it("renders children correctly", () => {
+    const { getByText, asFragment } = render(
+      <FullViewport>
+        <span>Test Content</span>
+      </FullViewport>,
+    );
+    expect(getByText("Test Content")).toBeInTheDocument();
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="full_viewport"
+        >
+          <div
+            class="content_wrap"
+          >
+            <span>
+              Test Content
+            </span>
+          </div>
+        </div>
+      </DocumentFragment>
+    `);
+  });
+
+  it("applies custom className", () => {
+    const { container, asFragment } = render(
+      <FullViewport className="custom-class">
+        <span>Test Content</span>
+      </FullViewport>,
+    );
+    expect(container.querySelector(".content_wrap")).toHaveClass(
+      "custom-class",
+    );
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="full_viewport"
+        >
+          <div
+            class="content_wrap custom-class"
+          >
+            <span>
+              Test Content
+            </span>
+          </div>
+        </div>
+      </DocumentFragment>
+    `);
+  });
+
+  it("forwards ref correctly", () => {
+    const ref = React.createRef<HTMLDivElement>();
+    render(
+      <FullViewport ref={ref}>
+        <span>Test Content</span>
+      </FullViewport>,
+    );
+    expect(ref.current).toBeInstanceOf(HTMLDivElement);
+  });
+});
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/FullViewport/FullViewport.tsx
+-------------------------------------
+import React, { HTMLAttributes, forwardRef } from "react";
+
+import clsx from "clsx";
+
+import styles from "./FullViewport.module.scss";
+
+export type FullViewportProps = HTMLAttributes<HTMLDivElement> & {
+  children: React.ReactNode;
+  className?: string;
+};
+
+const supportsDvhUnit = testSupportsDvhUnit();
+
+/*
+ * The FullViewport component consumes the entire viewport of the browser window.
+ * It is intended to be utilized as a base view for other components to stack on.
+ */
+const FullViewport = forwardRef<HTMLDivElement, FullViewportProps>(
+  ({ children, className, ...rest }, ref) => {
+    return (
+      <div className={styles.full_viewport}>
+        <div
+          ref={ref}
+          className={clsx(
+            styles.content_wrap,
+            { [styles.dvh]: supportsDvhUnit },
+            className,
+          )}
+          {...rest}
+        >
+          {children}
+        </div>
+      </div>
+    );
+  },
+);
+
+FullViewport.displayName = "FullViewport";
+
+export default FullViewport;
+
+// Test if the browser supports the 'dvh' (dynamic viewport height) unit.
+//
+// The 'dvh' unit adjusts for the presence of on-screen elements like the
+// mobile keyboard, providing a more accurate viewport height.
+// This function creates a temporary element, sets its height to '100dvh',
+// and checks if the computed height is non-zero, indicating support.
+// If supported, it helps in better handling of mobile keyboard layouts.
+function testSupportsDvhUnit() {
+  const testElement = window.document.createElement("div");
+  testElement.style.height = "100dvh";
+  window.document.body.appendChild(testElement);
+
+  const supportsDvh = testElement.clientHeight !== 0;
+  window.document.body.removeChild(testElement);
+  return supportsDvh;
+}
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/FullViewport/index.tsx
+-------------------------------------
+import FullViewport, { FullViewportProps } from "./FullViewport";
+
+export default FullViewport;
+export type { FullViewportProps };
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Layout/Aside.test.tsx
+-------------------------------------
+import React from "react";
+
+import "@testing-library/jest-dom";
+import { render } from "@testing-library/react";
+
+import { describe, expect, it } from "vitest";
+
+import Aside from "./Aside";
+
+describe("Aside Component", () => {
+  it("renders children correctly", () => {
+    const { getByText, asFragment } = render(
+      <Aside>
+        <span>Test Aside Content</span>
+      </Aside>,
+    );
+    expect(getByText("Test Aside Content")).toBeInTheDocument();
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <aside
+          class="aside"
+        >
+          <span>
+            Test Aside Content
+          </span>
+        </aside>
+      </DocumentFragment>
+    `);
+  });
+
+  it("applies custom className", () => {
+    const { container } = render(
+      <Aside className="custom-class">Test Content</Aside>,
+    );
+    expect(container.firstChild).toHaveClass("custom-class");
+  });
+});
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Layout/Aside.tsx
+-------------------------------------
+import React, { HTMLAttributes, forwardRef } from "react";
+
+import clsx from "clsx";
+
+import styles from "./Layout.module.scss";
+
+export type AsideProps = HTMLAttributes<HTMLElement> & {
+  children: React.ReactNode;
+  className?: string;
+};
+
+const Aside = forwardRef<HTMLElement, AsideProps>(
+  ({ children, className, ...rest }, ref) => {
+    return (
+      <aside ref={ref} className={clsx(styles.aside, className)} {...rest}>
+        {children}
+      </aside>
+    );
+  },
+);
+
+Aside.displayName = "Aside";
+
+export default Aside;
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Layout/Content.test.tsx
+-------------------------------------
+import React from "react";
+
+import "@testing-library/jest-dom";
+import { render } from "@testing-library/react";
+
+import { describe, expect, it } from "vitest";
+
+import Aside from "./Aside";
+import Content from "./Content";
+
+describe("Content Component", () => {
+  it("renders children correctly", () => {
+    const { getByText, asFragment } = render(
+      <Content>
+        <span>Test Content</span>
+      </Content>,
+    );
+    expect(getByText("Test Content")).toBeInTheDocument();
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <main
+          class="content"
+        >
+          <span>
+            Test Content
+          </span>
+        </main>
+      </DocumentFragment>
+    `);
+  });
+
+  it("applies custom className", () => {
+    const { container, asFragment } = render(
+      <Content className="custom-class">
+        <span>Test Content</span>
+      </Content>,
+    );
+    expect(container.firstChild).toHaveClass("custom-class");
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <main
+          class="content custom-class"
+        >
+          <span>
+            Test Content
+          </span>
+        </main>
+      </DocumentFragment>
+    `);
+  });
+
+  it("forwards ref correctly", () => {
+    const ref = React.createRef<HTMLDivElement>();
+    render(
+      <Content ref={ref}>
+        <span>Test Content</span>
+      </Content>,
+    );
+    expect(ref.current).toBeInstanceOf(HTMLElement);
+  });
+
+  it("adapts layout when Aside is a direct child", () => {
+    const { container } = render(
+      <Content>
+        <Aside>Left Sidebar</Aside>
+        <div>Main Content</div>
+      </Content>,
+    );
+
+    expect(container.firstChild).toHaveClass("content-row");
+  });
+});
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Layout/Content.tsx
+-------------------------------------
+import React, { HTMLAttributes, forwardRef } from "react";
+
+import clsx from "clsx";
+
+import styles from "./Layout.module.scss";
+import useHasAside from "./hooks/useHasAside";
+
+// Import the Aside component for type checking
+
+export type ContentProps = HTMLAttributes<HTMLElement> & {
+  children: React.ReactNode;
+  className?: string;
+};
+
+const Content = forwardRef<HTMLElement, ContentProps>(
+  ({ children, className, ...rest }, ref) => {
+    const hasAside = useHasAside(children);
+
+    return (
+      <main
+        ref={ref}
+        className={clsx(
+          styles.content,
+          { [styles["content-row"]]: hasAside },
+          className,
+        )}
+        {...rest}
+      >
+        {children}
+      </main>
+    );
+  },
+);
+
+Content.displayName = "Content";
+
+export default Content;
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Layout/Footer.test.tsx
+-------------------------------------
+import React from "react";
+
+import "@testing-library/jest-dom";
+import { render } from "@testing-library/react";
+
+import { describe, expect, it } from "vitest";
+
+import Aside from "./Aside";
+import Footer from "./Footer";
+
+describe("Footer Component", () => {
+  it("renders children correctly", () => {
+    const { getByText, asFragment } = render(
+      <Footer>
+        <span>Test Content</span>
+      </Footer>,
+    );
+    expect(getByText("Test Content")).toBeInTheDocument();
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <footer
+          class="footer"
+        >
+          <span>
+            Test Content
+          </span>
+        </footer>
+      </DocumentFragment>
+    `);
+  });
+
+  it("applies custom className", () => {
+    const { container, asFragment } = render(
+      <Footer className="custom-class">
+        <span>Test Content</span>
+      </Footer>,
+    );
+    expect(container.firstChild).toHaveClass("custom-class");
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <footer
+          class="footer custom-class"
+        >
+          <span>
+            Test Content
+          </span>
+        </footer>
+      </DocumentFragment>
+    `);
+  });
+
+  it("forwards ref correctly", () => {
+    const ref = React.createRef<HTMLDivElement>();
+    render(
+      <Footer ref={ref}>
+        <span>Test Content</span>
+      </Footer>,
+    );
+    expect(ref.current).toBeInstanceOf(HTMLElement);
+  });
+
+  it("applies row layout when Aside is a direct child", () => {
+    const { container } = render(
+      <Footer>
+        <Aside>Left Sidebar</Aside>
+        <div>Main Footer Content</div>
+      </Footer>,
+    );
+
+    expect(container.firstChild).toHaveClass("footer-row");
+  });
+});
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Layout/Footer.tsx
+-------------------------------------
+import React, { HTMLAttributes, forwardRef } from "react";
+
+import clsx from "clsx";
+
+import styles from "./Layout.module.scss";
+import useHasAside from "./hooks/useHasAside";
+
+export type FooterProps = HTMLAttributes<HTMLElement> & {
+  children: React.ReactNode;
+  className?: string;
+};
+
+const Footer = forwardRef<HTMLElement, FooterProps>(
+  ({ children, className, ...rest }, ref) => {
+    const hasAside = useHasAside(children);
+
+    return (
+      <footer
+        ref={ref}
+        className={clsx(
+          styles.footer,
+          { [styles["footer-row"]]: hasAside },
+          className,
+        )}
+        {...rest}
+      >
+        {children}
+      </footer>
+    );
+  },
+);
+
+Footer.displayName = "Footer";
+
+export default Footer;
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Layout/Header.test.tsx
+-------------------------------------
+import React from "react";
+
+import "@testing-library/jest-dom";
+import { render } from "@testing-library/react";
+
+import { describe, expect, it } from "vitest";
+
+import Aside from "./Aside";
+import Header from "./Header";
+
+describe("Header Component", () => {
+  it("renders children correctly", () => {
+    const { getByText, asFragment } = render(
+      <Header>
+        <span>Test Content</span>
+      </Header>,
+    );
+    expect(getByText("Test Content")).toBeInTheDocument();
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <header
+          class="header"
+        >
+          <span>
+            Test Content
+          </span>
+        </header>
+      </DocumentFragment>
+    `);
+  });
+
+  it("applies custom className", () => {
+    const { container, asFragment } = render(
+      <Header className="custom-class">
+        <span>Test Content</span>
+      </Header>,
+    );
+    expect(container.firstChild).toHaveClass("custom-class");
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <header
+          class="header custom-class"
+        >
+          <span>
+            Test Content
+          </span>
+        </header>
+      </DocumentFragment>
+    `);
+  });
+
+  it("forwards ref correctly", () => {
+    const ref = React.createRef<HTMLDivElement>();
+    render(
+      <Header ref={ref}>
+        <span>Test Content</span>
+      </Header>,
+    );
+    expect(ref.current).toBeInstanceOf(HTMLElement);
+  });
+
+  it("applies row layout when Aside is a direct child", () => {
+    const { container } = render(
+      <Header>
+        <Aside>Left Sidebar</Aside>
+        <div>Main Header Content</div>
+      </Header>,
+    );
+
+    expect(container.firstChild).toHaveClass("header-row");
+  });
+});
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Layout/Header.tsx
+-------------------------------------
+import React, { HTMLAttributes, forwardRef } from "react";
+
+import clsx from "clsx";
+
+import styles from "./Layout.module.scss";
+import useHasAside from "./hooks/useHasAside";
+
+export type HeaderProps = HTMLAttributes<HTMLElement> & {
+  children: React.ReactNode;
+  className?: string;
+};
+
+const Header = forwardRef<HTMLElement, HeaderProps>(
+  ({ children, className, ...rest }, ref) => {
+    const hasAside = useHasAside(children);
+
+    return (
+      <header
+        ref={ref}
+        className={clsx(
+          styles.header,
+          { [styles["header-row"]]: hasAside },
+          className,
+        )}
+        {...rest}
+      >
+        {children}
+      </header>
+    );
+  },
+);
+
+Header.displayName = "Header";
+
+export default Header;
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Layout/hooks/useHasAside.ts
+-------------------------------------
+import React, { Children, useMemo } from "react";
+
+import Aside from "../Aside";
+
+// Check if an "Aside" component is a direct child
+export default function useHasAside(children: React.ReactNode) {
+  const hasAside = useMemo(
+    () =>
+      Children.toArray(children).some(
+        (child) => React.isValidElement(child) && child.type === Aside,
+      ),
+    [children],
+  );
+
+  return hasAside;
+}
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Layout/index.tsx
+-------------------------------------
+import Aside, { AsideProps } from "./Aside";
+import Content, { ContentProps } from "./Content";
+import Footer, { FooterProps } from "./Footer";
+import Header, { HeaderProps } from "./Header";
+import Layout, { LayoutProps } from "./Layout";
+
+export default Layout;
+export { Header, Content, Footer, Aside };
+
+export type { LayoutProps, HeaderProps, ContentProps, FooterProps, AsideProps };
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Layout/Layout.module.scss
+-------------------------------------
+.layout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+
+  .header {
+    position: relative;
+    overflow: visible;
+
+    &-row {
+      display: flex;
+      flex-direction: row;
+    }
+  }
+
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 100%;
+    position: relative;
+
+    &-row {
+      flex-direction: row;
+    }
+  }
+
+  .footer {
+    position: relative;
+    overflow: visible;
+
+    &-row {
+      display: flex;
+      flex-direction: row;
+    }
+  }
+
+  .aside {
+    flex-shrink: 0; /* Prevent the aside from shrinking */
+    display: flex; /* Ensure children are laid out flexibly */
+    margin: 0; /* Avoid introducing unintended spacing */
+  }
+}
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Layout/Layout.test.tsx
+-------------------------------------
+import React from "react";
+
+import "@testing-library/jest-dom";
+import { render } from "@testing-library/react";
+
+import { describe, expect, it } from "vitest";
+
+import Content from "./Content";
+import Footer from "./Footer";
+import Header from "./Header";
+import Layout from "./Layout";
+
+describe("Layout Component", () => {
+  it("renders children correctly", () => {
+    const { getByText, asFragment } = render(
+      <Layout>
+        <Header>Test Header</Header>
+        <Content>Test Content</Content>
+        <Footer>Test Footer</Footer>
+      </Layout>,
+    );
+    expect(getByText("Test Content")).toBeInTheDocument();
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="layout"
+        >
+          <header
+            class="header"
+          >
+            Test Header
+          </header>
+          <main
+            class="content"
+          >
+            Test Content
+          </main>
+          <footer
+            class="footer"
+          >
+            Test Footer
+          </footer>
+        </div>
+      </DocumentFragment>
+    `);
+  });
+
+  it("applies custom className", () => {
+    const { container, asFragment } = render(
+      <Layout className="custom-class">
+        <Header>Test Header</Header>
+        <Content>Test Content</Content>
+        <Footer>Test Footer</Footer>
+      </Layout>,
+    );
+    expect(container.firstChild).toHaveClass("custom-class");
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="layout custom-class"
+        >
+          <header
+            class="header"
+          >
+            Test Header
+          </header>
+          <main
+            class="content"
+          >
+            Test Content
+          </main>
+          <footer
+            class="footer"
+          >
+            Test Footer
+          </footer>
+        </div>
+      </DocumentFragment>
+    `);
+  });
+
+  it("forwards ref correctly", () => {
+    const ref = React.createRef<HTMLDivElement>();
+    render(
+      <Layout ref={ref}>
+        <Header>Test Header</Header>
+        <Content>Test Content</Content>
+        <Footer>Test Footer</Footer>
+      </Layout>,
+    );
+    expect(ref.current).toBeInstanceOf(HTMLElement);
+  });
+});
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Layout/Layout.tsx
+-------------------------------------
+import React, { HTMLAttributes, forwardRef } from "react";
+
+import clsx from "clsx";
+
+import styles from "./Layout.module.scss";
+
+export type LayoutProps = HTMLAttributes<HTMLDivElement> & {
+  children: React.ReactNode;
+  className?: string;
+};
+
+const Layout = forwardRef<HTMLDivElement, LayoutProps>(
+  ({ children, className, ...rest }, ref) => {
+    return (
+      <div ref={ref} className={clsx(styles["layout"], className)} {...rest}>
+        {children}
+      </div>
+    );
+  },
+);
+
+Layout.displayName = "Layout";
+
+export default Layout;
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/README.md
+-------------------------------------
+# Layout Kit
+
+Layout Kit is a set of view components which I have used in several projects. The intentions of these components are to not impose any particular styling, directly, and are intended to be reusable across multiple projects.
+
+As such, they are "hardcoded" into this current project as they have not been officially migrated into their own repository.
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Scrollable/index.tsx
+-------------------------------------
+import Scrollable, { ScrollableProps } from "./Scrollable";
+
+export default Scrollable;
+export type { ScrollableProps };
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Scrollable/Scrollable.module.scss
+-------------------------------------
+.scrollable {
+  width: 100%;
+  height: 100%;
+  position: relative;
+
+  &.scroll_x {
+    overflow-x: auto;
+  }
+
+  &.scroll_y {
+    overflow-y: auto;
+  }
+}
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Scrollable/Scrollable.test.tsx
+-------------------------------------
+import React from "react";
+
+import "@testing-library/jest-dom";
+import { render } from "@testing-library/react";
+
+import { describe, it } from "vitest";
+
+import Scrollable from "./Scrollable";
+import styles from "./Scrollable.module.scss";
+
+describe("Scrollable Component", () => {
+  it("resets scroll position when trigger changes", () => {
+    const { container, rerender } = render(
+      <Scrollable resetTrigger="initial">
+        <span>Test Content</span>
+      </Scrollable>,
+    );
+
+    const scrollableDiv = container.firstChild as HTMLDivElement;
+
+    // Simulate scrolling
+    scrollableDiv.scrollTop = 100;
+    scrollableDiv.scrollLeft = 100;
+
+    expect(scrollableDiv.scrollTop).toBe(100);
+    expect(scrollableDiv.scrollLeft).toBe(100);
+
+    // Change the trigger prop
+    rerender(
+      <Scrollable resetTrigger="updated">
+        <span>Test Content</span>
+      </Scrollable>,
+    );
+
+    // Check that the scroll position has been reset
+    expect(scrollableDiv.scrollTop).toBe(0);
+    expect(scrollableDiv.scrollLeft).toBe(0);
+  });
+
+  it("renders children correctly", () => {
+    const { getByText, asFragment } = render(
+      <Scrollable>
+        <span>Test Content</span>
+      </Scrollable>,
+    );
+    expect(getByText("Test Content")).toBeInTheDocument();
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="scrollable scroll_y"
+        >
+          <span>
+            Test Content
+          </span>
+        </div>
+      </DocumentFragment>
+    `);
+  });
+
+  it("applies custom className", () => {
+    const { container, asFragment } = render(
+      <Scrollable className="custom-class">
+        <span>Test Content</span>
+      </Scrollable>,
+    );
+    expect(container.firstChild).toHaveClass("custom-class");
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="scrollable scroll_y custom-class"
+        >
+          <span>
+            Test Content
+          </span>
+        </div>
+      </DocumentFragment>
+    `);
+  });
+
+  it("enables horizontal scrolling when scrollX is true", () => {
+    const { container, asFragment } = render(
+      <Scrollable scrollX>
+        <span>Test Content</span>
+      </Scrollable>,
+    );
+    expect(container.firstChild).toHaveClass(styles.scroll_x);
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="scrollable scroll_x scroll_y"
+        >
+          <span>
+            Test Content
+          </span>
+        </div>
+      </DocumentFragment>
+    `);
+  });
+
+  it("enables vertical scrolling when scrollY is true", () => {
+    const { container, asFragment } = render(
+      <Scrollable scrollY>
+        <span>Test Content</span>
+      </Scrollable>,
+    );
+    expect(container.firstChild).toHaveClass(styles.scroll_y);
+    expect(asFragment()).toMatchInlineSnapshot(`
+      <DocumentFragment>
+        <div
+          class="scrollable scroll_y"
+        >
+          <span>
+            Test Content
+          </span>
+        </div>
+      </DocumentFragment>
+    `);
+  });
+
+  it("forwards ref correctly", () => {
+    const ref = React.createRef<HTMLDivElement>();
+    render(
+      <Scrollable ref={ref}>
+        <span>Test Content</span>
+      </Scrollable>,
+    );
+    expect(ref.current).toBeInstanceOf(HTMLElement);
+  });
+});
+
+=====================================
+
+File: /home/jeremy/Projects/etf-matcher/src/components/layout-kit/Scrollable/Scrollable.tsx
+-------------------------------------
+import React, { HTMLAttributes, useEffect, useRef } from "react";
+
+import clsx from "clsx";
+
+import styles from "./Scrollable.module.scss";
+
+export type ScrollableProps = HTMLAttributes<HTMLDivElement> & {
+  children: React.ReactNode;
+  className?: string;
+  scrollX?: boolean;
+  scrollY?: boolean;
+  resetTrigger?: unknown;
+};
+
+/**
+ * The Scrollable component enables scrolling on its X and / or Y axis.
+ */
+const Scrollable = React.forwardRef<HTMLDivElement, ScrollableProps>(
+  (
+    {
+      children,
+      className,
+      scrollX = false,
+      scrollY = true,
+      resetTrigger,
+      ...rest
+    },
+    ref,
+  ) => {
+    const scrollableRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+      if (scrollableRef.current) {
+        scrollableRef.current.scrollTop = 0;
+        scrollableRef.current.scrollLeft = 0;
+      }
+    }, [resetTrigger]);
+
+    return (
+      <div
+        ref={(node) => {
+          scrollableRef.current = node;
+          if (typeof ref === "function") {
+            ref(node);
+          } else if (ref) {
+            (ref as React.MutableRefObject<HTMLDivElement | null>).current =
+              node;
+          }
+        }}
+        className={clsx(
+          styles.scrollable,
+          {
+            [styles.scroll_x]: scrollX,
+            [styles.scroll_y]: scrollY,
+          },
+          className,
+        )}
+        {...rest}
+      >
+        {children}
+      </div>
+    );
+  },
+);
+
+Scrollable.displayName = "Scrollable";
+
+export default Scrollable;
+
+=====================================
+

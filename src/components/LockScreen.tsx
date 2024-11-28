@@ -14,8 +14,9 @@ import Cover from "@layoutKit/Cover";
 import Full from "@layoutKit/Full";
 import FullViewport from "@layoutKit/FullViewport";
 import Layout, { Content, Footer } from "@layoutKit/Layout";
-import Padding from "@layoutKit/Padding";
 import { PROJECT_DESCRIPTION } from "@src/constants";
+
+import Padding from "@components/Padding";
 
 import getEnvVariable from "@utils/getEnvVariable";
 import formatLocalTime from "@utils/string/formatLocalTime";

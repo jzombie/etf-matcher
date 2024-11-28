@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Typography } from "@mui/material";
 
 import Center from "@layoutKit/Center";
-import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 import { fetchETFHoldings } from "@services/RustService";
 import type {
@@ -15,6 +14,7 @@ import { RustServiceTickerDetail } from "@services/RustService";
 import EncodedImage from "@components/EncodedImage";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
+import Padding from "@components/Padding";
 import SelectableGrid, { SelectableGridItem } from "@components/SelectableGrid";
 
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";

@@ -3,7 +3,6 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 
 import Center from "@layoutKit/Center";
-import Padding from "@layoutKit/Padding";
 import Scrollable from "@layoutKit/Scrollable";
 import type { RustServiceTickerDetail } from "@services/RustService";
 
@@ -12,6 +11,7 @@ import FinancialBarLineChart, {
 } from "@components/FinancialBarLineChart";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
+import Padding from "@components/Padding";
 
 import useTicker10KDetail from "@hooks/useTicker10KDetail";
 
