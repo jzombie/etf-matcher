@@ -91,6 +91,7 @@ export default function AutoScaler({
       return function unmount() {
         ro.unobserve(outerWrap);
         ro.unobserve(innerWrap);
+        ro.disconnect();
       };
     }
   }, [enlargeable]);
