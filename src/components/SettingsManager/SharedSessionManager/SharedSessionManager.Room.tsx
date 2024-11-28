@@ -21,8 +21,8 @@ import {
 import AutoScaler from "@layoutKit/AutoScaler";
 import { MQTTRoom, MQTTRoomEvents } from "@services/MultiMQTTRoomService";
 import { useMultiMQTTRoomContext } from "@services/MultiMQTTRoomService/react";
-import { generateQRCode as libGenerateQRCode } from "@services/RustService";
 
+import QRCode from "@components/QRCode";
 import Section from "@components/Section";
 import Timer from "@components/Timer";
 
@@ -108,19 +108,12 @@ function RoomControls({ room }: RoomControlsProps) {
     "connectionstateupdate",
   ]);
 
-  const [qrCodeHTML, setQRCodeHTML] = useState<string | null>("");
+  const [isShowingQRCode, setIsShowingQRCode] = useState<boolean>(false);
 
-  const generateQRCode = useCallback(() => {
-    libGenerateQRCode(roomShareURL).then(setQRCodeHTML);
-  }, [roomShareURL]);
-
-  const toggleQRCode = useCallback(() => {
-    if (qrCodeHTML) {
-      setQRCodeHTML(null);
-    } else {
-      generateQRCode();
-    }
-  }, [qrCodeHTML, generateQRCode]);
+  const toggleQRCode = useCallback(
+    () => setIsShowingQRCode((prev) => !prev),
+    [],
+  );
 
   return (
     <>
@@ -153,10 +146,10 @@ function RoomControls({ room }: RoomControlsProps) {
           startIcon={<QrCodeIcon />}
           sx={{ flexGrow: 1 }}
         >
-          {!qrCodeHTML ? "Show" : "Hide"} QR Code
+          {!isShowingQRCode ? "Show" : "Hide"} QR Code
         </Button>
       </Box>
-      {qrCodeHTML && (
+      {isShowingQRCode && (
         <Section mb={1}>
           <Box sx={{ textAlign: "center" }}>
             <Typography variant="body2" sx={{ marginBottom: 2 }}>
@@ -165,10 +158,7 @@ function RoomControls({ room }: RoomControlsProps) {
             </Typography>
             <Box sx={{ height: 250 }} mb={2}>
               <AutoScaler>
-                {
-                  // TODO: Extract to a `QRCode` component
-                }
-                <div dangerouslySetInnerHTML={{ __html: qrCodeHTML }} />
+                <QRCode data={roomShareURL} />
               </AutoScaler>
             </Box>
             <TextField
