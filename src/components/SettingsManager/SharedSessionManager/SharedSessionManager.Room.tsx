@@ -1,6 +1,11 @@
 import React, { useCallback, useState } from "react";
 
-import { Devices, ExitToApp, QrCode, Sync } from "@mui/icons-material";
+import {
+  Devices as DevicesIcon,
+  ExitToApp as ExitToAppIcon,
+  QrCode as QrCodeIcon,
+  Sync as SyncIcon,
+} from "@mui/icons-material";
 import {
   Alert,
   Box,
@@ -130,7 +135,7 @@ function RoomControls({ room }: RoomControlsProps) {
           onClick={() => disconnectFromRoom(room.roomName)}
           color="secondary"
           variant="outlined"
-          startIcon={<ExitToApp />}
+          startIcon={<ExitToAppIcon />}
           sx={{ flexGrow: 1 }}
           disabled={!room.isConnected}
         >
@@ -139,7 +144,7 @@ function RoomControls({ room }: RoomControlsProps) {
         <Button
           onClick={toggleQRCode}
           variant="outlined"
-          startIcon={<QrCode />}
+          startIcon={<QrCodeIcon />}
           sx={{ flexGrow: 1 }}
         >
           {!qrCode ? "Generate" : "Hide"} QR Code
@@ -154,6 +159,9 @@ function RoomControls({ room }: RoomControlsProps) {
             </Typography>
             <Box sx={{ height: 150 }}>
               <AutoScaler>
+                {
+                  // TODO: Extract to a `QRCode` component
+                }
                 <div dangerouslySetInnerHTML={{ __html: qrCode }} />
               </AutoScaler>
             </Box>
@@ -169,7 +177,7 @@ function RoomControls({ room }: RoomControlsProps) {
         <Grid2 container spacing={2}>
           <Grid2 size={{ xs: 12, sm: 6 }}>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Devices sx={{ mr: 1 }} />
+              <DevicesIcon sx={{ mr: 1 }} />
               <Typography variant="body2">
                 Currently connected devices: {room.peers.length + 1}
               </Typography>
@@ -177,7 +185,7 @@ function RoomControls({ room }: RoomControlsProps) {
           </Grid2>
           <Grid2 size={{ xs: 12, sm: 6 }}>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Sync sx={{ mr: 1 }} />
+              <SyncIcon sx={{ mr: 1 }} />
               <Typography variant="body2">
                 In sync: {room.isInSync ? "yes" : "no"}
               </Typography>
