@@ -15,16 +15,16 @@ export default function useClipboard() {
   const isClipboardAvailable = useMemo(() => getIsClipboardAvailable(), []);
 
   const { execute: executeCopyTickerSymbols } = usePromise<void, [string[]]>({
-    fn: (symbols) => {
+    fn: (tickerSymbols) => {
       if (!isClipboardAvailable) {
         const uiError = new Error("Clipboard API not available");
         triggerUIError(uiError);
         throw uiError;
       }
 
-      const ret = copyTickerSymbols(symbols);
+      const ret = copyTickerSymbols(tickerSymbols);
       showNotification(
-        `${symbols.length} symbol${symbols.length !== 1 ? "s" : ""} copied to clipboard`,
+        `${tickerSymbols.length} symbol${tickerSymbols.length !== 1 ? "s" : ""} copied to clipboard`,
         "success",
       );
 
