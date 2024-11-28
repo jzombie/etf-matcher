@@ -94,6 +94,7 @@ function RoomControls({ room }: RoomControlsProps) {
   const { disconnectFromRoom } = useMultiMQTTRoomContext();
   const { getRoomShareURL } = useSharedSessionManagerContext();
 
+  // Refresh this component when these properties change
   useEventRefresh<MQTTRoomEvents>(room, [
     "peersupdate",
     "syncupdate",
@@ -101,20 +102,20 @@ function RoomControls({ room }: RoomControlsProps) {
     "connectionstateupdate",
   ]);
 
-  const [qrCode, setQRCode] = useState<string | null>("");
+  const [qrCodeHTML, setQRCodeHTML] = useState<string | null>("");
 
   const generateQRCode = useCallback(() => {
     const roomShareURL = getRoomShareURL(room);
-    libGenerateQRCode(roomShareURL).then(setQRCode);
+    libGenerateQRCode(roomShareURL).then(setQRCodeHTML);
   }, [getRoomShareURL, room]);
 
   const toggleQRCode = useCallback(() => {
-    if (qrCode) {
-      setQRCode(null);
+    if (qrCodeHTML) {
+      setQRCodeHTML(null);
     } else {
       generateQRCode();
     }
-  }, [qrCode, generateQRCode]);
+  }, [qrCodeHTML, generateQRCode]);
 
   return (
     <>
@@ -147,10 +148,10 @@ function RoomControls({ room }: RoomControlsProps) {
           startIcon={<QrCodeIcon />}
           sx={{ flexGrow: 1 }}
         >
-          {!qrCode ? "Generate" : "Hide"} QR Code
+          {!qrCodeHTML ? "Generate" : "Hide"} QR Code
         </Button>
       </Box>
-      {qrCode && (
+      {qrCodeHTML && (
         <Section mb={1}>
           <Box sx={{ textAlign: "center" }}>
             <Typography variant="body2" sx={{ marginBottom: 2 }}>
@@ -162,7 +163,7 @@ function RoomControls({ room }: RoomControlsProps) {
                 {
                   // TODO: Extract to a `QRCode` component
                 }
-                <div dangerouslySetInnerHTML={{ __html: qrCode }} />
+                <div dangerouslySetInnerHTML={{ __html: qrCodeHTML }} />
               </AutoScaler>
             </Box>
           </Box>
