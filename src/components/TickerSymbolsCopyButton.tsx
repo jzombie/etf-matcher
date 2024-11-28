@@ -23,15 +23,11 @@ export default function TickerSymbolsCopyButton({
 }: TickerSymbolsCopyButtonProps) {
   const { isClipboardAvailable, copyTickerSymbols } = useClipboard();
 
-  const handleCopyTickerSymbols = useCallback(() => {
-    try {
-      copyTickerSymbols(tickerSymbols);
-    } catch (err) {
-      // Note: Error handling is handled in the `copyTickerSymbols` command
-      // directly, so UIError triggering is not necessary here
-      customLogger.error(err);
-    }
-  }, [tickerSymbols, copyTickerSymbols]);
+  const handleCopyTickerSymbols = useCallback(
+    // Note: Error handling is handled directly by `copyTickerSymbols`
+    () => copyTickerSymbols(tickerSymbols),
+    [tickerSymbols, copyTickerSymbols],
+  );
 
   return (
     <Button
