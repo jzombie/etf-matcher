@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 import {
   Devices as DevicesIcon,
@@ -14,6 +14,7 @@ import {
   CardContent,
   CircularProgress,
   Grid2,
+  TextField,
   Typography,
 } from "@mui/material";
 
@@ -94,6 +95,11 @@ function RoomControls({ room }: RoomControlsProps) {
   const { disconnectFromRoom } = useMultiMQTTRoomContext();
   const { getRoomShareURL } = useSharedSessionManagerContext();
 
+  const roomShareURL = useMemo(
+    () => getRoomShareURL(room),
+    [room, getRoomShareURL],
+  );
+
   // Refresh this component when these properties change
   useEventRefresh<MQTTRoomEvents>(room, [
     "peersupdate",
@@ -105,9 +111,8 @@ function RoomControls({ room }: RoomControlsProps) {
   const [qrCodeHTML, setQRCodeHTML] = useState<string | null>("");
 
   const generateQRCode = useCallback(() => {
-    const roomShareURL = getRoomShareURL(room);
     libGenerateQRCode(roomShareURL).then(setQRCodeHTML);
-  }, [getRoomShareURL, room]);
+  }, [roomShareURL]);
 
   const toggleQRCode = useCallback(() => {
     if (qrCodeHTML) {
@@ -148,7 +153,7 @@ function RoomControls({ room }: RoomControlsProps) {
           startIcon={<QrCodeIcon />}
           sx={{ flexGrow: 1 }}
         >
-          {!qrCodeHTML ? "Generate" : "Hide"} QR Code
+          {!qrCodeHTML ? "Show" : "Hide"} QR Code
         </Button>
       </Box>
       {qrCodeHTML && (
@@ -158,7 +163,7 @@ function RoomControls({ room }: RoomControlsProps) {
               Scan this QR code from another device to synchronize its state
               with this device.
             </Typography>
-            <Box sx={{ height: 150 }}>
+            <Box sx={{ height: 250 }} mb={2}>
               <AutoScaler>
                 {
                   // TODO: Extract to a `QRCode` component
@@ -166,6 +171,21 @@ function RoomControls({ room }: RoomControlsProps) {
                 <div dangerouslySetInnerHTML={{ __html: qrCodeHTML }} />
               </AutoScaler>
             </Box>
+            <TextField
+              multiline
+              value={roomShareURL}
+              fullWidth
+              variant="outlined"
+              slotProps={{
+                input: {
+                  readOnly: true,
+                },
+              }}
+              rows={2}
+            />
+            {
+              // TODO: Add button to copy this URL
+            }
           </Box>
         </Section>
       )}
