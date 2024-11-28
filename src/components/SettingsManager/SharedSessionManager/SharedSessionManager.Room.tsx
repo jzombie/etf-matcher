@@ -17,6 +17,7 @@ import { MQTTRoom, MQTTRoomEvents } from "@services/MultiMQTTRoomService";
 import { useMultiMQTTRoomContext } from "@services/MultiMQTTRoomService/react";
 import { generateQRCode as libGenerateQRCode } from "@services/RustService";
 
+import Section from "@components/Section";
 import Timer from "@components/Timer";
 
 import useEventRefresh from "@hooks/useEventRefresh";
@@ -145,15 +146,19 @@ function RoomControls({ room }: RoomControlsProps) {
         </Button>
       </Box>
       {qrCode && (
-        <div>
-          <Typography variant="body2" sx={{ marginBottom: 2 }}>
-            Scan this QR code from another device to synchronize its state with
-            this device.
-          </Typography>
-          <AutoScaler style={{ width: 150, height: 150, marginBottom: "1rem" }}>
-            <div dangerouslySetInnerHTML={{ __html: qrCode }} />
-          </AutoScaler>
-        </div>
+        <Section mb={1}>
+          <Box sx={{ textAlign: "center" }}>
+            <Typography variant="body2" sx={{ marginBottom: 2 }}>
+              Scan this QR code from another device to synchronize its state
+              with this device.
+            </Typography>
+            <Box sx={{ height: 150 }}>
+              <AutoScaler>
+                <div dangerouslySetInnerHTML={{ __html: qrCode }} />
+              </AutoScaler>
+            </Box>
+          </Box>
+        </Section>
       )}
       {room.isConnecting && (
         <Box sx={{ textAlign: "center" }}>
