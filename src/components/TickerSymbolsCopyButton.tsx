@@ -5,6 +5,8 @@ import { Button, ButtonProps } from "@mui/material";
 
 import useClipboard from "@hooks/useClipboard";
 
+import customLogger from "@utils/customLogger";
+
 export type TickerSymbolsCopyButtonProps = Omit<
   ButtonProps,
   "children" | "onClick"
@@ -21,10 +23,15 @@ export default function TickerSymbolsCopyButton({
 }: TickerSymbolsCopyButtonProps) {
   const { isClipboardAvailable, copyTickerSymbols } = useClipboard();
 
-  const handleCopyTickerSymbols = useCallback(
-    () => copyTickerSymbols(tickerSymbols),
-    [tickerSymbols, copyTickerSymbols],
-  );
+  const handleCopyTickerSymbols = useCallback(() => {
+    try {
+      copyTickerSymbols(tickerSymbols);
+    } catch (err) {
+      // Note: Error handling is handled in the `copyTickerSymbols` command
+      // directly, so UIError triggering is not necessary here
+      customLogger.error(err);
+    }
+  }, [tickerSymbols, copyTickerSymbols]);
 
   return (
     <Button
