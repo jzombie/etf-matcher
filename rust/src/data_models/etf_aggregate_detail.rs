@@ -11,6 +11,16 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 impl TickerWeightedSectorDistribution {
+    /// This function parses a JSON string representing the "major sector distribution",
+    /// where the keys are Sector IDs and the values are their respective weights.
+    /// It then maps the Sector IDs to their corresponding Sector Names and constructs
+    /// a vector of `TickerWeightedSectorDistribution` objects.
+    ///
+    /// The process involves:
+    /// - Parsing the JSON string into a map of Sector IDs to weights.
+    /// - Validating the weights are within the valid `f32` range.
+    /// - Asynchronously resolving each Sector ID to its corresponding Sector Name.
+    /// - Returning a vector of the resolved sector names and their weights.
     async fn parse_major_sector_distribution(
         json_str: &str,
     ) -> Result<Vec<TickerWeightedSectorDistribution>, String> {
