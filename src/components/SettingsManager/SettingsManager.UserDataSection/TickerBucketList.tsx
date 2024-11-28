@@ -78,6 +78,7 @@ export default function TickerBucketList({
                 tickerSymbols={tickerBucket.tickers.map(
                   (ticker) => ticker.symbol,
                 )}
+                sx={{ marginTop: 1 }}
               />
             )}
           </Section>
