@@ -377,6 +377,10 @@ export default function TickerSearchModal({
         )}
       </Box>
       <DialogActions>
+        {
+          // TODO: Adjust `totalSearchResults` to discount potential results
+          // which include `disabledTickerIds`
+        }
         {searchQuery.trim() && totalSearchResults > 0 && (
           <div
             style={{
