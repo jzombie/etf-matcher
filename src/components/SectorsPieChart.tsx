@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 
 import AutoScaler from "@layoutKit/AutoScaler";
 import Center from "@layoutKit/Center";
-import { Cell, Legend, Pie, PieChart, Tooltip } from "recharts";
+import { Cell, Pie, PieChart, Tooltip } from "recharts";
 
 import customLogger from "@utils/customLogger";
 import getSectorColor from "@utils/string/getSectorColor";
@@ -33,37 +33,6 @@ export default function SectorsPieChart({
     customLogger.debug("Pie Chart Data: ", data);
   }, [data]);
 
-  // Define legend layout based on screen size
-  const getLegendLayout = () => {
-    if (window.innerWidth < 768) {
-      return {
-        layout: "horizontal" as const,
-        verticalAlign: "bottom" as const,
-        align: "center" as const,
-      };
-    }
-    return {
-      layout: "vertical" as const,
-      verticalAlign: "middle" as const,
-      align: "right" as const,
-    };
-  };
-
-  const [legendLayout, setLegendLayout] = useState(getLegendLayout());
-
-  // Update the legend layout when the window is resized
-  useEffect(() => {
-    const handleResize = () => {
-      setLegendLayout(getLegendLayout());
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
   if (!data.length) {
     return (
       <Center>
@@ -81,30 +50,51 @@ export default function SectorsPieChart({
       {
         // Note: These dimensions are used to maintain aspect ratio.
       }
-      <PieChart width={500} height={320}>
+      <PieChart width={400} height={320}>
         <Pie
           data={data}
           dataKey="value"
           nameKey="name"
-          cx={legendLayout.layout === "horizontal" ? "50%" : "55%"}
+          cx="50%"
           cy="50%"
           outerRadius={90}
           innerRadius={50}
-          labelLine={false} // Disable connecting lines for labels
+          label={({ name: sectorName, _percent, cx, x, y }) => {
+            const maxAllowedLabelWidth = 80; // Maximum width for the label in pixels
+
+            const charWidthEstimate = 8; // Approximate width of a character in pixels
+
+            // Calculate the maximum number of characters allowed based on the width
+            const maxCharsAllowed = maxAllowedLabelWidth / charWidthEstimate;
+
+            // Truncate the sector name if it exceeds the maximum character count
+            const truncatedText =
+              sectorName.length > maxCharsAllowed
+                ? `${sectorName.slice(0, maxCharsAllowed)}...`
+                : sectorName;
+
+            return (
+              <text
+                x={x}
+                y={y}
+                textAnchor={x > cx ? "start" : "end"} // Adjust text alignment
+                dominantBaseline="central"
+                style={{
+                  fontSize: "14px",
+                  fill: getSectorColor(sectorName), // Use sector-specific color
+                }}
+              >
+                {truncatedText}
+              </text>
+            );
+          }}
+          // labelStyle={{ fontSize: "12px", fill: "#333" }} // Optional: Customize label style
         >
           {data.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={getSectorColor(entry.name)} />
           ))}
         </Pie>
         <Tooltip formatter={(value: number) => `${value.toFixed(2)}%`} />
-        <Legend
-          layout={legendLayout.layout}
-          verticalAlign={legendLayout.verticalAlign}
-          align={legendLayout.align}
-          wrapperStyle={{
-            paddingLeft: legendLayout.layout === "vertical" ? "20px" : "0px",
-          }}
-        />
       </PieChart>
     </AutoScaler>
   );

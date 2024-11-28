@@ -82,9 +82,7 @@ pub struct ETFAggregateDetailRaw {
     pub top_market_value_industry_id: Option<IndustryId>,
     pub top_sector_market_value: f64,
     pub currency_code: Option<String>,
-    pub top_pct_sector_id: Option<SectorId>, // TODO: Remove from here and from datafeed; obtain from `major_sector_distribution`
-    pub top_pct_industry_id: Option<IndustryId>, // TODO: Remove from here and from datafeed; obtain from `major_sector_distribution`
-    pub top_pct_sector_weight: f32, // TODO: Remove from here and from datafeed; obtain from `major_sector_distribution`
+    pub top_pct_industry_id: Option<IndustryId>,
     //
     pub major_sector_distribution: Option<String>,
 }
@@ -100,12 +98,12 @@ pub struct ETFAggregateDetail {
     pub top_market_value_industry_name: Option<String>,
     pub top_sector_market_value: f64,
     pub currency_code: Option<String>,
-    pub top_pct_sector_name: Option<String>,
-    pub top_pct_industry_name: Option<String>,
-    pub top_pct_sector_weight: f32,
     //
     pub major_sector_distribution: Option<Vec<TickerWeightedSectorDistribution>>,
     //
+    pub top_pct_sector_name: Option<String>,
+    pub top_pct_sector_weight: f32,
+    pub top_pct_industry_name: Option<String>,
     pub logo_filename: Option<String>,
 }
 
@@ -149,27 +147,6 @@ impl ETFAggregateDetail {
                 None => None,
             };
 
-        // TODO: Calculate from `major_sector_distribution`
-        let top_pct_sector_name = match etf_aggregate_detail_raw.top_pct_sector_id {
-            Some(top_pct_sector_id) => SectorById::get_sector_name_with_id(top_pct_sector_id)
-                .await
-                .ok(),
-            None => None,
-        };
-
-        // TODO: Calculate from `major_sector_distribution`
-        let top_pct_industry_name = match etf_aggregate_detail_raw.top_pct_industry_id {
-            Some(top_pct_industry_id) => {
-                IndustryById::get_industry_name_with_id(top_pct_industry_id)
-                    .await
-                    .ok()
-            }
-            None => None,
-        };
-
-        // TODO: Calculate from `major_sector_distribution`
-        let top_pct_sector_weight = etf_aggregate_detail_raw.top_pct_sector_weight;
-
         let ticker_raw_search_result = TickerSearch::get_raw_result_with_id(ticker_id).await?;
         let logo_filename = extract_logo_filename(
             ticker_raw_search_result.logo_filename.as_deref(),
@@ -199,6 +176,34 @@ impl ETFAggregateDetail {
                 None => None,
             };
 
+        let (top_pct_sector_name, top_pct_sector_weight) = match &major_sector_distribution {
+            Some(distribution) if !distribution.is_empty() => {
+                // Find the sector with the highest weight
+                if let Some(max_sector) = distribution.iter().max_by(|a, b| {
+                    a.weight
+                        .partial_cmp(&b.weight)
+                        .unwrap_or(std::cmp::Ordering::Equal)
+                }) {
+                    (
+                        Some(max_sector.major_sector_name.clone()),
+                        max_sector.weight as f32,
+                    )
+                } else {
+                    (None, 0.0)
+                }
+            }
+            _ => (None, 0.0),
+        };
+
+        let top_pct_industry_name = match etf_aggregate_detail_raw.top_pct_industry_id {
+            Some(top_pct_industry_id) => {
+                IndustryById::get_industry_name_with_id(top_pct_industry_id)
+                    .await
+                    .ok()
+            }
+            None => None,
+        };
+
         let response = ETFAggregateDetail {
             ticker_id: etf_aggregate_detail_raw.ticker_id,
             etf_symbol,
@@ -209,12 +214,12 @@ impl ETFAggregateDetail {
             top_market_value_industry_name,
             top_sector_market_value: etf_aggregate_detail_raw.top_sector_market_value,
             currency_code: etf_aggregate_detail_raw.currency_code,
-            top_pct_sector_name,
-            top_pct_industry_name,
-            top_pct_sector_weight,
             //
             major_sector_distribution,
             //
+            top_pct_sector_name,
+            top_pct_sector_weight,
+            top_pct_industry_name,
             logo_filename,
         };
 
