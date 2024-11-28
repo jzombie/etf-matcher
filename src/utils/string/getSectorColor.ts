@@ -1,5 +1,8 @@
 import { COLOR_WHEEL_COLORS } from "@src/constants";
 
+// TODO: To enforce better consistency across sessions, the actual sectors could
+// be obtained from Rust and pre-calculated. This could be part of the store init
+// process.
 /**
  * A function that assigns consistent and unique colors to sector names, reusing
  * colors in a cyclic fashion if all available colors are exhausted.
