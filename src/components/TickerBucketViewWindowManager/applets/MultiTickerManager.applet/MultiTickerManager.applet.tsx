@@ -23,9 +23,8 @@ import TickerBucketViewWindowManagerAppletWrap, {
   TickerBucketViewWindowManagerAppletWrapProps,
 } from "../../components/TickerBucketViewWindowManager.AppletWrap";
 import useTickerSelectionManagerContext from "../../hooks/useTickerSelectionManagerContext";
+import MultiTickerManagerAsideNav from "./MultiTickerManager.AsideNav";
 import MultiTickerManagerTicker from "./MultiTickerManager.Ticker";
-
-const ICON_FONT_SIZE: "inherit" | "small" | "medium" | "large" = "medium";
 
 export type MultiTickerManagerAppletProps = Omit<
   TickerBucketViewWindowManagerAppletWrapProps,
@@ -89,65 +88,17 @@ export default function MultiTickerManagerApplet({
         <Content>
           <Aside>
             <Padding half>
-              <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                gap={2}
-              >
-                {/* Save / Commit Icon */}
-                <IconButton
-                  onClick={saveTickerBucket}
-                  disabled={isTickerBucketSaved}
-                  title="Save"
-                  aria-label="Save ticker adjustments"
-                >
-                  <SaveIcon fontSize={ICON_FONT_SIZE} />
-                </IconButton>
-
-                {/* Cancel Adjustments Icon */}
-                <IconButton
-                  onClick={cancelTickerAdjustments}
-                  disabled={isTickerBucketSaved} // Disable when adjustments are already saved
-                  title="Cancel Adjustments"
-                  aria-label="Cancel ticker adjustments"
-                >
-                  <CancelOutlinedIcon
-                    fontSize={ICON_FONT_SIZE}
-                    color={!isTickerBucketSaved ? "error" : "inherit"}
-                  />
-                </IconButton>
-
-                {/* Select All Icon */}
-                <IconButton
-                  onClick={selectAllTickerIds}
-                  disabled={areAllTickersSelected}
-                  title="Select All"
-                  aria-label="Select all tickers"
-                >
-                  <CheckBoxOutlineBlankIcon fontSize={ICON_FONT_SIZE} />
-                </IconButton>
-
-                {/* Unselect All Icon */}
-                <IconButton
-                  onClick={clearSelectedTickerIds}
-                  disabled={areNoTickersSelected}
-                  title="Unselect All"
-                  aria-label="Unselect all tickers"
-                >
-                  <CheckBoxIcon fontSize={ICON_FONT_SIZE} />
-                </IconButton>
-
-                {/* Add Child Bucket Icon */}
-                <IconButton
-                  onClick={() => setIsSearchModalOpen(true)}
-                  disabled={isSearchModalOpen}
-                  title="Add New Ticker or Group"
-                  aria-label="Add new ticker or group"
-                >
-                  <AddCircleOutlineIcon fontSize={ICON_FONT_SIZE} />
-                </IconButton>
-              </Box>
+              <MultiTickerManagerAsideNav
+                onSaveTickerBucket={saveTickerBucket}
+                isTickerBucketSaved={isTickerBucketSaved}
+                onCancelTickerAdjustments={cancelTickerAdjustments}
+                onSelectAllTickerIds={selectAllTickerIds}
+                areAllTickersSelected={areAllTickersSelected}
+                onClearSelectedTickerIds={clearSelectedTickerIds}
+                areNoTickersSelected={areNoTickersSelected}
+                onOpenSearchModal={() => setIsSearchModalOpen(true)}
+                isSearchModalOpen={isSearchModalOpen}
+              />
             </Padding>
           </Aside>
           <Scrollable>
