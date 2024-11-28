@@ -2,6 +2,7 @@ use crate::types::{ExchangeId, TickerId};
 use crate::utils::extract_logo_filename;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
+use crate::utils::ticker_utils::extract_ticker_ids_from_text;
 use crate::JsValue;
 use crate::{DataURL, ExchangeById, PaginatedResults};
 use serde::{Deserialize, Serialize};
@@ -198,5 +199,45 @@ impl TickerSearch {
             total_count: paginated_results.total_count,
             results: search_results,
         })
+    }
+
+    /// Extracts `TickerSearchResult` entries from a given text.
+    ///
+    /// This method uses the `extract_ticker_ids_from_text` to parse the text for ticker IDs
+    /// and then fetches the corresponding `TickerSearchResult` for each valid ticker ID.
+    ///
+    /// # Arguments
+    /// * `text` - The input text containing potential stock symbols.
+    ///
+    /// # Returns
+    /// A vector of `TickerSearchResult` entries for the extracted ticker IDs.
+    pub async fn extract_results_from_text(text: &str) -> Result<Vec<TickerSearchResult>, JsValue> {
+        // Extract ticker IDs from the provided text
+        let ticker_ids = extract_ticker_ids_from_text(text).await?;
+
+        // Fetch the raw ticker data for each extracted ticker ID
+        let mut results = Vec::with_capacity(ticker_ids.len());
+        for ticker_id in ticker_ids {
+            if let Ok(raw_result) = Self::get_raw_result_with_id(ticker_id).await {
+                let exchange_short_name = if let Some(exchange_id) = raw_result.exchange_id {
+                    match ExchangeById::get_short_name_by_exchange_id(exchange_id).await {
+                        Ok(name) => Some(name),
+                        Err(_) => None,
+                    }
+                } else {
+                    None
+                };
+
+                results.push(TickerSearchResult {
+                    ticker_id: raw_result.ticker_id,
+                    symbol: raw_result.symbol,
+                    exchange_short_name,
+                    company_name: raw_result.company_name,
+                    logo_filename: raw_result.logo_filename,
+                });
+            }
+        }
+
+        Ok(results)
     }
 }

@@ -59,17 +59,13 @@ pub async fn get_symbol_and_exchange_by_ticker_id(ticker_id: TickerId) -> Result
 }
 
 #[wasm_bindgen]
-pub async fn extract_ticker_ids_from_text(text: &str) -> Result<JsValue, JsValue> {
+pub async fn extract_search_results_from_text(text: &str) -> Result<JsValue, JsValue> {
     // Call the `extract_ticker_ids_from_text` method and handle its result
-    let ticker_ids = utils::ticker_utils::extract_ticker_ids_from_text(text).await?;
+    let results = TickerSearch::extract_results_from_text(text).await?;
 
     // Convert the result (Vec<u32>) to JsValue for JavaScript interoperability
-    to_value(&ticker_ids).map_err(|err| {
-        JsValue::from_str(&format!(
-            "Failed to serialize extracted ticker IDs: {}",
-            err
-        ))
-    })
+    to_value(&results)
+        .map_err(|err| JsValue::from_str(&format!("Failed to serialize results: {}", err)))
 }
 
 #[wasm_bindgen]
