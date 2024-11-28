@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 
 import AutoScaler from "@layoutKit/AutoScaler";
 import Center from "@layoutKit/Center";
@@ -14,6 +14,14 @@ export type SectorsPieChartProps = {
     major_sector_name: string;
     weight: number;
   }>;
+};
+
+type PieLabelProps = {
+  name: string;
+  percent: number;
+  cx: number;
+  x: number;
+  y: number;
 };
 
 export default function SectorsPieChart({
@@ -33,6 +41,40 @@ export default function SectorsPieChart({
     customLogger.debug("Pie Chart Data: ", data);
   }, [data]);
 
+  const renderLabel = useCallback(
+    ({ name: sectorName, cx, x, y }: PieLabelProps) => {
+      const maxAllowedLabelWidth = 80; // Maximum width for the label in pixels
+      const charWidthEstimate = 8; // Approximate width of a character in pixels
+
+      // Calculate the maximum number of characters allowed based on the width
+      const maxCharsAllowed = Math.floor(
+        maxAllowedLabelWidth / charWidthEstimate,
+      );
+
+      // Truncate the sector name if it exceeds the maximum character count
+      const truncatedText =
+        sectorName.length > maxCharsAllowed
+          ? `${sectorName.slice(0, maxCharsAllowed)}...`
+          : sectorName;
+
+      return (
+        <text
+          x={x}
+          y={y}
+          textAnchor={x > cx ? "start" : "end"} // Adjust text alignment
+          dominantBaseline="central"
+          style={{
+            fontSize: "14px",
+            fill: getSectorColor(sectorName), // Use sector-specific color
+          }}
+        >
+          {truncatedText}
+        </text>
+      );
+    },
+    [],
+  );
+
   if (!data.length) {
     return (
       <Center>
@@ -44,12 +86,7 @@ export default function SectorsPieChart({
   }
 
   return (
-    // Note: `AutoScaler` is used instead of `ResponsiveContainer` to better
-    // control the layout with the app.
     <AutoScaler>
-      {
-        // Note: These dimensions are used to maintain aspect ratio.
-      }
       <PieChart width={400} height={320}>
         <Pie
           data={data}
@@ -59,35 +96,7 @@ export default function SectorsPieChart({
           cy="50%"
           outerRadius={90}
           innerRadius={50}
-          label={({ name: sectorName, _percent, cx, x, y }) => {
-            const maxAllowedLabelWidth = 80; // Maximum width for the label in pixels
-
-            const charWidthEstimate = 8; // Approximate width of a character in pixels
-
-            // Calculate the maximum number of characters allowed based on the width
-            const maxCharsAllowed = maxAllowedLabelWidth / charWidthEstimate;
-
-            // Truncate the sector name if it exceeds the maximum character count
-            const truncatedText =
-              sectorName.length > maxCharsAllowed
-                ? `${sectorName.slice(0, maxCharsAllowed)}...`
-                : sectorName;
-
-            return (
-              <text
-                x={x}
-                y={y}
-                textAnchor={x > cx ? "start" : "end"} // Adjust text alignment
-                dominantBaseline="central"
-                style={{
-                  fontSize: "14px",
-                  fill: getSectorColor(sectorName), // Use sector-specific color
-                }}
-              >
-                {truncatedText}
-              </text>
-            );
-          }}
+          label={renderLabel}
         >
           {data.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={getSectorColor(entry.name)} />
