@@ -1,8 +1,12 @@
 import React from "react";
 
+import { extractSearchResultsFromText } from "@services/RustService";
+
 import DialogModal, { DialogModalProps } from "@components/DialogModal";
 
-import TickerSymbolTextField from "./TickerSymbolTextField";
+import customLogger from "@utils/customLogger";
+
+import TickerSymbolTextForm from "./TickerSymbolTextForm";
 
 export type TickerSymbolExtractorSelectorDialogModalProps = Omit<
   DialogModalProps,
@@ -15,7 +19,14 @@ export default function TickerSymbolExtractorSelectorDialogModal({
   // TODO: Build out as necessary
   return (
     <DialogModal {...rest}>
-      <TickerSymbolTextField />
+      <TickerSymbolTextForm
+        onProcess={(text) => {
+          // TODO: Remove
+          extractSearchResultsFromText(text).then((searchResults) =>
+            customLogger.debug("TODO: Handle", { searchResults }),
+          );
+        }}
+      />
     </DialogModal>
   );
 }
