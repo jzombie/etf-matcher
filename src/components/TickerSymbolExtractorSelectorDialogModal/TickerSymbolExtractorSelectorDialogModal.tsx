@@ -20,7 +20,7 @@ export default function TickerSymbolExtractorSelectorDialogModal({
   return (
     <DialogModal {...rest}>
       <TickerSymbolTextForm
-        onProcess={(text) => {
+        onSubmit={(text) => {
           // TODO: Remove
           extractSearchResultsFromText(text).then((searchResults) =>
             customLogger.debug("TODO: Handle", { searchResults }),

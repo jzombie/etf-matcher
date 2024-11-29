@@ -2,17 +2,13 @@ import React, { useCallback, useState } from "react";
 
 import { Box, Button, TextField, Typography } from "@mui/material";
 
-import useStableCurrentRef from "@hooks/useStableCurrentRef";
-
 export type TickerSymbolTextFormProps = {
-  onProcess: (text: string) => void;
+  onSubmit: (text: string) => void;
 };
 
 export default function TickerSymbolTextForm({
-  onProcess,
+  onSubmit,
 }: TickerSymbolTextFormProps) {
-  const onProcessStableRef = useStableCurrentRef(onProcess);
-
   const [text, setText] = useState("");
 
   const handleChange = useCallback(
@@ -26,11 +22,9 @@ export default function TickerSymbolTextForm({
     (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault(); // Prevent the form from actually submitting anywhere
 
-      const onProcess = onProcessStableRef.current;
-
-      onProcess(text);
+      onSubmit(text);
     },
-    [onProcessStableRef, text],
+    [onSubmit, text],
   );
 
   return (
