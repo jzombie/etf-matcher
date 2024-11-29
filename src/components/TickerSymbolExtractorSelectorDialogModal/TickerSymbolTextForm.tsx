@@ -76,7 +76,7 @@ export default function TickerSymbolTextForm({
             type="submit" // Changes to submit type for form behavior
             variant="contained"
             color="primary"
-            // disabled={!text.trim()}
+            disabled={!text.trim()}
           >
             Submit
           </Button>
