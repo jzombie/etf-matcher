@@ -112,6 +112,7 @@ export default function MultiTickerManagerAsideNav({
       <TickerSymbolExtractorSelectorDialogModal
         open={isShowingTempModal}
         onClose={() => setIsShowingTempModal(false)}
+        fullViewport
       />
     </Box>
   );
