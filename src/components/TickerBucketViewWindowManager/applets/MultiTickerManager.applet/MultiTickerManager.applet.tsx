@@ -160,15 +160,13 @@ export default function MultiTickerManagerApplet({
           </Scrollable>
         </Content>
         <Footer>
-          <Aside>
+          <Box sx={{ textAlign: "right" }}>
             <Typography
               variant="body2"
               sx={{
-                fontStyle: "italic",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                display: "inline-block",
               }}
+              mr={2}
             >
               {filteredTickerBucket.tickers.length} item
               {filteredTickerBucket.tickers.length !== 1 ? "s" : ""} selected
@@ -189,20 +187,13 @@ export default function MultiTickerManagerApplet({
                 </Box>
               )}
             </Typography>
-          </Aside>
-          <Content>
-            {
-              // Intentionally empty
-              " "
-            }
-          </Content>
-          <Aside>
+
             <TickerSymbolsCopyButton
               tickerSymbols={filteredTickerBucket.tickers.map(
                 (ticker) => ticker.symbol,
               )}
             />
-          </Aside>
+          </Box>
         </Footer>
       </Layout>
 
