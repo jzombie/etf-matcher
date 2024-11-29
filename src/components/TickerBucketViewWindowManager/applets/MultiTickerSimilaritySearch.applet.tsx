@@ -261,7 +261,7 @@ function FooterContent({
 }: FooterContentProps) {
   return (
     <Box sx={{ textAlign: "right", ...sx }} {...rest}>
-      <Typography variant="body2" component="span" sx={{ fontSize: ".8rem" }}>
+      <Typography variant="body2" component="span">
         Using model:{" "}
         <Link
           component="button"
