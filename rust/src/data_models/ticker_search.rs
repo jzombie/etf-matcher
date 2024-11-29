@@ -2,7 +2,7 @@ use crate::types::{ExchangeId, TickerId};
 use crate::utils::extract_logo_filename;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
-use crate::utils::ticker_utils::extract_ticker_ids_from_text;
+use crate::utils::ticker_utils::{extract_ticker_ids_from_text, generate_alternative_symbols};
 use crate::JsValue;
 use crate::{DataURL, ExchangeById, PaginatedResults};
 use serde::{Deserialize, Serialize};
@@ -38,16 +38,6 @@ impl TickerSearch {
         })?;
 
         Ok(())
-    }
-
-    fn generate_alternative_symbols(query: &str) -> Vec<String> {
-        let mut alternatives: Vec<String> = vec![query.to_lowercase()];
-        if query.contains('.') {
-            alternatives.push(query.replace('.', "-").to_lowercase());
-        } else if query.contains('-') {
-            alternatives.push(query.replace('-', ".").to_lowercase());
-        }
-        alternatives
     }
 
     // Retrieves all `raw` results without any transformations
@@ -102,7 +92,7 @@ impl TickerSearch {
                 extract_logo_filename(result.logo_filename.as_deref(), &result.symbol);
         }
 
-        let alternatives: Vec<String> = TickerSearch::generate_alternative_symbols(&trimmed_query);
+        let alternatives: Vec<String> = generate_alternative_symbols(&trimmed_query);
         let mut exact_symbol_matches: Vec<TickerSearch> = vec![];
         let mut starts_with_matches: Vec<TickerSearch> = vec![];
         let mut contains_matches: Vec<TickerSearch> = vec![];

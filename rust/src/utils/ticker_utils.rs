@@ -89,7 +89,16 @@ pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<Ti
     Err(JsValue::from_str("Symbol not found"))
 }
 
-// TODO: Include normalization algorithm which `tickerSearch` uses to normalize `BRK-B` and `BRK.B`, and the like
+pub fn generate_alternative_symbols(query: &str) -> Vec<String> {
+    let mut alternatives: Vec<String> = vec![query.to_lowercase()];
+    if query.contains('.') {
+        alternatives.push(query.replace('.', "-").to_lowercase());
+    } else if query.contains('-') {
+        alternatives.push(query.replace('-', ".").to_lowercase());
+    }
+    alternatives
+}
+
 /// Extracts ticker IDs from a given text.
 ///
 /// This function splits the input text into words and checks if each word matches
@@ -120,15 +129,20 @@ pub async fn extract_ticker_ids_from_text(
             continue;
         }
 
-        // Normalize to uppercase for matching in the cache
-        let normalized_word = cleaned_word.to_uppercase();
+        // Generate alternative symbol variations
+        let alternatives = generate_alternative_symbols(cleaned_word);
 
-        // Find matching ticker ID
-        if let Some((&ticker_id, _)) = cache
-            .iter()
-            .find(|(_, (symbol, _))| *symbol == normalized_word)
-        {
-            unique_ticker_ids.insert(ticker_id);
+        // Check all variations against the cache
+        for normalized_word in alternatives {
+            let normalized_uppercase = normalized_word.to_uppercase();
+
+            if let Some((&ticker_id, _)) = cache
+                .iter()
+                .find(|(_, (symbol, _))| *symbol == normalized_uppercase)
+            {
+                unique_ticker_ids.insert(ticker_id);
+                break; // Stop further checks once a match is found
+            }
         }
     }
 
