@@ -15,7 +15,6 @@ import {
 } from "@mui/material";
 
 import Center from "@layoutKit/Center";
-import Cover from "@layoutKit/Cover";
 import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
 import {
@@ -242,28 +241,19 @@ function ComponentWrap({
                         )}
                       </Transition>
                       {displayMode === "radial" && (
-                        <Cover clickThrough>
-                          <Layout>
-                            <Content>
-                              {
-                                // Intentionally empty
-                                " "
-                              }
-                            </Content>
-                            <Footer>
-                              <FooterContent
-                                preferredTickerVectorConfigKey={
-                                  preferredTickerVectorConfigKey
-                                }
-                                onOpenTickerVectorConfigSelectorDialog={() =>
-                                  setIsTickerVectorConfigSelectorDialogOpen(
-                                    true,
-                                  )
-                                }
-                              />
-                            </Footer>
-                          </Layout>
-                        </Cover>
+                        <FooterContent
+                          preferredTickerVectorConfigKey={
+                            preferredTickerVectorConfigKey
+                          }
+                          onOpenTickerVectorConfigSelectorDialog={() =>
+                            setIsTickerVectorConfigSelectorDialogOpen(true)
+                          }
+                          sx={{
+                            position: "absolute",
+                            bottom: 0,
+                            width: "100%",
+                          }}
+                        />
                       )}
                     </>
                   )}
@@ -304,9 +294,11 @@ type FooterContentProps = Omit<BoxProps, "children"> & {
 function FooterContent({
   preferredTickerVectorConfigKey,
   onOpenTickerVectorConfigSelectorDialog,
+  sx = {},
+  ...rest
 }: FooterContentProps) {
   return (
-    <Box sx={{ textAlign: "right" }}>
+    <Box sx={{ textAlign: "right", ...sx }} {...rest}>
       <Typography variant="body2" component="span" sx={{ fontSize: ".8rem" }}>
         Using model:{" "}
         <Link
