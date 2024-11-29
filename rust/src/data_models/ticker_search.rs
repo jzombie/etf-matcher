@@ -195,7 +195,6 @@ impl TickerSearch {
     ///
     /// This method uses the `extract_ticker_ids_from_text` to parse the text for ticker IDs
     /// and then fetches the corresponding `TickerSearchResult` for each valid ticker ID.
-
     pub async fn extract_results_from_text(
         text: &str,
         use_uppercase_only: bool,
