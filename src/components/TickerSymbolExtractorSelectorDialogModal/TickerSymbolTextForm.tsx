@@ -1,6 +1,9 @@
 import React, { useCallback, useState } from "react";
 
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Button, TextField, Typography } from "@mui/material";
+
+import Full from "@layoutKit/Full";
+import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
 
 export type TickerSymbolTextFormProps = {
   onSubmit: (text: string) => void;
@@ -28,38 +31,57 @@ export default function TickerSymbolTextForm({
   );
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-          maxWidth: 500,
-          margin: "auto",
-          mt: 4,
-        }}
-      >
-        <Typography variant="h6" align="center">
-          Paste Text to Extract Stock Symbols
-        </Typography>
-        <TextField
-          multiline
-          rows={6}
-          variant="outlined"
-          placeholder="Paste your text here..."
-          value={text}
-          onChange={handleChange}
-          fullWidth
-        />
-        <Button
-          type="submit" // Changes to submit type for form behavior
-          variant="contained"
-          color="primary"
-          disabled={!text.trim()}
-        >
-          Submit
-        </Button>
-      </Box>
-    </form>
+    <Full component="form" onSubmit={handleSubmit}>
+      <Layout>
+        <Header>
+          <Typography variant="h6" align="center">
+            Paste Text to Extract Stock Symbols
+          </Typography>
+        </Header>
+        <Content>
+          <Full
+            component={TextField}
+            multiline
+            variant="outlined"
+            placeholder="Paste your text here..."
+            value={text}
+            onChange={handleChange}
+            slotProps={{
+              input: {
+                sx: {
+                  height: "100%", // Ensures it takes full height of the parent
+                  alignItems: "flex-start", // Aligns the text to the top
+                  overflow: "auto",
+                  // Remove the border, as it doesn't scroll with the component
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    border: "none", // Removes the border
+                  },
+                },
+              },
+            }}
+            sx={{
+              border: 0,
+              "& .MuiOutlinedInput-root": {
+                backgroundColor: "rgba(0,0,0,.2)",
+                border: "1px rgba(255,255,255,.2) solid",
+              },
+              // "& .MuiInputBase-input": {
+              //   backgroundColor: "transparent",
+              // },
+            }}
+          />
+        </Content>
+        <Footer style={{ textAlign: "center" }}>
+          <Button
+            type="submit" // Changes to submit type for form behavior
+            variant="contained"
+            color="primary"
+            // disabled={!text.trim()}
+          >
+            Submit
+          </Button>
+        </Footer>
+      </Layout>
+    </Full>
   );
 }
