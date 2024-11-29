@@ -1,20 +1,39 @@
-import React, { HTMLAttributes, forwardRef } from "react";
+import React, { ElementType, forwardRef } from "react";
 
 import clsx from "clsx";
 
 import styles from "./Full.module.scss";
 
-export type FullProps = HTMLAttributes<HTMLDivElement> & {
-  children: React.ReactNode;
+// Define FullProps with a generic for the component type
+export type FullProps<T extends ElementType = "div"> = {
+  /**
+   * The element type to render, e.g., "div", "section", or a custom React component.
+   */
+  component?: T;
+  /**
+   * Optional className for styling.
+   */
   className?: string;
-};
+  /**
+   * Children to render inside the component.
+   */
+  children?: React.ReactNode;
+} & React.ComponentPropsWithRef<T>;
 
-const Full = forwardRef<HTMLDivElement, FullProps>(
-  ({ children, className, ...rest }, ref) => {
+const Full = forwardRef(
+  <T extends ElementType = "div">(
+    {
+      component: Component = "div",
+      className,
+      children,
+      ...rest
+    }: FullProps<T>,
+    ref: React.Ref<Element>,
+  ) => {
     return (
-      <div className={clsx(styles.full, className)} ref={ref} {...rest}>
+      <Component className={clsx(styles.full, className)} ref={ref} {...rest}>
         {children}
-      </div>
+      </Component>
     );
   },
 );
