@@ -44,6 +44,7 @@ export type TickerSearchModalProps = Omit<DialogModalProps, "children"> & {
   onSelectTicker?: (searchResult: RustServiceTickerSearchResult) => void;
   onCancel?: () => void;
   disabledTickerIds?: number[];
+  textInputPlaceholder?: string;
   searchButtonAriaLabel?: string;
   longFormAriaLabel?: string;
 };
@@ -56,6 +57,7 @@ export default function TickerSearchModal({
   onSelectTicker,
   onCancel,
   disabledTickerIds = [],
+  textInputPlaceholder = 'Search for Symbol (e.g. "AAPL" or "Apple")',
   searchButtonAriaLabel = "Ticker Search",
   longFormAriaLabel = "Extract Tickers from Text",
 }: TickerSearchModalProps) {
@@ -270,7 +272,7 @@ export default function TickerSearchModal({
         <TextField
           fullWidth
           inputRef={inputRef}
-          placeholder='Search for Symbol (e.g. "AAPL" or "Apple")'
+          placeholder={textInputPlaceholder}
           onChange={handleInputChange}
           onKeyDown={onKeyDown}
           value={searchQuery}
