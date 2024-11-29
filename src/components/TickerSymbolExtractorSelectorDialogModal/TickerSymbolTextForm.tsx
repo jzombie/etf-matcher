@@ -1,9 +1,12 @@
 import React, { useCallback, useState } from "react";
 
-import { Button, TextField, Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 
 import Full from "@layoutKit/Full";
 import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
+
+import FullTextField from "@components/FullTextField";
+import Padding from "@components/Padding";
 
 export type TickerSymbolTextFormProps = {
   onSubmit: (text: string) => void;
@@ -39,47 +42,23 @@ export default function TickerSymbolTextForm({
           </Typography>
         </Header>
         <Content>
-          <Full
-            component={TextField}
-            multiline
-            variant="outlined"
+          <FullTextField
             placeholder="Paste your text here..."
             value={text}
             onChange={handleChange}
-            slotProps={{
-              input: {
-                sx: {
-                  height: "100%", // Ensures it takes full height of the parent
-                  alignItems: "flex-start", // Aligns the text to the top
-                  overflow: "auto",
-                  // Remove the border, as it doesn't scroll with the component
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    border: "none", // Removes the border
-                  },
-                },
-              },
-            }}
-            sx={{
-              border: 0,
-              "& .MuiOutlinedInput-root": {
-                backgroundColor: "rgba(0,0,0,.1)",
-                border: "1px rgba(255,255,255,.2) solid",
-              },
-              // "& .MuiInputBase-input": {
-              //   backgroundColor: "transparent",
-              // },
-            }}
           />
         </Content>
         <Footer style={{ textAlign: "center" }}>
-          <Button
-            type="submit" // Changes to submit type for form behavior
-            variant="contained"
-            color="primary"
-            disabled={!text.trim()}
-          >
-            Submit
-          </Button>
+          <Padding half>
+            <Button
+              type="submit" // Changes to submit type for form behavior
+              variant="contained"
+              color="primary"
+              disabled={!text.trim()}
+            >
+              Submit
+            </Button>
+          </Padding>
         </Footer>
       </Layout>
     </Full>
