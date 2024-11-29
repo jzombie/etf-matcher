@@ -1,20 +1,26 @@
 import React, { useMemo } from "react";
 
 import { TextField, TextFieldProps } from "@mui/material";
+import { alpha, useTheme } from "@mui/material/styles";
 
 import Full from "@layoutKit/Full";
 
 import deepMerge from "@utils/deepMerge";
 
-export type FullTextFieldProps = TextFieldProps;
+export type FullTextFieldProps = TextFieldProps & {
+  backgroundOpacity?: number;
+};
 
 export default function FullTextField({
   multiline = true,
   variant = "outlined",
   sx = {},
   slotProps = {},
+  backgroundOpacity = 0.4,
   ...rest
 }: FullTextFieldProps) {
+  const theme = useTheme();
+
   const deepMergedSlotProps = useMemo(
     () =>
       deepMerge(
@@ -42,8 +48,11 @@ export default function FullTextField({
         {
           border: 0,
           "& .MuiOutlinedInput-root": {
-            backgroundColor: "rgba(0,0,0,.1)",
-            border: "1px rgba(255,255,255,.2) solid",
+            backgroundColor: alpha(
+              theme.palette.background.default,
+              backgroundOpacity,
+            ),
+            border: `1px solid ${theme.palette.divider}`,
           },
           // "& .MuiInputBase-input": {
           //   backgroundColor: "transparent",
@@ -51,7 +60,7 @@ export default function FullTextField({
         },
         { ...(sx || {}) },
       ),
-    [sx],
+    [sx, theme, backgroundOpacity],
   );
 
   return (
