@@ -276,4 +276,30 @@ describe("usePromise", () => {
       expect(result.current.data).toBe(null); // Check that data is cleared on error
     });
   });
+
+  it("should return the value from execute while also setting it as data", async () => {
+    const fn = vi.fn(() => Promise.resolve("direct-value"));
+    const { result } = renderHook(() =>
+      usePromise({
+        fn,
+        initialAutoExecute: false,
+      }),
+    );
+
+    let returnedValue: string | void;
+
+    // Execute the promise and capture the returned value
+    await act(async () => {
+      returnedValue = await result.current.execute();
+    });
+
+    // Ensure the value returned by execute is correct
+    // @ts-expect-error For testing purposes only
+    expect(returnedValue).toBe("direct-value");
+
+    // Ensure the same value is set as data
+    expect(result.current.data).toBe("direct-value");
+    expect(result.current.isPending).toBe(false);
+    expect(result.current.error).toBe(null);
+  });
 });
