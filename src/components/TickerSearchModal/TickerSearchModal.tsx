@@ -8,6 +8,7 @@ import React, {
 } from "react";
 
 import SearchIcon from "@mui/icons-material/Search";
+import SubjectIcon from "@mui/icons-material/Subject";
 import {
   Box,
   Button,
@@ -44,6 +45,7 @@ export type TickerSearchModalProps = Omit<DialogModalProps, "children"> & {
   onCancel?: () => void;
   disabledTickerIds?: number[];
   searchButtonAriaLabel?: string;
+  longFormAriaLabel?: string;
 };
 
 // TODO: Implement `initialValue`
@@ -55,6 +57,7 @@ export default function TickerSearchModal({
   onCancel,
   disabledTickerIds = [],
   searchButtonAriaLabel = "Ticker Search",
+  longFormAriaLabel = "Extract Tickers from Text",
 }: TickerSearchModalProps) {
   const { triggerUIError } = useAppErrorBoundary();
   const [error, setError] = useState<string | null>(null);
@@ -276,9 +279,19 @@ export default function TickerSearchModal({
           slotProps={{
             input: {
               startAdornment: (
-                <IconButton>
-                  <SearchIcon aria-label={searchButtonAriaLabel} />
-                </IconButton>
+                <>
+                  <IconButton disabled>
+                    <SearchIcon aria-label={searchButtonAriaLabel} />
+                  </IconButton>
+                  <IconButton
+                    onClick={
+                      // TODO: Handle long-form mode
+                      () => null
+                    }
+                  >
+                    <SubjectIcon aria-label={longFormAriaLabel} />
+                  </IconButton>
+                </>
               ),
             },
           }}
