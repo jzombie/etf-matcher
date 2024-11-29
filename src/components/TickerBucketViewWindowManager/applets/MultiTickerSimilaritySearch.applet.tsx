@@ -6,6 +6,7 @@ import ShowChartIcon from "@mui/icons-material/ShowChart";
 import StraightenIcon from "@mui/icons-material/Straighten";
 import {
   Box,
+  BoxProps,
   IconButton,
   Link,
   ToggleButton,
@@ -14,6 +15,7 @@ import {
 } from "@mui/material";
 
 import Center from "@layoutKit/Center";
+import Cover from "@layoutKit/Cover";
 import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
 import { fetchEuclideanByTickerBucket } from "@services/RustService";
@@ -198,6 +200,29 @@ export default function MultiTickerSimilaritySearchApplet({
                       />
                     </Scrollable>
                   )}
+
+                  {displayMode === "radial" && (
+                    <Cover clickThrough>
+                      <Layout>
+                        <Content>
+                          {
+                            // Intentionally empty
+                            " "
+                          }
+                        </Content>
+                        <Footer>
+                          <FooterContent
+                            preferredTickerVectorConfigKey={
+                              preferredTickerVectorConfigKey
+                            }
+                            onOpenTickerVectorConfigSelectorDialog={() =>
+                              setIsTickerVectorConfigSelectorDialogOpen(true)
+                            }
+                          />
+                        </Footer>
+                      </Layout>
+                    </Cover>
+                  )}
                 </>
               )}
               {
@@ -208,23 +233,14 @@ export default function MultiTickerSimilaritySearchApplet({
         )}
 
         <Footer>
-          <Footer style={{ textAlign: "right" }}>
-            <Typography
-              variant="body2"
-              component="span"
-              sx={{ fontSize: ".8rem" }}
-            >
-              Using model:{" "}
-              <Link
-                component="button"
-                variant="body2"
-                onClick={() => setIsTickerVectorConfigSelectorDialogOpen(true)}
-                sx={{ cursor: "pointer", color: "text.secondary" }}
-              >
-                {preferredTickerVectorConfigKey || "N/A"}
-              </Link>
-            </Typography>
-          </Footer>
+          {displayMode !== "radial" && (
+            <FooterContent
+              preferredTickerVectorConfigKey={preferredTickerVectorConfigKey}
+              onOpenTickerVectorConfigSelectorDialog={() =>
+                setIsTickerVectorConfigSelectorDialogOpen(true)
+              }
+            />
+          )}
         </Footer>
       </Layout>
 
@@ -237,5 +253,31 @@ export default function MultiTickerSimilaritySearchApplet({
         />
       )}
     </TickerBucketViewWindowManagerAppletWrap>
+  );
+}
+
+type FooterContentProps = Omit<BoxProps, "children"> & {
+  preferredTickerVectorConfigKey?: string;
+  onOpenTickerVectorConfigSelectorDialog: () => void;
+};
+
+function FooterContent({
+  preferredTickerVectorConfigKey,
+  onOpenTickerVectorConfigSelectorDialog,
+}: FooterContentProps) {
+  return (
+    <Box sx={{ textAlign: "right" }}>
+      <Typography variant="body2" component="span" sx={{ fontSize: ".8rem" }}>
+        Using model:{" "}
+        <Link
+          component="button"
+          variant="body2"
+          onClick={onOpenTickerVectorConfigSelectorDialog}
+          sx={{ cursor: "pointer", color: "text.secondary" }}
+        >
+          {preferredTickerVectorConfigKey || "N/A"}
+        </Link>
+      </Typography>
+    </Box>
   );
 }
