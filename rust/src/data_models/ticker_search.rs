@@ -18,7 +18,7 @@ pub struct TickerSearch {
     pub logo_filename: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TickerSearchResult {
     pub ticker_id: TickerId,
     pub symbol: String,
@@ -205,13 +205,12 @@ impl TickerSearch {
     ///
     /// This method uses the `extract_ticker_ids_from_text` to parse the text for ticker IDs
     /// and then fetches the corresponding `TickerSearchResult` for each valid ticker ID.
-    ///
-    /// # Arguments
-    /// * `text` - The input text containing potential stock symbols.
-    ///
-    /// # Returns
-    /// A vector of `TickerSearchResult` entries for the extracted ticker IDs.
-    pub async fn extract_results_from_text(text: &str) -> Result<Vec<TickerSearchResult>, JsValue> {
+
+    pub async fn extract_results_from_text(
+        text: &str,
+        page: usize,
+        page_size: usize,
+    ) -> Result<PaginatedResults<TickerSearchResult>, JsValue> {
         // Extract ticker IDs from the provided text
         let ticker_ids = extract_ticker_ids_from_text(text).await?;
 
@@ -242,6 +241,20 @@ impl TickerSearch {
             }
         }
 
-        Ok(results)
+        // Paginate the results
+        let total_count = results.len();
+        let start = page.saturating_sub(1).saturating_mul(page_size);
+        let end = start + page_size;
+
+        let paginated_results = if start < total_count {
+            results[start..total_count.min(end)].to_vec()
+        } else {
+            vec![]
+        };
+
+        Ok(PaginatedResults {
+            total_count,
+            results: paginated_results,
+        })
     }
 }

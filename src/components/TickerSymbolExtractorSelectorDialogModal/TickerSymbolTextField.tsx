@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 
 import { Box, Button, TextField, Typography } from "@mui/material";
 
-import { extractTickerIdsFromText } from "@services/RustService";
+import { extractSearchResultsFromText } from "@services/RustService";
 
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
@@ -24,8 +24,8 @@ export default function TickerSymbolTextField({
       setText(event.target.value);
 
       // TODO: Remove
-      extractTickerIdsFromText(event.target.value).then((tickerIds) =>
-        customLogger.debug("TODO: Handle", { tickerIds }),
+      extractSearchResultsFromText(event.target.value).then((searchResults) =>
+        customLogger.debug("TODO: Handle", { searchResults }),
       );
     },
     [],

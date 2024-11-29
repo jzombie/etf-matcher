@@ -14,11 +14,12 @@ import {
   fetchETFHoldingWeight,
   fetchETFHoldings,
 } from "./lib/etfHoldings";
-import extractTickerIdsFromText from "./lib/extractTickerIdsFromText";
 import { fetchImageInfo } from "./lib/imageInfo";
 import { fetchLevenshteinDistance } from "./lib/levenshteinDistance";
 import { generateQRCode } from "./lib/qrCode";
-import searchTickers from "./lib/searchTickers";
+import searchTickers, {
+  extractSearchResultsFromText,
+} from "./lib/searchTickers";
 import { fetchSymbolAndExchange } from "./lib/symbolAndExchange";
 import {
   fetchTicker10KDetail,
@@ -95,6 +96,7 @@ export {
   preloadSearchCache,
   generateQRCode,
   searchTickers,
+  extractSearchResultsFromText,
   fetchImageInfo,
   fetchETFHoldings,
   fetchETFHoldingWeight,
@@ -109,5 +111,4 @@ export {
   tickerBucketsToCSV,
   csvToTickerBuckets,
   fetchLevenshteinDistance,
-  extractTickerIdsFromText,
 };

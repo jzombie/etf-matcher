@@ -59,16 +59,6 @@ pub async fn get_symbol_and_exchange_by_ticker_id(ticker_id: TickerId) -> Result
 }
 
 #[wasm_bindgen]
-pub async fn extract_search_results_from_text(text: &str) -> Result<JsValue, JsValue> {
-    // Call the `extract_ticker_ids_from_text` method and handle its result
-    let results = TickerSearch::extract_results_from_text(text).await?;
-
-    // Convert the result (Vec<u32>) to JsValue for JavaScript interoperability
-    to_value(&results)
-        .map_err(|err| JsValue::from_str(&format!("Failed to serialize results: {}", err)))
-}
-
-#[wasm_bindgen]
 pub async fn get_data_build_info() -> Result<JsValue, JsValue> {
     let data: DataBuildInfo = DataBuildInfo::get_data_build_info().await?;
     to_value(&data).map_err(|err: serde_wasm_bindgen::Error| {
@@ -95,6 +85,20 @@ pub async fn search_tickers(
 ) -> Result<JsValue, JsValue> {
     let results: PaginatedResults<TickerSearchResult> =
         TickerSearch::search_tickers(query, page, page_size, only_exact_matches).await?;
+    to_value(&results)
+        .map_err(|err| JsValue::from_str(&format!("Failed to serialize results: {}", err)))
+}
+
+#[wasm_bindgen]
+pub async fn extract_search_results_from_text(
+    text: &str,
+    page: usize,
+    page_size: usize,
+) -> Result<JsValue, JsValue> {
+    // Call the `extract_ticker_ids_from_text` method and handle its result
+    let results = TickerSearch::extract_results_from_text(text, page, page_size).await?;
+
+    // Convert the result (Vec<u32>) to JsValue for JavaScript interoperability
     to_value(&results)
         .map_err(|err| JsValue::from_str(&format!("Failed to serialize results: {}", err)))
 }
