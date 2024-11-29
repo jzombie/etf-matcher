@@ -82,21 +82,35 @@ describe("usePromise", () => {
     });
   });
 
-  // TODO: Ensure this resolves with the value, as well
-  it("should call onSuccess callback on success", async () => {
+  it("should call onSuccess callback on success and resolve with the value", async () => {
     const onSuccess = vi.fn();
     const fn = vi.fn(() => Promise.resolve("data"));
-    renderHook(() =>
+    const { result } = renderHook(() =>
       usePromise({
         fn,
         onSuccess,
-        initialAutoExecute: true,
+        initialAutoExecute: false,
       }),
     );
 
-    await waitFor(() => {
-      expect(onSuccess).toHaveBeenCalledWith("data");
+    let returnedValue: string | void;
+
+    // Execute the promise and capture the returned value
+    await act(async () => {
+      returnedValue = await result.current.execute();
     });
+
+    // Ensure onSuccess was called with the correct data
+    expect(onSuccess).toHaveBeenCalledWith("data");
+
+    // Ensure the value returned by execute is correct
+    // @ts-expect-error For testing only
+    expect(returnedValue).toBe("data");
+
+    // Ensure the same value is set as data
+    expect(result.current.data).toBe("data");
+    expect(result.current.isPending).toBe(false);
+    expect(result.current.error).toBe(null);
   });
 
   it("should call onError callback on error", async () => {
