@@ -1,11 +1,6 @@
 import React, { useMemo, useState } from "react";
 
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutlined";
-import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
-import CheckBoxIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlined";
-import SaveIcon from "@mui/icons-material/SaveOutlined";
-import { Box, IconButton, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 import Layout, { Aside, Content, Footer } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
