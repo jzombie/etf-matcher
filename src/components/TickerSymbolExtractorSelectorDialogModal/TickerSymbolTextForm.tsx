@@ -10,10 +10,12 @@ import Padding from "@components/Padding";
 
 export type TickerSymbolTextFormProps = {
   onSubmit: (text: string) => void;
+  onCancel?: () => void;
 };
 
 export default function TickerSymbolTextForm({
   onSubmit,
+  onCancel,
 }: TickerSymbolTextFormProps) {
   const [text, setText] = useState("");
 
@@ -50,6 +52,11 @@ export default function TickerSymbolTextForm({
         </Content>
         <Footer style={{ textAlign: "center" }}>
           <Padding half>
+            {typeof onCancel === "function" && (
+              <Button type="button" color="error" onClick={onCancel}>
+                Cancel
+              </Button>
+            )}
             <Button
               type="submit" // Changes to submit type for form behavior
               variant="contained"

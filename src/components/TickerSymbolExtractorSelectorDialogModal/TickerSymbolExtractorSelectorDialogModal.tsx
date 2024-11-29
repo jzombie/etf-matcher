@@ -14,6 +14,7 @@ export type TickerSymbolExtractorSelectorDialogModalProps = Omit<
 >;
 
 export default function TickerSymbolExtractorSelectorDialogModal({
+  onClose,
   ...rest
 }: TickerSymbolExtractorSelectorDialogModalProps) {
   // TODO: Build out as necessary
@@ -26,6 +27,7 @@ export default function TickerSymbolExtractorSelectorDialogModal({
             customLogger.debug("TODO: Handle", { searchResults }),
           );
         }}
+        onCancel={onClose}
       />
     </DialogModal>
   );
