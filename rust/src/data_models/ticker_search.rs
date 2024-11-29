@@ -8,9 +8,15 @@ use crate::{DataURL, ExchangeById, PaginatedResults};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
-// TODO: Rename
-#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TickerSearch {
+    pub query: String,
+    pub page: usize,
+    pub page_size: usize,
+    pub only_exact_matches: Option<bool>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct TickerSearchResultRaw {
     pub ticker_id: TickerId,
     pub symbol: String,
     pub exchange_id: Option<ExchangeId>,
@@ -41,19 +47,21 @@ impl TickerSearch {
     }
 
     // Retrieves all `raw` results without any transformations
-    pub async fn get_all_raw_results() -> Result<Vec<TickerSearch>, JsValue> {
+    pub async fn get_all_raw_results() -> Result<Vec<TickerSearchResultRaw>, JsValue> {
         let url: String = DataURL::TickerSearch.value().to_owned();
         let csv_data = fetch_and_decompress_gz(&url, true).await?;
         let csv_string = String::from_utf8(csv_data).map_err(|err| {
             JsValue::from_str(&format!("Failed to convert data to String: {}", err))
         })?;
-        let results: Vec<TickerSearch> = parse_csv_data(csv_string.as_bytes())?;
+        let results: Vec<TickerSearchResultRaw> = parse_csv_data(csv_string.as_bytes())?;
 
         Ok(results)
     }
 
     // Retrieves a single `raw` result, using the given `ticker_id`
-    pub async fn get_raw_result_with_id(ticker_id: TickerId) -> Result<TickerSearch, JsValue> {
+    pub async fn get_raw_result_with_id(
+        ticker_id: TickerId,
+    ) -> Result<TickerSearchResultRaw, JsValue> {
         let all_raw_results = Self::get_all_raw_results().await?;
 
         match all_raw_results
@@ -69,13 +77,10 @@ impl TickerSearch {
     }
 
     pub async fn search_tickers(
-        query: &str,
-        page: usize,
-        page_size: usize,
-        only_exact_matches: Option<bool>,
+        &self, // Use `self` to access query parameters
     ) -> Result<PaginatedResults<TickerSearchResult>, JsValue> {
-        let trimmed_query: String = query.trim().to_lowercase();
-        let only_exact_matches = only_exact_matches.unwrap_or(false);
+        let trimmed_query: String = self.query.trim().to_lowercase();
+        let only_exact_matches = self.only_exact_matches.unwrap_or(false);
 
         if trimmed_query.is_empty() {
             return Ok(PaginatedResults {
@@ -93,10 +98,10 @@ impl TickerSearch {
         }
 
         let alternatives: Vec<String> = generate_alternative_symbols(&trimmed_query);
-        let mut exact_symbol_matches: Vec<TickerSearch> = vec![];
-        let mut starts_with_matches: Vec<TickerSearch> = vec![];
-        let mut contains_matches: Vec<TickerSearch> = vec![];
-        let mut reverse_contains_matches: Vec<TickerSearch> = vec![];
+        let mut exact_symbol_matches: Vec<TickerSearchResultRaw> = vec![];
+        let mut starts_with_matches: Vec<TickerSearchResultRaw> = vec![];
+        let mut contains_matches: Vec<TickerSearchResultRaw> = vec![];
+        let mut reverse_contains_matches: Vec<TickerSearchResultRaw> = vec![];
         let mut seen_symbols: HashSet<String> = HashSet::new();
 
         for alternative in &alternatives {
@@ -143,7 +148,7 @@ impl TickerSearch {
         }
 
         // Combine matches in the desired order
-        let mut matches: Vec<TickerSearch> = Vec::with_capacity(
+        let mut matches: Vec<TickerSearchResultRaw> = Vec::with_capacity(
             exact_symbol_matches.len()
                 + starts_with_matches.len()
                 + contains_matches.len()
@@ -158,7 +163,8 @@ impl TickerSearch {
         }
 
         // Paginate the results first
-        let paginated_results = PaginatedResults::paginate(matches.clone(), page, page_size)?;
+        let paginated_results =
+            PaginatedResults::paginate(matches.clone(), self.page, self.page_size)?;
 
         // Fetch exchange short names for the paginated results
         let mut search_results: Vec<TickerSearchResult> =

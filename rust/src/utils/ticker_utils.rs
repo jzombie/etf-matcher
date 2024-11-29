@@ -1,13 +1,12 @@
-use lazy_static::lazy_static;
-use std::collections::HashMap;
-use std::collections::HashSet;
-use std::sync::Mutex;
-// use serde::{Deserialize, Serialize};
-use crate::data_models::{DataURL, ExchangeById, TickerSearch};
+use crate::data_models::{DataURL, ExchangeById, TickerSearchResultRaw};
 use crate::types::TickerId;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
 use crate::JsValue;
+use lazy_static::lazy_static;
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::sync::Mutex;
 
 lazy_static! {
     static ref SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE: Mutex<HashMap<TickerId, (String, Option<String>)>> =
@@ -20,7 +19,7 @@ async fn preload_symbol_and_exchange_cache() -> Result<(), JsValue> {
     let csv_data = fetch_and_decompress_gz(&url, true).await?;
     let csv_string = String::from_utf8(csv_data)
         .map_err(|err| JsValue::from_str(&format!("Failed to convert data to String: {}", err)))?;
-    let symbol_search_results: Vec<TickerSearch> = parse_csv_data(csv_string.as_bytes())?;
+    let symbol_search_results: Vec<TickerSearchResultRaw> = parse_csv_data(csv_string.as_bytes())?;
 
     // Fetch and decompress the ExchangeById CSV data
     let exchange_url = DataURL::ExchangeByIdIndex.value().to_owned();
