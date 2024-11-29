@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 
-import { Box, Typography } from "@mui/material";
+import { Alert, Box, Link, Typography } from "@mui/material";
 
 import Layout, { Aside, Content, Footer } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
@@ -30,6 +30,7 @@ export type MultiTickerManagerAppletProps = Omit<
 const TICKER_QUANTITY_ADJUST_DEBOUNCE_TIME = 250;
 
 export default function MultiTickerManagerApplet({
+  tickerBucketType,
   adjustedTickerDetails,
   isTiling,
   ...rest
@@ -75,6 +76,7 @@ export default function MultiTickerManagerApplet({
 
   return (
     <TickerBucketViewWindowManagerAppletWrap
+      tickerBucketType={tickerBucketType}
       adjustedTickerDetails={adjustedTickerDetails}
       isTiling={isTiling}
       {...rest}
@@ -157,6 +159,17 @@ export default function MultiTickerManagerApplet({
                 </Section>
               );
             })}
+            {adjustedTickerDetails?.length === 1 && (
+              <Alert severity="info" sx={{ marginTop: 2 }}>
+                <Link
+                  onClick={() => setIsSearchModalOpen(true)}
+                  sx={{ cursor: "pointer" }}
+                >
+                  Add more tickers
+                </Link>{" "}
+                to make better use of this {tickerBucketType}.
+              </Alert>
+            )}
           </Scrollable>
         </Content>
         <Footer>
