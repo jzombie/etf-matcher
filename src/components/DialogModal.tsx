@@ -5,6 +5,7 @@ import { Dialog, DialogProps, SxProps } from "@mui/material";
 import { Location, useLocation } from "react-router-dom";
 
 import customLogger from "@utils/customLogger";
+import deepMerge from "@utils/deepMerge";
 
 export type DialogModalProps = {
   open: boolean;
@@ -48,24 +49,20 @@ export default function DialogModal({
     };
 
     if (fullViewport) {
-      sxProps = {
-        ...sxProps,
-        ...{
-          width: "100dvw",
-          maxWidth: "100dvw",
-          minWidth: "100dvw",
-          //
-          height: "100dvh",
-          maxHeight: "100dvh",
-          minHeight: "100dvh",
-          //
-          border: "none",
-          borderRadius: 0,
-        },
-      };
+      sxProps = deepMerge(sxProps, {
+        width: "100dvw",
+        maxWidth: "100dvw",
+        minWidth: "100dvw",
+        //
+        height: "100dvh",
+        maxHeight: "100dvh",
+        minHeight: "100dvh",
+        //
+        border: "none",
+        borderRadius: 0,
+      }) as Record<string, unknown>;
     } else {
-      sxProps = {
-        ...sxProps,
+      sxProps = deepMerge(sxProps, {
         width: {
           xs: "100dvw", // Full width for extra small screens
           sm: "50vw", // 50% width for small screens and up
@@ -91,7 +88,7 @@ export default function DialogModal({
           border: "none",
           borderRadius: 0,
         },
-      };
+      }) as Record<string, unknown>;
     }
 
     return { sx: sxProps };
