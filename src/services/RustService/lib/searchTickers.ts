@@ -22,11 +22,12 @@ export default async function searchTickers(
 
 export async function extractSearchResultsFromText(
   text: string,
-  useUppercaseOnly = true,
   page: number = 1,
   pageSize: number = 20,
   abortSignal?: AbortSignal,
 ): Promise<RustServicePaginatedResults<RustServiceTickerSearchResult>> {
+  const useUppercaseOnly = true;
+
   return callRustService<
     RustServicePaginatedResults<RustServiceTickerSearchResult>
   >(
