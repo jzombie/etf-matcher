@@ -92,11 +92,13 @@ pub async fn search_tickers(
 #[wasm_bindgen]
 pub async fn extract_search_results_from_text(
     text: &str,
+    use_uppercase_only: bool,
     page: usize,
     page_size: usize,
 ) -> Result<JsValue, JsValue> {
     // Call the `extract_ticker_ids_from_text` method and handle its result
-    let results = TickerSearch::extract_results_from_text(text, page, page_size).await?;
+    let results =
+        TickerSearch::extract_results_from_text(text, use_uppercase_only, page, page_size).await?;
 
     // Convert the result (Vec<u32>) to JsValue for JavaScript interoperability
     to_value(&results)

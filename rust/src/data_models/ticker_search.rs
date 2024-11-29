@@ -208,11 +208,12 @@ impl TickerSearch {
 
     pub async fn extract_results_from_text(
         text: &str,
+        use_uppercase_only: bool,
         page: usize,
         page_size: usize,
     ) -> Result<PaginatedResults<TickerSearchResult>, JsValue> {
         // Extract ticker IDs from the provided text
-        let ticker_ids = extract_ticker_ids_from_text(text).await?;
+        let ticker_ids = extract_ticker_ids_from_text(text, use_uppercase_only).await?;
 
         // Fetch the raw ticker data for each extracted ticker ID
         let mut results = Vec::with_capacity(ticker_ids.len());
