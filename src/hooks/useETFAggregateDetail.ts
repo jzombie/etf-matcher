@@ -28,7 +28,7 @@ export default function useETFAggregateDetail({
     execute,
   } = usePromise<RustServiceETFAggregateDetail, [number]>({
     fn: fetchETFAggregateDetail,
-    onLoad,
+    onSuccess: onLoad,
     onError: (err) => {
       triggerUIError(new Error("Error fetching ETF aggregate detail"));
       customLogger.error(err);

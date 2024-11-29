@@ -82,19 +82,20 @@ describe("usePromise", () => {
     });
   });
 
-  it("should call onLoad callback on success", async () => {
-    const onLoad = vi.fn();
+  // TODO: Ensure this resolves with the value, as well
+  it("should call onSuccess callback on success", async () => {
+    const onSuccess = vi.fn();
     const fn = vi.fn(() => Promise.resolve("data"));
     renderHook(() =>
       usePromise({
         fn,
-        onLoad,
+        onSuccess,
         initialAutoExecute: true,
       }),
     );
 
     await waitFor(() => {
-      expect(onLoad).toHaveBeenCalledWith("data");
+      expect(onSuccess).toHaveBeenCalledWith("data");
     });
   });
 

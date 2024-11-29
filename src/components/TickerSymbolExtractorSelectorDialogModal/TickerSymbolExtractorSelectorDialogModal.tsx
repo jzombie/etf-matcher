@@ -56,7 +56,7 @@ export default function TickerSymbolExtractorSelectorDialogModal({
         },
       ),
     initialAutoExecute: false,
-    onLoad: (tickerResults) => {
+    onSuccess: (tickerResults) => {
       // TODO: Handle
 
       customLogger.log({ tickerResults });
