@@ -40,7 +40,9 @@ import customLogger from "@utils/customLogger";
 import type { TickerSearchModalProps } from "../types";
 import useTickerSearchModalContent from "../useTickerSearchModalContent";
 
-export type BasicTickerSearchModalProps = TickerSearchModalProps;
+export type BasicTickerSearchModalProps = TickerSearchModalProps & {
+  onLongFormRequest: () => void;
+};
 
 // TODO: Implement `initialValue`
 export default function BasicTickerSearchModal({
@@ -53,6 +55,7 @@ export default function BasicTickerSearchModal({
   textInputPlaceholder = 'Search for Symbol (e.g. "AAPL" or "Apple")',
   searchButtonAriaLabel = "Ticker Search",
   longFormAriaLabel = "Extract Tickers from Text",
+  onLongFormRequest,
 }: BasicTickerSearchModalProps) {
   const { triggerUIError } = useAppErrorBoundary();
   const [error, setError] = useState<string | null>(null);
@@ -278,12 +281,7 @@ export default function BasicTickerSearchModal({
                   <IconButton disabled>
                     <SearchIcon aria-label={searchButtonAriaLabel} />
                   </IconButton>
-                  <IconButton
-                    onClick={
-                      // TODO: Handle long-form mode
-                      () => null
-                    }
-                  >
+                  <IconButton onClick={onLongFormRequest}>
                     <SubjectIcon aria-label={longFormAriaLabel} />
                   </IconButton>
                 </>

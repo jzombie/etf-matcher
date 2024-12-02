@@ -22,8 +22,9 @@ import TickerSymbolTextForm from "./components/TickerSymbolTextForm";
 
 export type TickerSymbolExtractorSelectorDialogModalProps = Omit<
   DialogModalProps,
-  "children"
+  "children" | "fullViewport"
 > & {
+  onCancel: () => void;
   onSelect: (selectedSearchResults: RustServiceTickerSearchResult[]) => void;
 };
 
@@ -40,6 +41,7 @@ const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 100;
 
 export default function TickerSymbolExtractorSelectorDialogModal({
+  onCancel,
   onClose,
   onSelect,
   ...rest
@@ -97,14 +99,14 @@ export default function TickerSymbolExtractorSelectorDialogModal({
   return (
     // TODO: Use `Transition` component to switch between phases
 
-    <DialogModal {...rest}>
+    <DialogModal {...rest} fullViewport>
       {phase === "input-text" && (
         <TickerSymbolTextForm
           onSubmit={(text) => {
             setText(text);
             setPhase("parse-text");
           }}
-          onCancel={onClose}
+          onCancel={onCancel}
         />
       )}
       {phase === "parse-text" && (
