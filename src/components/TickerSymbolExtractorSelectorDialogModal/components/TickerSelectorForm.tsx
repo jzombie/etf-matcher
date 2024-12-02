@@ -79,10 +79,7 @@ export default function TickerSelectorForm({
       <Layout>
         <Header>
           <Typography variant="h6" align="center">
-            {
-              // TODO: Pluralize or singularize based on props
-            }
-            Choose your tickers
+            Choose your ticker{searchResults.results.length !== 1 ? "s" : ""}
           </Typography>
         </Header>
         <Content>
@@ -98,9 +95,60 @@ export default function TickerSelectorForm({
                   <div style={{ textAlign: "center" }}>
                     <EncodedImage
                       encSrc={searchResult.logo_filename}
-                      style={{ width: 50, height: 50, marginBottom: 8 }}
-                    />
-                    [{isSelected ? "checked" : "not checked"} ]
+                      style={{ width: 50, height: 50 }}
+                    />{" "}
+                    <div style={{ textAlign: "center", marginBottom: 4 }}>
+                      <Typography variant="subtitle1" fontWeight="bold">
+                        {searchResult.company_name}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        {searchResult.symbol}
+                        {" | "}
+                        {searchResult.exchange_short_name}
+                      </Typography>
+                    </div>
+                    {isSelected ? (
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: 20,
+                            height: 20,
+                            borderRadius: "50%",
+                            backgroundColor: "green",
+                            color: "white",
+                            display: "inline-flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          ✓
+                        </span>
+                      </div>
+                    ) : (
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <span
+                          style={{
+                            display: "inline-block",
+                            width: 20,
+                            height: 20,
+                            borderRadius: "50%",
+                            backgroundColor: "gray",
+                          }}
+                        ></span>
+                      </div>
+                    )}
                   </div>
                 );
               }}
