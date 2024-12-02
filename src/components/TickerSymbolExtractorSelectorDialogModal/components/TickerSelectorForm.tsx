@@ -16,7 +16,7 @@ import SelectableGrid, { SelectableGridItem } from "@components/SelectableGrid";
 
 export type TickerSelectorFormProps = {
   searchResults: RustServicePaginatedResults<RustServiceTickerSearchResult>;
-  onSubmit: (tickerIds: number[]) => void;
+  onSubmit: (selectedSearchResults: RustServiceTickerSearchResult[]) => void;
   onCancel?: () => void;
 };
 
@@ -25,18 +25,18 @@ export default function TickerSelectorForm({
   onSubmit,
   onCancel,
 }: TickerSelectorFormProps) {
+  const [selectedItems, setSelectedItems] = useState<
+    RustServiceTickerSearchResult[]
+  >([]);
+
   const handleSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault(); // Prevent the form from actually submitting anywhere
 
-      onSubmit([]);
+      onSubmit(selectedItems);
     },
-    [onSubmit],
+    [onSubmit, selectedItems],
   );
-
-  const [selectedItems, setSelectedItems] = useState<
-    RustServiceTickerSearchResult[]
-  >([]);
 
   const handleToggleItem = useCallback(
     (searchResultItem: RustServiceTickerSearchResult) => {
@@ -167,8 +167,7 @@ export default function TickerSelectorForm({
               type="submit" // Changes to submit type for form behavior
               variant="contained"
               color="primary"
-              // TODO: Disable if no tickers are selected
-              // disabled={!text.trim()}
+              disabled={!selectedItems.length}
             >
               Submit
             </Button>

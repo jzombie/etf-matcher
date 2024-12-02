@@ -9,6 +9,8 @@ import { Box, IconButton } from "@mui/material";
 
 import TickerSymbolExtractorSelectorDialogModal from "@components/TickerSymbolExtractorSelectorDialogModal";
 
+import customLogger from "@utils/customLogger";
+
 const ICON_FONT_SIZE: "inherit" | "small" | "medium" | "large" = "medium";
 
 export type MultiTickerManagerAsideNavProps = {
@@ -112,6 +114,7 @@ export default function MultiTickerManagerAsideNav({
       <TickerSymbolExtractorSelectorDialogModal
         open={isShowingTempModal}
         onClose={() => setIsShowingTempModal(false)}
+        onSelect={(selectedItems) => customLogger.log({ selectedItems })}
         fullViewport
       />
     </Box>

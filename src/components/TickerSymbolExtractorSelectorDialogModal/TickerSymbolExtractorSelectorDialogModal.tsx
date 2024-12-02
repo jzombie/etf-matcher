@@ -23,7 +23,9 @@ import TickerSymbolTextForm from "./components/TickerSymbolTextForm";
 export type TickerSymbolExtractorSelectorDialogModalProps = Omit<
   DialogModalProps,
   "children"
->;
+> & {
+  onSelect: (selectedSearchResults: RustServiceTickerSearchResult[]) => void;
+};
 
 const SYMBOL_EXTRACTION_PHASES = [
   "input-text",
@@ -39,6 +41,7 @@ const DEFAULT_PAGE_SIZE = 100;
 
 export default function TickerSymbolExtractorSelectorDialogModal({
   onClose,
+  onSelect,
   ...rest
 }: TickerSymbolExtractorSelectorDialogModalProps) {
   const { triggerUIError } = useAppErrorBoundary();
@@ -111,10 +114,7 @@ export default function TickerSymbolExtractorSelectorDialogModal({
       {phase === "select-symbols" && searchResults && (
         <TickerSelectorForm
           searchResults={searchResults}
-          onSubmit={
-            // TODO: Handle
-            () => null
-          }
+          onSubmit={onSelect}
           onCancel={() => {
             // Navigate back to initial phase
             setPhase("input-text");
