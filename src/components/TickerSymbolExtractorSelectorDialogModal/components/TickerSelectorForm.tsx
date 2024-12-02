@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 
-import { Button, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 
 import Full from "@layoutKit/Full";
 import Layout, { Content, Footer, Header } from "@layoutKit/Layout";
@@ -93,12 +93,12 @@ export default function TickerSelectorForm({
                 );
 
                 return (
-                  <div style={{ textAlign: "center" }}>
+                  <Box sx={{ textAlign: "center" }}>
                     <EncodedImage
                       encSrc={searchResult.logo_filename}
                       style={{ width: 50, height: 50 }}
                     />
-                    <div style={{ textAlign: "center", marginBottom: 4 }}>
+                    <Box sx={{ textAlign: "center", marginBottom: 4 }}>
                       <Typography variant="subtitle1" fontWeight="bold">
                         {searchResult.company_name}
                       </Typography>
@@ -107,17 +107,18 @@ export default function TickerSelectorForm({
                         {" | "}
                         {searchResult.exchange_short_name}
                       </Typography>
-                    </div>
+                    </Box>
                     {isSelected ? (
-                      <div
-                        style={{
+                      <Box
+                        sx={{
                           display: "flex",
                           justifyContent: "center",
                           alignItems: "center",
                         }}
                       >
-                        <span
-                          style={{
+                        <Box
+                          component="span"
+                          sx={{
                             width: 20,
                             height: 20,
                             borderRadius: "50%",
@@ -129,28 +130,29 @@ export default function TickerSelectorForm({
                           }}
                         >
                           ✓
-                        </span>
-                      </div>
+                        </Box>
+                      </Box>
                     ) : (
-                      <div
-                        style={{
+                      <Box
+                        sx={{
                           display: "flex",
                           justifyContent: "center",
                           alignItems: "center",
                         }}
                       >
-                        <span
-                          style={{
+                        <Box
+                          component="span"
+                          sx={{
                             display: "inline-block",
                             width: 20,
                             height: 20,
                             borderRadius: "50%",
                             backgroundColor: "gray",
                           }}
-                        ></span>
-                      </div>
+                        ></Box>
+                      </Box>
                     )}
-                  </div>
+                  </Box>
                 );
               }}
               onItemSelect={handleToggleItem}
