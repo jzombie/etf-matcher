@@ -18,6 +18,7 @@ export type SelectableGridProps<T> = BoxProps & {
   minItemWidth?: number; // Minimum width of each item in the grid
   onItemSelect: (item: T) => void; // Callback when an item is selected
   renderItem: (item: T, isSelected: boolean) => React.ReactNode; // Render function for each item
+  centerItems?: boolean; // Optional prop to center items in the grid
 };
 
 export default function SelectableGrid<T>({
@@ -26,6 +27,7 @@ export default function SelectableGrid<T>({
   minItemWidth = 250, // Fallback to 250px per item if not provided
   onItemSelect,
   renderItem,
+  centerItems = false, // Default to false
   ...rest
 }: SelectableGridProps<T>) {
   const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
@@ -101,7 +103,12 @@ export default function SelectableGrid<T>({
 
   return (
     <Box ref={containerRef} {...rest}>
-      <Grid2 container spacing={2} sx={{ mt: 2 }}>
+      <Grid2
+        container
+        spacing={2}
+        sx={{ mt: 2 }}
+        justifyContent={centerItems ? "center" : "flex-start"}
+      >
         {items.map((item, index) => (
           <Grid2
             key={item.id}

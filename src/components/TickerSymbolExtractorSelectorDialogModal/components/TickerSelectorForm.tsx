@@ -86,6 +86,7 @@ export default function TickerSelectorForm({
           <Scrollable>
             <SelectableGrid
               items={gridItems}
+              centerItems
               renderItem={(searchResult) => {
                 const isSelected = selectedTickerIds.includes(
                   searchResult.ticker_id,
@@ -96,7 +97,7 @@ export default function TickerSelectorForm({
                     <EncodedImage
                       encSrc={searchResult.logo_filename}
                       style={{ width: 50, height: 50 }}
-                    />{" "}
+                    />
                     <div style={{ textAlign: "center", marginBottom: 4 }}>
                       <Typography variant="subtitle1" fontWeight="bold">
                         {searchResult.company_name}
