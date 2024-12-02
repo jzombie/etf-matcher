@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from "react";
 
-import { Box, Grid2, Paper } from "@mui/material";
+import { Box, BoxProps, Grid2, Paper } from "@mui/material";
 
 import useKeyboardEvents from "@hooks/useKeyboardEvents";
 import useResizeObserver from "@hooks/useResizeObserver";
@@ -12,7 +12,7 @@ export type SelectableGridItem<T> = {
 };
 
 // Define the props for the generic grid
-export type SelectableGridProps<T> = {
+export type SelectableGridProps<T> = BoxProps & {
   items: SelectableGridItem<T>[]; // Array of items to display
   maxColumns?: number; // Number of columns in the grid (optional, fallback if container resizing isn't used)
   minItemWidth?: number; // Minimum width of each item in the grid
@@ -26,6 +26,7 @@ export default function SelectableGrid<T>({
   minItemWidth = 250, // Fallback to 250px per item if not provided
   onItemSelect,
   renderItem,
+  ...rest
 }: SelectableGridProps<T>) {
   const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
   const [dynamicColumns, setDynamicColumns] = useState(maxColumns); // This will dynamically adjust based on container size
@@ -99,7 +100,7 @@ export default function SelectableGrid<T>({
   });
 
   return (
-    <Box ref={containerRef}>
+    <Box ref={containerRef} {...rest}>
       <Grid2 container spacing={2} sx={{ mt: 2 }}>
         {items.map((item, index) => (
           <Grid2
