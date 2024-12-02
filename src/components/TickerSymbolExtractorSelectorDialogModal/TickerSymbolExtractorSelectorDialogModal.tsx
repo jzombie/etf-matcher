@@ -34,6 +34,9 @@ const SYMBOL_EXTRACTION_PHASES = [
 
 type SymbolExtractionPhase = (typeof SYMBOL_EXTRACTION_PHASES)[number];
 
+const DEFAULT_PAGE = 1;
+const DEFAULT_PAGE_SIZE = 100;
+
 export default function TickerSymbolExtractorSelectorDialogModal({
   onClose,
   ...rest
@@ -42,12 +45,16 @@ export default function TickerSymbolExtractorSelectorDialogModal({
 
   const [phase, setPhase] = useState<SymbolExtractionPhase>("input-text");
   const [text, setText] = useState<string | null>(null);
+  const [searchResults, setSearchResults] =
+    useState<RustServicePaginatedResults<RustServiceTickerSearchResult> | null>(
+      null,
+    );
 
   const { execute: executeSymbolExtraction } = usePromise<
     RustServicePaginatedResults<RustServiceTickerSearchResult>,
-    [string, number, number]
+    [string, number?, number?]
   >({
-    fn: (text, page, pageSize) =>
+    fn: (text, page = DEFAULT_PAGE, pageSize = DEFAULT_PAGE_SIZE) =>
       extractSearchResultsFromText(text, page, pageSize).then(
         (searchResults) => {
           // customLogger.debug("TODO: Handle", { searchResults }),
@@ -56,13 +63,11 @@ export default function TickerSymbolExtractorSelectorDialogModal({
         },
       ),
     initialAutoExecute: false,
-    onSuccess: (tickerResults) => {
-      // TODO: Handle
-
-      customLogger.log({ tickerResults });
+    onSuccess: (searchResults) => {
+      setSearchResults(searchResults);
 
       // TODO: Don't proceed if there are no symbols identified
-      if (tickerResults?.results.length) {
+      if (searchResults?.results.length) {
         setPhase("select-symbols");
       } else {
         setPhase("no-symbols-identified");
@@ -81,7 +86,7 @@ export default function TickerSymbolExtractorSelectorDialogModal({
       if (!text) {
         setPhase("input-text");
       } else {
-        executeSymbolExtraction(text, 1, 100);
+        executeSymbolExtraction(text);
       }
     }
   }, [phase, text, executeSymbolExtraction, triggerUIError]);
@@ -103,8 +108,9 @@ export default function TickerSymbolExtractorSelectorDialogModal({
         // TODO: Include loading indicator
         <Center>Processing...</Center>
       )}
-      {phase === "select-symbols" && (
+      {phase === "select-symbols" && searchResults && (
         <TickerSelectorForm
+          searchResults={searchResults}
           onSubmit={
             // TODO: Handle
             () => null
