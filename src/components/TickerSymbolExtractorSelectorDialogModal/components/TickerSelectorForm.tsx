@@ -27,7 +27,7 @@ export default function TickerSelectorForm({
 }: TickerSelectorFormProps) {
   const [selectedItems, setSelectedItems] = useState<
     RustServiceTickerSearchResult[]
-  >([]);
+  >(searchResults.results);
 
   const handleSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
