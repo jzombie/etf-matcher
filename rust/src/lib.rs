@@ -109,7 +109,6 @@ pub async fn extract_search_results_from_text(
     let results =
         TickerSearch::extract_results_from_text(text, use_uppercase_only, page, page_size).await?;
 
-    // Convert the result (Vec<u32>) to JsValue for JavaScript interoperability
     to_value(&results)
         .map_err(|err| JsValue::from_str(&format!("Failed to serialize results: {}", err)))
 }
