@@ -52,7 +52,7 @@ export default function TickerSymbolExtractorSelectorDialogModal({
   // Close if `Escape` if pressed
   useKeyboardEvents({
     attachToWindow: true,
-    keyup: {
+    keyUp: {
       Escape: onCancel,
     },
   });

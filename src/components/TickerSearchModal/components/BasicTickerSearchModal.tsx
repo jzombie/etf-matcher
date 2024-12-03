@@ -208,7 +208,7 @@ export default function BasicTickerSearchModal({
 
   const { onKeyDown } = useKeyboardEvents({
     attachToWindow: false,
-    keydown: {
+    keyDown: {
       ArrowDown: () => {
         setSelectedIndex((prevIndex) => {
           const newIndex = Math.min(prevIndex + 1, searchResults.length - 1);

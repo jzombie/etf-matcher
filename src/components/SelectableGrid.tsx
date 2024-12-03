@@ -62,7 +62,7 @@ export default function SelectableGrid<T>({
 
   // Enable keyboard navigation
   useKeyboardEvents({
-    keydown: {
+    keyDown: {
       ArrowDown: () => {
         setHighlightedIndex((prevIndex) =>
           prevIndex === null || prevIndex + dynamicColumns >= items.length
