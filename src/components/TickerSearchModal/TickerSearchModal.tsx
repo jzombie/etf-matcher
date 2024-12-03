@@ -63,7 +63,9 @@ export default function TickerSearchModal({
       />
       <TickerSymbolExtractorSelectorDialogModal
         open={isTextExtractorModalOpen}
+        // TODO: Memoize
         onCancel={() => setIsFullTextMode(false)}
+        // TODO: Memoize
         onSelect={(selectedSearchResults) =>
           customLogger.warn("TODO: Implement multi-search results", {
             selectedSearchResults,
