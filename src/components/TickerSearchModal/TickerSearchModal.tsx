@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from "react";
 
+import customLogger from "@utils/customLogger";
+
 import BasicTickerSearchModal from "./components/BasicTickerSearchModal";
 import TickerSymbolExtractorSelectorDialogModal from "./components/TickerSymbolExtractorSelectorDialogModal";
 import type { TickerSearchModalProps } from "./types";
@@ -8,8 +10,8 @@ export type { TickerSearchModalProps };
 
 export default function TickerSearchModal({
   open: isOpen,
-  onSelectSearchQuery,
-  onSelectTicker,
+  onSelectSearchQuery, // TODO: Move elsewhere
+  onSelectTicker, // TODO: Pluralize
   onCancel,
   disabledTickerIds,
   textInputPlaceholder,
@@ -61,6 +63,11 @@ export default function TickerSearchModal({
       <TickerSymbolExtractorSelectorDialogModal
         open={isTextExtractorModalOpen}
         onCancel={() => setIsFullTextMode(false)}
+        onSelect={(selectedSearchResults) =>
+          customLogger.warn("TODO: Implement multi-search results", {
+            selectedSearchResults,
+          })
+        }
       />
     </>
   );
