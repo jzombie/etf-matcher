@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { Button } from "@mui/material";
 
@@ -64,6 +64,17 @@ export default function TickerSymbolExtractorSelectorDialogModal({
       null,
     );
 
+  const handleSelect = useCallback(
+    (selectedSearchResults: RustServiceTickerSearchResult[]) => {
+      onSelect(selectedSearchResults);
+
+      if (typeof onClose === "function") {
+        onClose();
+      }
+    },
+    [onSelect, onClose],
+  );
+
   const { execute: executeSymbolExtraction } = usePromise<
     RustServicePaginatedResults<RustServiceTickerSearchResult>,
     [string, number?, number?]
@@ -125,7 +136,7 @@ export default function TickerSymbolExtractorSelectorDialogModal({
       {phase === "select-symbols" && searchResults && (
         <TickerSelectorForm
           searchResults={searchResults}
-          onSubmit={onSelect}
+          onSubmit={handleSelect}
           onCancel={() => {
             // Navigate back to initial phase
             setPhase("input-text");

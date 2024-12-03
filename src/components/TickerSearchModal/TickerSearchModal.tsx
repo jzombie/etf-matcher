@@ -1,7 +1,5 @@
 import React, { useMemo, useState } from "react";
 
-import customLogger from "@utils/customLogger";
-
 import BasicTickerSearchModal from "./components/BasicTickerSearchModal";
 import TickerSymbolExtractorSelectorDialogModal from "./components/TickerSymbolExtractorSelectorDialogModal";
 import type { SearchQueryResult, TickerSearchModalProps } from "./types";
@@ -12,6 +10,7 @@ export default function TickerSearchModal({
   open: isOpen,
   onSelect,
   onCancel,
+  onClose,
   disabledTickerIds,
   // TODO: Differentiate between `basic` and `long-form`
   textInputPlaceholder = 'Search for Symbol (e.g. "AAPL" or "Apple")',
@@ -51,6 +50,7 @@ export default function TickerSearchModal({
         open={isBasicTickerSearchModalOpen}
         onSelect={onSelect}
         onCancel={onCancel}
+        onClose={onClose}
         disabledTickerIds={disabledTickerIds}
         textInputPlaceholder={textInputPlaceholder}
         searchButtonAriaLabel={searchButtonAriaLabel}
@@ -63,11 +63,16 @@ export default function TickerSearchModal({
         open={isTextExtractorModalOpen}
         // TODO: Memoize
         onCancel={() => setIsFullTextMode(false)}
+        onClose={onClose}
         // TODO: Memoize
         onSelect={(selectedSearchResults) =>
-          customLogger.warn("TODO: Implement multi-search results", {
-            selectedSearchResults,
-          })
+          onSelect(
+            selectedSearchResults.map((tickerSearchResult) => ({
+              searchQuery: tickerSearchResult.symbol,
+              tickerSearchResult,
+              isExact: true,
+            })),
+          )
         }
       />
     </>
