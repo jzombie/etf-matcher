@@ -85,6 +85,7 @@ export default function TickerSelectorForm({
         <Content>
           <Scrollable>
             <SelectableGrid
+              aria-label="Ticker selection grid"
               items={gridItems}
               centerItems
               renderItem={(searchResult) => {
