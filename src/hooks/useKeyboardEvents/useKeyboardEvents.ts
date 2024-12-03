@@ -4,6 +4,7 @@ import { SyntheticEvent } from "react";
 import useStableCurrentRef from "../useStableCurrentRef";
 
 export type KeyboardEventsProps = {
+  // TODO: Make `keyDown` and `keyUp` camelCase
   keydown?: { [key: string]: (event: KeyboardEvent) => void };
   keyup?: { [key: string]: (event: KeyboardEvent) => void };
   attachToWindow?: boolean;

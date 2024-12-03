@@ -13,6 +13,7 @@ import DialogModal, { DialogModalProps } from "@components/DialogModal";
 import NoInformationAvailableAlert from "@components/NoInformationAvailableAlert";
 
 import useAppErrorBoundary from "@hooks/useAppErrorBoundary";
+import useKeyboardEvents from "@hooks/useKeyboardEvents";
 import usePromise from "@hooks/usePromise";
 
 import customLogger from "@utils/customLogger";
@@ -47,6 +48,14 @@ export default function TickerSymbolExtractorSelectorDialogModal({
   ...rest
 }: TickerSymbolExtractorSelectorDialogModalProps) {
   const { triggerUIError } = useAppErrorBoundary();
+
+  // Close if `Escape` if pressed
+  useKeyboardEvents({
+    attachToWindow: true,
+    keyup: {
+      Escape: onCancel,
+    },
+  });
 
   const [phase, setPhase] = useState<SymbolExtractionPhase>("input-text");
   const [text, setText] = useState<string | null>(null);
