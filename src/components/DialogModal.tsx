@@ -60,7 +60,7 @@ export default function DialogModal({
         //
         border: "none",
         borderRadius: 0,
-      }) as Record<string, unknown>;
+      }) as SxProps;
     } else {
       sxProps = deepMerge(sxProps, {
         width: {
@@ -88,7 +88,7 @@ export default function DialogModal({
           border: "none",
           borderRadius: 0,
         },
-      }) as Record<string, unknown>;
+      }) as SxProps;
     }
 
     return { sx: sxProps };
