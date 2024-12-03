@@ -60,9 +60,6 @@ export default function SearchModalButton({
       const searchQuery = searchQueryResults[0].searchQuery;
       const isExact = searchQueryResults[0].isExact;
 
-      // TODO: Remove
-      console.log({ searchQuery, isExact });
-
       // Close the modal
       handleClose();
 
