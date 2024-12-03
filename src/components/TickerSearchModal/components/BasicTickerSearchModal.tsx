@@ -52,9 +52,9 @@ export default function BasicTickerSearchModal({
   onSelectTicker,
   onCancel,
   disabledTickerIds = [],
-  textInputPlaceholder = 'Search for Symbol (e.g. "AAPL" or "Apple")',
-  searchButtonAriaLabel = "Ticker Search",
-  longFormAriaLabel = "Extract Tickers from Text",
+  textInputPlaceholder,
+  searchButtonAriaLabel,
+  longFormAriaLabel,
   onLongFormRequest,
 }: BasicTickerSearchModalProps) {
   const { triggerUIError } = useAppErrorBoundary();

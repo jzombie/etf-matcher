@@ -14,9 +14,10 @@ export default function TickerSearchModal({
   onSelectTicker, // TODO: Pluralize
   onCancel,
   disabledTickerIds,
-  textInputPlaceholder,
-  searchButtonAriaLabel,
-  longFormAriaLabel,
+  // TODO: Differentiate between `basic` and `long-form`
+  textInputPlaceholder = 'Search for Symbol (e.g. "AAPL" or "Apple")',
+  searchButtonAriaLabel = "Ticker Search",
+  longFormAriaLabel = "Extract Tickers from Text",
   ...rest
 }: TickerSearchModalProps) {
   const [isFullTextMode, setIsFullTextMode] = useState<boolean>(false);
