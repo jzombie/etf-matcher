@@ -102,10 +102,7 @@ pub fn generate_alternative_symbols(query: &str) -> Vec<String> {
 ///
 /// This function splits the input text into words and checks if each word matches
 /// any stock symbol in the preloaded cache.
-pub async fn extract_ticker_ids_from_text(
-    text: &str,
-    use_uppercase_only: bool,
-) -> Result<Vec<u32>, JsValue> {
+pub async fn extract_ticker_ids_from_text(text: &str) -> Result<Vec<u32>, JsValue> {
     // Ensure the cache is preloaded
     if SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE
         .lock()
@@ -123,8 +120,8 @@ pub async fn extract_ticker_ids_from_text(
         // Normalize the word (e.g., remove punctuation)
         let cleaned_word = word.trim_matches(|c: char| !c.is_alphanumeric());
 
-        // Skip words that are not entirely uppercase if `use_uppercase_only` is true
-        if use_uppercase_only && cleaned_word != cleaned_word.to_uppercase() {
+        // Skip words that are not entirely uppercase
+        if cleaned_word != cleaned_word.to_uppercase() {
             continue;
         }
 

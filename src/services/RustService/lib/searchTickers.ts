@@ -26,13 +26,7 @@ export async function extractSearchResultsFromText(
   pageSize: number = 20,
   abortSignal?: AbortSignal,
 ): Promise<RustServicePaginatedResults<RustServiceTickerSearchResult>> {
-  const useUppercaseOnly = true;
-
   return callRustService<
     RustServicePaginatedResults<RustServiceTickerSearchResult>
-  >(
-    "extract_search_results_from_text",
-    [text, useUppercaseOnly, page, pageSize],
-    abortSignal,
-  );
+  >("extract_search_results_from_text", [text, page, pageSize], abortSignal);
 }
