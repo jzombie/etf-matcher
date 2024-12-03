@@ -11,6 +11,14 @@ export type KeyboardEventsProps = {
   preventDefault?: boolean;
 };
 
+/**
+ * A custom React hook for handling keyboard events (`keydown` and `keyup`).
+ *
+ * - If `attachToWindow` is true (default), the event listeners are attached to the `window`.
+ * - If `attachToWindow` is false, the returned `onKeyDown` and `onKeyUp` handlers
+ *   should be attached to specific React components for localized event handling.
+ */
+
 export default function useKeyboardEvents({
   attachToWindow = true,
   stopPropagation = true,
