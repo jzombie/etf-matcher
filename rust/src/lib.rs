@@ -104,9 +104,10 @@ pub async fn extract_search_results_from_text(
     page: usize,
     page_size: usize,
 ) -> Result<JsValue, JsValue> {
-    // Call the `extract_ticker_ids_from_text` method and handle its result
+    // Extract and paginate search results from the input text
     let results = TickerSearch::extract_results_from_text(text, page, page_size).await?;
 
+    // Serialize the paginated results for JavaScript interoperability
     to_value(&results)
         .map_err(|err| JsValue::from_str(&format!("Failed to serialize results: {}", err)))
 }
