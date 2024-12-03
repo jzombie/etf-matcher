@@ -10,14 +10,13 @@ import customLogger from "@utils/customLogger";
 
 import TickerSearchModal, { SearchQueryResult } from "./TickerSearchModal";
 
-export type SearchModalButtonProps = {
+export type TickerSearchModalButtonProps = {
   highlight?: boolean;
 };
 
-// TODO: Rename to `TickerSearchModalButton`
-export default function SearchModalButton({
+export default function TickerSearchModalButton({
   highlight,
-}: SearchModalButtonProps) {
+}: TickerSearchModalButtonProps) {
   const searchModalButtonRef = useRef<HTMLButtonElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 

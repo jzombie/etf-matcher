@@ -18,8 +18,8 @@ import type { RustServiceTickerSearchResult } from "@services/RustService";
 import AvatarLogo from "@components/AvatarLogo";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
 import Padding from "@components/Padding";
-import SearchModalButton from "@components/SearchModalButton";
 import SelectableGrid from "@components/SelectableGrid";
+import TickerSearchModalButton from "@components/TickerSearchModalButton";
 import TickerViewWindowManager from "@components/TickerViewWindowManager";
 import Transition from "@components/Transition";
 
@@ -150,7 +150,7 @@ export default function SearchResultsPage() {
             Try another
           </Typography>
 
-          <SearchModalButton />
+          <TickerSearchModalButton />
         </Box>
 
         {onlyExactMatches && (
