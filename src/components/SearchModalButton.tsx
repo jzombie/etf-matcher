@@ -6,7 +6,9 @@ import { Button } from "@mui/material";
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import useURLState from "@hooks/useURLState";
 
-import TickerSearchModal from "./TickerSearchModal";
+import customLogger from "@utils/customLogger";
+
+import TickerSearchModal, { SearchQueryResult } from "./TickerSearchModal";
 
 export type SearchModalButtonProps = {
   highlight?: boolean;
@@ -49,7 +51,18 @@ export default function SearchModalButton({
   const { setURLState, toBooleanParam } = useURLState();
 
   const handleSearchQuery = useCallback(
-    (searchQuery: string, isExact: boolean) => {
+    // (searchQuery: string, isExact: boolean) => {
+    (searchQueryResults: SearchQueryResult[]) => {
+      if (searchQueryResults.length > 1) {
+        customLogger.warn("`searchQueryResults` truncated to the first value");
+      }
+
+      const searchQuery = searchQueryResults[0].searchQuery;
+      const isExact = searchQueryResults[0].isExact;
+
+      // TODO: Remove
+      console.log({ searchQuery, isExact });
+
       // Close the modal
       handleClose();
 
@@ -82,7 +95,7 @@ export default function SearchModalButton({
       <TickerSearchModal
         open={isSearchModalOpen}
         onClose={handleClose}
-        onSelectSearchQuery={handleSearchQuery}
+        onSelect={handleSearchQuery}
       />
     </>
   );

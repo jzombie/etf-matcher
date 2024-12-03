@@ -4,6 +4,7 @@ import { Alert, Box, Link, Typography } from "@mui/material";
 
 import Layout, { Aside, Content, Footer } from "@layoutKit/Layout";
 import Scrollable from "@layoutKit/Scrollable";
+import type { RustServiceTickerSearchResult } from "@services/RustService";
 
 import Padding from "@components/Padding";
 import Section from "@components/Section";
@@ -44,7 +45,7 @@ export default function MultiTickerManagerApplet({
     areAllTickersSelected,
     areNoTickersSelected,
     adjustTicker,
-    addSearchResultTicker,
+    addSearchResultTickers,
     removeTickerWithId,
     adjustedTickerBucket,
     filteredTickerBucket,
@@ -213,7 +214,19 @@ export default function MultiTickerManagerApplet({
       {/* Ticker Search Modal */}
       <TickerSearchModal
         open={isSearchModalOpen}
-        onSelectTicker={addSearchResultTicker}
+        // TODO: Memoize
+        onSelect={(searchQueryResults) =>
+          addSearchResultTickers(
+            searchQueryResults
+              .map((searchQueryResult) => searchQueryResult.tickerSearchResult)
+              .filter(
+                (
+                  tickerSearchResult,
+                ): tickerSearchResult is RustServiceTickerSearchResult =>
+                  !!tickerSearchResult,
+              ),
+          )
+        }
         onCancel={() => setIsSearchModalOpen(false)}
         disabledTickerIds={disabledSearchTickerIds}
       />

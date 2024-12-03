@@ -2,9 +2,14 @@ import type { RustServiceTickerSearchResult } from "@services/RustService";
 
 import type { DialogModalProps } from "@components/DialogModal";
 
+export type SearchQueryResult = {
+  searchQuery: string;
+  tickerSearchResult?: RustServiceTickerSearchResult;
+  isExact: boolean;
+};
+
 export type TickerSearchModalProps = Omit<DialogModalProps, "children"> & {
-  onSelectSearchQuery?: (searchQuery: string, isExact: boolean) => void;
-  onSelectTicker?: (searchResult: RustServiceTickerSearchResult) => void;
+  onSelect: (searchQueryResults: SearchQueryResult[]) => void;
   onCancel?: () => void;
   disabledTickerIds?: number[];
   textInputPlaceholder?: string;

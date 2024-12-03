@@ -33,8 +33,8 @@ export type TickerSelectionManagerContextType = {
   areAllTickersSelected: boolean;
   areNoTickersSelected: boolean;
   adjustTicker: (adjustedTicker: TickerBucketTicker) => void;
-  addSearchResultTicker: (
-    searchResultTicker: RustServiceTickerSearchResult,
+  addSearchResultTickers: (
+    searchResultTickers: RustServiceTickerSearchResult[],
   ) => void;
   removeTickerWithId: (tickerId: number) => void;
   adjustedTickerBucket: TickerBucket;
@@ -68,7 +68,7 @@ const DEFAULT_CONTEXT_VALUE: TickerSelectionManagerContextType = {
   areAllTickersSelected: true,
   areNoTickersSelected: false,
   adjustTicker: () => {},
-  addSearchResultTicker: () => {},
+  addSearchResultTickers: () => {},
   removeTickerWithId: () => {},
   adjustedTickerBucket: {
     uuid: "N/A",
@@ -195,40 +195,82 @@ export default function TickerSelectionManagerProvider({
     });
   }, []);
 
-  const addSearchResultTicker = useCallback(
-    (searchResultTicker: RustServiceTickerSearchResult) => {
+  const addSearchResultTickers = useCallback(
+    (searchResultTickers: RustServiceTickerSearchResult[]) => {
       setAdjustedTickerBucket((prev) => {
-        // Check if the ticker already exists in the adjustedTickerBucket
-        const tickerExists = prev.tickers.some(
-          (ticker) => ticker.tickerId === searchResultTicker.ticker_id,
-        );
+        // Create a new array for updated tickers
+        const updatedTickers = [...prev.tickers];
 
-        if (tickerExists) {
-          // If the ticker already exists, return the previous state without modification
-          return prev;
+        for (const searchResultTicker of searchResultTickers) {
+          // Check if the ticker already exists in the adjustedTickerBucket
+          const tickerExists = prev.tickers.some(
+            (ticker) => ticker.tickerId === searchResultTicker.ticker_id,
+          );
+
+          if (!tickerExists) {
+            // If the ticker does not exist, add it
+            const newTicker: TickerBucketTicker = {
+              tickerId: searchResultTicker.ticker_id,
+              symbol: searchResultTicker.symbol,
+              exchangeShortName: searchResultTicker.exchange_short_name,
+              quantity: 1,
+            };
+            updatedTickers.push(newTicker);
+          }
         }
 
-        // If the ticker does not exist, add it
-        const newTicker: TickerBucketTicker = {
-          tickerId: searchResultTicker.ticker_id,
-          symbol: searchResultTicker.symbol,
-          exchangeShortName: searchResultTicker.exchange_short_name,
-          quantity: 1,
-        };
-
-        // Automatically select new ticker id
-        setSelectedTickerIds((prev) => [
-          ...new Set([...prev, searchResultTicker.ticker_id]),
+        // Automatically select new ticker ids
+        setSelectedTickerIds((prevSelected) => [
+          ...new Set([
+            ...prevSelected,
+            ...searchResultTickers.map((ticker) => ticker.ticker_id),
+          ]),
         ]);
 
         return {
           ...prev,
-          tickers: [...prev.tickers, newTicker],
+          tickers: updatedTickers,
         };
       });
     },
     [],
   );
+
+  // TODO: Remove
+  // const addSearchResultTickers = useCallback(
+  //   (searchResultTicker: RustServiceTickerSearchResult) => {
+  //     setAdjustedTickerBucket((prev) => {
+  //       // Check if the ticker already exists in the adjustedTickerBucket
+  //       const tickerExists = prev.tickers.some(
+  //         (ticker) => ticker.tickerId === searchResultTicker.ticker_id,
+  //       );
+
+  //       if (tickerExists) {
+  //         // If the ticker already exists, return the previous state without modification
+  //         return prev;
+  //       }
+
+  //       // If the ticker does not exist, add it
+  //       const newTicker: TickerBucketTicker = {
+  //         tickerId: searchResultTicker.ticker_id,
+  //         symbol: searchResultTicker.symbol,
+  //         exchangeShortName: searchResultTicker.exchange_short_name,
+  //         quantity: 1,
+  //       };
+
+  //       // Automatically select new ticker id
+  //       setSelectedTickerIds((prev) => [
+  //         ...new Set([...prev, searchResultTicker.ticker_id]),
+  //       ]);
+
+  //       return {
+  //         ...prev,
+  //         tickers: [...prev.tickers, newTicker],
+  //       };
+  //     });
+  //   },
+  //   [],
+  // );
 
   const removeTickerWithId = useCallback(
     (tickerId: number) => {
@@ -365,7 +407,7 @@ export default function TickerSelectionManagerProvider({
       areAllTickersSelected,
       areNoTickersSelected,
       adjustTicker,
-      addSearchResultTicker,
+      addSearchResultTickers,
       removeTickerWithId,
       adjustedTickerBucket,
       filteredTickerBucket,
@@ -395,7 +437,7 @@ export default function TickerSelectionManagerProvider({
       areAllTickersSelected,
       areNoTickersSelected,
       adjustTicker,
-      addSearchResultTicker,
+      addSearchResultTickers,
       removeTickerWithId,
       adjustedTickerBucket,
       filteredTickerBucket,

@@ -48,8 +48,7 @@ export type BasicTickerSearchModalProps = TickerSearchModalProps & {
 export default function BasicTickerSearchModal({
   open: isOpen,
   onClose,
-  onSelectSearchQuery,
-  onSelectTicker,
+  onSelect,
   onCancel,
   disabledTickerIds = [],
   textInputPlaceholder,
@@ -63,11 +62,8 @@ export default function BasicTickerSearchModal({
 
   const onCancelStableCurrentRef = useStableCurrentRef(onCancel);
   const onCloseStableCurrentRef = useStableCurrentRef(onClose);
-  const onSelectSearchQueryStableCurrentRef =
-    useStableCurrentRef(onSelectSearchQuery);
 
-  const onSelectTickerResultStableCurrentRef =
-    useStableCurrentRef(onSelectTicker);
+  const onSelectStableCurrentRef = useStableCurrentRef(onSelect);
 
   // Handle auto-blur/focus
   useEffect(() => {
@@ -153,38 +149,28 @@ export default function BasicTickerSearchModal({
     (
       _?: SyntheticEvent | KeyboardEvent,
       exactSearchValue?: string,
-      selectedTicker?: RustServiceTickerSearchResult,
+      tickerSearchResult?: RustServiceTickerSearchResult,
     ) => {
       try {
         // Close the modal
         handleClose();
 
-        const locSearchQuery = exactSearchValue || searchQuery;
-
-        const onSelectSearchQuery = onSelectSearchQueryStableCurrentRef.current;
-        if (typeof onSelectSearchQuery === "function") {
-          onSelectSearchQuery(locSearchQuery, Boolean(exactSearchValue));
-        }
-
-        if (selectedTicker) {
-          const onSelectTickerResult =
-            onSelectTickerResultStableCurrentRef.current;
-          if (typeof onSelectTickerResult === "function") {
-            onSelectTickerResult(selectedTicker);
-          }
+        const onSelect = onSelectStableCurrentRef.current;
+        if (typeof onSelect === "function") {
+          onSelect([
+            {
+              searchQuery: exactSearchValue || searchQuery,
+              tickerSearchResult,
+              isExact: Boolean(exactSearchValue),
+            },
+          ]);
         }
       } catch (error) {
         triggerUIError(new Error("Error confirming search"));
         customLogger.error("Error confirming search:", error);
       }
     },
-    [
-      handleClose,
-      searchQuery,
-      onSelectSearchQueryStableCurrentRef,
-      onSelectTickerResultStableCurrentRef,
-      triggerUIError,
-    ],
+    [handleClose, searchQuery, onSelectStableCurrentRef, triggerUIError],
   );
 
   const handleInputChange = useCallback(

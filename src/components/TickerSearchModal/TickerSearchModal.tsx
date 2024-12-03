@@ -4,14 +4,13 @@ import customLogger from "@utils/customLogger";
 
 import BasicTickerSearchModal from "./components/BasicTickerSearchModal";
 import TickerSymbolExtractorSelectorDialogModal from "./components/TickerSymbolExtractorSelectorDialogModal";
-import type { TickerSearchModalProps } from "./types";
+import type { SearchQueryResult, TickerSearchModalProps } from "./types";
 
-export type { TickerSearchModalProps };
+export type { TickerSearchModalProps, SearchQueryResult };
 
 export default function TickerSearchModal({
   open: isOpen,
-  onSelectSearchQuery, // TODO: Move elsewhere
-  onSelectTicker, // TODO: Pluralize
+  onSelect,
   onCancel,
   disabledTickerIds,
   // TODO: Differentiate between `basic` and `long-form`
@@ -50,8 +49,7 @@ export default function TickerSearchModal({
     <>
       <BasicTickerSearchModal
         open={isBasicTickerSearchModalOpen}
-        onSelectSearchQuery={onSelectSearchQuery}
-        onSelectTicker={onSelectTicker}
+        onSelect={onSelect}
         onCancel={onCancel}
         disabledTickerIds={disabledTickerIds}
         textInputPlaceholder={textInputPlaceholder}
