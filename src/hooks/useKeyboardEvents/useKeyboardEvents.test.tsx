@@ -137,7 +137,7 @@ describe("useKeyboardEvents", () => {
         const stopPropagation = vi.fn();
         render(
           <TestComponent
-            keydown={{
+            keyDown={{
               Enter: keydownCallback,
             }}
             stopPropagation={true}
