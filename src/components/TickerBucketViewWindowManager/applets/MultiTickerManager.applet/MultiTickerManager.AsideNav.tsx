@@ -2,8 +2,8 @@ import React from "react";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutlined";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
-import CheckBoxIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlined";
+import UnselectIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import SelectAllIcon from "@mui/icons-material/CheckBoxOutlined";
 import SaveIcon from "@mui/icons-material/SaveOutlined";
 import { Box, IconButton } from "@mui/material";
 
@@ -64,7 +64,7 @@ export default function MultiTickerManagerAsideNav({
         title="Select All"
         aria-label="Select all tickers"
       >
-        <CheckBoxOutlineBlankIcon fontSize={ICON_FONT_SIZE} />
+        <SelectAllIcon fontSize={ICON_FONT_SIZE} />
       </IconButton>
 
       {/* Unselect All Icon */}
@@ -74,7 +74,7 @@ export default function MultiTickerManagerAsideNav({
         title="Unselect All"
         aria-label="Unselect all tickers"
       >
-        <CheckBoxIcon fontSize={ICON_FONT_SIZE} />
+        <UnselectIcon fontSize={ICON_FONT_SIZE} />
       </IconButton>
 
       {/* Add Child Bucket Icon */}
