@@ -227,7 +227,7 @@ export default function MultiTickerManagerApplet({
               ),
           )
         }
-        onCancel={() => setIsSearchModalOpen(false)}
+        onClose={() => setIsSearchModalOpen(false)}
         disabledTickerIds={disabledSearchTickerIds}
       />
     </TickerBucketViewWindowManagerAppletWrap>
