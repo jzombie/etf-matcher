@@ -9,6 +9,7 @@ export type { TickerSearchModalProps, SearchQueryResult };
 // TODO: Handle disabled in `long-form` mode
 // TODO: Limit `long-form` selections, if necessary (max selections)
 // TODO: Fix "Adjust `totalSearchResults`" TODO in `BasicTickerSearchModal
+// TODO: Implement non-symbol based extraction
 
 export default function TickerSearchModal({
   open: isOpen,
