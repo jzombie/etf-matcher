@@ -6,7 +6,7 @@ use crate::utils::ticker_utils::generate_alternative_symbols;
 use crate::JsValue;
 use crate::{DataURL, ExchangeById, PaginatedResults};
 use serde::{Deserialize, Serialize};
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 pub struct TickerSearch {
     pub query: String,
@@ -197,6 +197,9 @@ impl TickerSearch {
         })
     }
 
+    // TODO: This algorithm needs to be extracted into a separate library and tested accordingly.
+    // The company-name based extraction is very fickle and not good.
+    //
     /// Extracts `TickerSearchResult` entries from a given text.
     ///
     /// This method uses the `extract_ticker_ids_from_text` to parse the text for ticker IDs
@@ -286,7 +289,16 @@ impl TickerSearch {
             .filter(|token| !COMMON_WORDS.contains(token))
             .collect();
         if !input_tokens.is_empty() {
-            let mut scored_results: Vec<(f32, &TickerSearchResultRaw)> = Vec::new();
+            // Filter input tokens: Only consider tokens starting with a capital letter and of sufficient length
+            let input_tokens_capitalized: Vec<String> = input_tokens
+                .iter()
+                .filter(|token| {
+                    token.chars().next().map_or(false, |c| c.is_uppercase()) && token.len() > 1
+                }) // Min length > 1
+                .map(|token| token.to_lowercase()) // Normalize to lowercase for matching
+                .collect();
+
+            let mut scored_results: HashMap<u32, f32> = HashMap::new();
 
             for raw_result in &all_raw_results {
                 // Skip already-matched results
@@ -300,66 +312,87 @@ impl TickerSearch {
                     continue; // Skip results with no company name
                 }
 
-                // Normalize the company name and extract tokens
+                // Normalize and tokenize the company name
                 let company_lower = company_name
                     .unwrap()
-                    .replace(|c: char| !c.is_alphanumeric() && c != ' ', " "); // Remove special characters
-                let mut company_tokens = company_lower.split_whitespace();
+                    .to_lowercase()
+                    .replace(|c: char| !c.is_alphanumeric() && c != ' ', " ");
+                let company_tokens: Vec<String> =
+                    company_lower.split_whitespace().map(String::from).collect();
+                let total_company_words = company_tokens.len();
 
-                // Locate the first meaningful company first word
-                let mut company_first_word = "";
-                for token in company_tokens.clone() {
-                    if !COMMON_WORDS
-                        .iter()
-                        .any(|&common| common.eq_ignore_ascii_case(&token))
-                    {
-                        company_first_word = token;
-                        break; // Exit the loop once we find a non-common word
+                if company_tokens.is_empty() {
+                    continue; // Skip empty names
+                }
+
+                let mut match_score = 0.0;
+                let mut token_index = 0;
+
+                // Attempt to match consecutive tokens
+                while token_index < input_tokens_capitalized.len() {
+                    let mut consecutive_match_count = 0;
+                    let mut start_index = None;
+
+                    for (company_index, company_token) in company_tokens.iter().enumerate() {
+                        if input_tokens_capitalized[token_index] == *company_token {
+                            if start_index.is_none() {
+                                start_index = Some(company_index);
+                            }
+                            consecutive_match_count += 1;
+                            token_index += 1;
+                            if token_index == input_tokens_capitalized.len() {
+                                break; // No more tokens to match
+                            }
+                        } else if start_index.is_some() {
+                            break; // End of consecutive match
+                        }
+                    }
+
+                    if consecutive_match_count > 0 {
+                        let consecutive_score =
+                            consecutive_match_count as f32 / total_company_words as f32;
+                        match_score += consecutive_score;
+                    } else {
+                        token_index += 1; // Move to the next token if no match was found
                     }
                 }
 
-                // Skip the first word if it is empty
-                if company_first_word == "" {
+                // Penalize results with extra unrelated words
+                match_score /= total_company_words as f32;
+
+                // Skip if no meaningful match
+                if match_score == 0.0 {
                     continue;
                 }
 
-                // Create a set of meaningful tokens from the company name
-                let company_token_set: HashSet<&str> = company_tokens
-                    .filter(|token| {
-                        !COMMON_WORDS
-                            .iter()
-                            .any(|&common| common.eq_ignore_ascii_case(token))
-                    }) // Exclude common words (case-insensitive)
-                    .chain(std::iter::once(company_first_word))
-                    .collect();
-
-                // Calculate matching tokens count
-                let matching_tokens_count = company_token_set
-                    .iter()
-                    .filter(|&token| input_tokens.contains(token))
-                    .count();
-
-                // Calculate the match score as the proportion of matching tokens
-                let score = matching_tokens_count as f32 / company_token_set.len() as f32;
-
-                // Store the score and raw result for later sorting
-                scored_results.push((score, raw_result));
+                // Aggregate score for this company
+                scored_results
+                    .entry(raw_result.ticker_id)
+                    .and_modify(|e| *e += match_score)
+                    .or_insert(match_score);
             }
 
-            // Sort results by score in descending order
-            scored_results
-                .sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap_or(std::cmp::Ordering::Equal));
+            // Convert scored results to a sorted list
+            let mut results: Vec<(f32, &TickerSearchResultRaw)> = scored_results
+                .into_iter()
+                .map(|(id, score)| {
+                    let raw_result = all_raw_results
+                        .iter()
+                        .find(|r| r.ticker_id == id)
+                        .expect("Ticker ID mismatch");
+                    (score, raw_result)
+                })
+                .collect();
 
-            // Find the highest score and filter results within a deviation
-            let max_score = scored_results
-                .first()
-                .map(|(score, _)| *score)
-                .unwrap_or(0.0);
-            let threshold = max_score * 0.8; // Include results within 80% of the highest score
+            results.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap_or(std::cmp::Ordering::Equal));
 
-            for (score, raw_result) in scored_results {
+            // Apply a threshold (e.g., 80% of the highest score)
+            let max_score = results.first().map(|(score, _)| *score).unwrap_or(0.0);
+            let threshold = max_score * 0.8;
+
+            for (score, raw_result) in results {
                 if score < threshold {
-                    break; // Stop processing once scores drop below the threshold
+                    break;
                 }
 
                 if seen_ticker_ids.insert(raw_result.ticker_id) {
