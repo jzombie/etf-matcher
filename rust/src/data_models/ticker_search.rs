@@ -262,122 +262,86 @@ impl TickerSearch {
             }
         }
 
-        // Step 2: Company Name Matching
-        // for raw_result in &all_raw_results {
-        //     // Skip already-matched results
-        //     if seen_ticker_ids.contains(&raw_result.ticker_id) {
-        //         continue;
-        //     }
+        // Define a set of common generic words to exclude from matching
+        const COMMON_WORDS: &[&str] = &[
+            "the",
+            "corporation",
+            "inc",
+            "company",
+            "limited",
+            "llc",
+            "group",
+        ];
 
-        //     let company_lower = raw_result
-        //         .company_name
-        //         .as_deref()
-        //         .unwrap_or("")
-        //         .to_lowercase();
+        // Step 2: Optimized Company Name Matching
+        for raw_result in &all_raw_results {
+            // Skip already-matched results
+            if seen_ticker_ids.contains(&raw_result.ticker_id) {
+                continue;
+            }
 
-        //     // Calculate the maximum window size based on the company name word count
-        //     let max_window_size = company_lower.split_whitespace().count();
+            // Ensure the company name exists
+            let company_name = raw_result.company_name.as_deref();
+            if company_name.is_none() || company_name.unwrap().is_empty() {
+                continue; // Skip results with no company name
+            }
 
-        //     const ALLOWED_DISTANCE: usize = 2; // Fuzzy matching threshold
+            // Normalize the company name into tokens, excluding common words
+            let company_lower = company_name
+                .unwrap()
+                .to_lowercase()
+                .replace(|c: char| !c.is_alphanumeric() && c != ' ', " "); // Remove special characters
+            let company_tokens: HashSet<&str> = company_lower
+                .split_whitespace()
+                .filter(|token| !COMMON_WORDS.contains(token)) // Exclude common words
+                .collect();
 
-        //     for start_idx in 0..tokens.len() {
-        //         for window_size in 1..=max_window_size {
-        //             let end_idx = start_idx + window_size;
+            // Normalize and clean the input text into tokens
+            let cleaned_text = text
+                .to_lowercase()
+                .replace(|c: char| !c.is_alphanumeric() && c != ' ', " "); // Remove special characters
+            let input_tokens: HashSet<&str> = cleaned_text
+                .split_whitespace()
+                .filter(|token| !COMMON_WORDS.contains(token)) // Exclude common words
+                .collect();
 
-        //             // Break if the window exceeds the tokens array
-        //             if end_idx > tokens.len() {
-        //                 break;
-        //             }
+            // Skip if input tokens contain no meaningful words
+            if input_tokens.is_empty() {
+                continue; // No meaningful words in input
+            }
 
-        //             // Create a phrase from adjacent tokens
-        //             let phrase = tokens[start_idx..end_idx].join(" ").to_lowercase();
+            // Check if the number of matching tokens is at least half of the unique company tokens
+            let matching_tokens_count = company_tokens
+                .iter()
+                .filter(|&token| input_tokens.contains(*token))
+                .count();
+            let required_matches = (company_tokens.len() + 1) / 2; // At least half (rounding up)
 
-        //             // Prioritize exact matches first
-        //             if phrase == company_lower {
-        //                 if seen_ticker_ids.insert(raw_result.ticker_id) {
-        //                     let logo_filename = extract_logo_filename(
-        //                         raw_result.logo_filename.as_deref(),
-        //                         &raw_result.symbol,
-        //                     );
+            if matching_tokens_count >= required_matches {
+                if seen_ticker_ids.insert(raw_result.ticker_id) {
+                    let logo_filename = extract_logo_filename(
+                        raw_result.logo_filename.as_deref(),
+                        &raw_result.symbol,
+                    );
 
-        //                     let exchange_short_name =
-        //                         if let Some(exchange_id) = raw_result.exchange_id {
-        //                             ExchangeById::get_short_name_by_exchange_id(exchange_id)
-        //                                 .await
-        //                                 .ok()
-        //                         } else {
-        //                             None
-        //                         };
+                    let exchange_short_name = if let Some(exchange_id) = raw_result.exchange_id {
+                        ExchangeById::get_short_name_by_exchange_id(exchange_id)
+                            .await
+                            .ok()
+                    } else {
+                        None
+                    };
 
-        //                     matches.push(TickerSearchResult {
-        //                         ticker_id: raw_result.ticker_id,
-        //                         symbol: raw_result.symbol.clone(),
-        //                         exchange_short_name,
-        //                         company_name: raw_result.company_name.clone(),
-        //                         logo_filename,
-        //                     });
-        //                 }
-        //                 break; // Stop further checks once an exact match is found
-        //             }
-
-        //             // Check if phrase is a prefix of the company name
-        //             if company_lower.starts_with(&phrase) {
-        //                 if seen_ticker_ids.insert(raw_result.ticker_id) {
-        //                     let logo_filename = extract_logo_filename(
-        //                         raw_result.logo_filename.as_deref(),
-        //                         &raw_result.symbol,
-        //                     );
-
-        //                     let exchange_short_name =
-        //                         if let Some(exchange_id) = raw_result.exchange_id {
-        //                             ExchangeById::get_short_name_by_exchange_id(exchange_id)
-        //                                 .await
-        //                                 .ok()
-        //                         } else {
-        //                             None
-        //                         };
-
-        //                     matches.push(TickerSearchResult {
-        //                         ticker_id: raw_result.ticker_id,
-        //                         symbol: raw_result.symbol.clone(),
-        //                         exchange_short_name,
-        //                         company_name: raw_result.company_name.clone(),
-        //                         logo_filename,
-        //                     });
-        //                 }
-        //                 break; // Stop further checks once a prefix match is found
-        //             }
-
-        //             // Fallback to fuzzy matching for longer company names
-        //             if levenshtein(&phrase, &company_lower) <= ALLOWED_DISTANCE {
-        //                 if seen_ticker_ids.insert(raw_result.ticker_id) {
-        //                     let logo_filename = extract_logo_filename(
-        //                         raw_result.logo_filename.as_deref(),
-        //                         &raw_result.symbol,
-        //                     );
-
-        //                     let exchange_short_name =
-        //                         if let Some(exchange_id) = raw_result.exchange_id {
-        //                             ExchangeById::get_short_name_by_exchange_id(exchange_id)
-        //                                 .await
-        //                                 .ok()
-        //                         } else {
-        //                             None
-        //                         };
-
-        //                     matches.push(TickerSearchResult {
-        //                         ticker_id: raw_result.ticker_id,
-        //                         symbol: raw_result.symbol.clone(),
-        //                         exchange_short_name,
-        //                         company_name: raw_result.company_name.clone(),
-        //                         logo_filename,
-        //                     });
-        //                 }
-        //                 break; // Stop further checks once a fuzzy match is found
-        //             }
-        //         }
-        //     }
-        // }
+                    matches.push(TickerSearchResult {
+                        ticker_id: raw_result.ticker_id,
+                        symbol: raw_result.symbol.clone(),
+                        exchange_short_name,
+                        company_name: raw_result.company_name.clone(),
+                        logo_filename,
+                    });
+                }
+            }
+        }
 
         // Step 3: Sort and Paginate Results
         matches.sort_by(|a, b| a.symbol.cmp(&b.symbol));
