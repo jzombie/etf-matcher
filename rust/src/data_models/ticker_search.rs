@@ -266,79 +266,95 @@ impl TickerSearch {
         const COMMON_WORDS: &[&str] = &[
             "the",
             "corporation",
+            "enterprise",
             "inc",
             "company",
             "limited",
             "llc",
             "group",
+            "technologies",
         ];
 
         // Step 2: Optimized Company Name Matching
-        for raw_result in &all_raw_results {
-            // Skip already-matched results
-            if seen_ticker_ids.contains(&raw_result.ticker_id) {
-                continue;
-            }
+        let normalized_text = text
+            // .to_lowercase()
+            .replace(|c: char| !c.is_alphanumeric() && c != ' ', " "); // Normalize input
 
-            // Ensure the company name exists
-            let company_name = raw_result.company_name.as_deref();
-            if company_name.is_none() || company_name.unwrap().is_empty() {
-                continue; // Skip results with no company name
-            }
+        let input_tokens: Vec<&str> = normalized_text
+            .split_whitespace()
+            .filter(|token| !COMMON_WORDS.contains(token))
+            .collect();
+        if !input_tokens.is_empty() {
+            for raw_result in &all_raw_results {
+                // Skip already-matched results
+                if seen_ticker_ids.contains(&raw_result.ticker_id) {
+                    continue;
+                }
 
-            // Normalize the company name into tokens, excluding common words
-            let company_lower = company_name
-                .unwrap()
-                .to_lowercase()
-                .replace(|c: char| !c.is_alphanumeric() && c != ' ', " "); // Remove special characters
-            let company_tokens: HashSet<&str> = company_lower
-                .split_whitespace()
-                .filter(|token| !COMMON_WORDS.contains(token)) // Exclude common words
-                .collect();
+                // Ensure the company name exists
+                let company_name = raw_result.company_name.as_deref();
+                if company_name.is_none() || company_name.unwrap().is_empty() {
+                    continue; // Skip results with no company name
+                }
 
-            // Normalize and clean the input text into tokens
-            let cleaned_text = text
-                .to_lowercase()
-                .replace(|c: char| !c.is_alphanumeric() && c != ' ', " "); // Remove special characters
-            let input_tokens: HashSet<&str> = cleaned_text
-                .split_whitespace()
-                .filter(|token| !COMMON_WORDS.contains(token)) // Exclude common words
-                .collect();
+                // Normalize the company name and extract tokens
+                let company_lower = company_name
+                    .unwrap()
+                    // .to_lowercase()
+                    .replace(|c: char| !c.is_alphanumeric() && c != ' ', " "); // Remove special characters
+                let mut company_tokens = company_lower.split_whitespace();
 
-            // Skip if input tokens contain no meaningful words
-            if input_tokens.is_empty() {
-                continue; // No meaningful words in input
-            }
+                // Skip the first word if it's "the"
+                let company_first_word = company_tokens.next().unwrap_or("");
+                let company_first_word = if COMMON_WORDS.contains(&company_first_word) {
+                    company_tokens.next().unwrap_or("") // Skip to the second word
+                } else {
+                    company_first_word
+                };
 
-            // Check if the number of matching tokens is at least half of the unique company tokens
-            let matching_tokens_count = company_tokens
-                .iter()
-                .filter(|&token| input_tokens.contains(*token))
-                .count();
-            let required_matches = (company_tokens.len() + 1) / 2; // At least half (rounding up)
+                // Create a set of meaningful tokens from the company name
+                let company_token_set: HashSet<&str> = company_tokens
+                    .filter(|token| !COMMON_WORDS.contains(token)) // Exclude common words
+                    .chain(std::iter::once(company_first_word)) // Include the first meaningful word
+                    .collect();
 
-            if matching_tokens_count >= required_matches {
-                if seen_ticker_ids.insert(raw_result.ticker_id) {
-                    let logo_filename = extract_logo_filename(
-                        raw_result.logo_filename.as_deref(),
-                        &raw_result.symbol,
-                    );
+                // Prioritize the first meaningful word match
+                if !input_tokens.contains(&company_first_word) {
+                    continue; // Skip if the first meaningful word does not match
+                }
 
-                    let exchange_short_name = if let Some(exchange_id) = raw_result.exchange_id {
-                        ExchangeById::get_short_name_by_exchange_id(exchange_id)
-                            .await
-                            .ok()
-                    } else {
-                        None
-                    };
+                // Check if the input matches at least half the company's meaningful tokens
+                let matching_tokens_count = company_token_set
+                    .iter()
+                    .filter(|&token| input_tokens.contains(token))
+                    .count();
 
-                    matches.push(TickerSearchResult {
-                        ticker_id: raw_result.ticker_id,
-                        symbol: raw_result.symbol.clone(),
-                        exchange_short_name,
-                        company_name: raw_result.company_name.clone(),
-                        logo_filename,
-                    });
+                let required_matches = (company_token_set.len() + 1) / 2; // At least half (rounding up)
+
+                if matching_tokens_count >= required_matches {
+                    if seen_ticker_ids.insert(raw_result.ticker_id) {
+                        let logo_filename = extract_logo_filename(
+                            raw_result.logo_filename.as_deref(),
+                            &raw_result.symbol,
+                        );
+
+                        let exchange_short_name = if let Some(exchange_id) = raw_result.exchange_id
+                        {
+                            ExchangeById::get_short_name_by_exchange_id(exchange_id)
+                                .await
+                                .ok()
+                        } else {
+                            None
+                        };
+
+                        matches.push(TickerSearchResult {
+                            ticker_id: raw_result.ticker_id,
+                            symbol: raw_result.symbol.clone(),
+                            exchange_short_name,
+                            company_name: raw_result.company_name.clone(),
+                            logo_filename,
+                        });
+                    }
                 }
             }
         }
