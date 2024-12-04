@@ -262,6 +262,8 @@ impl TickerSearch {
             }
         }
 
+        // Note: Special consideration would need to be made if the company is actually called one of these
+        //
         // Define a set of common generic words to exclude from matching
         const COMMON_WORDS: &[&str] = &[
             "the",
@@ -304,18 +306,34 @@ impl TickerSearch {
                     .replace(|c: char| !c.is_alphanumeric() && c != ' ', " "); // Remove special characters
                 let mut company_tokens = company_lower.split_whitespace();
 
-                // Skip the first word if it's "the"
-                let company_first_word = company_tokens.next().unwrap_or("");
-                let company_first_word = if COMMON_WORDS.contains(&company_first_word) {
-                    company_tokens.next().unwrap_or("") // Skip to the second word
-                } else {
-                    company_first_word
-                };
+                // Locate the first meaningful company first word
+                let mut company_first_word = "";
+                for token in company_tokens.clone() {
+                    if !COMMON_WORDS
+                        .iter()
+                        .any(|&common| common.eq_ignore_ascii_case(&token))
+                    {
+                        company_first_word = token;
+                        break; // Exit the loop once we find a non-common word
+                    }
+                }
+
+                // Use the original `company_tokens` here
+                // let company_token_set: HashSet<&str> = company_tokens.collect();
+
+                // Skip the first word if it is empty
+                if company_first_word == "" {
+                    continue;
+                }
 
                 // Create a set of meaningful tokens from the company name
                 let company_token_set: HashSet<&str> = company_tokens
-                    .filter(|token| !COMMON_WORDS.contains(token)) // Exclude common words
-                    .chain(std::iter::once(company_first_word)) // Include the first meaningful word
+                    .filter(|token| {
+                        !COMMON_WORDS
+                            .iter()
+                            .any(|&common| common.eq_ignore_ascii_case(token))
+                    }) // Exclude common words (case-insensitive)
+                    .chain(std::iter::once(company_first_word))
                     .collect();
 
                 // Prioritize the first meaningful word match
