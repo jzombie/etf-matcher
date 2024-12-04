@@ -2,9 +2,10 @@ use crate::types::{ExchangeId, TickerId};
 use crate::utils::extract_logo_filename;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
-use crate::utils::ticker_utils::{extract_ticker_ids_from_text, generate_alternative_symbols};
+use crate::utils::ticker_utils::generate_alternative_symbols;
 use crate::JsValue;
 use crate::{DataURL, ExchangeById, PaginatedResults};
+use levenshtein::levenshtein;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
@@ -206,43 +207,183 @@ impl TickerSearch {
         page: usize,
         page_size: usize,
     ) -> Result<PaginatedResults<TickerSearchResult>, JsValue> {
-        // Extract ticker IDs from the provided text
-        let ticker_ids = extract_ticker_ids_from_text(text).await?;
+        // Tokenize and normalize the input text
+        let tokens: Vec<&str> = text
+            .split_whitespace()
+            .map(|word| word.trim_matches(|c: char| !(c.is_alphanumeric() || c == '-' || c == '.')))
+            .filter(|word| !word.is_empty())
+            .collect();
 
-        // Fetch the raw ticker data for each extracted ticker ID
-        let mut results = Vec::with_capacity(ticker_ids.len());
-        for ticker_id in ticker_ids {
-            if let Ok(raw_result) = Self::get_raw_result_with_id(ticker_id).await {
-                let exchange_short_name = if let Some(exchange_id) = raw_result.exchange_id {
-                    match ExchangeById::get_short_name_by_exchange_id(exchange_id).await {
-                        Ok(name) => Some(name),
-                        Err(_) => None,
+        // Fetch all raw results
+        let all_raw_results = Self::get_all_raw_results().await?;
+
+        let mut matches = Vec::new();
+        let mut seen_ticker_ids = HashSet::new();
+
+        // Step 1: Symbol Matching
+        for raw_result in &all_raw_results {
+            let symbol_lower = raw_result.symbol.to_lowercase();
+
+            for token in &tokens {
+                let token_lower = token.to_lowercase();
+                let alternatives = generate_alternative_symbols(&token_lower);
+
+                // Check if token or its alternatives match the symbol
+                if alternatives.iter().any(|alt| alt == &symbol_lower) {
+                    if seen_ticker_ids.insert(raw_result.ticker_id) {
+                        let logo_filename = extract_logo_filename(
+                            raw_result.logo_filename.as_deref(),
+                            &raw_result.symbol,
+                        );
+
+                        let exchange_short_name = if let Some(exchange_id) = raw_result.exchange_id
+                        {
+                            ExchangeById::get_short_name_by_exchange_id(exchange_id)
+                                .await
+                                .ok()
+                        } else {
+                            None
+                        };
+
+                        matches.push(TickerSearchResult {
+                            ticker_id: raw_result.ticker_id,
+                            symbol: raw_result.symbol.clone(),
+                            exchange_short_name,
+                            company_name: raw_result.company_name.clone(),
+                            logo_filename,
+                        });
                     }
-                } else {
-                    None
-                };
-
-                // Use `extract_logo_filename` to get the actual filename
-                let logo_filename =
-                    extract_logo_filename(raw_result.logo_filename.as_deref(), &raw_result.symbol);
-
-                results.push(TickerSearchResult {
-                    ticker_id: raw_result.ticker_id,
-                    symbol: raw_result.symbol,
-                    exchange_short_name,
-                    company_name: raw_result.company_name,
-                    logo_filename,
-                });
+                    break; // Stop further checks once a match is found for this raw_result
+                }
             }
         }
 
-        // Paginate the results
-        let total_count = results.len();
+        // Step 2: Company Name Matching
+        for raw_result in &all_raw_results {
+            // Skip already-matched results
+            if seen_ticker_ids.contains(&raw_result.ticker_id) {
+                continue;
+            }
+
+            let company_lower = raw_result
+                .company_name
+                .as_deref()
+                .unwrap_or("")
+                .to_lowercase();
+
+            // Calculate the maximum window size based on the company name word count
+            let max_window_size = company_lower.split_whitespace().count();
+
+            const ALLOWED_DISTANCE: usize = 2; // Fuzzy matching threshold
+
+            for start_idx in 0..tokens.len() {
+                for window_size in 1..=max_window_size {
+                    let end_idx = start_idx + window_size;
+
+                    // Break if the window exceeds the tokens array
+                    if end_idx > tokens.len() {
+                        break;
+                    }
+
+                    // Create a phrase from adjacent tokens
+                    let phrase = tokens[start_idx..end_idx].join(" ").to_lowercase();
+
+                    // Prioritize exact matches first
+                    if phrase == company_lower {
+                        if seen_ticker_ids.insert(raw_result.ticker_id) {
+                            let logo_filename = extract_logo_filename(
+                                raw_result.logo_filename.as_deref(),
+                                &raw_result.symbol,
+                            );
+
+                            let exchange_short_name =
+                                if let Some(exchange_id) = raw_result.exchange_id {
+                                    ExchangeById::get_short_name_by_exchange_id(exchange_id)
+                                        .await
+                                        .ok()
+                                } else {
+                                    None
+                                };
+
+                            matches.push(TickerSearchResult {
+                                ticker_id: raw_result.ticker_id,
+                                symbol: raw_result.symbol.clone(),
+                                exchange_short_name,
+                                company_name: raw_result.company_name.clone(),
+                                logo_filename,
+                            });
+                        }
+                        break; // Stop further checks once an exact match is found
+                    }
+
+                    // Check if phrase is a prefix of the company name
+                    if company_lower.starts_with(&phrase) {
+                        if seen_ticker_ids.insert(raw_result.ticker_id) {
+                            let logo_filename = extract_logo_filename(
+                                raw_result.logo_filename.as_deref(),
+                                &raw_result.symbol,
+                            );
+
+                            let exchange_short_name =
+                                if let Some(exchange_id) = raw_result.exchange_id {
+                                    ExchangeById::get_short_name_by_exchange_id(exchange_id)
+                                        .await
+                                        .ok()
+                                } else {
+                                    None
+                                };
+
+                            matches.push(TickerSearchResult {
+                                ticker_id: raw_result.ticker_id,
+                                symbol: raw_result.symbol.clone(),
+                                exchange_short_name,
+                                company_name: raw_result.company_name.clone(),
+                                logo_filename,
+                            });
+                        }
+                        break; // Stop further checks once a prefix match is found
+                    }
+
+                    // Fallback to fuzzy matching for longer company names
+                    if levenshtein(&phrase, &company_lower) <= ALLOWED_DISTANCE {
+                        if seen_ticker_ids.insert(raw_result.ticker_id) {
+                            let logo_filename = extract_logo_filename(
+                                raw_result.logo_filename.as_deref(),
+                                &raw_result.symbol,
+                            );
+
+                            let exchange_short_name =
+                                if let Some(exchange_id) = raw_result.exchange_id {
+                                    ExchangeById::get_short_name_by_exchange_id(exchange_id)
+                                        .await
+                                        .ok()
+                                } else {
+                                    None
+                                };
+
+                            matches.push(TickerSearchResult {
+                                ticker_id: raw_result.ticker_id,
+                                symbol: raw_result.symbol.clone(),
+                                exchange_short_name,
+                                company_name: raw_result.company_name.clone(),
+                                logo_filename,
+                            });
+                        }
+                        break; // Stop further checks once a fuzzy match is found
+                    }
+                }
+            }
+        }
+
+        // Step 3: Sort and Paginate Results
+        matches.sort_by(|a, b| a.symbol.cmp(&b.symbol));
+
+        let total_count = matches.len();
         let start = page.saturating_sub(1).saturating_mul(page_size);
         let end = start + page_size;
 
         let paginated_results = if start < total_count {
-            results[start..total_count.min(end)].to_vec()
+            matches[start..total_count.min(end)].to_vec()
         } else {
             vec![]
         };
