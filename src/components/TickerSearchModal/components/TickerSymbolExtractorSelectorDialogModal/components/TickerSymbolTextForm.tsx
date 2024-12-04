@@ -42,6 +42,11 @@ export default function TickerSymbolTextForm({
           <Typography variant="h6" align="center">
             Paste Text to Extract Stock Symbols
           </Typography>
+          <Typography variant="body2" align="center">
+            Note: This aims to extract stock symbols from both company names and
+            symbols, but the extraction of company names is still in the early
+            beta stage.
+          </Typography>
         </Header>
         <Content>
           <FullTextField
