@@ -5,7 +5,6 @@ use crate::utils::parse::parse_csv_data;
 use crate::utils::ticker_utils::generate_alternative_symbols;
 use crate::JsValue;
 use crate::{DataURL, ExchangeById, PaginatedResults};
-use levenshtein::levenshtein;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
