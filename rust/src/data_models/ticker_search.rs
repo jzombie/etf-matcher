@@ -287,6 +287,8 @@ impl TickerSearch {
             .filter(|token| !COMMON_WORDS.contains(token))
             .collect();
         if !input_tokens.is_empty() {
+            let mut scored_results: Vec<(f32, &TickerSearchResultRaw)> = Vec::new();
+
             for raw_result in &all_raw_results {
                 // Skip already-matched results
                 if seen_ticker_ids.contains(&raw_result.ticker_id) {
@@ -302,7 +304,6 @@ impl TickerSearch {
                 // Normalize the company name and extract tokens
                 let company_lower = company_name
                     .unwrap()
-                    // .to_lowercase()
                     .replace(|c: char| !c.is_alphanumeric() && c != ' ', " "); // Remove special characters
                 let mut company_tokens = company_lower.split_whitespace();
 
@@ -317,9 +318,6 @@ impl TickerSearch {
                         break; // Exit the loop once we find a non-common word
                     }
                 }
-
-                // Use the original `company_tokens` here
-                // let company_token_set: HashSet<&str> = company_tokens.collect();
 
                 // Skip the first word if it is empty
                 if company_first_word == "" {
@@ -336,43 +334,56 @@ impl TickerSearch {
                     .chain(std::iter::once(company_first_word))
                     .collect();
 
-                // Prioritize the first meaningful word match
-                if !input_tokens.contains(&company_first_word) {
-                    continue; // Skip if the first meaningful word does not match
-                }
-
-                // Check if the input matches at least half the company's meaningful tokens
+                // Calculate matching tokens count
                 let matching_tokens_count = company_token_set
                     .iter()
                     .filter(|&token| input_tokens.contains(token))
                     .count();
 
-                let required_matches = (company_token_set.len() + 1) / 2; // At least half (rounding up)
+                // Calculate the match score as the proportion of matching tokens
+                let score = matching_tokens_count as f32 / company_token_set.len() as f32;
 
-                if matching_tokens_count >= required_matches {
-                    if seen_ticker_ids.insert(raw_result.ticker_id) {
-                        let logo_filename = extract_logo_filename(
-                            raw_result.logo_filename.as_deref(),
-                            &raw_result.symbol,
-                        );
+                // Store the score and raw result for later sorting
+                scored_results.push((score, raw_result));
+            }
 
-                        let exchange_short_name = if let Some(exchange_id) = raw_result.exchange_id
-                        {
-                            ExchangeById::get_short_name_by_exchange_id(exchange_id)
-                                .await
-                                .ok()
-                        } else {
-                            None
-                        };
+            // Sort results by score in descending order
+            scored_results
+                .sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap_or(std::cmp::Ordering::Equal));
 
-                        matches.push(TickerSearchResult {
-                            ticker_id: raw_result.ticker_id,
-                            symbol: raw_result.symbol.clone(),
-                            exchange_short_name,
-                            company_name: raw_result.company_name.clone(),
-                            logo_filename,
-                        });
-                    }
+            // Find the highest score and filter results within a deviation
+            let max_score = scored_results
+                .first()
+                .map(|(score, _)| *score)
+                .unwrap_or(0.0);
+            let threshold = max_score * 0.8; // Include results within 80% of the highest score
+
+            for (score, raw_result) in scored_results {
+                if score < threshold {
+                    break; // Stop processing once scores drop below the threshold
+                }
+
+                if seen_ticker_ids.insert(raw_result.ticker_id) {
+                    let logo_filename = extract_logo_filename(
+                        raw_result.logo_filename.as_deref(),
+                        &raw_result.symbol,
+                    );
+
+                    let exchange_short_name = if let Some(exchange_id) = raw_result.exchange_id {
+                        ExchangeById::get_short_name_by_exchange_id(exchange_id)
+                            .await
+                            .ok()
+                    } else {
+                        None
+                    };
+
+                    matches.push(TickerSearchResult {
+                        ticker_id: raw_result.ticker_id,
+                        symbol: raw_result.symbol.clone(),
+                        exchange_short_name,
+                        company_name: raw_result.company_name.clone(),
+                        logo_filename,
+                    });
                 }
             }
         }
