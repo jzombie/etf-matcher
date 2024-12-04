@@ -225,8 +225,12 @@ impl TickerSearch {
             let symbol_lower = raw_result.symbol.to_lowercase();
 
             for token in &tokens {
-                let token_lower = token.to_lowercase();
-                let alternatives = generate_alternative_symbols(&token_lower);
+                // Skip tokens that are not fully uppercase in their original form
+                if token != &token.to_uppercase() {
+                    continue;
+                }
+
+                let alternatives = generate_alternative_symbols(token);
 
                 // Check if token or its alternatives match the symbol
                 if alternatives.iter().any(|alt| alt == &symbol_lower) {
@@ -259,121 +263,121 @@ impl TickerSearch {
         }
 
         // Step 2: Company Name Matching
-        for raw_result in &all_raw_results {
-            // Skip already-matched results
-            if seen_ticker_ids.contains(&raw_result.ticker_id) {
-                continue;
-            }
+        // for raw_result in &all_raw_results {
+        //     // Skip already-matched results
+        //     if seen_ticker_ids.contains(&raw_result.ticker_id) {
+        //         continue;
+        //     }
 
-            let company_lower = raw_result
-                .company_name
-                .as_deref()
-                .unwrap_or("")
-                .to_lowercase();
+        //     let company_lower = raw_result
+        //         .company_name
+        //         .as_deref()
+        //         .unwrap_or("")
+        //         .to_lowercase();
 
-            // Calculate the maximum window size based on the company name word count
-            let max_window_size = company_lower.split_whitespace().count();
+        //     // Calculate the maximum window size based on the company name word count
+        //     let max_window_size = company_lower.split_whitespace().count();
 
-            const ALLOWED_DISTANCE: usize = 2; // Fuzzy matching threshold
+        //     const ALLOWED_DISTANCE: usize = 2; // Fuzzy matching threshold
 
-            for start_idx in 0..tokens.len() {
-                for window_size in 1..=max_window_size {
-                    let end_idx = start_idx + window_size;
+        //     for start_idx in 0..tokens.len() {
+        //         for window_size in 1..=max_window_size {
+        //             let end_idx = start_idx + window_size;
 
-                    // Break if the window exceeds the tokens array
-                    if end_idx > tokens.len() {
-                        break;
-                    }
+        //             // Break if the window exceeds the tokens array
+        //             if end_idx > tokens.len() {
+        //                 break;
+        //             }
 
-                    // Create a phrase from adjacent tokens
-                    let phrase = tokens[start_idx..end_idx].join(" ").to_lowercase();
+        //             // Create a phrase from adjacent tokens
+        //             let phrase = tokens[start_idx..end_idx].join(" ").to_lowercase();
 
-                    // Prioritize exact matches first
-                    if phrase == company_lower {
-                        if seen_ticker_ids.insert(raw_result.ticker_id) {
-                            let logo_filename = extract_logo_filename(
-                                raw_result.logo_filename.as_deref(),
-                                &raw_result.symbol,
-                            );
+        //             // Prioritize exact matches first
+        //             if phrase == company_lower {
+        //                 if seen_ticker_ids.insert(raw_result.ticker_id) {
+        //                     let logo_filename = extract_logo_filename(
+        //                         raw_result.logo_filename.as_deref(),
+        //                         &raw_result.symbol,
+        //                     );
 
-                            let exchange_short_name =
-                                if let Some(exchange_id) = raw_result.exchange_id {
-                                    ExchangeById::get_short_name_by_exchange_id(exchange_id)
-                                        .await
-                                        .ok()
-                                } else {
-                                    None
-                                };
+        //                     let exchange_short_name =
+        //                         if let Some(exchange_id) = raw_result.exchange_id {
+        //                             ExchangeById::get_short_name_by_exchange_id(exchange_id)
+        //                                 .await
+        //                                 .ok()
+        //                         } else {
+        //                             None
+        //                         };
 
-                            matches.push(TickerSearchResult {
-                                ticker_id: raw_result.ticker_id,
-                                symbol: raw_result.symbol.clone(),
-                                exchange_short_name,
-                                company_name: raw_result.company_name.clone(),
-                                logo_filename,
-                            });
-                        }
-                        break; // Stop further checks once an exact match is found
-                    }
+        //                     matches.push(TickerSearchResult {
+        //                         ticker_id: raw_result.ticker_id,
+        //                         symbol: raw_result.symbol.clone(),
+        //                         exchange_short_name,
+        //                         company_name: raw_result.company_name.clone(),
+        //                         logo_filename,
+        //                     });
+        //                 }
+        //                 break; // Stop further checks once an exact match is found
+        //             }
 
-                    // Check if phrase is a prefix of the company name
-                    if company_lower.starts_with(&phrase) {
-                        if seen_ticker_ids.insert(raw_result.ticker_id) {
-                            let logo_filename = extract_logo_filename(
-                                raw_result.logo_filename.as_deref(),
-                                &raw_result.symbol,
-                            );
+        //             // Check if phrase is a prefix of the company name
+        //             if company_lower.starts_with(&phrase) {
+        //                 if seen_ticker_ids.insert(raw_result.ticker_id) {
+        //                     let logo_filename = extract_logo_filename(
+        //                         raw_result.logo_filename.as_deref(),
+        //                         &raw_result.symbol,
+        //                     );
 
-                            let exchange_short_name =
-                                if let Some(exchange_id) = raw_result.exchange_id {
-                                    ExchangeById::get_short_name_by_exchange_id(exchange_id)
-                                        .await
-                                        .ok()
-                                } else {
-                                    None
-                                };
+        //                     let exchange_short_name =
+        //                         if let Some(exchange_id) = raw_result.exchange_id {
+        //                             ExchangeById::get_short_name_by_exchange_id(exchange_id)
+        //                                 .await
+        //                                 .ok()
+        //                         } else {
+        //                             None
+        //                         };
 
-                            matches.push(TickerSearchResult {
-                                ticker_id: raw_result.ticker_id,
-                                symbol: raw_result.symbol.clone(),
-                                exchange_short_name,
-                                company_name: raw_result.company_name.clone(),
-                                logo_filename,
-                            });
-                        }
-                        break; // Stop further checks once a prefix match is found
-                    }
+        //                     matches.push(TickerSearchResult {
+        //                         ticker_id: raw_result.ticker_id,
+        //                         symbol: raw_result.symbol.clone(),
+        //                         exchange_short_name,
+        //                         company_name: raw_result.company_name.clone(),
+        //                         logo_filename,
+        //                     });
+        //                 }
+        //                 break; // Stop further checks once a prefix match is found
+        //             }
 
-                    // Fallback to fuzzy matching for longer company names
-                    if levenshtein(&phrase, &company_lower) <= ALLOWED_DISTANCE {
-                        if seen_ticker_ids.insert(raw_result.ticker_id) {
-                            let logo_filename = extract_logo_filename(
-                                raw_result.logo_filename.as_deref(),
-                                &raw_result.symbol,
-                            );
+        //             // Fallback to fuzzy matching for longer company names
+        //             if levenshtein(&phrase, &company_lower) <= ALLOWED_DISTANCE {
+        //                 if seen_ticker_ids.insert(raw_result.ticker_id) {
+        //                     let logo_filename = extract_logo_filename(
+        //                         raw_result.logo_filename.as_deref(),
+        //                         &raw_result.symbol,
+        //                     );
 
-                            let exchange_short_name =
-                                if let Some(exchange_id) = raw_result.exchange_id {
-                                    ExchangeById::get_short_name_by_exchange_id(exchange_id)
-                                        .await
-                                        .ok()
-                                } else {
-                                    None
-                                };
+        //                     let exchange_short_name =
+        //                         if let Some(exchange_id) = raw_result.exchange_id {
+        //                             ExchangeById::get_short_name_by_exchange_id(exchange_id)
+        //                                 .await
+        //                                 .ok()
+        //                         } else {
+        //                             None
+        //                         };
 
-                            matches.push(TickerSearchResult {
-                                ticker_id: raw_result.ticker_id,
-                                symbol: raw_result.symbol.clone(),
-                                exchange_short_name,
-                                company_name: raw_result.company_name.clone(),
-                                logo_filename,
-                            });
-                        }
-                        break; // Stop further checks once a fuzzy match is found
-                    }
-                }
-            }
-        }
+        //                     matches.push(TickerSearchResult {
+        //                         ticker_id: raw_result.ticker_id,
+        //                         symbol: raw_result.symbol.clone(),
+        //                         exchange_short_name,
+        //                         company_name: raw_result.company_name.clone(),
+        //                         logo_filename,
+        //                     });
+        //                 }
+        //                 break; // Stop further checks once a fuzzy match is found
+        //             }
+        //         }
+        //     }
+        // }
 
         // Step 3: Sort and Paginate Results
         matches.sort_by(|a, b| a.symbol.cmp(&b.symbol));
