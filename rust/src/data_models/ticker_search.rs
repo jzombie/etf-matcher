@@ -258,19 +258,8 @@ impl TickerSearch {
         }
 
         // Step 4: Apply Pagination Logic
-        let total_count = matches.len();
-        let start = page.saturating_sub(1).saturating_mul(page_size);
-        let end = start + page_size;
+        let paginated_results = PaginatedResults::paginate(matches, page, page_size)?;
 
-        let paginated_results = if start < total_count {
-            matches[start..total_count.min(end)].to_vec()
-        } else {
-            vec![]
-        };
-
-        Ok(PaginatedResults {
-            total_count,
-            results: paginated_results,
-        })
+        Ok(paginated_results)
     }
 }
