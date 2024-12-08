@@ -78,6 +78,7 @@ impl TickerSearch {
         }
     }
 
+    // TODO: Remove `generate_alternative_symbols` and match on pure alphanumeric
     pub async fn search_tickers(
         &self, // Use `self` to access query parameters
     ) -> Result<PaginatedResults<TickerSearchResult>, JsValue> {
