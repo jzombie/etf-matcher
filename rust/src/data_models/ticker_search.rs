@@ -1,7 +1,4 @@
-use ticker_sniffer::{
-    generate_alternative_symbols, ResultBiasAdjuster, SymbolsMap,
-    DEFAULT_RESULT_BIAS_ADJUSTER_WEIGHTS, DEFAULT_WEIGHTS,
-};
+use ticker_sniffer::{generate_alternative_symbols, SymbolsMap};
 
 use crate::types::{ExchangeId, TickerId};
 use crate::utils::extract_logo_filename;
@@ -220,12 +217,8 @@ impl TickerSearch {
             .collect();
 
         // Step 2: Use `ticker-sniffer` to extract symbols from text
-        let (extracted_symbols, _, _) = ticker_sniffer::extract_tickers_from_text(
-            text,
-            &symbols_map,
-            DEFAULT_WEIGHTS,
-            &ResultBiasAdjuster::from_weights(DEFAULT_RESULT_BIAS_ADJUSTER_WEIGHTS),
-        );
+        let (extracted_symbols, _, _) =
+            ticker_sniffer::extract_tickers_from_text(text, &symbols_map);
 
         // Step 3: Map extracted symbols to `TickerSearchResult`
         let mut matches = Vec::new();
