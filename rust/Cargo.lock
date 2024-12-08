@@ -568,6 +568,7 @@ dependencies = [
  "serde-wasm-bindgen",
  "serde_json",
  "sha2 0.9.9",
+ "ticker-sniffer",
  "toml",
  "wasm-bindgen",
  "wasm-bindgen-futures",
@@ -721,6 +722,15 @@ dependencies = [
  "pin-project-lite",
  "pin-utils",
  "slab",
+]
+
+[[package]]
+name = "fxhash"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c31b6d751ae2c7f11320402d34e41349dd1016f8d5d45e48c4312bc8625af50c"
+dependencies = [
+ "byteorder",
 ]
 
 [[package]]
@@ -1719,6 +1729,13 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.68",
+]
+
+[[package]]
+name = "ticker-sniffer"
+version = "0.1.0"
+dependencies = [
+ "fxhash",
 ]
 
 [[package]]

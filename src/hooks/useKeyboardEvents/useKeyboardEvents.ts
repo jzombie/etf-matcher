@@ -4,12 +4,20 @@ import { SyntheticEvent } from "react";
 import useStableCurrentRef from "../useStableCurrentRef";
 
 export type KeyboardEventsProps = {
-  keydown?: { [key: string]: (event: KeyboardEvent) => void };
-  keyup?: { [key: string]: (event: KeyboardEvent) => void };
+  keyDown?: { [key: string]: (event: KeyboardEvent) => void };
+  keyUp?: { [key: string]: (event: KeyboardEvent) => void };
   attachToWindow?: boolean;
   stopPropagation?: boolean;
   preventDefault?: boolean;
 };
+
+/**
+ * A custom React hook for handling keyboard events (`keydown` and `keyup`).
+ *
+ * - If `attachToWindow` is true (default), the event listeners are attached to the `window`.
+ * - If `attachToWindow` is false, the returned `onKeyDown` and `onKeyUp` handlers
+ *   should be attached to specific React components for localized event handling.
+ */
 
 export default function useKeyboardEvents({
   attachToWindow = true,
@@ -17,8 +25,8 @@ export default function useKeyboardEvents({
   preventDefault = true,
   ...rest
 }: KeyboardEventsProps) {
-  const keydownCallbacksStableRef = useStableCurrentRef(rest.keydown || {});
-  const keyupCallbacksStableRef = useStableCurrentRef(rest.keyup || {});
+  const keyDownCallbacksStableRef = useStableCurrentRef(rest.keyDown || {});
+  const keyUpCallbacksStableRef = useStableCurrentRef(rest.keyUp || {});
 
   const handleUnifiedCallback = useCallback(
     (evt: KeyboardEvent, callback?: (event: KeyboardEvent) => void) => {
@@ -41,10 +49,10 @@ export default function useKeyboardEvents({
       // FIXME: Using `evt.code` may be the *preferred* solution but it breaks
       // `Enter` key navigation on Android. Leaving as `evt.key` for now.
       // Perhaps this should be configurable.
-      const callback = keydownCallbacksStableRef.current[evt.key];
+      const callback = keyDownCallbacksStableRef.current[evt.key];
       handleUnifiedCallback(evt, callback);
     },
-    [handleUnifiedCallback, keydownCallbacksStableRef],
+    [handleUnifiedCallback, keyDownCallbacksStableRef],
   );
 
   const handleKeyUp = useCallback(
@@ -52,10 +60,10 @@ export default function useKeyboardEvents({
       // FIXME: Using `evt.code` may be the *preferred* solution but it breaks
       // `Enter` key navigation on Android. Leaving as `evt.key` for now.
       // Perhaps this should be configurable.
-      const callback = keyupCallbacksStableRef.current[evt.key];
+      const callback = keyUpCallbacksStableRef.current[evt.key];
       handleUnifiedCallback(evt, callback);
     },
-    [handleUnifiedCallback, keyupCallbacksStableRef],
+    [handleUnifiedCallback, keyUpCallbacksStableRef],
   );
 
   useEffect(() => {

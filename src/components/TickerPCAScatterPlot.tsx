@@ -21,6 +21,8 @@ import {
 } from "recharts";
 import { NameType } from "recharts/types/component/DefaultTooltipContent";
 
+import Padding from "@components/Padding";
+
 import usePromise from "@hooks/usePromise";
 import useTickerSymbolNavigation from "@hooks/useTickerSymbolNavigation";
 
@@ -128,38 +130,40 @@ export default function TickerPCAScatterPlot({
     // control the layout with the app.
     <Full>
       <AutoScaler>
-        <ScatterChart
-          margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-          width={400}
-          height={400}
-        >
-          <XAxis
-            type="number"
-            dataKey="pc1"
-            domain={[-maxValue, maxValue]}
-            name="PC1"
-            hide
-          />
-          <YAxis
-            type="number"
-            dataKey="pc2"
-            domain={[-maxValue, maxValue]}
-            name="PC2"
-            hide
-          />
-          {renderRadialOverlay()}
-          <Tooltip
-            content={<CustomTooltip />}
-            cursor={{ strokeDasharray: "3 3" }}
-          />
-          <Scatter
-            name="10-K Proximity Tickers"
-            data={chartData}
-            fill="#8884d8"
-            onClick={handleClick}
-            shape={CustomPoint}
-          />
-        </ScatterChart>
+        <Padding>
+          <ScatterChart
+            margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+            width={400}
+            height={400}
+          >
+            <XAxis
+              type="number"
+              dataKey="pc1"
+              domain={[-maxValue, maxValue]}
+              name="PC1"
+              hide
+            />
+            <YAxis
+              type="number"
+              dataKey="pc2"
+              domain={[-maxValue, maxValue]}
+              name="PC2"
+              hide
+            />
+            {renderRadialOverlay()}
+            <Tooltip
+              content={<CustomTooltip />}
+              cursor={{ strokeDasharray: "3 3" }}
+            />
+            <Scatter
+              name="10-K Proximity Tickers"
+              data={chartData}
+              fill="#8884d8"
+              onClick={handleClick}
+              shape={CustomPoint}
+            />
+          </ScatterChart>
+        </Padding>
       </AutoScaler>
       <Cover clickThrough>
         {isLoading && (

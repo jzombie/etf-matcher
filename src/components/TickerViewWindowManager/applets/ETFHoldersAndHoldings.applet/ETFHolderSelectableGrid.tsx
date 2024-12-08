@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Box, Divider, Pagination, Typography } from "@mui/material";
 
@@ -74,6 +74,16 @@ export default function ETFHolderSelectableGrid({
     [navigateToSymbol],
   );
 
+  const gridItems: SelectableGridItem<RustServiceETFAggregateDetail>[] =
+    useMemo(
+      () =>
+        paginatedETFHolders?.results.map((result) => ({
+          id: result.ticker_id,
+          data: result,
+        })) || [],
+      [paginatedETFHolders],
+    );
+
   if (!paginatedETFHolders && isLoadingETFHolders) {
     return (
       <Center>
@@ -91,12 +101,6 @@ export default function ETFHolderSelectableGrid({
       </Center>
     );
   }
-
-  const gridItems: SelectableGridItem<RustServiceETFAggregateDetail>[] =
-    paginatedETFHolders.results.map((result) => ({
-      id: result.ticker_id,
-      data: result,
-    }));
 
   return (
     <Layout>

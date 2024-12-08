@@ -82,20 +82,35 @@ describe("usePromise", () => {
     });
   });
 
-  it("should call onLoad callback on success", async () => {
-    const onLoad = vi.fn();
+  it("should call onSuccess callback on success and resolve with the value", async () => {
+    const onSuccess = vi.fn();
     const fn = vi.fn(() => Promise.resolve("data"));
-    renderHook(() =>
+    const { result } = renderHook(() =>
       usePromise({
         fn,
-        onLoad,
-        initialAutoExecute: true,
+        onSuccess,
+        initialAutoExecute: false,
       }),
     );
 
-    await waitFor(() => {
-      expect(onLoad).toHaveBeenCalledWith("data");
+    let returnedValue: string | void;
+
+    // Execute the promise and capture the returned value
+    await act(async () => {
+      returnedValue = await result.current.execute();
     });
+
+    // Ensure onSuccess was called with the correct data
+    expect(onSuccess).toHaveBeenCalledWith("data");
+
+    // Ensure the value returned by execute is correct
+    // @ts-expect-error For testing only
+    expect(returnedValue).toBe("data");
+
+    // Ensure the same value is set as data
+    expect(result.current.data).toBe("data");
+    expect(result.current.isPending).toBe(false);
+    expect(result.current.error).toBe(null);
   });
 
   it("should call onError callback on error", async () => {
@@ -275,5 +290,31 @@ describe("usePromise", () => {
       expect(result.current.error).toEqual(new Error("test error"));
       expect(result.current.data).toBe(null); // Check that data is cleared on error
     });
+  });
+
+  it("should return the value from execute while also setting it as data", async () => {
+    const fn = vi.fn(() => Promise.resolve("direct-value"));
+    const { result } = renderHook(() =>
+      usePromise({
+        fn,
+        initialAutoExecute: false,
+      }),
+    );
+
+    let returnedValue: string | void;
+
+    // Execute the promise and capture the returned value
+    await act(async () => {
+      returnedValue = await result.current.execute();
+    });
+
+    // Ensure the value returned by execute is correct
+    // @ts-expect-error For testing purposes only
+    expect(returnedValue).toBe("direct-value");
+
+    // Ensure the same value is set as data
+    expect(result.current.data).toBe("direct-value");
+    expect(result.current.isPending).toBe(false);
+    expect(result.current.error).toBe(null);
   });
 });

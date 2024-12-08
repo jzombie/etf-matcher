@@ -31,7 +31,7 @@ import clsx from "clsx";
 import { Link, matchPath, useLocation } from "react-router-dom";
 
 import LogoNavButton from "@components/LogoNavButton";
-import SearchModalButton from "@components/SearchModalButton";
+import TickerSearchModalButton from "@components/TickerSearchModalButton";
 
 import useStoreStateReader, { store } from "@hooks/useStoreStateReader";
 import useTickerBucketImportExportContext from "@hooks/useTickerBucketImportExportContext";
@@ -205,7 +205,7 @@ export default function HeaderMenu() {
                 )}
               </Box>
             ))}
-            <SearchModalButton highlight={shouldHighlightSearchButton} />
+            <TickerSearchModalButton highlight={shouldHighlightSearchButton} />
           </Box>
         ) : (
           <>
@@ -306,7 +306,7 @@ export default function HeaderMenu() {
               </List>
             </Drawer>
             <Box sx={{ flexGrow: 1 }} />
-            <SearchModalButton highlight={shouldHighlightSearchButton} />
+            <TickerSearchModalButton highlight={shouldHighlightSearchButton} />
           </>
         )}
       </Toolbar>
