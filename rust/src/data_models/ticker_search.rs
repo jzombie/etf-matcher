@@ -1,4 +1,7 @@
-use ticker_sniffer::generate_alternative_symbols;
+use ticker_sniffer::{
+    generate_alternative_symbols, ResultBiasAdjuster, SymbolsMap,
+    DEFAULT_RESULT_BIAS_ADJUSTER_WEIGHTS, DEFAULT_WEIGHTS,
+};
 
 use crate::types::{ExchangeId, TickerId};
 use crate::utils::extract_logo_filename;
@@ -8,7 +11,7 @@ use crate::utils::parse::parse_csv_data;
 use crate::JsValue;
 use crate::{DataURL, ExchangeById, PaginatedResults};
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 pub struct TickerSearch {
     pub query: String,
@@ -199,209 +202,39 @@ impl TickerSearch {
         })
     }
 
-    // TODO: Replace with `ticker-sniffer`
-    //
-    /// Extracts `TickerSearchResult` entries from a given text.
-    ///
-    /// This method uses the `extract_ticker_ids_from_text` to parse the text for ticker IDs
-    /// and then fetches the corresponding `TickerSearchResult` for each valid ticker ID.
     pub async fn extract_results_from_text(
         text: &str,
         page: usize,
         page_size: usize,
     ) -> Result<PaginatedResults<TickerSearchResult>, JsValue> {
-        // Tokenize and normalize the input text
-        let tokens: Vec<&str> = text
-            .split_whitespace()
-            .map(|word| word.trim_matches(|c: char| !(c.is_alphanumeric() || c == '-' || c == '.')))
-            .filter(|word| !word.is_empty())
+        // Step 1: Fetch raw results and construct the symbols map
+        let raw_results = Self::get_all_raw_results().await?;
+        let symbols_map: SymbolsMap = raw_results
+            .iter()
+            .map(|raw_result| {
+                (
+                    raw_result.symbol.clone(),
+                    Some(raw_result.company_name.clone().unwrap_or_default()),
+                )
+            })
             .collect();
 
-        // Fetch all raw results
-        let all_raw_results = Self::get_all_raw_results().await?;
+        // Step 2: Use `ticker-sniffer` to extract symbols from text
+        let (extracted_symbols, _, _) = ticker_sniffer::extract_tickers_from_text(
+            text,
+            &symbols_map,
+            DEFAULT_WEIGHTS,
+            &ResultBiasAdjuster::from_weights(DEFAULT_RESULT_BIAS_ADJUSTER_WEIGHTS),
+        );
 
+        // Step 3: Map extracted symbols to `TickerSearchResult`
         let mut matches = Vec::new();
         let mut seen_ticker_ids = HashSet::new();
 
-        // Step 1: Symbol Matching
-        for raw_result in &all_raw_results {
-            let symbol_lower = raw_result.symbol.to_lowercase();
-
-            for token in &tokens {
-                // Skip tokens that are not fully uppercase in their original form
-                if token != &token.to_uppercase() {
-                    continue;
-                }
-
-                let alternatives = generate_alternative_symbols(token);
-
-                // Check if token or its alternatives match the symbol
-                if alternatives.iter().any(|alt| alt == &symbol_lower) {
-                    if seen_ticker_ids.insert(raw_result.ticker_id) {
-                        let logo_filename = extract_logo_filename(
-                            raw_result.logo_filename.as_deref(),
-                            &raw_result.symbol,
-                        );
-
-                        let exchange_short_name = if let Some(exchange_id) = raw_result.exchange_id
-                        {
-                            ExchangeById::get_short_name_by_exchange_id(exchange_id)
-                                .await
-                                .ok()
-                        } else {
-                            None
-                        };
-
-                        matches.push(TickerSearchResult {
-                            ticker_id: raw_result.ticker_id,
-                            symbol: raw_result.symbol.clone(),
-                            exchange_short_name,
-                            company_name: raw_result.company_name.clone(),
-                            logo_filename,
-                        });
-                    }
-                    break; // Stop further checks once a match is found for this raw_result
-                }
-            }
-        }
-
-        // Note: Special consideration would need to be made if the company is actually called one of these
-        //
-        // Define a set of common generic words to exclude from matching
-        const COMMON_WORDS: &[&str] = &[
-            "the",
-            "corporation",
-            "enterprise",
-            "inc",
-            "company",
-            "limited",
-            "llc",
-            "group",
-            "technologies",
-        ];
-
-        // Step 2: Optimized Company Name Matching
-        let normalized_text = text
-            // .to_lowercase()
-            .replace(|c: char| !c.is_alphanumeric() && c != ' ', " "); // Normalize input
-
-        let input_tokens: Vec<&str> = normalized_text
-            .split_whitespace()
-            .filter(|token| !COMMON_WORDS.contains(token))
-            .collect();
-        if !input_tokens.is_empty() {
-            // Filter input tokens: Only consider tokens starting with a capital letter and of sufficient length
-            let input_tokens_capitalized: Vec<String> = input_tokens
-                .iter()
-                .filter(|token| {
-                    token.chars().next().map_or(false, |c| c.is_uppercase()) && token.len() > 1
-                }) // Min length > 1
-                .map(|token| token.to_lowercase()) // Normalize to lowercase for matching
-                .collect();
-
-            let mut scored_results: HashMap<u32, f32> = HashMap::new();
-
-            for raw_result in &all_raw_results {
-                // Skip already-matched results
-                if seen_ticker_ids.contains(&raw_result.ticker_id) {
-                    continue;
-                }
-
-                // Ensure the company name exists
-                let company_name = raw_result.company_name.as_deref();
-                if company_name.is_none() || company_name.unwrap().is_empty() {
-                    continue; // Skip results with no company name
-                }
-
-                // Normalize and tokenize the company name
-                let company_lower = company_name
-                    .unwrap()
-                    .to_lowercase()
-                    .replace(|c: char| !c.is_alphanumeric() && c != ' ', " ");
-                let company_tokens: Vec<String> =
-                    company_lower.split_whitespace().map(String::from).collect();
-                let total_company_words = company_tokens.len();
-
-                if company_tokens.is_empty() {
-                    continue; // Skip empty names
-                }
-
-                let mut match_score = 0.0;
-                let mut token_index = 0;
-
-                // Attempt to match consecutive tokens
-                while token_index < input_tokens_capitalized.len() {
-                    let mut consecutive_match_count = 0;
-                    let mut start_index = None;
-
-                    for (company_index, company_token) in company_tokens.iter().enumerate() {
-                        if input_tokens_capitalized[token_index] == *company_token {
-                            if start_index.is_none() {
-                                start_index = Some(company_index);
-                            }
-                            consecutive_match_count += 1;
-                            token_index += 1;
-                            if token_index == input_tokens_capitalized.len() {
-                                break; // No more tokens to match
-                            }
-                        } else if start_index.is_some() {
-                            break; // End of consecutive match
-                        }
-                    }
-
-                    if consecutive_match_count > 0 {
-                        let consecutive_score =
-                            consecutive_match_count as f32 / total_company_words as f32;
-                        match_score += consecutive_score;
-                    } else {
-                        token_index += 1; // Move to the next token if no match was found
-                    }
-                }
-
-                // Penalize results with extra unrelated words
-                match_score /= total_company_words as f32;
-
-                // Skip if no meaningful match
-                if match_score == 0.0 {
-                    continue;
-                }
-
-                // Aggregate score for this company
-                scored_results
-                    .entry(raw_result.ticker_id)
-                    .and_modify(|e| *e += match_score)
-                    .or_insert(match_score);
-            }
-
-            // Convert scored results to a sorted list
-            let mut results: Vec<(f32, &TickerSearchResultRaw)> = scored_results
-                .into_iter()
-                .map(|(id, score)| {
-                    let raw_result = all_raw_results
-                        .iter()
-                        .find(|r| r.ticker_id == id)
-                        .expect("Ticker ID mismatch");
-                    (score, raw_result)
-                })
-                .collect();
-
-            results.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap_or(std::cmp::Ordering::Equal));
-
-            // Apply a threshold (e.g., 80% of the highest score)
-            let max_score = results.first().map(|(score, _)| *score).unwrap_or(0.0);
-            let threshold = max_score * 0.8;
-
-            for (score, raw_result) in results {
-                if score < threshold {
-                    break;
-                }
-
+        for symbol in extracted_symbols {
+            if let Some(raw_result) = raw_results.iter().find(|result| result.symbol == symbol) {
+                // Avoid duplicates based on `ticker_id`
                 if seen_ticker_ids.insert(raw_result.ticker_id) {
-                    let logo_filename = extract_logo_filename(
-                        raw_result.logo_filename.as_deref(),
-                        &raw_result.symbol,
-                    );
-
                     let exchange_short_name = if let Some(exchange_id) = raw_result.exchange_id {
                         ExchangeById::get_short_name_by_exchange_id(exchange_id)
                             .await
@@ -415,15 +248,16 @@ impl TickerSearch {
                         symbol: raw_result.symbol.clone(),
                         exchange_short_name,
                         company_name: raw_result.company_name.clone(),
-                        logo_filename,
+                        logo_filename: extract_logo_filename(
+                            raw_result.logo_filename.as_deref(),
+                            &raw_result.symbol,
+                        ),
                     });
                 }
             }
         }
 
-        // Step 3: Sort and Paginate Results
-        matches.sort_by(|a, b| a.symbol.cmp(&b.symbol));
-
+        // Step 4: Apply Pagination Logic
         let total_count = matches.len();
         let start = page.saturating_sub(1).saturating_mul(page_size);
         let end = start + page_size;
