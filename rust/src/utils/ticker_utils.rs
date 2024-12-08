@@ -87,17 +87,6 @@ pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<Ti
     Err(JsValue::from_str("Symbol not found"))
 }
 
-// TODO: Move back to `ticker_search`
-pub fn generate_alternative_symbols(query: &str) -> Vec<String> {
-    let mut alternatives: Vec<String> = vec![query.to_lowercase()];
-    if query.contains('.') {
-        alternatives.push(query.replace('.', "-").to_lowercase());
-    } else if query.contains('-') {
-        alternatives.push(query.replace('-', ".").to_lowercase());
-    }
-    alternatives
-}
-
 // TODO: Remove
 // /// Extracts ticker IDs from a given text.
 // ///

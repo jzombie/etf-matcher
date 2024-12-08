@@ -1,8 +1,10 @@
+use ticker_sniffer::generate_alternative_symbols;
+
 use crate::types::{ExchangeId, TickerId};
 use crate::utils::extract_logo_filename;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
-use crate::utils::ticker_utils::generate_alternative_symbols;
+
 use crate::JsValue;
 use crate::{DataURL, ExchangeById, PaginatedResults};
 use serde::{Deserialize, Serialize};
@@ -197,8 +199,7 @@ impl TickerSearch {
         })
     }
 
-    // TODO: This algorithm needs to be extracted into a separate library and tested accordingly.
-    // The company-name based extraction is very fickle and not good.
+    // TODO: Replace with `ticker-sniffer`
     //
     /// Extracts `TickerSearchResult` entries from a given text.
     ///
