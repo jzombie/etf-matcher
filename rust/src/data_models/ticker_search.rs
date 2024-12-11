@@ -200,6 +200,7 @@ impl TickerSearch {
         })
     }
 
+    // TODO: In final implementation, include confidence scores, and ensure search results are ordered by confidence score by default
     pub async fn extract_results_from_text(
         text: &str,
         page: usize,
