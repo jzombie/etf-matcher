@@ -103,7 +103,7 @@ export default function useTickerSearch(
         : Promise.resolve({ results: [], total_count: 0 });
     },
     initialAutoExecute: false,
-    onLoad: ({ results, total_count }) => {
+    onSuccess: ({ results, total_count }) => {
       _setSearchResults(results);
       _setTotalSearchResults(total_count);
       setSelectedIndex(DEFAULT_PROPS.initialSelectedIndex);

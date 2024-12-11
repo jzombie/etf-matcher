@@ -21,7 +21,7 @@ export default function useTickerDetail(
     execute,
   } = usePromise<RustServiceTickerDetail, [number]>({
     fn: fetchTickerDetail,
-    onLoad,
+    onSuccess: onLoad,
     onError: (err) => {
       triggerUIError(new Error("Error fetching ticker detail"));
       customLogger.error({ tickerId, err });

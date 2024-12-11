@@ -5,8 +5,6 @@ import { Button, ButtonProps } from "@mui/material";
 
 import useClipboard from "@hooks/useClipboard";
 
-import customLogger from "@utils/customLogger";
-
 export type TickerSymbolsCopyButtonProps = Omit<
   ButtonProps,
   "children" | "onClick"

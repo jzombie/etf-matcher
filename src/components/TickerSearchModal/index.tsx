@@ -1,4 +1,7 @@
-import TickerSearchModal, { TickerSearchModalProps } from "./TickerSearchModal";
+import TickerSearchModal, {
+  SearchQueryResult,
+  TickerSearchModalProps,
+} from "./TickerSearchModal";
 
 export default TickerSearchModal;
-export type { TickerSearchModalProps };
+export type { TickerSearchModalProps, SearchQueryResult };

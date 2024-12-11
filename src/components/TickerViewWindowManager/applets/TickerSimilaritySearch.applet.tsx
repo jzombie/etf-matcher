@@ -6,6 +6,7 @@ import ShowChartIcon from "@mui/icons-material/ShowChart";
 import StraightenIcon from "@mui/icons-material/Straighten";
 import {
   Box,
+  BoxProps,
   IconButton,
   Link,
   ToggleButton,
@@ -217,27 +218,44 @@ function ComponentWrap({
                   {preferredTickerVectorConfigKey && (
                     // Due to some of the child components of the`Transition` wrapper,
                     // it's being conditionally rendered for now.
-                    <Transition
-                      trigger={`${displayMode}-${preferredTickerVectorConfigKey}-${hashedTickerDistances}`}
-                      direction={getDirection()}
-                    >
-                      {displayMode === "radial" ? (
-                        <TickerPCAScatterPlot
-                          tickerDistances={tickerDistances}
-                        />
-                      ) : (
-                        <Scrollable>
-                          <TickerVectorQueryTable
-                            queryMode="ticker-detail"
-                            query={tickerDetail}
-                            alignment={displayMode}
-                            tickerVectorConfigKey={
-                              preferredTickerVectorConfigKey
-                            }
+                    <>
+                      <Transition
+                        trigger={`${displayMode}-${preferredTickerVectorConfigKey}-${hashedTickerDistances}`}
+                        direction={getDirection()}
+                      >
+                        {displayMode === "radial" ? (
+                          <TickerPCAScatterPlot
+                            tickerDistances={tickerDistances}
                           />
-                        </Scrollable>
+                        ) : (
+                          <Scrollable>
+                            <TickerVectorQueryTable
+                              queryMode="ticker-detail"
+                              query={tickerDetail}
+                              alignment={displayMode}
+                              tickerVectorConfigKey={
+                                preferredTickerVectorConfigKey
+                              }
+                            />
+                          </Scrollable>
+                        )}
+                      </Transition>
+                      {displayMode === "radial" && (
+                        <FooterContent
+                          preferredTickerVectorConfigKey={
+                            preferredTickerVectorConfigKey
+                          }
+                          onOpenTickerVectorConfigSelectorDialog={() =>
+                            setIsTickerVectorConfigSelectorDialogOpen(true)
+                          }
+                          sx={{
+                            position: "absolute",
+                            bottom: 0,
+                            width: "100%",
+                          }}
+                        />
                       )}
-                    </Transition>
+                    </>
                   )}
                 </>
               )}
@@ -245,22 +263,15 @@ function ComponentWrap({
           </>
         )}
 
-        <Footer style={{ textAlign: "right" }}>
-          <Typography
-            variant="body2"
-            component="span"
-            sx={{ fontSize: ".8rem" }}
-          >
-            Using model:{" "}
-            <Link
-              component="button"
-              variant="body2"
-              onClick={() => setIsTickerVectorConfigSelectorDialogOpen(true)}
-              sx={{ cursor: "pointer", color: "text.secondary" }}
-            >
-              {preferredTickerVectorConfigKey || "N/A"}
-            </Link>
-          </Typography>
+        <Footer>
+          {displayMode !== "radial" && (
+            <FooterContent
+              preferredTickerVectorConfigKey={preferredTickerVectorConfigKey}
+              onOpenTickerVectorConfigSelectorDialog={() =>
+                setIsTickerVectorConfigSelectorDialogOpen(true)
+              }
+            />
+          )}
         </Footer>
       </Layout>
       {preferredTickerVectorConfig && (
@@ -272,5 +283,33 @@ function ComponentWrap({
         />
       )}
     </>
+  );
+}
+
+type FooterContentProps = Omit<BoxProps, "children"> & {
+  preferredTickerVectorConfigKey?: string;
+  onOpenTickerVectorConfigSelectorDialog: () => void;
+};
+
+function FooterContent({
+  preferredTickerVectorConfigKey,
+  onOpenTickerVectorConfigSelectorDialog,
+  sx = {},
+  ...rest
+}: FooterContentProps) {
+  return (
+    <Box sx={{ textAlign: "right", ...sx }} {...rest}>
+      <Typography variant="body2" component="span">
+        Using model:{" "}
+        <Link
+          component="button"
+          variant="body2"
+          onClick={onOpenTickerVectorConfigSelectorDialog}
+          sx={{ cursor: "pointer", color: "text.secondary" }}
+        >
+          {preferredTickerVectorConfigKey || "N/A"}
+        </Link>
+      </Typography>
+    </Box>
   );
 }

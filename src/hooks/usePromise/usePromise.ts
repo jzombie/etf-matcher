@@ -7,7 +7,7 @@ import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 type UsePromiseProps<T, A extends unknown[] = []> = {
   fn: (...args: A) => Promise<T>;
-  onLoad?: (data: T) => void;
+  onSuccess?: (data: T) => void;
   onError?: (error: Error) => void;
   initialAutoExecute: boolean;
   initialAutoExecuteProps?: A;
@@ -25,12 +25,12 @@ type UsePromiseProps<T, A extends unknown[] = []> = {
  *
  * @param {UsePromiseProps<T, A>} props - The properties for configuring the hook.
  * @param {(...args: A) => Promise<T>} props.fn - The function that returns a promise.
- * @param {(data: T) => void} [props.onLoad] - Optional callback invoked when the promise resolves successfully.
+ * @param {(data: T) => void} [props.onSuccess] - Optional callback invoked when the promise resolves successfully.
  * @param {(error: Error) => void} [props.onError] - Optional callback invoked when the promise is rejected.
  * @param {boolean} props.initialAutoExecute - If true, the promise function is automatically executed on mount.
  * @param {A} [props.initialAutoExecuteProps] - The arguments to use for the initial auto-execute. These are only evaluated once on the initial auto-execute and do not trigger re-evaluation if changed.
  *
- * @returns {{ data: T | null, isPending: boolean, error: Error | null, execute: (...args: A) => void }}
+ * @returns {{ data: T | null, isPending: boolean, error: Error | null, execute: (...args: A) => Promise<T> | void }}
  * - `data`: The data returned by the promise, or null if not yet resolved.
  * - `isPending`: A boolean indicating if the promise is currently pending.
  * - `error`: The error returned by the promise, or null if not yet rejected.
@@ -38,7 +38,7 @@ type UsePromiseProps<T, A extends unknown[] = []> = {
  */
 export default function usePromise<T, A extends unknown[] = []>({
   fn,
-  onLoad,
+  onSuccess,
   onError,
   initialAutoExecute,
   initialAutoExecuteProps,
@@ -54,7 +54,7 @@ export default function usePromise<T, A extends unknown[] = []>({
   const stableInitialAutoExecuteProps = useStableCurrentRef(
     initialAutoExecuteProps,
   );
-  const onLoadStableRef = useStableCurrentRef(onLoad);
+  const onSuccessStableRef = useStableCurrentRef(onSuccess);
   const fnStableRef = useStableCurrentRef(fn);
   const onErrorStableRef = useStableCurrentRef(onError);
 
@@ -70,7 +70,7 @@ export default function usePromise<T, A extends unknown[] = []>({
       //   hasLoggedWarningRef.current = true;
       // }
 
-      const onLoad = onLoadStableRef.current;
+      const onSuccess = onSuccessStableRef.current;
       const fn = fnStableRef.current;
       const onError = onErrorStableRef.current;
 
@@ -80,14 +80,16 @@ export default function usePromise<T, A extends unknown[] = []>({
       const newPromise = fn(...args);
       pendingPromiseRef.current = newPromise;
 
-      newPromise
+      return newPromise
         .then((result) => {
           if (pendingPromiseRef.current === newPromise) {
             setData(result);
-            if (onLoad) {
-              onLoad(result);
+            if (onSuccess) {
+              onSuccess(result);
             }
           }
+
+          return result;
         })
         .catch((error) => {
           if (pendingPromiseRef.current === newPromise) {
@@ -100,14 +102,16 @@ export default function usePromise<T, A extends unknown[] = []>({
             }
           }
         })
-        .finally(() => {
+        .finally((result: T | void) => {
           if (pendingPromiseRef.current === newPromise) {
             pendingPromiseRef.current = null;
             setIsPending(false);
+
+            return result;
           }
         });
     },
-    [fnStableRef, onLoadStableRef, onErrorStableRef],
+    [fnStableRef, onSuccessStableRef, onErrorStableRef],
   );
 
   useEffect(() => {
