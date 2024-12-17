@@ -3,16 +3,17 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import { Grid2, IconButton, TextField } from "@mui/material";
 
-import { RustServiceTickerSearchResult } from "@services/RustService";
 import type { TickerBucketTicker } from "@src/store";
 
 import AvatarLogo from "@components/AvatarLogo";
 import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
+import type { SearchQueryResult } from "@components/TickerSearchModal";
 import TickerSearchModal from "@components/TickerSearchModal";
 
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import useTickerDetail from "@hooks/useTickerDetail";
 
+import customLogger from "@utils/customLogger";
 import formatNumberWithCommas from "@utils/string/formatNumberWithCommas";
 import removeCommas from "@utils/string/removeCommas";
 
@@ -130,16 +131,26 @@ export default function TickerSelectionFieldsItem({
 
   const [isSearchModalOpen, setIsSearchModalOpen] = useState<boolean>(false);
 
-  const handleSelectTicker = useCallback(
-    (tickerSearchResult: RustServiceTickerSearchResult) => {
-      setIsSearchModalOpen(false);
+  const handleSelectSearchResults = useCallback(
+    (searchQueryResults: SearchQueryResult[]) => {
+      if (searchQueryResults.length > 1) {
+        customLogger.warn("Only one search query result used");
+      }
 
-      handleSetBucketTicker({
-        tickerId: tickerSearchResult.ticker_id,
-        symbol: tickerSearchResult.symbol,
-        exchangeShortName: tickerSearchResult.exchange_short_name,
-        quantity: 1,
-      });
+      const tickerSearchResult = searchQueryResults[0].tickerSearchResult;
+
+      if (tickerSearchResult) {
+        setIsSearchModalOpen(false);
+
+        handleSetBucketTicker({
+          tickerId: tickerSearchResult.ticker_id,
+          symbol: tickerSearchResult.symbol,
+          exchangeShortName: tickerSearchResult.exchange_short_name,
+          quantity: 1,
+        });
+      } else {
+        customLogger.warn("No search result selected");
+      }
     },
     [handleSetBucketTicker],
   );
@@ -249,7 +260,7 @@ export default function TickerSelectionFieldsItem({
       {/* Ticker Search Modal */}
       <TickerSearchModal
         open={isSearchModalOpen}
-        onSelectTicker={handleSelectTicker}
+        onSelect={handleSelectSearchResults}
         onCancel={() => setIsSearchModalOpen(false)}
         disabledTickerIds={disabledSearchTickerIds}
       />

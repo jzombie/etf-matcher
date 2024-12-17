@@ -83,8 +83,31 @@ pub async fn search_tickers(
     page_size: usize,
     only_exact_matches: Option<bool>,
 ) -> Result<JsValue, JsValue> {
-    let results: PaginatedResults<TickerSearchResult> =
-        TickerSearch::search_tickers(query, page, page_size, only_exact_matches).await?;
+    // Create a TickerSearch instance
+    let ticker_search = TickerSearch {
+        query: query.to_string(),
+        page,
+        page_size,
+        only_exact_matches,
+    };
+
+    // Call the search_tickers method on the TickerSearch instance
+    let results: PaginatedResults<TickerSearchResult> = ticker_search.search_tickers().await?;
+
+    to_value(&results)
+        .map_err(|err| JsValue::from_str(&format!("Failed to serialize results: {}", err)))
+}
+
+#[wasm_bindgen]
+pub async fn extract_search_results_from_text(
+    text: &str,
+    page: usize,
+    page_size: usize,
+) -> Result<JsValue, JsValue> {
+    // Extract and paginate search results from the input text
+    let results = TickerSearch::extract_results_from_text(text, page, page_size).await?;
+
+    // Serialize the paginated results for JavaScript interoperability
     to_value(&results)
         .map_err(|err| JsValue::from_str(&format!("Failed to serialize results: {}", err)))
 }

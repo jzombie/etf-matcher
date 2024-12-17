@@ -60,7 +60,7 @@ export default function useMultiTickerDetail(
     reset,
   } = usePromise<RustServiceTickerDetail[], [number[]]>({
     fn: fetchDetails,
-    onLoad,
+    onSuccess: onLoad,
     onError: triggerUIError,
     initialAutoExecute: false,
   });
