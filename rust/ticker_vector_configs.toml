@@ -10,6 +10,17 @@ training_sequence_length = 80
 training_data_sources = ["10-Q", "key metrics", "Correlated S&P 500"]
 
 
+[ticker_vector_config.v5-intermediate]
+path = "v5.lows+spy-corr-blend-autoencoder.financial_vectors.tenq.bin"
+description = "SPY Corr + Lows Intermediate"
+proto_noteboook = "v5.lows+spy-corr-blend-autoencoder"
+last_training_time = "2024-12-28T12:00:00Z"
+features = 250
+vector_dimensions = 128
+training_sequence_length = 1008
+training_data_sources = ["52-week-lows", "10-Q", "key metrics", "Correlated S&P 500"]
+
+
 [ticker_vector_config.spy-corr-v4]
 path = "v4.spy-corr-composite-10-Q-key-metrics.financial_vectors.tenq.bin"
 description = "SPY Corr Prototype"
