@@ -26,6 +26,7 @@ import UserDataSection from "./SettingsManager.UserDataSection";
 
 export default function SettingsManager() {
   const {
+    isSharedArrayBufferAvailable,
     isHTMLJSVersionSynced,
     isAppUnlocked,
     isIndexedDBReady,
@@ -41,6 +42,7 @@ export default function SettingsManager() {
     rustServiceXHRRequestErrors,
     subscribedMQTTRoomNames,
   } = useStoreStateReader([
+    "isSharedArrayBufferAvailable",
     "isHTMLJSVersionSynced",
     "isAppUnlocked",
     "isIndexedDBReady",
@@ -214,6 +216,8 @@ export default function SettingsManager() {
           {isIndexedDBReady ? "IndexedDB Ready" : "IndexedDB Not Ready"}
           {" | "}
           Subscribed MQTT Rooms: {subscribedMQTTRoomNames.length}
+          {" | "} Shared Array Buffer Support:{" "}
+          {isSharedArrayBufferAvailable ? "Yes" : "No"}
           {" | "} Client Uptime: <Timer onTick={() => store.clientUptime} />
         </Typography>
       </Padding>

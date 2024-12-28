@@ -35,6 +35,7 @@ import debounceWithKey from "@utils/debounceWithKey";
 import detectHTMLJSVersionSync from "@utils/detectHTMLJSVersionSync";
 import getCurrentUnixTime from "@utils/getCurrentUnixTime";
 import getIsProdEnv from "@utils/getIsProdEnv";
+import getIsSharedArrayBufferAvailable from "@utils/getIsSharedArrayBufferAvailable";
 
 import {
   CacheAccessedRequests,
@@ -120,6 +121,7 @@ const DEFAULT_TICKER_BUCKETS: TickerBucket[] = [
 
 export type StoreStateProps = {
   clientBootUnixTime: number;
+  isSharedArrayBufferAvailable: boolean;
   appThemeProps: {
     fontMode: AppThemeFontMode;
   };
@@ -175,6 +177,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     // TODO: Catch worker function errors and log them to the state so they can be piped up to the UI
     super({
       clientBootUnixTime: getCurrentUnixTime(),
+      isSharedArrayBufferAvailable: getIsSharedArrayBufferAvailable(),
       appThemeProps: {
         fontMode: "normal",
       },
