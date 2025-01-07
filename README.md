@@ -1,4 +1,4 @@
-![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/jzombie/etf-matcher)
+[![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/jzombie/etf-matcher)](https://github.com/jzombie/etf-matcher/pulls?q=is%3Apr+is%3Aclosed)
 
 # ETF Matcher
 
