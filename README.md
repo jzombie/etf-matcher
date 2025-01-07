@@ -1,3 +1,5 @@
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/jzombie/etf-matcher?link=https%3A%2F%2Fgithub.com%2Fjzombie%2Fetf-matcher%2Fpulls%3Fq%3Dis%253Apr%2Bis%253Aclosed)
+
 # ETF Matcher
 
 Source code for [ETFMatcher.com](https://etfmatcher.com), a utility that leverages machine learning to analyze financial disclosures, helping users customize virtual portfolios and discover ETFs tailored to their investment strategies.
