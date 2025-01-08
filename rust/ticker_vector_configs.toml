@@ -7,7 +7,18 @@ last_training_time = "2024-12-05T12:00:00Z"
 features = 250
 vector_dimensions = 192
 training_sequence_length = 80
-training_data_sources = ["10-Q", "key metrics", "Correlated S&P 500"]
+training_data_sources = ["10-Q", "key metrics", "correlated S&P 500"]
+
+
+[ticker_vector_config.spy-corr-reciprocals-v5]
+path = "v5.EXP-SPY-RECIPROCAL.financial_vectors.tenq.bin"
+description = "SPY Corr Reciprocals (Extended Tuning)"
+proto_noteboook = "v5.EXP-SPY-RECIPROCAL.spy-reciprocal"
+last_training_time = "2025-01-08T12:00:00Z"
+features = 752
+vector_dimensions = 432
+training_sequence_length = 80
+training_data_sources = ["10-Q", "key metrics", "correlated S&P 500", "reciprocals"]
 
 
 [ticker_vector_config.v5-intermediate]
@@ -18,7 +29,7 @@ last_training_time = "2024-12-28T12:00:00Z"
 features = 250
 vector_dimensions = 128
 training_sequence_length = 1008
-training_data_sources = ["52-week-lows", "10-Q", "key metrics", "Correlated S&P 500"]
+training_data_sources = ["52-week-lows", "10-Q", "key metrics", "correlated S&P 500"]
 
 
 [ticker_vector_config.spy-corr-v4]
@@ -29,7 +40,7 @@ last_training_time = "2024-11-23T12:00:00Z"
 features = 250
 vector_dimensions = 192
 training_sequence_length = 80
-training_data_sources = ["10-Q", "key metrics", "Correlated S&P 500"]
+training_data_sources = ["10-Q", "key metrics", "correlated S&P 500"]
 
 
 [ticker_vector_config.r5-extended]
