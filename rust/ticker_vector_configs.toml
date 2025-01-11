@@ -1,5 +1,27 @@
-# [ticker_vector_config.spy-corr-v4a]
+# [ticker_vector_config.sma-corr-v5-refine]
 [ticker_vector_config.default]
+path = "v5.EXP-EMA-PERC-REFINE.financial_vectors.tenq.bin"
+description = "SPY EMA PERC REFINE Prototype (v5 series)"
+proto_noteboook = "v5.EXP-EMA-PERC-REFINE.ema-perc"
+last_training_time = "2024-12-10T12:00:00Z"
+features = 155
+vector_dimensions = 448
+training_sequence_length = 40
+training_data_sources = ["10-Q", "key metrics"]
+
+
+[ticker_vector_config.sma-corr-v5]
+path = "v5.EXP-EMA-PERC.financial_vectors.tenq.bin"
+description = "SPY EMA PERC Prototype (v5 series)"
+proto_noteboook = "v5.EXP-EMA-PERC.ema-perc"
+last_training_time = "2024-12-10T12:00:00Z"
+features = 155
+vector_dimensions = 320
+training_sequence_length = 40
+training_data_sources = ["10-Q", "key metrics"]
+
+
+[ticker_vector_config.spy-corr-v4a]
 path = "v4a.spy-corr-composite-10-Q-key-metrics.financial_vectors.tenq.bin"
 description = "SPY Corr Prototype (Extended Tuning)"
 proto_noteboook = "v4a.spy-corr-composite-10-Q-key-metrics-autoencoder-lstm"
@@ -17,7 +39,7 @@ proto_noteboook = "v5.EXP-SPY-RECIPROCAL.spy-reciprocal"
 last_training_time = "2025-01-08T12:00:00Z"
 features = 752
 vector_dimensions = 432
-training_sequence_length = 80
+training_sequence_length = 40
 training_data_sources = ["10-Q", "key metrics", "correlated S&P 500", "reciprocals"]
 
 
