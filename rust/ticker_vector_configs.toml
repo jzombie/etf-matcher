@@ -1,5 +1,16 @@
-# [ticker_vector_config.ema-perc-v5-double-scale]
+# [ticker_vector_config.ema-perc-v5-no-scale-no-gauss]
 [ticker_vector_config.default]
+path = "v5.EXP-EMA-PERC-NO-SCALE-NO-GAUSS.financial_vectors.tenq.bin"
+description = "SPY EMA PERC NO SCALE NO GAUSS Prototype (v5 series)"
+proto_noteboook = "v5.EXP-EMA-PERC-NO-SCALE-NO-GAUSS.ema-perc"
+last_training_time = "2024-12-12T12:00:00Z"
+features = 155
+vector_dimensions = 320
+training_sequence_length = 40
+training_data_sources = ["10-Q", "key metrics"]
+
+
+[ticker_vector_config.ema-perc-v5-double-scale]
 path = "v5.EXP-EMA-PERC-DOUBLE-SCALE.financial_vectors.tenq.bin"
 description = "SPY EMA PERC DOUBLE SCALE Prototype (v5 series)"
 proto_noteboook = "v5.EXP-EMA-PERC-DOUBLE-SCALE.ema-perc"
