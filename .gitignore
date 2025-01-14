@@ -1,13 +1,13 @@
 .env
 
-coverage/
+/coverage/
 
-dist/
+/dist/
 
 # Frontend artifacts
-public/data
-public/pkg
-public/buildTime.json
+/public/data
+/public/pkg
+/public/buildTime.json
 
 # OS generated files
 .DS_Store
@@ -16,7 +16,7 @@ public/buildTime.json
 /data/
 /data.old/
 
-node_modules/
+/node_modules/
 
 # Ignore Rust targets
 **/rust/**/target/
