@@ -13,8 +13,8 @@ public/buildTime.json
 .DS_Store
 
 # Only ignore data in the root directory
-data/
-data.old/
+/data/
+/data.old/
 
 node_modules/
 
