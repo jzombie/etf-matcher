@@ -1,4 +1,4 @@
-use ticker_sniffer::{generate_alternative_symbols, SymbolsMap};
+use ticker_sniffer;
 
 use crate::types::{ExchangeId, TickerId};
 use crate::utils::extract_logo_filename;
@@ -78,6 +78,16 @@ impl TickerSearch {
         }
     }
 
+    fn generate_alternative_symbols(query: &str) -> Vec<String> {
+        let mut alternatives: Vec<String> = vec![query.to_lowercase()];
+        if query.contains('.') {
+            alternatives.push(query.replace('.', "-").to_lowercase());
+        } else if query.contains('-') {
+            alternatives.push(query.replace('-', ".").to_lowercase());
+        }
+        alternatives
+    }
+
     // TODO: Remove `generate_alternative_symbols` and match on pure alphanumeric
     pub async fn search_tickers(
         &self, // Use `self` to access query parameters
@@ -100,7 +110,7 @@ impl TickerSearch {
                 extract_logo_filename(result.logo_filename.as_deref(), &result.symbol);
         }
 
-        let alternatives: Vec<String> = generate_alternative_symbols(&trimmed_query);
+        let alternatives: Vec<String> = Self::generate_alternative_symbols(&trimmed_query);
         let mut exact_symbol_matches: Vec<TickerSearchResultRaw> = vec![];
         let mut starts_with_matches: Vec<TickerSearchResultRaw> = vec![];
         let mut contains_matches: Vec<TickerSearchResultRaw> = vec![];
@@ -206,28 +216,21 @@ impl TickerSearch {
         page: usize,
         page_size: usize,
     ) -> Result<PaginatedResults<TickerSearchResult>, JsValue> {
-        // Step 1: Fetch raw results and construct the symbols map
+        // // Step 1: Fetch raw results and construct the symbols map
         let raw_results = Self::get_all_raw_results().await?;
-        let symbols_map: SymbolsMap = raw_results
-            .iter()
-            .map(|raw_result| {
-                (
-                    raw_result.symbol.clone(),
-                    Some(raw_result.company_name.clone().unwrap_or_default()),
-                )
-            })
-            .collect();
 
         // Step 2: Use `ticker-sniffer` to extract symbols from text
-        let (extracted_symbols, _, _) =
-            ticker_sniffer::extract_tickers_from_text(text, &symbols_map);
+        let ticker_frequency_map = ticker_sniffer::extract_tickers_from_text(text)
+            .map_err(|e| JsValue::from_str(&e.to_string()))?;
+
+        let extracted_symbols = ticker_frequency_map.keys();
 
         // Step 3: Map extracted symbols to `TickerSearchResult`
         let mut matches = Vec::new();
         let mut seen_ticker_ids = HashSet::new();
 
         for symbol in extracted_symbols {
-            if let Some(raw_result) = raw_results.iter().find(|result| result.symbol == symbol) {
+            if let Some(raw_result) = raw_results.iter().find(|result| result.symbol == *symbol) {
                 // Avoid duplicates based on `ticker_id`
                 if seen_ticker_ids.insert(raw_result.ticker_id) {
                     let exchange_short_name = if let Some(exchange_id) = raw_result.exchange_id {

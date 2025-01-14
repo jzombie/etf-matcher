@@ -42,7 +42,7 @@ chrono = { version = "0.4.38", features = ["serde"] }
 flatbuffers = "24.3.25"
 indexmap = "2.6.0"
 levenshtein = "1.0.5"
-ticker-sniffer = { path = "temp_ticker_sniffer_PROTOTYPE" }
+ticker-sniffer = { path = "temp_ticker_sniffer_PROTOTYPE/ticker-sniffer" }
 
 [build-dependencies]
 dotenv = "0.15"
