@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Typography } from "@mui/material";
 
@@ -59,6 +59,15 @@ export default function ETFHoldingSelectableGrid({
     [navigateToSymbol],
   );
 
+  const gridItems: SelectableGridItem<RustServiceETFHoldingTicker>[] = useMemo(
+    () =>
+      paginatedHoldings?.results.map((result) => ({
+        id: result.holding_ticker_id,
+        data: result,
+      })) || [],
+    [paginatedHoldings],
+  );
+
   if (!etfTickerDetail.is_etf) {
     return (
       <Center>
@@ -80,12 +89,6 @@ export default function ETFHoldingSelectableGrid({
   if (!paginatedHoldings) {
     return null;
   }
-
-  const gridItems: SelectableGridItem<RustServiceETFHoldingTicker>[] =
-    paginatedHoldings.results.map((result) => ({
-      id: result.holding_ticker_id,
-      data: result,
-    }));
 
   return (
     <Scrollable>

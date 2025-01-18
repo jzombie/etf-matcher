@@ -1,4 +1,4 @@
-# ETF Matcher (Build Assets)
+# ETF Matcher (Build Artifacts)
 
 This repository is intended for hosting the compiled and built assets necessary for deploying the application.
 

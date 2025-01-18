@@ -1,22 +1,22 @@
 .env
 
-coverage/
+/coverage/
 
-dist/
+/dist/
 
 # Frontend artifacts
-public/data
-public/pkg
-public/buildTime.json
+/public/data
+/public/pkg
+/public/buildTime.json
 
 # OS generated files
 .DS_Store
 
 # Only ignore data in the root directory
-data/
-data.old/
+/data/
+/data.old/
 
-node_modules/
+/node_modules/
 
 # Ignore Rust targets
 **/rust/**/target/

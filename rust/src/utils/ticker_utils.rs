@@ -1,12 +1,11 @@
-use lazy_static::lazy_static;
-use std::collections::HashMap;
-use std::sync::Mutex;
-// use serde::{Deserialize, Serialize};
-use crate::data_models::{DataURL, ExchangeById, TickerSearch};
+use crate::data_models::{DataURL, ExchangeById, TickerSearchResultRaw};
 use crate::types::TickerId;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
 use crate::JsValue;
+use lazy_static::lazy_static;
+use std::collections::HashMap;
+use std::sync::Mutex;
 
 lazy_static! {
     static ref SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE: Mutex<HashMap<TickerId, (String, Option<String>)>> =
@@ -19,7 +18,7 @@ async fn preload_symbol_and_exchange_cache() -> Result<(), JsValue> {
     let csv_data = fetch_and_decompress_gz(&url, true).await?;
     let csv_string = String::from_utf8(csv_data)
         .map_err(|err| JsValue::from_str(&format!("Failed to convert data to String: {}", err)))?;
-    let symbol_search_results: Vec<TickerSearch> = parse_csv_data(csv_string.as_bytes())?;
+    let symbol_search_results: Vec<TickerSearchResultRaw> = parse_csv_data(csv_string.as_bytes())?;
 
     // Fetch and decompress the ExchangeById CSV data
     let exchange_url = DataURL::ExchangeByIdIndex.value().to_owned();
@@ -87,3 +86,52 @@ pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<Ti
 
     Err(JsValue::from_str("Symbol not found"))
 }
+
+// TODO: Remove
+// /// Extracts ticker IDs from a given text.
+// ///
+// /// This function splits the input text into words and checks if each word matches
+// /// any stock symbol in the preloaded cache.
+// pub async fn extract_ticker_ids_from_text(text: &str) -> Result<Vec<u32>, JsValue> {
+//     // Ensure the cache is preloaded
+//     if SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE
+//         .lock()
+//         .unwrap()
+//         .is_empty()
+//     {
+//         preload_symbol_and_exchange_cache().await?;
+//     }
+
+//     // Extract ticker IDs from text
+//     let cache = SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE.lock().unwrap();
+//     let mut unique_ticker_ids = HashSet::new();
+
+//     for word in text.split_whitespace() {
+//         // Normalize the word (e.g., remove punctuation)
+//         let cleaned_word = word.trim_matches(|c: char| !c.is_alphanumeric());
+
+//         // Skip words that are not entirely uppercase
+//         if cleaned_word != cleaned_word.to_uppercase() {
+//             continue;
+//         }
+
+//         // Generate alternative symbol variations
+//         let alternatives = generate_alternative_symbols(cleaned_word);
+
+//         // Check all variations against the cache
+//         for normalized_word in alternatives {
+//             let normalized_uppercase = normalized_word.to_uppercase();
+
+//             if let Some((&ticker_id, _)) = cache
+//                 .iter()
+//                 .find(|(_, (symbol, _))| *symbol == normalized_uppercase)
+//             {
+//                 unique_ticker_ids.insert(ticker_id);
+//                 break; // Stop further checks once a match is found
+//             }
+//         }
+//     }
+
+//     // Convert the HashSet into a Vec
+//     Ok(unique_ticker_ids.into_iter().collect())
+// }

@@ -62,7 +62,7 @@ export default function useMultiETFAggregateDetail(
     reset,
   } = usePromise<RustServiceETFAggregateDetail[], [number[]]>({
     fn: fetchDetails,
-    onLoad,
+    onSuccess: onLoad,
     onError: triggerUIError,
     initialAutoExecute: false,
   });

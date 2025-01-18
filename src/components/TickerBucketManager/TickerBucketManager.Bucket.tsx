@@ -13,8 +13,8 @@ import { Link } from "react-router-dom";
 import DeleteEntityDialogModal from "@components/DeleteEntityDialogModal";
 import Padding from "@components/Padding";
 import ScrollTo from "@components/ScrollTo";
-import SearchModalButton from "@components/SearchModalButton";
 import Section from "@components/Section";
+import TickerSearchModalButton from "@components/TickerSearchModalButton";
 import { UnstyledLI, UnstyledUL } from "@components/Unstyled";
 
 import {
@@ -181,7 +181,7 @@ export default function TickerBucketView({ tickerBucket }: TickerBucketProps) {
                         Perhaps you might wish to perform a{" "}
                         {/* [`Search` button follows] */}
                       </Typography>
-                      <SearchModalButton />
+                      <TickerSearchModalButton />
                     </Box>
                   )}
                 </>

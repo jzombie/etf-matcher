@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from "react";
 
-import { Box, Grid2, Paper } from "@mui/material";
+import { Box, BoxProps, Grid2, Paper } from "@mui/material";
 
 import useKeyboardEvents from "@hooks/useKeyboardEvents";
 import useResizeObserver from "@hooks/useResizeObserver";
@@ -12,12 +12,13 @@ export type SelectableGridItem<T> = {
 };
 
 // Define the props for the generic grid
-export type SelectableGridProps<T> = {
+export type SelectableGridProps<T> = BoxProps & {
   items: SelectableGridItem<T>[]; // Array of items to display
   maxColumns?: number; // Number of columns in the grid (optional, fallback if container resizing isn't used)
   minItemWidth?: number; // Minimum width of each item in the grid
   onItemSelect: (item: T) => void; // Callback when an item is selected
   renderItem: (item: T, isSelected: boolean) => React.ReactNode; // Render function for each item
+  centerItems?: boolean; // Optional prop to center items in the grid
 };
 
 export default function SelectableGrid<T>({
@@ -26,6 +27,8 @@ export default function SelectableGrid<T>({
   minItemWidth = 250, // Fallback to 250px per item if not provided
   onItemSelect,
   renderItem,
+  centerItems = false, // Default to false
+  ...rest
 }: SelectableGridProps<T>) {
   const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
   const [dynamicColumns, setDynamicColumns] = useState(maxColumns); // This will dynamically adjust based on container size
@@ -59,7 +62,7 @@ export default function SelectableGrid<T>({
 
   // Enable keyboard navigation
   useKeyboardEvents({
-    keydown: {
+    keyDown: {
       ArrowDown: () => {
         setHighlightedIndex((prevIndex) =>
           prevIndex === null || prevIndex + dynamicColumns >= items.length
@@ -99,8 +102,13 @@ export default function SelectableGrid<T>({
   });
 
   return (
-    <Box ref={containerRef}>
-      <Grid2 container spacing={2} sx={{ mt: 2 }}>
+    <Box ref={containerRef} {...rest}>
+      <Grid2
+        container
+        spacing={2}
+        sx={{ mt: 2 }}
+        justifyContent={centerItems ? "center" : "flex-start"}
+      >
         {items.map((item, index) => (
           <Grid2
             key={item.id}
