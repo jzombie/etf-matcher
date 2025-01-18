@@ -1,170 +1,21 @@
-# [ticker_vector_config.ema-perc-v5-no-scale-no-gauss]
+# [ticker_vector_config.v5-exp-spy-corr-no-scale]
 [ticker_vector_config.default]
 path = "v5.EXP-SPY-CORR-NO-SCALE.financial_vectors.tenq.bin"
-description = "SPY SPY CORR NO SCALE Prototype (v5 series)"
-proto_noteboook = "v5.EXP-SPY-CORR-NO-SCALE.spy-corr.ema-perc"
-last_training_time = "2024-12-13T12:00:00Z"
+description = "EXP-SPY-CORR-NO-SCALE Prototype (v5 series)"
+proto_noteboook = "v5.EXP-SPY-CORR-NO-SCALE.spy-corr.ipynb"
+last_training_time = "2025-01-18T12:00:00Z"
 features = 250
 vector_dimensions = 320
 training_sequence_length = 40
 training_data_sources = ["10-Q", "key metrics"]
 
 
-[ticker_vector_config.ema-perc-v5-no-scale-no-gauss]
-path = "v5.EXP-EMA-PERC-NO-SCALE-NO-GAUSS.financial_vectors.tenq.bin"
-description = "SPY EMA PERC NO SCALE NO GAUSS Prototype (v5 series)"
-proto_noteboook = "v5.EXP-EMA-PERC-NO-SCALE-NO-GAUSS.ema-perc"
-last_training_time = "2024-12-12T12:00:00Z"
+[ticker_vector_config.v5-ema-perc-v5-no-scale]
+path = "v5.EXP-EMA-PERC-NO-SCALE-2.financial_vectors.tenq.bin"
+description = "EXP-EMA-PERC-NO-SCALE-2 Prototype (v5 series)"
+proto_noteboook = "v5.EXP-EMA-PERC-NO-SCALE-2.ema-perc.ipynb"
+last_training_time = "2025-01-18T12:00:00Z"
 features = 155
 vector_dimensions = 320
 training_sequence_length = 40
-training_data_sources = ["10-Q", "key metrics"]
-
-
-[ticker_vector_config.ema-perc-v5-double-scale]
-path = "v5.EXP-EMA-PERC-DOUBLE-SCALE.financial_vectors.tenq.bin"
-description = "SPY EMA PERC DOUBLE SCALE Prototype (v5 series)"
-proto_noteboook = "v5.EXP-EMA-PERC-DOUBLE-SCALE.ema-perc"
-last_training_time = "2024-12-12T12:00:00Z"
-features = 153
-vector_dimensions = 320
-training_sequence_length = 40
-training_data_sources = ["10-Q", "key metrics"]
-
-
-[ticker_vector_config.ema-perc-v5-no-scale-buffett]
-path = "v5.EXP-EMA-PERC-NO-SCALE-BUFFETT.financial_vectors.tenq.bin"
-description = "SPY EMA PERC NO SCALE BUFFETT Prototype (v5 series)"
-proto_noteboook = "v5.EXP-EMA-PERC-NO-SCALE-BUFFETT.ema-perc"
-last_training_time = "2024-12-11T12:00:00Z"
-features = 54
-vector_dimensions = 320
-training_sequence_length = 40
-training_data_sources = ["10-Q", "key metrics"]
-
-
-[ticker_vector_config.ema-perc-v5-no-scale]
-path = "v5.EXP-EMA-PERC-NO-SCALE.financial_vectors.tenq.bin"
-description = "SPY EMA PERC NO SCALE Prototype (v5 series)"
-proto_noteboook = "v5.EXP-EMA-PERC-NO-SCALE.ema-perc"
-last_training_time = "2024-12-11T12:00:00Z"
-features = 155
-vector_dimensions = 320
-training_sequence_length = 40
-training_data_sources = ["10-Q", "key metrics"]
-
-
-[ticker_vector_config.ema-perc-v5-refine]
-path = "v5.EXP-EMA-PERC-REFINE.financial_vectors.tenq.bin"
-description = "SPY EMA PERC REFINE Prototype (v5 series)"
-proto_noteboook = "v5.EXP-EMA-PERC-REFINE.ema-perc"
-last_training_time = "2024-12-10T12:00:00Z"
-features = 155
-vector_dimensions = 448
-training_sequence_length = 40
-training_data_sources = ["10-Q", "key metrics"]
-
-
-[ticker_vector_config.ema-perc-v5]
-path = "v5.EXP-EMA-PERC.financial_vectors.tenq.bin"
-description = "SPY EMA PERC Prototype (v5 series)"
-proto_noteboook = "v5.EXP-EMA-PERC.ema-perc"
-last_training_time = "2024-12-10T12:00:00Z"
-features = 155
-vector_dimensions = 320
-training_sequence_length = 40
-training_data_sources = ["10-Q", "key metrics"]
-
-
-[ticker_vector_config.spy-corr-v4a]
-path = "v4a.spy-corr-composite-10-Q-key-metrics.financial_vectors.tenq.bin"
-description = "SPY Corr Prototype (Extended Tuning)"
-proto_noteboook = "v4a.spy-corr-composite-10-Q-key-metrics-autoencoder-lstm"
-last_training_time = "2024-12-05T12:00:00Z"
-features = 250
-vector_dimensions = 192
-training_sequence_length = 80
-training_data_sources = ["10-Q", "key metrics", "correlated S&P 500"]
-
-
-[ticker_vector_config.spy-corr-reciprocals-v5]
-path = "v5.EXP-SPY-RECIPROCAL.financial_vectors.tenq.bin"
-description = "SPY Corr Reciprocals (Extended Tuning)"
-proto_noteboook = "v5.EXP-SPY-RECIPROCAL.spy-reciprocal"
-last_training_time = "2025-01-08T12:00:00Z"
-features = 752
-vector_dimensions = 432
-training_sequence_length = 40
-training_data_sources = ["10-Q", "key metrics", "correlated S&P 500", "reciprocals"]
-
-
-[ticker_vector_config.v5-intermediate]
-path = "v5.lows+spy-corr-blend-autoencoder.financial_vectors.tenq.bin"
-description = "SPY Corr + Lows Intermediate"
-proto_noteboook = "v5.lows+spy-corr-blend-autoencoder"
-last_training_time = "2024-12-28T12:00:00Z"
-features = 250
-vector_dimensions = 128
-training_sequence_length = 1008
-training_data_sources = ["52-week-lows", "10-Q", "key metrics", "correlated S&P 500"]
-
-
-[ticker_vector_config.spy-corr-v4]
-path = "v4.spy-corr-composite-10-Q-key-metrics.financial_vectors.tenq.bin"
-description = "SPY Corr Prototype"
-proto_noteboook = "v4.spy-corr-composite-10-Q-key-metrics-autoencoder-lstm"
-last_training_time = "2024-11-23T12:00:00Z"
-features = 250
-vector_dimensions = 192
-training_sequence_length = 80
-training_data_sources = ["10-Q", "key metrics", "correlated S&P 500"]
-
-
-[ticker_vector_config.r5-extended]
-path = "r5-5-10-20yr(rev-2).financial_vectors.tenq.bin"
-description = "`r5` (extended training); 20 years of 10-Q statements, with additional key metrics"
-proto_noteboook = "r5-5-10-20yr.etf-matcher-10-Q-key-metrics-vectors-lstm-parallel"
-last_training_time = "2024-10-20T12:00:00Z"
-vector_dimensions = 128
-training_sequence_length = 80
-training_data_sources = ["10-Q", "key metrics"]
-
-
-[ticker_vector_config.r5]
-path = "r5-5-10-20yr.financial_vectors.tenq.bin"
-description = "Original `r5`; 20 years of 10-Q statements, with additional key metrics"
-proto_noteboook = "r5-5-10-20yr.etf-matcher-10-Q-key-metrics-vectors-lstm-parallel"
-last_training_time = "2024-10-14T12:00:00Z"
-vector_dimensions = 128
-training_sequence_length = 80
-training_data_sources = ["10-Q", "key metrics"]
-
-
-[ticker_vector_config.price-value-composite-prelim]
-path = "price-value-composite-prelim.financial_vectors.tenq.bin"
-proto_noteboook = "price-value-composite-10-Q-key-metrics-autoencoder-lstm"
-description = "Preliminary Price Value Autoencoder"
-last_training_time = "2024-11-01T12:00:00Z"
-vector_dimensions = 256
-training_sequence_length = 80
-training_data_sources = ["10-Q", "key metrics"]
-
-
-[ticker_vector_config.v2-d-fat-skippy]
-path = "v2-d-fat-skippy-preliminary.price-value-attention-composite.financial_vectors.tenq.bin"
-proto_noteboook = "v2-d-fat-skippy.price-value-attention-composite-10-Q-key-metrics-autoencoder-lstm"
-description = "Preliminary Price Value Autoencoder w/ pct_change metrics (not fully trained); Trial #0143"
-last_training_time = "2024-11-15T12:00:00Z"
-vector_dimensions = 432
-training_sequence_length = 80
-training_data_sources = ["10-Q", "key metrics"]
-
-
-[ticker_vector_config.v3-price-value-composite]
-path = "v3.price-value-composite-10-Q-key-metrics-autoencoder.financial_vectors.tenq.bin"
-proto_noteboook = "v3.price-value-composite-10-Q-key-metrics-autoencoder-lstm"
-description = "Price Value Composite Autoencoder w/ pct_change metrics (fully trained); Trial #0143"
-last_training_time = "2024-11-18T12:00:00Z"
-vector_dimensions = 368
-training_sequence_length = 80
 training_data_sources = ["10-Q", "key metrics"]
