@@ -1,3 +1,0 @@
-First Trust Dow 30 Equal Weight ETF
-
-EXPECTED: EDOW

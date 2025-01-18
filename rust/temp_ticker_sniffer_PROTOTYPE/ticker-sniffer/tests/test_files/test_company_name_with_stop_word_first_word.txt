@@ -1,5 +1,0 @@
-Gap is a clothing store.
-
-EXPECTED: GAP
-
-COMMENT: In the dataset, the symbol is proceeded by a stop word.

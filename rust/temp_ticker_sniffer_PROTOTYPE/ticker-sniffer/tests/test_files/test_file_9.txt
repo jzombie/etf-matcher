@@ -1,5 +1,0 @@
-An apple is a fruit, but an Nvidia is a manzana.
-
-EXPECTED: NVDA
-
-COMMENT: Apple should not be processed as a stock symbol since it is not capitalized.

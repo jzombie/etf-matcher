@@ -1,7 +1,0 @@
-
-Axon largely makes equipment for law enforcement, and Cramer said Palantir is cool.
-
-EXPECTED: PLTR
-EXPECTED: AXON
-
-COMMENT: More extensive company name extraction.

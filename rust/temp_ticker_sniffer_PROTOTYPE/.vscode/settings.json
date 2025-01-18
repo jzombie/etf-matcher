@@ -1,6 +1,0 @@
-{
-  "rust-analyzer.excludeGlobs": ["**/__AUTOGEN__*.*"],
-  "files.watcherExclude": {
-    "**/__AUTOGEN__*.*": true
-  }
-}

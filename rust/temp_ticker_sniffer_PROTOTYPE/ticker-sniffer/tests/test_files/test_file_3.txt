@@ -1,5 +1,0 @@
-AAPL, AAPL, AAPL!!!
-
-EXPECTED: AAPL
-
-COMMENT: Duplicate symbols should only register once.
