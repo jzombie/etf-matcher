@@ -29,13 +29,14 @@ export default function TickerSelectionFields({
   omitShares = false,
 }: TickerSelectionFieldsProps) {
   const [newTicker, setNewTicker] = useState<TickerBucketTicker | null>(null);
-  const [errorFields, setErrorFields] = useState<Set<number | "new">>(
+  // TODO: Improve this type handling, where `string` is a ticker ID and `number` is a new field index
+  const [errorFields, setErrorFields] = useState<Set<string | number>>(
     new Set(),
   );
 
   // Handle error state changes by adding/removing field IDs to/from the Set
   const handleErrorStateChange = useCallback(
-    (fieldId: number | "new", hasError: boolean) => {
+    (fieldId: string | number, hasError: boolean) => {
       setErrorFields((prevErrors) => {
         const updatedErrors = new Set(prevErrors);
         if (hasError) {
@@ -161,10 +162,7 @@ export default function TickerSelectionFields({
                 }
                 onDelete={() => handleRemoveField(bucketTicker.symbol)}
                 onErrorStateChange={(hasError) =>
-                  handleErrorStateChange(
-                    bucketTicker?.ticker_symbol || idx,
-                    hasError,
-                  )
+                  handleErrorStateChange(bucketTicker?.symbol || idx, hasError)
                 }
                 omitShares={omitShares}
               />
@@ -178,10 +176,7 @@ export default function TickerSelectionFields({
                 onUpdate={handleUpdateField}
                 onCancel={handleRemoveNewTickerFields}
                 onErrorStateChange={(hasError) =>
-                  handleErrorStateChange(
-                    newTicker.ticker_symbol || "new",
-                    hasError,
-                  )
+                  handleErrorStateChange(newTicker.symbol || -1, hasError)
                 }
                 omitShares={omitShares}
               />

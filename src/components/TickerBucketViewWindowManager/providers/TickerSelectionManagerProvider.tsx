@@ -237,7 +237,7 @@ export default function TickerSelectionManagerProvider({
     [],
   );
 
-  const removeTickerWithId = useCallback(
+  const removeTickerWithSymbol = useCallback(
     (tickerSymbol: string) => {
       try {
         setAdjustedTickerBucket((prev) => ({
@@ -377,7 +377,7 @@ export default function TickerSelectionManagerProvider({
       areNoTickersSelected,
       adjustTicker,
       addSearchResultTickers,
-      removeTickerWithId,
+      removeTickerWithSymbol,
       adjustedTickerBucket,
       filteredTickerBucket,
       saveTickerBucket,
@@ -407,7 +407,7 @@ export default function TickerSelectionManagerProvider({
       areNoTickersSelected,
       adjustTicker,
       addSearchResultTickers,
-      removeTickerWithId,
+      removeTickerWithSymbol,
       adjustedTickerBucket,
       filteredTickerBucket,
       saveTickerBucket,
