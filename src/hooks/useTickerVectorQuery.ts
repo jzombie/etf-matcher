@@ -50,7 +50,7 @@ export default function useTickerVectorQuery({
   const queryName = useMemo(() => {
     switch (queryMode) {
       case "ticker-detail":
-        return (query as RustServiceTickerDetail).symbol;
+        return (query as RustServiceTickerDetail).ticker_symbol;
       case "bucket":
         return (query as TickerBucket).name;
       default:
@@ -76,7 +76,7 @@ export default function useTickerVectorQuery({
   const fetchEuclideanData = useCallback(async () => {
     let items;
     if (queryMode === "ticker-detail") {
-      const tickerSymbol = (query as RustServiceTickerDetail).symbol;
+      const tickerSymbol = (query as RustServiceTickerDetail).ticker_symbol;
       items = await fetchEuclideanByTicker(tickerVectorConfigKey, tickerSymbol);
     } else {
       const tickerBucket = query as TickerBucket;
@@ -124,7 +124,7 @@ export default function useTickerVectorQuery({
   const fetchCosineData = useCallback(async () => {
     let items;
     if (queryMode === "ticker-detail") {
-      const tickerSymbol = (query as RustServiceTickerDetail).symbol;
+      const tickerSymbol = (query as RustServiceTickerDetail).ticker_symbol;
       items = await fetchCosineByTicker(tickerVectorConfigKey, tickerSymbol);
     } else {
       const tickerBucket = query as TickerBucket;

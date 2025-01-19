@@ -27,12 +27,12 @@ export default function useBucketChangeOverview({
   incomingBucket,
 }: TickerBucketChangeOverviewProps) {
   const bucketChangeOverview = useMemo(() => {
-    const currentTickersMap = new Map<number, TickerBucketTicker>(
-      currentBucket?.tickers.map((ticker) => [ticker.tickerId, ticker]) || [],
+    const currentTickersMap = new Map<string, TickerBucketTicker>(
+      currentBucket?.tickers.map((ticker) => [ticker.symbol, ticker]) || [],
     );
 
-    const incomingTickerIds = new Set<number>(
-      incomingBucket.tickers.map((t) => t.tickerId),
+    const incomingTickerSymbols = new Set<string>(
+      incomingBucket.tickers.map((ticker) => ticker.symbol),
     );
 
     const result: TickerBucketChangeOverviewResult = {
@@ -43,7 +43,7 @@ export default function useBucketChangeOverview({
     };
 
     for (const incomingTicker of incomingBucket.tickers) {
-      const existingTicker = currentTickersMap.get(incomingTicker.tickerId);
+      const existingTicker = currentTickersMap.get(incomingTicker.symbol);
       if (!existingTicker) {
         // Ticker is new, will be added
         result.added.push({
@@ -66,7 +66,7 @@ export default function useBucketChangeOverview({
     // Check for removed tickers
     if (currentBucket) {
       for (const existingTicker of currentBucket.tickers) {
-        if (!incomingTickerIds.has(existingTicker.tickerId)) {
+        if (!incomingTickerSymbols.has(existingTicker.symbol)) {
           result.removed.push({
             previousQuantity: existingTicker.quantity,
             ticker: existingTicker,

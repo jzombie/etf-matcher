@@ -31,12 +31,12 @@ export default function TickerContainerProvider({
     new Map<
       Element,
       {
-        tickerId: number;
+        tickerSymbol: string;
         intersectionCallback?: (isIntersecting: boolean) => void;
       }
     >(),
   );
-  const visibleSymbolMapRef = useRef(new Map<Element, number>());
+  const visibleSymbolMapRef = useRef(new Map<Element, string>());
 
   const syncVisibleTickers = useCallback(() => {
     const prev = store.state.visibleTickerSymbols;
@@ -53,9 +53,9 @@ export default function TickerContainerProvider({
       entries.forEach((entry) => {
         const metadata = metadataMapRef.current.get(entry.target);
         if (metadata) {
-          const { tickerId, intersectionCallback } = metadata;
+          const { tickerSymbol, intersectionCallback } = metadata;
           if (entry.isIntersecting) {
-            visibleSymbolMapRef.current.set(entry.target, tickerId);
+            visibleSymbolMapRef.current.set(entry.target, tickerSymbol);
           } else {
             visibleSymbolMapRef.current.delete(entry.target);
           }
@@ -78,12 +78,12 @@ export default function TickerContainerProvider({
   const handleObserve = useCallback(
     (
       el: HTMLElement,
-      tickerId: number,
+      tickerSymbol: string,
       onIntersectionStateChange?: (isIntersecting: boolean) => void,
     ) => {
       observe(el);
       metadataMapRef.current.set(el, {
-        tickerId,
+        tickerSymbol,
         intersectionCallback: onIntersectionStateChange,
       });
     },

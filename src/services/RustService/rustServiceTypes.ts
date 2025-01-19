@@ -21,7 +21,7 @@ export type RustServiceTickerSearchResult = {
 
 // "Level 2"
 export type RustServiceTickerDetail = {
-  symbol: string;
+  ticker_symbol: string;
   exchange_short_name?: string;
   company_name: string;
   cik?: string;

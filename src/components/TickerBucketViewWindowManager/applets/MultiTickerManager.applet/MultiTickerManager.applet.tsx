@@ -63,7 +63,8 @@ export default function MultiTickerManagerApplet({
   const [isSearchModalOpen, setIsSearchModalOpen] = useState<boolean>(false);
 
   const disabledSearchTickerSymbols = useMemo(
-    () => adjustedTickerDetails?.map((tickerDetail) => tickerDetail.symbol),
+    () =>
+      adjustedTickerDetails?.map((tickerDetail) => tickerDetail.ticker_symbol),
     [adjustedTickerDetails],
   );
 
@@ -103,35 +104,40 @@ export default function MultiTickerManagerApplet({
             {adjustedTickerDetails?.map((tickerDetail) => {
               const isDeleted = !adjustedTickerBucket.tickers
                 .map((ticker) => ticker.symbol)
-                .includes(tickerDetail.symbol);
+                .includes(tickerDetail.ticker_symbol);
 
               if (isDeleted) {
                 return;
               }
 
               const isSelected = selectedTickerSymbols.some(
-                (tickerSymbol) => tickerSymbol === tickerDetail.symbol,
+                (tickerSymbol) => tickerSymbol === tickerDetail.ticker_symbol,
               );
 
               const isDisabled = !filteredTickerBucket.tickers.find(
                 (filteredTicker) =>
-                  filteredTicker.symbol === tickerDetail.symbol,
+                  filteredTicker.symbol === tickerDetail.ticker_symbol,
               );
 
               const isMissingInTickerVectors =
-                missingAuditedTickerSymbols?.includes(tickerDetail.symbol) ||
-                false;
+                missingAuditedTickerSymbols?.includes(
+                  tickerDetail.ticker_symbol,
+                ) || false;
 
               return (
-                <Section key={tickerDetail.symbol} mx={1} my={1} ml={0}>
+                <Section key={tickerDetail.ticker_symbol} mx={1} my={1} ml={0}>
                   <MultiTickerManagerTicker
                     key={forceRefreshIndex}
                     adjustedTickerBucket={adjustedTickerBucket}
                     tickerDetail={tickerDetail}
                     isMissingInTickerVectors={isMissingInTickerVectors}
                     isTiling={isTiling}
-                    onSelect={() => selectTickerSymbol(tickerDetail.symbol)}
-                    onDeselect={() => deselectTickerSymbol(tickerDetail.symbol)}
+                    onSelect={() =>
+                      selectTickerSymbol(tickerDetail.ticker_symbol)
+                    }
+                    onDeselect={() =>
+                      deselectTickerSymbol(tickerDetail.ticker_symbol)
+                    }
                     onAdjust={(adjustedTicker) => {
                       // Note: I experimented with throttling, but the UI update
                       // performance tradeoff wasn't worth it at the time
@@ -144,12 +150,14 @@ export default function MultiTickerManagerApplet({
                       );
                     }}
                     onDelete={() => {
-                      removeTickerWithSymbol(tickerDetail.symbol);
+                      removeTickerWithSymbol(tickerDetail.ticker_symbol);
 
                       // Auto-save
                       saveTickerBucket();
                     }}
-                    onNavigate={() => navigateToSymbol(tickerDetail.symbol)}
+                    onNavigate={() =>
+                      navigateToSymbol(tickerDetail.ticker_symbol)
+                    }
                     // TODO: Base on dynamic ranges
                     minWeight={0.001}
                     maxWeight={10000000000}

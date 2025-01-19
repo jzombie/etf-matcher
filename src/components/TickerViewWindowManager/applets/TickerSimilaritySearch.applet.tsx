@@ -75,13 +75,13 @@ export default function TickerSimilaritySearchApplet({
 
 type ComponentWrapProps = {
   tickerDetail: RustServiceTickerDetail;
-  missingAuditedTickerVectorIds: TickerSimilaritySearchAppletProps["missingAuditedTickerVectorIds"];
+  missingAuditedTickerSymbols: TickerSimilaritySearchAppletProps["missingAuditedTickerSymbols"];
   isTickerVectorAuditPending: TickerSimilaritySearchAppletProps["isTickerVectorAuditPending"];
 };
 
 function ComponentWrap({
   tickerDetail,
-  missingAuditedTickerVectorIds,
+  missingAuditedTickerSymbols,
   isTickerVectorAuditPending,
 }: ComponentWrapProps) {
   const [displayMode, setDisplayMode] = useState<DisplayMode>("radial");
@@ -144,19 +144,22 @@ function ComponentWrap({
 
   useEffect(() => {
     if (preferredTickerVectorConfigKey && tickerDetail) {
-      fetchTickerDistances(preferredTickerVectorConfigKey, tickerDetail.symbol);
+      fetchTickerDistances(
+        preferredTickerVectorConfigKey,
+        tickerDetail.ticker_symbol,
+      );
     }
   }, [preferredTickerVectorConfigKey, tickerDetail, fetchTickerDistances]);
 
   return (
     <>
       <Layout>
-        {missingAuditedTickerVectorIds?.length ? (
+        {missingAuditedTickerSymbols?.length ? (
           <Content>
             <Center>
               <NoInformationAvailableAlert>
                 Similarity search is not available for &quot;
-                {tickerDetail.symbol}&quot;.
+                {tickerDetail.ticker_symbol}&quot;.
               </NoInformationAvailableAlert>
             </Center>
           </Content>

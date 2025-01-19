@@ -151,7 +151,7 @@ export default function TickerSelectionManagerProvider({
     () =>
       adjustedTickerDetails
         ?.filter((ticker) => ticker.is_etf)
-        .map((ticker) => ticker.symbol) || [],
+        .map((ticker) => ticker.ticker_symbol) || [],
     [adjustedTickerDetails],
   );
 
@@ -330,44 +330,49 @@ export default function TickerSelectionManagerProvider({
     });
   }, []);
 
-  const deselectTickerId = useCallback((tickerId: number) => {
-    setSelectedTickerIds((prevTickerIds) =>
-      prevTickerIds.filter((prevTickerId) => prevTickerId !== tickerId),
+  const deselectTickerSymbol = useCallback((tickerSymbol: string) => {
+    setSelectedTickerSymbols((prevTickerSymbols) =>
+      prevTickerSymbols.filter(
+        (prevTickerSymbol) => prevTickerSymbol !== tickerSymbol,
+      ),
     );
   }, []);
 
-  const selectAllTickerIds = useCallback(() => {
-    setSelectedTickerIds(
-      adjustedTickerBucket.tickers.map((ticker) => ticker.tickerId),
+  const selectAllTickerSymbols = useCallback(() => {
+    setSelectedTickerSymbols(
+      adjustedTickerBucket.tickers.map((ticker) => ticker.symbol),
     );
   }, [adjustedTickerBucket]);
 
-  const clearSelectedTickerIds = useCallback(() => {
-    setSelectedTickerIds([]);
+  const clearSelectedTickerSymbols = useCallback(() => {
+    setSelectedTickerSymbols([]);
   }, []);
 
   const areAllTickersSelected = useMemo(
-    () => selectedTickerIds.length === adjustedTickerBucket.tickers.length,
-    [selectedTickerIds, adjustedTickerBucket.tickers.length],
+    () => selectedTickerSymbols.length === adjustedTickerBucket.tickers.length,
+    [selectedTickerSymbols, adjustedTickerBucket.tickers.length],
   );
 
   const areNoTickersSelected = useMemo(
-    () => selectedTickerIds.length === 0,
-    [selectedTickerIds],
+    () => selectedTickerSymbols.length === 0,
+    [selectedTickerSymbols],
   );
 
   const {
     missingTickerSymbols: missingAuditedTickerSymbols,
     isAuditPending: isTickerVectorAuditPending,
-  } = useTickerVectorAudit(preferredTickerVectorConfigKey, selectedTickerIds);
+  } = useTickerVectorAudit(
+    preferredTickerVectorConfigKey,
+    selectedTickerSymbols,
+  );
 
   const contextValue = useMemo(
     () => ({
-      selectedTickerIds,
-      selectTickerId,
-      deselectTickerId,
-      selectAllTickerIds,
-      clearSelectedTickerIds,
+      selectedTickerSymbols,
+      selectTickerSymbol,
+      deselectTickerSymbol,
+      selectAllTickerSymbols,
+      clearSelectedTickerSymbols,
       areAllTickersSelected,
       areNoTickersSelected,
       adjustTicker,
@@ -393,11 +398,11 @@ export default function TickerSelectionManagerProvider({
       forceRefreshIndex,
     }),
     [
-      selectedTickerIds,
-      selectTickerId,
-      deselectTickerId,
-      selectAllTickerIds,
-      clearSelectedTickerIds,
+      selectedTickerSymbols,
+      selectTickerSymbol,
+      deselectTickerSymbol,
+      selectAllTickerSymbols,
+      clearSelectedTickerSymbols,
       areAllTickersSelected,
       areNoTickersSelected,
       adjustTicker,
@@ -417,7 +422,7 @@ export default function TickerSelectionManagerProvider({
       adjustedETFAggregateDetailsError,
       formattedAdjustedSymbolsWithExchange,
       //
-      missingAuditedTickerVectorIds,
+      missingAuditedTickerSymbols,
       isTickerVectorAuditPending,
       //
       forceRefreshIndex,

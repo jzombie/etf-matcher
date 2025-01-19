@@ -20,7 +20,7 @@ export default function MergeTableRow({
   tickerDiff,
   actionType,
 }: MergeTableRowProps) {
-  const { tickerDetail } = useTickerDetail(tickerDiff.ticker.tickerId);
+  const { tickerDetail } = useTickerDetail(tickerDiff.ticker.symbol);
 
   const nextQuantity =
     actionType === "removed" ? 0 : tickerDiff.ticker.quantity;
@@ -32,7 +32,7 @@ export default function MergeTableRow({
       : null; // No change for new tickers
 
   return (
-    <TableRow key={tickerDiff.ticker.tickerId} style={getRowStyle(actionType)}>
+    <TableRow key={tickerDiff.ticker.symbol} style={getRowStyle(actionType)}>
       <TableCell>
         <AvatarLogo tickerDetail={tickerDetail} />
       </TableCell>

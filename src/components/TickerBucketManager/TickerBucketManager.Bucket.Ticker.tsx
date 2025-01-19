@@ -51,7 +51,7 @@ export default function TickerBucketTicker({
   tickerBucket,
 }: TickerBucketTickerProps) {
   const { isLoadingTickerDetail, tickerDetail, tickerDetailError } =
-    useTickerDetail(bucketTicker.tickerId);
+    useTickerDetail(bucketTicker.symbol);
 
   const [open, setOpen] = useState(false);
 
@@ -64,7 +64,7 @@ export default function TickerBucketTicker({
   }, []);
 
   const handleDelete = useCallback(() => {
-    store.removeTickerFromBucket(bucketTicker.tickerId, tickerBucket);
+    store.removeTickerFromBucket(bucketTicker.symbol, tickerBucket);
   }, [bucketTicker, tickerBucket]);
 
   const navigateToSymbol = useTickerSymbolNavigation();
@@ -110,7 +110,7 @@ export default function TickerBucketTicker({
                 variant="h6"
                 sx={{ fontWeight: "bold", color: "#ffffff", ml: 2 }}
               >
-                {tickerDetail.symbol}
+                {tickerDetail.ticker_symbol}
               </Typography>
             </Box>
           </Grid2>

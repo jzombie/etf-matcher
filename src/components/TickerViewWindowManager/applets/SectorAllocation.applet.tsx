@@ -42,7 +42,7 @@ export default function SectorAllocationApplet({
     fn: (tickerDetail) =>
       fetchWeightedTickerSectorDistribution([
         {
-          symbol: tickerDetail.symbol,
+          symbol: tickerDetail.ticker_symbol,
           // Explicitly hardcode to 1 for single-ticker mode
           quantity: 1,
         },
@@ -79,7 +79,7 @@ export default function SectorAllocationApplet({
           <Center>
             <NoInformationAvailableAlert>
               No sector allocation information is available for &quot;
-              {tickerDetail?.symbol}&quot;.
+              {tickerDetail?.ticker_symbol}&quot;.
             </NoInformationAvailableAlert>
           </Center>
         )}

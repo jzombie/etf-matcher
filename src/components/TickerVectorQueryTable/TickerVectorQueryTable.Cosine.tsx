@@ -98,8 +98,8 @@ export default function TickerVectorQueryTableCosine({
               {tickerDetails && tickerDetails.length > 0 ? (
                 tickerDetails.map((tickerDetail) => (
                   <TableRow
-                    key={tickerDetail.symbol}
-                    onClick={() => handleRowClick(tickerDetail.symbol)}
+                    key={tickerDetail.ticker_symbol}
+                    onClick={() => handleRowClick(tickerDetail.ticker_symbol)}
                     sx={{ cursor: "pointer" }}
                   >
                     <TableCell sx={{ textAlign: "center", fontWeight: "bold" }}>
@@ -107,7 +107,7 @@ export default function TickerVectorQueryTableCosine({
                         tickerDetail={tickerDetail as RustServiceTickerDetail}
                       />
                       <br />
-                      {tickerDetail.symbol}
+                      {tickerDetail.ticker_symbol}
                     </TableCell>
                     <TableCell>{tickerDetail.company_name}</TableCell>
                     <TableCell

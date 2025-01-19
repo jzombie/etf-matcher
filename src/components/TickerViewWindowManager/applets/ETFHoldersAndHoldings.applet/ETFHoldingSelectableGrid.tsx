@@ -40,7 +40,7 @@ export default function ETFHoldingSelectableGrid({
   useEffect(() => {
     if (etfTickerDetail.is_etf) {
       setIsLoadingETFHoldings(true);
-      fetchETFHoldings(etfTickerDetail.symbol)
+      fetchETFHoldings(etfTickerDetail.ticker_symbol)
         .then(setPaginatedHoldings)
         .catch((err) => {
           // TODO: Normalize error handling
@@ -73,7 +73,7 @@ export default function ETFHoldingSelectableGrid({
     return (
       <Center>
         <NoInformationAvailableAlert>
-          &quot;{etfTickerDetail.symbol}&quot; is not an ETF.
+          &quot;{etfTickerDetail.ticker_symbol}&quot; is not an ETF.
         </NoInformationAvailableAlert>
       </Center>
     );
@@ -103,7 +103,7 @@ export default function ETFHoldingSelectableGrid({
             }}
           >
             These represent the top holdings in the &quot;
-            {etfTickerDetail.symbol}
+            {etfTickerDetail.ticker_symbol}
             &quot; ETF, listed in order from the largest to the smallest
             allocation.{" "}
           </Typography>

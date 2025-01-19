@@ -37,7 +37,7 @@ export type ETFHolderSelectableGridProps = {
 export default function ETFHolderSelectableGrid({
   tickerDetail,
 }: ETFHolderSelectableGridProps) {
-  const tickerSymbol = tickerDetail.symbol;
+  const tickerSymbol = tickerDetail.ticker_symbol;
 
   const [isLoadingETFHolders, setIsLoadingETFHolders] =
     useState<boolean>(false);

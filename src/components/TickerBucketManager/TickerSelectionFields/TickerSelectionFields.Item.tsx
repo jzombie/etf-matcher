@@ -66,7 +66,7 @@ export default function TickerSelectionFieldsItem({
     return formattedValue;
   }, [quantityInputValue]);
 
-  const { tickerDetail } = useTickerDetail(bucketTicker?.tickerId);
+  const { tickerDetail } = useTickerDetail(bucketTicker?.symbol);
   const [tickerError, setTickerError] = useState<string | null>(null);
 
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
@@ -84,9 +84,9 @@ export default function TickerSelectionFieldsItem({
     (bucketTicker: TickerBucketTicker | null) => {
       if (
         bucketTicker &&
-        bucketTicker.tickerId !== initialBucketTicker?.tickerId &&
+        bucketTicker.symbol !== initialBucketTicker?.symbol &&
         existingBucketTickers.some(
-          (existingTicker) => existingTicker.tickerId === bucketTicker.tickerId,
+          (existingTicker) => existingTicker.symbol === bucketTicker.symbol,
         )
       ) {
         setTickerError("This ticker is already in your portfolio.");

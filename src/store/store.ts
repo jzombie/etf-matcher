@@ -731,7 +731,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
   private async _addRecentlyViewedTicker(tickerSymbol: string) {
     const tickerDetail = await fetchTickerDetail(tickerSymbol);
     const tickerBucketTicker: TickerBucketTicker = {
-      symbol: tickerDetail.symbol,
+      symbol: tickerDetail.ticker_symbol,
       exchangeShortName: tickerDetail.exchange_short_name,
       quantity: 1,
     };

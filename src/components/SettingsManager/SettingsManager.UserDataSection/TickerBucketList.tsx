@@ -68,7 +68,7 @@ export default function TickerBucketList({
             >
               {tickerBucket.tickers.map((ticker) => (
                 <TickerBucketItem
-                  key={ticker.tickerId}
+                  key={ticker.symbol}
                   tickerBucketTicker={ticker}
                 />
               ))}

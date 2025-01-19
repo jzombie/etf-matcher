@@ -9,7 +9,7 @@ import customLogger from "@utils/customLogger";
 export default function formatSymbolWithExchange(
   tickerDetail: RustServiceTickerDetail,
 ): string {
-  if (!tickerDetail.symbol) {
+  if (!tickerDetail.ticker_symbol) {
     return "";
   }
 
@@ -19,7 +19,7 @@ export default function formatSymbolWithExchange(
   // modify the data source itself
   if (exchangeShortName === "ETF") {
     customLogger.debug(
-      `Patching ETF short name with AMEX for symbol: ${tickerDetail.symbol}`,
+      `Patching ETF short name with AMEX for symbol: ${tickerDetail.ticker_symbol}`,
     );
 
     exchangeShortName = "AMEX";
@@ -27,7 +27,7 @@ export default function formatSymbolWithExchange(
 
   const exchangePrefix = exchangeShortName ? `${exchangeShortName}:` : "";
 
-  const formattedSymbol = tickerDetail.symbol?.replaceAll("-", ".");
+  const formattedSymbol = tickerDetail.ticker_symbol?.replaceAll("-", ".");
 
   return `${exchangePrefix}${formattedSymbol}`;
 }

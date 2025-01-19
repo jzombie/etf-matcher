@@ -49,12 +49,12 @@ export default function TickerTape() {
       const tickers = tickerTapeBucket.tickers;
 
       Promise.all(
-        tickers.map((ticker) => fetchTickerDetail(ticker.tickerId)),
+        tickers.map((ticker) => fetchTickerDetail(ticker.symbol)),
       ).then((tickerDetails) => {
         setTickerTapeSymbols(
           tickerDetails.map((tickerDetail) => ({
-            proName: tickerDetail.symbol,
-            title: `${tickerDetail.company_name} (${tickerDetail.symbol})`,
+            proName: tickerDetail.ticker_symbol,
+            title: `${tickerDetail.company_name} (${tickerDetail.ticker_symbol})`,
           })),
         );
       });

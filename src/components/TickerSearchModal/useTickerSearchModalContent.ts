@@ -92,7 +92,7 @@ export default function useTickerSearchModalContent({
             settledDetails
               .filter((result) => result.status === "fulfilled")
               .map((result) => ({
-                ticker_symbol: result.value.symbol,
+                ticker_symbol: result.value.ticker_symbol,
                 exchange_short_name: result.value.exchange_short_name,
                 company_name: result.value.company_name,
                 logo_filename: result.value.logo_filename,

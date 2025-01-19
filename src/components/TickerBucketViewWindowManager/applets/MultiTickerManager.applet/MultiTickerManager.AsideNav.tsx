@@ -13,9 +13,9 @@ export type MultiTickerManagerAsideNavProps = {
   onSaveTickerBucket: () => void;
   isTickerBucketSaved: boolean;
   onCancelTickerAdjustments: () => void;
-  onSelectAllTickerIds: () => void;
+  onSelectAllTickerSymbols: () => void;
   areAllTickersSelected: boolean;
-  onClearSelectedTickerIds: () => void;
+  onClearSelectedTickerSymbols: () => void;
   areNoTickersSelected: boolean;
   onOpenSearchModal: () => void;
   isSearchModalOpen: boolean;
@@ -25,9 +25,9 @@ export default function MultiTickerManagerAsideNav({
   onSaveTickerBucket,
   isTickerBucketSaved,
   onCancelTickerAdjustments,
-  onSelectAllTickerIds,
+  onSelectAllTickerSymbols,
   areAllTickersSelected,
-  onClearSelectedTickerIds,
+  onClearSelectedTickerSymbols,
   areNoTickersSelected,
   onOpenSearchModal,
   isSearchModalOpen,
@@ -59,7 +59,7 @@ export default function MultiTickerManagerAsideNav({
 
       {/* Select All Icon */}
       <IconButton
-        onClick={onSelectAllTickerIds}
+        onClick={onSelectAllTickerSymbols}
         disabled={areAllTickersSelected}
         title="Select All"
         aria-label="Select all tickers"
@@ -69,7 +69,7 @@ export default function MultiTickerManagerAsideNav({
 
       {/* Unselect All Icon */}
       <IconButton
-        onClick={onClearSelectedTickerIds}
+        onClick={onClearSelectedTickerSymbols}
         disabled={areNoTickersSelected}
         title="Unselect All"
         aria-label="Unselect all tickers"

@@ -47,7 +47,7 @@ export default function TickerInformationApplet({
     // re-renders when they have changed
     if (tickerBuckets && tickerDetail) {
       return store
-        .getTickerBucketsWithTicker(tickerDetail?.symbol)
+        .getTickerBucketsWithTicker(tickerDetail?.ticker_symbol)
         .filter((tickerBucket) =>
           ["portfolio", "watchlist"].includes(tickerBucket.type),
         );
@@ -69,7 +69,7 @@ export default function TickerInformationApplet({
           <LogoWrapper>
             <EncodedImage
               encSrc={tickerDetail?.logo_filename}
-              title={`${tickerDetail?.symbol} logo`}
+              title={`${tickerDetail?.ticker_symbol} logo`}
               style={{
                 width: "100%",
                 maxWidth: "80px",
@@ -83,7 +83,7 @@ export default function TickerInformationApplet({
           <InfoWrapper>
             <InfoItem
               label="Symbol"
-              value={`${tickerDetail?.symbol}${tickerDetail?.exchange_short_name ? ` (${tickerDetail.exchange_short_name})` : ""}`}
+              value={`${tickerDetail?.ticker_symbol}${tickerDetail?.exchange_short_name ? ` (${tickerDetail.exchange_short_name})` : ""}`}
             />
             <InfoItem
               label="Company"
@@ -105,9 +105,11 @@ export default function TickerInformationApplet({
               // TODO: Add asset class, etc.
             }
           </InfoWrapper>
-          {tickerDetail?.symbol && (
+          {tickerDetail?.ticker_symbol && (
             <Box sx={{ textAlign: "center" }} mb={2}>
-              <TickerSymbolsCopyButton tickerSymbols={[tickerDetail.symbol]} />
+              <TickerSymbolsCopyButton
+                tickerSymbols={[tickerDetail.ticker_symbol]}
+              />
             </Box>
           )}
           {tickerDetail && (
@@ -124,28 +126,28 @@ export default function TickerInformationApplet({
                 <Link
                   sx={{ mx: 0.5 }}
                   href={getSymbolThirdPartyLink({
-                    tickerSymbol: tickerDetail?.symbol,
+                    tickerSymbol: tickerDetail?.ticker_symbol,
                     companyName: tickerDetail?.company_name,
                     isETF: tickerDetail?.is_etf,
                     provider: "stockanalysis.com",
                   })}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={`View ${tickerDetail?.symbol} on stockanalysis.com`}
+                  aria-label={`View ${tickerDetail?.ticker_symbol} on stockanalysis.com`}
                 >
                   stockanalysis.com
                 </Link>
                 <Link
                   sx={{ mx: 0.5 }}
                   href={getSymbolThirdPartyLink({
-                    tickerSymbol: tickerDetail?.symbol,
+                    tickerSymbol: tickerDetail?.ticker_symbol,
                     companyName: tickerDetail?.company_name,
                     isETF: tickerDetail?.is_etf,
                     provider: "google.com",
                   })}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={`View ${tickerDetail?.symbol} on stockanalysis.com`}
+                  aria-label={`View ${tickerDetail?.ticker_symbol} on stockanalysis.com`}
                 >
                   google.com
                 </Link>
