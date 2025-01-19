@@ -9,18 +9,18 @@ import useAppErrorBoundary from "./useAppErrorBoundary";
 import usePromise from "./usePromise";
 
 export default function useMultiETFAggregateDetail(
-  etfTickerIds: number[] = [],
+  etfTickerSymbols: string[] = [],
   onLoad?: (etfAggregateDetails: RustServiceETFAggregateDetail[]) => void,
 ) {
   const { triggerUIError } = useAppErrorBoundary();
 
   const fetchDetails = async (
-    ids: number[],
+    etfTickerSymbols: string[],
   ): Promise<RustServiceETFAggregateDetail[]> => {
     const results = await Promise.allSettled(
-      ids.map((id) =>
-        fetchETFAggregateDetail(id).catch((err) => {
-          customLogger.error({ tickerId: id, err });
+      etfTickerSymbols.map((etfTickerSymbol) =>
+        fetchETFAggregateDetail(etfTickerSymbol).catch((err) => {
+          customLogger.error({ etfTickerSymbol, err });
           return { status: "rejected", reason: err };
         }),
       ),
@@ -60,7 +60,7 @@ export default function useMultiETFAggregateDetail(
     error,
     execute,
     reset,
-  } = usePromise<RustServiceETFAggregateDetail[], [number[]]>({
+  } = usePromise<RustServiceETFAggregateDetail[], [string[]]>({
     fn: fetchDetails,
     onSuccess: onLoad,
     onError: triggerUIError,
@@ -69,12 +69,12 @@ export default function useMultiETFAggregateDetail(
 
   // Auto-execute the promise when the tickerIds change
   useEffect(() => {
-    if (etfTickerIds.length > 0) {
-      execute(etfTickerIds);
+    if (etfTickerSymbols.length > 0) {
+      execute(etfTickerSymbols);
     } else {
       reset();
     }
-  }, [etfTickerIds, execute, reset]);
+  }, [etfTickerSymbols, execute, reset]);
 
   return { isLoading, multiETFAggregateDetails, error };
 }

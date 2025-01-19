@@ -23,7 +23,7 @@ export default function FinancialChartsGrid({
   tickerDetail,
 }: FinancialChartsGridProps) {
   const { isLoading, detail: financialDetail } = useTicker10KDetail(
-    tickerDetail.ticker_id,
+    tickerDetail.symbol,
   );
 
   // TODO: Move out of `FinancialChartsGrid` scope?

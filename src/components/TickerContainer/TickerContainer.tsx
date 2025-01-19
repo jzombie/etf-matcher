@@ -7,12 +7,12 @@ import useStableCurrentRef from "@hooks/useStableCurrentRef";
 import { TickerContainerContext } from "./TickerContainerProvider";
 
 export type TickerContainerProps = FullProps & {
-  tickerId: number;
+  tickerSymbol: string;
   onIntersectionStateChange?: (isIntersecting: boolean) => void;
 };
 
 export default function TickerContainer({
-  tickerId,
+  tickerSymbol,
   onIntersectionStateChange,
   children,
   ...rest
@@ -39,13 +39,13 @@ export default function TickerContainer({
   useEffect(() => {
     if (elementRef.current) {
       const el = elementRef.current;
-      observe(el, tickerId, handleOnIntersectionStateChange);
+      observe(el, tickerSymbol, handleOnIntersectionStateChange);
 
       return () => {
         unobserve(el as HTMLElement);
       };
     }
-  }, [tickerId, observe, unobserve, handleOnIntersectionStateChange]);
+  }, [tickerSymbol, observe, unobserve, handleOnIntersectionStateChange]);
 
   return (
     <Full ref={elementRef} {...rest}>

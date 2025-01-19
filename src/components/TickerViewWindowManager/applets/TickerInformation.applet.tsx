@@ -47,7 +47,7 @@ export default function TickerInformationApplet({
     // re-renders when they have changed
     if (tickerBuckets && tickerDetail) {
       return store
-        .getTickerBucketsWithTicker(tickerDetail?.ticker_id)
+        .getTickerBucketsWithTicker(tickerDetail?.symbol)
         .filter((tickerBucket) =>
           ["portfolio", "watchlist"].includes(tickerBucket.type),
         );

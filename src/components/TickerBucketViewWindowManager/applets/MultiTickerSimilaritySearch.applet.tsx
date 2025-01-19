@@ -57,7 +57,7 @@ export default function MultiTickerSimilaritySearchApplet({
 
   const {
     filteredTickerBucket,
-    missingAuditedTickerVectorIds,
+    missingAuditedTickerSymbols,
     isTickerVectorAuditPending,
   } = useTickerSelectionManagerContext();
 
@@ -123,13 +123,13 @@ export default function MultiTickerSimilaritySearchApplet({
   return (
     <TickerBucketViewWindowManagerAppletWrap {...rest}>
       <Layout>
-        {missingAuditedTickerVectorIds?.length ? (
+        {missingAuditedTickerSymbols?.length ? (
           <Content>
             <Center>
               <NoInformationAvailableAlert>
-                {missingAuditedTickerVectorIds.length} ticker
-                {missingAuditedTickerVectorIds.length !== 1 ? "s" : ""}{" "}
-                {missingAuditedTickerVectorIds.length !== 1 ? "are" : "is"}{" "}
+                {missingAuditedTickerSymbols.length} ticker
+                {missingAuditedTickerSymbols.length !== 1 ? "s" : ""}{" "}
+                {missingAuditedTickerSymbols.length !== 1 ? "are" : "is"}{" "}
                 preventing similarity search (model:{" "}
                 {preferredTickerVectorConfigKey}).
               </NoInformationAvailableAlert>

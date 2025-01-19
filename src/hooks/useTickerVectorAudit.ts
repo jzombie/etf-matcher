@@ -10,21 +10,21 @@ import usePromise from "./usePromise";
 
 export default function useTickerVectorAudit(
   tickerVectorConfigKey: string,
-  // Note: `queryTickerIds` represents the `query`, not `filtered results`
-  queryTickerIds: number[],
+  // Note: `queryTickerSymbols` represents the `query`, not `filtered results`
+  queryTickerSymbols: string[],
 ) {
   const { triggerUIError } = useAppErrorBoundary();
 
-  const prevTickerIdsRef = useRef<number[]>([]);
+  const prevTickerSymbolsRef = useRef<string[]>([]);
 
   const {
-    data: missingTickerIds,
+    data: missingTickerSymbols,
     isPending: isAuditPending,
     error: auditError,
     execute: executeAudit,
-  } = usePromise<number[], [string, number[]]>({
-    fn: (tickerVectorConfigKey, queryTickerIds) =>
-      auditMissingTickerVectors(tickerVectorConfigKey, queryTickerIds),
+  } = usePromise<string[], [string, string[]]>({
+    fn: (tickerVectorConfigKey, queryTickerSymbols) =>
+      auditMissingTickerVectors(tickerVectorConfigKey, queryTickerSymbols),
     onError: (err) => {
       customLogger.error(err);
       triggerUIError(
@@ -35,13 +35,13 @@ export default function useTickerVectorAudit(
   });
 
   useEffect(() => {
-    const prevTickerIds = prevTickerIdsRef.current;
-    if (!arraysEqual(prevTickerIds, queryTickerIds)) {
-      executeAudit(tickerVectorConfigKey, queryTickerIds);
+    const prevTickerSymbols = prevTickerSymbolsRef.current;
+    if (!arraysEqual(prevTickerSymbols, queryTickerSymbols)) {
+      executeAudit(tickerVectorConfigKey, queryTickerSymbols);
 
-      prevTickerIdsRef.current = queryTickerIds;
+      prevTickerSymbolsRef.current = queryTickerSymbols;
     }
-  }, [tickerVectorConfigKey, queryTickerIds, executeAudit]);
+  }, [tickerVectorConfigKey, queryTickerSymbols, executeAudit]);
 
-  return { missingTickerIds, isAuditPending, auditError };
+  return { missingTickerSymbols, isAuditPending, auditError };
 }

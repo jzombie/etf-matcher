@@ -16,11 +16,11 @@ import TickerSimilaritySearchApplet from "../applets/TickerSimilaritySearch.appl
 import type { TickerViewWindowManagerAppletWrapProps } from "../components/TickerViewWindowManager.AppletWrap";
 
 export default function useTickerViewWindowManagerContent(
-  tickerId: number,
+  tickerSymbol: string,
   isTiling: boolean,
 ) {
   const { tickerDetail, isLoadingTickerDetail, tickerDetailError } =
-    useTickerDetail(tickerId);
+    useTickerDetail(tickerSymbol);
 
   const isETF = Boolean(tickerDetail && tickerDetail.is_etf);
 
@@ -29,7 +29,7 @@ export default function useTickerViewWindowManagerContent(
     isLoadingETFAggregateDetail,
     etfAggregateDetailError,
   } = useETFAggregateDetail({
-    tickerId,
+    tickerSymbol,
     shouldLoad: isETF,
   });
 
@@ -38,9 +38,9 @@ export default function useTickerViewWindowManagerContent(
   );
 
   const {
-    missingTickerIds: missingAuditedTickerVectorIds,
+    missingTickerSymbols: missingAuditedTickerSymbols,
     isAuditPending: isTickerVectorAuditPending,
-  } = useTickerVectorAudit(preferredTickerVectorConfigKey, [tickerId]);
+  } = useTickerVectorAudit(preferredTickerVectorConfigKey, [tickerSymbol]);
 
   // Common props for all applets
   const commonProps: Omit<TickerViewWindowManagerAppletWrapProps, "children"> =
@@ -53,7 +53,7 @@ export default function useTickerViewWindowManagerContent(
         isLoadingETFAggregateDetail,
         etfAggregateDetailError,
         //
-        missingAuditedTickerVectorIds,
+        missingAuditedTickerSymbols,
         isTickerVectorAuditPending,
         //
         isTiling,
@@ -66,7 +66,7 @@ export default function useTickerViewWindowManagerContent(
         isLoadingETFAggregateDetail,
         etfAggregateDetailError,
         //
-        missingAuditedTickerVectorIds,
+        missingAuditedTickerSymbols,
         isTickerVectorAuditPending,
         //
         isTiling,

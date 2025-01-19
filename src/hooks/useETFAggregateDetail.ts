@@ -9,13 +9,13 @@ import useAppErrorBoundary from "./useAppErrorBoundary";
 import usePromise from "./usePromise";
 
 export type ETFAggregateDetailRequestProps = {
-  tickerId?: number;
+  tickerSymbol?: string;
   onLoad?: (etfAggregateDetail: RustServiceETFAggregateDetail) => void;
   shouldLoad?: boolean;
 };
 
 export default function useETFAggregateDetail({
-  tickerId,
+  tickerSymbol,
   onLoad,
   shouldLoad = true,
 }: ETFAggregateDetailRequestProps) {
@@ -26,7 +26,7 @@ export default function useETFAggregateDetail({
     isPending: isLoadingETFAggregateDetail,
     error: etfAggregateDetailError,
     execute,
-  } = usePromise<RustServiceETFAggregateDetail, [number]>({
+  } = usePromise<RustServiceETFAggregateDetail, [string]>({
     fn: fetchETFAggregateDetail,
     onSuccess: onLoad,
     onError: (err) => {
@@ -37,10 +37,10 @@ export default function useETFAggregateDetail({
   });
 
   useEffect(() => {
-    if (tickerId && shouldLoad) {
-      execute(tickerId);
+    if (tickerSymbol && shouldLoad) {
+      execute(tickerSymbol);
     }
-  }, [tickerId, shouldLoad, execute]);
+  }, [tickerSymbol, shouldLoad, execute]);
 
   return {
     isLoadingETFAggregateDetail,

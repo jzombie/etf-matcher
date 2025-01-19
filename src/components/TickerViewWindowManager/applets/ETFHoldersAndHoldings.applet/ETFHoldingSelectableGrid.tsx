@@ -40,7 +40,7 @@ export default function ETFHoldingSelectableGrid({
   useEffect(() => {
     if (etfTickerDetail.is_etf) {
       setIsLoadingETFHoldings(true);
-      fetchETFHoldings(etfTickerDetail.ticker_id)
+      fetchETFHoldings(etfTickerDetail.symbol)
         .then(setPaginatedHoldings)
         .catch((err) => {
           // TODO: Normalize error handling
@@ -54,7 +54,7 @@ export default function ETFHoldingSelectableGrid({
 
   const handleItemSelect = useCallback(
     (holding: RustServiceETFHoldingTicker) => {
-      navigateToSymbol(holding.holding_symbol);
+      navigateToSymbol(holding.holding_ticker_symbol);
     },
     [navigateToSymbol],
   );
@@ -62,7 +62,8 @@ export default function ETFHoldingSelectableGrid({
   const gridItems: SelectableGridItem<RustServiceETFHoldingTicker>[] = useMemo(
     () =>
       paginatedHoldings?.results.map((result) => ({
-        id: result.holding_ticker_id,
+        // Note: `id` is the ID for the `SelectableGridItem`, not the ticker ID
+        id: result.holding_ticker_symbol,
         data: result,
       })) || [],
     [paginatedHoldings],
@@ -120,7 +121,7 @@ export default function ETFHoldingSelectableGrid({
 
               <StyledTitle>{holding.company_name}</StyledTitle>
               <Typography variant="body2">
-                Symbol: {holding.holding_symbol}
+                Symbol: {holding.holding_ticker_symbol}
               </Typography>
               <Typography variant="body2">
                 Industry: {holding.industry_name}

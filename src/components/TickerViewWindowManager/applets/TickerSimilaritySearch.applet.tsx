@@ -51,21 +51,21 @@ export type TickerSimilaritySearchAppletProps = Omit<
 
 export default function TickerSimilaritySearchApplet({
   tickerDetail,
-  missingAuditedTickerVectorIds,
+  missingAuditedTickerSymbols,
   isTickerVectorAuditPending,
   ...rest
 }: TickerSimilaritySearchAppletProps) {
   return (
     <TickerViewWindowManagerAppletWrap
       tickerDetail={tickerDetail}
-      missingAuditedTickerVectorIds={missingAuditedTickerVectorIds}
+      missingAuditedTickerSymbols={missingAuditedTickerSymbols}
       isTickerVectorAuditPending={isTickerVectorAuditPending}
       {...rest}
     >
       {tickerDetail && (
         <ComponentWrap
           tickerDetail={tickerDetail}
-          missingAuditedTickerVectorIds={missingAuditedTickerVectorIds}
+          missingAuditedTickerSymbols={missingAuditedTickerSymbols}
           isTickerVectorAuditPending={isTickerVectorAuditPending}
         />
       )}
@@ -129,10 +129,10 @@ function ComponentWrap({
 
   const { data: tickerDistances, execute: fetchTickerDistances } = usePromise<
     RustServiceTickerDistance[],
-    [tickerVectorConfigKey: string, tickerId: number]
+    [tickerVectorConfigKey: string, tickerSymbol: string]
   >({
-    fn: (tickerVectorConfigKey, tickerId) =>
-      fetchEuclideanByTicker(tickerVectorConfigKey, tickerId),
+    fn: (tickerVectorConfigKey, tickerSymbol) =>
+      fetchEuclideanByTicker(tickerVectorConfigKey, tickerSymbol),
     onError: (err) => {
       customLogger.error(err);
       triggerUIError(new Error("Could not fetch PCA similarity results"));
@@ -144,10 +144,7 @@ function ComponentWrap({
 
   useEffect(() => {
     if (preferredTickerVectorConfigKey && tickerDetail) {
-      fetchTickerDistances(
-        preferredTickerVectorConfigKey,
-        tickerDetail.ticker_id,
-      );
+      fetchTickerDistances(preferredTickerVectorConfigKey, tickerDetail.symbol);
     }
   }, [preferredTickerVectorConfigKey, tickerDetail, fetchTickerDistances]);
 

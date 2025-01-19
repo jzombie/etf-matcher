@@ -42,7 +42,6 @@ export default function SectorAllocationApplet({
     fn: (tickerDetail) =>
       fetchWeightedTickerSectorDistribution([
         {
-          tickerId: tickerDetail.ticker_id,
           symbol: tickerDetail.symbol,
           // Explicitly hardcode to 1 for single-ticker mode
           quantity: 1,

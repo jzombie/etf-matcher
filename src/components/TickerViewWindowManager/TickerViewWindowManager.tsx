@@ -11,16 +11,16 @@ import TickerViewWindowManagerBucketManager from "./components/TickerViewWindowM
 import useTickerViewWindowManagerContent from "./hooks/useTickerViewWindowManagerContent";
 
 export type TickerViewWindowManagerProps = {
-  tickerId: number;
+  tickerSymbol: string;
 };
 
 export default function TickerViewWindowManager({
-  tickerId,
+  tickerSymbol,
 }: TickerViewWindowManagerProps) {
   const [isTiling, setIsTiling] = useState(true);
 
   const { initialLayout, contentMap, tickerDetail } =
-    useTickerViewWindowManagerContent(tickerId, isTiling);
+    useTickerViewWindowManagerContent(tickerSymbol, isTiling);
 
   const { height: windowHeight } = useWindowSize();
 
@@ -41,7 +41,7 @@ export default function TickerViewWindowManager({
   }, [tickerDetail, isTiling, windowHeight]);
 
   return (
-    <TickerContainer tickerId={tickerId}>
+    <TickerContainer tickerSymbol={tickerSymbol}>
       <Layout>
         <Content>
           <WindowManager

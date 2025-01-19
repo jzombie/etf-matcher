@@ -12,7 +12,7 @@ mod data_models;
 mod types;
 mod utils;
 
-use crate::types::TickerId;
+use crate::types::{TickerId, TickerSymbol};
 
 use crate::data_models::{
     ticker_vector_analysis, DataBuildInfo, DataURL, ETFAggregateDetail, ETFHoldingTicker,
@@ -113,9 +113,9 @@ pub async fn extract_search_results_from_text(
 }
 
 #[wasm_bindgen]
-pub async fn get_ticker_detail(ticker_id: TickerId) -> Result<JsValue, JsValue> {
-    let detail: TickerDetail = TickerDetail::get_ticker_detail(ticker_id).await?;
-    to_value(&detail).map_err(|err: serde_wasm_bindgen::Error| {
+pub async fn get_ticker_detail(ticker_symbol: TickerSymbol) -> Result<JsValue, JsValue> {
+    let ticker_detail: TickerDetail = TickerDetail::get_ticker_detail(ticker_symbol).await?;
+    to_value(&ticker_detail).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
             "Failed to convert TickerDetail to JsValue: {}",
             err
@@ -244,9 +244,8 @@ pub async fn get_image_info(filename: &str) -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
-pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<JsValue, JsValue> {
-    let ticker_id: TickerId =
-        utils::ticker_utils::get_ticker_id(symbol, exchange_short_name).await?;
+pub async fn get_ticker_id(ticker_symbol: &str) -> Result<JsValue, JsValue> {
+    let ticker_id: TickerId = utils::ticker_utils::fetch_ticker_id(ticker_symbol).await?;
     Ok(to_value(&ticker_id).map_err(|e| JsValue::from_str(&e.to_string()))?)
 }
 

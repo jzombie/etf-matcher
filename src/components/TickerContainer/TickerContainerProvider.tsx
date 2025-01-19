@@ -8,7 +8,7 @@ import arraysEqual from "@utils/arraysEqual";
 export type TickerContainerContextType = {
   observe: (
     el: HTMLElement,
-    tickerId: number,
+    tickerSymbol: string,
     onIntersectionStateChange?: (isIntersecting: boolean) => void,
   ) => void;
   unobserve: (el?: HTMLElement) => void;
@@ -39,7 +39,7 @@ export default function TickerContainerProvider({
   const visibleSymbolMapRef = useRef(new Map<Element, number>());
 
   const syncVisibleTickers = useCallback(() => {
-    const prev = store.state.visibleTickerIds;
+    const prev = store.state.visibleTickerSymbols;
 
     const next = [...new Set(visibleSymbolMapRef.current.values())];
 

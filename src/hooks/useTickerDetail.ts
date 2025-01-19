@@ -9,7 +9,7 @@ import useAppErrorBoundary from "./useAppErrorBoundary";
 import usePromise from "./usePromise";
 
 export default function useTickerDetail(
-  tickerId?: number,
+  tickerSymbol?: string,
   onLoad?: (tickerDetail: RustServiceTickerDetail) => void,
 ) {
   const { triggerUIError } = useAppErrorBoundary();
@@ -19,21 +19,21 @@ export default function useTickerDetail(
     isPending: isLoadingTickerDetail,
     error: tickerDetailError,
     execute,
-  } = usePromise<RustServiceTickerDetail, [number]>({
+  } = usePromise<RustServiceTickerDetail, [string]>({
     fn: fetchTickerDetail,
     onSuccess: onLoad,
     onError: (err) => {
       triggerUIError(new Error("Error fetching ticker detail"));
-      customLogger.error({ tickerId, err });
+      customLogger.error({ tickerSymbol, err });
     },
     initialAutoExecute: false,
   });
 
   useEffect(() => {
-    if (tickerId) {
-      execute(tickerId);
+    if (tickerSymbol) {
+      execute(tickerSymbol);
     }
-  }, [tickerId, execute]);
+  }, [tickerSymbol, execute]);
 
   return { isLoadingTickerDetail, tickerDetail, tickerDetailError };
 }

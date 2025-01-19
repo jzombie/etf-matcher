@@ -11,7 +11,7 @@ export type SearchQueryResult = {
 export type TickerSearchModalProps = Omit<DialogModalProps, "children"> & {
   onSelect: (searchQueryResults: SearchQueryResult[]) => void;
   onCancel?: () => void;
-  disabledTickerIds?: number[];
+  disabledTickerSymbols?: string[];
   textInputPlaceholder?: string;
   searchButtonAriaLabel?: string;
   longFormAriaLabel?: string;

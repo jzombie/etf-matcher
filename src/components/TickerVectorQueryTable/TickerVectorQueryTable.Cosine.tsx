@@ -96,44 +96,44 @@ export default function TickerVectorQueryTableCosine({
             </TableHead>
             <TableBody>
               {tickerDetails && tickerDetails.length > 0 ? (
-                tickerDetails.map((detail) => (
+                tickerDetails.map((tickerDetail) => (
                   <TableRow
-                    key={detail.ticker_id}
-                    onClick={() => handleRowClick(detail.symbol)}
+                    key={tickerDetail.symbol}
+                    onClick={() => handleRowClick(tickerDetail.symbol)}
                     sx={{ cursor: "pointer" }}
                   >
                     <TableCell sx={{ textAlign: "center", fontWeight: "bold" }}>
                       <AvatarLogo
-                        tickerDetail={detail as RustServiceTickerDetail}
+                        tickerDetail={tickerDetail as RustServiceTickerDetail}
                       />
                       <br />
-                      {detail.symbol}
+                      {tickerDetail.symbol}
                     </TableCell>
-                    <TableCell>{detail.company_name}</TableCell>
+                    <TableCell>{tickerDetail.company_name}</TableCell>
                     <TableCell
                       sx={{ display: { xs: "none", sm: "table-cell" } }}
                     >
-                      {detail.industry_name || "N/A"}
-                    </TableCell>
-                    <TableCell
-                      sx={{ display: { xs: "none", sm: "table-cell" } }}
-                    >
-                      {detail.sector_name || "N/A"}
+                      {tickerDetail.industry_name || "N/A"}
                     </TableCell>
                     <TableCell
                       sx={{ display: { xs: "none", sm: "table-cell" } }}
                     >
-                      <FormattedETFExpenseRatio tickerDetail={detail} />
+                      {tickerDetail.sector_name || "N/A"}
                     </TableCell>
                     <TableCell
                       sx={{ display: { xs: "none", sm: "table-cell" } }}
                     >
-                      {detail.is_held_in_etf ? "Yes" : "No"}
+                      <FormattedETFExpenseRatio tickerDetail={tickerDetail} />
+                    </TableCell>
+                    <TableCell
+                      sx={{ display: { xs: "none", sm: "table-cell" } }}
+                    >
+                      {tickerDetail.is_held_in_etf ? "Yes" : "No"}
                     </TableCell>
                     <TableCell
                       sx={{ display: { xs: "none", md: "table-cell" } }}
                     >
-                      {detail.cosineSimilarityScore.toFixed(2)}{" "}
+                      {tickerDetail.cosineSimilarityScore.toFixed(2)}{" "}
                     </TableCell>
                   </TableRow>
                 ))

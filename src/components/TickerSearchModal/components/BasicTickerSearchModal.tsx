@@ -50,7 +50,7 @@ export default function BasicTickerSearchModal({
   onClose,
   onSelect,
   onCancel,
-  disabledTickerIds = [],
+  disabledTickerSymbols = [],
   textInputPlaceholder,
   searchButtonAriaLabel,
   longFormAriaLabel,
@@ -234,7 +234,11 @@ export default function BasicTickerSearchModal({
           handleOk(evt);
         } else if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
           const selectedSearchResult = searchResults[selectedIndex];
-          handleOk(evt, selectedSearchResult.symbol, selectedSearchResult);
+          handleOk(
+            evt,
+            selectedSearchResult.ticker_symbol,
+            selectedSearchResult,
+          );
         }
       },
     },
@@ -243,9 +247,10 @@ export default function BasicTickerSearchModal({
   const filteredResults = useMemo(
     () =>
       searchResults.filter(
-        (searchResult) => !disabledTickerIds?.includes(searchResult.ticker_id),
+        (searchResult) =>
+          !disabledTickerSymbols?.includes(searchResult.ticker_symbol),
       ),
-    [searchResults, disabledTickerIds],
+    [searchResults, disabledTickerSymbols],
   );
 
   return (
@@ -298,8 +303,10 @@ export default function BasicTickerSearchModal({
         <List>
           {filteredResults.map((searchResult, idx) => (
             <ButtonBase
-              key={searchResult.ticker_id}
-              onClick={(_) => handleOk(_, searchResult.symbol, searchResult)}
+              key={searchResult.ticker_symbol}
+              onClick={(_) =>
+                handleOk(_, searchResult.ticker_symbol, searchResult)
+              }
               sx={{
                 display: "block",
                 width: "100%",
@@ -330,7 +337,7 @@ export default function BasicTickerSearchModal({
                   sx={{ marginLeft: 1 }}
                   primary={
                     <div style={{ overflow: "auto" }}>
-                      {searchResult.symbol}
+                      {searchResult.ticker_symbol}
                       <span style={{ float: "right", opacity: 0.2 }}>
                         {searchResult.exchange_short_name}
                       </span>
@@ -371,7 +378,7 @@ export default function BasicTickerSearchModal({
       <DialogActions>
         {
           // TODO: Adjust `totalSearchResults` to discount potential results
-          // which include `disabledTickerIds`
+          // which include `disabledTickerSymbols`
         }
         {searchQuery.trim() && totalSearchResults > 0 && (
           <div

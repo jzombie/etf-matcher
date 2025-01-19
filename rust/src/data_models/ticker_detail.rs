@@ -1,11 +1,15 @@
-use crate::types::{IndustryId, SectorId, TickerId, TickerWeightedSectorDistribution};
+use crate::types::{
+    IndustryId, SectorId, TickerId, TickerSymbol, TickerWeightedSectorDistribution,
+};
 use crate::utils::logo_utils::extract_logo_filename;
 use crate::utils::shard::query_shard_for_id;
+use crate::utils::ticker_utils::fetch_ticker_id;
 use crate::DataURL;
 use crate::ETFAggregateDetail;
 use crate::IndustryById;
 use crate::JsValue;
 use crate::SectorById;
+use futures::TryFutureExt;
 use serde::{Deserialize, Deserializer, Serialize};
 use std::collections::HashMap;
 use web_sys::console;
@@ -59,11 +63,15 @@ pub struct TickerDetail {
 }
 
 impl TickerDetail {
-    pub async fn get_ticker_detail(ticker_id: TickerId) -> Result<TickerDetail, JsValue> {
+    pub async fn get_ticker_detail(ticker_symbol: TickerSymbol) -> Result<TickerDetail, JsValue> {
+        let ticker_id = fetch_ticker_id(&ticker_symbol)
+            .await
+            .map_err(|_| JsValue::from_str("Could not locate ticker ID"))?;
+
         let url = DataURL::TickerDetailShardIndex.value();
-        let mut detail: TickerDetailRaw =
-            query_shard_for_id(&url, &ticker_id, |detail: &TickerDetailRaw| {
-                Some(&detail.ticker_id)
+        let mut raw_ticker_detail: TickerDetailRaw =
+            query_shard_for_id(&url, &ticker_id, |raw_ticker_detail: &TickerDetailRaw| {
+                Some(&raw_ticker_detail.ticker_id)
             })
             .await?
             .ok_or_else(|| {
@@ -71,38 +79,40 @@ impl TickerDetail {
             })?;
 
         // Extract the logo filename
-        detail.logo_filename =
-            extract_logo_filename(detail.logo_filename.as_deref(), &detail.symbol);
+        raw_ticker_detail.logo_filename = extract_logo_filename(
+            raw_ticker_detail.logo_filename.as_deref(),
+            &raw_ticker_detail.symbol,
+        );
 
         // Retrieve industry name if industry_id is present
-        let industry_name = match detail.industry_id {
+        let industry_name = match raw_ticker_detail.industry_id {
             Some(industry_id) => IndustryById::get_industry_name_with_id(industry_id)
                 .await
                 .ok(),
             None => None,
         };
 
-        // Retrieve sector name if sector_id is present
-        let sector_name = match detail.sector_id {
+        // Retrieve sector name if sector_id is ticker_detail
+        let sector_name = match raw_ticker_detail.sector_id {
             Some(sector_id) => SectorById::get_sector_name_with_id(sector_id).await.ok(),
             None => None,
         };
 
         // Construct the response
         Ok(TickerDetail {
-            ticker_id: detail.ticker_id,
-            symbol: detail.symbol,
-            exchange_short_name: detail.exchange_short_name,
-            company_name: detail.company_name,
-            cik: detail.cik,
-            country_code: detail.country_code,
-            currency_code: detail.currency_code,
+            ticker_id: raw_ticker_detail.ticker_id,
+            symbol: raw_ticker_detail.symbol,
+            exchange_short_name: raw_ticker_detail.exchange_short_name,
+            company_name: raw_ticker_detail.company_name,
+            cik: raw_ticker_detail.cik,
+            country_code: raw_ticker_detail.country_code,
+            currency_code: raw_ticker_detail.currency_code,
             industry_name,
             sector_name,
-            is_etf: detail.is_etf,
-            is_held_in_etf: detail.is_held_in_etf,
-            score_avg_dca: detail.score_avg_dca,
-            logo_filename: detail.logo_filename,
+            is_etf: raw_ticker_detail.is_etf,
+            is_held_in_etf: raw_ticker_detail.is_held_in_etf,
+            score_avg_dca: raw_ticker_detail.score_avg_dca,
+            logo_filename: raw_ticker_detail.logo_filename,
         })
     }
 

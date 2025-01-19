@@ -16,7 +16,7 @@ export default function TickerSearchModal({
   onSelect,
   onCancel,
   onClose,
-  disabledTickerIds,
+  disabledTickerSymbols,
   // TODO: Differentiate between `basic` and `long-form`
   textInputPlaceholder = 'Search for Symbol (e.g. "AAPL" or "Apple")',
   searchButtonAriaLabel = "Ticker Search",
@@ -56,7 +56,7 @@ export default function TickerSearchModal({
         onSelect={onSelect}
         onCancel={onCancel}
         onClose={onClose}
-        disabledTickerIds={disabledTickerIds}
+        disabledTickerSymbols={disabledTickerSymbols}
         textInputPlaceholder={textInputPlaceholder}
         searchButtonAriaLabel={searchButtonAriaLabel}
         longFormAriaLabel={longFormAriaLabel}
@@ -73,7 +73,7 @@ export default function TickerSearchModal({
         onSelect={(selectedSearchResults) =>
           onSelect(
             selectedSearchResults.map((tickerSearchResult) => ({
-              searchQuery: tickerSearchResult.symbol,
+              searchQuery: tickerSearchResult.ticker_symbol,
               tickerSearchResult,
               isExact: true,
             })),

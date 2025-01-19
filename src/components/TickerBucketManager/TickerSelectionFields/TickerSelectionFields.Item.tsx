@@ -143,8 +143,7 @@ export default function TickerSelectionFieldsItem({
         setIsSearchModalOpen(false);
 
         handleSetBucketTicker({
-          tickerId: tickerSearchResult.ticker_id,
-          symbol: tickerSearchResult.symbol,
+          symbol: tickerSearchResult.ticker_symbol,
           exchangeShortName: tickerSearchResult.exchange_short_name,
           quantity: 1,
         });
@@ -181,8 +180,8 @@ export default function TickerSelectionFieldsItem({
 
   const isDeleteButtonDisabled = !bucketTicker && !existingBucketTickers.length;
 
-  const disabledSearchTickerIds = useMemo(
-    () => existingBucketTickers.map((ticker) => ticker.tickerId),
+  const disabledSearchTickerSymbols = useMemo(
+    () => existingBucketTickers.map((ticker) => ticker.symbol),
     [existingBucketTickers],
   );
 
@@ -262,7 +261,7 @@ export default function TickerSelectionFieldsItem({
         open={isSearchModalOpen}
         onSelect={handleSelectSearchResults}
         onCancel={() => setIsSearchModalOpen(false)}
-        disabledTickerIds={disabledSearchTickerIds}
+        disabledTickerSymbols={disabledSearchTickerSymbols}
       />
 
       {/* Delete Confirmation Dialog */}

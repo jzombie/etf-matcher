@@ -1,5 +1,5 @@
 export type TickerViewWindowManagerCommonProps = {
-  missingAuditedTickerVectorIds: number[] | null;
+  missingAuditedTickerSymbols: string[] | null;
   isTickerVectorAuditPending: boolean;
   isTiling: boolean;
 };

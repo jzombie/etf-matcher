@@ -64,7 +64,7 @@ export default function TickerPCAScatterPlot({
     fn: (tickerDistances) => {
       return Promise.allSettled(
         tickerDistances.map(async (item) => {
-          const tickerDetail = await fetchTickerDetail(item.ticker_id);
+          const tickerDetail = await fetchTickerDetail(item.ticker_symbol);
           return {
             tickerDetail,
             pc1: item.translated_pca_coords[0],

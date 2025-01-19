@@ -5,10 +5,10 @@ import type { RustServiceTickerDetail } from "../rustServiceTypes";
 import type { RustServiceTickerWeightedSectorDistribution } from "../rustServiceTypes";
 
 export async function fetchTickerDetail(
-  tickerId: number,
+  tickerSymbol: string,
 ): Promise<RustServiceTickerDetail> {
   return callRustService<RustServiceTickerDetail>("get_ticker_detail", [
-    tickerId,
+    tickerSymbol,
   ]);
 }
 
@@ -16,7 +16,7 @@ export async function fetchWeightedTickerSectorDistribution(
   tickerBucketTickers: TickerBucketTicker[],
 ): Promise<RustServiceTickerWeightedSectorDistribution> {
   const tickerWeightPairs = tickerBucketTickers.map((ticker) => [
-    ticker.tickerId,
+    ticker.symbol,
     ticker.quantity,
   ]);
 

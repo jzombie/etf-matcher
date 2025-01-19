@@ -34,21 +34,21 @@ export async function fetchAllTickerVectorConfigs(): Promise<
 // Used for "audit mode"
 export async function auditMissingTickerVectors(
   tickerVectorConfigKey: string,
-  tickerIds: number[],
-): Promise<number[]> {
-  return callRustService<number[]>("audit_missing_ticker_vectors", [
+  tickerSymbols: string[],
+): Promise<string[]> {
+  return callRustService<string[]>("audit_missing_ticker_vectors", [
     tickerVectorConfigKey,
-    tickerIds,
+    tickerSymbols,
   ]);
 }
 
 export async function fetchCosineByTicker(
   tickerVectorConfigKey: string,
-  tickerId: number,
+  tickerSymbol: string,
 ): Promise<RustServiceCosineSimilarityResult[]> {
   return callRustService<RustServiceCosineSimilarityResult[]>(
     "get_cosine_by_ticker",
-    [tickerVectorConfigKey, tickerId],
+    [tickerVectorConfigKey, tickerSymbol],
   );
 }
 
@@ -67,11 +67,11 @@ export async function fetchCosineByTickerBucket(
 
 export async function fetchEuclideanByTicker(
   tickerVectorConfigKey: string,
-  tickerId: number,
+  tickerSymbol: string,
 ): Promise<RustServiceTickerDistance[]> {
   return callRustService<RustServiceTickerDistance[]>(
     "get_euclidean_by_ticker",
-    [tickerVectorConfigKey, tickerId],
+    [tickerVectorConfigKey, tickerSymbol],
   );
 }
 

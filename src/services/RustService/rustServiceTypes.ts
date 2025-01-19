@@ -13,8 +13,7 @@ export type RustServicePaginatedResults<T> = {
 
 // "Level 1"
 export type RustServiceTickerSearchResult = {
-  ticker_id: number;
-  symbol: string;
+  ticker_symbol: string;
   exchange_short_name?: string;
   company_name: string;
   logo_filename?: string;
@@ -22,7 +21,6 @@ export type RustServiceTickerSearchResult = {
 
 // "Level 2"
 export type RustServiceTickerDetail = {
-  ticker_id: number;
   symbol: string;
   exchange_short_name?: string;
   company_name: string;
@@ -43,8 +41,7 @@ export type RustServiceTickerWeightedSectorDistribution = {
 }[];
 
 export type RustServiceETFAggregateDetail = {
-  ticker_id: number;
-  etf_symbol: string;
+  etf_ticker_symbol: string;
   expense_ratio: number;
   exchange_short_name?: string;
   etf_name?: string;
@@ -65,7 +62,7 @@ export type RustServiceETFAggregateDetail = {
 };
 
 export type RustServiceTicker10KDetail = {
-  ticker_id: number;
+  symbol: string;
   //
   is_current?: boolean;
   //
@@ -145,15 +142,14 @@ export type RustServiceTicker10KDetail = {
 };
 
 export type RustServiceETFHoldingWeight = {
-  etf_ticker_id: number;
-  holding_ticker_id: number;
+  etf_ticker_symbol: string;
+  holding_ticker_symbol: string;
   holding_market_value: number;
   holding_percentage: number;
 };
 
 export type RustServiceETFHoldingTicker = {
-  holding_ticker_id: number;
-  holding_symbol: string;
+  holding_ticker_symbol: string;
   holding_market_value: number;
   holding_percentage: number;
   company_name?: string;
@@ -188,18 +184,18 @@ export type RustServiceTickerVectorConfig = {
 };
 
 export type RustServiceTickerDistance = {
-  ticker_id: number;
+  ticker_symbol: string;
   distance: number;
   original_pca_coords: number[];
   translated_pca_coords: number[];
 };
 
 export type RustServiceCosineSimilarityResult = {
-  ticker_id: number;
+  ticker_symbol: string;
   similarity_score: number;
 };
 
 export type RustServiceTickerWithWeight = {
-  ticker_id: number;
+  ticker_symbol: string;
   weight: number;
 };

@@ -59,7 +59,7 @@ export default function TickerViewWindowManagerBucketManager({
         bucket.type,
       );
 
-      if (store.bucketHasTicker(tickerDetail.ticker_id, bucket)) {
+      if (store.bucketHasTicker(tickerDetail.symbol, bucket)) {
         if (isManagementPane || !canHaveMultipleInstances) {
           setSelectedBucket(bucket);
           setIsDeleteDialogOpen(true);
@@ -69,23 +69,23 @@ export default function TickerViewWindowManagerBucketManager({
         }
       } else {
         if (isManagementPane || !canHaveMultipleInstances) {
-          store.addTickerToBucket(tickerDetail.ticker_id, 1, bucket);
+          store.addTickerToBucket(tickerDetail.symbol, 1, bucket);
         } else {
           setSelectedBucketType(bucket.type);
           setIsBucketDialogOpen(true);
         }
       }
     },
-    [tickerDetail.ticker_id],
+    [tickerDetail.symbol],
   );
 
   const handleConfirmRemove = useCallback(() => {
     if (selectedBucket) {
-      store.removeTickerFromBucket(tickerDetail.ticker_id, selectedBucket);
+      store.removeTickerFromBucket(tickerDetail.symbol, selectedBucket);
     }
     setIsDeleteDialogOpen(false);
     setSelectedBucket(null);
-  }, [selectedBucket, tickerDetail.ticker_id]);
+  }, [selectedBucket, tickerDetail.symbol]);
 
   const handleCloseDeleteDialog = useCallback(() => {
     setIsDeleteDialogOpen(false);
@@ -125,7 +125,7 @@ export default function TickerViewWindowManagerBucketManager({
           if (!bucket) return null;
 
           const isTickerInBucketType = store.bucketTypeHasTicker(
-            tickerDetail.ticker_id,
+            tickerDetail.symbol,
             bucketType,
           );
 
@@ -223,7 +223,7 @@ export default function TickerViewWindowManagerBucketManager({
               )
               .map((tickerBucket) => {
                 const bucketHasTicker = store.bucketHasTicker(
-                  tickerDetail.ticker_id,
+                  tickerDetail.symbol,
                   tickerBucket,
                 );
 
