@@ -1,5 +1,6 @@
-use crate::types::TickerId;
+use crate::types::{TickerId, TickerSymbol};
 use crate::utils::shard::query_shard_for_id;
+use crate::utils::ticker_utils::{get_ticker_id, get_ticker_symbol};
 use crate::ETFAggregateDetail;
 use crate::JsValue;
 use crate::{DataURL, PaginatedResults};
@@ -9,30 +10,31 @@ use serde::{Deserialize, Serialize};
 pub struct TickerETFHolder {
     // TODO: Rename to `etf_ticker_id`
     pub ticker_id: TickerId,
+    // TODO: Rename to `etf_ticker_symbol`
+    pub ticker_symbol: TickerSymbol,
     pub etf_ticker_ids_json: String,
 }
 
 impl TickerETFHolder {
-    pub async fn get_etf_holders_aggregate_detail_by_ticker_id(
-        // TODO: Rename to `etf_ticker_id`
-        ticker_id: TickerId,
+    pub async fn get_etf_holders_aggregate_detail(
+        // TODO: Rename to `etf_ticker_symbol`
+        ticker_symbol: TickerSymbol,
         page: usize,
         page_size: usize,
     ) -> Result<PaginatedResults<ETFAggregateDetail>, JsValue> {
         let paginated_etf_holder_ids =
-            TickerETFHolder::get_ticker_etf_holder_ids_by_ticker_id(ticker_id, page, page_size)
-                .await?;
+            Self::get_ticker_etf_holders(ticker_symbol, page, page_size).await?;
 
         let mut etf_aggregate_details = Vec::new();
 
-        for etf_ticker_id in paginated_etf_holder_ids.results {
-            match ETFAggregateDetail::get_etf_aggregate_detail_by_ticker_id(etf_ticker_id).await {
+        for etf_ticker_symbol in paginated_etf_holder_ids.results {
+            match ETFAggregateDetail::get_etf_aggregate_detail(etf_ticker_symbol.clone()).await {
                 Ok(detail) => etf_aggregate_details.push(detail),
                 Err(e) => {
                     web_sys::console::warn_2(
                         &format!(
-                            "Failed to fetch ETF aggregate detail for ticker ID: {}: {:?}",
-                            etf_ticker_id, e
+                            "Failed to fetch ETF aggregate detail for ticker {}: {:?}",
+                            etf_ticker_symbol, e
                         )
                         .into(),
                         &e,
@@ -50,16 +52,19 @@ impl TickerETFHolder {
         Ok(paginated_results)
     }
 
-    async fn get_ticker_etf_holder_ids_by_ticker_id(
-        // TODO: Rename to `etf_ticker_id`
-        ticker_id: TickerId,
+    async fn get_ticker_etf_holders(
+        ticker_symbol: TickerSymbol,
         page: usize,
         page_size: usize,
-    ) -> Result<PaginatedResults<TickerId>, JsValue> {
+    ) -> Result<PaginatedResults<TickerSymbol>, JsValue> {
         // Log the start of the function
         // web_sys::console::debug_1(&format!("Fetching ticker ETF holders for ticker_id: {}", ticker_id).into());
 
         let url: &str = &DataURL::TickerETFHoldersShardIndex.value();
+
+        let ticker_id = get_ticker_id(ticker_symbol.clone())
+            .await
+            .map_err(|_| JsValue::from_str("Could not locate ticker ID"))?;
 
         // Query shard for the ticker_id
         // web_sys::console::debug_1(&format!("Querying shard for ticker_id: {}", ticker_id).into());
@@ -69,7 +74,7 @@ impl TickerETFHolder {
         .await?
         .ok_or_else(|| {
             // web_sys::console::debug_1(&format!("Ticker not found in shard for ticker_id: {}", ticker_id).into());
-            JsValue::from_str(&format!("Ticker ID {} not found", ticker_id))
+            JsValue::from_str(&format!("Ticker {} not found", ticker_id))
         })?;
 
         // web_sys::console::debug_1(&format!("Found holder for ticker_id: {}", ticker_id).into());
@@ -82,9 +87,25 @@ impl TickerETFHolder {
                 JsValue::from_str(&format!("Failed to parse etf_ticker_ids_json: {}", e))
             })?;
 
+        // TODO: Remove
+        // let etf_ticker_symbols = etf_ticker_ids
+        //     .iter()
+        //     .map(|ticker_id| get_ticker_symbol(*ticker_id))
+        //     .collect();
+
+        let etf_ticker_symbols = futures::future::join_all(
+            etf_ticker_ids
+                .iter()
+                .map(|ticker_id| get_ticker_symbol(*ticker_id)),
+        )
+        .await
+        .into_iter()
+        .filter_map(Result::ok)
+        .collect();
+
         // Paginate the results
         // web_sys::console::debug_1(&format!("Paginating results for ticker_id: {}", ticker_id).into());
-        let paginated_results = PaginatedResults::paginate(etf_ticker_ids, page, page_size)?;
+        let paginated_results = PaginatedResults::paginate(etf_ticker_symbols, page, page_size)?;
 
         // web_sys::console::debug_1(&format!("Returning paginated results for ticker_id: {}", ticker_id).into());
         Ok(paginated_results)

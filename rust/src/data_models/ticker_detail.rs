@@ -3,13 +3,12 @@ use crate::types::{
 };
 use crate::utils::logo_utils::extract_logo_filename;
 use crate::utils::shard::query_shard_for_id;
-use crate::utils::ticker_utils::fetch_ticker_id;
+use crate::utils::ticker_utils::get_ticker_id;
 use crate::DataURL;
 use crate::ETFAggregateDetail;
 use crate::IndustryById;
 use crate::JsValue;
 use crate::SectorById;
-use futures::TryFutureExt;
 use serde::{Deserialize, Deserializer, Serialize};
 use std::collections::HashMap;
 use web_sys::console;
@@ -27,7 +26,7 @@ where
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TickerDetailRaw {
     pub ticker_id: TickerId,
-    pub symbol: String,
+    pub symbol: String, // TODO: For consistency, use `ticker_symbol` in data source?
     pub exchange_short_name: Option<String>,
     pub company_name: String,
     pub cik: Option<String>,
@@ -47,8 +46,8 @@ pub struct TickerDetailRaw {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TickerDetail {
-    pub ticker_id: TickerId,
-    pub symbol: String,
+    pub ticker_id: TickerId, // TODO: Remove?
+    pub ticker_symbol: TickerSymbol,
     pub exchange_short_name: Option<String>,
     pub company_name: String,
     pub cik: Option<String>,
@@ -64,7 +63,7 @@ pub struct TickerDetail {
 
 impl TickerDetail {
     pub async fn get_ticker_detail(ticker_symbol: TickerSymbol) -> Result<TickerDetail, JsValue> {
-        let ticker_id = fetch_ticker_id(&ticker_symbol)
+        let ticker_id = get_ticker_id(ticker_symbol)
             .await
             .map_err(|_| JsValue::from_str("Could not locate ticker ID"))?;
 
@@ -101,7 +100,7 @@ impl TickerDetail {
         // Construct the response
         Ok(TickerDetail {
             ticker_id: raw_ticker_detail.ticker_id,
-            symbol: raw_ticker_detail.symbol,
+            ticker_symbol: raw_ticker_detail.symbol,
             exchange_short_name: raw_ticker_detail.exchange_short_name,
             company_name: raw_ticker_detail.company_name,
             cik: raw_ticker_detail.cik,
@@ -117,20 +116,20 @@ impl TickerDetail {
     }
 
     pub async fn get_weighted_ticker_sector_distribution(
-        ticker_weights: Vec<(TickerId, f64)>,
+        ticker_weights: Vec<(TickerSymbol, f64)>,
     ) -> Result<Vec<TickerWeightedSectorDistribution>, JsValue> {
         let mut sector_weights: HashMap<String, f64> = HashMap::new();
         let mut total_weight = 0.0;
 
-        for (ticker_id, weight) in &ticker_weights {
+        for (ticker_symbol, weight) in &ticker_weights {
             total_weight += weight;
 
             // Determine if the ticker is an ETF
-            match TickerDetail::get_ticker_detail(*ticker_id).await {
+            match Self::get_ticker_detail(ticker_symbol.clone()).await {
                 Ok(ticker_detail) => {
                     if ticker_detail.is_etf {
                         // Fetch ETF aggregate detail for major sector distribution
-                        match ETFAggregateDetail::get_etf_aggregate_detail_by_ticker_id(*ticker_id)
+                        match ETFAggregateDetail::get_etf_aggregate_detail(ticker_symbol.clone())
                             .await
                         {
                             Ok(etf_detail) => {
@@ -159,8 +158,8 @@ impl TickerDetail {
                             // but they do not interrupt processing. The function continues to process other tickers.
                             Err(err) => console::error_1(
                                 &format!(
-                                    "Failed to fetch ETF aggregate detail for ticker ID {}: {:?}",
-                                    ticker_id, err
+                                    "Failed to fetch ETF aggregate detail for ticker {}: {:?}",
+                                    ticker_symbol, err
                                 )
                                 .into(),
                             ),
@@ -176,7 +175,7 @@ impl TickerDetail {
                             *entry += weight;
                         } else {
                             console::warn_1(
-                                &format!("Ticker ID {} does not have a sector name.", ticker_id)
+                                &format!("Ticker {} does not have a sector name.", ticker_symbol)
                                     .into(),
                             );
                         }
@@ -184,8 +183,8 @@ impl TickerDetail {
                 }
                 Err(_err) => {
                     return Err(JsValue::from_str(&format!(
-                        "Failed to fetch details for ticker ID: {}",
-                        ticker_id
+                        "Failed to fetch details for ticker: {}",
+                        ticker_symbol
                     )));
                 }
             }

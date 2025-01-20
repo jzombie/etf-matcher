@@ -1,6 +1,6 @@
 use ticker_sniffer;
 
-use crate::types::{ExchangeId, TickerId};
+use crate::types::{ExchangeId, TickerId, TickerSymbol};
 use crate::utils::extract_logo_filename;
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
@@ -20,7 +20,7 @@ pub struct TickerSearch {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TickerSearchResultRaw {
     pub ticker_id: TickerId,
-    pub symbol: String,
+    pub symbol: TickerSymbol, // TODO: For consistency, use `ticker_symbol` in data source?
     pub exchange_id: Option<ExchangeId>,
     pub company_name: Option<String>,
     pub logo_filename: Option<String>,
@@ -28,8 +28,8 @@ pub struct TickerSearchResultRaw {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TickerSearchResult {
-    pub ticker_id: TickerId,
-    pub symbol: String,
+    pub ticker_id: TickerId, // TODO: Remove?
+    pub ticker_symbol: TickerSymbol,
     pub exchange_short_name: Option<String>,
     pub company_name: Option<String>,
     pub logo_filename: Option<String>,
@@ -110,12 +110,12 @@ impl TickerSearch {
                 extract_logo_filename(result.logo_filename.as_deref(), &result.symbol);
         }
 
-        let alternatives: Vec<String> = Self::generate_alternative_symbols(&trimmed_query);
+        let alternatives: Vec<TickerSymbol> = Self::generate_alternative_symbols(&trimmed_query);
         let mut exact_symbol_matches: Vec<TickerSearchResultRaw> = vec![];
         let mut starts_with_matches: Vec<TickerSearchResultRaw> = vec![];
         let mut contains_matches: Vec<TickerSearchResultRaw> = vec![];
         let mut reverse_contains_matches: Vec<TickerSearchResultRaw> = vec![];
-        let mut seen_symbols: HashSet<String> = HashSet::new();
+        let mut seen_symbols: HashSet<TickerSymbol> = HashSet::new();
 
         for alternative in &alternatives {
             let query_lower: String = alternative.to_lowercase();
@@ -194,7 +194,7 @@ impl TickerSearch {
 
             search_results.push(TickerSearchResult {
                 ticker_id: result.ticker_id,
-                symbol: result.symbol,
+                ticker_symbol: result.symbol,
                 exchange_short_name,
                 company_name: result.company_name,
                 logo_filename: result.logo_filename,
@@ -243,7 +243,7 @@ impl TickerSearch {
 
                     matches.push(TickerSearchResult {
                         ticker_id: raw_result.ticker_id,
-                        symbol: raw_result.symbol.clone(),
+                        ticker_symbol: raw_result.symbol.clone(),
                         exchange_short_name,
                         company_name: raw_result.company_name.clone(),
                         logo_filename: extract_logo_filename(

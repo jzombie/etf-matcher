@@ -1,5 +1,6 @@
-use crate::types::TickerId;
+use crate::types::{TickerId, TickerSymbol};
 use crate::utils::shard::query_shard_for_id;
+use crate::utils::ticker_utils;
 use crate::JsValue;
 use crate::{DataURL, PaginatedResults, TickerDetail};
 use serde::{Deserialize, Serialize};
@@ -20,8 +21,8 @@ struct ETFHoldingTickerJSON {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ETFHoldingTicker {
-    pub holding_ticker_id: TickerId,
-    pub holding_symbol: String,
+    pub holding_ticker_id: TickerId, // TODO: Remove?
+    pub holding_ticker_symbol: TickerSymbol,
     pub holding_market_value: f32,
     pub holding_percentage: f32,
     pub company_name: Option<String>,
@@ -33,19 +34,28 @@ pub struct ETFHoldingTicker {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ETFHoldingWeight {
-    pub etf_ticker_id: TickerId,
-    pub holding_ticker_id: TickerId,
+    pub etf_ticker_symbol: TickerSymbol,
+    pub holding_ticker_symbol: TickerSymbol,
     pub holding_market_value: f32,
     pub holding_percentage: f32,
 }
 
 impl ETFHoldingTicker {
-    pub async fn get_etf_holdings_by_etf_ticker_id(
-        etf_ticker_id: TickerId,
+    pub async fn get_etf_holdings(
+        etf_ticker_symbol: TickerSymbol,
         page: usize,
         page_size: usize,
     ) -> Result<PaginatedResults<ETFHoldingTicker>, JsValue> {
         let url: &str = &DataURL::ETFHoldingTickersShardIndex.value();
+
+        let etf_ticker_id = ticker_utils::get_ticker_id(etf_ticker_symbol.clone())
+            .await
+            .map_err(|err| {
+                JsValue::from_str(&format!(
+                    "Could not fetch ticker ID for ETF ticker symbol: {} {:?}",
+                    etf_ticker_symbol, err
+                ))
+            })?;
 
         // Query shard for the ETF ticker ID
         let holdings = query_shard_for_id(url, &etf_ticker_id, |detail: &ETFHoldingTickerRaw| {
@@ -66,11 +76,20 @@ impl ETFHoldingTicker {
         // Retrieve additional information for each holding
         let mut detailed_holdings = Vec::with_capacity(etf_holdings.len());
         for holding in etf_holdings {
-            match TickerDetail::get_ticker_detail(holding.holding_ticker_id).await {
+            let holding_ticker_symbol = ticker_utils::get_ticker_symbol(holding.holding_ticker_id)
+                .await
+                .map_err(|err| {
+                    JsValue::from_str(&format!(
+                        "Could not fetch ticker symbol for holding ticker ID: {} {:?}",
+                        holding.holding_ticker_id, err
+                    ))
+                })?;
+
+            match TickerDetail::get_ticker_detail(holding_ticker_symbol).await {
                 Ok(ticker_detail) => {
                     detailed_holdings.push(ETFHoldingTicker {
                         holding_ticker_id: holding.holding_ticker_id,
-                        holding_symbol: ticker_detail.symbol,
+                        holding_ticker_symbol: ticker_detail.ticker_symbol,
                         holding_market_value: holding.holding_market_value,
                         holding_percentage: holding.holding_percentage,
                         company_name: Some(ticker_detail.company_name),
@@ -98,10 +117,28 @@ impl ETFHoldingTicker {
 
     // A non-paginated direct variant of `get_etf_holdings_by_etf_ticker_id`
     pub async fn get_etf_holding_weight(
-        etf_ticker_id: TickerId,
-        holding_ticker_id: TickerId,
+        etf_ticker_symbol: TickerSymbol,
+        holding_ticker_symbol: TickerSymbol,
     ) -> Result<ETFHoldingWeight, JsValue> {
         let url: &str = &DataURL::ETFHoldingTickersShardIndex.value();
+
+        let etf_ticker_id = ticker_utils::get_ticker_id(etf_ticker_symbol.clone())
+            .await
+            .map_err(|err| {
+                JsValue::from_str(&format!(
+                    "Could not fetch ticker ID for ETF ticker symbol: {} {:?}",
+                    etf_ticker_symbol, err
+                ))
+            })?;
+
+        let holding_ticker_id = ticker_utils::get_ticker_id(holding_ticker_symbol.clone())
+            .await
+            .map_err(|err| {
+                JsValue::from_str(&format!(
+                    "Could not fetch ticker ID for ETF holding ticker symbol: {} {:?}",
+                    holding_ticker_symbol, err
+                ))
+            })?;
 
         // Query shard for the ETF ticker ID
         let holdings = query_shard_for_id(url, &etf_ticker_id, |detail: &ETFHoldingTickerRaw| {
@@ -125,9 +162,18 @@ impl ETFHoldingTicker {
                 ))
             })?;
 
+        let holding_ticker_symbol = ticker_utils::get_ticker_symbol(holding.holding_ticker_id)
+            .await
+            .map_err(|err| {
+                JsValue::from_str(&format!(
+                    "Could not fetch ticker symbol for holding ticker ID: {} {:?}",
+                    holding.holding_ticker_id, err
+                ))
+            })?;
+
         Ok(ETFHoldingWeight {
-            etf_ticker_id,
-            holding_ticker_id: holding.holding_ticker_id,
+            etf_ticker_symbol,
+            holding_ticker_symbol: holding_ticker_symbol,
             holding_market_value: holding.holding_market_value,
             holding_percentage: holding.holding_percentage,
         })
