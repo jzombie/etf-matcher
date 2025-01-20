@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 
-import type { RustServiceTickerDetail } from "@services/RustService";
+import type {
+  RustServiceTickerDetail,
+  RustServiceTickerSymbol,
+} from "@services/RustService";
 import { fetchTickerDetail } from "@services/RustService";
 
 import customLogger from "@utils/customLogger";
@@ -9,7 +12,7 @@ import useAppErrorBoundary from "./useAppErrorBoundary";
 import usePromise from "./usePromise";
 
 export default function useTickerDetail(
-  tickerSymbol?: string,
+  tickerSymbol?: RustServiceTickerSymbol,
   onLoad?: (tickerDetail: RustServiceTickerDetail) => void,
 ) {
   const { triggerUIError } = useAppErrorBoundary();
@@ -19,7 +22,7 @@ export default function useTickerDetail(
     isPending: isLoadingTickerDetail,
     error: tickerDetailError,
     execute,
-  } = usePromise<RustServiceTickerDetail, [string]>({
+  } = usePromise<RustServiceTickerDetail, [RustServiceTickerSymbol]>({
     fn: fetchTickerDetail,
     onSuccess: onLoad,
     onError: (err) => {

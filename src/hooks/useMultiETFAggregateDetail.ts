@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 
-import type { RustServiceETFAggregateDetail } from "@services/RustService";
+import type {
+  RustServiceETFAggregateDetail,
+  RustServiceTickerSymbol,
+} from "@services/RustService";
 import { fetchETFAggregateDetail } from "@services/RustService";
 
 import customLogger from "@utils/customLogger";
@@ -9,13 +12,13 @@ import useAppErrorBoundary from "./useAppErrorBoundary";
 import usePromise from "./usePromise";
 
 export default function useMultiETFAggregateDetail(
-  etfTickerSymbols: string[] = [],
+  etfTickerSymbols: RustServiceTickerSymbol[] = [],
   onLoad?: (etfAggregateDetails: RustServiceETFAggregateDetail[]) => void,
 ) {
   const { triggerUIError } = useAppErrorBoundary();
 
   const fetchDetails = async (
-    etfTickerSymbols: string[],
+    etfTickerSymbols: RustServiceTickerSymbol[],
   ): Promise<RustServiceETFAggregateDetail[]> => {
     const results = await Promise.allSettled(
       etfTickerSymbols.map((etfTickerSymbol) =>
@@ -60,7 +63,7 @@ export default function useMultiETFAggregateDetail(
     error,
     execute,
     reset,
-  } = usePromise<RustServiceETFAggregateDetail[], [string[]]>({
+  } = usePromise<RustServiceETFAggregateDetail[], [RustServiceTickerSymbol[]]>({
     fn: fetchDetails,
     onSuccess: onLoad,
     onError: triggerUIError,

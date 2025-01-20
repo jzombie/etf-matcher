@@ -8,6 +8,8 @@ import React, {
 
 import { Box, BoxProps, Input, InputLabel } from "@mui/material";
 
+import type { RustServiceTickerSymbol } from "@services/RustService";
+
 import LogarithmicSlider from "@components/LogarithmicSlider";
 
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
@@ -22,7 +24,7 @@ type TickerWeightSeletorProps = Omit<BoxProps, "onChange"> & {
   defaultValue?: number;
   value?: number;
   disabled?: boolean;
-  tickerSymbol?: string;
+  tickerSymbol?: RustServiceTickerSymbol;
   inputLabel?: string;
 };
 

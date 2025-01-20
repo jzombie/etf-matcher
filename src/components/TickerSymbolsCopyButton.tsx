@@ -3,13 +3,15 @@ import React, { useCallback } from "react";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { Button, ButtonProps } from "@mui/material";
 
+import type { RustServiceTickerSymbol } from "@services/RustService";
+
 import useClipboard from "@hooks/useClipboard";
 
 export type TickerSymbolsCopyButtonProps = Omit<
   ButtonProps,
   "children" | "onClick"
 > & {
-  tickerSymbols: string[];
+  tickerSymbols: RustServiceTickerSymbol[];
 };
 
 export default function TickerSymbolsCopyButton({

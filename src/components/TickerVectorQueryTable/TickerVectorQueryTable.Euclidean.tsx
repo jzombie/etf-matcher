@@ -13,7 +13,10 @@ import {
 import Center from "@layoutKit/Center";
 import Cover from "@layoutKit/Cover";
 import Full from "@layoutKit/Full";
-import type { RustServiceTickerDetail } from "@services/RustService";
+import type {
+  RustServiceTickerDetail,
+  RustServiceTickerSymbol,
+} from "@services/RustService";
 
 import AvatarLogo from "@components/AvatarLogo";
 import NetworkProgressIndicator from "@components/NetworkProgressIndicator";
@@ -27,7 +30,7 @@ import useTickerVectorQuery, {
 import FormattedETFExpenseRatio from "./TickerVectorQueryTable.FormattedETFExpenseRatio";
 
 export type TickerVectorQueryTableEuclideanProps = {
-  tickerVectorConfigKey: string;
+  tickerVectorConfigKey: RustServiceTickerSymbol;
   queryMode: TickerVectorQueryProps["queryMode"];
   query: TickerVectorQueryProps["query"];
 };
@@ -40,7 +43,7 @@ export default function TickerVectorQueryTableEuclidean({
   const navigateToSymbol = useTickerSymbolNavigation();
 
   const handleRowClick = useCallback(
-    (tickerSymbol: string) => {
+    (tickerSymbol: RustServiceTickerSymbol) => {
       navigateToSymbol(tickerSymbol);
     },
     [navigateToSymbol],

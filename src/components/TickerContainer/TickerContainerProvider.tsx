@@ -1,5 +1,7 @@
 import React, { createContext, useCallback, useRef } from "react";
 
+import type { RustServiceTickerSymbol } from "@services/RustService";
+
 import useIntersectionObserver from "@hooks/useIntersectionObserver";
 import { store } from "@hooks/useStoreStateReader";
 
@@ -8,7 +10,7 @@ import arraysEqual from "@utils/arraysEqual";
 export type TickerContainerContextType = {
   observe: (
     el: HTMLElement,
-    tickerSymbol: string,
+    tickerSymbol: RustServiceTickerSymbol,
     onIntersectionStateChange?: (isIntersecting: boolean) => void,
   ) => void;
   unobserve: (el?: HTMLElement) => void;
@@ -31,12 +33,14 @@ export default function TickerContainerProvider({
     new Map<
       Element,
       {
-        tickerSymbol: string;
+        tickerSymbol: RustServiceTickerSymbol;
         intersectionCallback?: (isIntersecting: boolean) => void;
       }
     >(),
   );
-  const visibleSymbolMapRef = useRef(new Map<Element, string>());
+  const visibleSymbolMapRef = useRef(
+    new Map<Element, RustServiceTickerSymbol>(),
+  );
 
   const syncVisibleTickers = useCallback(() => {
     const prev = store.state.visibleTickerSymbols;
@@ -78,7 +82,7 @@ export default function TickerContainerProvider({
   const handleObserve = useCallback(
     (
       el: HTMLElement,
-      tickerSymbol: string,
+      tickerSymbol: RustServiceTickerSymbol,
       onIntersectionStateChange?: (isIntersecting: boolean) => void,
     ) => {
       observe(el);

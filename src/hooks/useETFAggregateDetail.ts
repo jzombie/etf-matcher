@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 
-import type { RustServiceETFAggregateDetail } from "@services/RustService";
+import type {
+  RustServiceETFAggregateDetail,
+  RustServiceTickerSymbol,
+} from "@services/RustService";
 import { fetchETFAggregateDetail } from "@services/RustService";
 
 import customLogger from "@utils/customLogger";
@@ -9,7 +12,7 @@ import useAppErrorBoundary from "./useAppErrorBoundary";
 import usePromise from "./usePromise";
 
 export type ETFAggregateDetailRequestProps = {
-  tickerSymbol?: string;
+  tickerSymbol?: RustServiceTickerSymbol;
   onLoad?: (etfAggregateDetail: RustServiceETFAggregateDetail) => void;
   shouldLoad?: boolean;
 };
@@ -26,7 +29,7 @@ export default function useETFAggregateDetail({
     isPending: isLoadingETFAggregateDetail,
     error: etfAggregateDetailError,
     execute,
-  } = usePromise<RustServiceETFAggregateDetail, [string]>({
+  } = usePromise<RustServiceETFAggregateDetail, [RustServiceTickerSymbol]>({
     fn: fetchETFAggregateDetail,
     onSuccess: onLoad,
     onError: (err) => {

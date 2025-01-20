@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 
+import type { RustServiceTickerSymbol } from "@services/RustService";
 import { MosaicNode } from "react-mosaic-component";
 
 import useETFAggregateDetail from "@hooks/useETFAggregateDetail";
@@ -16,7 +17,7 @@ import TickerSimilaritySearchApplet from "../applets/TickerSimilaritySearch.appl
 import type { TickerViewWindowManagerAppletWrapProps } from "../components/TickerViewWindowManager.AppletWrap";
 
 export default function useTickerViewWindowManagerContent(
-  tickerSymbol: string,
+  tickerSymbol: RustServiceTickerSymbol,
   isTiling: boolean,
 ) {
   const { tickerDetail, isLoadingTickerDetail, tickerDetailError } =

@@ -1,10 +1,13 @@
 import type { TickerBucketTicker } from "@src/store";
 
 import callRustService from "../callRustService";
-import type { RustServiceTicker10KDetail } from "../rustServiceTypes";
+import type {
+  RustServiceTicker10KDetail,
+  RustServiceTickerSymbol,
+} from "../rustServiceTypes";
 
 export async function fetchTicker10KDetail(
-  tickerSymbol: string,
+  tickerSymbol: RustServiceTickerSymbol,
 ): Promise<RustServiceTicker10KDetail> {
   return callRustService<RustServiceTicker10KDetail>("get_ticker_10k_detail", [
     tickerSymbol,

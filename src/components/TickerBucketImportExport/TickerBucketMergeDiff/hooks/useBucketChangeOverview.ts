@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 
+import type { RustServiceTickerSymbol } from "@services/RustService";
 import type { TickerBucket, TickerBucketTicker } from "@src/store";
 
 export type TickerDiff = {
@@ -27,11 +28,12 @@ export default function useBucketChangeOverview({
   incomingBucket,
 }: TickerBucketChangeOverviewProps) {
   const bucketChangeOverview = useMemo(() => {
-    const currentTickersMap = new Map<string, TickerBucketTicker>(
-      currentBucket?.tickers.map((ticker) => [ticker.symbol, ticker]) || [],
-    );
+    const currentTickersMap = new Map<
+      RustServiceTickerSymbol,
+      TickerBucketTicker
+    >(currentBucket?.tickers.map((ticker) => [ticker.symbol, ticker]) || []);
 
-    const incomingTickerSymbols = new Set<string>(
+    const incomingTickerSymbols = new Set<RustServiceTickerSymbol>(
       incomingBucket.tickers.map((ticker) => ticker.symbol),
     );
 

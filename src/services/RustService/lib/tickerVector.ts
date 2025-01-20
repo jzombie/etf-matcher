@@ -4,6 +4,7 @@ import callRustService from "../callRustService";
 import type {
   RustServiceCosineSimilarityResult,
   RustServiceTickerDistance,
+  RustServiceTickerSymbol,
   RustServiceTickerVectorConfig,
 } from "../rustServiceTypes";
 import tickerBucketToTickersWithQuantity from "../utils/tickerBucketToTickersWithQuantity";
@@ -34,17 +35,17 @@ export async function fetchAllTickerVectorConfigs(): Promise<
 // Used for "audit mode"
 export async function auditMissingTickerVectors(
   tickerVectorConfigKey: string,
-  tickerSymbols: string[],
-): Promise<string[]> {
-  return callRustService<string[]>("audit_missing_ticker_vectors", [
-    tickerVectorConfigKey,
-    tickerSymbols,
-  ]);
+  tickerSymbols: RustServiceTickerSymbol[],
+): Promise<RustServiceTickerSymbol[]> {
+  return callRustService<RustServiceTickerSymbol[]>(
+    "audit_missing_ticker_vectors",
+    [tickerVectorConfigKey, tickerSymbols],
+  );
 }
 
 export async function fetchCosineByTicker(
   tickerVectorConfigKey: string,
-  tickerSymbol: string,
+  tickerSymbol: RustServiceTickerSymbol,
 ): Promise<RustServiceCosineSimilarityResult[]> {
   return callRustService<RustServiceCosineSimilarityResult[]>(
     "get_cosine_by_ticker",
@@ -67,7 +68,7 @@ export async function fetchCosineByTickerBucket(
 
 export async function fetchEuclideanByTicker(
   tickerVectorConfigKey: string,
-  tickerSymbol: string,
+  tickerSymbol: RustServiceTickerSymbol,
 ): Promise<RustServiceTickerDistance[]> {
   return callRustService<RustServiceTickerDistance[]>(
     "get_euclidean_by_ticker",

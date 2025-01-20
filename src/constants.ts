@@ -1,3 +1,4 @@
+import type { RustServiceTickerSymbol } from "@services/RustService";
 import type { StoreStateProps } from "@src/store";
 
 export const PROJECT_URL = "https://etfmatcher.com";
@@ -44,7 +45,7 @@ export const TRADING_VIEW_COPYRIGHT_STYLES: Readonly<{
 export const TRADING_VIEW_THEME = "dark";
 
 export const DEFAULT_TICKER_TAPE_TICKERS: ReadonlyArray<{
-  symbol: string;
+  symbol: RustServiceTickerSymbol;
   exchangeShortName: string;
 }> = [
   { symbol: "XLY", exchangeShortName: "AMEX" }, // Consumer Discretionary

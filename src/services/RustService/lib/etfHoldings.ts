@@ -4,10 +4,11 @@ import type {
   RustServiceETFHoldingTicker,
   RustServiceETFHoldingWeight,
   RustServicePaginatedResults,
+  RustServiceTickerSymbol,
 } from "../rustServiceTypes";
 
 export async function fetchETFHoldings(
-  tickerSymbol: string,
+  tickerSymbol: RustServiceTickerSymbol,
   page: number = 1,
   pageSize: number = 20,
 ): Promise<RustServicePaginatedResults<RustServiceETFHoldingTicker>> {
@@ -17,7 +18,7 @@ export async function fetchETFHoldings(
 }
 
 export async function fetchETFHoldingWeight(
-  etfTickerSymbol: string,
+  etfTickerSymbol: RustServiceTickerSymbol,
   holdingTickerId: number,
 ): Promise<RustServiceETFHoldingWeight> {
   return callRustService<RustServiceETFHoldingWeight>(
@@ -27,7 +28,7 @@ export async function fetchETFHoldingWeight(
 }
 
 export async function fetchETFHoldersAggregateDetail(
-  tickerSymbol: string,
+  tickerSymbol: RustServiceTickerSymbol,
   page: number = 1,
   pageSize: number = 20,
 ): Promise<RustServicePaginatedResults<RustServiceETFAggregateDetail>> {

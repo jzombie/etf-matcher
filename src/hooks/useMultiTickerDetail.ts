@@ -1,6 +1,9 @@
 import { useEffect, useRef } from "react";
 
-import type { RustServiceTickerDetail } from "@services/RustService";
+import type {
+  RustServiceTickerDetail,
+  RustServiceTickerSymbol,
+} from "@services/RustService";
 import { fetchTickerDetail } from "@services/RustService";
 
 import arraysEqual from "@utils/arraysEqual";
@@ -10,14 +13,14 @@ import useAppErrorBoundary from "./useAppErrorBoundary";
 import usePromise from "./usePromise";
 
 export default function useMultiTickerDetail(
-  tickerSymbols: string[] = [],
+  tickerSymbols: RustServiceTickerSymbol[] = [],
   onLoad?: (tickerDetails: RustServiceTickerDetail[]) => void,
 ) {
   const { triggerUIError } = useAppErrorBoundary();
-  const previousTickerSymbolsRef = useRef<string[]>([]);
+  const previousTickerSymbolsRef = useRef<RustServiceTickerSymbol[]>([]);
 
   const fetchDetails = async (
-    tickerSymbols: string[],
+    tickerSymbols: RustServiceTickerSymbol[],
   ): Promise<RustServiceTickerDetail[]> => {
     const results = await Promise.allSettled(
       tickerSymbols.map((tickerSymbol) =>
@@ -58,7 +61,7 @@ export default function useMultiTickerDetail(
     error,
     execute,
     reset,
-  } = usePromise<RustServiceTickerDetail[], [string[]]>({
+  } = usePromise<RustServiceTickerDetail[], [RustServiceTickerSymbol[]]>({
     fn: fetchDetails,
     onSuccess: onLoad,
     onError: triggerUIError,

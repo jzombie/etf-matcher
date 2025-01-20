@@ -52,6 +52,7 @@ import type {
   RustServiceTickerDetail,
   RustServiceTickerDistance,
   RustServiceTickerSearchResult,
+  RustServiceTickerSymbol,
   RustServiceTickerVectorConfig,
   RustServiceTickerWeightedSectorDistribution,
   RustServiceTickerWithWeight,
@@ -63,6 +64,7 @@ export { subscribe };
 
 export { NotifierEvent };
 export type {
+  RustServiceTickerSymbol,
   RustServiceDataBuildInfo,
   RustServicePaginatedResults,
   RustServiceTickerSearchResult,

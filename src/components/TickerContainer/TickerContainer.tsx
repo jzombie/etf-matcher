@@ -1,13 +1,14 @@
 import React, { useCallback, useContext, useEffect, useRef } from "react";
 
 import Full, { FullProps } from "@layoutKit/Full";
+import type { RustServiceTickerSymbol } from "@services/RustService";
 
 import useStableCurrentRef from "@hooks/useStableCurrentRef";
 
 import { TickerContainerContext } from "./TickerContainerProvider";
 
 export type TickerContainerProps = FullProps & {
-  tickerSymbol: string;
+  tickerSymbol: RustServiceTickerSymbol;
   onIntersectionStateChange?: (isIntersecting: boolean) => void;
 };
 

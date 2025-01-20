@@ -13,6 +13,7 @@ import {
 import Center from "@layoutKit/Center";
 import Cover from "@layoutKit/Cover";
 import Full from "@layoutKit/Full";
+import type { RustServiceTickerSymbol } from "@services/RustService";
 import type { RustServiceTickerDetail } from "@services/RustService";
 
 import AvatarLogo from "@components/AvatarLogo";
@@ -40,7 +41,7 @@ export default function TickerVectorQueryTableCosine({
   const navigateToSymbol = useTickerSymbolNavigation();
 
   const handleRowClick = useCallback(
-    (tickerSymbol: string) => {
+    (tickerSymbol: RustServiceTickerSymbol) => {
       navigateToSymbol(tickerSymbol);
     },
     [navigateToSymbol],

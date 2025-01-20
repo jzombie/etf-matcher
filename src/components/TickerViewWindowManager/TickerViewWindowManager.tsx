@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 
 import Layout, { Content, Footer } from "@layoutKit/Layout";
+import type { RustServiceTickerSymbol } from "@services/RustService";
 
 import TickerContainer from "@components/TickerContainer";
 import WindowManager from "@components/WindowManager";
@@ -11,7 +12,7 @@ import TickerViewWindowManagerBucketManager from "./components/TickerViewWindowM
 import useTickerViewWindowManagerContent from "./hooks/useTickerViewWindowManagerContent";
 
 export type TickerViewWindowManagerProps = {
-  tickerSymbol: string;
+  tickerSymbol: RustServiceTickerSymbol;
 };
 
 export default function TickerViewWindowManager({

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 
 import { auditMissingTickerVectors } from "@services/RustService";
+import type { RustServiceTickerSymbol } from "@services/RustService";
 
 import arraysEqual from "@utils/arraysEqual";
 import customLogger from "@utils/customLogger";
@@ -11,18 +12,21 @@ import usePromise from "./usePromise";
 export default function useTickerVectorAudit(
   tickerVectorConfigKey: string,
   // Note: `queryTickerSymbols` represents the `query`, not `filtered results`
-  queryTickerSymbols: string[],
+  queryTickerSymbols: RustServiceTickerSymbol[],
 ) {
   const { triggerUIError } = useAppErrorBoundary();
 
-  const prevTickerSymbolsRef = useRef<string[]>([]);
+  const prevTickerSymbolsRef = useRef<RustServiceTickerSymbol[]>([]);
 
   const {
     data: missingTickerSymbols,
     isPending: isAuditPending,
     error: auditError,
     execute: executeAudit,
-  } = usePromise<string[], [string, string[]]>({
+  } = usePromise<
+    RustServiceTickerSymbol[],
+    [tickerVectorConfigKey: string, tickerSymbols: RustServiceTickerSymbol[]]
+  >({
     fn: (tickerVectorConfigKey, queryTickerSymbols) =>
       auditMissingTickerVectors(tickerVectorConfigKey, queryTickerSymbols),
     onError: (err) => {

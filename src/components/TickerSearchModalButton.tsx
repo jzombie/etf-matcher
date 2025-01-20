@@ -50,7 +50,6 @@ export default function TickerSearchModalButton({
   const { setURLState, toBooleanParam } = useURLState();
 
   const handleSearchQuery = useCallback(
-    // (searchQuery: string, isExact: boolean) => {
     (searchQueryResults: SearchQueryResult[]) => {
       if (searchQueryResults.length > 1) {
         customLogger.warn("`searchQueryResults` truncated to the first value");

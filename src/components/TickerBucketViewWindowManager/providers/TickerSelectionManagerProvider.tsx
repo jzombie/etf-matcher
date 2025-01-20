@@ -10,6 +10,7 @@ import type {
   RustServiceETFAggregateDetail,
   RustServiceTickerDetail,
   RustServiceTickerSearchResult,
+  RustServiceTickerSymbol,
 } from "@services/RustService";
 import store, { TickerBucket, TickerBucketTicker } from "@src/store";
 
@@ -25,9 +26,9 @@ import deepEqual from "@utils/deepEqual";
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
 export type TickerSelectionManagerContextType = {
-  selectedTickerSymbols: string[];
-  selectTickerSymbol: (tickerSymbol: string) => void;
-  deselectTickerSymbol: (tickerSymbol: string) => void;
+  selectedTickerSymbols: RustServiceTickerSymbol[];
+  selectTickerSymbol: (tickerSymbol: RustServiceTickerSymbol) => void;
+  deselectTickerSymbol: (tickerSymbol: RustServiceTickerSymbol) => void;
   selectAllTickerSymbols: () => void;
   clearSelectedTickerSymbols: () => void;
   areAllTickersSelected: boolean;
@@ -36,7 +37,7 @@ export type TickerSelectionManagerContextType = {
   addSearchResultTickers: (
     searchResultTickers: RustServiceTickerSearchResult[],
   ) => void;
-  removeTickerWithSymbol: (tickerSymbol: string) => void;
+  removeTickerWithSymbol: (tickerSymbol: RustServiceTickerSymbol) => void;
   adjustedTickerBucket: TickerBucket;
   // `filteredTickerBucket` is the `adjustedTickerBucket` with deselected tickers filtered out
   filteredTickerBucket: TickerBucket;
@@ -52,7 +53,7 @@ export type TickerSelectionManagerContextType = {
   adjustedETFAggregateDetailsError: Error | null;
   formattedAdjustedSymbolsWithExchange?: string[] | null;
   //
-  missingAuditedTickerSymbols?: string[] | null;
+  missingAuditedTickerSymbols?: RustServiceTickerSymbol[] | null;
   isTickerVectorAuditPending: boolean;
   //
   forceRefreshIndex: number;
@@ -130,9 +131,9 @@ export default function TickerSelectionManagerProvider({
     setForceRefreshIndex((prev) => ++prev);
   }, []);
 
-  const [selectedTickerSymbols, setSelectedTickerSymbols] = useState<string[]>(
-    () => tickerBucket.tickers.map((ticker) => ticker.symbol),
-  );
+  const [selectedTickerSymbols, setSelectedTickerSymbols] = useState<
+    RustServiceTickerSymbol[]
+  >(() => tickerBucket.tickers.map((ticker) => ticker.symbol));
 
   const [adjustedTickerBucket, setAdjustedTickerBucket] =
     useState<TickerBucket>(tickerBucket);
@@ -238,7 +239,7 @@ export default function TickerSelectionManagerProvider({
   );
 
   const removeTickerWithSymbol = useCallback(
-    (tickerSymbol: string) => {
+    (tickerSymbol: RustServiceTickerSymbol) => {
       try {
         setAdjustedTickerBucket((prev) => ({
           ...prev,
@@ -321,22 +322,28 @@ export default function TickerSelectionManagerProvider({
     }
   }, [tickerBucket, forceRefresh, showNotification, triggerUIError]);
 
-  const selectTickerSymbol = useCallback((tickerSymbol: string) => {
-    setSelectedTickerSymbols((prevTickerSymbols) => {
-      if (prevTickerSymbols.includes(tickerSymbol)) {
-        return prevTickerSymbols; // Avoid unnecessary re-renders
-      }
-      return [...prevTickerSymbols, tickerSymbol];
-    });
-  }, []);
+  const selectTickerSymbol = useCallback(
+    (tickerSymbol: RustServiceTickerSymbol) => {
+      setSelectedTickerSymbols((prevTickerSymbols) => {
+        if (prevTickerSymbols.includes(tickerSymbol)) {
+          return prevTickerSymbols; // Avoid unnecessary re-renders
+        }
+        return [...prevTickerSymbols, tickerSymbol];
+      });
+    },
+    [],
+  );
 
-  const deselectTickerSymbol = useCallback((tickerSymbol: string) => {
-    setSelectedTickerSymbols((prevTickerSymbols) =>
-      prevTickerSymbols.filter(
-        (prevTickerSymbol) => prevTickerSymbol !== tickerSymbol,
-      ),
-    );
-  }, []);
+  const deselectTickerSymbol = useCallback(
+    (tickerSymbol: RustServiceTickerSymbol) => {
+      setSelectedTickerSymbols((prevTickerSymbols) =>
+        prevTickerSymbols.filter(
+          (prevTickerSymbol) => prevTickerSymbol !== tickerSymbol,
+        ),
+      );
+    },
+    [],
+  );
 
   const selectAllTickerSymbols = useCallback(() => {
     setSelectedTickerSymbols(

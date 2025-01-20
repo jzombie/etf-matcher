@@ -4,6 +4,7 @@ import type {
   RustServiceCosineSimilarityResult,
   RustServiceTickerDetail,
   RustServiceTickerDistance,
+  RustServiceTickerSymbol,
 } from "@services/RustService";
 import {
   fetchCosineByTicker,
@@ -59,7 +60,7 @@ export default function useTickerVectorQuery({
   }, [queryMode, query]);
 
   const fetchTickerDetailWithETFExpenseRatio = useCallback(
-    async (tickerSymbol: string) => {
+    async (tickerSymbol: RustServiceTickerSymbol) => {
       const tickerDetail = await fetchTickerDetail(tickerSymbol);
       let etf_expense_ratio = null;
 
