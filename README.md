@@ -7,7 +7,7 @@ Source code for [ETFMatcher.com](https://etfmatcher.com), a utility that leverag
 ## Build Requirements
 
 - A Unix terminal shell (such as Bash or Zsh)
-- Docker version 26.1.3 (may work with earlier versions of Docker)
+- Docker version 26.1.3 or later (earlier versions may also work but are not guaranteed)
 - Proprietary `.bin` files used for stock analysis
 - A compatible `.env` file (details not provided)
 
