@@ -314,6 +314,13 @@ pub async fn get_euclidean_by_ticker(
             &JsValue::from(ticker_distance.ticker_id),
         )
         .unwrap();
+        let obj = js_sys::Object::new();
+        js_sys::Reflect::set(
+            &obj,
+            &JsValue::from_str("ticker_symbol"),
+            &JsValue::from(ticker_distance.ticker_symbol),
+        )
+        .unwrap();
         js_sys::Reflect::set(
             &obj,
             &JsValue::from_str("distance"),
@@ -402,6 +409,12 @@ pub async fn get_cosine_by_ticker(
             &obj,
             &JsValue::from_str("ticker_id"),
             &JsValue::from(similarity_result.ticker_id),
+        )
+        .unwrap();
+        js_sys::Reflect::set(
+            &obj,
+            &JsValue::from_str("ticker_symbol"),
+            &JsValue::from(similarity_result.ticker_symbol),
         )
         .unwrap();
         js_sys::Reflect::set(
