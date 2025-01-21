@@ -8,7 +8,7 @@ export async function fetchETFAggregateDetail(
   etfTickerSymbol: RustServiceTickerSymbol,
 ): Promise<RustServiceETFAggregateDetail> {
   return callRustService<RustServiceETFAggregateDetail>(
-    "get_etf_aggregate_detail_by_ticker",
+    "get_etf_aggregate_detail",
     [etfTickerSymbol],
   );
 }

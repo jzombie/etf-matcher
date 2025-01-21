@@ -191,9 +191,7 @@ pub async fn get_etf_holders_aggregate_detail(
 }
 
 #[wasm_bindgen]
-pub async fn get_etf_aggregate_detail_by_ticker_id(
-    ticker_symbol: TickerSymbol,
-) -> Result<JsValue, JsValue> {
+pub async fn get_etf_aggregate_detail(ticker_symbol: TickerSymbol) -> Result<JsValue, JsValue> {
     let etf_detail: ETFAggregateDetail =
         ETFAggregateDetail::get_etf_aggregate_detail(ticker_symbol).await?;
     to_value(&etf_detail).map_err(|err: serde_wasm_bindgen::Error| {
@@ -205,7 +203,7 @@ pub async fn get_etf_aggregate_detail_by_ticker_id(
 }
 
 #[wasm_bindgen]
-pub async fn get_etf_holdings_by_etf_ticker_id(
+pub async fn get_etf_holdings(
     etf_ticker_symbol: TickerSymbol,
     page: usize,
     page_size: usize,
