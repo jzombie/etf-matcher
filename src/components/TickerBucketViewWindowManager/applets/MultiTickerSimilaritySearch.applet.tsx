@@ -67,6 +67,7 @@ export default function MultiTickerSimilaritySearchApplet({
     setPreferredTickerVectorConfig,
   } = useTickerVectorConfigs();
 
+  // TODO: Should this be based on cosine instead, or at least configurable?
   const { data: tickerDistances, execute: fetchTickerDistances } = usePromise<
     RustServiceTickerDistance[],
     [tickerVectorConfigKey: string, filteredTickerBucket: TickerBucket]
