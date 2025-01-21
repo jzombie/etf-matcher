@@ -127,6 +127,7 @@ function ComponentWrap({
 
   const shouldShowLabels = contentSize.width >= 360;
 
+  // TODO: Should this be based on cosine instead, or at least configurable?
   const { data: tickerDistances, execute: fetchTickerDistances } = usePromise<
     RustServiceTickerDistance[],
     [tickerVectorConfigKey: string, tickerSymbol: string]
