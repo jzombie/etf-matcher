@@ -13,14 +13,8 @@ struct TickerETFHolderRaw {
     etf_ticker_ids_json: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct TickerETFHolder {
-    // TODO: Rename to `etf_ticker_id`
-    pub ticker_id: TickerId, // TODO: Remove?
-    // TODO: Rename to `etf_ticker_symbol`
-    pub ticker_symbol: TickerSymbol,
-    pub etf_ticker_ids_json: String,
-}
+// Note: This struct is not used directly; `ETFAggregateDetail` is returned instead
+pub struct TickerETFHolder {}
 
 impl TickerETFHolder {
     pub async fn get_etf_holders_aggregate_detail(
