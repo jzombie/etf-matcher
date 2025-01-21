@@ -101,7 +101,7 @@ impl ETFHoldingTicker {
                 }
                 Err(e) => {
                     web_sys::console::error_1(&JsValue::from_str(&format!(
-                        "Failed to get ticker detail for holding_ticker_id (via get_etf_holdings_by_etf_ticker_id): {}. Error: {:?}",
+                        "Failed to get ticker detail for holding_ticker_id (via get_etf_holdings): {}. Error: {:?}",
                         holding.holding_ticker_id, e
                     )));
                     continue; // Skip to the next iteration
@@ -115,7 +115,7 @@ impl ETFHoldingTicker {
         Ok(paginated_results)
     }
 
-    // A non-paginated direct variant of `get_etf_holdings_by_etf_ticker_id`
+    // A non-paginated direct variant of `get_etf_holdings`
     pub async fn get_etf_holding_weight(
         etf_ticker_symbol: TickerSymbol,
         holding_ticker_symbol: TickerSymbol,

@@ -14,7 +14,7 @@ export async function fetchETFHoldings(
 ): Promise<RustServicePaginatedResults<RustServiceETFHoldingTicker>> {
   return callRustService<
     RustServicePaginatedResults<RustServiceETFHoldingTicker>
-  >("get_etf_holdings_by_etf_ticker_id", [tickerSymbol, page, pageSize]);
+  >("get_etf_holdings", [tickerSymbol, page, pageSize]);
 }
 
 export async function fetchETFHoldingWeight(
