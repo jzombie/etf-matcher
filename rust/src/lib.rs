@@ -175,7 +175,7 @@ pub async fn get_weighted_ticker_10k_detail(
 }
 
 #[wasm_bindgen]
-pub async fn get_etf_holders_aggregate_detail_by_ticker_id(
+pub async fn get_etf_holders_aggregate_detail(
     ticker_symbol: TickerSymbol,
     page: usize,
     page_size: usize,

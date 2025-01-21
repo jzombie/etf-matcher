@@ -35,9 +35,5 @@ export async function fetchETFHoldersAggregateDetail(
   // TODO: Rename Rust function (no longer `ticker_id`)
   return callRustService<
     RustServicePaginatedResults<RustServiceETFAggregateDetail>
-  >("get_etf_holders_aggregate_detail_by_ticker_id", [
-    tickerSymbol,
-    page,
-    pageSize,
-  ]);
+  >("get_etf_holders_aggregate_detail", [tickerSymbol, page, pageSize]);
 }
