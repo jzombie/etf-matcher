@@ -97,7 +97,6 @@ impl TickerDetail {
             None => None,
         };
 
-        // Construct the response
         Ok(TickerDetail {
             ticker_id: raw_ticker_detail.ticker_id,
             ticker_symbol: raw_ticker_detail.symbol,
