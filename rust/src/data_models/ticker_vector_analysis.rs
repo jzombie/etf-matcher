@@ -5,6 +5,7 @@ use crate::utils::ticker_utils::{get_ticker_id, get_ticker_symbol};
 use crate::DataURL;
 use financial_vectors::ten_k::root_as_ticker_vectors;
 use financial_vectors::ten_k::TickerVectors;
+use futures::stream;
 use futures::stream::StreamExt; // Provides async combinators
 use serde::{Deserialize, Serialize};
 
@@ -226,16 +227,25 @@ impl TickerDistance {
             .map(|ticker_with_weight| ticker_with_weight.ticker_symbol.clone())
             .collect();
 
-        let exclude_ticker_ids: Vec<TickerId> = futures::stream::iter(exclude_ticker_symbols)
+        let exclude_ticker_ids: Vec<TickerId> = stream::iter(exclude_ticker_symbols)
             .then(|ticker_symbol| async move {
-                get_ticker_id(ticker_symbol.clone())
-                    .await
-                    .unwrap_or_else(|_| {
-                        panic!(
-                            "Could not locate ticker ID for ticker symbol: {}",
-                            ticker_symbol
-                        )
-                    })
+                match get_ticker_id(ticker_symbol.clone()).await {
+                    Ok(ticker_id) => Some(ticker_id),
+                    Err(err) => {
+                        eprintln!(
+                            "Failed to locate ticker ID for ticker symbol {}: {:?}",
+                            ticker_symbol, err
+                        );
+                        None
+                    }
+                }
+            })
+            .filter_map(|ticker_id| async move {
+                if ticker_id.is_some() {
+                    ticker_id
+                } else {
+                    None
+                }
             })
             .collect::<Vec<_>>()
             .await;
@@ -475,12 +485,12 @@ impl TickerWithWeight {
 
             let ticker_id = get_ticker_id(ticker_with_weight.ticker_symbol.clone())
                 .await
-                .unwrap_or_else(|_| {
-                    panic!(
+                .map_err(|_| {
+                    format!(
                         "Could not locate ticker ID for ticker symbol: {}",
                         ticker_with_weight.ticker_symbol
                     )
-                });
+                })?;
 
             // Fetch the vector associated with the current ticker_id asynchronously
             let ticker_vector = get_ticker_vector(ticker_vector_config_key, ticker_id).await?;
