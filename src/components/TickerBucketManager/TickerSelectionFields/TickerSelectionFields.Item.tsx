@@ -144,7 +144,6 @@ export default function TickerSelectionFieldsItem({
 
         handleSetBucketTicker({
           symbol: tickerSearchResult.ticker_symbol,
-          exchangeShortName: tickerSearchResult.exchange_short_name,
           quantity: 1,
         });
       } else {

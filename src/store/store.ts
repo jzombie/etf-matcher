@@ -47,7 +47,6 @@ import {
 
 export type TickerBucketTicker = {
   symbol: RustServiceTickerSymbol;
-  exchangeShortName?: string;
   quantity: number;
 };
 
@@ -262,8 +261,6 @@ class Store extends ReactStateEmitter<StoreStateProps> {
         return {
           tickerId: fulfilledResult.value,
           symbol: DEFAULT_TICKER_TAPE_TICKERS[index].symbol,
-          exchangeShortName:
-            DEFAULT_TICKER_TAPE_TICKERS[index].exchangeShortName,
           quantity: 1,
         };
       });
@@ -629,16 +626,13 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     // TODO: Emit custom event for this to route to UI notification
   }
 
+  // TODO: This currently does not handle the case where the ticker is already
+  // in the bucket, and instead upserts while disregarding any previous quantity
   async addTickerToBucket(
     tickerSymbol: RustServiceTickerSymbol,
     quantity: number,
     tickerBucket: TickerBucket,
   ) {
-    // TODO: Rename (and refactor) to `fetchTickerExchange`
-    const tickerAndExchange = await fetchSymbolAndExchange(tickerSymbol);
-
-    const exchangeShortName = tickerAndExchange[1];
-
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.map((bucket) => {
         if (bucket.uuid === tickerBucket.uuid) {
@@ -649,7 +643,6 @@ class Store extends ReactStateEmitter<StoreStateProps> {
                 // Intentionally prepend
                 {
                   symbol: tickerSymbol,
-                  exchangeShortName,
                   quantity,
                 },
                 ...bucket.tickers,
@@ -743,7 +736,6 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     const tickerDetail = await fetchTickerDetail(tickerSymbol);
     const tickerBucketTicker: TickerBucketTicker = {
       symbol: tickerDetail.ticker_symbol,
-      exchangeShortName: tickerDetail.exchange_short_name,
       quantity: 1,
     };
 

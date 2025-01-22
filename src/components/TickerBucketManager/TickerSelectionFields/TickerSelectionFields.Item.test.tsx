@@ -59,13 +59,11 @@ describe("TickerSelectionFieldsItem", () => {
       onDelete,
       initialBucketTicker: {
         symbol: "AAPL",
-        exchangeShortName: "NASDAQ",
         quantity: 10,
       },
       existingBucketTickers: [
         {
           symbol: "AAPL",
-          exchangeShortName: "NASDAQ",
           quantity: 10,
         },
       ],
@@ -82,7 +80,6 @@ describe("TickerSelectionFieldsItem", () => {
     // Assert that onDelete was called with the correct values
     expect(onDelete).toHaveBeenCalledWith({
       symbol: "AAPL",
-      exchangeShortName: "NASDAQ",
       quantity: 10,
     });
   });
@@ -138,13 +135,11 @@ describe("TickerSelectionFieldsItem", () => {
         onUpdate={onUpdate}
         initialBucketTicker={{
           symbol: "AAPL",
-          exchangeShortName: "NASDAQ",
           quantity: 1000000, // Start with a value that should be formatted
         }}
         existingBucketTickers={[
           {
             symbol: "AAPL",
-            exchangeShortName: "NASDAQ",
             quantity: 1000000,
           },
         ]}

@@ -36,12 +36,7 @@ export default function MergeTableRow({
       <TableCell>
         <AvatarLogo tickerDetail={tickerDetail} />
       </TableCell>
-      <TableCell>
-        {tickerDiff.ticker.symbol}
-        {tickerDiff.ticker.exchangeShortName
-          ? ` (${tickerDiff.ticker.exchangeShortName})`
-          : ""}
-      </TableCell>
+      <TableCell>{tickerDiff.ticker.symbol}</TableCell>
       <TableCell>{tickerDetail?.company_name || "N/A"}</TableCell>
       <TableCell>
         {formatNumberWithCommas(nextQuantity)}

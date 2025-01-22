@@ -212,7 +212,6 @@ export default function TickerSelectionManagerProvider({
             // If the ticker does not exist, add it
             const newTicker: TickerBucketTicker = {
               symbol: searchResultTicker.ticker_symbol,
-              exchangeShortName: searchResultTicker.exchange_short_name,
               quantity: 1,
             };
             updatedTickers.push(newTicker);
