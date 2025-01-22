@@ -10,7 +10,6 @@ import {
   fetchCacheDetails,
   fetchCacheSize,
   fetchDataBuildInfo,
-  fetchSymbolAndExchange,
   fetchTickerDetail,
   fetchTickerId,
   subscribe as libRustServiceSubscribe,

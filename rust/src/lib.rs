@@ -49,16 +49,6 @@ pub fn generate_qr_code(data: &str) -> Result<JsValue, JsValue> {
     })
 }
 
-// TODO: Remove
-// #[wasm_bindgen]
-// pub async fn get_symbol_and_exchange_by_ticker_id(ticker_id: TickerId) -> Result<JsValue, JsValue> {
-//     let result: (String, Option<String>) =
-//         utils::ticker_utils::get_symbol_and_exchange_by_ticker_id(ticker_id).await?;
-//     to_value(&result).map_err(|err: serde_wasm_bindgen::Error| {
-//         JsValue::from_str(&format!("Failed to convert result to JsValue: {}", err))
-//     })
-// }
-
 #[wasm_bindgen]
 pub async fn get_data_build_info() -> Result<JsValue, JsValue> {
     let data: DataBuildInfo = DataBuildInfo::get_data_build_info().await?;

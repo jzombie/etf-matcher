@@ -44,26 +44,6 @@ async fn preload_symbol_and_exchange_cache() -> Result<(), JsValue> {
     Ok(())
 }
 
-// TODO: Remove
-// pub async fn get_symbol_and_exchange_by_ticker_id(
-//     ticker_id: TickerId,
-// ) -> Result<(String, Option<String>), JsValue> {
-//     // Ensure cache is preloaded
-//     if SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE
-//         .lock()
-//         .unwrap()
-//         .is_empty()
-//     {
-//         preload_symbol_and_exchange_cache().await?;
-//     }
-
-//     let cache = SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE.lock().unwrap();
-//     cache
-//         .get(&ticker_id)
-//         .cloned()
-//         .ok_or_else(|| JsValue::from_str("Ticker ID not found"))
-// }
-
 pub async fn get_ticker_id(ticker_symbol: TickerSymbol) -> Result<TickerId, JsValue> {
     // Ensure cache is preloaded
     if SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE

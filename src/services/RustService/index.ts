@@ -20,7 +20,6 @@ import { generateQRCode } from "./lib/qrCode";
 import searchTickers, {
   extractSearchResultsFromText,
 } from "./lib/searchTickers";
-import { fetchSymbolAndExchange } from "./lib/symbolAndExchange";
 import {
   fetchTicker10KDetail,
   fetchWeightedTicker10KDetail,
@@ -107,7 +106,6 @@ export {
   fetchWeightedTickerSectorDistribution,
   fetchTicker10KDetail,
   fetchWeightedTicker10KDetail,
-  fetchSymbolAndExchange,
   fetchETFAggregateDetail,
   fetchAllMajorSectors,
   tickerBucketsToCSV,

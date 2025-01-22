@@ -4,7 +4,6 @@ use crate::types::{
 use crate::utils::extract_logo_filename;
 use crate::utils::shard::query_shard_for_id;
 use crate::utils::ticker_utils::get_ticker_id;
-// use crate::utils::ticker_utils::get_symbol_and_exchange_by_ticker_id; // TODO: Remove
 use crate::DataURL;
 use crate::IndustryById;
 use crate::JsValue;
@@ -130,10 +129,6 @@ impl ETFAggregateDetail {
         )
         .await?
         .ok_or_else(|| JsValue::from_str(&format!("ETF ticker ID {} not found", ticker_id)))?;
-
-        // Fetch the symbol and exchange short name
-        // let (etf_symbol, exchange_short_name) =
-        //     get_symbol_and_exchange_by_ticker_id(ticker_id).await?;
 
         let top_market_value_sector_name = match etf_aggregate_detail_raw.top_market_value_sector_id
         {
