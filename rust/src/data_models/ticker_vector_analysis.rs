@@ -24,7 +24,6 @@ pub struct CosineSimilarityResult {
     pub similarity_score: f32,
 }
 
-// TODO: Add usage of ticker_symbol
 // TODO: Extract into a common type to use with `get_weighted_ticker_10k_detail_by_ticker_ids`.
 #[derive(Deserialize)]
 pub struct TickerWithWeight {

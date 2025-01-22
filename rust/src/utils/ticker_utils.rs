@@ -58,13 +58,6 @@ pub async fn get_ticker_id(ticker_symbol: TickerSymbol) -> Result<TickerId, JsVa
     for (ticker_id, (cached_symbol, _cached_exchange)) in cache.iter() {
         if cached_symbol.eq_ignore_ascii_case(&ticker_symbol) {
             return Ok(*ticker_id);
-
-            // TODO: Remove
-            // if let Some(ref cached_exchange_short_name) = cached_exchange {
-            //     if cached_exchange_short_name.eq_ignore_ascii_case(exchange_short_name) {
-            //         return Ok(*ticker_id);
-            //     }
-            // }
         }
     }
 
@@ -85,13 +78,6 @@ pub async fn get_ticker_symbol(ticker_id: TickerId) -> Result<TickerSymbol, JsVa
     for (cached_ticker_id, (ticker_symbol, _cached_exchange)) in cache.iter() {
         if *cached_ticker_id == ticker_id {
             return Ok(ticker_symbol.clone());
-
-            // TODO: Remove
-            // if let Some(ref cached_exchange_short_name) = cached_exchange {
-            //     if cached_exchange_short_name.eq_ignore_ascii_case(exchange_short_name) {
-            //         return Ok(*ticker_id);
-            //     }
-            // }
         }
     }
 

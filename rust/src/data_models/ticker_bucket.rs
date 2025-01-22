@@ -161,19 +161,6 @@ impl TickerBucket {
                         JsValue::from_str(&format!("Failed to parse quantity: {:?}", err))
                     })?;
 
-            // TODO: Remove
-            // Use the symbol and exchange_short_name as the key for direct lookup
-            // let key = (ticker_symbol, exchange_short_name.clone());
-            // let ticker_id = match ticker_map.get(key) {
-            //     Some(&id) => id,
-            //     None => {
-            //         return Err(JsValue::from_str(&format!(
-            //             "Error: Ticker symbol {} with exchange {} not found in the system",
-            //             ticker_symbol, exchange_short_name
-            //         )))
-            //     }
-            // };
-
             let ticker = TickerBucketTicker {
                 symbol: ticker_symbol.to_string(),
                 exchange_short_name: Some(exchange_short_name),
