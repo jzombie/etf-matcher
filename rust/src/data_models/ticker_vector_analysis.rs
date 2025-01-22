@@ -28,7 +28,7 @@ pub struct CosineSimilarityResult {
 // TODO: Extract into a common type to use with `get_weighted_ticker_10k_detail_by_ticker_ids`.
 #[derive(Deserialize)]
 pub struct TickerWithWeight {
-    pub ticker_id: TickerId,
+    pub ticker_symbol: TickerSymbol,
     // Float is used to allow usage of fractional shares
     pub weight: f32,
 }
@@ -222,10 +222,24 @@ impl TickerDistance {
         let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
         // Collect all ticker_ids in the input tickers_with_weight to exclude them
-        let exclude_ticker_ids: Vec<TickerId> = tickers_with_weight
+        let exclude_ticker_symbols: Vec<TickerSymbol> = tickers_with_weight
             .iter()
-            .map(|ticker_with_weight| ticker_with_weight.ticker_id)
+            .map(|ticker_with_weight| ticker_with_weight.ticker_symbol.clone())
             .collect();
+
+        let exclude_ticker_ids: Vec<TickerId> = futures::stream::iter(exclude_ticker_symbols)
+            .then(|ticker_symbol| async move {
+                get_ticker_id(ticker_symbol.clone())
+                    .await
+                    .unwrap_or_else(|_| {
+                        panic!(
+                            "Could not locate ticker ID for ticker symbol: {}",
+                            ticker_symbol
+                        )
+                    })
+            })
+            .collect::<Vec<_>>()
+            .await;
 
         Self::find_closest_tickers_by_vector(
             &custom_vector,
@@ -460,9 +474,17 @@ impl TickerWithWeight {
                 return Err("Invalid weight: Must be a positive number.".to_string());
             }
 
+            let ticker_id = get_ticker_id(ticker_with_weight.ticker_symbol.clone())
+                .await
+                .unwrap_or_else(|_| {
+                    panic!(
+                        "Could not locate ticker ID for ticker symbol: {}",
+                        ticker_with_weight.ticker_symbol
+                    )
+                });
+
             // Fetch the vector associated with the current ticker_id asynchronously
-            let ticker_vector =
-                get_ticker_vector(ticker_vector_config_key, ticker_with_weight.ticker_id).await?;
+            let ticker_vector = get_ticker_vector(ticker_vector_config_key, ticker_id).await?;
 
             // Check if the aggregated_vector is empty, which will only be true for the first ticker
             if aggregated_vector.is_empty() {
