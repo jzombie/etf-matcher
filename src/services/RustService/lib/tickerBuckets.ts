@@ -7,9 +7,6 @@ export async function tickerBucketsToCSV(
 ): Promise<string> {
   const jsonTickerBuckets = JSON.stringify(tickerBuckets);
 
-  // TODO: REmove
-  console.log({ jsonTickerBuckets });
-
   return callRustService<string>("ticker_buckets_to_csv", [jsonTickerBuckets]);
 }
 
