@@ -11,7 +11,6 @@ import {
   fetchCacheSize,
   fetchDataBuildInfo,
   fetchTickerDetail,
-  fetchTickerId,
   subscribe as libRustServiceSubscribe,
   preloadSearchCache,
   removeCacheEntry,
@@ -249,16 +248,9 @@ class Store extends ReactStateEmitter<StoreStateProps> {
       return;
     }
 
-    const results = await Promise.allSettled(
-      DEFAULT_TICKER_TAPE_TICKERS.map((ticker) => fetchTickerId(ticker.symbol)),
-    );
-
-    const tickerTapeBucketTickers: TickerBucketTicker[] = results
-      .filter((result) => result.status === "fulfilled")
-      .map((result, index) => {
-        const fulfilledResult = result as PromiseFulfilledResult<number>;
+    const tickerTapeBucketTickers: TickerBucketTicker[] =
+      DEFAULT_TICKER_TAPE_TICKERS.map((_, index) => {
         return {
-          tickerId: fulfilledResult.value,
           symbol: DEFAULT_TICKER_TAPE_TICKERS[index].symbol,
           quantity: 1,
         };

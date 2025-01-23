@@ -29,7 +29,6 @@ import {
   fetchTickerDetail,
   fetchWeightedTickerSectorDistribution,
 } from "./lib/tickerDetail";
-import { fetchTickerId } from "./lib/tickerId";
 import {
   auditMissingTickerVectors,
   fetchAllTickerVectorConfigs,
@@ -92,7 +91,6 @@ export {
   fetchEuclideanByTickerBucket,
   fetchCacheSize,
   fetchCacheDetails,
-  fetchTickerId,
   fetchDataBuildInfo,
   preloadSearchCache,
   generateQRCode,

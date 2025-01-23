@@ -12,7 +12,7 @@ mod data_models;
 mod types;
 mod utils;
 
-use crate::types::{TickerId, TickerSymbol};
+use crate::types::TickerSymbol;
 
 use crate::data_models::{
     ticker_vector_analysis, DataBuildInfo, DataURL, ETFAggregateDetail, ETFHoldingTicker,
@@ -228,13 +228,6 @@ pub async fn get_image_info(filename: &str) -> Result<JsValue, JsValue> {
     let image_url = DataURL::Image(filename.to_string()).image_url();
     let image_info = lib_get_image_info(&image_url).await?;
     Ok(to_value(&image_info).map_err(|e| JsValue::from_str(&e.to_string()))?)
-}
-
-// TODO: Remove? Should this even be exposed at all to the frontend?
-#[wasm_bindgen]
-pub async fn get_ticker_id(ticker_symbol: &str) -> Result<JsValue, JsValue> {
-    let ticker_id: TickerId = utils::ticker_utils::get_ticker_id(ticker_symbol.to_string()).await?;
-    Ok(to_value(&ticker_id).map_err(|e| JsValue::from_str(&e.to_string()))?)
 }
 
 #[wasm_bindgen]
