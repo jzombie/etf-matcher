@@ -22,7 +22,6 @@ export default function MainLayout() {
       "isAppUnlocked",
       "isRustInit",
       "isProfilingCacheOverlayOpen",
-      "isIndexedDBReady",
     ]);
 
   if (!isAppUnlocked) {
