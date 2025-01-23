@@ -145,7 +145,7 @@ export type RustServiceTicker10KDetail = {
 
 export type RustServiceETFHoldingWeight = {
   etf_ticker_symbol: RustServiceTickerSymbol;
-  holding_ticker_symbol: string;
+  holding_ticker_symbol: RustServiceTickerSymbol;
   holding_market_value: number;
   holding_percentage: number;
 };
