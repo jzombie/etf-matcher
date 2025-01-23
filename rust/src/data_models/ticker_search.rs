@@ -88,7 +88,7 @@ impl TickerSearch {
         alternatives
     }
 
-    // TODO: Remove `generate_alternative_symbols` and match on pure alphanumeric
+    // TODO: If possible, remove `generate_alternative_symbols` and match on pure alphanumeric
     pub async fn search_tickers(
         &self, // Use `self` to access query parameters
     ) -> Result<PaginatedResults<TickerSearchResult>, JsValue> {
@@ -176,14 +176,15 @@ impl TickerSearch {
         }
 
         // Paginate the results first
-        let paginated_results =
+        let paginated_raw_results =
             PaginatedResults::paginate(matches.clone(), self.page, self.page_size)?;
 
         // Fetch exchange short names for the paginated results
         let mut search_results: Vec<TickerSearchResult> =
-            Vec::with_capacity(paginated_results.results.len());
-        for result in paginated_results.results {
-            let exchange_short_name = if let Some(exchange_id) = result.exchange_id {
+            Vec::with_capacity(paginated_raw_results.results.len());
+
+        for raw_result in paginated_raw_results.results {
+            let exchange_short_name = if let Some(exchange_id) = raw_result.exchange_id {
                 match ExchangeById::get_short_name_by_exchange_id(exchange_id).await {
                     Ok(name) => Some(name),
                     Err(_) => None,
@@ -193,11 +194,11 @@ impl TickerSearch {
             };
 
             search_results.push(TickerSearchResult {
-                ticker_id: result.ticker_id,
-                ticker_symbol: result.symbol,
+                ticker_id: raw_result.ticker_id,
+                ticker_symbol: raw_result.symbol,
                 exchange_short_name,
-                company_name: result.company_name,
-                logo_filename: result.logo_filename,
+                company_name: raw_result.company_name,
+                logo_filename: raw_result.logo_filename,
             });
         }
 
@@ -205,7 +206,7 @@ impl TickerSearch {
         // This creates a new PaginatedResults instance with the total_count from paginated_results
         // and the results from search_results, which now includes the exchange short names.
         Ok(PaginatedResults {
-            total_count: paginated_results.total_count,
+            total_count: paginated_raw_results.total_count,
             results: search_results,
         })
     }
