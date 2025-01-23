@@ -78,7 +78,7 @@ impl TickerSearch {
         }
     }
 
-    fn generate_alternative_symbols(query: &str) -> Vec<String> {
+    fn generate_alternative_symbols(query: &str) -> Vec<TickerSymbol> {
         let mut alternatives: Vec<String> = vec![query.to_lowercase()];
         if query.contains('.') {
             alternatives.push(query.replace('.', "-").to_lowercase());
