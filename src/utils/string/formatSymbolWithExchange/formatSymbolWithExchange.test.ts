@@ -26,7 +26,7 @@ describe("formatSymbolWithExchange", () => {
 
   it("should handle null exchange_short_name", () => {
     const tickerDetail = {
-      symbol: "AAPL",
+      ticker_symbol: "AAPL",
       exchange_short_name: null,
     } as unknown as RustServiceTickerDetail;
 
