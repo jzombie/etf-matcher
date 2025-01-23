@@ -147,7 +147,7 @@ export default function TickerInformationApplet({
                   })}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={`View ${tickerDetail?.ticker_symbol} on stockanalysis.com`}
+                  aria-label={`View ${tickerDetail?.ticker_symbol} on google.com`}
                 >
                   google.com
                 </Link>
