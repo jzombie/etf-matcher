@@ -94,7 +94,6 @@ pub struct ETFAggregateDetail {
     pub ticker_id: TickerId, // TODO: Remove?
     pub etf_ticker_symbol: String,
     pub expense_ratio: f32,
-    pub exchange_short_name: Option<String>,
     pub etf_name: Option<String>,
     pub top_market_value_sector_name: Option<String>,
     pub top_market_value_industry_name: Option<String>,
@@ -211,7 +210,6 @@ impl ETFAggregateDetail {
             ticker_id: etf_aggregate_detail_raw.ticker_id,
             etf_ticker_symbol: ticker_symbol,
             expense_ratio: etf_aggregate_detail_raw.expense_ratio,
-            exchange_short_name: Some("TODO: Use".to_string()),
             etf_name: etf_aggregate_detail_raw.etf_name,
             top_market_value_sector_name,
             top_market_value_industry_name,

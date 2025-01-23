@@ -45,7 +45,6 @@ export type RustServiceTickerWeightedSectorDistribution = {
 export type RustServiceETFAggregateDetail = {
   etf_ticker_symbol: RustServiceTickerSymbol;
   expense_ratio: number;
-  exchange_short_name?: string;
   etf_name?: string;
   top_market_value_sector_name?: string;
   top_market_value_industry_name?: string;
