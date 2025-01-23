@@ -21,7 +21,7 @@ struct ETFHoldingTickerJSON {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ETFHoldingTicker {
-    pub holding_ticker_id: TickerId, // TODO: Remove?
+    pub holding_ticker_id: TickerId,
     pub holding_ticker_symbol: TickerSymbol,
     pub holding_market_value: f32,
     pub holding_percentage: f32,

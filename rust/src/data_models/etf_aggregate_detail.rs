@@ -91,7 +91,8 @@ pub struct ETFAggregateDetailRaw {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ETFAggregateDetail {
-    pub ticker_id: TickerId, // TODO: Remove?
+    // TODO: Rename to `etf_ticker_id`
+    pub ticker_id: TickerId,
     pub etf_ticker_symbol: String,
     pub expense_ratio: f32,
     pub etf_name: Option<String>,

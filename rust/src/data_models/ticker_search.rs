@@ -28,7 +28,7 @@ pub struct TickerSearchResultRaw {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TickerSearchResult {
-    pub ticker_id: TickerId, // TODO: Remove?
+    pub ticker_id: TickerId,
     pub ticker_symbol: TickerSymbol,
     pub exchange_short_name: Option<String>,
     pub company_name: Option<String>,
