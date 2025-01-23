@@ -63,12 +63,12 @@ export default function MultiTickerManagerTicker({
 
   const tickerBucketTicker = adjustedTickerBucket.tickers.find(
     (tickerBucketTicker) =>
-      tickerBucketTicker.tickerId === tickerDetail.ticker_id,
+      tickerBucketTicker.symbol === tickerDetail.ticker_symbol,
   );
 
   return (
     <Box
-      key={tickerDetail.ticker_id}
+      key={tickerDetail.ticker_symbol}
       display="flex"
       flexDirection="column"
       alignItems="start"
@@ -97,7 +97,7 @@ export default function MultiTickerManagerTicker({
                   marginRight: 1,
                 }}
               >
-                {tickerDetail.symbol}
+                {tickerDetail.ticker_symbol}
                 {isMissingInTickerVectors && (
                   <Box
                     component="span"
@@ -205,7 +205,7 @@ export default function MultiTickerManagerTicker({
         onCancel={() => setIsShowingDeleteModal(false)}
         onDelete={handleDelete}
         title={`Confirm Delete`}
-        content={`Are you sure you want to remove "${tickerDetail.symbol}" from "${adjustedTickerBucket.name}"?`}
+        content={`Are you sure you want to remove "${tickerDetail.ticker_symbol}" from "${adjustedTickerBucket.name}"?`}
       />
     </Box>
   );

@@ -86,7 +86,9 @@ export default function SearchResultsPage() {
     () =>
       searchResults.map((result) => ({
         data: result,
-        id: result.ticker_id,
+        // Note: This is used for id selection in the `SelectableGrid`, and
+        // does not represent the ticker ID itself
+        id: result.ticker_symbol,
       })),
     [searchResults],
   );
@@ -109,7 +111,7 @@ export default function SearchResultsPage() {
           {" "}
           {/* Ensure this box can shrink */}
           <Typography variant="h6" noWrap>
-            {searchResult.symbol}
+            {searchResult.ticker_symbol}
           </Typography>
           <Typography variant="body2" color="textSecondary" noWrap>
             {searchResult.company_name}
@@ -248,14 +250,16 @@ export default function SearchResultsPage() {
           trigger={searchResults}
         >
           {searchResults.length === 1 && onlyExactMatches ? (
-            <TickerViewWindowManager tickerId={searchResults[0].ticker_id} />
+            <TickerViewWindowManager
+              tickerSymbol={searchResults[0].ticker_symbol}
+            />
           ) : (
             <Scrollable onScroll={handleScroll}>
               <Padding>
                 <SelectableGrid
                   items={selectableSearchResults}
                   onItemSelect={(searchResult) =>
-                    navigateToSymbol(searchResult.symbol)
+                    navigateToSymbol(searchResult.ticker_symbol)
                   }
                   renderItem={renderSearchResultItem}
                 />

@@ -10,6 +10,7 @@ import type {
   RustServiceETFAggregateDetail,
   RustServiceTickerDetail,
   RustServiceTickerSearchResult,
+  RustServiceTickerSymbol,
 } from "@services/RustService";
 import store, { TickerBucket, TickerBucketTicker } from "@src/store";
 
@@ -25,18 +26,18 @@ import deepEqual from "@utils/deepEqual";
 import formatSymbolWithExchange from "@utils/string/formatSymbolWithExchange";
 
 export type TickerSelectionManagerContextType = {
-  selectedTickerIds: number[];
-  selectTickerId: (tickerId: number) => void;
-  deselectTickerId: (tickerId: number) => void;
-  selectAllTickerIds: () => void;
-  clearSelectedTickerIds: () => void;
+  selectedTickerSymbols: RustServiceTickerSymbol[];
+  selectTickerSymbol: (tickerSymbol: RustServiceTickerSymbol) => void;
+  deselectTickerSymbol: (tickerSymbol: RustServiceTickerSymbol) => void;
+  selectAllTickerSymbols: () => void;
+  clearSelectedTickerSymbols: () => void;
   areAllTickersSelected: boolean;
   areNoTickersSelected: boolean;
   adjustTicker: (adjustedTicker: TickerBucketTicker) => void;
   addSearchResultTickers: (
     searchResultTickers: RustServiceTickerSearchResult[],
   ) => void;
-  removeTickerWithId: (tickerId: number) => void;
+  removeTickerWithSymbol: (tickerSymbol: RustServiceTickerSymbol) => void;
   adjustedTickerBucket: TickerBucket;
   // `filteredTickerBucket` is the `adjustedTickerBucket` with deselected tickers filtered out
   filteredTickerBucket: TickerBucket;
@@ -52,7 +53,7 @@ export type TickerSelectionManagerContextType = {
   adjustedETFAggregateDetailsError: Error | null;
   formattedAdjustedSymbolsWithExchange?: string[] | null;
   //
-  missingAuditedTickerVectorIds?: number[] | null;
+  missingAuditedTickerSymbols?: RustServiceTickerSymbol[] | null;
   isTickerVectorAuditPending: boolean;
   //
   forceRefreshIndex: number;
@@ -60,16 +61,16 @@ export type TickerSelectionManagerContextType = {
 
 // Set up the default value with empty functions and an empty array for selected tickers
 const DEFAULT_CONTEXT_VALUE: TickerSelectionManagerContextType = {
-  selectedTickerIds: [],
-  selectTickerId: () => {},
-  deselectTickerId: () => {},
-  selectAllTickerIds: () => {},
-  clearSelectedTickerIds: () => {},
+  selectedTickerSymbols: [],
+  selectTickerSymbol: () => {},
+  deselectTickerSymbol: () => {},
+  selectAllTickerSymbols: () => {},
+  clearSelectedTickerSymbols: () => {},
   areAllTickersSelected: true,
   areNoTickersSelected: false,
   adjustTicker: () => {},
   addSearchResultTickers: () => {},
-  removeTickerWithId: () => {},
+  removeTickerWithSymbol: () => {},
   adjustedTickerBucket: {
     uuid: "N/A",
     name: "N/A",
@@ -98,7 +99,7 @@ const DEFAULT_CONTEXT_VALUE: TickerSelectionManagerContextType = {
   adjustedETFAggregateDetailsError: null,
   formattedAdjustedSymbolsWithExchange: null,
   //
-  missingAuditedTickerVectorIds: null,
+  missingAuditedTickerSymbols: null,
   isTickerVectorAuditPending: false,
   //
   forceRefreshIndex: 0,
@@ -130,28 +131,28 @@ export default function TickerSelectionManagerProvider({
     setForceRefreshIndex((prev) => ++prev);
   }, []);
 
-  const [selectedTickerIds, setSelectedTickerIds] = useState<number[]>(() =>
-    tickerBucket.tickers.map((ticker) => ticker.tickerId),
-  );
+  const [selectedTickerSymbols, setSelectedTickerSymbols] = useState<
+    RustServiceTickerSymbol[]
+  >(() => tickerBucket.tickers.map((ticker) => ticker.symbol));
 
   const [adjustedTickerBucket, setAdjustedTickerBucket] =
     useState<TickerBucket>(tickerBucket);
 
-  const adjustedTickerIds = useMemo(
-    () => adjustedTickerBucket.tickers.map((ticker) => ticker.tickerId),
+  const adjustedTickerSymbols = useMemo(
+    () => adjustedTickerBucket.tickers.map((ticker) => ticker.symbol),
     [adjustedTickerBucket],
   );
   const {
     isLoading: isLoadingAdjustedTickerDetails,
     multiTickerDetails: adjustedTickerDetails,
     error: adjustedTickerDetailsError,
-  } = useMultiTickerDetail(adjustedTickerIds);
+  } = useMultiTickerDetail(adjustedTickerSymbols);
 
-  const adjustedETFTickerIds = useMemo(
+  const adjustedETFTickerSymbols = useMemo(
     () =>
       adjustedTickerDetails
         ?.filter((ticker) => ticker.is_etf)
-        .map((ticker) => ticker.ticker_id) || [],
+        .map((ticker) => ticker.ticker_symbol) || [],
     [adjustedTickerDetails],
   );
 
@@ -159,7 +160,7 @@ export default function TickerSelectionManagerProvider({
     isLoading: isLoadingAdjustedETFAggregateDetails,
     multiETFAggregateDetails: adjustedETFAggregateDetails,
     error: adjustedETFAggregateDetailsError,
-  } = useMultiETFAggregateDetail(adjustedETFTickerIds);
+  } = useMultiETFAggregateDetail(adjustedETFTickerSymbols);
 
   const formattedAdjustedSymbolsWithExchange = useMemo(
     () =>
@@ -173,7 +174,7 @@ export default function TickerSelectionManagerProvider({
     setAdjustedTickerBucket((prev) => {
       // Find the index of the ticker to adjust
       const tickerIndex = prev.tickers.findIndex(
-        (ticker) => ticker.tickerId === adjustedTicker.tickerId,
+        (ticker) => ticker.symbol === adjustedTicker.symbol,
       );
 
       if (tickerIndex === -1) {
@@ -204,15 +205,13 @@ export default function TickerSelectionManagerProvider({
         for (const searchResultTicker of searchResultTickers) {
           // Check if the ticker already exists in the adjustedTickerBucket
           const tickerExists = prev.tickers.some(
-            (ticker) => ticker.tickerId === searchResultTicker.ticker_id,
+            (ticker) => ticker.symbol === searchResultTicker.ticker_symbol,
           );
 
           if (!tickerExists) {
             // If the ticker does not exist, add it
             const newTicker: TickerBucketTicker = {
-              tickerId: searchResultTicker.ticker_id,
-              symbol: searchResultTicker.symbol,
-              exchangeShortName: searchResultTicker.exchange_short_name,
+              symbol: searchResultTicker.ticker_symbol,
               quantity: 1,
             };
             updatedTickers.push(newTicker);
@@ -220,10 +219,12 @@ export default function TickerSelectionManagerProvider({
         }
 
         // Automatically select new ticker ids
-        setSelectedTickerIds((prevSelected) => [
+        setSelectedTickerSymbols((prevSelected) => [
           ...new Set([
             ...prevSelected,
-            ...searchResultTickers.map((ticker) => ticker.ticker_id),
+            ...searchResultTickers.map(
+              (searchResultTicker) => searchResultTicker.ticker_symbol,
+            ),
           ]),
         ]);
 
@@ -236,29 +237,28 @@ export default function TickerSelectionManagerProvider({
     [],
   );
 
-  const removeTickerWithId = useCallback(
-    (tickerId: number) => {
-      const symbol = adjustedTickerBucket.tickers.find(
-        (ticker) => ticker.tickerId === tickerId,
-      )?.symbol;
+  const removeTickerWithSymbol = useCallback(
+    (tickerSymbol: RustServiceTickerSymbol) => {
       try {
         setAdjustedTickerBucket((prev) => ({
           ...prev,
           tickers: prev.tickers.filter(
-            (prevTicker) => prevTicker.tickerId !== tickerId,
+            (prevTicker) => prevTicker.symbol !== tickerSymbol,
           ),
         }));
 
-        if (symbol) {
+        if (tickerSymbol) {
           showNotification(
-            `"${symbol}" removed from "${adjustedTickerBucket.name}"`,
+            `"${tickerSymbol}" removed from "${adjustedTickerBucket.name}"`,
             "warning",
           );
         }
       } catch (err) {
         customLogger.error(err);
 
-        const formattedUIErrorSymbol = symbol ? `"${symbol}"` : "the ticker";
+        const formattedUIErrorSymbol = tickerSymbol
+          ? `"${tickerSymbol}"`
+          : "the ticker";
         triggerUIError(
           new Error(
             `An error occurred when trying to remove ${formattedUIErrorSymbol} from "${adjustedTickerBucket.name}"`,
@@ -271,14 +271,14 @@ export default function TickerSelectionManagerProvider({
 
   const filteredTickerBucket = useMemo(() => {
     const filteredTickers = adjustedTickerBucket.tickers.filter((ticker) =>
-      selectedTickerIds.includes(ticker.tickerId),
+      selectedTickerSymbols.includes(ticker.symbol),
     );
 
     return {
       ...adjustedTickerBucket,
       tickers: filteredTickers,
     };
-  }, [adjustedTickerBucket, selectedTickerIds]);
+  }, [adjustedTickerBucket, selectedTickerSymbols]);
 
   const isTickerBucketSaved = useMemo(
     () => deepEqual(tickerBucket, adjustedTickerBucket),
@@ -303,12 +303,12 @@ export default function TickerSelectionManagerProvider({
     try {
       setAdjustedTickerBucket(tickerBucket);
 
-      // Reset selected ticker IDs
+      // Reset selected ticker symbols
       //
-      // Resolves an issue where adding a ticker while all IDs were selected
-      // and then canceling would result in an incorrect state for selected IDs.
-      setSelectedTickerIds(
-        tickerBucket.tickers.map((ticker) => ticker.tickerId),
+      // Resolves an issue where adding a ticker while all symbols were selected
+      // and then canceling would result in an incorrect state for the selected symbol.
+      setSelectedTickerSymbols(
+        tickerBucket.tickers.map((ticker) => ticker.symbol),
       );
 
       // This is needed to reset slider positions since they are not controlled by React
@@ -321,58 +321,69 @@ export default function TickerSelectionManagerProvider({
     }
   }, [tickerBucket, forceRefresh, showNotification, triggerUIError]);
 
-  const selectTickerId = useCallback((tickerId: number) => {
-    setSelectedTickerIds((prevTickerIds) => {
-      if (prevTickerIds.includes(tickerId)) {
-        return prevTickerIds; // Avoid unnecessary re-renders
-      }
-      return [...prevTickerIds, tickerId];
-    });
-  }, []);
+  const selectTickerSymbol = useCallback(
+    (tickerSymbol: RustServiceTickerSymbol) => {
+      setSelectedTickerSymbols((prevTickerSymbols) => {
+        if (prevTickerSymbols.includes(tickerSymbol)) {
+          return prevTickerSymbols; // Avoid unnecessary re-renders
+        }
+        return [...prevTickerSymbols, tickerSymbol];
+      });
+    },
+    [],
+  );
 
-  const deselectTickerId = useCallback((tickerId: number) => {
-    setSelectedTickerIds((prevTickerIds) =>
-      prevTickerIds.filter((prevTickerId) => prevTickerId !== tickerId),
-    );
-  }, []);
+  const deselectTickerSymbol = useCallback(
+    (tickerSymbol: RustServiceTickerSymbol) => {
+      setSelectedTickerSymbols((prevTickerSymbols) =>
+        prevTickerSymbols.filter(
+          (prevTickerSymbol) => prevTickerSymbol !== tickerSymbol,
+        ),
+      );
+    },
+    [],
+  );
 
-  const selectAllTickerIds = useCallback(() => {
-    setSelectedTickerIds(
-      adjustedTickerBucket.tickers.map((ticker) => ticker.tickerId),
+  const selectAllTickerSymbols = useCallback(() => {
+    setSelectedTickerSymbols(
+      adjustedTickerBucket.tickers.map((ticker) => ticker.symbol),
     );
   }, [adjustedTickerBucket]);
 
-  const clearSelectedTickerIds = useCallback(() => {
-    setSelectedTickerIds([]);
+  const clearSelectedTickerSymbols = useCallback(() => {
+    setSelectedTickerSymbols([]);
   }, []);
 
   const areAllTickersSelected = useMemo(
-    () => selectedTickerIds.length === adjustedTickerBucket.tickers.length,
-    [selectedTickerIds, adjustedTickerBucket.tickers.length],
+    () => selectedTickerSymbols.length === adjustedTickerBucket.tickers.length,
+    [selectedTickerSymbols, adjustedTickerBucket.tickers.length],
   );
 
   const areNoTickersSelected = useMemo(
-    () => selectedTickerIds.length === 0,
-    [selectedTickerIds],
+    () => selectedTickerSymbols.length === 0,
+    [selectedTickerSymbols],
   );
 
   const {
-    missingTickerIds: missingAuditedTickerVectorIds,
+    missingTickerSymbols: missingAuditedTickerSymbols,
     isAuditPending: isTickerVectorAuditPending,
-  } = useTickerVectorAudit(preferredTickerVectorConfigKey, selectedTickerIds);
+  } = useTickerVectorAudit(
+    preferredTickerVectorConfigKey,
+    selectedTickerSymbols,
+  );
 
   const contextValue = useMemo(
     () => ({
-      selectedTickerIds,
-      selectTickerId,
-      deselectTickerId,
-      selectAllTickerIds,
-      clearSelectedTickerIds,
+      selectedTickerSymbols,
+      selectTickerSymbol,
+      deselectTickerSymbol,
+      selectAllTickerSymbols,
+      clearSelectedTickerSymbols,
       areAllTickersSelected,
       areNoTickersSelected,
       adjustTicker,
       addSearchResultTickers,
-      removeTickerWithId,
+      removeTickerWithSymbol,
       adjustedTickerBucket,
       filteredTickerBucket,
       saveTickerBucket,
@@ -387,22 +398,22 @@ export default function TickerSelectionManagerProvider({
       adjustedETFAggregateDetailsError,
       formattedAdjustedSymbolsWithExchange,
       //
-      missingAuditedTickerVectorIds,
+      missingAuditedTickerSymbols,
       isTickerVectorAuditPending,
       //
       forceRefreshIndex,
     }),
     [
-      selectedTickerIds,
-      selectTickerId,
-      deselectTickerId,
-      selectAllTickerIds,
-      clearSelectedTickerIds,
+      selectedTickerSymbols,
+      selectTickerSymbol,
+      deselectTickerSymbol,
+      selectAllTickerSymbols,
+      clearSelectedTickerSymbols,
       areAllTickersSelected,
       areNoTickersSelected,
       adjustTicker,
       addSearchResultTickers,
-      removeTickerWithId,
+      removeTickerWithSymbol,
       adjustedTickerBucket,
       filteredTickerBucket,
       saveTickerBucket,
@@ -417,7 +428,7 @@ export default function TickerSelectionManagerProvider({
       adjustedETFAggregateDetailsError,
       formattedAdjustedSymbolsWithExchange,
       //
-      missingAuditedTickerVectorIds,
+      missingAuditedTickerSymbols,
       isTickerVectorAuditPending,
       //
       forceRefreshIndex,

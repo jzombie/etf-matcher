@@ -1,15 +1,16 @@
 import IndexedDBService from "@services/IndexedDBService";
 import MultiMQTTRoomService, { MQTTRoom } from "@services/MultiMQTTRoomService";
-import type { RustServiceCacheDetail } from "@services/RustService";
+import type {
+  RustServiceCacheDetail,
+  RustServiceTickerSymbol,
+} from "@services/RustService";
 import {
   NotifierEvent,
   clearCache,
   fetchCacheDetails,
   fetchCacheSize,
   fetchDataBuildInfo,
-  fetchSymbolAndExchange,
   fetchTickerDetail,
-  fetchTickerId,
   subscribe as libRustServiceSubscribe,
   preloadSearchCache,
   removeCacheEntry,
@@ -43,9 +44,7 @@ import {
 } from "./OpenedNetworkRequests";
 
 export type TickerBucketTicker = {
-  tickerId: number;
-  symbol: string;
-  exchangeShortName?: string;
+  symbol: RustServiceTickerSymbol;
   quantity: number;
 };
 
@@ -134,7 +133,7 @@ export type StoreStateProps = {
   isRustInit: boolean;
   dataBuildTime: string | null;
   isDirtyState: boolean;
-  visibleTickerIds: number[];
+  visibleTickerSymbols: string[];
   isSearchModalOpen: boolean;
   tickerBuckets: TickerBucket[];
   isProfilingCacheOverlayOpen: boolean;
@@ -190,7 +189,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
       isRustInit: false,
       dataBuildTime: null,
       isDirtyState: false,
-      visibleTickerIds: [],
+      visibleTickerSymbols: [],
       isSearchModalOpen: false,
       tickerBuckets: DEFAULT_TICKER_BUCKETS,
       isProfilingCacheOverlayOpen: false,
@@ -249,21 +248,10 @@ class Store extends ReactStateEmitter<StoreStateProps> {
       return;
     }
 
-    const results = await Promise.allSettled(
-      DEFAULT_TICKER_TAPE_TICKERS.map((ticker) =>
-        fetchTickerId(ticker.symbol, ticker.exchangeShortName),
-      ),
-    );
-
-    const tickerTapeBucketTickers: TickerBucketTicker[] = results
-      .filter((result) => result.status === "fulfilled")
-      .map((result, index) => {
-        const fulfilledResult = result as PromiseFulfilledResult<number>;
+    const tickerTapeBucketTickers: TickerBucketTicker[] =
+      DEFAULT_TICKER_TAPE_TICKERS.map((_, index) => {
         return {
-          tickerId: fulfilledResult.value,
           symbol: DEFAULT_TICKER_TAPE_TICKERS[index].symbol,
-          exchangeShortName:
-            DEFAULT_TICKER_TAPE_TICKERS[index].exchangeShortName,
           quantity: 1,
         };
       });
@@ -303,11 +291,13 @@ class Store extends ReactStateEmitter<StoreStateProps> {
   // Handles the tracking of ticker views and syncing with Rust service
   private _initTickerViewTracking() {
     const _onVisibleTickersUpdate = (keys: (keyof StoreStateProps)[]) => {
-      if (keys.includes("visibleTickerIds")) {
-        const { visibleTickerIds } = this.getState(["visibleTickerIds"]);
+      if (keys.includes("visibleTickerSymbols")) {
+        const { visibleTickerSymbols } = this.getState([
+          "visibleTickerSymbols",
+        ]);
 
-        if (visibleTickerIds.length) {
-          this._addRecentlyViewedTicker(visibleTickerIds[0]);
+        if (visibleTickerSymbols.length) {
+          this._addRecentlyViewedTicker(visibleTickerSymbols[0]);
         }
       }
     };
@@ -521,8 +511,8 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     }));
   }
 
-  setVisibleTickers(visibleTickerIds: number[]) {
-    this.setState({ visibleTickerIds });
+  setVisibleTickers(visibleTickerSymbols: RustServiceTickerSymbol[]) {
+    this.setState({ visibleTickerSymbols });
   }
 
   private async _syncCacheDetails(): Promise<void> {
@@ -627,16 +617,13 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     // TODO: Emit custom event for this to route to UI notification
   }
 
+  // TODO: This currently does not handle the case where the ticker is already
+  // in the bucket, and instead upserts while disregarding any previous quantity
   async addTickerToBucket(
-    tickerId: number,
+    tickerSymbol: RustServiceTickerSymbol,
     quantity: number,
     tickerBucket: TickerBucket,
   ) {
-    const tickerAndExchange = await fetchSymbolAndExchange(tickerId);
-
-    const symbol = tickerAndExchange[0];
-    const exchangeShortName = tickerAndExchange[1];
-
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.map((bucket) => {
         if (bucket.uuid === tickerBucket.uuid) {
@@ -646,9 +633,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
               new Set([
                 // Intentionally prepend
                 {
-                  tickerId,
-                  symbol,
-                  exchangeShortName,
+                  symbol: tickerSymbol,
                   quantity,
                 },
                 ...bucket.tickers,
@@ -664,14 +649,17 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     // TODO: Emit custom event for this to route to UI notification
   }
 
-  removeTickerFromBucket(tickerId: number, tickerBucket: TickerBucket) {
+  removeTickerFromBucket(
+    tickerSymbol: RustServiceTickerSymbol,
+    tickerBucket: TickerBucket,
+  ) {
     this.setState((prevState) => {
       const tickerBuckets = prevState.tickerBuckets.map((bucket) => {
         if (bucket.uuid === tickerBucket.uuid) {
           return {
             ...bucket,
             tickers: bucket.tickers.filter(
-              (ticker) => ticker.tickerId !== tickerId,
+              (ticker) => ticker.symbol !== tickerSymbol,
             ),
           };
         }
@@ -683,18 +671,23 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     // TODO: Emit custom event for this to route to UI notification
   }
 
-  bucketHasTicker(tickerId: number, tickerBucket: TickerBucket): boolean {
-    return tickerBucket.tickers.some((ticker) => ticker.tickerId === tickerId);
+  bucketHasTicker(
+    tickerSymbol: RustServiceTickerSymbol,
+    tickerBucket: TickerBucket,
+  ): boolean {
+    return tickerBucket.tickers.some(
+      (ticker) => ticker.symbol === tickerSymbol,
+    );
   }
 
   bucketTypeHasTicker(
-    tickerId: number,
+    tickerSymbol: RustServiceTickerSymbol,
     tickerBucketType: TickerBucket["type"],
   ): boolean {
     return this.state.tickerBuckets
       .filter((bucket) => bucket.type === tickerBucketType)
       .some((bucket) =>
-        bucket.tickers.some((ticker) => ticker.tickerId === tickerId),
+        bucket.tickers.some((ticker) => ticker.symbol === tickerSymbol),
       );
   }
 
@@ -728,12 +721,12 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     );
   }
 
-  private async _addRecentlyViewedTicker(tickerId: number) {
-    const tickerDetail = await fetchTickerDetail(tickerId);
+  private async _addRecentlyViewedTicker(
+    tickerSymbol: RustServiceTickerSymbol,
+  ) {
+    const tickerDetail = await fetchTickerDetail(tickerSymbol);
     const tickerBucketTicker: TickerBucketTicker = {
-      tickerId,
-      symbol: tickerDetail.symbol,
-      exchangeShortName: tickerDetail.exchange_short_name,
+      symbol: tickerDetail.ticker_symbol,
       quantity: 1,
     };
 
@@ -750,7 +743,7 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     const updatedTickers = [
       tickerBucketTicker,
       ...recentlyViewedBucket.tickers.filter(
-        (ticker) => ticker.tickerId !== tickerId,
+        (ticker) => ticker.symbol !== tickerSymbol,
       ),
     ].slice(0, MAX_RECENTLY_VIEWED_ITEMS);
 
@@ -770,9 +763,11 @@ class Store extends ReactStateEmitter<StoreStateProps> {
     }
   }
 
-  getTickerBucketsWithTicker(tickerId: number): TickerBucket[] {
+  getTickerBucketsWithTicker(
+    tickerSymbol: RustServiceTickerSymbol,
+  ): TickerBucket[] {
     return this.state.tickerBuckets.filter((bucket) =>
-      bucket.tickers.some((ticker) => ticker.tickerId === tickerId),
+      bucket.tickers.some((ticker) => ticker.symbol === tickerSymbol),
     );
   }
 

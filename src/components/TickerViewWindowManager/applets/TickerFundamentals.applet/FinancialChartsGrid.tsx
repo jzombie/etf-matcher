@@ -23,7 +23,7 @@ export default function FinancialChartsGrid({
   tickerDetail,
 }: FinancialChartsGridProps) {
   const { isLoading, detail: financialDetail } = useTicker10KDetail(
-    tickerDetail.ticker_id,
+    tickerDetail.ticker_symbol,
   );
 
   // TODO: Move out of `FinancialChartsGrid` scope?
@@ -40,7 +40,8 @@ export default function FinancialChartsGrid({
     return (
       <Center>
         <NoInformationAvailableAlert>
-          No 10-K financial data available for &quot;{tickerDetail.symbol}
+          No 10-K financial data available for &quot;
+          {tickerDetail.ticker_symbol}
           &quot;.
         </NoInformationAvailableAlert>
       </Center>
@@ -59,7 +60,7 @@ export default function FinancialChartsGrid({
               sx={{ textAlign: "center" }}
             >
               The following metrics are based on a weighted average of the
-              holdings in the &quot;{tickerDetail.symbol}&quot; ETF.
+              holdings in the &quot;{tickerDetail.ticker_symbol}&quot; ETF.
             </Typography>
           </Box>
         )}

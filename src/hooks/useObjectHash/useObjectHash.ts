@@ -20,20 +20,35 @@ export default function useObjectHash(
   return hash;
 }
 
-async function generateHash(data: Uint8Array): Promise<string> {
-  if (typeof crypto !== "undefined" && crypto.subtle && crypto.subtle.digest) {
-    // Use Web Crypto API if available
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map((byte) => byte.toString(16).padStart(2, "0")).join("");
-  } else {
-    // Fallback to FNV-1a hash if Web Crypto API is unavailable
-    customLogger.warn(
-      "Web Crypto API not available. Using FNV-1a hash as a fallback.",
-    );
-    return fnv1aHash(data);
-  }
-}
+const generateHash = (() => {
+  let hasShownFallbackNotice = false;
+
+  return async function generateHash(data: Uint8Array): Promise<string> {
+    if (
+      typeof crypto !== "undefined" &&
+      crypto.subtle &&
+      crypto.subtle.digest
+    ) {
+      // Use Web Crypto API if available
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray
+        .map((byte) => byte.toString(16).padStart(2, "0"))
+        .join("");
+    } else {
+      if (!hasShownFallbackNotice) {
+        // Fallback to FNV-1a hash if Web Crypto API is unavailable
+        customLogger.warn(
+          "Web Crypto API not available. Using FNV-1a hash as a fallback. Future notices will be suppressed.",
+        );
+
+        hasShownFallbackNotice = true;
+      }
+
+      return fnv1aHash(data);
+    }
+  };
+})();
 
 // FNV-1a hash function for fallback
 function fnv1aHash(data: Uint8Array): string {

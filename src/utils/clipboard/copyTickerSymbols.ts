@@ -1,7 +1,9 @@
+import type { RustServiceTickerSymbol } from "@services/RustService";
+
 import getIsClipboardAvailable from "./getIsClipboardAvailable";
 
 export default async function copyTickerSymbols(
-  tickerSymbols: string[],
+  tickerSymbols: RustServiceTickerSymbol[],
 ): Promise<void> {
   if (!getIsClipboardAvailable()) {
     throw new Error("Clipboard API is not available");

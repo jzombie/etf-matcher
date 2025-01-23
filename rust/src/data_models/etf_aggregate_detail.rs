@@ -1,7 +1,9 @@
-use crate::types::{IndustryId, SectorId, TickerId, TickerWeightedSectorDistribution};
+use crate::types::{
+    IndustryId, SectorId, TickerId, TickerSymbol, TickerWeightedSectorDistribution,
+};
 use crate::utils::extract_logo_filename;
 use crate::utils::shard::query_shard_for_id;
-use crate::utils::ticker_utils::get_symbol_and_exchange_by_ticker_id;
+use crate::utils::ticker_utils::get_ticker_id;
 use crate::DataURL;
 use crate::IndustryById;
 use crate::JsValue;
@@ -89,10 +91,10 @@ pub struct ETFAggregateDetailRaw {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ETFAggregateDetail {
+    // TODO: Rename to `etf_ticker_id`
     pub ticker_id: TickerId,
-    pub etf_symbol: String,
+    pub etf_ticker_symbol: String,
     pub expense_ratio: f32,
-    pub exchange_short_name: Option<String>,
     pub etf_name: Option<String>,
     pub top_market_value_sector_name: Option<String>,
     pub top_market_value_industry_name: Option<String>,
@@ -108,11 +110,16 @@ pub struct ETFAggregateDetail {
 }
 
 impl ETFAggregateDetail {
-    pub async fn get_etf_aggregate_detail_by_ticker_id(
-        // TODO: Rename to `etf_ticker_id`
-        ticker_id: TickerId,
+    pub async fn get_etf_aggregate_detail(
+        // TODO: Rename to `etf_ticker_symbol`
+        ticker_symbol: TickerSymbol,
     ) -> Result<ETFAggregateDetail, JsValue> {
         let url: &str = &DataURL::ETFAggregateDetailShardIndex.value();
+
+        let ticker_id = get_ticker_id(ticker_symbol.clone())
+            .await
+            .map_err(|_| JsValue::from_str("Could not locate ticker ID"))?;
+
         let etf_aggregate_detail_raw: ETFAggregateDetailRaw = query_shard_for_id(
             url,
             &ticker_id,
@@ -122,10 +129,6 @@ impl ETFAggregateDetail {
         )
         .await?
         .ok_or_else(|| JsValue::from_str(&format!("ETF ticker ID {} not found", ticker_id)))?;
-
-        // Fetch the symbol and exchange short name
-        let (etf_symbol, exchange_short_name) =
-            get_symbol_and_exchange_by_ticker_id(ticker_id).await?;
 
         let top_market_value_sector_name = match etf_aggregate_detail_raw.top_market_value_sector_id
         {
@@ -206,9 +209,8 @@ impl ETFAggregateDetail {
 
         let response = ETFAggregateDetail {
             ticker_id: etf_aggregate_detail_raw.ticker_id,
-            etf_symbol,
+            etf_ticker_symbol: ticker_symbol,
             expense_ratio: etf_aggregate_detail_raw.expense_ratio,
-            exchange_short_name,
             etf_name: etf_aggregate_detail_raw.etf_name,
             top_market_value_sector_name,
             top_market_value_industry_name,

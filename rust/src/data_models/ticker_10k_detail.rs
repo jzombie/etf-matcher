@@ -1,5 +1,6 @@
-use crate::types::TickerId;
+use crate::types::{TickerId, TickerSymbol};
 use crate::utils::shard::query_shard_for_id;
+use crate::utils::ticker_utils::get_ticker_id;
 use crate::DataURL;
 use crate::JsValue;
 use serde::{Deserialize, Deserializer, Serialize};
@@ -127,10 +128,18 @@ pub struct Ticker10KDetail {
 impl Ticker10KDetail {
     // TODO: In the data source, it should always return the same amount of
     // rows as the search data, regardless if there is `10-K` detail or not.
-    pub async fn get_ticker_10k_detail_by_ticker_id(
-        ticker_id: TickerId,
+    pub async fn get_ticker_10k_detail(
+        ticker_symbol: TickerSymbol,
     ) -> Result<Ticker10KDetail, JsValue> {
         let url: &str = &DataURL::Ticker10KDetailShardIndex.value();
+
+        let ticker_id = get_ticker_id(ticker_symbol.clone()).await.map_err(|err| {
+            JsValue::from_str(&format!(
+                "Could not fetch ticker ID for ticker symbol: {} {:?}",
+                ticker_symbol, err
+            ))
+        })?;
+
         let mut ticker_10k_detail: Ticker10KDetail =
             query_shard_for_id(url, &ticker_id, |ticker_10k_detail: &Ticker10KDetail| {
                 Some(&ticker_10k_detail.ticker_id)
@@ -143,14 +152,18 @@ impl Ticker10KDetail {
         Ok(ticker_10k_detail)
     }
 
-    pub async fn get_weighted_ticker_10k_detail_by_ticker_ids(
-        ticker_weights: Vec<(TickerId, f64)>,
+    pub async fn get_weighted_ticker_10k_detail(
+        ticker_weights: Vec<(TickerSymbol, f64)>,
     ) -> Result<Ticker10KDetail, JsValue> {
         let url: &str = &DataURL::Ticker10KDetailShardIndex.value();
         let mut accumulated_detail = Ticker10KDetail::default();
         let mut total_weight = 0.0;
 
-        for (ticker_id, weight) in ticker_weights {
+        for (ticker_symbol, weight) in ticker_weights {
+            let ticker_id = get_ticker_id(ticker_symbol.clone())
+                .await
+                .map_err(|_| JsValue::from_str("Could not locate ticker ID"))?;
+
             if let Some(detail) =
                 query_shard_for_id(url, &ticker_id, |ticker_10k_detail: &Ticker10KDetail| {
                     Some(&ticker_10k_detail.ticker_id)

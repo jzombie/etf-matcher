@@ -1,14 +1,17 @@
 import type { TickerBucketTicker } from "@src/store";
 
 import callRustService from "../callRustService";
-import type { RustServiceTickerDetail } from "../rustServiceTypes";
-import type { RustServiceTickerWeightedSectorDistribution } from "../rustServiceTypes";
+import type {
+  RustServiceTickerDetail,
+  RustServiceTickerSymbol,
+  RustServiceTickerWeightedSectorDistribution,
+} from "../rustServiceTypes";
 
 export async function fetchTickerDetail(
-  tickerId: number,
+  tickerSymbol: RustServiceTickerSymbol,
 ): Promise<RustServiceTickerDetail> {
   return callRustService<RustServiceTickerDetail>("get_ticker_detail", [
-    tickerId,
+    tickerSymbol,
   ]);
 }
 
@@ -16,7 +19,7 @@ export async function fetchWeightedTickerSectorDistribution(
   tickerBucketTickers: TickerBucketTicker[],
 ): Promise<RustServiceTickerWeightedSectorDistribution> {
   const tickerWeightPairs = tickerBucketTickers.map((ticker) => [
-    ticker.tickerId,
+    ticker.symbol,
     ticker.quantity,
   ]);
 

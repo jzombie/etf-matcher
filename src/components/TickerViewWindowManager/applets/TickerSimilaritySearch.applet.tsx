@@ -51,21 +51,21 @@ export type TickerSimilaritySearchAppletProps = Omit<
 
 export default function TickerSimilaritySearchApplet({
   tickerDetail,
-  missingAuditedTickerVectorIds,
+  missingAuditedTickerSymbols,
   isTickerVectorAuditPending,
   ...rest
 }: TickerSimilaritySearchAppletProps) {
   return (
     <TickerViewWindowManagerAppletWrap
       tickerDetail={tickerDetail}
-      missingAuditedTickerVectorIds={missingAuditedTickerVectorIds}
+      missingAuditedTickerSymbols={missingAuditedTickerSymbols}
       isTickerVectorAuditPending={isTickerVectorAuditPending}
       {...rest}
     >
       {tickerDetail && (
         <ComponentWrap
           tickerDetail={tickerDetail}
-          missingAuditedTickerVectorIds={missingAuditedTickerVectorIds}
+          missingAuditedTickerSymbols={missingAuditedTickerSymbols}
           isTickerVectorAuditPending={isTickerVectorAuditPending}
         />
       )}
@@ -75,13 +75,13 @@ export default function TickerSimilaritySearchApplet({
 
 type ComponentWrapProps = {
   tickerDetail: RustServiceTickerDetail;
-  missingAuditedTickerVectorIds: TickerSimilaritySearchAppletProps["missingAuditedTickerVectorIds"];
+  missingAuditedTickerSymbols: TickerSimilaritySearchAppletProps["missingAuditedTickerSymbols"];
   isTickerVectorAuditPending: TickerSimilaritySearchAppletProps["isTickerVectorAuditPending"];
 };
 
 function ComponentWrap({
   tickerDetail,
-  missingAuditedTickerVectorIds,
+  missingAuditedTickerSymbols,
   isTickerVectorAuditPending,
 }: ComponentWrapProps) {
   const [displayMode, setDisplayMode] = useState<DisplayMode>("radial");
@@ -127,12 +127,13 @@ function ComponentWrap({
 
   const shouldShowLabels = contentSize.width >= 360;
 
+  // TODO: Should this be based on cosine instead, or at least configurable?
   const { data: tickerDistances, execute: fetchTickerDistances } = usePromise<
     RustServiceTickerDistance[],
-    [tickerVectorConfigKey: string, tickerId: number]
+    [tickerVectorConfigKey: string, tickerSymbol: string]
   >({
-    fn: (tickerVectorConfigKey, tickerId) =>
-      fetchEuclideanByTicker(tickerVectorConfigKey, tickerId),
+    fn: (tickerVectorConfigKey, tickerSymbol) =>
+      fetchEuclideanByTicker(tickerVectorConfigKey, tickerSymbol),
     onError: (err) => {
       customLogger.error(err);
       triggerUIError(new Error("Could not fetch PCA similarity results"));
@@ -146,7 +147,7 @@ function ComponentWrap({
     if (preferredTickerVectorConfigKey && tickerDetail) {
       fetchTickerDistances(
         preferredTickerVectorConfigKey,
-        tickerDetail.ticker_id,
+        tickerDetail.ticker_symbol,
       );
     }
   }, [preferredTickerVectorConfigKey, tickerDetail, fetchTickerDistances]);
@@ -154,12 +155,12 @@ function ComponentWrap({
   return (
     <>
       <Layout>
-        {missingAuditedTickerVectorIds?.length ? (
+        {missingAuditedTickerSymbols?.length ? (
           <Content>
             <Center>
               <NoInformationAvailableAlert>
                 Similarity search is not available for &quot;
-                {tickerDetail.symbol}&quot;.
+                {tickerDetail.ticker_symbol}&quot;.
               </NoInformationAvailableAlert>
             </Center>
           </Content>

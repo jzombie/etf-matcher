@@ -42,12 +42,12 @@ export default function TickerSelectorForm({
     (searchResultItem: RustServiceTickerSearchResult) => {
       setSelectedItems((prev) => {
         const exists = prev.some(
-          (item) => item.ticker_id === searchResultItem.ticker_id,
+          (item) => item.ticker_symbol === searchResultItem.ticker_symbol,
         );
         if (exists) {
           // Remove the item if it already exists
           return prev.filter(
-            (item) => item.ticker_id !== searchResultItem.ticker_id,
+            (item) => item.ticker_symbol !== searchResultItem.ticker_symbol,
           );
         } else {
           // Add the item if it doesn't exist
@@ -63,14 +63,14 @@ export default function TickerSelectorForm({
   >(
     () =>
       searchResults.results.map((result) => ({
-        id: result.ticker_id,
+        id: result.ticker_symbol,
         data: result,
       })),
     [searchResults],
   );
 
   const selectedTickerIds = useMemo(
-    () => selectedItems.map((item) => item.ticker_id),
+    () => selectedItems.map((item) => item.ticker_symbol),
     [selectedItems],
   );
 
@@ -90,7 +90,7 @@ export default function TickerSelectorForm({
               centerItems
               renderItem={(searchResult) => {
                 const isSelected = selectedTickerIds.includes(
-                  searchResult.ticker_id,
+                  searchResult.ticker_symbol,
                 );
 
                 return (
@@ -104,7 +104,7 @@ export default function TickerSelectorForm({
                         {searchResult.company_name}
                       </Typography>
                       <Typography variant="body2" color="textSecondary">
-                        {searchResult.symbol}
+                        {searchResult.ticker_symbol}
                         {" | "}
                         {searchResult.exchange_short_name}
                       </Typography>

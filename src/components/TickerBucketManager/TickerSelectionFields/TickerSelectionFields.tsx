@@ -29,13 +29,14 @@ export default function TickerSelectionFields({
   omitShares = false,
 }: TickerSelectionFieldsProps) {
   const [newTicker, setNewTicker] = useState<TickerBucketTicker | null>(null);
-  const [errorFields, setErrorFields] = useState<Set<number | "new">>(
+  // TODO: Improve this type handling, where `string` is a ticker ID and `number` is a new field index
+  const [errorFields, setErrorFields] = useState<Set<string | number>>(
     new Set(),
   );
 
   // Handle error state changes by adding/removing field IDs to/from the Set
   const handleErrorStateChange = useCallback(
-    (fieldId: number | "new", hasError: boolean) => {
+    (fieldId: string | number, hasError: boolean) => {
       setErrorFields((prevErrors) => {
         const updatedErrors = new Set(prevErrors);
         if (hasError) {
@@ -50,7 +51,7 @@ export default function TickerSelectionFields({
   );
 
   const handleAddNewTickerFields = useCallback(() => {
-    setNewTicker({ tickerId: 0, symbol: "", quantity: 1 });
+    setNewTicker({ symbol: "", quantity: 1 });
   }, []);
 
   const handleRemoveNewTickerFields = useCallback(() => {
@@ -104,7 +105,7 @@ export default function TickerSelectionFields({
     const newTicker = newTickerStableCurrentRef.current;
 
     if (existingTickers.length === 0 && !newTicker) {
-      setNewTicker({ tickerId: 0, symbol: "", quantity: 1 });
+      setNewTicker({ symbol: "", quantity: 1 });
     } else if (existingTickers.length > 0) {
       setNewTicker(null); // Ensure the new ticker field is not shown if there are existing tickers
     }
@@ -115,7 +116,7 @@ export default function TickerSelectionFields({
     if (updatedTicker) {
       setExistingTickers((prevTickers) => {
         const tickerIndex = prevTickers.findIndex(
-          (ticker) => ticker.tickerId === updatedTicker.tickerId,
+          (ticker) => ticker.symbol === updatedTicker.symbol,
         );
 
         if (tickerIndex !== -1) {
@@ -134,13 +135,13 @@ export default function TickerSelectionFields({
   };
 
   // Handle removing an existing ticker
-  const handleRemoveField = (tickerId: number) => {
+  const handleRemoveField = (tickerSymbol: string) => {
     setExistingTickers(
-      existingTickers.filter((ticker) => ticker.tickerId !== tickerId),
+      existingTickers.filter((ticker) => ticker.symbol !== tickerSymbol),
     );
     setErrorFields((prevErrors) => {
       const updatedErrors = new Set(prevErrors);
-      updatedErrors.delete(tickerId);
+      updatedErrors.delete(tickerSymbol);
       return updatedErrors;
     });
   };
@@ -153,18 +154,15 @@ export default function TickerSelectionFields({
             // Render existing form fields from the tickerBucket or newly added ones
             existingTickers.map((bucketTicker, idx) => (
               <TickerSelectionFieldsItem
-                key={bucketTicker?.tickerId || idx}
+                key={bucketTicker?.symbol || idx}
                 initialBucketTicker={bucketTicker}
                 existingBucketTickers={existingTickers}
                 onUpdate={(updatedTicker: TickerBucketTicker | null) =>
                   handleUpdateField(updatedTicker)
                 }
-                onDelete={() => handleRemoveField(bucketTicker.tickerId)}
+                onDelete={() => handleRemoveField(bucketTicker.symbol)}
                 onErrorStateChange={(hasError) =>
-                  handleErrorStateChange(
-                    bucketTicker?.tickerId || idx,
-                    hasError,
-                  )
+                  handleErrorStateChange(bucketTicker?.symbol || idx, hasError)
                 }
                 omitShares={omitShares}
               />
@@ -178,7 +176,7 @@ export default function TickerSelectionFields({
                 onUpdate={handleUpdateField}
                 onCancel={handleRemoveNewTickerFields}
                 onErrorStateChange={(hasError) =>
-                  handleErrorStateChange(newTicker.tickerId || "new", hasError)
+                  handleErrorStateChange(newTicker.symbol || -1, hasError)
                 }
                 omitShares={omitShares}
               />

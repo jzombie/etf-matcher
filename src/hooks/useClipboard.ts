@@ -1,5 +1,7 @@
 import { useMemo } from "react";
 
+import type { RustServiceTickerSymbol } from "@services/RustService";
+
 import copyTickerSymbols from "@utils/clipboard/copyTickerSymbols";
 import getIsClipboardAvailable from "@utils/clipboard/getIsClipboardAvailable";
 import customLogger from "@utils/customLogger";
@@ -14,7 +16,10 @@ export default function useClipboard() {
 
   const isClipboardAvailable = useMemo(() => getIsClipboardAvailable(), []);
 
-  const { execute: executeCopyTickerSymbols } = usePromise<void, [string[]]>({
+  const { execute: executeCopyTickerSymbols } = usePromise<
+    void,
+    [RustServiceTickerSymbol[]]
+  >({
     fn: async (tickerSymbols) => {
       const ret = await copyTickerSymbols(tickerSymbols);
 

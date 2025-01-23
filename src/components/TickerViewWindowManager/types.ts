@@ -1,5 +1,7 @@
+import type { RustServiceTickerSymbol } from "@services/RustService";
+
 export type TickerViewWindowManagerCommonProps = {
-  missingAuditedTickerVectorIds: number[] | null;
+  missingAuditedTickerSymbols: RustServiceTickerSymbol[] | null;
   isTickerVectorAuditPending: boolean;
   isTiling: boolean;
 };

@@ -6,7 +6,7 @@ import formatSymbolWithExchange from "./formatSymbolWithExchange";
 describe("formatSymbolWithExchange", () => {
   it("should format symbol with exchange prefix", () => {
     const tickerDetail = {
-      symbol: "AAPL",
+      ticker_symbol: "AAPL",
       exchange_short_name: "NASDAQ",
     } as RustServiceTickerDetail;
 
@@ -16,7 +16,7 @@ describe("formatSymbolWithExchange", () => {
 
   it("should handle undefined exchange_short_name", () => {
     const tickerDetail = {
-      symbol: "AAPL",
+      ticker_symbol: "AAPL",
       exchange_short_name: undefined,
     } as RustServiceTickerDetail;
 
@@ -26,7 +26,7 @@ describe("formatSymbolWithExchange", () => {
 
   it("should handle null exchange_short_name", () => {
     const tickerDetail = {
-      symbol: "AAPL",
+      ticker_symbol: "AAPL",
       exchange_short_name: null,
     } as unknown as RustServiceTickerDetail;
 
@@ -36,7 +36,7 @@ describe("formatSymbolWithExchange", () => {
 
   it("should format symbol without exchange prefix if exchange_short_name is empty", () => {
     const tickerDetail = {
-      symbol: "AAPL",
+      ticker_symbol: "AAPL",
       exchange_short_name: "",
     } as RustServiceTickerDetail;
 
@@ -46,7 +46,7 @@ describe("formatSymbolWithExchange", () => {
 
   it("should replace hyphens with dots in symbol", () => {
     const tickerDetail = {
-      symbol: "BRK-B",
+      ticker_symbol: "BRK-B",
       exchange_short_name: "NYSE",
     } as RustServiceTickerDetail;
 
@@ -56,7 +56,7 @@ describe("formatSymbolWithExchange", () => {
 
   it("should handle symbol with no exchange_short_name and hyphens", () => {
     const tickerDetail = {
-      symbol: "BRK-B",
+      ticker_symbol: "BRK-B",
       exchange_short_name: "",
     } as RustServiceTickerDetail;
 
@@ -66,7 +66,7 @@ describe("formatSymbolWithExchange", () => {
 
   it("should return empty string if symbol is empty", () => {
     const tickerDetail = {
-      symbol: "",
+      ticker_symbol: "",
       exchange_short_name: "NASDAQ",
     } as RustServiceTickerDetail;
 
@@ -86,7 +86,7 @@ describe("formatSymbolWithExchange", () => {
 
   it("should override exchange short name to AMEX for ETFs", () => {
     const tickerDetail = {
-      symbol: "SPY",
+      ticker_symbol: "SPY",
       exchange_short_name: "ETF",
     } as RustServiceTickerDetail;
 

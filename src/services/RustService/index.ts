@@ -20,7 +20,6 @@ import { generateQRCode } from "./lib/qrCode";
 import searchTickers, {
   extractSearchResultsFromText,
 } from "./lib/searchTickers";
-import { fetchSymbolAndExchange } from "./lib/symbolAndExchange";
 import {
   fetchTicker10KDetail,
   fetchWeightedTicker10KDetail,
@@ -30,7 +29,6 @@ import {
   fetchTickerDetail,
   fetchWeightedTickerSectorDistribution,
 } from "./lib/tickerDetail";
-import { fetchTickerId } from "./lib/tickerId";
 import {
   auditMissingTickerVectors,
   fetchAllTickerVectorConfigs,
@@ -52,6 +50,7 @@ import type {
   RustServiceTickerDetail,
   RustServiceTickerDistance,
   RustServiceTickerSearchResult,
+  RustServiceTickerSymbol,
   RustServiceTickerVectorConfig,
   RustServiceTickerWeightedSectorDistribution,
   RustServiceTickerWithWeight,
@@ -63,6 +62,7 @@ export { subscribe };
 
 export { NotifierEvent };
 export type {
+  RustServiceTickerSymbol,
   RustServiceDataBuildInfo,
   RustServicePaginatedResults,
   RustServiceTickerSearchResult,
@@ -91,7 +91,6 @@ export {
   fetchEuclideanByTickerBucket,
   fetchCacheSize,
   fetchCacheDetails,
-  fetchTickerId,
   fetchDataBuildInfo,
   preloadSearchCache,
   generateQRCode,
@@ -105,7 +104,6 @@ export {
   fetchWeightedTickerSectorDistribution,
   fetchTicker10KDetail,
   fetchWeightedTicker10KDetail,
-  fetchSymbolAndExchange,
   fetchETFAggregateDetail,
   fetchAllMajorSectors,
   tickerBucketsToCSV,

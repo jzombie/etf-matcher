@@ -1,14 +1,18 @@
 include!("flatbuffers/financial_vectors.tenk_generated.rs"); // TODO: Rename to not be specific to `10-K` or `10-Q`
-use crate::types::TickerId;
+use crate::types::{TickerId, TickerSymbol};
 use crate::utils;
+use crate::utils::ticker_utils::{get_ticker_id, get_ticker_symbol};
 use crate::DataURL;
 use financial_vectors::ten_k::root_as_ticker_vectors;
 use financial_vectors::ten_k::TickerVectors;
+use futures::stream;
+use futures::stream::StreamExt; // Provides async combinators
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct TickerDistance {
     pub ticker_id: TickerId,
+    pub ticker_symbol: TickerSymbol,
     pub distance: f32,
     pub original_pca_coords: Vec<f32>,
     pub translated_pca_coords: Vec<f32>,
@@ -17,13 +21,14 @@ pub struct TickerDistance {
 #[derive(Debug, Clone, Serialize)]
 pub struct CosineSimilarityResult {
     pub ticker_id: TickerId,
+    pub ticker_symbol: TickerSymbol,
     pub similarity_score: f32,
 }
 
-// TODO: Extract into a common type to use with `get_weighted_ticker_10k_detail_by_ticker_ids`. Consider changing `weight` to `weight`.
+// TODO: Extract into a common type to use with `get_weighted_ticker_10k_detail_by_ticker_ids`.
 #[derive(Deserialize)]
 pub struct TickerWithWeight {
-    pub ticker_id: TickerId,
+    pub ticker_symbol: TickerSymbol,
     // Float is used to allow usage of fractional shares
     pub weight: f32,
 }
@@ -38,14 +43,21 @@ pub struct OwnedTickerVectors {
 impl OwnedTickerVectors {
     pub async fn audit_missing_tickers(
         ticker_vector_config_key: &str,
-        ticker_ids: &[TickerId],
-    ) -> Result<Vec<TickerId>, String> {
+        ticker_symbols: &[TickerSymbol],
+    ) -> Result<Vec<TickerSymbol>, String> {
         let owned_ticker_vectors = Self::get_all_ticker_vectors(ticker_vector_config_key).await?;
         let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
         let mut missing_tickers = Vec::new();
 
-        for &ticker_id in ticker_ids {
+        for ticker_symbol in ticker_symbols {
+            let ticker_id = get_ticker_id(ticker_symbol.clone()).await.map_err(|err| {
+                format!(
+                    "Could not locate ticker ID for ticker symbol: {}, {:?}",
+                    ticker_symbol, err
+                )
+            })?;
+
             // Check if the ticker exists in the vector model
             let exists = ticker_vectors
                 .vectors()
@@ -58,7 +70,7 @@ impl OwnedTickerVectors {
                 .is_some();
 
             if !exists {
-                missing_tickers.push(ticker_id);
+                missing_tickers.push(ticker_symbol.clone());
             }
         }
 
@@ -123,8 +135,18 @@ impl TickerDistance {
                             .map(|(c, &target_c)| c - target_c)
                             .collect::<Vec<f32>>();
 
+                        let ticker_id = ticker_vector.ticker_id() as TickerId;
+
+                        let ticker_symbol = get_ticker_symbol(ticker_id).await.or_else(|_| {
+                            Err(format!(
+                                "Could not locate ticker symbol for ticker ID: {}",
+                                ticker_id
+                            ))
+                        })?;
+
                         results.push(TickerDistance {
-                            ticker_id: ticker_vector.ticker_id() as TickerId,
+                            ticker_id,
+                            ticker_symbol,
                             distance,
                             original_pca_coords,
                             translated_pca_coords,
@@ -144,20 +166,28 @@ impl TickerDistance {
 
     pub async fn get_euclidean_by_ticker(
         ticker_vector_config_key: &str,
-        ticker_id: TickerId,
+        ticker_symbol: TickerSymbol,
     ) -> Result<Vec<TickerDistance>, String> {
         let owned_ticker_vectors =
             OwnedTickerVectors::get_all_ticker_vectors(ticker_vector_config_key).await?;
         let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
+        let ticker_id = get_ticker_id(ticker_symbol.clone()).await.map_err(|err| {
+            format!(
+                "Could not locate ticker ID for ticker symbol: {}, {:?}",
+                ticker_symbol, err
+            )
+        })?;
+
         let (target_vector, target_pca_coords) =
             match get_ticker_vector_and_pca(&ticker_vectors, ticker_id) {
                 Some(result) => result,
                 None => {
-                    return Err(
-                        format!("Ticker ID {} or PCA coordinates not found.", ticker_id)
-                            .to_string(),
-                    );
+                    return Err(format!(
+                        "Ticker vector with symbol {} or PCA coordinates not found.",
+                        ticker_symbol
+                    )
+                    .to_string());
                 }
             };
 
@@ -192,12 +222,35 @@ impl TickerDistance {
         let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
         // Collect all ticker_ids in the input tickers_with_weight to exclude them
-        let exclude_ticker_ids: Vec<TickerId> = tickers_with_weight
+        let exclude_ticker_symbols: Vec<TickerSymbol> = tickers_with_weight
             .iter()
-            .map(|ticker_with_weight| ticker_with_weight.ticker_id)
+            .map(|ticker_with_weight| ticker_with_weight.ticker_symbol.clone())
             .collect();
 
-        TickerDistance::find_closest_tickers_by_vector(
+        let exclude_ticker_ids: Vec<TickerId> = stream::iter(exclude_ticker_symbols)
+            .then(|ticker_symbol| async move {
+                match get_ticker_id(ticker_symbol.clone()).await {
+                    Ok(ticker_id) => Some(ticker_id),
+                    Err(err) => {
+                        eprintln!(
+                            "Failed to locate ticker ID for ticker symbol {}: {:?}",
+                            ticker_symbol, err
+                        );
+                        None
+                    }
+                }
+            })
+            .filter_map(|ticker_id| async move {
+                if ticker_id.is_some() {
+                    ticker_id
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<_>>()
+            .await;
+
+        Self::find_closest_tickers_by_vector(
             &custom_vector,
             &custom_pca_coords,
             &ticker_vectors,
@@ -290,46 +343,63 @@ impl TickerDistance {
 impl CosineSimilarityResult {
     pub async fn get_cosine_by_ticker(
         ticker_vector_config_key: &str,
-        ticker_id: TickerId,
+        ticker_symbol: TickerSymbol,
     ) -> Result<Vec<CosineSimilarityResult>, String> {
         let owned_ticker_vectors =
             OwnedTickerVectors::get_all_ticker_vectors(ticker_vector_config_key).await?;
         let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
+        let ticker_id = get_ticker_id(ticker_symbol.clone()).await.map_err(|err| {
+            format!(
+                "Could not locate ticker ID for ticker symbol: {}, {:?}",
+                ticker_symbol, err
+            )
+        })?;
+
         let (target_vector, _target_pca_coords) =
             match get_ticker_vector_and_pca(&ticker_vectors, ticker_id) {
                 Some(result) => result,
                 None => {
-                    return Err(
-                        format!("Ticker ID {} or PCA coordinates not found.", ticker_id)
-                            .to_string(),
+                    return Err(format!(
+                        "Ticker vector with symbol {} or PCA coordinates not found.",
+                        ticker_symbol
                     )
+                    .to_string())
                 }
             };
 
-        let mut results: Vec<CosineSimilarityResult> = ticker_vectors
-            .vectors()
-            .ok_or("No vectors found.")?
-            .iter()
-            .filter_map(|ticker_vector| {
-                // Exclude the current ticker ID
-                if ticker_vector.ticker_id() as TickerId != ticker_id {
-                    ticker_vector.vector().map(|other_vector| {
-                        let similarity = CosineSimilarityResult::cosine_similarity(
-                            &target_vector.iter().collect::<Vec<_>>(),
-                            &other_vector.iter().collect::<Vec<_>>(),
-                        );
+        let mut results: Vec<CosineSimilarityResult> =
+            futures::stream::iter(ticker_vectors.vectors().ok_or("No vectors found.")?.iter())
+                .filter_map(|ticker_vector| {
+                    let target_vector = target_vector.clone();
+                    async move {
+                        if ticker_vector.ticker_id() as TickerId != ticker_id {
+                            if let Some(other_vector) = ticker_vector.vector() {
+                                let similarity = Self::cosine_similarity(
+                                    &target_vector.iter().collect::<Vec<_>>(),
+                                    &other_vector.iter().collect::<Vec<_>>(),
+                                );
 
-                        CosineSimilarityResult {
-                            ticker_id: ticker_vector.ticker_id() as TickerId,
-                            similarity_score: similarity,
+                                let ticker_id = ticker_vector.ticker_id() as TickerId;
+
+                                match get_ticker_symbol(ticker_id).await {
+                                    Ok(ticker_symbol) => Some(CosineSimilarityResult {
+                                        ticker_id,
+                                        ticker_symbol,
+                                        similarity_score: similarity,
+                                    }),
+                                    Err(_) => None, // Skip if fetching ticker symbol fails
+                                }
+                            } else {
+                                None
+                            }
+                        } else {
+                            None
                         }
-                    })
-                } else {
-                    None
-                }
-            })
-            .collect();
+                    }
+                })
+                .collect::<Vec<_>>() // Collect results into a Vec
+                .await; // Await the completion of the asynchronous stream
 
         results.sort_by(|a, b| {
             b.similarity_score
@@ -353,24 +423,34 @@ impl CosineSimilarityResult {
             OwnedTickerVectors::get_all_ticker_vectors(ticker_vector_config_key).await?;
         let ticker_vectors = &owned_ticker_vectors.ticker_vectors;
 
-        let mut results: Vec<CosineSimilarityResult> = ticker_vectors
-            .vectors()
-            .ok_or("No vectors found.")?
-            .iter()
-            .filter_map(|ticker_vector| {
-                ticker_vector.vector().map(|other_vector| {
-                    let similarity = Self::cosine_similarity(
-                        &custom_vector,
-                        &other_vector.iter().collect::<Vec<f32>>(),
-                    );
+        let mut results: Vec<CosineSimilarityResult> =
+            futures::stream::iter(ticker_vectors.vectors().ok_or("No vectors found.")?.iter())
+                .filter_map(|ticker_vector| {
+                    let custom_vector = custom_vector.clone();
+                    async move {
+                        if let Some(other_vector) = ticker_vector.vector() {
+                            let similarity = Self::cosine_similarity(
+                                &custom_vector,
+                                &other_vector.iter().collect::<Vec<f32>>(),
+                            );
 
-                    CosineSimilarityResult {
-                        ticker_id: ticker_vector.ticker_id() as TickerId,
-                        similarity_score: similarity,
+                            let ticker_id = ticker_vector.ticker_id() as TickerId;
+
+                            match get_ticker_symbol(ticker_id).await {
+                                Ok(ticker_symbol) => Some(CosineSimilarityResult {
+                                    ticker_id,
+                                    ticker_symbol,
+                                    similarity_score: similarity,
+                                }),
+                                Err(_) => None, // Skip if fetching ticker symbol fails
+                            }
+                        } else {
+                            None
+                        }
                     }
                 })
-            })
-            .collect();
+                .collect::<Vec<_>>() // Collect results into a vector
+                .await; // Await the completion of the asynchronous stream
 
         results.sort_by(|a, b| {
             b.similarity_score
@@ -403,9 +483,17 @@ impl TickerWithWeight {
                 return Err("Invalid weight: Must be a positive number.".to_string());
             }
 
+            let ticker_id = get_ticker_id(ticker_with_weight.ticker_symbol.clone())
+                .await
+                .map_err(|_| {
+                    format!(
+                        "Could not locate ticker ID for ticker symbol: {}",
+                        ticker_with_weight.ticker_symbol
+                    )
+                })?;
+
             // Fetch the vector associated with the current ticker_id asynchronously
-            let ticker_vector =
-                get_ticker_vector(ticker_vector_config_key, ticker_with_weight.ticker_id).await?;
+            let ticker_vector = get_ticker_vector(ticker_vector_config_key, ticker_id).await?;
 
             // Check if the aggregated_vector is empty, which will only be true for the first ticker
             if aggregated_vector.is_empty() {

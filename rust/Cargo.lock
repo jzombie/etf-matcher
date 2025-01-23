@@ -1739,9 +1739,9 @@ dependencies = [
 
 [[package]]
 name = "ticker-sniffer"
-version = "0.1.0-alpha"
+version = "0.1.0-alpha.1e"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "77afcafcb6f1cb89db21aa47696c23e12de5ecbc68eaa0c72c5197fe88dfb4f0"
+checksum = "139d0df14c086d62ee8eb8785f6db2ccc758d742ba5cdef78e0115423cc18a68"
 dependencies = [
  "csv",
  "flate2",

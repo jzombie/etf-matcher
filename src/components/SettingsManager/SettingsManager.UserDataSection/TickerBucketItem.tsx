@@ -17,7 +17,7 @@ export default function TickerBucketItem({
   tickerBucketTicker,
 }: TickerBucketItemProps) {
   const { isLoadingTickerDetail, tickerDetail } = useTickerDetail(
-    tickerBucketTicker.tickerId,
+    tickerBucketTicker.symbol,
   );
 
   const navigateToSymbol = useTickerSymbolNavigation();
@@ -36,7 +36,7 @@ export default function TickerBucketItem({
         <div>
           <AvatarLogo tickerDetail={tickerDetail} />
         </div>
-        <div style={{ fontWeight: "bold" }}>{tickerDetail?.symbol}</div>
+        <div style={{ fontWeight: "bold" }}>{tickerDetail?.ticker_symbol}</div>
       </div>
     </ButtonBase>
   );

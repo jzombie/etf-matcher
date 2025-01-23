@@ -1,6 +1,8 @@
 // Note: This file consists of types defined within the Rust service, and these types
 // use snake_case ("_") naming instead of camelCase.
 
+export type RustServiceTickerSymbol = string;
+
 export type RustServiceDataBuildInfo = {
   time: string;
   hash: string;
@@ -13,8 +15,7 @@ export type RustServicePaginatedResults<T> = {
 
 // "Level 1"
 export type RustServiceTickerSearchResult = {
-  ticker_id: number;
-  symbol: string;
+  ticker_symbol: RustServiceTickerSymbol;
   exchange_short_name?: string;
   company_name: string;
   logo_filename?: string;
@@ -22,8 +23,7 @@ export type RustServiceTickerSearchResult = {
 
 // "Level 2"
 export type RustServiceTickerDetail = {
-  ticker_id: number;
-  symbol: string;
+  ticker_symbol: RustServiceTickerSymbol;
   exchange_short_name?: string;
   company_name: string;
   cik?: string;
@@ -43,10 +43,8 @@ export type RustServiceTickerWeightedSectorDistribution = {
 }[];
 
 export type RustServiceETFAggregateDetail = {
-  ticker_id: number;
-  etf_symbol: string;
+  etf_ticker_symbol: RustServiceTickerSymbol;
   expense_ratio: number;
-  exchange_short_name?: string;
   etf_name?: string;
   top_market_value_sector_name?: string;
   top_market_value_industry_name?: string;
@@ -65,7 +63,7 @@ export type RustServiceETFAggregateDetail = {
 };
 
 export type RustServiceTicker10KDetail = {
-  ticker_id: number;
+  ticker_symbol: RustServiceTickerSymbol;
   //
   is_current?: boolean;
   //
@@ -145,15 +143,14 @@ export type RustServiceTicker10KDetail = {
 };
 
 export type RustServiceETFHoldingWeight = {
-  etf_ticker_id: number;
-  holding_ticker_id: number;
+  etf_ticker_symbol: RustServiceTickerSymbol;
+  holding_ticker_symbol: RustServiceTickerSymbol;
   holding_market_value: number;
   holding_percentage: number;
 };
 
 export type RustServiceETFHoldingTicker = {
-  holding_ticker_id: number;
-  holding_symbol: string;
+  holding_ticker_symbol: RustServiceTickerSymbol;
   holding_market_value: number;
   holding_percentage: number;
   company_name?: string;
@@ -188,18 +185,18 @@ export type RustServiceTickerVectorConfig = {
 };
 
 export type RustServiceTickerDistance = {
-  ticker_id: number;
+  ticker_symbol: RustServiceTickerSymbol;
   distance: number;
   original_pca_coords: number[];
   translated_pca_coords: number[];
 };
 
 export type RustServiceCosineSimilarityResult = {
-  ticker_id: number;
+  ticker_symbol: RustServiceTickerSymbol;
   similarity_score: number;
 };
 
 export type RustServiceTickerWithWeight = {
-  ticker_id: number;
+  ticker_symbol: RustServiceTickerSymbol;
   weight: number;
 };

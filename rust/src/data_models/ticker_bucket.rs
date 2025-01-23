@@ -21,7 +21,6 @@ pub struct TickerBucket {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct TickerBucketTicker {
-    pub ticker_id: TickerId,
     pub symbol: String,
     pub exchange_short_name: Option<String>,
     pub quantity: f32,
@@ -32,7 +31,6 @@ const CSV_HEADER_BUCKET_NAME: &str = "bucket_name";
 const CSV_HEADER_BUCKET_TYPE: &str = "bucket_type";
 const CSV_HEADER_BUCKET_DESCRIPTION: &str = "bucket_description";
 const CSV_HEADER_BUCKET_CONFIGURABLE: &str = "bucket_configurable";
-const CSV_HEADER_TICKER_ID: &str = "ticker_id";
 const CSV_HEADER_TICKER_SYMBOL: &str = "ticker_symbol";
 const CSV_HEADER_TICKER_EXCHANGE: &str = "ticker_exchange";
 const CSV_HEADER_TICKER_QUANTITY: &str = "ticker_quantity";
@@ -48,7 +46,6 @@ impl TickerBucket {
             CSV_HEADER_BUCKET_TYPE,
             CSV_HEADER_BUCKET_DESCRIPTION,
             CSV_HEADER_BUCKET_CONFIGURABLE,
-            CSV_HEADER_TICKER_ID,
             CSV_HEADER_TICKER_SYMBOL,
             CSV_HEADER_TICKER_EXCHANGE,
             CSV_HEADER_TICKER_QUANTITY,
@@ -64,7 +61,6 @@ impl TickerBucket {
                     &bucket.bucket_type,
                     &bucket.description,
                     &bucket.is_user_configurable.to_string(),
-                    &ticker.ticker_id.to_string(),
                     &ticker.symbol,
                     &ticker.exchange_short_name.clone().unwrap_or_default(),
                     &ticker.quantity.to_string(),
@@ -153,7 +149,7 @@ impl TickerBucket {
                         JsValue::from_str(&format!("Failed to parse boolean: {:?}", err))
                     })?;
 
-            let symbol =
+            let ticker_symbol =
                 TickerBucket::get_field_by_name(&record, &headers, CSV_HEADER_TICKER_SYMBOL)?;
             let exchange_short_name =
                 TickerBucket::get_field_by_name(&record, &headers, CSV_HEADER_TICKER_EXCHANGE)?
@@ -165,21 +161,8 @@ impl TickerBucket {
                         JsValue::from_str(&format!("Failed to parse quantity: {:?}", err))
                     })?;
 
-            // Use the symbol and exchange_short_name as the key for direct lookup
-            let key = (symbol.to_string(), exchange_short_name.clone());
-            let ticker_id = match ticker_map.get(&key) {
-                Some(&id) => id,
-                None => {
-                    return Err(JsValue::from_str(&format!(
-                        "Error: Ticker symbol {} with exchange {} not found in the system",
-                        symbol, exchange_short_name
-                    )))
-                }
-            };
-
             let ticker = TickerBucketTicker {
-                ticker_id,
-                symbol: symbol.to_string(),
+                symbol: ticker_symbol.to_string(),
                 exchange_short_name: Some(exchange_short_name),
                 quantity,
             };

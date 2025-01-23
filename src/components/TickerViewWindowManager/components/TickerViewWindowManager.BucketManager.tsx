@@ -59,7 +59,7 @@ export default function TickerViewWindowManagerBucketManager({
         bucket.type,
       );
 
-      if (store.bucketHasTicker(tickerDetail.ticker_id, bucket)) {
+      if (store.bucketHasTicker(tickerDetail.ticker_symbol, bucket)) {
         if (isManagementPane || !canHaveMultipleInstances) {
           setSelectedBucket(bucket);
           setIsDeleteDialogOpen(true);
@@ -69,23 +69,23 @@ export default function TickerViewWindowManagerBucketManager({
         }
       } else {
         if (isManagementPane || !canHaveMultipleInstances) {
-          store.addTickerToBucket(tickerDetail.ticker_id, 1, bucket);
+          store.addTickerToBucket(tickerDetail.ticker_symbol, 1, bucket);
         } else {
           setSelectedBucketType(bucket.type);
           setIsBucketDialogOpen(true);
         }
       }
     },
-    [tickerDetail.ticker_id],
+    [tickerDetail.ticker_symbol],
   );
 
   const handleConfirmRemove = useCallback(() => {
     if (selectedBucket) {
-      store.removeTickerFromBucket(tickerDetail.ticker_id, selectedBucket);
+      store.removeTickerFromBucket(tickerDetail.ticker_symbol, selectedBucket);
     }
     setIsDeleteDialogOpen(false);
     setSelectedBucket(null);
-  }, [selectedBucket, tickerDetail.ticker_id]);
+  }, [selectedBucket, tickerDetail.ticker_symbol]);
 
   const handleCloseDeleteDialog = useCallback(() => {
     setIsDeleteDialogOpen(false);
@@ -125,7 +125,7 @@ export default function TickerViewWindowManagerBucketManager({
           if (!bucket) return null;
 
           const isTickerInBucketType = store.bucketTypeHasTicker(
-            tickerDetail.ticker_id,
+            tickerDetail.ticker_symbol,
             bucketType,
           );
 
@@ -162,10 +162,10 @@ export default function TickerViewWindowManagerBucketManager({
               >
                 <Box component="span" sx={{ flexGrow: 1, textAlign: "center" }}>
                   {isTickerInBucketType && areMultipleInstancesAllowed
-                    ? `Manage "${tickerDetail.symbol}" in ${tickerBucketDefaultNames[bucketType]}s`
+                    ? `Manage "${tickerDetail.ticker_symbol}" in ${tickerBucketDefaultNames[bucketType]}s`
                     : isTickerInBucketType
-                      ? `Remove "${tickerDetail.symbol}" from ${tickerBucketDefaultNames[bucketType]}`
-                      : `Add "${tickerDetail.symbol}" to ${tickerBucketDefaultNames[bucketType]}`}
+                      ? `Remove "${tickerDetail.ticker_symbol}" from ${tickerBucketDefaultNames[bucketType]}`
+                      : `Add "${tickerDetail.ticker_symbol}" to ${tickerBucketDefaultNames[bucketType]}`}
                 </Box>
               </Button>
             </Grid2>
@@ -181,9 +181,9 @@ export default function TickerViewWindowManagerBucketManager({
         title="Confirm Delete"
         content={
           <>
-            Are you sure you want to remove &quot;{tickerDetail.symbol}&quot;
-            from &quot;{selectedBucket?.name}&quot;? This action cannot be
-            undone.
+            Are you sure you want to remove &quot;{tickerDetail.ticker_symbol}
+            &quot; from &quot;{selectedBucket?.name}&quot;? This action cannot
+            be undone.
           </>
         }
       />
@@ -191,7 +191,7 @@ export default function TickerViewWindowManagerBucketManager({
       <DialogModal open={isBucketDialogOpen} onClose={handleCloseBucketDialog}>
         <DialogTitle>
           <ListAltIcon sx={{ verticalAlign: "middle", marginRight: 1 }} />{" "}
-          Manage &quot;{tickerDetail.symbol}&quot; in{" "}
+          Manage &quot;{tickerDetail.ticker_symbol}&quot; in{" "}
           {selectedBucketType
             ? `${tickerBucketDefaultNames[selectedBucketType]}s`
             : "Buckets"}{" "}
@@ -223,7 +223,7 @@ export default function TickerViewWindowManagerBucketManager({
               )
               .map((tickerBucket) => {
                 const bucketHasTicker = store.bucketHasTicker(
-                  tickerDetail.ticker_id,
+                  tickerDetail.ticker_symbol,
                   tickerBucket,
                 );
 
@@ -246,8 +246,8 @@ export default function TickerViewWindowManagerBucketManager({
                       sx={{ flexGrow: 1, textAlign: "center" }}
                     >
                       {bucketHasTicker
-                        ? `Remove "${tickerDetail.symbol}" from "${tickerBucket.name}"`
-                        : `Add "${tickerDetail.symbol}" to "${tickerBucket.name}"`}
+                        ? `Remove "${tickerDetail.ticker_symbol}" from "${tickerBucket.name}"`
+                        : `Add "${tickerDetail.ticker_symbol}" to "${tickerBucket.name}"`}
                     </Box>
                   </Button>
                 );

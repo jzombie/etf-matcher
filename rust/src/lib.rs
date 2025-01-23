@@ -12,7 +12,7 @@ mod data_models;
 mod types;
 mod utils;
 
-use crate::types::TickerId;
+use crate::types::TickerSymbol;
 
 use crate::data_models::{
     ticker_vector_analysis, DataBuildInfo, DataURL, ETFAggregateDetail, ETFHoldingTicker,
@@ -46,15 +46,6 @@ pub fn generate_qr_code(data: &str) -> Result<JsValue, JsValue> {
         qrcode_generator::to_svg_to_string(data, QrCodeEcc::Low, 1024, None::<&str>).unwrap();
     to_value(&result).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!("Failed to generate QR code: {}", err))
-    })
-}
-
-#[wasm_bindgen]
-pub async fn get_symbol_and_exchange_by_ticker_id(ticker_id: TickerId) -> Result<JsValue, JsValue> {
-    let result: (String, Option<String>) =
-        utils::ticker_utils::get_symbol_and_exchange_by_ticker_id(ticker_id).await?;
-    to_value(&result).map_err(|err: serde_wasm_bindgen::Error| {
-        JsValue::from_str(&format!("Failed to convert result to JsValue: {}", err))
     })
 }
 
@@ -113,9 +104,9 @@ pub async fn extract_search_results_from_text(
 }
 
 #[wasm_bindgen]
-pub async fn get_ticker_detail(ticker_id: TickerId) -> Result<JsValue, JsValue> {
-    let detail: TickerDetail = TickerDetail::get_ticker_detail(ticker_id).await?;
-    to_value(&detail).map_err(|err: serde_wasm_bindgen::Error| {
+pub async fn get_ticker_detail(ticker_symbol: TickerSymbol) -> Result<JsValue, JsValue> {
+    let ticker_detail: TickerDetail = TickerDetail::get_ticker_detail(ticker_symbol).await?;
+    to_value(&ticker_detail).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
             "Failed to convert TickerDetail to JsValue: {}",
             err
@@ -127,10 +118,10 @@ pub async fn get_ticker_detail(ticker_id: TickerId) -> Result<JsValue, JsValue> 
 pub async fn get_weighted_ticker_sector_distribution(
     ticker_weights_js: JsValue,
 ) -> Result<JsValue, JsValue> {
-    // Deserialize the JsValue into Vec<(TickerId, f64)>
-    let ticker_weights: Vec<(TickerId, f64)> = from_value(ticker_weights_js).map_err(|err| {
-        JsValue::from_str(&format!("Failed to deserialize ticker weights: {}", err))
-    })?;
+    let ticker_weights: Vec<(TickerSymbol, f64)> =
+        from_value(ticker_weights_js).map_err(|err| {
+            JsValue::from_str(&format!("Failed to deserialize ticker weights: {}", err))
+        })?;
 
     // Call the Rust method to calculate weighted sector distribution
     let sector_distribution =
@@ -143,9 +134,8 @@ pub async fn get_weighted_ticker_sector_distribution(
 }
 
 #[wasm_bindgen]
-pub async fn get_ticker_10k_detail(ticker_id: TickerId) -> Result<JsValue, JsValue> {
-    let detail: Ticker10KDetail =
-        Ticker10KDetail::get_ticker_10k_detail_by_ticker_id(ticker_id).await?;
+pub async fn get_ticker_10k_detail(ticker_symbol: TickerSymbol) -> Result<JsValue, JsValue> {
+    let detail: Ticker10KDetail = Ticker10KDetail::get_ticker_10k_detail(ticker_symbol).await?;
     to_value(&detail).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
             "Failed to convert Ticker10KDetail to JsValue: {}",
@@ -158,13 +148,13 @@ pub async fn get_ticker_10k_detail(ticker_id: TickerId) -> Result<JsValue, JsVal
 pub async fn get_weighted_ticker_10k_detail(
     ticker_weights_js: JsValue,
 ) -> Result<JsValue, JsValue> {
-    // Deserialize the JsValue into Vec<(TickerId, f64)>
-    let ticker_weights: Vec<(TickerId, f64)> = from_value(ticker_weights_js).map_err(|err| {
-        JsValue::from_str(&format!("Failed to deserialize ticker weights: {}", err))
-    })?;
+    let ticker_weights: Vec<(TickerSymbol, f64)> =
+        from_value(ticker_weights_js).map_err(|err| {
+            JsValue::from_str(&format!("Failed to deserialize ticker weights: {}", err))
+        })?;
 
     let detail: Ticker10KDetail =
-        Ticker10KDetail::get_weighted_ticker_10k_detail_by_ticker_ids(ticker_weights).await?;
+        Ticker10KDetail::get_weighted_ticker_10k_detail(ticker_weights).await?;
 
     to_value(&detail).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
@@ -175,14 +165,13 @@ pub async fn get_weighted_ticker_10k_detail(
 }
 
 #[wasm_bindgen]
-pub async fn get_etf_holders_aggregate_detail_by_ticker_id(
-    ticker_id: TickerId,
+pub async fn get_etf_holders_aggregate_detail(
+    ticker_symbol: TickerSymbol,
     page: usize,
     page_size: usize,
 ) -> Result<JsValue, JsValue> {
     let paginated_etf_aggregate_details: PaginatedResults<ETFAggregateDetail> =
-        TickerETFHolder::get_etf_holders_aggregate_detail_by_ticker_id(ticker_id, page, page_size)
-            .await?;
+        TickerETFHolder::get_etf_holders_aggregate_detail(ticker_symbol, page, page_size).await?;
     to_value(&paginated_etf_aggregate_details).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
             "Failed to convert PaginatedResults<ETFAggregateDetail> to JsValue: {}",
@@ -192,11 +181,9 @@ pub async fn get_etf_holders_aggregate_detail_by_ticker_id(
 }
 
 #[wasm_bindgen]
-pub async fn get_etf_aggregate_detail_by_ticker_id(
-    ticker_id: TickerId,
-) -> Result<JsValue, JsValue> {
+pub async fn get_etf_aggregate_detail(ticker_symbol: TickerSymbol) -> Result<JsValue, JsValue> {
     let etf_detail: ETFAggregateDetail =
-        ETFAggregateDetail::get_etf_aggregate_detail_by_ticker_id(ticker_id).await?;
+        ETFAggregateDetail::get_etf_aggregate_detail(ticker_symbol).await?;
     to_value(&etf_detail).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
             "Failed to convert ETFAggregateDetail to JsValue: {}",
@@ -206,13 +193,13 @@ pub async fn get_etf_aggregate_detail_by_ticker_id(
 }
 
 #[wasm_bindgen]
-pub async fn get_etf_holdings_by_etf_ticker_id(
-    etf_ticker_id: TickerId,
+pub async fn get_etf_holdings(
+    etf_ticker_symbol: TickerSymbol,
     page: usize,
     page_size: usize,
 ) -> Result<JsValue, JsValue> {
     let etf_holding_tickers: PaginatedResults<ETFHoldingTicker> =
-        ETFHoldingTicker::get_etf_holdings_by_etf_ticker_id(etf_ticker_id, page, page_size).await?;
+        ETFHoldingTicker::get_etf_holdings(etf_ticker_symbol, page, page_size).await?;
     to_value(&etf_holding_tickers).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
             "Failed to convert <PaginatedResults<ETFHoldingTicker> to JsValue: {}",
@@ -223,11 +210,11 @@ pub async fn get_etf_holdings_by_etf_ticker_id(
 
 #[wasm_bindgen]
 pub async fn get_etf_holding_weight(
-    etf_ticker_id: TickerId,
-    holding_ticker_id: TickerId,
+    etf_ticker_symbol: TickerSymbol,
+    holding_ticker_symbol: TickerSymbol,
 ) -> Result<JsValue, JsValue> {
     let etf_holding_weight: ETFHoldingWeight =
-        ETFHoldingTicker::get_etf_holding_weight(etf_ticker_id, holding_ticker_id).await?;
+        ETFHoldingTicker::get_etf_holding_weight(etf_ticker_symbol, holding_ticker_symbol).await?;
     to_value(&etf_holding_weight).map_err(|err: serde_wasm_bindgen::Error| {
         JsValue::from_str(&format!(
             "Failed to convert ETFHoldingWeight to JsValue: {}",
@@ -244,13 +231,6 @@ pub async fn get_image_info(filename: &str) -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
-pub async fn get_ticker_id(symbol: &str, exchange_short_name: &str) -> Result<JsValue, JsValue> {
-    let ticker_id: TickerId =
-        utils::ticker_utils::get_ticker_id(symbol, exchange_short_name).await?;
-    Ok(to_value(&ticker_id).map_err(|e| JsValue::from_str(&e.to_string()))?)
-}
-
-#[wasm_bindgen]
 pub async fn get_all_major_sectors() -> Result<JsValue, JsValue> {
     // Fetch all sectors by using the get_all_sectors method from the SectorById struct
     let all_sectors = SectorById::get_all_major_sectors().await?;
@@ -264,10 +244,10 @@ pub async fn get_all_major_sectors() -> Result<JsValue, JsValue> {
 #[wasm_bindgen]
 pub async fn audit_missing_ticker_vectors(
     ticker_vector_config_key: &str,
-    ticker_ids_js: JsValue,
+    ticker_symbols_js: JsValue,
 ) -> Result<JsValue, JsValue> {
     // Deserialize the input `JsValue` into a vector of TickerId
-    let ticker_ids: Vec<TickerId> = from_value(ticker_ids_js).map_err(|err| {
+    let ticker_symbols: Vec<TickerSymbol> = from_value(ticker_symbols_js).map_err(|err| {
         JsValue::from_str(&format!(
             "Failed to deserialize ticker IDs from input: {}",
             err
@@ -277,7 +257,7 @@ pub async fn audit_missing_ticker_vectors(
     // Perform the audit to find missing tickers
     let missing_tickers = ticker_vector_analysis::OwnedTickerVectors::audit_missing_tickers(
         ticker_vector_config_key,
-        &ticker_ids,
+        &ticker_symbols,
     )
     .await
     .map_err(|err| JsValue::from_str(&format!("Failed to audit missing tickers: {}", err)))?;
@@ -294,12 +274,12 @@ pub async fn audit_missing_ticker_vectors(
 #[wasm_bindgen]
 pub async fn get_euclidean_by_ticker(
     ticker_vector_config_key: &str,
-    ticker_id: TickerId,
+    ticker_symbol: TickerSymbol,
 ) -> Result<JsValue, JsValue> {
     // Call the find_closest_tickers function from the ticker_vector_analysis module
     let closest_tickers = ticker_vector_analysis::TickerDistance::get_euclidean_by_ticker(
         ticker_vector_config_key,
-        ticker_id,
+        ticker_symbol,
     )
     .await
     .map_err(|err| JsValue::from_str(&format!("Failed to find closest ticker IDs: {}", err)))?;
@@ -313,6 +293,13 @@ pub async fn get_euclidean_by_ticker(
             &obj,
             &JsValue::from_str("ticker_id"),
             &JsValue::from(ticker_distance.ticker_id),
+        )
+        .unwrap();
+        let obj = js_sys::Object::new();
+        js_sys::Reflect::set(
+            &obj,
+            &JsValue::from_str("ticker_symbol"),
+            &JsValue::from(ticker_distance.ticker_symbol),
         )
         .unwrap();
         js_sys::Reflect::set(
@@ -379,12 +366,12 @@ pub async fn get_euclidean_by_ticker_bucket(
 #[wasm_bindgen]
 pub async fn get_cosine_by_ticker(
     ticker_vector_config_key: &str,
-    ticker_id: TickerId,
+    ticker_symbol: TickerSymbol,
 ) -> Result<JsValue, JsValue> {
     // Call the rank_tickers_by_cosine_similarity function from the ticker_vector_analysis module
     let similar_tickers = ticker_vector_analysis::CosineSimilarityResult::get_cosine_by_ticker(
         ticker_vector_config_key,
-        ticker_id,
+        ticker_symbol,
     )
     .await
     .map_err(|err| {
@@ -403,6 +390,12 @@ pub async fn get_cosine_by_ticker(
             &obj,
             &JsValue::from_str("ticker_id"),
             &JsValue::from(similarity_result.ticker_id),
+        )
+        .unwrap();
+        js_sys::Reflect::set(
+            &obj,
+            &JsValue::from_str("ticker_symbol"),
+            &JsValue::from(similarity_result.ticker_symbol),
         )
         .unwrap();
         js_sys::Reflect::set(

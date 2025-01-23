@@ -41,7 +41,7 @@ describe("TickerSelectionFields", () => {
   it("should update existing ticker", () => {
     const onDataChange = vi.fn();
     const existingTickers: TickerBucketTicker[] = [
-      { tickerId: 1, symbol: "AAPL", quantity: 10 },
+      { symbol: "AAPL", quantity: 10 },
     ];
     renderComponent({
       tickerBucket: { tickers: existingTickers } as TickerBucket,
@@ -53,14 +53,14 @@ describe("TickerSelectionFields", () => {
     });
 
     expect(onDataChange).toHaveBeenCalledWith([
-      { tickerId: 1, symbol: "AAPL", quantity: 20 },
+      { symbol: "AAPL", quantity: 20 },
     ]);
   });
 
   it("should remove ticker when delete button is clicked and confirmed in the dialog", () => {
     const onDataChange = vi.fn(); // Mock the onDataChange function to simulate data change
     const existingTickers: TickerBucketTicker[] = [
-      { tickerId: 1, symbol: "AAPL", quantity: 10 },
+      { symbol: "AAPL", quantity: 10 },
     ];
 
     const { queryByDisplayValue, getByRole } = renderComponent({
@@ -96,7 +96,7 @@ describe("TickerSelectionFields", () => {
 
   it("should enable add button by default for existing buckets", () => {
     const existingTickers: TickerBucketTicker[] = [
-      { tickerId: 1, symbol: "AAPL", quantity: 10 },
+      { symbol: "AAPL", quantity: 10 },
     ];
     renderComponent({
       tickerBucket: { tickers: existingTickers } as TickerBucket,

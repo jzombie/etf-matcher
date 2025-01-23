@@ -6,7 +6,7 @@ export default function tickerBucketToTickersWithWeight(
   tickerBucket: TickerBucket,
 ): RustServiceTickerWithWeight[] {
   return tickerBucket.tickers.map((ticker) => ({
-    ticker_id: ticker.tickerId,
+    ticker_symbol: ticker.symbol,
     weight: ticker.quantity,
   }));
 }

@@ -1,6 +1,9 @@
-use crate::types::{IndustryId, SectorId, TickerId, TickerWeightedSectorDistribution};
+use crate::types::{
+    IndustryId, SectorId, TickerId, TickerSymbol, TickerWeightedSectorDistribution,
+};
 use crate::utils::logo_utils::extract_logo_filename;
 use crate::utils::shard::query_shard_for_id;
+use crate::utils::ticker_utils::get_ticker_id;
 use crate::DataURL;
 use crate::ETFAggregateDetail;
 use crate::IndustryById;
@@ -23,7 +26,7 @@ where
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TickerDetailRaw {
     pub ticker_id: TickerId,
-    pub symbol: String,
+    pub symbol: String, // TODO: For consistency, use `ticker_symbol` in data source?
     pub exchange_short_name: Option<String>,
     pub company_name: String,
     pub cik: Option<String>,
@@ -44,7 +47,7 @@ pub struct TickerDetailRaw {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TickerDetail {
     pub ticker_id: TickerId,
-    pub symbol: String,
+    pub ticker_symbol: TickerSymbol,
     pub exchange_short_name: Option<String>,
     pub company_name: String,
     pub cik: Option<String>,
@@ -59,11 +62,15 @@ pub struct TickerDetail {
 }
 
 impl TickerDetail {
-    pub async fn get_ticker_detail(ticker_id: TickerId) -> Result<TickerDetail, JsValue> {
+    pub async fn get_ticker_detail(ticker_symbol: TickerSymbol) -> Result<TickerDetail, JsValue> {
+        let ticker_id = get_ticker_id(ticker_symbol)
+            .await
+            .map_err(|_| JsValue::from_str("Could not locate ticker ID"))?;
+
         let url = DataURL::TickerDetailShardIndex.value();
-        let mut detail: TickerDetailRaw =
-            query_shard_for_id(&url, &ticker_id, |detail: &TickerDetailRaw| {
-                Some(&detail.ticker_id)
+        let mut raw_ticker_detail: TickerDetailRaw =
+            query_shard_for_id(&url, &ticker_id, |raw_ticker_detail: &TickerDetailRaw| {
+                Some(&raw_ticker_detail.ticker_id)
             })
             .await?
             .ok_or_else(|| {
@@ -71,56 +78,57 @@ impl TickerDetail {
             })?;
 
         // Extract the logo filename
-        detail.logo_filename =
-            extract_logo_filename(detail.logo_filename.as_deref(), &detail.symbol);
+        raw_ticker_detail.logo_filename = extract_logo_filename(
+            raw_ticker_detail.logo_filename.as_deref(),
+            &raw_ticker_detail.symbol,
+        );
 
         // Retrieve industry name if industry_id is present
-        let industry_name = match detail.industry_id {
+        let industry_name = match raw_ticker_detail.industry_id {
             Some(industry_id) => IndustryById::get_industry_name_with_id(industry_id)
                 .await
                 .ok(),
             None => None,
         };
 
-        // Retrieve sector name if sector_id is present
-        let sector_name = match detail.sector_id {
+        // Retrieve sector name if sector_id is ticker_detail
+        let sector_name = match raw_ticker_detail.sector_id {
             Some(sector_id) => SectorById::get_sector_name_with_id(sector_id).await.ok(),
             None => None,
         };
 
-        // Construct the response
         Ok(TickerDetail {
-            ticker_id: detail.ticker_id,
-            symbol: detail.symbol,
-            exchange_short_name: detail.exchange_short_name,
-            company_name: detail.company_name,
-            cik: detail.cik,
-            country_code: detail.country_code,
-            currency_code: detail.currency_code,
+            ticker_id: raw_ticker_detail.ticker_id,
+            ticker_symbol: raw_ticker_detail.symbol,
+            exchange_short_name: raw_ticker_detail.exchange_short_name,
+            company_name: raw_ticker_detail.company_name,
+            cik: raw_ticker_detail.cik,
+            country_code: raw_ticker_detail.country_code,
+            currency_code: raw_ticker_detail.currency_code,
             industry_name,
             sector_name,
-            is_etf: detail.is_etf,
-            is_held_in_etf: detail.is_held_in_etf,
-            score_avg_dca: detail.score_avg_dca,
-            logo_filename: detail.logo_filename,
+            is_etf: raw_ticker_detail.is_etf,
+            is_held_in_etf: raw_ticker_detail.is_held_in_etf,
+            score_avg_dca: raw_ticker_detail.score_avg_dca,
+            logo_filename: raw_ticker_detail.logo_filename,
         })
     }
 
     pub async fn get_weighted_ticker_sector_distribution(
-        ticker_weights: Vec<(TickerId, f64)>,
+        ticker_weights: Vec<(TickerSymbol, f64)>,
     ) -> Result<Vec<TickerWeightedSectorDistribution>, JsValue> {
         let mut sector_weights: HashMap<String, f64> = HashMap::new();
         let mut total_weight = 0.0;
 
-        for (ticker_id, weight) in &ticker_weights {
+        for (ticker_symbol, weight) in &ticker_weights {
             total_weight += weight;
 
             // Determine if the ticker is an ETF
-            match TickerDetail::get_ticker_detail(*ticker_id).await {
+            match Self::get_ticker_detail(ticker_symbol.clone()).await {
                 Ok(ticker_detail) => {
                     if ticker_detail.is_etf {
                         // Fetch ETF aggregate detail for major sector distribution
-                        match ETFAggregateDetail::get_etf_aggregate_detail_by_ticker_id(*ticker_id)
+                        match ETFAggregateDetail::get_etf_aggregate_detail(ticker_symbol.clone())
                             .await
                         {
                             Ok(etf_detail) => {
@@ -149,8 +157,8 @@ impl TickerDetail {
                             // but they do not interrupt processing. The function continues to process other tickers.
                             Err(err) => console::error_1(
                                 &format!(
-                                    "Failed to fetch ETF aggregate detail for ticker ID {}: {:?}",
-                                    ticker_id, err
+                                    "Failed to fetch ETF aggregate detail for ticker {}: {:?}",
+                                    ticker_symbol, err
                                 )
                                 .into(),
                             ),
@@ -166,7 +174,7 @@ impl TickerDetail {
                             *entry += weight;
                         } else {
                             console::warn_1(
-                                &format!("Ticker ID {} does not have a sector name.", ticker_id)
+                                &format!("Ticker {} does not have a sector name.", ticker_symbol)
                                     .into(),
                             );
                         }
@@ -174,8 +182,8 @@ impl TickerDetail {
                 }
                 Err(_err) => {
                     return Err(JsValue::from_str(&format!(
-                        "Failed to fetch details for ticker ID: {}",
-                        ticker_id
+                        "Failed to fetch details for ticker: {}",
+                        ticker_symbol
                     )));
                 }
             }

@@ -66,7 +66,7 @@ export default function TickerSelectionFieldsItem({
     return formattedValue;
   }, [quantityInputValue]);
 
-  const { tickerDetail } = useTickerDetail(bucketTicker?.tickerId);
+  const { tickerDetail } = useTickerDetail(bucketTicker?.symbol);
   const [tickerError, setTickerError] = useState<string | null>(null);
 
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
@@ -84,9 +84,9 @@ export default function TickerSelectionFieldsItem({
     (bucketTicker: TickerBucketTicker | null) => {
       if (
         bucketTicker &&
-        bucketTicker.tickerId !== initialBucketTicker?.tickerId &&
+        bucketTicker.symbol !== initialBucketTicker?.symbol &&
         existingBucketTickers.some(
-          (existingTicker) => existingTicker.tickerId === bucketTicker.tickerId,
+          (existingTicker) => existingTicker.symbol === bucketTicker.symbol,
         )
       ) {
         setTickerError("This ticker is already in your portfolio.");
@@ -143,9 +143,7 @@ export default function TickerSelectionFieldsItem({
         setIsSearchModalOpen(false);
 
         handleSetBucketTicker({
-          tickerId: tickerSearchResult.ticker_id,
-          symbol: tickerSearchResult.symbol,
-          exchangeShortName: tickerSearchResult.exchange_short_name,
+          symbol: tickerSearchResult.ticker_symbol,
           quantity: 1,
         });
       } else {
@@ -181,8 +179,8 @@ export default function TickerSelectionFieldsItem({
 
   const isDeleteButtonDisabled = !bucketTicker && !existingBucketTickers.length;
 
-  const disabledSearchTickerIds = useMemo(
-    () => existingBucketTickers.map((ticker) => ticker.tickerId),
+  const disabledSearchTickerSymbols = useMemo(
+    () => existingBucketTickers.map((ticker) => ticker.symbol),
     [existingBucketTickers],
   );
 
@@ -262,7 +260,7 @@ export default function TickerSelectionFieldsItem({
         open={isSearchModalOpen}
         onSelect={handleSelectSearchResults}
         onCancel={() => setIsSearchModalOpen(false)}
-        disabledTickerIds={disabledSearchTickerIds}
+        disabledTickerSymbols={disabledSearchTickerSymbols}
       />
 
       {/* Delete Confirmation Dialog */}

@@ -1,3 +1,4 @@
+import type { RustServiceTickerSymbol } from "@services/RustService";
 import type { StoreStateProps } from "@src/store";
 
 export const PROJECT_URL = "https://etfmatcher.com";
@@ -44,20 +45,19 @@ export const TRADING_VIEW_COPYRIGHT_STYLES: Readonly<{
 export const TRADING_VIEW_THEME = "dark";
 
 export const DEFAULT_TICKER_TAPE_TICKERS: ReadonlyArray<{
-  symbol: string;
-  exchangeShortName: string;
+  symbol: RustServiceTickerSymbol;
 }> = [
-  { symbol: "XLY", exchangeShortName: "AMEX" }, // Consumer Discretionary
-  { symbol: "XLP", exchangeShortName: "AMEX" }, // Consumer Staples
-  { symbol: "XLE", exchangeShortName: "AMEX" }, // Energy
-  { symbol: "XLF", exchangeShortName: "AMEX" }, // Financials
-  { symbol: "XLV", exchangeShortName: "AMEX" }, // Healthcare
-  { symbol: "XLI", exchangeShortName: "AMEX" }, // Industrials
-  { symbol: "XLB", exchangeShortName: "AMEX" }, // Materials
-  { symbol: "XLRE", exchangeShortName: "AMEX" }, // Real Estate
-  { symbol: "XLK", exchangeShortName: "AMEX" }, // Technology
-  { symbol: "XLC", exchangeShortName: "AMEX" }, // Telecommunications
-  { symbol: "XLU", exchangeShortName: "AMEX" }, // Utilities
+  { symbol: "XLY" }, // Consumer Discretionary
+  { symbol: "XLP" }, // Consumer Staples
+  { symbol: "XLE" }, // Energy
+  { symbol: "XLF" }, // Financials
+  { symbol: "XLV" }, // Healthcare
+  { symbol: "XLI" }, // Industrials
+  { symbol: "XLB" }, // Materials
+  { symbol: "XLRE" }, // Real Estate
+  { symbol: "XLK" }, // Technology
+  { symbol: "XLC" }, // Telecommunications
+  { symbol: "XLU" }, // Utilities
 ];
 
 export const COLOR_WHEEL_COLORS = [

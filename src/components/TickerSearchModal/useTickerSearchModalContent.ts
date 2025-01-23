@@ -84,7 +84,7 @@ export default function useTickerSearchModalContent({
     if (altResultsBucket?.tickers.length) {
       Promise.allSettled(
         altResultsBucket.tickers.map((ticker) =>
-          fetchTickerDetail(ticker.tickerId),
+          fetchTickerDetail(ticker.symbol),
         ),
       )
         .then((settledDetails) => {
@@ -92,8 +92,7 @@ export default function useTickerSearchModalContent({
             settledDetails
               .filter((result) => result.status === "fulfilled")
               .map((result) => ({
-                ticker_id: result.value.ticker_id,
-                symbol: result.value.symbol,
+                ticker_symbol: result.value.ticker_symbol,
                 exchange_short_name: result.value.exchange_short_name,
                 company_name: result.value.company_name,
                 logo_filename: result.value.logo_filename,

@@ -17,7 +17,7 @@ export default function TickerViewWindowManagerAppletWrap({
   etfAggregateDetail,
   isLoadingETFAggregateDetail,
   etfAggregateDetailError,
-  missingAuditedTickerVectorIds,
+  missingAuditedTickerSymbols,
   isTickerVectorAuditPending,
   isTiling,
   children,
@@ -27,7 +27,7 @@ export default function TickerViewWindowManagerAppletWrap({
       tickerDetail={tickerDetail}
       isLoadingTickerDetail={isLoadingTickerDetail}
       tickerDetailError={tickerDetailError}
-      missingAuditedTickerVectorIds={missingAuditedTickerVectorIds}
+      missingAuditedTickerSymbols={missingAuditedTickerSymbols}
       isTickerVectorAuditPending={isTickerVectorAuditPending}
       isTiling={isTiling}
     >
@@ -38,7 +38,7 @@ export default function TickerViewWindowManagerAppletWrap({
               etfAggregateDetail={etfAggregateDetail}
               isLoadingETFAggregateDetail={isLoadingETFAggregateDetail}
               etfAggregateDetailError={etfAggregateDetailError}
-              missingAuditedTickerVectorIds={missingAuditedTickerVectorIds}
+              missingAuditedTickerSymbols={missingAuditedTickerSymbols}
               isTickerVectorAuditPending={isTickerVectorAuditPending}
               isTiling={isTiling}
             >

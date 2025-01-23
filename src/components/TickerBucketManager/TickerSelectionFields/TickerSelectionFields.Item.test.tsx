@@ -58,16 +58,12 @@ describe("TickerSelectionFieldsItem", () => {
     renderComponent({
       onDelete,
       initialBucketTicker: {
-        tickerId: 1,
         symbol: "AAPL",
-        exchangeShortName: "NASDAQ",
         quantity: 10,
       },
       existingBucketTickers: [
         {
-          tickerId: 1,
           symbol: "AAPL",
-          exchangeShortName: "NASDAQ",
           quantity: 10,
         },
       ],
@@ -83,9 +79,7 @@ describe("TickerSelectionFieldsItem", () => {
 
     // Assert that onDelete was called with the correct values
     expect(onDelete).toHaveBeenCalledWith({
-      tickerId: 1,
       symbol: "AAPL",
-      exchangeShortName: "NASDAQ",
       quantity: 10,
     });
   });
@@ -96,7 +90,6 @@ describe("TickerSelectionFieldsItem", () => {
       onCancel,
       existingBucketTickers: [
         {
-          tickerId: 1,
           symbol: "AAPL",
           quantity: 10,
         } as TickerBucketTicker,
@@ -141,16 +134,12 @@ describe("TickerSelectionFieldsItem", () => {
       <TickerSelectionFieldsItem
         onUpdate={onUpdate}
         initialBucketTicker={{
-          tickerId: 1,
           symbol: "AAPL",
-          exchangeShortName: "NASDAQ",
           quantity: 1000000, // Start with a value that should be formatted
         }}
         existingBucketTickers={[
           {
-            tickerId: 1,
             symbol: "AAPL",
-            exchangeShortName: "NASDAQ",
             quantity: 1000000,
           },
         ]}

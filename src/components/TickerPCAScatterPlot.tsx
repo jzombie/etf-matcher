@@ -64,7 +64,7 @@ export default function TickerPCAScatterPlot({
     fn: (tickerDistances) => {
       return Promise.allSettled(
         tickerDistances.map(async (item) => {
-          const tickerDetail = await fetchTickerDetail(item.ticker_id);
+          const tickerDetail = await fetchTickerDetail(item.ticker_symbol);
           return {
             tickerDetail,
             pc1: item.translated_pca_coords[0],
@@ -94,10 +94,10 @@ export default function TickerPCAScatterPlot({
   const handleClick = useCallback(
     (item: ChartVectorDistance) => {
       customLogger.debug(
-        `Ticker: ${item.tickerDetail.symbol}\nPC1: ${item.pc1}\nPC2: ${item.pc2}`,
+        `Ticker: ${item.tickerDetail.ticker_symbol}\nPC1: ${item.pc1}\nPC2: ${item.pc2}`,
       );
 
-      navigateToSymbol(item.tickerDetail.symbol);
+      navigateToSymbol(item.tickerDetail.ticker_symbol);
     },
     [navigateToSymbol],
   );
@@ -282,7 +282,7 @@ function CustomPoint({ cx = 0, cy = 0, payload }: CustomPointProps) {
     <g style={{ cursor: "pointer" }}>
       <circle cx={cx} cy={cy} r={6} fill="#8884d8" />
       <text x={cx} y={cy} dy={-10} textAnchor="middle" fill="#ccc">
-        {payload?.tickerDetail?.symbol}
+        {payload?.tickerDetail?.ticker_symbol}
       </text>
     </g>
   );

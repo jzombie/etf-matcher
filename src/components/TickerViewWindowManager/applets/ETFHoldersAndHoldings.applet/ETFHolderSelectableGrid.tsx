@@ -37,8 +37,7 @@ export type ETFHolderSelectableGridProps = {
 export default function ETFHolderSelectableGrid({
   tickerDetail,
 }: ETFHolderSelectableGridProps) {
-  const tickerId = tickerDetail.ticker_id;
-  const tickerSymbol = tickerDetail.symbol;
+  const tickerSymbol = tickerDetail.ticker_symbol;
 
   const [isLoadingETFHolders, setIsLoadingETFHolders] =
     useState<boolean>(false);
@@ -54,10 +53,10 @@ export default function ETFHolderSelectableGrid({
   const navigateToSymbol = useTickerSymbolNavigation();
 
   useEffect(() => {
-    if (tickerId) {
+    if (tickerSymbol) {
       setIsLoadingETFHolders(true);
 
-      fetchETFHoldersAggregateDetail(tickerId, page)
+      fetchETFHoldersAggregateDetail(tickerSymbol, page)
         .then(setPaginatedETFHolders)
         .catch((err) => {
           // TODO: Normalize error handling
@@ -65,11 +64,11 @@ export default function ETFHolderSelectableGrid({
         })
         .finally(() => setIsLoadingETFHolders(false));
     }
-  }, [tickerId, page]);
+  }, [tickerSymbol, page]);
 
   const handleItemSelect = useCallback(
     (holder: RustServiceETFAggregateDetail) => {
-      navigateToSymbol(holder.etf_symbol);
+      navigateToSymbol(holder.etf_ticker_symbol);
     },
     [navigateToSymbol],
   );
@@ -78,7 +77,7 @@ export default function ETFHolderSelectableGrid({
     useMemo(
       () =>
         paginatedETFHolders?.results.map((result) => ({
-          id: result.ticker_id,
+          id: result.etf_ticker_symbol,
           data: result,
         })) || [],
       [paginatedETFHolders],
@@ -144,7 +143,7 @@ export default function ETFHolderSelectableGrid({
                     </StyledTitle>
 
                     <Typography variant="body2">
-                      Symbol: {holder.etf_symbol}
+                      Symbol: {holder.etf_ticker_symbol}
                     </Typography>
 
                     <Typography variant="body2">

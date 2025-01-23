@@ -1,3 +1,5 @@
+import type { RustServiceTickerSymbol } from "@services/RustService";
+
 export const SYMBOL_THIRD_PARTY_PROVIDERS = [
   "stockanalysis.com",
   "google.com",
@@ -7,7 +9,7 @@ type TickerSymbolThirdPartyProvider =
   (typeof SYMBOL_THIRD_PARTY_PROVIDERS)[number];
 
 export type GetSymbolThirdPartyLinkProps = {
-  tickerSymbol: string;
+  tickerSymbol: RustServiceTickerSymbol;
   companyName: string;
   isETF: boolean;
   provider: TickerSymbolThirdPartyProvider;

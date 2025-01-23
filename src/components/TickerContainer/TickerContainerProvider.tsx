@@ -1,5 +1,7 @@
 import React, { createContext, useCallback, useRef } from "react";
 
+import type { RustServiceTickerSymbol } from "@services/RustService";
+
 import useIntersectionObserver from "@hooks/useIntersectionObserver";
 import { store } from "@hooks/useStoreStateReader";
 
@@ -8,7 +10,7 @@ import arraysEqual from "@utils/arraysEqual";
 export type TickerContainerContextType = {
   observe: (
     el: HTMLElement,
-    tickerId: number,
+    tickerSymbol: RustServiceTickerSymbol,
     onIntersectionStateChange?: (isIntersecting: boolean) => void,
   ) => void;
   unobserve: (el?: HTMLElement) => void;
@@ -31,15 +33,17 @@ export default function TickerContainerProvider({
     new Map<
       Element,
       {
-        tickerId: number;
+        tickerSymbol: RustServiceTickerSymbol;
         intersectionCallback?: (isIntersecting: boolean) => void;
       }
     >(),
   );
-  const visibleSymbolMapRef = useRef(new Map<Element, number>());
+  const visibleSymbolMapRef = useRef(
+    new Map<Element, RustServiceTickerSymbol>(),
+  );
 
   const syncVisibleTickers = useCallback(() => {
-    const prev = store.state.visibleTickerIds;
+    const prev = store.state.visibleTickerSymbols;
 
     const next = [...new Set(visibleSymbolMapRef.current.values())];
 
@@ -53,9 +57,9 @@ export default function TickerContainerProvider({
       entries.forEach((entry) => {
         const metadata = metadataMapRef.current.get(entry.target);
         if (metadata) {
-          const { tickerId, intersectionCallback } = metadata;
+          const { tickerSymbol, intersectionCallback } = metadata;
           if (entry.isIntersecting) {
-            visibleSymbolMapRef.current.set(entry.target, tickerId);
+            visibleSymbolMapRef.current.set(entry.target, tickerSymbol);
           } else {
             visibleSymbolMapRef.current.delete(entry.target);
           }
@@ -78,12 +82,12 @@ export default function TickerContainerProvider({
   const handleObserve = useCallback(
     (
       el: HTMLElement,
-      tickerId: number,
+      tickerSymbol: RustServiceTickerSymbol,
       onIntersectionStateChange?: (isIntersecting: boolean) => void,
     ) => {
       observe(el);
       metadataMapRef.current.set(el, {
-        tickerId,
+        tickerSymbol,
         intersectionCallback: onIntersectionStateChange,
       });
     },

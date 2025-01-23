@@ -1,12 +1,14 @@
 import { useCallback } from "react";
 
+import type { RustServiceTickerSymbol } from "@services/RustService";
+
 import useURLState from "./useURLState";
 
 export default function useTickerSymbolNavigation() {
   const { setURLState, toBooleanParam } = useURLState();
 
   const navigateToSymbol = useCallback(
-    (tickerSymbol: string) => {
+    (tickerSymbol: RustServiceTickerSymbol) => {
       setURLState(
         {
           query: tickerSymbol,

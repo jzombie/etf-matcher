@@ -69,7 +69,7 @@ export default function AvatarLogo({
   return (
     <Avatar
       {...rest}
-      title={title || `${tickerDetail.symbol} logo`}
+      title={title || `${tickerDetail.ticker_symbol} logo`}
       src={base64 ? `data:image/png;base64,${base64}` : noImageAvailable}
       className={clsx(styles.avatar_logo, className)}
       style={disabledStyle}
