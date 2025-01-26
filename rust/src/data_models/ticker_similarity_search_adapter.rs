@@ -40,10 +40,21 @@ impl TickerSimilaritySearchAdapter {
                 .map_err(|err| format!("Failed to initialize ticker symbol mapper: {:?}", err))?,
         );
 
-        Ok(Self {
+        let instance = Self {
             ticker_vector_repository,
             ticker_symbol_mapper,
-        })
+        };
+
+        // TODO: Remove
+        web_sys::console::debug_1(&JsValue::from_str(&format!(
+            "TickerVectorRepository address: {:p}, Registered vectors count: {}",
+            Arc::as_ptr(&instance.ticker_vector_repository),
+            instance
+                .ticker_vector_repository
+                .get_registered_vectors_count()
+        )));
+
+        Ok(instance)
     }
 
     async fn init_ticker_vector_repository(
@@ -51,6 +62,7 @@ impl TickerSimilaritySearchAdapter {
     ) -> Result<Arc<TickerVectorRepository>, JsValue> {
         let url = DataURL::TickerVectors(ticker_vector_config_key.to_string()).value();
 
+        // TODO: This may not need to be cached via this mechanism since the byte array is stored separately
         let file_content = utils::xhr_fetch_cached(url.to_string())
             .await
             .map_err(|err| format!("Failed to fetch file: {:?}", err))?;
@@ -60,7 +72,8 @@ impl TickerSimilaritySearchAdapter {
 
         // TODO: Remove
         web_sys::console::debug_1(&JsValue::from_str(&format!(
-            "Registered vectors count: {:?}, instance hash: {}",
+            "Address: {:p}, Registered vectors count: {:?}, instance hash: {}",
+            Arc::as_ptr(&ticker_vector_repository),
             ticker_vector_repository.get_registered_vectors_count(),
             ticker_vector_repository.instance_hash
         )));
@@ -105,6 +118,13 @@ impl TickerSimilaritySearchAdapter {
     ) -> Result<Vec<TickerEuclideanDistance>, JsValue> {
         let ticker_vector_repository = Arc::clone(&self.ticker_vector_repository);
         let ticker_symbol_mapper = Arc::clone(&self.ticker_symbol_mapper);
+
+        // TODO: Remove
+        web_sys::console::debug_1(&JsValue::from_str(&format!(
+            "TickerVectorRepository address: {:p}, Registered vectors count: {}",
+            Arc::as_ptr(&self.ticker_vector_repository),
+            self.ticker_vector_repository.get_registered_vectors_count()
+        )));
 
         // TODO: Remove
         web_sys::console::debug_1(&JsValue::from_str(&format!(
