@@ -13,6 +13,7 @@ lazy_static! {
         Mutex::new(HashMap::new());
 }
 
+// TODO: Rename to Exchange
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ExchangeById {
     pub exchange_id: ExchangeId,

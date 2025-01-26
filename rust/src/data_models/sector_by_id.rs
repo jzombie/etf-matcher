@@ -13,6 +13,7 @@ lazy_static! {
         Mutex::new(HashMap::new());
 }
 
+// TODO: Rename to Sector
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SectorById {
     pub sector_id: SectorId,
