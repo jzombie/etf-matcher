@@ -41,7 +41,7 @@ qrcode-generator = "4.1.9"
 chrono = { version = "0.4.38", features = ["serde"] }
 indexmap = "2.6.0"
 levenshtein = "1.0.5"
-ticker-sniffer = "=0.1.0-alpha.1l"
+ticker-sniffer = "=0.1.0-alpha.1m"
 ticker-similarity-search = { path = "PROTOTYPE.ticker-similarity-search" }
 
 [build-dependencies]
