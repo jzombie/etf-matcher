@@ -26,7 +26,7 @@ impl TickerSimilaritySearchAdapter {
     pub async fn from_ticker_vector_config_key(
         ticker_vector_config_key: &str,
     ) -> Result<Self, JsValue> {
-        // Initialize the repository and mapper using Rc
+        // Initialize the repository and mapper using Arc
         let ticker_vector_repository =
             Self::init_ticker_vector_repository(ticker_vector_config_key)
                 .await
