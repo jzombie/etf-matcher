@@ -1,16 +1,24 @@
 use crate::data_models::DataURL;
+use crate::types::TickerSymbol;
 use crate::utils;
 use crate::utils::ticker_utils::get_ticker_symbol_map;
-use std::rc::Rc;
+use std::sync::Arc;
 use ticker_similarity_search::data_models::{
-    flatbuffers_ticker_vectors_collection::TickerVector, ticker_symbol_mapper, TickerSymbolMapper,
+    TickerEuclideanDistance as TickerEuclideanDistanceIdBased, TickerSymbolMapper,
     TickerVectorRepository,
 };
 use wasm_bindgen::JsValue;
 
+pub struct TickerEuclideanDistance {
+    pub ticker_symbol: TickerSymbol,
+    pub distance: f32,
+    pub original_pca_coords: Vec<f32>,
+    pub translated_pca_coords: Vec<f32>,
+}
+
 pub struct TickerSimilaritySearchAdapter {
-    ticker_vector_repository: Rc<TickerVectorRepository>,
-    ticker_symbol_mapper: Rc<TickerSymbolMapper>,
+    ticker_vector_repository: Arc<TickerVectorRepository>,
+    ticker_symbol_mapper: Arc<TickerSymbolMapper>,
 }
 
 // TODO: Be wary about using Rc or Arc and inadvertently winding up with cyclic loops that can never be freed
@@ -19,15 +27,14 @@ impl TickerSimilaritySearchAdapter {
         ticker_vector_config_key: &str,
     ) -> Result<Self, JsValue> {
         // Initialize the repository and mapper using Rc
-        let ticker_vector_repository = Rc::new(
+        let ticker_vector_repository =
             Self::init_ticker_vector_repository(ticker_vector_config_key)
                 .await
                 .map_err(|err| {
                     format!("Failed to initialize ticker vector repository: {:?}", err)
-                })?,
-        );
+                })?;
 
-        let ticker_symbol_mapper = Rc::new(
+        let ticker_symbol_mapper = Arc::new(
             Self::init_ticker_symbol_mapper()
                 .await
                 .map_err(|err| format!("Failed to initialize ticker symbol mapper: {:?}", err))?,
@@ -41,7 +48,7 @@ impl TickerSimilaritySearchAdapter {
 
     async fn init_ticker_vector_repository(
         ticker_vector_config_key: &str,
-    ) -> Result<TickerVectorRepository, JsValue> {
+    ) -> Result<Arc<TickerVectorRepository>, JsValue> {
         let url = DataURL::TickerVectors(ticker_vector_config_key.to_string()).value();
 
         let file_content = utils::xhr_fetch_cached(url.to_string())
@@ -50,6 +57,13 @@ impl TickerSimilaritySearchAdapter {
 
         let ticker_vector_repository =
             TickerVectorRepository::from_flatbuffers_byte_array(file_content.as_slice())?;
+
+        // TODO: Remove
+        web_sys::console::debug_1(&JsValue::from_str(&format!(
+            "Registered vectors count: {:?}, instance hash: {}",
+            ticker_vector_repository.get_registered_vectors_count(),
+            ticker_vector_repository.instance_hash
+        )));
 
         Ok(ticker_vector_repository)
     }
@@ -60,5 +74,68 @@ impl TickerSimilaritySearchAdapter {
         let ticker_symbol_mapper = TickerSymbolMapper::from_ticker_symbol_map(ticker_symbol_map);
 
         Ok(ticker_symbol_mapper)
+    }
+
+    pub fn audit_missing_ticker_vectors(
+        &self,
+        ticker_symbols: &[TickerSymbol],
+    ) -> Result<Vec<TickerSymbol>, JsValue> {
+        let ticker_vector_repository = Arc::clone(&self.ticker_vector_repository);
+        let ticker_symbol_mapper = Arc::clone(&self.ticker_symbol_mapper);
+
+        // TODO: Remove
+        web_sys::console::debug_1(&JsValue::from_str(&format!(
+            "Registered vectors count [audit_missing_ticker_vectors]: {:?}",
+            ticker_vector_repository.get_registered_vectors_count()
+        )));
+
+        let ticker_ids = ticker_symbol_mapper.get_ticker_ids(ticker_symbols);
+
+        let missing_ticker_ids =
+            ticker_vector_repository.audit_missing_tickers(ticker_ids.as_slice())?;
+
+        let missing_ticker_symbols = ticker_symbol_mapper.get_ticker_symbols(&missing_ticker_ids);
+
+        Ok(missing_ticker_symbols)
+    }
+
+    pub fn get_euclidean_by_ticker(
+        &self,
+        ticker_symbol: &TickerSymbol,
+    ) -> Result<Vec<TickerEuclideanDistance>, JsValue> {
+        let ticker_vector_repository = Arc::clone(&self.ticker_vector_repository);
+        let ticker_symbol_mapper = Arc::clone(&self.ticker_symbol_mapper);
+
+        // TODO: Remove
+        web_sys::console::debug_1(&JsValue::from_str(&format!(
+            "Registered vectors count [get_euclidean_by_ticker]: {:?}",
+            ticker_vector_repository.get_registered_vectors_count()
+        )));
+
+        // TODO: Don't use nwrap
+        let ticker_id = ticker_symbol_mapper
+            .get_ticker_id(ticker_symbol.to_string())
+            .unwrap();
+
+        let euclidean_results_id_based: Vec<TickerEuclideanDistanceIdBased> =
+            TickerEuclideanDistanceIdBased::get_euclidean_by_ticker(
+                &ticker_vector_repository,
+                ticker_id,
+            )?;
+
+        let euclidean_results = euclidean_results_id_based
+            .iter()
+            .map(|result| TickerEuclideanDistance {
+                // TODO: Don't use unwrap
+                ticker_symbol: ticker_symbol_mapper
+                    .get_ticker_symbol(result.ticker_id)
+                    .unwrap(),
+                distance: result.distance,
+                original_pca_coords: result.original_pca_coords.clone(),
+                translated_pca_coords: result.translated_pca_coords.clone(),
+            })
+            .collect();
+
+        Ok(euclidean_results)
     }
 }

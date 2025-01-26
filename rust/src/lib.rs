@@ -17,7 +17,8 @@ use crate::types::TickerSymbol;
 use crate::data_models::{
     DataBuildInfo, DataURL, ETFAggregateDetail, ETFHoldingTicker, ETFHoldingWeight, ExchangeById,
     IndustryById, PaginatedResults, SectorById, Ticker10KDetail, TickerBucket, TickerDetail,
-    TickerETFHolder, TickerSearch, TickerSearchResult,
+    TickerETFHolder, TickerEuclideanDistance, TickerSearch, TickerSearchResult,
+    TickerSimilaritySearchAdapter,
 };
 
 use crate::data_models::image::get_image_info as lib_get_image_info;
@@ -241,105 +242,113 @@ pub async fn get_all_major_sectors() -> Result<JsValue, JsValue> {
     })
 }
 
-// TODO: Re-add
-// #[wasm_bindgen]
-// pub async fn audit_missing_ticker_vectors(
-//     ticker_vector_config_key: &str,
-//     ticker_symbols_js: JsValue,
-// ) -> Result<JsValue, JsValue> {
-//     // Deserialize the input `JsValue` into a vector of TickerId
-//     let ticker_symbols: Vec<TickerSymbol> = from_value(ticker_symbols_js).map_err(|err| {
-//         JsValue::from_str(&format!(
-//             "Failed to deserialize ticker IDs from input: {}",
-//             err
-//         ))
-//     })?;
+#[wasm_bindgen]
+pub async fn audit_missing_ticker_vectors(
+    ticker_vector_config_key: &str,
+    ticker_symbols_js: JsValue,
+) -> Result<JsValue, JsValue> {
+    // Deserialize the input `JsValue` into a vector of TickerId
+    let ticker_symbols: Vec<TickerSymbol> = from_value(ticker_symbols_js).map_err(|err| {
+        JsValue::from_str(&format!(
+            "Failed to deserialize ticker IDs from input: {}",
+            err
+        ))
+    })?;
 
-//     // Perform the audit to find missing tickers
-//     let missing_tickers = ticker_vector_analysis::OwnedTickerVectors::audit_missing_tickers(
-//         ticker_vector_config_key,
-//         &ticker_symbols,
-//     )
-//     .await
-//     .map_err(|err| JsValue::from_str(&format!("Failed to audit missing tickers: {}", err)))?;
+    // TODO: Remove
+    // Perform the audit to find missing tickers
+    // let missing_tickers = ticker_vector_analysis::OwnedTickerVectors::audit_missing_tickers(
+    //     ticker_vector_config_key,
+    //     &ticker_symbols,
+    // )
+    // .await
+    // .map_err(|err| JsValue::from_str(&format!("Failed to audit missing tickers: {}", err)))?;
 
-//     // Serialize the missing tickers to `JsValue`
-//     to_value(&missing_tickers).map_err(|err| {
-//         JsValue::from_str(&format!(
-//             "Failed to serialize missing tickers to JsValue: {}",
-//             err
-//         ))
-//     })
-// }
+    let ticker_similarity_search_adapter =
+        TickerSimilaritySearchAdapter::from_ticker_vector_config_key(ticker_vector_config_key)
+            .await?;
 
-// TODO: Re-add
-// #[wasm_bindgen]
-// pub async fn get_euclidean_by_ticker(
-//     ticker_vector_config_key: &str,
-//     ticker_symbol: TickerSymbol,
-// ) -> Result<JsValue, JsValue> {
-//     // Call the find_closest_tickers function from the ticker_vector_analysis module
-//     let closest_tickers = ticker_vector_analysis::TickerDistance::get_euclidean_by_ticker(
-//         ticker_vector_config_key,
-//         ticker_symbol,
-//     )
-//     .await
-//     .map_err(|err| JsValue::from_str(&format!("Failed to find closest ticker IDs: {}", err)))?;
+    let missing_ticker_symbols = ticker_similarity_search_adapter
+        .audit_missing_ticker_vectors(&ticker_symbols)
+        .map_err(|err| JsValue::from_str(&format!("Failed to audit missing tickers: {:?}", err)))?;
 
-//     // Convert the results to JsValue
-//     let js_array = js_sys::Array::new();
+    // Serialize the missing tickers to `JsValue`
+    to_value(&missing_ticker_symbols).map_err(|err| {
+        JsValue::from_str(&format!(
+            "Failed to serialize missing tickers to JsValue: {}",
+            err
+        ))
+    })
+}
 
-//     for ticker_distance in closest_tickers {
-//         let obj = js_sys::Object::new();
-//         js_sys::Reflect::set(
-//             &obj,
-//             &JsValue::from_str("ticker_id"),
-//             &JsValue::from(ticker_distance.ticker_id),
-//         )
-//         .unwrap();
-//         let obj = js_sys::Object::new();
-//         js_sys::Reflect::set(
-//             &obj,
-//             &JsValue::from_str("ticker_symbol"),
-//             &JsValue::from(ticker_distance.ticker_symbol),
-//         )
-//         .unwrap();
-//         js_sys::Reflect::set(
-//             &obj,
-//             &JsValue::from_str("distance"),
-//             &JsValue::from(ticker_distance.distance),
-//         )
-//         .unwrap();
+#[wasm_bindgen]
+pub async fn get_euclidean_by_ticker(
+    ticker_vector_config_key: &str,
+    ticker_symbol: TickerSymbol,
+) -> Result<JsValue, JsValue> {
+    let ticker_similarity_search_adapter =
+        TickerSimilaritySearchAdapter::from_ticker_vector_config_key(ticker_vector_config_key)
+            .await?;
 
-//         // Convert original PCA coordinates to JS array
-//         let original_pca_array = js_sys::Array::new();
-//         for coord in ticker_distance.original_pca_coords {
-//             original_pca_array.push(&JsValue::from_f64(coord as f64));
-//         }
-//         js_sys::Reflect::set(
-//             &obj,
-//             &JsValue::from_str("original_pca_coords"),
-//             &original_pca_array.into(),
-//         )
-//         .unwrap();
+    let closest_tickers =
+        ticker_similarity_search_adapter.get_euclidean_by_ticker(&ticker_symbol)?;
 
-//         // Convert translated PCA coordinates to JS array
-//         let translated_pca_array = js_sys::Array::new();
-//         for coord in ticker_distance.translated_pca_coords {
-//             translated_pca_array.push(&JsValue::from_f64(coord as f64));
-//         }
-//         js_sys::Reflect::set(
-//             &obj,
-//             &JsValue::from_str("translated_pca_coords"),
-//             &translated_pca_array.into(),
-//         )
-//         .unwrap();
+    // TODO: Remove
+    // Call the find_closest_tickers function from the ticker_vector_analysis module
+    // let closest_tickers = ticker_vector_analysis::TickerDistance::get_euclidean_by_ticker(
+    //     ticker_vector_config_key,
+    //     ticker_symbol,
+    // )
+    // .await
+    // .map_err(|err| JsValue::from_str(&format!("Failed to find closest ticker IDs: {}", err)))?;
 
-//         js_array.push(&obj);
-//     }
+    // Convert the results to JsValue
+    let js_array = js_sys::Array::new();
 
-//     Ok(js_array.into())
-// }
+    for ticker_distance in closest_tickers {
+        let obj = js_sys::Object::new();
+        js_sys::Reflect::set(
+            &obj,
+            &JsValue::from_str("ticker_symbol"),
+            &JsValue::from(ticker_distance.ticker_symbol),
+        )
+        .unwrap();
+        js_sys::Reflect::set(
+            &obj,
+            &JsValue::from_str("distance"),
+            &JsValue::from(ticker_distance.distance),
+        )
+        .unwrap();
+
+        // Convert original PCA coordinates to JS array
+        let original_pca_array = js_sys::Array::new();
+        for coord in ticker_distance.original_pca_coords {
+            original_pca_array.push(&JsValue::from_f64(coord as f64));
+        }
+        js_sys::Reflect::set(
+            &obj,
+            &JsValue::from_str("original_pca_coords"),
+            &original_pca_array.into(),
+        )
+        .unwrap();
+
+        // Convert translated PCA coordinates to JS array
+        let translated_pca_array = js_sys::Array::new();
+        for coord in ticker_distance.translated_pca_coords {
+            translated_pca_array.push(&JsValue::from_f64(coord as f64));
+        }
+        js_sys::Reflect::set(
+            &obj,
+            &JsValue::from_str("translated_pca_coords"),
+            &translated_pca_array.into(),
+        )
+        .unwrap();
+
+        js_array.push(&obj);
+    }
+
+    Ok(js_array.into())
+}
 
 // TODO: Re-add
 // #[wasm_bindgen]

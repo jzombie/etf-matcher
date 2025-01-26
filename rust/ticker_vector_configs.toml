@@ -1,21 +1,10 @@
-# [ticker_vector_config.v5-exp-spy-corr-no-scale]
 [ticker_vector_config.default]
-path = "v5.EXP-SPY-CORR-NO-SCALE.financial_vectors.tenq.bin"
-description = "EXP-SPY-CORR-NO-SCALE Prototype (v5 series)"
-proto_noteboook = "v5.EXP-SPY-CORR-NO-SCALE.spy-corr.ipynb"
-last_training_time = "2025-01-18T12:00:00Z"
+path = "v5.SPY-CORR-NO-SCALE-2.ticker_vectors_collection.flatbuffers.bin"
+description = "SPY CORR NO SCALE 2 Prototype (v5 series)"
+proto_noteboook = "v5.SPY-CORR-NO-SCALE-2.dataset-gen.spy-corr.ipynb"
+last_training_time = "2025-01-23T12:00:00Z"
 features = 250
 vector_dimensions = 320
 training_sequence_length = 40
 training_data_sources = ["10-Q", "key metrics"]
-
-
-[ticker_vector_config.v5-ema-perc-v5-no-scale]
-path = "v5.EXP-EMA-PERC-NO-SCALE-2.financial_vectors.tenq.bin"
-description = "EXP-EMA-PERC-NO-SCALE-2 Prototype (v5 series)"
-proto_noteboook = "v5.EXP-EMA-PERC-NO-SCALE-2.ema-perc.ipynb"
-last_training_time = "2025-01-18T12:00:00Z"
-features = 155
-vector_dimensions = 320
-training_sequence_length = 40
-training_data_sources = ["10-Q", "key metrics"]
+# Note: Some of these details are unverified

@@ -2539,6 +2539,7 @@ dependencies = [
  "crossterm",
  "embed-resources",
  "flatbuffers",
+ "lazy_static",
  "rand",
  "serde",
  "tui",
