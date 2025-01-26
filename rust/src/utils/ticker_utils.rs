@@ -1,3 +1,5 @@
+// TODO: This entire file can likely be removed; moving all functionality to `ticker_search` and skipping the duplicate cache
+
 use crate::data_models::{DataURL, ExchangeById, TickerSearchResultRaw};
 use crate::types::{TickerId, TickerSymbol};
 use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
@@ -7,11 +9,13 @@ use lazy_static::lazy_static;
 use std::collections::HashMap;
 use std::sync::Mutex;
 
+// TODO: Remove
 lazy_static! {
     static ref SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE: Mutex<HashMap<TickerId, (String, Option<String>)>> =
         Mutex::new(HashMap::new());
 }
 
+// TODO: Remove
 async fn preload_symbol_and_exchange_cache() -> Result<(), JsValue> {
     // Fetch and decompress the TickerSearch CSV data
     let url = DataURL::TickerSearch.value().to_owned();
@@ -44,6 +48,7 @@ async fn preload_symbol_and_exchange_cache() -> Result<(), JsValue> {
     Ok(())
 }
 
+// TODO: Move to `ticker_search` and skip the duplicate cache
 pub async fn get_ticker_id(ticker_symbol: TickerSymbol) -> Result<TickerId, JsValue> {
     // Ensure cache is preloaded
     if SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE
@@ -64,6 +69,7 @@ pub async fn get_ticker_id(ticker_symbol: TickerSymbol) -> Result<TickerId, JsVa
     Err(JsValue::from_str("Symbol not found"))
 }
 
+// TODO: Move to `ticker_search` and skip the duplicate cache
 pub async fn get_ticker_symbol(ticker_id: TickerId) -> Result<TickerSymbol, JsValue> {
     // Ensure cache is preloaded
     if SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE

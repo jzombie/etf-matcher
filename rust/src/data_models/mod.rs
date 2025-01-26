@@ -12,7 +12,7 @@ pub mod ticker_bucket;
 pub mod ticker_detail;
 pub mod ticker_etf_holder;
 pub mod ticker_search;
-pub mod ticker_vector_analysis;
+// pub mod ticker_vector_analysis; // TODO: Remove?
 
 pub use data_build_info::DataBuildInfo;
 pub use data_url::DataURL;

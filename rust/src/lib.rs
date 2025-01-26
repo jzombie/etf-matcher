@@ -1,5 +1,5 @@
-extern crate flatbuffers as fb;
-use data_models::ticker_vector_analysis::TickerWithWeight;
+// TODO: Re-add
+// use data_models::ticker_vector_analysis::TickerWithWeight;
 use levenshtein::levenshtein;
 use qrcode_generator::QrCodeEcc;
 use serde_wasm_bindgen::{from_value, to_value};
@@ -15,9 +15,9 @@ mod utils;
 use crate::types::TickerSymbol;
 
 use crate::data_models::{
-    ticker_vector_analysis, DataBuildInfo, DataURL, ETFAggregateDetail, ETFHoldingTicker,
-    ETFHoldingWeight, ExchangeById, IndustryById, PaginatedResults, SectorById, Ticker10KDetail,
-    TickerBucket, TickerDetail, TickerETFHolder, TickerSearch, TickerSearchResult,
+    DataBuildInfo, DataURL, ETFAggregateDetail, ETFHoldingTicker, ETFHoldingWeight, ExchangeById,
+    IndustryById, PaginatedResults, SectorById, Ticker10KDetail, TickerBucket, TickerDetail,
+    TickerETFHolder, TickerSearch, TickerSearchResult,
 };
 
 use crate::data_models::image::get_image_info as lib_get_image_info;
@@ -241,199 +241,204 @@ pub async fn get_all_major_sectors() -> Result<JsValue, JsValue> {
     })
 }
 
-#[wasm_bindgen]
-pub async fn audit_missing_ticker_vectors(
-    ticker_vector_config_key: &str,
-    ticker_symbols_js: JsValue,
-) -> Result<JsValue, JsValue> {
-    // Deserialize the input `JsValue` into a vector of TickerId
-    let ticker_symbols: Vec<TickerSymbol> = from_value(ticker_symbols_js).map_err(|err| {
-        JsValue::from_str(&format!(
-            "Failed to deserialize ticker IDs from input: {}",
-            err
-        ))
-    })?;
+// TODO: Re-add
+// #[wasm_bindgen]
+// pub async fn audit_missing_ticker_vectors(
+//     ticker_vector_config_key: &str,
+//     ticker_symbols_js: JsValue,
+// ) -> Result<JsValue, JsValue> {
+//     // Deserialize the input `JsValue` into a vector of TickerId
+//     let ticker_symbols: Vec<TickerSymbol> = from_value(ticker_symbols_js).map_err(|err| {
+//         JsValue::from_str(&format!(
+//             "Failed to deserialize ticker IDs from input: {}",
+//             err
+//         ))
+//     })?;
 
-    // Perform the audit to find missing tickers
-    let missing_tickers = ticker_vector_analysis::OwnedTickerVectors::audit_missing_tickers(
-        ticker_vector_config_key,
-        &ticker_symbols,
-    )
-    .await
-    .map_err(|err| JsValue::from_str(&format!("Failed to audit missing tickers: {}", err)))?;
+//     // Perform the audit to find missing tickers
+//     let missing_tickers = ticker_vector_analysis::OwnedTickerVectors::audit_missing_tickers(
+//         ticker_vector_config_key,
+//         &ticker_symbols,
+//     )
+//     .await
+//     .map_err(|err| JsValue::from_str(&format!("Failed to audit missing tickers: {}", err)))?;
 
-    // Serialize the missing tickers to `JsValue`
-    to_value(&missing_tickers).map_err(|err| {
-        JsValue::from_str(&format!(
-            "Failed to serialize missing tickers to JsValue: {}",
-            err
-        ))
-    })
-}
+//     // Serialize the missing tickers to `JsValue`
+//     to_value(&missing_tickers).map_err(|err| {
+//         JsValue::from_str(&format!(
+//             "Failed to serialize missing tickers to JsValue: {}",
+//             err
+//         ))
+//     })
+// }
 
-#[wasm_bindgen]
-pub async fn get_euclidean_by_ticker(
-    ticker_vector_config_key: &str,
-    ticker_symbol: TickerSymbol,
-) -> Result<JsValue, JsValue> {
-    // Call the find_closest_tickers function from the ticker_vector_analysis module
-    let closest_tickers = ticker_vector_analysis::TickerDistance::get_euclidean_by_ticker(
-        ticker_vector_config_key,
-        ticker_symbol,
-    )
-    .await
-    .map_err(|err| JsValue::from_str(&format!("Failed to find closest ticker IDs: {}", err)))?;
+// TODO: Re-add
+// #[wasm_bindgen]
+// pub async fn get_euclidean_by_ticker(
+//     ticker_vector_config_key: &str,
+//     ticker_symbol: TickerSymbol,
+// ) -> Result<JsValue, JsValue> {
+//     // Call the find_closest_tickers function from the ticker_vector_analysis module
+//     let closest_tickers = ticker_vector_analysis::TickerDistance::get_euclidean_by_ticker(
+//         ticker_vector_config_key,
+//         ticker_symbol,
+//     )
+//     .await
+//     .map_err(|err| JsValue::from_str(&format!("Failed to find closest ticker IDs: {}", err)))?;
 
-    // Convert the results to JsValue
-    let js_array = js_sys::Array::new();
+//     // Convert the results to JsValue
+//     let js_array = js_sys::Array::new();
 
-    for ticker_distance in closest_tickers {
-        let obj = js_sys::Object::new();
-        js_sys::Reflect::set(
-            &obj,
-            &JsValue::from_str("ticker_id"),
-            &JsValue::from(ticker_distance.ticker_id),
-        )
-        .unwrap();
-        let obj = js_sys::Object::new();
-        js_sys::Reflect::set(
-            &obj,
-            &JsValue::from_str("ticker_symbol"),
-            &JsValue::from(ticker_distance.ticker_symbol),
-        )
-        .unwrap();
-        js_sys::Reflect::set(
-            &obj,
-            &JsValue::from_str("distance"),
-            &JsValue::from(ticker_distance.distance),
-        )
-        .unwrap();
+//     for ticker_distance in closest_tickers {
+//         let obj = js_sys::Object::new();
+//         js_sys::Reflect::set(
+//             &obj,
+//             &JsValue::from_str("ticker_id"),
+//             &JsValue::from(ticker_distance.ticker_id),
+//         )
+//         .unwrap();
+//         let obj = js_sys::Object::new();
+//         js_sys::Reflect::set(
+//             &obj,
+//             &JsValue::from_str("ticker_symbol"),
+//             &JsValue::from(ticker_distance.ticker_symbol),
+//         )
+//         .unwrap();
+//         js_sys::Reflect::set(
+//             &obj,
+//             &JsValue::from_str("distance"),
+//             &JsValue::from(ticker_distance.distance),
+//         )
+//         .unwrap();
 
-        // Convert original PCA coordinates to JS array
-        let original_pca_array = js_sys::Array::new();
-        for coord in ticker_distance.original_pca_coords {
-            original_pca_array.push(&JsValue::from_f64(coord as f64));
-        }
-        js_sys::Reflect::set(
-            &obj,
-            &JsValue::from_str("original_pca_coords"),
-            &original_pca_array.into(),
-        )
-        .unwrap();
+//         // Convert original PCA coordinates to JS array
+//         let original_pca_array = js_sys::Array::new();
+//         for coord in ticker_distance.original_pca_coords {
+//             original_pca_array.push(&JsValue::from_f64(coord as f64));
+//         }
+//         js_sys::Reflect::set(
+//             &obj,
+//             &JsValue::from_str("original_pca_coords"),
+//             &original_pca_array.into(),
+//         )
+//         .unwrap();
 
-        // Convert translated PCA coordinates to JS array
-        let translated_pca_array = js_sys::Array::new();
-        for coord in ticker_distance.translated_pca_coords {
-            translated_pca_array.push(&JsValue::from_f64(coord as f64));
-        }
-        js_sys::Reflect::set(
-            &obj,
-            &JsValue::from_str("translated_pca_coords"),
-            &translated_pca_array.into(),
-        )
-        .unwrap();
+//         // Convert translated PCA coordinates to JS array
+//         let translated_pca_array = js_sys::Array::new();
+//         for coord in ticker_distance.translated_pca_coords {
+//             translated_pca_array.push(&JsValue::from_f64(coord as f64));
+//         }
+//         js_sys::Reflect::set(
+//             &obj,
+//             &JsValue::from_str("translated_pca_coords"),
+//             &translated_pca_array.into(),
+//         )
+//         .unwrap();
 
-        js_array.push(&obj);
-    }
+//         js_array.push(&obj);
+//     }
 
-    Ok(js_array.into())
-}
+//     Ok(js_array.into())
+// }
 
-#[wasm_bindgen]
-pub async fn get_euclidean_by_ticker_bucket(
-    ticker_vector_config_key: &str,
-    tickers_with_quantity: JsValue,
-) -> Result<JsValue, JsValue> {
-    // Deserialize the input JsValue into Rust Vec<TickerWithWeight>
-    let tickers_with_quantity: Vec<TickerWithWeight> =
-        serde_wasm_bindgen::from_value(tickers_with_quantity)
-            .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
+// TODO: Re-add
+// #[wasm_bindgen]
+// pub async fn get_euclidean_by_ticker_bucket(
+//     ticker_vector_config_key: &str,
+//     tickers_with_weight: JsValue,
+// ) -> Result<JsValue, JsValue> {
+//     // Deserialize the input JsValue into Rust Vec<TickerWithWeight>
+//     let tickers_with_weight: Vec<TickerWithWeight> =
+//         serde_wasm_bindgen::from_value(tickers_with_weight)
+//             .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
 
-    // Find the closest tickers by quantity
-    let closest_tickers: Vec<ticker_vector_analysis::TickerDistance> =
-        ticker_vector_analysis::TickerDistance::get_euclidean_by_ticker_bucket(
-            ticker_vector_config_key,
-            &tickers_with_quantity,
-        )
-        .await
-        .map_err(|err| JsValue::from_str(&err))?;
+//     // Find the closest tickers by quantity
+//     let closest_tickers: Vec<ticker_vector_analysis::TickerDistance> =
+//         ticker_vector_analysis::TickerDistance::get_euclidean_by_ticker_bucket(
+//             ticker_vector_config_key,
+//             &tickers_with_weight,
+//         )
+//         .await
+//         .map_err(|err| JsValue::from_str(&err))?;
 
-    // Serialize the result back to JsValue
-    serde_wasm_bindgen::to_value(&closest_tickers)
-        .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
-}
+//     // Serialize the result back to JsValue
+//     serde_wasm_bindgen::to_value(&closest_tickers)
+//         .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
+// }
 
-#[wasm_bindgen]
-pub async fn get_cosine_by_ticker(
-    ticker_vector_config_key: &str,
-    ticker_symbol: TickerSymbol,
-) -> Result<JsValue, JsValue> {
-    // Call the rank_tickers_by_cosine_similarity function from the ticker_vector_analysis module
-    let similar_tickers = ticker_vector_analysis::CosineSimilarityResult::get_cosine_by_ticker(
-        ticker_vector_config_key,
-        ticker_symbol,
-    )
-    .await
-    .map_err(|err| {
-        JsValue::from_str(&format!(
-            "Failed to rank tickers by cosine similarity: {}",
-            err
-        ))
-    })?;
+// TODO: Re-add
+// #[wasm_bindgen]
+// pub async fn get_cosine_by_ticker(
+//     ticker_vector_config_key: &str,
+//     ticker_symbol: TickerSymbol,
+// ) -> Result<JsValue, JsValue> {
+//     // Call the rank_tickers_by_cosine_similarity function from the ticker_vector_analysis module
+//     let similar_tickers = ticker_vector_analysis::CosineSimilarityResult::get_cosine_by_ticker(
+//         ticker_vector_config_key,
+//         ticker_symbol,
+//     )
+//     .await
+//     .map_err(|err| {
+//         JsValue::from_str(&format!(
+//             "Failed to rank tickers by cosine similarity: {}",
+//             err
+//         ))
+//     })?;
 
-    // Convert the results to JsValue
-    let js_array = js_sys::Array::new();
+//     // Convert the results to JsValue
+//     let js_array = js_sys::Array::new();
 
-    for similarity_result in similar_tickers {
-        let obj = js_sys::Object::new();
-        js_sys::Reflect::set(
-            &obj,
-            &JsValue::from_str("ticker_id"),
-            &JsValue::from(similarity_result.ticker_id),
-        )
-        .unwrap();
-        js_sys::Reflect::set(
-            &obj,
-            &JsValue::from_str("ticker_symbol"),
-            &JsValue::from(similarity_result.ticker_symbol),
-        )
-        .unwrap();
-        js_sys::Reflect::set(
-            &obj,
-            &JsValue::from_str("similarity_score"),
-            &JsValue::from(similarity_result.similarity_score),
-        )
-        .unwrap();
+//     for similarity_result in similar_tickers {
+//         let obj = js_sys::Object::new();
+//         js_sys::Reflect::set(
+//             &obj,
+//             &JsValue::from_str("ticker_id"),
+//             &JsValue::from(similarity_result.ticker_id),
+//         )
+//         .unwrap();
+//         js_sys::Reflect::set(
+//             &obj,
+//             &JsValue::from_str("ticker_symbol"),
+//             &JsValue::from(similarity_result.ticker_symbol),
+//         )
+//         .unwrap();
+//         js_sys::Reflect::set(
+//             &obj,
+//             &JsValue::from_str("similarity_score"),
+//             &JsValue::from(similarity_result.similarity_score),
+//         )
+//         .unwrap();
 
-        js_array.push(&obj);
-    }
+//         js_array.push(&obj);
+//     }
 
-    Ok(js_array.into())
-}
+//     Ok(js_array.into())
+// }
 
-#[wasm_bindgen]
-pub async fn get_cosine_by_ticker_bucket(
-    ticker_vector_config_key: &str,
-    tickers_with_quantity: JsValue,
-) -> Result<JsValue, JsValue> {
-    // Deserialize the input JsValue into Rust Vec<TickerWithWeight>
-    let tickers_with_quantity: Vec<TickerWithWeight> =
-        serde_wasm_bindgen::from_value(tickers_with_quantity)
-            .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
+// TODO: Re-add
+// #[wasm_bindgen]
+// pub async fn get_cosine_by_ticker_bucket(
+//     ticker_vector_config_key: &str,
+//     tickers_with_weight: JsValue,
+// ) -> Result<JsValue, JsValue> {
+//     // Deserialize the input JsValue into Rust Vec<TickerWithWeight>
+//     let tickers_with_weight: Vec<TickerWithWeight> =
+//         serde_wasm_bindgen::from_value(tickers_with_weight)
+//             .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
 
-    // Rank tickers by cosine similarity using the quantity
-    let ranked_tickers: Vec<ticker_vector_analysis::CosineSimilarityResult> =
-        ticker_vector_analysis::CosineSimilarityResult::get_cosine_by_ticker_bucket(
-            ticker_vector_config_key,
-            &tickers_with_quantity,
-        )
-        .await
-        .map_err(|err| JsValue::from_str(&err))?;
+//     // Rank tickers by cosine similarity using the quantity
+//     let ranked_tickers: Vec<ticker_vector_analysis::CosineSimilarityResult> =
+//         ticker_vector_analysis::CosineSimilarityResult::get_cosine_by_ticker_bucket(
+//             ticker_vector_config_key,
+//             &tickers_with_weight,
+//         )
+//         .await
+//         .map_err(|err| JsValue::from_str(&err))?;
 
-    // Serialize the result back to JsValue
-    serde_wasm_bindgen::to_value(&ranked_tickers)
-        .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
-}
+//     // Serialize the result back to JsValue
+//     serde_wasm_bindgen::to_value(&ranked_tickers)
+//         .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
+// }
 
 #[wasm_bindgen]
 pub fn get_all_ticker_vector_configs() -> Result<JsValue, JsValue> {

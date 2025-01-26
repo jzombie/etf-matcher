@@ -78,6 +78,7 @@ impl TickerSearch {
         }
     }
 
+    // TODO: Remove? Pure alpha-numeric might be a better way
     fn generate_alternative_symbols(query: &str) -> Vec<TickerSymbol> {
         let mut alternatives: Vec<String> = vec![query.to_lowercase()];
         if query.contains('.') {
