@@ -15,8 +15,8 @@ mod utils;
 use crate::types::TickerSymbol;
 
 use crate::data_models::{
-    DataBuildInfo, DataURL, ETFAggregateDetail, ETFHoldingTicker, ETFHoldingWeight, ExchangeById,
-    IndustryById, PaginatedResults, SectorById, Ticker10KDetail, TickerBucket, TickerDetail,
+    DataBuildInfo, DataURL, ETFAggregateDetail, ETFHoldingTicker, ETFHoldingWeight, Exchange,
+    Industry, PaginatedResults, Sector, Ticker10KDetail, TickerBucket, TickerDetail,
     TickerETFHolder, TickerEuclideanDistance, TickerSearch, TickerSearchResult,
     TickerSimilaritySearchAdapter,
 };
@@ -233,8 +233,8 @@ pub async fn get_image_info(filename: &str) -> Result<JsValue, JsValue> {
 
 #[wasm_bindgen]
 pub async fn get_all_major_sectors() -> Result<JsValue, JsValue> {
-    // Fetch all sectors by using the get_all_sectors method from the SectorById struct
-    let all_sectors = SectorById::get_all_major_sectors().await?;
+    // Fetch all sectors by using the get_all_sectors method from the Sector struct
+    let all_sectors = Sector::get_all_major_sectors().await?;
 
     // Convert the HashMap<SectorId, String> to a JsValue
     to_value(&all_sectors).map_err(|err: serde_wasm_bindgen::Error| {

@@ -9,18 +9,17 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 
 lazy_static! {
-    static ref INDUSTRY_NAME_BY_ID_CACHE: Mutex<HashMap<IndustryId, IndustryById>> =
+    static ref INDUSTRY_NAME_BY_ID_CACHE: Mutex<HashMap<IndustryId, Industry>> =
         Mutex::new(HashMap::new());
 }
 
-// TODO: Rename to Industry
 #[derive(Serialize, Deserialize, Debug)]
-pub struct IndustryById {
+pub struct Industry {
     pub industry_id: IndustryId,
     pub industry_name: String,
 }
 
-impl IndustryById {
+impl Industry {
     pub async fn get_industry_name_with_id(industry_id: IndustryId) -> Result<String, JsValue> {
         // Ensure cache is preloaded
         if INDUSTRY_NAME_BY_ID_CACHE.lock().unwrap().is_empty() {
@@ -64,7 +63,7 @@ impl IndustryById {
         })?;
 
         // Parse the CSV data
-        let data: Vec<IndustryById> = parse_csv_data(csv_string.as_bytes())?;
+        let data: Vec<Industry> = parse_csv_data(csv_string.as_bytes())?;
 
         // Load data into cache
         let mut cache = INDUSTRY_NAME_BY_ID_CACHE.lock().unwrap();

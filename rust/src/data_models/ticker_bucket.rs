@@ -1,4 +1,4 @@
-use crate::data_models::ExchangeById;
+use crate::data_models::Exchange;
 use crate::data_models::TickerSearch;
 use crate::types::TickerId;
 use csv::{StringRecord, Writer};
@@ -90,7 +90,7 @@ impl TickerBucket {
         let mut exchange_short_names = Vec::new();
 
         for &exchange_id in &exchange_ids {
-            match ExchangeById::get_short_name_by_exchange_id(exchange_id).await {
+            match Exchange::get_short_name_by_exchange_id(exchange_id).await {
                 Ok(short_name) => exchange_short_names.push(short_name),
                 Err(err) => {
                     return Err(JsValue::from_str(&format!(

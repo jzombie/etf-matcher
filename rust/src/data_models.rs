@@ -9,19 +9,19 @@ pub use etf_aggregate_detail::ETFAggregateDetail;
 pub mod etf_holding_ticker;
 pub use etf_holding_ticker::{ETFHoldingTicker, ETFHoldingWeight};
 
-pub mod exchange_by_id;
-pub use exchange_by_id::ExchangeById;
+pub mod exchange;
+pub use exchange::Exchange;
 
 pub mod image;
 
-pub mod industry_by_id;
-pub use industry_by_id::IndustryById;
+pub mod industry;
+pub use industry::Industry;
 
 pub mod paginated_results;
 pub use paginated_results::PaginatedResults;
 
-pub mod sector_by_id;
-pub use sector_by_id::SectorById;
+pub mod sector;
+pub use sector::Sector;
 
 pub mod ticker_10k_detail;
 pub use ticker_10k_detail::Ticker10KDetail;

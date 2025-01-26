@@ -13,15 +13,14 @@ lazy_static! {
         Mutex::new(HashMap::new());
 }
 
-// TODO: Rename to Exchange
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ExchangeById {
+pub struct Exchange {
     pub exchange_id: ExchangeId,
     pub exchange_short_name: String,
     pub exchange_name: String,
 }
 
-impl ExchangeById {
+impl Exchange {
     pub async fn get_short_name_by_exchange_id(exchange_id: ExchangeId) -> Result<String, JsValue> {
         // Ensure cache is preloaded
         if EXCHANGE_SHORT_NAME_BY_ID_CACHE.lock().unwrap().is_empty() {
@@ -49,7 +48,7 @@ impl ExchangeById {
         })?;
 
         // Parse the CSV data
-        let data: Vec<ExchangeById> = parse_csv_data(csv_string.as_bytes())?;
+        let data: Vec<Exchange> = parse_csv_data(csv_string.as_bytes())?;
 
         // Load data into cache
         let mut cache = EXCHANGE_SHORT_NAME_BY_ID_CACHE.lock().unwrap();

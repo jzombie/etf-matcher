@@ -6,7 +6,7 @@ use crate::utils::fetch_and_decompress::fetch_and_decompress_gz;
 use crate::utils::parse::parse_csv_data;
 
 use crate::JsValue;
-use crate::{DataURL, ExchangeById, PaginatedResults};
+use crate::{DataURL, Exchange, PaginatedResults};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
@@ -186,7 +186,7 @@ impl TickerSearch {
 
         for raw_result in paginated_raw_results.results {
             let exchange_short_name = if let Some(exchange_id) = raw_result.exchange_id {
-                match ExchangeById::get_short_name_by_exchange_id(exchange_id).await {
+                match Exchange::get_short_name_by_exchange_id(exchange_id).await {
                     Ok(name) => Some(name),
                     Err(_) => None,
                 }
@@ -236,7 +236,7 @@ impl TickerSearch {
                 // Avoid duplicates based on `ticker_id`
                 if seen_ticker_ids.insert(raw_result.ticker_id) {
                     let exchange_short_name = if let Some(exchange_id) = raw_result.exchange_id {
-                        ExchangeById::get_short_name_by_exchange_id(exchange_id)
+                        Exchange::get_short_name_by_exchange_id(exchange_id)
                             .await
                             .ok()
                     } else {
