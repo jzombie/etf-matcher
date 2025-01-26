@@ -23,6 +23,7 @@ pub struct TickerSimilaritySearchAdapter {
 
 // TODO: Be wary about using Rc or Arc and inadvertently winding up with cyclic loops that can never be freed
 impl TickerSimilaritySearchAdapter {
+    // TODO: Implement instantiation of repository by hash and skip the secondary lookup
     pub async fn from_ticker_vector_config_key(
         ticker_vector_config_key: &str,
     ) -> Result<Self, JsValue> {
