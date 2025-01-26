@@ -89,3 +89,22 @@ pub async fn get_ticker_symbol(ticker_id: TickerId) -> Result<TickerSymbol, JsVa
 
     Err(JsValue::from_str("Symbol not found"))
 }
+
+pub async fn get_ticker_symbol_map() -> Result<HashMap<TickerSymbol, TickerId>, JsValue> {
+    // Ensure cache is preloaded
+    if SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE
+        .lock()
+        .unwrap()
+        .is_empty()
+    {
+        preload_symbol_and_exchange_cache().await?;
+    }
+
+    let cache = SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE.lock().unwrap();
+    let symbol_map: HashMap<TickerSymbol, TickerId> = cache
+        .iter()
+        .map(|(ticker_id, (symbol, _exchange))| (symbol.clone(), *ticker_id))
+        .collect();
+
+    Ok(symbol_map)
+}

@@ -12,7 +12,7 @@ pub mod ticker_bucket;
 pub mod ticker_detail;
 pub mod ticker_etf_holder;
 pub mod ticker_search;
-// pub mod ticker_vector_analysis; // TODO: Remove?
+pub mod ticker_similarity_search_adapter;
 
 pub use data_build_info::DataBuildInfo;
 pub use data_url::DataURL;
@@ -27,3 +27,4 @@ pub use ticker_bucket::TickerBucket;
 pub use ticker_detail::TickerDetail;
 pub use ticker_etf_holder::TickerETFHolder;
 pub use ticker_search::{TickerSearch, TickerSearchResult, TickerSearchResultRaw};
+pub use ticker_similarity_search_adapter::TickerSimilaritySearchAdapter;
