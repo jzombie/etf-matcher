@@ -19,7 +19,8 @@ pub(crate) mod password {
     ) -> Result<[u8; 32], JsValue> {
         // Derive the decryption key
         let mut key = [0u8; 32];
-        pbkdf2::<Hmac<Sha256>>(encrypted_password, salt, 10000, &mut key);
+        pbkdf2::<Hmac<Sha256>>(encrypted_password, salt, 10000, &mut key)
+            .or_else(|_| Err(JsValue::from_str("Failed to derive the decryption key")))?;
         Ok(key)
     }
 

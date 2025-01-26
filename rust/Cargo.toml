@@ -23,9 +23,9 @@ js-sys = "0.3"
 wasm-bindgen-futures = "0.4"
 aes = "0.7"
 block-modes = "0.8"
-hmac = "0.11"
-pbkdf2 = "0.9"
-sha2 = "0.9"
+hmac = "0.12.1"
+pbkdf2 = "0.12.2"
+sha2 = "0.10.8"
 hex-literal = "0.3"
 dotenv_codegen = "0.15"
 rand = { version = "0.8", features = ["getrandom"] }
@@ -42,7 +42,7 @@ chrono = { version = "0.4.38", features = ["serde"] }
 flatbuffers = "24.3.25"
 indexmap = "2.6.0"
 levenshtein = "1.0.5"
-ticker-sniffer = "=0.1.0-alpha.1f"
+ticker-sniffer = "=0.1.0-alpha.1j"
 
 [build-dependencies]
 dotenv = "0.15"
@@ -54,3 +54,6 @@ indexmap = "2.6.0"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
+
+[workspace]
+resolver = "2"
