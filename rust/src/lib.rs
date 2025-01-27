@@ -33,7 +33,11 @@ include!("__AUTOGEN__compilation_time.rs");
 pub fn main() -> Result<(), JsValue> {
     web_sys::console::debug_1(&"Hello from Rust!".into());
     web_sys::console::debug_1(&format!("Rust compiled at: {}", RUST_COMPILATION_TIME).into());
+
+    // Debug panics on wasm32-unknown-unknown by providing a panic hook that forwards panic
+    // messages to console.error.
     panic::set_hook(Box::new(console_error_panic_hook::hook));
+
     Ok(())
 }
 
