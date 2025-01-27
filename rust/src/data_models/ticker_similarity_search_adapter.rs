@@ -35,6 +35,7 @@ pub struct TickerSimilaritySearchAdapter {
     ticker_symbol_mapper: Arc<TickerSymbolMapper>,
 }
 
+/// Compatibility layer for `ticker_similarity_search` crate
 impl TickerSimilaritySearchAdapter {
     pub async fn from_ticker_vector_config_key(
         ticker_vector_config_key: &str,
