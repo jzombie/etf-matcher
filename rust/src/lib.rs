@@ -431,30 +431,37 @@ pub async fn get_cosine_by_ticker(
     Ok(js_array.into())
 }
 
-// TODO: Re-add
-// #[wasm_bindgen]
-// pub async fn get_cosine_by_ticker_bucket(
-//     ticker_vector_config_key: &str,
-//     tickers_with_weight: JsValue,
-// ) -> Result<JsValue, JsValue> {
-//     // Deserialize the input JsValue into Rust Vec<TickerWithWeight>
-//     let tickers_with_weight: Vec<TickerWithWeight> =
-//         serde_wasm_bindgen::from_value(tickers_with_weight)
-//             .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
+#[wasm_bindgen]
+pub async fn get_cosine_by_ticker_bucket(
+    ticker_vector_config_key: &str,
+    tickers_with_weight: JsValue,
+) -> Result<JsValue, JsValue> {
+    // Deserialize the input JsValue into Rust Vec<TickerWithWeight>
+    let tickers_with_weight: Vec<TickerWithWeight> =
+        serde_wasm_bindgen::from_value(tickers_with_weight)
+            .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
 
-//     // Rank tickers by cosine similarity using the quantity
-//     let ranked_tickers: Vec<ticker_vector_analysis::CosineSimilarityResult> =
-//         ticker_vector_analysis::CosineSimilarityResult::get_cosine_by_ticker_bucket(
-//             ticker_vector_config_key,
-//             &tickers_with_weight,
-//         )
-//         .await
-//         .map_err(|err| JsValue::from_str(&err))?;
+    // TODO: Remove
+    // Rank tickers by cosine similarity using the quantity
+    // let ranked_tickers: Vec<ticker_vector_analysis::CosineSimilarityResult> =
+    //     ticker_vector_analysis::CosineSimilarityResult::get_cosine_by_ticker_bucket(
+    //         ticker_vector_config_key,
+    //         &tickers_with_weight,
+    //     )
+    //     .await
+    //     .map_err(|err| JsValue::from_str(&err))?;
 
-//     // Serialize the result back to JsValue
-//     serde_wasm_bindgen::to_value(&ranked_tickers)
-//         .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
-// }
+    let ticker_similarity_search_adapter =
+        TickerSimilaritySearchAdapter::from_ticker_vector_config_key(ticker_vector_config_key)
+            .await?;
+
+    let similar_tickers =
+        ticker_similarity_search_adapter.get_cosine_by_ticker_bucket(&tickers_with_weight)?;
+
+    // Serialize the result back to JsValue
+    serde_wasm_bindgen::to_value(&similar_tickers)
+        .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
+}
 
 #[wasm_bindgen]
 pub fn get_all_ticker_vector_configs() -> Result<JsValue, JsValue> {

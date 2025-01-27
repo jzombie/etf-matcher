@@ -218,6 +218,7 @@ impl TickerSimilaritySearchAdapter {
         let ticker_vector_repository = Arc::clone(&self.ticker_vector_repository);
         let ticker_symbol_mapper = Arc::clone(&self.ticker_symbol_mapper);
 
+        // TODO: Dedupe
         let tickers_with_weight_id_based: Vec<TickerWithWeightIdBased> = tickers_with_weight
             .iter()
             .map(|ticker_with_weight| TickerWithWeightIdBased {
@@ -257,6 +258,36 @@ impl TickerSimilaritySearchAdapter {
             TickerCosineSimilarityIdBased::get_cosine_by_ticker(
                 &ticker_vector_repository,
                 ticker_id,
+            )?;
+
+        let cosine_results = self.cosine_results_id_based_to_symbol_based(&cosine_results_id_based);
+
+        Ok(cosine_results)
+    }
+
+    pub fn get_cosine_by_ticker_bucket(
+        &self,
+        tickers_with_weight: &[TickerWithWeight],
+    ) -> Result<Vec<TickerCosineSimilarity>, JsValue> {
+        let ticker_vector_repository = Arc::clone(&self.ticker_vector_repository);
+        let ticker_symbol_mapper = Arc::clone(&self.ticker_symbol_mapper);
+
+        // TODO: Dedupe
+        let tickers_with_weight_id_based: Vec<TickerWithWeightIdBased> = tickers_with_weight
+            .iter()
+            .map(|ticker_with_weight| TickerWithWeightIdBased {
+                ticker_id: ticker_symbol_mapper
+                    .get_ticker_id(ticker_with_weight.ticker_symbol.to_string())
+                    // TODO: Don't use unwrap
+                    .unwrap(),
+                weight: ticker_with_weight.weight,
+            })
+            .collect();
+
+        let cosine_results_id_based: Vec<TickerCosineSimilarityIdBased> =
+            TickerCosineSimilarityIdBased::get_cosine_by_ticker_bucket(
+                &ticker_vector_repository,
+                &tickers_with_weight_id_based,
             )?;
 
         let cosine_results = self.cosine_results_id_based_to_symbol_based(&cosine_results_id_based);
