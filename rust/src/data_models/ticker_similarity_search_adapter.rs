@@ -71,6 +71,7 @@ impl TickerSimilaritySearchAdapter {
         let url = DataURL::TickerVectors(ticker_vector_config_key.to_string()).value();
 
         // TODO: This may not need to be cached via this mechanism since the byte array is stored separately
+        // (ideally it should still maintain in the reporting that it is indeed still cached)
         let file_content = utils::xhr_fetch_cached(url.to_string())
             .await
             .map_err(|err| format!("Failed to fetch file: {:?}", err))?;
