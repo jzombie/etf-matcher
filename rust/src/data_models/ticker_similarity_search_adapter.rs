@@ -5,15 +5,22 @@ use crate::utils::ticker_utils::get_ticker_symbol_map;
 use std::sync::Arc;
 use ticker_similarity_search::data_models::{
     TickerEuclideanDistance as TickerEuclideanDistanceIdBased, TickerSymbolMapper,
-    TickerVectorRepository,
+    TickerVectorRepository, TickerWithWeight as TickerWithWeightIdBased,
 };
 use wasm_bindgen::JsValue;
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct TickerEuclideanDistance {
     pub ticker_symbol: TickerSymbol,
     pub distance: f32,
     pub original_pca_coords: Vec<f32>,
     pub translated_pca_coords: Vec<f32>,
+}
+
+#[derive(serde::Serialize, serde::Deserialize)]
+pub struct TickerWithWeight {
+    pub ticker_symbol: TickerSymbol,
+    pub weight: f32,
 }
 
 pub struct TickerSimilaritySearchAdapter {
@@ -143,9 +150,9 @@ impl TickerSimilaritySearchAdapter {
             ticker_vector_repository.get_registered_vectors_count()
         )));
 
-        // TODO: Don't use nwrap
         let ticker_id = ticker_symbol_mapper
             .get_ticker_id(ticker_symbol.to_string())
+            // TODO: Don't use unwrap
             .unwrap();
 
         let euclidean_results_id_based: Vec<TickerEuclideanDistanceIdBased> =
@@ -157,9 +164,49 @@ impl TickerSimilaritySearchAdapter {
         let euclidean_results = euclidean_results_id_based
             .iter()
             .map(|result| TickerEuclideanDistance {
-                // TODO: Don't use unwrap
                 ticker_symbol: ticker_symbol_mapper
                     .get_ticker_symbol(result.ticker_id)
+                    // TODO: Don't use unwrap
+                    .unwrap(),
+                distance: result.distance,
+                original_pca_coords: result.original_pca_coords.clone(),
+                translated_pca_coords: result.translated_pca_coords.clone(),
+            })
+            .collect();
+
+        Ok(euclidean_results)
+    }
+
+    pub fn get_euclidean_by_ticker_bucket(
+        &self,
+        tickers_with_weight: &[TickerWithWeight],
+    ) -> Result<Vec<TickerEuclideanDistance>, JsValue> {
+        let ticker_vector_repository = Arc::clone(&self.ticker_vector_repository);
+        let ticker_symbol_mapper = Arc::clone(&self.ticker_symbol_mapper);
+
+        let tickers_with_weight_id_based: Vec<TickerWithWeightIdBased> = tickers_with_weight
+            .iter()
+            .map(|ticker_with_weight| TickerWithWeightIdBased {
+                ticker_id: ticker_symbol_mapper
+                    .get_ticker_id(ticker_with_weight.ticker_symbol.to_string())
+                    // TODO: Don't use unwrap
+                    .unwrap(),
+                weight: ticker_with_weight.weight,
+            })
+            .collect();
+
+        let euclidean_results_id_based: Vec<TickerEuclideanDistanceIdBased> =
+            TickerEuclideanDistanceIdBased::get_euclidean_by_ticker_bucket(
+                &ticker_vector_repository,
+                &tickers_with_weight_id_based,
+            )?;
+
+        let euclidean_results = euclidean_results_id_based
+            .iter()
+            .map(|result| TickerEuclideanDistance {
+                ticker_symbol: ticker_symbol_mapper
+                    .get_ticker_symbol(result.ticker_id)
+                    // TODO: Don't use unwrap
                     .unwrap(),
                 distance: result.distance,
                 original_pca_coords: result.original_pca_coords.clone(),

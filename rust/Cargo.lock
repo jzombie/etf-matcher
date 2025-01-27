@@ -2541,7 +2541,6 @@ dependencies = [
  "flatbuffers",
  "lazy_static",
  "rand",
- "serde",
  "tui",
 ]
 

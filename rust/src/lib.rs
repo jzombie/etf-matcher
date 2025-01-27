@@ -1,5 +1,3 @@
-// TODO: Re-add
-// use data_models::ticker_vector_analysis::TickerWithWeight;
 use levenshtein::levenshtein;
 use qrcode_generator::QrCodeEcc;
 use serde_wasm_bindgen::{from_value, to_value};
@@ -15,21 +13,19 @@ mod utils;
 use crate::types::TickerSymbol;
 
 use crate::data_models::{
-    DataBuildInfo, DataURL, ETFAggregateDetail, ETFHoldingTicker, ETFHoldingWeight, Exchange,
-    Industry, PaginatedResults, Sector, Ticker10KDetail, TickerBucket, TickerDetail,
-    TickerETFHolder, TickerEuclideanDistance, TickerSearch, TickerSearchResult,
-    TickerSimilaritySearchAdapter,
+    image::get_image_info as lib_get_image_info, DataBuildInfo, DataURL, ETFAggregateDetail,
+    ETFHoldingTicker, ETFHoldingWeight, Exchange, Industry, PaginatedResults, Sector,
+    Ticker10KDetail, TickerBucket, TickerDetail, TickerETFHolder, TickerSearch, TickerSearchResult,
+    TickerSimilaritySearchAdapter, TickerWithWeight,
 };
 
-use crate::data_models::image::get_image_info as lib_get_image_info;
-
-// Rename the imported functions to avoid name conflicts
-use crate::utils::network_cache::{
-    clear_cache as lib_clear_cache, get_cache_details as lib_get_cache_details,
-    get_cache_size as lib_get_cache_size, remove_cache_entry as lib_remove_cache_entry,
+use crate::utils::{
+    network_cache::{
+        clear_cache as lib_clear_cache, get_cache_details as lib_get_cache_details,
+        get_cache_size as lib_get_cache_size, remove_cache_entry as lib_remove_cache_entry,
+    },
+    ticker_vector_config_utils,
 };
-
-use crate::utils::ticker_vector_config_utils;
 
 include!("__AUTOGEN__compilation_time.rs");
 
@@ -290,6 +286,7 @@ pub async fn get_euclidean_by_ticker(
         TickerSimilaritySearchAdapter::from_ticker_vector_config_key(ticker_vector_config_key)
             .await?;
 
+    // TODO: Rename variable to ticker_euclidean_distances
     let closest_tickers =
         ticker_similarity_search_adapter.get_euclidean_by_ticker(&ticker_symbol)?;
 
@@ -350,30 +347,37 @@ pub async fn get_euclidean_by_ticker(
     Ok(js_array.into())
 }
 
-// TODO: Re-add
-// #[wasm_bindgen]
-// pub async fn get_euclidean_by_ticker_bucket(
-//     ticker_vector_config_key: &str,
-//     tickers_with_weight: JsValue,
-// ) -> Result<JsValue, JsValue> {
-//     // Deserialize the input JsValue into Rust Vec<TickerWithWeight>
-//     let tickers_with_weight: Vec<TickerWithWeight> =
-//         serde_wasm_bindgen::from_value(tickers_with_weight)
-//             .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
+#[wasm_bindgen]
+pub async fn get_euclidean_by_ticker_bucket(
+    ticker_vector_config_key: &str,
+    tickers_with_weight: JsValue,
+) -> Result<JsValue, JsValue> {
+    // Deserialize the input JsValue into Rust Vec<TickerWithWeight>
+    let tickers_with_weight: Vec<TickerWithWeight> =
+        serde_wasm_bindgen::from_value(tickers_with_weight)
+            .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
 
-//     // Find the closest tickers by quantity
-//     let closest_tickers: Vec<ticker_vector_analysis::TickerDistance> =
-//         ticker_vector_analysis::TickerDistance::get_euclidean_by_ticker_bucket(
-//             ticker_vector_config_key,
-//             &tickers_with_weight,
-//         )
-//         .await
-//         .map_err(|err| JsValue::from_str(&err))?;
+    // Find the closest tickers by quantity
+    // let closest_tickers: Vec<ticker_vector_analysis::TickerDistance> =
+    //     ticker_vector_analysis::TickerDistance::get_euclidean_by_ticker_bucket(
+    //         ticker_vector_config_key,
+    //         &tickers_with_weight,
+    //     )
+    //     .await
+    //     .map_err(|err| JsValue::from_str(&err))?;
 
-//     // Serialize the result back to JsValue
-//     serde_wasm_bindgen::to_value(&closest_tickers)
-//         .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
-// }
+    let ticker_similarity_search_adapter =
+        TickerSimilaritySearchAdapter::from_ticker_vector_config_key(ticker_vector_config_key)
+            .await?;
+
+    // TODO: Rename variable to ticker_euclidean_distances
+    let closest_tickers =
+        ticker_similarity_search_adapter.get_euclidean_by_ticker_bucket(&tickers_with_weight)?;
+
+    // Serialize the result back to JsValue
+    serde_wasm_bindgen::to_value(&closest_tickers)
+        .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
+}
 
 // TODO: Re-add
 // #[wasm_bindgen]
