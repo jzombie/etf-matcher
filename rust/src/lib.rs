@@ -303,6 +303,7 @@ pub async fn get_euclidean_by_ticker(
     let js_array = js_sys::Array::new();
 
     for ticker_distance in closest_tickers {
+        // TODO: Auto reflect
         let obj = js_sys::Object::new();
         js_sys::Reflect::set(
             &obj,
@@ -357,6 +358,7 @@ pub async fn get_euclidean_by_ticker_bucket(
         serde_wasm_bindgen::from_value(tickers_with_weight)
             .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
 
+    // TODO: Remove
     // Find the closest tickers by quantity
     // let closest_tickers: Vec<ticker_vector_analysis::TickerDistance> =
     //     ticker_vector_analysis::TickerDistance::get_euclidean_by_ticker_bucket(
@@ -379,54 +381,55 @@ pub async fn get_euclidean_by_ticker_bucket(
         .map_err(|err| JsValue::from_str(&format!("Failed to serialize output: {}", err)))
 }
 
-// TODO: Re-add
-// #[wasm_bindgen]
-// pub async fn get_cosine_by_ticker(
-//     ticker_vector_config_key: &str,
-//     ticker_symbol: TickerSymbol,
-// ) -> Result<JsValue, JsValue> {
-//     // Call the rank_tickers_by_cosine_similarity function from the ticker_vector_analysis module
-//     let similar_tickers = ticker_vector_analysis::CosineSimilarityResult::get_cosine_by_ticker(
-//         ticker_vector_config_key,
-//         ticker_symbol,
-//     )
-//     .await
-//     .map_err(|err| {
-//         JsValue::from_str(&format!(
-//             "Failed to rank tickers by cosine similarity: {}",
-//             err
-//         ))
-//     })?;
+#[wasm_bindgen]
+pub async fn get_cosine_by_ticker(
+    ticker_vector_config_key: &str,
+    ticker_symbol: TickerSymbol,
+) -> Result<JsValue, JsValue> {
+    // TODO: Remove
+    // // Call the rank_tickers_by_cosine_similarity function from the ticker_vector_analysis module
+    // let similar_tickers = ticker_vector_analysis::CosineSimilarityResult::get_cosine_by_ticker(
+    //     ticker_vector_config_key,
+    //     ticker_symbol,
+    // )
+    // .await
+    // .map_err(|err| {
+    //     JsValue::from_str(&format!(
+    //         "Failed to rank tickers by cosine similarity: {}",
+    //         err
+    //     ))
+    // })?;
 
-//     // Convert the results to JsValue
-//     let js_array = js_sys::Array::new();
+    let ticker_similarity_search_adapter =
+        TickerSimilaritySearchAdapter::from_ticker_vector_config_key(ticker_vector_config_key)
+            .await?;
 
-//     for similarity_result in similar_tickers {
-//         let obj = js_sys::Object::new();
-//         js_sys::Reflect::set(
-//             &obj,
-//             &JsValue::from_str("ticker_id"),
-//             &JsValue::from(similarity_result.ticker_id),
-//         )
-//         .unwrap();
-//         js_sys::Reflect::set(
-//             &obj,
-//             &JsValue::from_str("ticker_symbol"),
-//             &JsValue::from(similarity_result.ticker_symbol),
-//         )
-//         .unwrap();
-//         js_sys::Reflect::set(
-//             &obj,
-//             &JsValue::from_str("similarity_score"),
-//             &JsValue::from(similarity_result.similarity_score),
-//         )
-//         .unwrap();
+    let similar_tickers = ticker_similarity_search_adapter.get_cosine_by_ticker(ticker_symbol)?;
 
-//         js_array.push(&obj);
-//     }
+    // Convert the results to JsValue
+    let js_array = js_sys::Array::new();
 
-//     Ok(js_array.into())
-// }
+    for similarity_result in similar_tickers {
+        // TODO: Auto reflect
+        let obj = js_sys::Object::new();
+        js_sys::Reflect::set(
+            &obj,
+            &JsValue::from_str("ticker_symbol"),
+            &JsValue::from(similarity_result.ticker_symbol),
+        )
+        .unwrap();
+        js_sys::Reflect::set(
+            &obj,
+            &JsValue::from_str("similarity_score"),
+            &JsValue::from(similarity_result.similarity_score),
+        )
+        .unwrap();
+
+        js_array.push(&obj);
+    }
+
+    Ok(js_array.into())
+}
 
 // TODO: Re-add
 // #[wasm_bindgen]
