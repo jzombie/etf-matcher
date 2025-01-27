@@ -61,6 +61,13 @@ impl TickerSimilaritySearchAdapter {
     async fn init_ticker_vector_repository(
         ticker_vector_config_key: &str,
     ) -> Result<Arc<TickerVectorRepository>, JsValue> {
+        // Check the alias cache for an existing instance
+        if let Ok(cached_ticker_vector_repository) =
+            TickerVectorRepository::from_alias(ticker_vector_config_key)
+        {
+            return Ok(cached_ticker_vector_repository);
+        }
+
         let url = DataURL::TickerVectors(ticker_vector_config_key.to_string()).value();
 
         // TODO: This may not need to be cached via this mechanism since the byte array is stored separately
@@ -68,8 +75,10 @@ impl TickerSimilaritySearchAdapter {
             .await
             .map_err(|err| format!("Failed to fetch file: {:?}", err))?;
 
-        let ticker_vector_repository =
-            TickerVectorRepository::from_flatbuffers_byte_array(file_content.as_slice())?;
+        let ticker_vector_repository = TickerVectorRepository::from_flatbuffers_byte_array(
+            file_content.as_slice(),
+            ticker_vector_config_key,
+        )?;
 
         // TODO: Remove
         web_sys::console::debug_1(&JsValue::from_str(&format!(
