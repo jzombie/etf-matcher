@@ -151,21 +151,26 @@ impl TickerSimilaritySearchAdapter {
     fn euclidean_results_id_based_to_symbol_based(
         &self,
         euclidean_results_id_based: &Vec<TickerEuclideanDistanceIdBased>,
-    ) -> Vec<TickerEuclideanDistance> {
+    ) -> Result<Vec<TickerEuclideanDistance>, String> {
         let ticker_symbol_mapper = Arc::clone(&self.ticker_symbol_mapper);
 
         euclidean_results_id_based
             .iter()
-            .map(|result| TickerEuclideanDistance {
-                ticker_symbol: ticker_symbol_mapper
+            .map(|result| {
+                let ticker_symbol = ticker_symbol_mapper
                     .get_ticker_symbol(result.ticker_id)
-                    // TODO: Don't use unwrap
-                    .unwrap(),
-                distance: result.distance,
-                original_pca_coords: result.original_pca_coords.clone(),
-                translated_pca_coords: result.translated_pca_coords.clone(),
+                    .map_err(|err| {
+                        format!("Error mapping ticker ID {}: {}", result.ticker_id, err)
+                    })?;
+
+                Ok(TickerEuclideanDistance {
+                    ticker_symbol,
+                    distance: result.distance,
+                    original_pca_coords: result.original_pca_coords.clone(),
+                    translated_pca_coords: result.translated_pca_coords.clone(),
+                })
             })
-            .collect()
+            .collect::<Result<Vec<TickerEuclideanDistance>, String>>()
     }
 
     fn cosine_results_id_based_to_symbol_based(
@@ -220,7 +225,7 @@ impl TickerSimilaritySearchAdapter {
             )?;
 
         let euclidean_results =
-            self.euclidean_results_id_based_to_symbol_based(&euclidean_results_id_based);
+            self.euclidean_results_id_based_to_symbol_based(&euclidean_results_id_based)?;
 
         Ok(euclidean_results)
     }
@@ -265,7 +270,7 @@ impl TickerSimilaritySearchAdapter {
 
         // Convert ID-based results to symbol-based results
         let euclidean_results =
-            self.euclidean_results_id_based_to_symbol_based(&euclidean_results_id_based);
+            self.euclidean_results_id_based_to_symbol_based(&euclidean_results_id_based)?;
 
         Ok(euclidean_results)
     }
