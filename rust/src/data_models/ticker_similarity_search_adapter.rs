@@ -164,48 +164,70 @@ impl TickerSimilaritySearchAdapter {
         Ok(missing_ticker_symbols)
     }
 
+    /// Error handling is optional here; handled by the caller. This is to allow the caller to
+    /// determine whether to just ignore errors in Euclidean results, which could be related to
+    /// the underlying vector ticker IDs not being fully in sync with the mapping.
     fn euclidean_results_id_based_to_symbol_based(
         &self,
         euclidean_results_id_based: &Vec<TickerEuclideanDistanceIdBased>,
-    ) -> Result<Vec<TickerEuclideanDistance>, String> {
+        on_error: Option<&dyn Fn(String)>, // Optional error handling callback
+    ) -> Vec<TickerEuclideanDistance> {
         euclidean_results_id_based
             .iter()
-            .map(|result| {
-                let ticker_symbol = self
+            .filter_map(|result| {
+                match self
                     .ticker_symbol_mapper
                     .get_ticker_symbol(result.ticker_id)
-                    .map_err(|err| {
-                        format!("Error mapping ticker ID {}: {}", result.ticker_id, err)
-                    })?;
-
-                Ok(TickerEuclideanDistance {
-                    ticker_symbol,
-                    distance: result.distance,
-                    original_pca_coords: result.original_pca_coords.clone(),
-                    translated_pca_coords: result.translated_pca_coords.clone(),
-                })
+                {
+                    Ok(ticker_symbol) => Some(TickerEuclideanDistance {
+                        ticker_symbol,
+                        distance: result.distance,
+                        original_pca_coords: result.original_pca_coords.clone(),
+                        translated_pca_coords: result.translated_pca_coords.clone(),
+                    }),
+                    Err(err) => {
+                        if let Some(callback) = on_error {
+                            callback(format!(
+                                "Error mapping ticker ID {}: {}",
+                                result.ticker_id, err
+                            ));
+                        }
+                        None // Skip the entry with an error
+                    }
+                }
             })
-            .collect::<Result<Vec<TickerEuclideanDistance>, String>>()
+            .collect()
     }
 
+    /// Error handling is optional here; handled by the caller. This is to allow the caller to
+    /// determine whether to just ignore errors in cosine results, which could be related to
+    /// the underlying vector ticker IDs not being fully in sync with the mapping.
     fn cosine_results_id_based_to_symbol_based(
         &self,
         cosine_results_id_based: &Vec<TickerCosineSimilarityIdBased>,
-    ) -> Result<Vec<TickerCosineSimilarity>, String> {
+        on_error: Option<&dyn Fn(String)>, // Optional error handling callback
+    ) -> Vec<TickerCosineSimilarity> {
         cosine_results_id_based
             .iter()
-            .map(|result| {
-                let ticker_symbol = self
+            .filter_map(|result| {
+                match self
                     .ticker_symbol_mapper
                     .get_ticker_symbol(result.ticker_id)
-                    .map_err(|err| {
-                        format!("Error mapping ticker ID {}: {}", result.ticker_id, err)
-                    })?;
-
-                Ok(TickerCosineSimilarity {
-                    ticker_symbol,
-                    similarity_score: result.similarity_score,
-                })
+                {
+                    Ok(ticker_symbol) => Some(TickerCosineSimilarity {
+                        ticker_symbol,
+                        similarity_score: result.similarity_score,
+                    }),
+                    Err(err) => {
+                        if let Some(callback) = on_error {
+                            callback(format!(
+                                "Error mapping ticker ID {}: {}",
+                                result.ticker_id, err
+                            ));
+                        }
+                        None // Skip the entry with an error
+                    }
+                }
             })
             .collect()
     }
@@ -238,7 +260,7 @@ impl TickerSimilaritySearchAdapter {
             )?;
 
         let euclidean_results =
-            self.euclidean_results_id_based_to_symbol_based(&euclidean_results_id_based)?;
+            self.euclidean_results_id_based_to_symbol_based(&euclidean_results_id_based, None);
 
         Ok(euclidean_results)
     }
@@ -280,7 +302,7 @@ impl TickerSimilaritySearchAdapter {
 
         // Convert ID-based results to symbol-based results
         let euclidean_results =
-            self.euclidean_results_id_based_to_symbol_based(&euclidean_results_id_based)?;
+            self.euclidean_results_id_based_to_symbol_based(&euclidean_results_id_based, None);
 
         Ok(euclidean_results)
     }
@@ -300,7 +322,7 @@ impl TickerSimilaritySearchAdapter {
             )?;
 
         let cosine_results =
-            self.cosine_results_id_based_to_symbol_based(&cosine_results_id_based)?;
+            self.cosine_results_id_based_to_symbol_based(&cosine_results_id_based, None);
 
         Ok(cosine_results)
     }
@@ -337,7 +359,7 @@ impl TickerSimilaritySearchAdapter {
             )?;
 
         let cosine_results =
-            self.cosine_results_id_based_to_symbol_based(&cosine_results_id_based)?;
+            self.cosine_results_id_based_to_symbol_based(&cosine_results_id_based, None);
 
         Ok(cosine_results)
     }
