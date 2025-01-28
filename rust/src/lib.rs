@@ -43,11 +43,13 @@ pub fn main() -> Result<(), JsValue> {
 
 #[wasm_bindgen]
 pub fn generate_qr_code(data: &str) -> Result<JsValue, JsValue> {
-    // TODO: Remove `unwrap`
-    let result =
-        qrcode_generator::to_svg_to_string(data, QrCodeEcc::Low, 1024, None::<&str>).unwrap();
+    // Generate the QR code as an SVG string
+    let result = qrcode_generator::to_svg_to_string(data, QrCodeEcc::Low, 1024, None::<&str>)
+        .map_err(|err| JsValue::from_str(&format!("Failed to generate QR code: {}", err)))?;
+
+    // Convert the result to a JsValue
     to_value(&result).map_err(|err: serde_wasm_bindgen::Error| {
-        JsValue::from_str(&format!("Failed to generate QR code: {}", err))
+        JsValue::from_str(&format!("Failed to convert QR code to JsValue: {}", err))
     })
 }
 
@@ -290,48 +292,9 @@ pub async fn get_euclidean_by_ticker(
     let js_array = js_sys::Array::new();
 
     for ticker_distance in closest_tickers {
-        // TODO: Auto reflect
-        let obj = js_sys::Object::new();
-        js_sys::Reflect::set(
-            &obj,
-            &JsValue::from_str("ticker_symbol"),
-            &JsValue::from(ticker_distance.ticker_symbol),
-        )
-        // TODO: Remove `unwrap`
-        .unwrap();
-        js_sys::Reflect::set(
-            &obj,
-            &JsValue::from_str("distance"),
-            &JsValue::from(ticker_distance.distance),
-        )
-        // TODO: Remove `unwrap`
-        .unwrap();
-
-        // Convert original PCA coordinates to JS array
-        let original_pca_array = js_sys::Array::new();
-        for coord in ticker_distance.original_pca_coords {
-            original_pca_array.push(&JsValue::from_f64(coord as f64));
-        }
-        js_sys::Reflect::set(
-            &obj,
-            &JsValue::from_str("original_pca_coords"),
-            &original_pca_array.into(),
-        )
-        // TODO: Remove `unwrap`
-        .unwrap();
-
-        // Convert translated PCA coordinates to JS array
-        let translated_pca_array = js_sys::Array::new();
-        for coord in ticker_distance.translated_pca_coords {
-            translated_pca_array.push(&JsValue::from_f64(coord as f64));
-        }
-        js_sys::Reflect::set(
-            &obj,
-            &JsValue::from_str("translated_pca_coords"),
-            &translated_pca_array.into(),
-        )
-        // TODO: Remove `unwrap`
-        .unwrap();
+        // Automatically serialize the struct into a JsValue
+        let obj = to_value(&ticker_distance)
+            .map_err(|err| JsValue::from_str(&format!("Serialization error: {}", err)))?;
 
         js_array.push(&obj);
     }
@@ -377,22 +340,9 @@ pub async fn get_cosine_by_ticker(
     let js_array = js_sys::Array::new();
 
     for similarity_result in similar_tickers {
-        // TODO: Auto reflect
-        let obj = js_sys::Object::new();
-        js_sys::Reflect::set(
-            &obj,
-            &JsValue::from_str("ticker_symbol"),
-            &JsValue::from(similarity_result.ticker_symbol),
-        )
-        // TODO: Remove `unwrap`
-        .unwrap();
-        js_sys::Reflect::set(
-            &obj,
-            &JsValue::from_str("similarity_score"),
-            &JsValue::from(similarity_result.similarity_score),
-        )
-        // TODO: Remove `unwrap`
-        .unwrap();
+        // Automatically serialize the struct into a JsValue
+        let obj = to_value(&similarity_result)
+            .map_err(|err| JsValue::from_str(&format!("Serialization error: {}", err)))?;
 
         js_array.push(&obj);
     }
