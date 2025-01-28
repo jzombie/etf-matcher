@@ -117,33 +117,49 @@ impl TickerSimilaritySearchAdapter {
         &self,
         ticker_symbols: &[TickerSymbol],
     ) -> Result<Vec<TickerSymbol>, JsValue> {
-        // TODO: Remove
+        // Debug registered vectors count
         web_sys::console::debug_1(&JsValue::from_str(&format!(
             "Registered vectors count [audit_missing_ticker_vectors]: {:?}",
             self.ticker_vector_repository.get_registered_vectors_count()
         )));
 
-        // Get ticker IDs, propagating errors as `JsValue`
-        let ticker_ids = self
-            .ticker_symbol_mapper
-            .get_ticker_ids(ticker_symbols)
-            .map_err(|err| JsValue::from_str(&err))?; // Propagate error as JsValue
+        let mut valid_ticker_ids = Vec::new();
+        let mut missing_ticker_symbols = Vec::new();
+
+        // Separate valid ticker IDs and missing ticker symbols
+        for symbol in ticker_symbols {
+            match self.ticker_symbol_mapper.get_ticker_id(symbol.to_string()) {
+                Ok(ticker_id) => valid_ticker_ids.push(ticker_id),
+                Err(err) => {
+                    web_sys::console::error_1(&JsValue::from_str(&format!(
+                        "Error mapping ticker symbol {}: {}",
+                        symbol, err
+                    )));
+                    missing_ticker_symbols.push(symbol.clone());
+                }
+            }
+        }
 
         // Audit for missing ticker IDs
         let missing_ticker_ids = self
             .ticker_vector_repository
-            .audit_missing_tickers(&ticker_ids)
+            .audit_missing_tickers(&valid_ticker_ids)
             .map_err(|err| {
                 JsValue::from_str(&format!("Error auditing missing tickers: {}", err))
             })?;
 
-        // Get ticker symbols for the missing IDs
-        let missing_ticker_symbols = self
-            .ticker_symbol_mapper
-            .get_ticker_symbols(&missing_ticker_ids)
-            .map_err(|err| {
-                JsValue::from_str(&format!("Error mapping missing ticker IDs: {}", err))
-            })?;
+        // Map missing ticker IDs to symbols
+        for ticker_id in missing_ticker_ids {
+            match self.ticker_symbol_mapper.get_ticker_symbol(ticker_id) {
+                Ok(symbol) => missing_ticker_symbols.push(symbol),
+                Err(err) => {
+                    web_sys::console::error_1(&JsValue::from_str(&format!(
+                        "Error mapping missing ticker ID {}: {}",
+                        ticker_id, err
+                    )));
+                }
+            }
+        }
 
         Ok(missing_ticker_symbols)
     }
