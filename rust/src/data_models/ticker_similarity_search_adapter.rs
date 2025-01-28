@@ -1,5 +1,3 @@
-// TODO: Urgent! Replace .unwrap()
-
 use crate::data_models::DataURL;
 use crate::types::TickerSymbol;
 use crate::utils;
@@ -128,12 +126,24 @@ impl TickerSimilaritySearchAdapter {
             ticker_vector_repository.get_registered_vectors_count()
         )));
 
-        let ticker_ids = ticker_symbol_mapper.get_ticker_ids(ticker_symbols);
+        // Get ticker IDs, propagating errors as `JsValue`
+        let ticker_ids = ticker_symbol_mapper
+            .get_ticker_ids(ticker_symbols)
+            .map_err(|err| JsValue::from_str(&err))?; // Propagate error as JsValue
 
-        let missing_ticker_ids =
-            ticker_vector_repository.audit_missing_tickers(ticker_ids.as_slice())?;
+        // Audit for missing ticker IDs
+        let missing_ticker_ids = ticker_vector_repository
+            .audit_missing_tickers(&ticker_ids)
+            .map_err(|err| {
+                JsValue::from_str(&format!("Error auditing missing tickers: {}", err))
+            })?;
 
-        let missing_ticker_symbols = ticker_symbol_mapper.get_ticker_symbols(&missing_ticker_ids);
+        // Get ticker symbols for the missing IDs
+        let missing_ticker_symbols = ticker_symbol_mapper
+            .get_ticker_symbols(&missing_ticker_ids)
+            .map_err(|err| {
+                JsValue::from_str(&format!("Error mapping missing ticker IDs: {}", err))
+            })?;
 
         Ok(missing_ticker_symbols)
     }
@@ -161,17 +171,22 @@ impl TickerSimilaritySearchAdapter {
     fn cosine_results_id_based_to_symbol_based(
         &self,
         cosine_results_id_based: &Vec<TickerCosineSimilarityIdBased>,
-    ) -> Vec<TickerCosineSimilarity> {
+    ) -> Result<Vec<TickerCosineSimilarity>, String> {
         let ticker_symbol_mapper = Arc::clone(&self.ticker_symbol_mapper);
 
         cosine_results_id_based
             .iter()
-            .map(|result| TickerCosineSimilarity {
-                ticker_symbol: ticker_symbol_mapper
+            .map(|result| {
+                let ticker_symbol = ticker_symbol_mapper
                     .get_ticker_symbol(result.ticker_id)
-                    // TODO: Don't use unwrap
-                    .unwrap(),
-                similarity_score: result.similarity_score,
+                    .map_err(|err| {
+                        format!("Error mapping ticker ID {}: {}", result.ticker_id, err)
+                    })?;
+
+                Ok(TickerCosineSimilarity {
+                    ticker_symbol,
+                    similarity_score: result.similarity_score,
+                })
             })
             .collect()
     }
@@ -196,10 +211,7 @@ impl TickerSimilaritySearchAdapter {
             ticker_vector_repository.get_registered_vectors_count()
         )));
 
-        let ticker_id = ticker_symbol_mapper
-            .get_ticker_id(ticker_symbol.to_string())
-            // TODO: Don't use unwrap
-            .unwrap();
+        let ticker_id = ticker_symbol_mapper.get_ticker_id(ticker_symbol.to_string())?;
 
         let euclidean_results_id_based: Vec<TickerEuclideanDistanceIdBased> =
             TickerEuclideanDistanceIdBased::get_euclidean_by_ticker(
@@ -217,27 +229,41 @@ impl TickerSimilaritySearchAdapter {
         &self,
         tickers_with_weight: &[TickerWithWeight],
     ) -> Result<Vec<TickerEuclideanDistance>, JsValue> {
-        let ticker_vector_repository = Arc::clone(&self.ticker_vector_repository);
-        let ticker_symbol_mapper = Arc::clone(&self.ticker_symbol_mapper);
+        // let ticker_vector_repository = Arc::clone(&self.ticker_vector_repository);
+        // let ticker_symbol_mapper = Arc::clone(&self.ticker_symbol_mapper);
 
         // TODO: Dedupe
         let tickers_with_weight_id_based: Vec<TickerWithWeightIdBased> = tickers_with_weight
             .iter()
-            .map(|ticker_with_weight| TickerWithWeightIdBased {
-                ticker_id: ticker_symbol_mapper
-                    .get_ticker_id(ticker_with_weight.ticker_symbol.to_string())
-                    // TODO: Don't use unwrap
-                    .unwrap(),
-                weight: ticker_with_weight.weight,
+            .map(|result| {
+                let ticker_id = self
+                    .ticker_symbol_mapper
+                    .get_ticker_id(result.ticker_symbol.to_string())
+                    .map_err(|err| {
+                        JsValue::from_str(&format!(
+                            "Error mapping ticker symbol {}: {}",
+                            result.ticker_symbol, err
+                        ))
+                    })?;
+
+                Ok(TickerWithWeightIdBased {
+                    ticker_id,
+                    weight: result.weight,
+                })
             })
-            .collect();
+            .collect::<Result<Vec<TickerWithWeightIdBased>, JsValue>>()?;
 
-        let euclidean_results_id_based: Vec<TickerEuclideanDistanceIdBased> =
+        // Compute euclidean distances (ID-based)
+        let euclidean_results_id_based =
             TickerEuclideanDistanceIdBased::get_euclidean_by_ticker_bucket(
-                &ticker_vector_repository,
+                &self.ticker_vector_repository,
                 &tickers_with_weight_id_based,
-            )?;
+            )
+            .map_err(|err| {
+                JsValue::from_str(&format!("Error computing Euclidean distances: {}", err))
+            })?;
 
+        // Convert ID-based results to symbol-based results
         let euclidean_results =
             self.euclidean_results_id_based_to_symbol_based(&euclidean_results_id_based);
 
@@ -251,10 +277,7 @@ impl TickerSimilaritySearchAdapter {
         let ticker_vector_repository = Arc::clone(&self.ticker_vector_repository);
         let ticker_symbol_mapper = Arc::clone(&self.ticker_symbol_mapper);
 
-        let ticker_id = ticker_symbol_mapper
-            .get_ticker_id(ticker_symbol.to_string())
-            // TODO: Don't use unwrap
-            .unwrap();
+        let ticker_id = ticker_symbol_mapper.get_ticker_id(ticker_symbol.to_string())?;
 
         let cosine_results_id_based: Vec<TickerCosineSimilarityIdBased> =
             TickerCosineSimilarityIdBased::get_cosine_by_ticker(
@@ -262,7 +285,8 @@ impl TickerSimilaritySearchAdapter {
                 ticker_id,
             )?;
 
-        let cosine_results = self.cosine_results_id_based_to_symbol_based(&cosine_results_id_based);
+        let cosine_results =
+            self.cosine_results_id_based_to_symbol_based(&cosine_results_id_based)?;
 
         Ok(cosine_results)
     }
@@ -271,28 +295,38 @@ impl TickerSimilaritySearchAdapter {
         &self,
         tickers_with_weight: &[TickerWithWeight],
     ) -> Result<Vec<TickerCosineSimilarity>, JsValue> {
-        let ticker_vector_repository = Arc::clone(&self.ticker_vector_repository);
-        let ticker_symbol_mapper = Arc::clone(&self.ticker_symbol_mapper);
+        // let ticker_vector_repository = Arc::clone(&self.ticker_vector_repository);
+        // let ticker_symbol_mapper = Arc::clone(&self.ticker_symbol_mapper);
 
         // TODO: Dedupe
         let tickers_with_weight_id_based: Vec<TickerWithWeightIdBased> = tickers_with_weight
             .iter()
-            .map(|ticker_with_weight| TickerWithWeightIdBased {
-                ticker_id: ticker_symbol_mapper
-                    .get_ticker_id(ticker_with_weight.ticker_symbol.to_string())
-                    // TODO: Don't use unwrap
-                    .unwrap(),
-                weight: ticker_with_weight.weight,
+            .map(|result| {
+                let ticker_id = self
+                    .ticker_symbol_mapper
+                    .get_ticker_id(result.ticker_symbol.to_string())
+                    .map_err(|err| {
+                        JsValue::from_str(&format!(
+                            "Error mapping ticker symbol {}: {}",
+                            result.ticker_symbol, err
+                        ))
+                    })?;
+
+                Ok(TickerWithWeightIdBased {
+                    ticker_id,
+                    weight: result.weight,
+                })
             })
-            .collect();
+            .collect::<Result<Vec<TickerWithWeightIdBased>, JsValue>>()?;
 
         let cosine_results_id_based: Vec<TickerCosineSimilarityIdBased> =
             TickerCosineSimilarityIdBased::get_cosine_by_ticker_bucket(
-                &ticker_vector_repository,
+                &self.ticker_vector_repository,
                 &tickers_with_weight_id_based,
             )?;
 
-        let cosine_results = self.cosine_results_id_based_to_symbol_based(&cosine_results_id_based);
+        let cosine_results =
+            self.cosine_results_id_based_to_symbol_based(&cosine_results_id_based)?;
 
         Ok(cosine_results)
     }
