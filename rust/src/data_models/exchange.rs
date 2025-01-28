@@ -22,11 +22,13 @@ pub struct Exchange {
 
 impl Exchange {
     pub async fn get_short_name_by_exchange_id(exchange_id: ExchangeId) -> Result<String, JsValue> {
+        // TODO: Remove `unwrap`
         // Ensure cache is preloaded
         if EXCHANGE_SHORT_NAME_BY_ID_CACHE.lock().unwrap().is_empty() {
             Self::preload_exchange_short_name_cache().await?;
         }
 
+        // TODO: Remove `unwrap`
         // Check if the result is already in the cache
         let cache = EXCHANGE_SHORT_NAME_BY_ID_CACHE.lock().unwrap();
         if let Some(short_name) = cache.get(&exchange_id) {
@@ -50,6 +52,7 @@ impl Exchange {
         // Parse the CSV data
         let data: Vec<Exchange> = parse_csv_data(csv_string.as_bytes())?;
 
+        // TODO: Remove `unwrap`
         // Load data into cache
         let mut cache = EXCHANGE_SHORT_NAME_BY_ID_CACHE.lock().unwrap();
         for exchange in data {

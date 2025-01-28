@@ -21,11 +21,13 @@ pub struct Industry {
 
 impl Industry {
     pub async fn get_industry_name_with_id(industry_id: IndustryId) -> Result<String, JsValue> {
+        // TODO: Remove `unwrap`
         // Ensure cache is preloaded
         if INDUSTRY_NAME_BY_ID_CACHE.lock().unwrap().is_empty() {
             Self::preload_industry_name_cache().await?;
         }
 
+        // TODO: Remove `unwrap`
         // Check if the result is already in the cache
         let cache = INDUSTRY_NAME_BY_ID_CACHE.lock().unwrap();
         if let Some(industry) = cache.get(&industry_id) {
@@ -65,6 +67,7 @@ impl Industry {
         // Parse the CSV data
         let data: Vec<Industry> = parse_csv_data(csv_string.as_bytes())?;
 
+        // TODO: Remove `unwrap`
         // Load data into cache
         let mut cache = INDUSTRY_NAME_BY_ID_CACHE.lock().unwrap();
         for industry in data {

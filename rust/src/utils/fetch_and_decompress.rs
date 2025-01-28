@@ -6,8 +6,8 @@ use futures::FutureExt;
 use hex;
 use std::convert::TryInto;
 use std::io::Read;
-use wasm_bindgen::prelude::*;
 use std::sync::Arc;
+use wasm_bindgen::prelude::*;
 
 use crate::utils::decrypt::password::{
     decrypt_password, get_encrypted_password, get_iv, Aes256Cbc,
@@ -43,19 +43,22 @@ where
     } else {
         web_sys::console::debug_1(&"Skipping cache".into());
         // Convert the Arc<Vec<u8>> to Vec<u8> here
-        decrypt_and_decompress_data(url_str).await.map(|data| (*data).clone())
+        decrypt_and_decompress_data(url_str)
+            .await
+            .map(|data| (*data).clone())
     }
 }
-
 
 async fn decrypt_and_decompress_data(url: String) -> Result<Arc<Vec<u8>>, JsValue> {
     let encrypted_data: Vec<u8> = xhr_fetch(url).await?;
 
     let salt: &[u8] = &encrypted_data[0..16];
 
+    // TODO: Remove `unwrap`
     let encrypted_password: Vec<u8> = hex::decode(get_encrypted_password().as_bytes()).unwrap();
     let key: [u8; 32] = decrypt_password(&encrypted_password, salt)?;
 
+    // TODO: Remove `unwrap`
     let iv: [u8; 16] = hex::decode(get_iv().as_bytes())
         .unwrap()
         .try_into()

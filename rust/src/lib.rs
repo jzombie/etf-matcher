@@ -43,6 +43,7 @@ pub fn main() -> Result<(), JsValue> {
 
 #[wasm_bindgen]
 pub fn generate_qr_code(data: &str) -> Result<JsValue, JsValue> {
+    // TODO: Remove `unwrap`
     let result =
         qrcode_generator::to_svg_to_string(data, QrCodeEcc::Low, 1024, None::<&str>).unwrap();
     to_value(&result).map_err(|err: serde_wasm_bindgen::Error| {
@@ -296,14 +297,14 @@ pub async fn get_euclidean_by_ticker(
             &JsValue::from_str("ticker_symbol"),
             &JsValue::from(ticker_distance.ticker_symbol),
         )
-        // TODO: Remove unwrap
+        // TODO: Remove `unwrap`
         .unwrap();
         js_sys::Reflect::set(
             &obj,
             &JsValue::from_str("distance"),
             &JsValue::from(ticker_distance.distance),
         )
-        // TODO: Remove unwrap
+        // TODO: Remove `unwrap`
         .unwrap();
 
         // Convert original PCA coordinates to JS array
@@ -316,7 +317,7 @@ pub async fn get_euclidean_by_ticker(
             &JsValue::from_str("original_pca_coords"),
             &original_pca_array.into(),
         )
-        // TODO: Remove unwrap
+        // TODO: Remove `unwrap`
         .unwrap();
 
         // Convert translated PCA coordinates to JS array
@@ -329,7 +330,7 @@ pub async fn get_euclidean_by_ticker(
             &JsValue::from_str("translated_pca_coords"),
             &translated_pca_array.into(),
         )
-        // TODO: Remove unwrap
+        // TODO: Remove `unwrap`
         .unwrap();
 
         js_array.push(&obj);
@@ -383,14 +384,14 @@ pub async fn get_cosine_by_ticker(
             &JsValue::from_str("ticker_symbol"),
             &JsValue::from(similarity_result.ticker_symbol),
         )
-        // TODO: Remove unwrap
+        // TODO: Remove `unwrap`
         .unwrap();
         js_sys::Reflect::set(
             &obj,
             &JsValue::from_str("similarity_score"),
             &JsValue::from(similarity_result.similarity_score),
         )
-        // TODO: Remove unwrap
+        // TODO: Remove `unwrap`
         .unwrap();
 
         js_array.push(&obj);

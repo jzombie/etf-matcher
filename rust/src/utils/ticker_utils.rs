@@ -50,6 +50,7 @@ async fn preload_symbol_and_exchange_cache() -> Result<(), JsValue> {
 
 // TODO: Move to `ticker_search` and skip the duplicate cache
 pub async fn get_ticker_id(ticker_symbol: TickerSymbol) -> Result<TickerId, JsValue> {
+    // TODO: Remove `unwrap`
     // Ensure cache is preloaded
     if SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE
         .lock()
@@ -59,6 +60,7 @@ pub async fn get_ticker_id(ticker_symbol: TickerSymbol) -> Result<TickerId, JsVa
         preload_symbol_and_exchange_cache().await?;
     }
 
+    // TODO: Remove `unwrap`
     let cache = SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE.lock().unwrap();
     for (ticker_id, (cached_symbol, _cached_exchange)) in cache.iter() {
         if cached_symbol.eq_ignore_ascii_case(&ticker_symbol) {
@@ -71,6 +73,7 @@ pub async fn get_ticker_id(ticker_symbol: TickerSymbol) -> Result<TickerId, JsVa
 
 // TODO: Move to `ticker_search` and skip the duplicate cache
 pub async fn get_ticker_symbol(ticker_id: TickerId) -> Result<TickerSymbol, JsValue> {
+    // TODO: Remove `unwrap`
     // Ensure cache is preloaded
     if SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE
         .lock()
@@ -80,6 +83,7 @@ pub async fn get_ticker_symbol(ticker_id: TickerId) -> Result<TickerSymbol, JsVa
         preload_symbol_and_exchange_cache().await?;
     }
 
+    // TODO: Remove `unwrap`
     let cache = SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE.lock().unwrap();
     for (cached_ticker_id, (ticker_symbol, _cached_exchange)) in cache.iter() {
         if *cached_ticker_id == ticker_id {
@@ -91,6 +95,7 @@ pub async fn get_ticker_symbol(ticker_id: TickerId) -> Result<TickerSymbol, JsVa
 }
 
 pub async fn get_ticker_symbol_map() -> Result<HashMap<TickerSymbol, TickerId>, JsValue> {
+    // TODO: Remove `unwrap`
     // Ensure cache is preloaded
     if SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE
         .lock()
@@ -100,6 +105,7 @@ pub async fn get_ticker_symbol_map() -> Result<HashMap<TickerSymbol, TickerId>, 
         preload_symbol_and_exchange_cache().await?;
     }
 
+    // TODO: Remove `unwrap`
     let cache = SYMBOL_AND_EXCHANGE_BY_TICKER_ID_CACHE.lock().unwrap();
     let symbol_map: HashMap<TickerSymbol, TickerId> = cache
         .iter()
