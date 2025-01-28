@@ -112,56 +112,15 @@ impl TickerSimilaritySearchAdapter {
         Ok(ticker_symbol_mapper)
     }
 
-    // TODO: Move to library
     pub fn audit_missing_ticker_vectors(
         &self,
         ticker_symbols: &[TickerSymbol],
     ) -> Result<Vec<TickerSymbol>, JsValue> {
-        // Debug registered vectors count
-        web_sys::console::debug_1(&JsValue::from_str(&format!(
-            "Registered vectors count [audit_missing_ticker_vectors]: {:?}",
-            self.ticker_vector_repository.get_registered_vectors_count()
-        )));
-
-        let mut valid_ticker_ids = Vec::new();
-        let mut missing_ticker_symbols = Vec::new();
-
-        // Separate valid ticker IDs and missing ticker symbols
-        for symbol in ticker_symbols {
-            match self.ticker_symbol_mapper.get_ticker_id(symbol.to_string()) {
-                Ok(ticker_id) => valid_ticker_ids.push(ticker_id),
-                Err(err) => {
-                    web_sys::console::error_1(&JsValue::from_str(&format!(
-                        "Error mapping ticker symbol {}: {}",
-                        symbol, err
-                    )));
-                    missing_ticker_symbols.push(symbol.clone());
-                }
-            }
-        }
-
-        // Audit for missing ticker IDs
-        let missing_ticker_ids = self
-            .ticker_vector_repository
-            .audit_missing_tickers(&valid_ticker_ids)
+        self.ticker_vector_repository
+            .audit_missing_ticker_vectors_by_symbol(&self.ticker_symbol_mapper, &ticker_symbols)
             .map_err(|err| {
-                JsValue::from_str(&format!("Error auditing missing tickers: {}", err))
-            })?;
-
-        // Map missing ticker IDs to symbols
-        for ticker_id in missing_ticker_ids {
-            match self.ticker_symbol_mapper.get_ticker_symbol(ticker_id) {
-                Ok(symbol) => missing_ticker_symbols.push(symbol),
-                Err(err) => {
-                    web_sys::console::error_1(&JsValue::from_str(&format!(
-                        "Error mapping missing ticker ID {}: {}",
-                        ticker_id, err
-                    )));
-                }
-            }
-        }
-
-        Ok(missing_ticker_symbols)
+                JsValue::from_str(&format!("audit_missing_ticker_vectors Error: {:?}", err))
+            })
     }
 
     pub fn get_euclidean_by_ticker(
@@ -191,20 +150,10 @@ impl TickerSimilaritySearchAdapter {
         &self,
         tickers_with_weight: &[TickerWithWeight],
     ) -> Result<Vec<TickerEuclideanDistance>, JsValue> {
-        // TODO: Dedupe
-        // Map your local TickerWithWeight to LibTickerWithWeight
-        let lib_tickers_with_weight: Vec<LibTickerWithWeight> = tickers_with_weight
-            .iter()
-            .map(|ticker| LibTickerWithWeight {
-                ticker_symbol: ticker.ticker_symbol.clone(),
-                weight: ticker.weight,
-            })
-            .collect();
-
         LibTickerEuclideanDistance::get_euclidean_by_ticker_bucket(
             &self.ticker_vector_repository,
             &self.ticker_symbol_mapper,
-            &lib_tickers_with_weight,
+            &self.to_lib_tickers_with_weight(tickers_with_weight),
         )
         .map(|results| {
             results
@@ -247,20 +196,10 @@ impl TickerSimilaritySearchAdapter {
         &self,
         tickers_with_weight: &[TickerWithWeight],
     ) -> Result<Vec<TickerCosineSimilarity>, JsValue> {
-        // TODO: Dedupe
-        // Map your local TickerWithWeight to LibTickerWithWeight
-        let lib_tickers_with_weight: Vec<LibTickerWithWeight> = tickers_with_weight
-            .iter()
-            .map(|ticker| LibTickerWithWeight {
-                ticker_symbol: ticker.ticker_symbol.clone(),
-                weight: ticker.weight,
-            })
-            .collect();
-
         LibTickerCosineSimilarity::get_cosine_by_ticker_bucket(
             &self.ticker_vector_repository,
             &self.ticker_symbol_mapper,
-            &lib_tickers_with_weight,
+            &self.to_lib_tickers_with_weight(tickers_with_weight),
         )
         .map(|results| {
             results
@@ -272,5 +211,19 @@ impl TickerSimilaritySearchAdapter {
                 .collect()
         })
         .map_err(|err| JsValue::from_str(&format!("get_cosine_by_ticker_bucket Error: {:?}", err)))
+    }
+
+    /// Converts local `[TickerWithWeight]` into struct defined by similarity search library
+    fn to_lib_tickers_with_weight(
+        &self,
+        tickers_with_weight: &[TickerWithWeight],
+    ) -> Vec<LibTickerWithWeight> {
+        tickers_with_weight
+            .iter()
+            .map(|ticker| LibTickerWithWeight {
+                ticker_symbol: ticker.ticker_symbol.clone(),
+                weight: ticker.weight,
+            })
+            .collect()
     }
 }
