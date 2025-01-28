@@ -42,6 +42,4 @@ pub mod ticker_similarity_search_adapter;
 
 pub use data_build_info::DataBuildInfo;
 
-pub use ticker_similarity_search_adapter::{
-    TickerEuclideanDistance, TickerSimilaritySearchAdapter, TickerWithWeight,
-};
+pub use ticker_similarity_search_adapter::{TickerSimilaritySearchAdapter, TickerWithWeight};

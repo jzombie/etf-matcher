@@ -255,15 +255,6 @@ pub async fn audit_missing_ticker_vectors(
         ))
     })?;
 
-    // TODO: Remove
-    // Perform the audit to find missing tickers
-    // let missing_tickers = ticker_vector_analysis::OwnedTickerVectors::audit_missing_tickers(
-    //     ticker_vector_config_key,
-    //     &ticker_symbols,
-    // )
-    // .await
-    // .map_err(|err| JsValue::from_str(&format!("Failed to audit missing tickers: {}", err)))?;
-
     let ticker_similarity_search_adapter =
         TickerSimilaritySearchAdapter::from_ticker_vector_config_key(ticker_vector_config_key)
             .await?;
@@ -294,15 +285,6 @@ pub async fn get_euclidean_by_ticker(
     let closest_tickers =
         ticker_similarity_search_adapter.get_euclidean_by_ticker(&ticker_symbol)?;
 
-    // TODO: Remove
-    // Call the find_closest_tickers function from the ticker_vector_analysis module
-    // let closest_tickers = ticker_vector_analysis::TickerDistance::get_euclidean_by_ticker(
-    //     ticker_vector_config_key,
-    //     ticker_symbol,
-    // )
-    // .await
-    // .map_err(|err| JsValue::from_str(&format!("Failed to find closest ticker IDs: {}", err)))?;
-
     // Convert the results to JsValue
     let js_array = js_sys::Array::new();
 
@@ -314,12 +296,14 @@ pub async fn get_euclidean_by_ticker(
             &JsValue::from_str("ticker_symbol"),
             &JsValue::from(ticker_distance.ticker_symbol),
         )
+        // TODO: Remove unwrap
         .unwrap();
         js_sys::Reflect::set(
             &obj,
             &JsValue::from_str("distance"),
             &JsValue::from(ticker_distance.distance),
         )
+        // TODO: Remove unwrap
         .unwrap();
 
         // Convert original PCA coordinates to JS array
@@ -332,6 +316,7 @@ pub async fn get_euclidean_by_ticker(
             &JsValue::from_str("original_pca_coords"),
             &original_pca_array.into(),
         )
+        // TODO: Remove unwrap
         .unwrap();
 
         // Convert translated PCA coordinates to JS array
@@ -344,6 +329,7 @@ pub async fn get_euclidean_by_ticker(
             &JsValue::from_str("translated_pca_coords"),
             &translated_pca_array.into(),
         )
+        // TODO: Remove unwrap
         .unwrap();
 
         js_array.push(&obj);
@@ -361,16 +347,6 @@ pub async fn get_euclidean_by_ticker_bucket(
     let tickers_with_weight: Vec<TickerWithWeight> =
         serde_wasm_bindgen::from_value(tickers_with_weight)
             .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
-
-    // TODO: Remove
-    // Find the closest tickers by quantity
-    // let closest_tickers: Vec<ticker_vector_analysis::TickerDistance> =
-    //     ticker_vector_analysis::TickerDistance::get_euclidean_by_ticker_bucket(
-    //         ticker_vector_config_key,
-    //         &tickers_with_weight,
-    //     )
-    //     .await
-    //     .map_err(|err| JsValue::from_str(&err))?;
 
     let ticker_similarity_search_adapter =
         TickerSimilaritySearchAdapter::from_ticker_vector_config_key(ticker_vector_config_key)
@@ -390,20 +366,6 @@ pub async fn get_cosine_by_ticker(
     ticker_vector_config_key: &str,
     ticker_symbol: TickerSymbol,
 ) -> Result<JsValue, JsValue> {
-    // TODO: Remove
-    // // Call the rank_tickers_by_cosine_similarity function from the ticker_vector_analysis module
-    // let similar_tickers = ticker_vector_analysis::CosineSimilarityResult::get_cosine_by_ticker(
-    //     ticker_vector_config_key,
-    //     ticker_symbol,
-    // )
-    // .await
-    // .map_err(|err| {
-    //     JsValue::from_str(&format!(
-    //         "Failed to rank tickers by cosine similarity: {}",
-    //         err
-    //     ))
-    // })?;
-
     let ticker_similarity_search_adapter =
         TickerSimilaritySearchAdapter::from_ticker_vector_config_key(ticker_vector_config_key)
             .await?;
@@ -421,12 +383,14 @@ pub async fn get_cosine_by_ticker(
             &JsValue::from_str("ticker_symbol"),
             &JsValue::from(similarity_result.ticker_symbol),
         )
+        // TODO: Remove unwrap
         .unwrap();
         js_sys::Reflect::set(
             &obj,
             &JsValue::from_str("similarity_score"),
             &JsValue::from(similarity_result.similarity_score),
         )
+        // TODO: Remove unwrap
         .unwrap();
 
         js_array.push(&obj);
@@ -444,16 +408,6 @@ pub async fn get_cosine_by_ticker_bucket(
     let tickers_with_weight: Vec<TickerWithWeight> =
         serde_wasm_bindgen::from_value(tickers_with_weight)
             .map_err(|err| JsValue::from_str(&format!("Failed to deserialize input: {}", err)))?;
-
-    // TODO: Remove
-    // Rank tickers by cosine similarity using the quantity
-    // let ranked_tickers: Vec<ticker_vector_analysis::CosineSimilarityResult> =
-    //     ticker_vector_analysis::CosineSimilarityResult::get_cosine_by_ticker_bucket(
-    //         ticker_vector_config_key,
-    //         &tickers_with_weight,
-    //     )
-    //     .await
-    //     .map_err(|err| JsValue::from_str(&err))?;
 
     let ticker_similarity_search_adapter =
         TickerSimilaritySearchAdapter::from_ticker_vector_config_key(ticker_vector_config_key)
