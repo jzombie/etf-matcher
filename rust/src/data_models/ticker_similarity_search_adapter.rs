@@ -34,6 +34,9 @@ pub struct TickerSimilaritySearchAdapter {
     ticker_symbol_mapper: Arc<TickerSymbolMapper>,
 }
 
+// TODO: Make this configurable
+static MAX_RESULTS: usize = 20;
+
 /// Compatibility layer for `ticker_similarity_search` crate
 impl TickerSimilaritySearchAdapter {
     pub async fn from_ticker_vector_config_key(
@@ -131,6 +134,7 @@ impl TickerSimilaritySearchAdapter {
             &self.ticker_vector_repository,
             &self.ticker_symbol_mapper,
             ticker_symbol.to_string(),
+            MAX_RESULTS,
         )
         .map(|results| {
             results
@@ -154,6 +158,7 @@ impl TickerSimilaritySearchAdapter {
             &self.ticker_vector_repository,
             &self.ticker_symbol_mapper,
             &self.to_lib_tickers_with_weight(tickers_with_weight),
+            MAX_RESULTS,
         )
         .map(|results| {
             results
@@ -179,6 +184,7 @@ impl TickerSimilaritySearchAdapter {
             &self.ticker_vector_repository,
             &self.ticker_symbol_mapper,
             ticker_symbol.to_string(),
+            MAX_RESULTS,
         )
         .map(|results| {
             results
@@ -200,6 +206,7 @@ impl TickerSimilaritySearchAdapter {
             &self.ticker_vector_repository,
             &self.ticker_symbol_mapper,
             &self.to_lib_tickers_with_weight(tickers_with_weight),
+            MAX_RESULTS,
         )
         .map(|results| {
             results
