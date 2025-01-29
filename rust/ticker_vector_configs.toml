@@ -1,3 +1,4 @@
+# Note: Some of these details are unverified
 [ticker_vector_config.default]
 path = "v5.SPY-CORR-NO-SCALE-2.ticker_vectors_collection.flatbuffers.bin"
 description = "SPY CORR NO SCALE 2 Prototype (v5 series)"
@@ -7,4 +8,13 @@ features = 250
 vector_dimensions = 320
 training_sequence_length = 40
 training_data_sources = ["10-Q", "key metrics"]
-# Note: Some of these details are unverified
+
+[ticker_vector_config.v5-sma-lstm-stacks]
+path = "v5.SMA-LSTM-STACKS.autoencoder.ticker_vectors_collection.flatbuffers.bin"
+description = "v5 SMA LSTM STACKS"
+proto_noteboook = "v5.SMA-LSTM-STACKS.ipynb"
+last_training_time = "2025-01-28T12:00:00Z"
+features = 158
+vector_dimensions = 320
+training_sequence_length = 40
+training_data_sources = ["10-Q", "key metrics"]
