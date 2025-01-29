@@ -2541,6 +2541,7 @@ dependencies = [
  "flatbuffers",
  "lazy_static",
  "rand",
+ "ticker-sniffer",
  "tui",
 ]
 
