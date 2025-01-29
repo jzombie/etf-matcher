@@ -37,7 +37,7 @@ pub struct TickerSimilaritySearchAdapter {
 // TODO: Make this configurable
 static MAX_RESULTS: usize = 20;
 
-/// Compatibility layer for `ticker_similarity_search` crate
+/// Compatibility layer for `ticker-similarity-search` crate
 impl TickerSimilaritySearchAdapter {
     pub async fn from_ticker_vector_config_key(
         ticker_vector_config_key: &str,
