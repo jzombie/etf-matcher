@@ -18,3 +18,13 @@ features = 158
 vector_dimensions = 320
 training_sequence_length = 40
 training_data_sources = ["10-Q", "key metrics"]
+
+[ticker_vector_config.v5-sma-lstm-stacks-winsorized]
+path = "v5.SMA-LSTM-STACKS-WINSORIZED.autoencoder.ticker_vectors_collection.flatbuffers.bin"
+description = "v5 SMA LSTM STACKS WINSORIZED"
+proto_noteboook = "v5.SMA-LSTM-STACKS-WINSORIZED.ipynb"
+last_training_time = "2025-01-29T12:00:00Z"
+features = 158
+vector_dimensions = 320
+training_sequence_length = 40
+training_data_sources = ["10-Q", "key metrics"]
