@@ -9,12 +9,19 @@ use ticker_similarity_search::data_models::{
     TickerVectorRepository, TickerWithWeight as LibTickerWithWeight,
 };
 use wasm_bindgen::JsValue;
+
+#[derive(serde::Serialize, serde::Deserialize)]
+pub struct Coord2D {
+    x: f32,
+    y: f32,
+}
+
 #[derive(serde::Serialize, serde::Deserialize)]
 pub struct TickerEuclideanDistance {
     pub ticker_symbol: TickerSymbol,
     pub distance: f32,
-    pub original_pca_coords: Vec<f32>,
-    pub translated_pca_coords: Vec<f32>,
+    pub original_pca_coords: Coord2D,
+    pub translated_pca_coords: Coord2D,
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
@@ -142,8 +149,14 @@ impl TickerSimilaritySearchAdapter {
                 .map(|result| TickerEuclideanDistance {
                     ticker_symbol: result.ticker_symbol,
                     distance: result.distance,
-                    original_pca_coords: result.original_pca_coords,
-                    translated_pca_coords: result.translated_pca_coords,
+                    original_pca_coords: Coord2D {
+                        x: result.original_pca_coords.x,
+                        y: result.original_pca_coords.y,
+                    },
+                    translated_pca_coords: Coord2D {
+                        x: result.translated_pca_coords.x,
+                        y: result.translated_pca_coords.y,
+                    },
                 })
                 .collect()
         })
@@ -166,8 +179,14 @@ impl TickerSimilaritySearchAdapter {
                 .map(|result| TickerEuclideanDistance {
                     ticker_symbol: result.ticker_symbol,
                     distance: result.distance,
-                    original_pca_coords: result.original_pca_coords,
-                    translated_pca_coords: result.translated_pca_coords,
+                    original_pca_coords: Coord2D {
+                        x: result.original_pca_coords.x,
+                        y: result.original_pca_coords.y,
+                    },
+                    translated_pca_coords: Coord2D {
+                        x: result.translated_pca_coords.x,
+                        y: result.translated_pca_coords.y,
+                    },
                 })
                 .collect()
         })
