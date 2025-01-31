@@ -5,9 +5,9 @@ use crate::utils::extract_logo_filename;
 use crate::utils::shard::query_shard_for_id;
 use crate::utils::ticker_utils::get_ticker_id;
 use crate::DataURL;
-use crate::IndustryById;
+use crate::Industry;
 use crate::JsValue;
-use crate::SectorById;
+use crate::Sector;
 use crate::TickerSearch;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -48,7 +48,7 @@ impl TickerWeightedSectorDistribution {
 
                     // Fetch the major sector name asynchronously
                     if let Ok(major_sector_name) =
-                        SectorById::get_major_sector_name_with_id(major_sector_id).await
+                        Sector::get_major_sector_name_with_id(major_sector_id).await
                     {
                         result.push(TickerWeightedSectorDistribution {
                             major_sector_name, // Use sector name instead of ID
@@ -133,7 +133,7 @@ impl ETFAggregateDetail {
         let top_market_value_sector_name = match etf_aggregate_detail_raw.top_market_value_sector_id
         {
             Some(top_market_value_sector_id) => {
-                SectorById::get_sector_name_with_id(top_market_value_sector_id)
+                Sector::get_sector_name_with_id(top_market_value_sector_id)
                     .await
                     .ok()
             }
@@ -143,7 +143,7 @@ impl ETFAggregateDetail {
         let top_market_value_industry_name =
             match etf_aggregate_detail_raw.top_market_value_industry_id {
                 Some(top_market_value_industry_id) => {
-                    IndustryById::get_industry_name_with_id(top_market_value_industry_id)
+                    Industry::get_industry_name_with_id(top_market_value_industry_id)
                         .await
                         .ok()
                 }
@@ -199,11 +199,9 @@ impl ETFAggregateDetail {
         };
 
         let top_pct_industry_name = match etf_aggregate_detail_raw.top_pct_industry_id {
-            Some(top_pct_industry_id) => {
-                IndustryById::get_industry_name_with_id(top_pct_industry_id)
-                    .await
-                    .ok()
-            }
+            Some(top_pct_industry_id) => Industry::get_industry_name_with_id(top_pct_industry_id)
+                .await
+                .ok(),
             None => None,
         };
 

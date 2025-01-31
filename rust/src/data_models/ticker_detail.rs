@@ -6,9 +6,9 @@ use crate::utils::shard::query_shard_for_id;
 use crate::utils::ticker_utils::get_ticker_id;
 use crate::DataURL;
 use crate::ETFAggregateDetail;
-use crate::IndustryById;
+use crate::Industry;
 use crate::JsValue;
-use crate::SectorById;
+use crate::Sector;
 use serde::{Deserialize, Deserializer, Serialize};
 use std::collections::HashMap;
 use web_sys::console;
@@ -85,15 +85,13 @@ impl TickerDetail {
 
         // Retrieve industry name if industry_id is present
         let industry_name = match raw_ticker_detail.industry_id {
-            Some(industry_id) => IndustryById::get_industry_name_with_id(industry_id)
-                .await
-                .ok(),
+            Some(industry_id) => Industry::get_industry_name_with_id(industry_id).await.ok(),
             None => None,
         };
 
         // Retrieve sector name if sector_id is ticker_detail
         let sector_name = match raw_ticker_detail.sector_id {
-            Some(sector_id) => SectorById::get_sector_name_with_id(sector_id).await.ok(),
+            Some(sector_id) => Sector::get_sector_name_with_id(sector_id).await.ok(),
             None => None,
         };
 

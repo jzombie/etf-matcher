@@ -9,20 +9,21 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 
 lazy_static! {
-    static ref SECTOR_NAME_BY_ID_CACHE: Mutex<HashMap<SectorId, SectorById>> =
+    static ref SECTOR_NAME_BY_ID_CACHE: Mutex<HashMap<SectorId, Sector>> =
         Mutex::new(HashMap::new());
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct SectorById {
+pub struct Sector {
     pub sector_id: SectorId,
     pub sector_name: String,
     pub major_sector_id: Option<SectorId>,
     pub major_sector_name: Option<String>,
 }
 
-impl SectorById {
+impl Sector {
     pub async fn get_sector_name_with_id(sector_id: SectorId) -> Result<String, JsValue> {
+        // TODO: Remove `unwrap`
         // Ensure cache is preloaded
         if SECTOR_NAME_BY_ID_CACHE.lock().unwrap().is_empty() {
             Self::preload_sector_name_cache().await?;
@@ -43,11 +44,13 @@ impl SectorById {
     pub async fn get_major_sector_name_with_id(
         major_sector_id: SectorId,
     ) -> Result<String, JsValue> {
+        // TODO: Remove `unwrap`
         // Ensure cache is preloaded
         if SECTOR_NAME_BY_ID_CACHE.lock().unwrap().is_empty() {
             Self::preload_sector_name_cache().await?;
         }
 
+        // TODO: Remove `unwrap`
         // Check if the major sector is in the cache
         let cache = SECTOR_NAME_BY_ID_CACHE.lock().unwrap();
         for sector in cache.values() {
@@ -83,6 +86,7 @@ impl SectorById {
     // }
 
     pub async fn get_all_major_sectors() -> Result<HashMap<SectorId, String>, JsValue> {
+        // TODO: Remove `unwrap`
         // Ensure cache is preloaded
         if SECTOR_NAME_BY_ID_CACHE.lock().unwrap().is_empty() {
             Self::preload_sector_name_cache().await?;
@@ -91,6 +95,7 @@ impl SectorById {
         // Create a map for major sectors
         let mut major_sector_cache = HashMap::new();
 
+        // TODO: Remove `unwrap`
         // Access the cache to populate the major sector data
         let cache = SECTOR_NAME_BY_ID_CACHE.lock().unwrap();
         for (_, sector) in cache.iter() {
@@ -113,8 +118,9 @@ impl SectorById {
         })?;
 
         // Parse the CSV data
-        let data: Vec<SectorById> = parse_csv_data(csv_string.as_bytes())?;
+        let data: Vec<Sector> = parse_csv_data(csv_string.as_bytes())?;
 
+        // TODO: Remove `unwrap`
         // Load data into cache
         let mut cache = SECTOR_NAME_BY_ID_CACHE.lock().unwrap();
         for sector in data {

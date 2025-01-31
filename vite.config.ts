@@ -176,6 +176,16 @@ export default defineConfig(({ mode }) => {
                   src: "README.md",
                   dest: path.resolve(DESTINATION_DIR),
                 },
+                // Copy ticker vector configs so they can consumed by external
+                // `ticker-similarity-search` crate for CLI analysis
+                {
+                  src: path.resolve(
+                    __dirname,
+                    "rust",
+                    "ticker_vector_configs.toml",
+                  ),
+                  dest: path.resolve(DESTINATION_DIR, "data"),
+                },
               ],
             }),
             {

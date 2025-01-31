@@ -184,11 +184,16 @@ export type RustServiceTickerVectorConfig = {
   training_data_sources: string[];
 };
 
+export type RustServiceCoord2D = {
+  x: number;
+  y: number;
+};
+
 export type RustServiceTickerDistance = {
   ticker_symbol: RustServiceTickerSymbol;
   distance: number;
-  original_pca_coords: number[];
-  translated_pca_coords: number[];
+  original_pca_coords: RustServiceCoord2D;
+  centered_pca_coords: RustServiceCoord2D;
 };
 
 export type RustServiceCosineSimilarityResult = {

@@ -15,7 +15,7 @@ pub struct TickerDistance {
     pub ticker_symbol: TickerSymbol,
     pub distance: f32,
     pub original_pca_coords: Vec<f32>,
-    pub translated_pca_coords: Vec<f32>,
+    pub centered_pca_coords: Vec<f32>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -129,7 +129,7 @@ impl TickerDistance {
                             .map(|coords| coords.iter().collect::<Vec<f32>>())
                             .unwrap_or_default();
 
-                        let translated_pca_coords = original_pca_coords
+                        let centered_pca_coords = original_pca_coords
                             .iter()
                             .zip(target_pca_coords)
                             .map(|(c, &target_c)| c - target_c)
@@ -149,7 +149,7 @@ impl TickerDistance {
                             ticker_symbol,
                             distance,
                             original_pca_coords,
-                            translated_pca_coords,
+                            centered_pca_coords,
                         });
                     }
                 }

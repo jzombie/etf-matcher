@@ -1,21 +1,30 @@
-# [ticker_vector_config.v5-exp-spy-corr-no-scale]
+# Note: Some of these details are unverified
 [ticker_vector_config.default]
-path = "v5.EXP-SPY-CORR-NO-SCALE.financial_vectors.tenq.bin"
-description = "EXP-SPY-CORR-NO-SCALE Prototype (v5 series)"
-proto_noteboook = "v5.EXP-SPY-CORR-NO-SCALE.spy-corr.ipynb"
-last_training_time = "2025-01-18T12:00:00Z"
+path = "v5.SPY-CORR-NO-SCALE-2.ticker_vectors_collection.flatbuffers.bin"
+description = "SPY CORR NO SCALE 2 Prototype (v5 series)"
+proto_noteboook = "v5.SPY-CORR-NO-SCALE-2.dataset-gen.spy-corr.ipynb"
+last_training_time = "2025-01-23T12:00:00Z"
 features = 250
 vector_dimensions = 320
 training_sequence_length = 40
 training_data_sources = ["10-Q", "key metrics"]
 
+[ticker_vector_config.v5-sma-lstm-stacks]
+path = "v5.SMA-LSTM-STACKS.autoencoder.ticker_vectors_collection.flatbuffers.bin"
+description = "v5 SMA LSTM STACKS"
+proto_noteboook = "v5.SMA-LSTM-STACKS.ipynb"
+last_training_time = "2025-01-28T12:00:00Z"
+features = 158
+vector_dimensions = 320
+training_sequence_length = 40
+training_data_sources = ["10-Q", "key metrics"]
 
-[ticker_vector_config.v5-ema-perc-v5-no-scale]
-path = "v5.EXP-EMA-PERC-NO-SCALE-2.financial_vectors.tenq.bin"
-description = "EXP-EMA-PERC-NO-SCALE-2 Prototype (v5 series)"
-proto_noteboook = "v5.EXP-EMA-PERC-NO-SCALE-2.ema-perc.ipynb"
-last_training_time = "2025-01-18T12:00:00Z"
-features = 155
+[ticker_vector_config.v5-sma-lstm-stacks-winsorized]
+path = "v5.SMA-LSTM-STACKS-WINSORIZED.autoencoder.ticker_vectors_collection.flatbuffers.bin"
+description = "v5 SMA LSTM STACKS WINSORIZED"
+proto_noteboook = "v5.SMA-LSTM-STACKS-WINSORIZED.ipynb"
+last_training_time = "2025-01-29T12:00:00Z"
+features = 158
 vector_dimensions = 320
 training_sequence_length = 40
 training_data_sources = ["10-Q", "key metrics"]

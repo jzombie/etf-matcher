@@ -39,6 +39,7 @@ import {
 } from "./lib/tickerVector";
 import type {
   RustServiceCacheDetail,
+  RustServiceCoord2D,
   RustServiceCosineSimilarityResult,
   RustServiceDataBuildInfo,
   RustServiceETFAggregateDetail,
@@ -78,6 +79,7 @@ export type {
   RustServiceTickerDistance,
   RustServiceCosineSimilarityResult,
   RustServiceTickerWithWeight,
+  RustServiceCoord2D,
 };
 
 export {
