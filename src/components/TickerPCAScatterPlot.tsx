@@ -70,8 +70,8 @@ export default function TickerPCAScatterPlot({
           const tickerDetail = await fetchTickerDetail(item.ticker_symbol);
           return {
             tickerDetail,
-            x: item.translated_pca_coords.x,
-            y: item.translated_pca_coords.y,
+            x: item.centered_pca_coords.x,
+            y: item.centered_pca_coords.y,
           };
         }),
       ).then((results) => {
@@ -105,6 +105,7 @@ export default function TickerPCAScatterPlot({
     [navigateToSymbol],
   );
 
+  // TODO: Consider moving this scaling to Rust
   // Calculate domain for the axes based on the chart data to ensure (0,0) is centered
   const maxValue = useMemo(
     () =>

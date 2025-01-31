@@ -21,7 +21,7 @@ pub struct TickerEuclideanDistance {
     pub ticker_symbol: TickerSymbol,
     pub distance: f32,
     pub original_pca_coords: Coord2D,
-    pub translated_pca_coords: Coord2D,
+    pub centered_pca_coords: Coord2D,
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
@@ -42,7 +42,7 @@ pub struct TickerSimilaritySearchAdapter {
 }
 
 // TODO: Make this configurable
-static MAX_RESULTS: usize = 20;
+static MAX_RESULTS: usize = 50;
 
 /// Compatibility layer for `ticker-similarity-search` crate
 impl TickerSimilaritySearchAdapter {
@@ -153,9 +153,9 @@ impl TickerSimilaritySearchAdapter {
                         x: result.original_pca_coords.x,
                         y: result.original_pca_coords.y,
                     },
-                    translated_pca_coords: Coord2D {
-                        x: result.translated_pca_coords.x,
-                        y: result.translated_pca_coords.y,
+                    centered_pca_coords: Coord2D {
+                        x: result.centered_pca_coords.x,
+                        y: result.centered_pca_coords.y,
                     },
                 })
                 .collect()
@@ -183,9 +183,9 @@ impl TickerSimilaritySearchAdapter {
                         x: result.original_pca_coords.x,
                         y: result.original_pca_coords.y,
                     },
-                    translated_pca_coords: Coord2D {
-                        x: result.translated_pca_coords.x,
-                        y: result.translated_pca_coords.y,
+                    centered_pca_coords: Coord2D {
+                        x: result.centered_pca_coords.x,
+                        y: result.centered_pca_coords.y,
                     },
                 })
                 .collect()
