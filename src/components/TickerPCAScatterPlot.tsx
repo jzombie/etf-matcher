@@ -107,15 +107,15 @@ export default function TickerPCAScatterPlot({
 
   // TODO: Consider moving this scaling to Rust
   // Calculate domain for the axes based on the chart data to ensure (0,0) is centered
-  const maxValue = useMemo(
-    () =>
-      chartData
-        ? Math.max(
-            ...chartData.map(({ x, y }) => Math.max(Math.abs(x), Math.abs(y))),
-          ) * MAX_VALUE_MULT_BUFFER
-        : 0,
-    [chartData],
-  );
+  // const maxValue = useMemo(
+  //   () =>
+  //     chartData
+  //       ? Math.max(
+  //           ...chartData.map(({ x, y }) => Math.max(Math.abs(x), Math.abs(y))),
+  //         ) * MAX_VALUE_MULT_BUFFER
+  //       : 0,
+  //   [chartData],
+  // );
 
   if (!chartData) {
     return (
@@ -141,14 +141,16 @@ export default function TickerPCAScatterPlot({
             <XAxis
               type="number"
               dataKey="x"
-              domain={[-maxValue, maxValue]}
+              // domain={[-maxValue, maxValue]}
+              domain={[-1, 1]}
               name="X"
               hide
             />
             <YAxis
               type="number"
               dataKey="y"
-              domain={[-maxValue, maxValue]}
+              // domain={[-maxValue, maxValue]}
+              domain={[-1, 1]}
               name="Y"
               hide
             />
