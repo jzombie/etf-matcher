@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import { Box, Divider, Typography } from "@mui/material";
 
@@ -37,8 +37,7 @@ const RADIAL_FILL_COLOR = "none";
 const YELLOW_DOT_COLOR = "yellow";
 const YELLOW_DOT_RADIUS = 5;
 
-// Prevent coordinates from overflowing radial chart
-const MAX_VALUE_MULT_BUFFER = 1.1;
+const GRAPH_DOMAIN = [-1, 1];
 
 type TickerPCAScatterPlotCoord = {
   tickerDetail: RustServiceTickerDetail;
@@ -105,18 +104,6 @@ export default function TickerPCAScatterPlot({
     [navigateToSymbol],
   );
 
-  // TODO: Consider moving this scaling to Rust
-  // Calculate domain for the axes based on the chart data to ensure (0,0) is centered
-  // const maxValue = useMemo(
-  //   () =>
-  //     chartData
-  //       ? Math.max(
-  //           ...chartData.map(({ x, y }) => Math.max(Math.abs(x), Math.abs(y))),
-  //         ) * MAX_VALUE_MULT_BUFFER
-  //       : 0,
-  //   [chartData],
-  // );
-
   if (!chartData) {
     return (
       <Center>
@@ -141,16 +128,14 @@ export default function TickerPCAScatterPlot({
             <XAxis
               type="number"
               dataKey="x"
-              // domain={[-maxValue, maxValue]}
-              domain={[-1, 1]}
+              domain={GRAPH_DOMAIN}
               name="X"
               hide
             />
             <YAxis
               type="number"
               dataKey="y"
-              // domain={[-maxValue, maxValue]}
-              domain={[-1, 1]}
+              domain={GRAPH_DOMAIN}
               name="Y"
               hide
             />
