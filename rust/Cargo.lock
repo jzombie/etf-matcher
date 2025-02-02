@@ -643,17 +643,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "etf-matcher-vector-config-loader"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "15b0b0e32f3096fec1993579727a4f0f6b39290efacf08f2cc4efae40120ed26"
-dependencies = [
- "reqwest",
- "serde",
- "toml",
-]
-
-[[package]]
 name = "exr"
 version = "1.72.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2442,10 +2431,8 @@ dependencies = [
 name = "ticker-similarity-search"
 version = "0.1.0-alpha"
 dependencies = [
- "etf-matcher-vector-config-loader",
  "flatbuffers",
  "lazy_static",
- "ticker-sniffer",
 ]
 
 [[package]]
