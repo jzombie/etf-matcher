@@ -2430,6 +2430,8 @@ dependencies = [
 [[package]]
 name = "ticker-similarity-search"
 version = "0.1.0-alpha"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e7e07935f0c3ebef035660c279b3828018920c754344592db223c9ca0fd6ebd7"
 dependencies = [
  "flatbuffers",
  "lazy_static",

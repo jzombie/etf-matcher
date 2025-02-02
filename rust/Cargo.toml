@@ -42,7 +42,7 @@ chrono = { version = "0.4.38", features = ["serde"] }
 indexmap = "2.6.0"
 levenshtein = "1.0.5"
 ticker-sniffer = "=0.1.0-alpha.1o"
-ticker-similarity-search = { path = "../rust.PROTOTYPE.ticker-similarity-search" }
+ticker-similarity-search = "=0.1.0-alpha"
 
 [build-dependencies]
 dotenv = "0.15"
@@ -54,6 +54,3 @@ indexmap = "2.6.0"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
-
-[workspace]
-resolver = "2"
