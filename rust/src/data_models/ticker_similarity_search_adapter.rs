@@ -68,15 +68,6 @@ impl TickerSimilaritySearchAdapter {
             ticker_symbol_mapper,
         };
 
-        // TODO: Remove
-        web_sys::console::debug_1(&JsValue::from_str(&format!(
-            "TickerVectorRepository address: {:p}, Registered vectors count: {}",
-            Arc::as_ptr(&instance.ticker_vector_repository),
-            instance
-                .ticker_vector_repository
-                .get_registered_vectors_count()
-        )));
-
         Ok(instance)
     }
 
@@ -102,14 +93,6 @@ impl TickerSimilaritySearchAdapter {
             file_content.as_slice(),
             ticker_vector_config_key,
         )?;
-
-        // TODO: Remove
-        web_sys::console::debug_1(&JsValue::from_str(&format!(
-            "Address: {:p}, Registered vectors count: {:?}, instance hash: {}",
-            Arc::as_ptr(&ticker_vector_repository),
-            ticker_vector_repository.get_registered_vectors_count(),
-            ticker_vector_repository.instance_hash
-        )));
 
         Ok(ticker_vector_repository)
     }
