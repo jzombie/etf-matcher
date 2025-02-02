@@ -19,12 +19,9 @@ use crate::data_models::{
     TickerSimilaritySearchAdapter, TickerWithWeight,
 };
 
-use crate::utils::{
-    network_cache::{
-        clear_cache as lib_clear_cache, get_cache_details as lib_get_cache_details,
-        get_cache_size as lib_get_cache_size, remove_cache_entry as lib_remove_cache_entry,
-    },
-    ticker_vector_config_utils,
+use crate::utils::network_cache::{
+    clear_cache as lib_clear_cache, get_cache_details as lib_get_cache_details,
+    get_cache_size as lib_get_cache_size, remove_cache_entry as lib_remove_cache_entry,
 };
 
 include!("__AUTOGEN__compilation_time.rs");
@@ -374,7 +371,7 @@ pub async fn get_cosine_by_ticker_bucket(
 
 #[wasm_bindgen]
 pub fn get_all_ticker_vector_configs() -> Result<JsValue, JsValue> {
-    let configs = ticker_vector_config_utils::get_all_ticker_vector_configs();
+    let configs = TickerSimilaritySearchAdapter::get_all_ticker_vector_configs();
     to_value(&configs).map_err(|err| {
         JsValue::from_str(&format!(
             "Failed to convert ticker vector configs to JsValue: {}",

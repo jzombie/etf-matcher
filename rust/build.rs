@@ -149,7 +149,7 @@ fn generate_ticker_vector_config_rust_code(config: &IndexMap<String, Value>) -> 
     code.push_str("use crate::config::TickerVectorConfig;\n\n");
 
     code.push_str(
-        "pub fn get_ticker_vectors_map() -> IndexMap<&'static str, TickerVectorConfig> {\n",
+        "pub fn get_ticker_vector_configs_map() -> IndexMap<&'static str, TickerVectorConfig> {\n",
     );
     code.push_str("    let mut map = IndexMap::new();\n");
 
