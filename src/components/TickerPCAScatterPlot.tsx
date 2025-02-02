@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import { Box, Divider, Typography } from "@mui/material";
 
@@ -37,13 +37,12 @@ const RADIAL_FILL_COLOR = "none";
 const YELLOW_DOT_COLOR = "yellow";
 const YELLOW_DOT_RADIUS = 5;
 
-// Prevent coordinates from overflowing radial chart
-const MAX_VALUE_MULT_BUFFER = 1.1;
+const GRAPH_DOMAIN = [-1, 1];
 
-type ChartVectorDistance = {
+type TickerPCAScatterPlotCoord = {
   tickerDetail: RustServiceTickerDetail;
-  pc1: number;
-  pc2: number;
+  x: number;
+  y: number;
 };
 
 export type TickerPCAScatterPlotProps = {
@@ -60,15 +59,18 @@ export default function TickerPCAScatterPlot({
     data: chartData,
     isPending: isLoading,
     execute: executeFetchDetail,
-  } = usePromise<ChartVectorDistance[] | null, [RustServiceTickerDistance[]]>({
+  } = usePromise<
+    TickerPCAScatterPlotCoord[] | null,
+    [RustServiceTickerDistance[]]
+  >({
     fn: (tickerDistances) => {
       return Promise.allSettled(
         tickerDistances.map(async (item) => {
           const tickerDetail = await fetchTickerDetail(item.ticker_symbol);
           return {
             tickerDetail,
-            pc1: item.translated_pca_coords[0],
-            pc2: item.translated_pca_coords[1],
+            x: item.centered_pca_coords.x,
+            y: item.centered_pca_coords.y,
           };
         }),
       ).then((results) => {
@@ -92,27 +94,14 @@ export default function TickerPCAScatterPlot({
   const navigateToSymbol = useTickerSymbolNavigation();
 
   const handleClick = useCallback(
-    (item: ChartVectorDistance) => {
+    (item: TickerPCAScatterPlotCoord) => {
       customLogger.debug(
-        `Ticker: ${item.tickerDetail.ticker_symbol}\nPC1: ${item.pc1}\nPC2: ${item.pc2}`,
+        `Ticker: ${item.tickerDetail.ticker_symbol}\nX: ${item.x}\nY: ${item.y}`,
       );
 
       navigateToSymbol(item.tickerDetail.ticker_symbol);
     },
     [navigateToSymbol],
-  );
-
-  // Calculate domain for the axes based on the chart data to ensure (0,0) is centered
-  const maxValue = useMemo(
-    () =>
-      chartData
-        ? Math.max(
-            ...chartData.map(({ pc1, pc2 }) =>
-              Math.max(Math.abs(pc1), Math.abs(pc2)),
-            ),
-          ) * MAX_VALUE_MULT_BUFFER
-        : 0,
-    [chartData],
   );
 
   if (!chartData) {
@@ -138,16 +127,16 @@ export default function TickerPCAScatterPlot({
           >
             <XAxis
               type="number"
-              dataKey="pc1"
-              domain={[-maxValue, maxValue]}
-              name="PC1"
+              dataKey="x"
+              domain={GRAPH_DOMAIN}
+              name="X"
               hide
             />
             <YAxis
               type="number"
-              dataKey="pc2"
-              domain={[-maxValue, maxValue]}
-              name="PC2"
+              dataKey="y"
+              domain={GRAPH_DOMAIN}
+              name="Y"
               hide
             />
             {renderRadialOverlay()}
@@ -224,7 +213,7 @@ const renderRadialOverlay = () => {
 
 function CustomTooltip({ active, payload }: TooltipProps<number, NameType>) {
   if (active && payload && payload.length) {
-    const { tickerDetail, pc1, pc2 } = payload[0].payload;
+    const { tickerDetail, x, y } = payload[0].payload;
 
     return (
       <Box
@@ -261,10 +250,10 @@ function CustomTooltip({ active, payload }: TooltipProps<number, NameType>) {
         <Divider sx={{ my: 1, borderColor: "rgba(255, 255, 255, 0.1)" }} />
 
         <Typography variant="body2" color="textSecondary">
-          PC1: {pc1.toFixed(2)}
+          X: {x.toFixed(2)}
         </Typography>
         <Typography variant="body2" color="textSecondary">
-          PC2: {pc2.toFixed(2)}
+          Y: {y.toFixed(2)}
         </Typography>
       </Box>
     );
@@ -274,7 +263,7 @@ function CustomTooltip({ active, payload }: TooltipProps<number, NameType>) {
 type CustomPointProps = {
   cx?: number;
   cy?: number;
-  payload?: ChartVectorDistance;
+  payload?: TickerPCAScatterPlotCoord;
 };
 
 function CustomPoint({ cx = 0, cy = 0, payload }: CustomPointProps) {

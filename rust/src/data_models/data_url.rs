@@ -1,4 +1,4 @@
-use crate::utils::ticker_vector_config_utils::get_ticker_vector_config_by_key;
+use crate::data_models::TickerSimilaritySearchAdapter;
 use std::path::PathBuf;
 
 pub enum DataURL {
@@ -43,18 +43,20 @@ impl DataURL {
                 Self::build_path("etf_holding_tickers_shard_index.enc")
             }
             DataURL::TickerVectors(ticker_vector_config_key) => {
-                get_ticker_vector_config_by_key(ticker_vector_config_key)
-                    .map(|ticker_vector_config| Self::build_path(&ticker_vector_config.path))
-                    .ok_or_else(|| {
-                        format!(
-                            "Key not found in ticker vectors map: {}",
-                            ticker_vector_config_key
-                        )
-                    })
-                    .expect(&format!(
-                        "Invalid ticker vector key: {}",
+                TickerSimilaritySearchAdapter::get_ticker_vector_config_by_key(
+                    ticker_vector_config_key,
+                )
+                .map(|ticker_vector_config| Self::build_path(&ticker_vector_config.path))
+                .ok_or_else(|| {
+                    format!(
+                        "Key not found in ticker vectors map: {}",
                         ticker_vector_config_key
-                    )) // Or propagate the error up
+                    )
+                })
+                .expect(&format!(
+                    "Invalid ticker vector key: {}",
+                    ticker_vector_config_key
+                )) // Or propagate the error up
             }
             DataURL::Image(_) => panic!("Use image_url() for image paths"), // Prevent calling value() for images
         }
