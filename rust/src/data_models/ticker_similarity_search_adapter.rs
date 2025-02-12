@@ -32,6 +32,19 @@ pub struct TickerWithWeight {
     pub weight: f32,
 }
 
+impl TickerWithWeight {
+    /// Converts local `[TickerWithWeight]` into struct defined by similarity search library
+    fn to_lib_tickers_with_weight(tickers_with_weight: &[Self]) -> Vec<LibTickerWithWeight> {
+        tickers_with_weight
+            .iter()
+            .map(|ticker| LibTickerWithWeight {
+                ticker_symbol: ticker.ticker_symbol.clone(),
+                weight: ticker.weight,
+            })
+            .collect()
+    }
+}
+
 #[derive(serde::Serialize, serde::Deserialize)]
 pub struct TickerCosineSimilarity {
     pub ticker_symbol: TickerSymbol,
@@ -181,7 +194,7 @@ impl TickerSimilaritySearchAdapter {
                 exclude_ticker_symbols: None,
                 max_results: MAX_RESULTS,
             },
-            &self.to_lib_tickers_with_weight(tickers_with_weight),
+            &TickerWithWeight::to_lib_tickers_with_weight(tickers_with_weight),
         )
         .map(|results| {
             results
@@ -245,7 +258,7 @@ impl TickerSimilaritySearchAdapter {
                 exclude_ticker_symbols: None,
                 max_results: MAX_RESULTS,
             },
-            &self.to_lib_tickers_with_weight(tickers_with_weight),
+            &TickerWithWeight::to_lib_tickers_with_weight(tickers_with_weight),
         )
         .map(|results| {
             results
@@ -257,19 +270,5 @@ impl TickerSimilaritySearchAdapter {
                 .collect()
         })
         .map_err(|err| JsValue::from_str(&format!("get_cosine_by_ticker_bucket Error: {:?}", err)))
-    }
-
-    /// Converts local `[TickerWithWeight]` into struct defined by similarity search library
-    fn to_lib_tickers_with_weight(
-        &self,
-        tickers_with_weight: &[TickerWithWeight],
-    ) -> Vec<LibTickerWithWeight> {
-        tickers_with_weight
-            .iter()
-            .map(|ticker| LibTickerWithWeight {
-                ticker_symbol: ticker.ticker_symbol.clone(),
-                weight: ticker.weight,
-            })
-            .collect()
     }
 }
