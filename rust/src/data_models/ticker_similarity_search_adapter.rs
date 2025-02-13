@@ -22,6 +22,7 @@ pub struct Coord2D {
 pub struct TickerEuclideanDistance {
     pub ticker_symbol: TickerSymbol,
     pub distance: f32,
+    pub distance_local_normalized: f32,
     pub original_pca_coords: Coord2D,
     pub centered_pca_coords: Coord2D,
 }
@@ -49,6 +50,7 @@ impl TickerWithWeight {
 pub struct TickerCosineSimilarity {
     pub ticker_symbol: TickerSymbol,
     pub similarity_score: f32,
+    pub similarity_score_normalized: f32,
 }
 
 pub struct TickerSimilaritySearchAdapter {
@@ -158,6 +160,7 @@ impl TickerSimilaritySearchAdapter {
                 include_ticker_symbols: None,
                 exclude_ticker_symbols: None,
                 max_results: MAX_RESULTS,
+                use_inverted: false,
             },
             ticker_symbol.to_string(),
         )
@@ -167,6 +170,7 @@ impl TickerSimilaritySearchAdapter {
                 .map(|result| TickerEuclideanDistance {
                     ticker_symbol: result.ticker_symbol,
                     distance: result.distance,
+                    distance_local_normalized: result.distance_local_normalized,
                     original_pca_coords: Coord2D {
                         x: result.original_pca_coords.x,
                         y: result.original_pca_coords.y,
@@ -193,6 +197,7 @@ impl TickerSimilaritySearchAdapter {
                 include_ticker_symbols: None,
                 exclude_ticker_symbols: None,
                 max_results: MAX_RESULTS,
+                use_inverted: false,
             },
             &TickerWithWeight::to_lib_tickers_with_weight(tickers_with_weight),
         )
@@ -202,6 +207,7 @@ impl TickerSimilaritySearchAdapter {
                 .map(|result| TickerEuclideanDistance {
                     ticker_symbol: result.ticker_symbol,
                     distance: result.distance,
+                    distance_local_normalized: result.distance_local_normalized,
                     original_pca_coords: Coord2D {
                         x: result.original_pca_coords.x,
                         y: result.original_pca_coords.y,
@@ -230,6 +236,7 @@ impl TickerSimilaritySearchAdapter {
                 include_ticker_symbols: None,
                 exclude_ticker_symbols: None,
                 max_results: MAX_RESULTS,
+                use_inverted: false,
             },
             ticker_symbol.to_string(),
         )
@@ -239,6 +246,7 @@ impl TickerSimilaritySearchAdapter {
                 .map(|result| TickerCosineSimilarity {
                     ticker_symbol: result.ticker_symbol,
                     similarity_score: result.similarity_score,
+                    similarity_score_normalized: result.similarity_score_normalized,
                 })
                 .collect()
         })
@@ -257,6 +265,7 @@ impl TickerSimilaritySearchAdapter {
                 include_ticker_symbols: None,
                 exclude_ticker_symbols: None,
                 max_results: MAX_RESULTS,
+                use_inverted: false,
             },
             &TickerWithWeight::to_lib_tickers_with_weight(tickers_with_weight),
         )
@@ -266,6 +275,7 @@ impl TickerSimilaritySearchAdapter {
                 .map(|result| TickerCosineSimilarity {
                     ticker_symbol: result.ticker_symbol,
                     similarity_score: result.similarity_score,
+                    similarity_score_normalized: result.similarity_score_normalized,
                 })
                 .collect()
         })
