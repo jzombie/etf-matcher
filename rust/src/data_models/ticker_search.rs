@@ -213,7 +213,7 @@ impl TickerSearch {
     }
 
     // TODO: In final implementation, include frequency scores, and ensure search results are ordered by frequency score by default
-    // Note: In `ticker-sniffer` >= 0.1.0-alpha4 there is a `utils::sort_results` method that will do this
+    // Note: In `ticker-sniffer` >= v0.1.0-alpha9 there is a `utils::sort_results` method that will do this
     pub async fn extract_results_from_text(
         text: &str,
         page: usize,
