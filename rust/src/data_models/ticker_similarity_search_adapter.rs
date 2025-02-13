@@ -6,7 +6,7 @@ use std::sync::Arc;
 use ticker_similarity_search::data_models::{
     TickerCosineSimilarity as LibTickerCosineSimilarity,
     TickerEuclideanDistance as LibTickerEuclideanDistance, TickerSymbolMapper,
-    TickerVectorRepository, TickerWithWeight as LibTickerWithWeight,
+    TickerVectorRepository, TickerVectorSearchConfig, TickerWithWeight as LibTickerWithWeight,
 };
 use wasm_bindgen::JsValue;
 
@@ -22,6 +22,7 @@ pub struct Coord2D {
 pub struct TickerEuclideanDistance {
     pub ticker_symbol: TickerSymbol,
     pub distance: f32,
+    pub distance_local_normalized: f32,
     pub original_pca_coords: Coord2D,
     pub centered_pca_coords: Coord2D,
 }
@@ -32,10 +33,24 @@ pub struct TickerWithWeight {
     pub weight: f32,
 }
 
+impl TickerWithWeight {
+    /// Converts local `[TickerWithWeight]` into struct defined by similarity search library
+    fn to_lib_tickers_with_weight(tickers_with_weight: &[Self]) -> Vec<LibTickerWithWeight> {
+        tickers_with_weight
+            .iter()
+            .map(|ticker| LibTickerWithWeight {
+                ticker_symbol: ticker.ticker_symbol.clone(),
+                weight: ticker.weight,
+            })
+            .collect()
+    }
+}
+
 #[derive(serde::Serialize, serde::Deserialize)]
 pub struct TickerCosineSimilarity {
     pub ticker_symbol: TickerSymbol,
     pub similarity_score: f32,
+    pub similarity_score_normalized: f32,
 }
 
 pub struct TickerSimilaritySearchAdapter {
@@ -138,10 +153,16 @@ impl TickerSimilaritySearchAdapter {
         ticker_symbol: &TickerSymbol,
     ) -> Result<Vec<TickerEuclideanDistance>, JsValue> {
         LibTickerEuclideanDistance::get_euclidean_by_ticker(
-            &self.ticker_vector_repository,
-            &self.ticker_symbol_mapper,
+            &TickerVectorSearchConfig {
+                ticker_vector_repository: &self.ticker_vector_repository,
+                ticker_symbol_mapper: &self.ticker_symbol_mapper,
+                // TODO: Handle
+                include_ticker_symbols: None,
+                exclude_ticker_symbols: None,
+                max_results: MAX_RESULTS,
+                use_inverted: false,
+            },
             ticker_symbol.to_string(),
-            MAX_RESULTS,
         )
         .map(|results| {
             results
@@ -149,6 +170,7 @@ impl TickerSimilaritySearchAdapter {
                 .map(|result| TickerEuclideanDistance {
                     ticker_symbol: result.ticker_symbol,
                     distance: result.distance,
+                    distance_local_normalized: result.distance_local_normalized,
                     original_pca_coords: Coord2D {
                         x: result.original_pca_coords.x,
                         y: result.original_pca_coords.y,
@@ -168,10 +190,16 @@ impl TickerSimilaritySearchAdapter {
         tickers_with_weight: &[TickerWithWeight],
     ) -> Result<Vec<TickerEuclideanDistance>, JsValue> {
         LibTickerEuclideanDistance::get_euclidean_by_ticker_bucket(
-            &self.ticker_vector_repository,
-            &self.ticker_symbol_mapper,
-            &self.to_lib_tickers_with_weight(tickers_with_weight),
-            MAX_RESULTS,
+            &TickerVectorSearchConfig {
+                ticker_vector_repository: &self.ticker_vector_repository,
+                ticker_symbol_mapper: &self.ticker_symbol_mapper,
+                // TODO: Handle
+                include_ticker_symbols: None,
+                exclude_ticker_symbols: None,
+                max_results: MAX_RESULTS,
+                use_inverted: false,
+            },
+            &TickerWithWeight::to_lib_tickers_with_weight(tickers_with_weight),
         )
         .map(|results| {
             results
@@ -179,6 +207,7 @@ impl TickerSimilaritySearchAdapter {
                 .map(|result| TickerEuclideanDistance {
                     ticker_symbol: result.ticker_symbol,
                     distance: result.distance,
+                    distance_local_normalized: result.distance_local_normalized,
                     original_pca_coords: Coord2D {
                         x: result.original_pca_coords.x,
                         y: result.original_pca_coords.y,
@@ -200,10 +229,16 @@ impl TickerSimilaritySearchAdapter {
         ticker_symbol: TickerSymbol,
     ) -> Result<Vec<TickerCosineSimilarity>, JsValue> {
         LibTickerCosineSimilarity::get_cosine_by_ticker(
-            &self.ticker_vector_repository,
-            &self.ticker_symbol_mapper,
+            &TickerVectorSearchConfig {
+                ticker_vector_repository: &self.ticker_vector_repository,
+                ticker_symbol_mapper: &self.ticker_symbol_mapper,
+                // TODO: Handle
+                include_ticker_symbols: None,
+                exclude_ticker_symbols: None,
+                max_results: MAX_RESULTS,
+                use_inverted: false,
+            },
             ticker_symbol.to_string(),
-            MAX_RESULTS,
         )
         .map(|results| {
             results
@@ -211,6 +246,7 @@ impl TickerSimilaritySearchAdapter {
                 .map(|result| TickerCosineSimilarity {
                     ticker_symbol: result.ticker_symbol,
                     similarity_score: result.similarity_score,
+                    similarity_score_normalized: result.similarity_score_normalized,
                 })
                 .collect()
         })
@@ -222,10 +258,16 @@ impl TickerSimilaritySearchAdapter {
         tickers_with_weight: &[TickerWithWeight],
     ) -> Result<Vec<TickerCosineSimilarity>, JsValue> {
         LibTickerCosineSimilarity::get_cosine_by_ticker_bucket(
-            &self.ticker_vector_repository,
-            &self.ticker_symbol_mapper,
-            &self.to_lib_tickers_with_weight(tickers_with_weight),
-            MAX_RESULTS,
+            &TickerVectorSearchConfig {
+                ticker_vector_repository: &self.ticker_vector_repository,
+                ticker_symbol_mapper: &self.ticker_symbol_mapper,
+                // TODO: Handle
+                include_ticker_symbols: None,
+                exclude_ticker_symbols: None,
+                max_results: MAX_RESULTS,
+                use_inverted: false,
+            },
+            &TickerWithWeight::to_lib_tickers_with_weight(tickers_with_weight),
         )
         .map(|results| {
             results
@@ -233,23 +275,10 @@ impl TickerSimilaritySearchAdapter {
                 .map(|result| TickerCosineSimilarity {
                     ticker_symbol: result.ticker_symbol,
                     similarity_score: result.similarity_score,
+                    similarity_score_normalized: result.similarity_score_normalized,
                 })
                 .collect()
         })
         .map_err(|err| JsValue::from_str(&format!("get_cosine_by_ticker_bucket Error: {:?}", err)))
-    }
-
-    /// Converts local `[TickerWithWeight]` into struct defined by similarity search library
-    fn to_lib_tickers_with_weight(
-        &self,
-        tickers_with_weight: &[TickerWithWeight],
-    ) -> Vec<LibTickerWithWeight> {
-        tickers_with_weight
-            .iter()
-            .map(|ticker| LibTickerWithWeight {
-                ticker_symbol: ticker.ticker_symbol.clone(),
-                weight: ticker.weight,
-            })
-            .collect()
     }
 }

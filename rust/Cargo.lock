@@ -2429,9 +2429,9 @@ dependencies = [
 
 [[package]]
 name = "ticker-similarity-search"
-version = "0.1.0-alpha"
+version = "0.1.0-alpha4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e7e07935f0c3ebef035660c279b3828018920c754344592db223c9ca0fd6ebd7"
+checksum = "9439f6deed30d7c0606cb97e0d17d38b7370f7aa3d1647489fb10d4ab063156f"
 dependencies = [
  "flatbuffers",
  "lazy_static",
@@ -2439,9 +2439,9 @@ dependencies = [
 
 [[package]]
 name = "ticker-sniffer"
-version = "0.1.0-alpha.1o"
+version = "0.1.0-alpha7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0fc460bc85203600d1e89bc1915b3cd5c0139e193790e4cf8ecf288730bb716f"
+checksum = "5a62db0d103b0bdff6704132249289b1194d7d47781bb19fbfc9aa3401246b02"
 dependencies = [
  "csv",
  "embed-resources",
