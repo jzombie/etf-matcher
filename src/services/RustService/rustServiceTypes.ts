@@ -192,6 +192,7 @@ export type RustServiceCoord2D = {
 export type RustServiceTickerDistance = {
   ticker_symbol: RustServiceTickerSymbol;
   distance: number;
+  distance_local_normalized: number;
   original_pca_coords: RustServiceCoord2D;
   centered_pca_coords: RustServiceCoord2D;
 };

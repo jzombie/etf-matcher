@@ -28,3 +28,13 @@ features = 158
 vector_dimensions = 320
 training_sequence_length = 40
 training_data_sources = ["10-Q", "key metrics"]
+
+[ticker_vector_config.v6-sma-lstm-investing-cash-flow-sub-class]
+path = "v6.SMA-LSTM-SUB-CLASS.NNNN.autoencoder.investing_cash_flow.ticker_vectors_collection.flatbuffers.bin"
+description = "v6 SMA LSTM Investing Cash Flow Sub Class"
+proto_noteboook = "v6.SMA-LSTM-SUB-CLASS.ipynb"
+last_training_time = "2025-02-14T12:00:00Z"
+features = 6
+vector_dimensions = 208
+training_sequence_length = 40
+training_data_sources = ["10-Q", "key metrics"]

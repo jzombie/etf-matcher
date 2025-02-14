@@ -3,7 +3,7 @@ use crate::types::TickerSymbol;
 use crate::utils;
 use crate::utils::ticker_utils::get_ticker_symbol_map;
 use std::sync::Arc;
-use ticker_similarity_search::data_models::{
+use ticker_similarity_search::structs::{
     TickerCosineSimilarity as LibTickerCosineSimilarity,
     TickerEuclideanDistance as LibTickerEuclideanDistance, TickerSymbolMapper,
     TickerVectorRepository, TickerVectorSearchConfig, TickerWithWeight as LibTickerWithWeight,
@@ -28,6 +28,12 @@ pub struct TickerEuclideanDistance {
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
+pub struct TickerCosineSimilarity {
+    pub ticker_symbol: TickerSymbol,
+    pub similarity_score: f32,
+}
+
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct TickerWithWeight {
     pub ticker_symbol: TickerSymbol,
     pub weight: f32,
@@ -44,13 +50,6 @@ impl TickerWithWeight {
             })
             .collect()
     }
-}
-
-#[derive(serde::Serialize, serde::Deserialize)]
-pub struct TickerCosineSimilarity {
-    pub ticker_symbol: TickerSymbol,
-    pub similarity_score: f32,
-    pub similarity_score_normalized: f32,
 }
 
 pub struct TickerSimilaritySearchAdapter {
@@ -157,8 +156,8 @@ impl TickerSimilaritySearchAdapter {
                 ticker_vector_repository: &self.ticker_vector_repository,
                 ticker_symbol_mapper: &self.ticker_symbol_mapper,
                 // TODO: Handle
-                include_ticker_symbols: None,
-                exclude_ticker_symbols: None,
+                include_filter_ticker_symbols: None,
+                exclude_filter_ticker_symbols: None,
                 max_results: MAX_RESULTS,
                 use_inverted: false,
             },
@@ -194,8 +193,8 @@ impl TickerSimilaritySearchAdapter {
                 ticker_vector_repository: &self.ticker_vector_repository,
                 ticker_symbol_mapper: &self.ticker_symbol_mapper,
                 // TODO: Handle
-                include_ticker_symbols: None,
-                exclude_ticker_symbols: None,
+                include_filter_ticker_symbols: None,
+                exclude_filter_ticker_symbols: None,
                 max_results: MAX_RESULTS,
                 use_inverted: false,
             },
@@ -233,8 +232,8 @@ impl TickerSimilaritySearchAdapter {
                 ticker_vector_repository: &self.ticker_vector_repository,
                 ticker_symbol_mapper: &self.ticker_symbol_mapper,
                 // TODO: Handle
-                include_ticker_symbols: None,
-                exclude_ticker_symbols: None,
+                include_filter_ticker_symbols: None,
+                exclude_filter_ticker_symbols: None,
                 max_results: MAX_RESULTS,
                 use_inverted: false,
             },
@@ -246,7 +245,6 @@ impl TickerSimilaritySearchAdapter {
                 .map(|result| TickerCosineSimilarity {
                     ticker_symbol: result.ticker_symbol,
                     similarity_score: result.similarity_score,
-                    similarity_score_normalized: result.similarity_score_normalized,
                 })
                 .collect()
         })
@@ -262,8 +260,8 @@ impl TickerSimilaritySearchAdapter {
                 ticker_vector_repository: &self.ticker_vector_repository,
                 ticker_symbol_mapper: &self.ticker_symbol_mapper,
                 // TODO: Handle
-                include_ticker_symbols: None,
-                exclude_ticker_symbols: None,
+                include_filter_ticker_symbols: None,
+                exclude_filter_ticker_symbols: None,
                 max_results: MAX_RESULTS,
                 use_inverted: false,
             },
@@ -275,7 +273,6 @@ impl TickerSimilaritySearchAdapter {
                 .map(|result| TickerCosineSimilarity {
                     ticker_symbol: result.ticker_symbol,
                     similarity_score: result.similarity_score,
-                    similarity_score_normalized: result.similarity_score_normalized,
                 })
                 .collect()
         })
