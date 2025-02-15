@@ -37,6 +37,7 @@ const RADIAL_FILL_COLOR = "none";
 const YELLOW_DOT_COLOR = "yellow";
 const YELLOW_DOT_RADIUS = 5;
 
+// TODO: Use from Rust service?
 const GRAPH_DOMAIN = [-1, 1];
 
 type TickerPCAScatterPlotCoord = {
