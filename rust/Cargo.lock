@@ -2429,19 +2429,20 @@ dependencies = [
 
 [[package]]
 name = "ticker-similarity-search"
-version = "0.1.0-alpha6"
+version = "0.1.0-alpha7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "598bd57cc7a5a7dcd1ce2d676a2ccd74a969c730a62900f4ca091034f3ce7849"
+checksum = "a368da04a27be49782ce7f28852aa11c226bbe33c61ea7b599173e3f5073665d"
 dependencies = [
  "flatbuffers",
  "lazy_static",
+ "ticker-sniffer",
 ]
 
 [[package]]
 name = "ticker-sniffer"
-version = "0.1.0-alpha9"
+version = "0.1.0-alpha10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "642f0a302ad5ab3c031bfaf5259d372da2fdf3fe2c0b8a8365cd7cdcac3777ee"
+checksum = "2f8e96f37935bd6f04c53a5cfaca9d91230e9d7b2c3247bc1fa00257b66061a1"
 dependencies = [
  "csv",
  "embed-resources",
