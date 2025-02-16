@@ -602,7 +602,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "etf-matcher"
+name = "etf-matcher-wasm-service"
 version = "0.1.0"
 dependencies = [
  "aes",
