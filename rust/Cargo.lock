@@ -281,9 +281,9 @@ checksum = "325918d6fe32f23b19878fe4b34794ae41fc19ddbe53b10571a4874d44ffd39b"
 
 [[package]]
 name = "cargo-pkg-info-struct-builder"
-version = "0.1.0-alpha5"
+version = "0.1.0-alpha6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "21355898460a988f698d7da2939eb7bbd09e5c915244208dae731ddf0f1a724b"
+checksum = "7c58cff495a378e41bf603aa22444230190b4f6404fff0935510df00c2866b6d"
 dependencies = [
  "toml",
 ]

@@ -15,6 +15,7 @@ const NO_ENV_FALLBACK: &str = "N/A";
 
 pub struct CargoPkgInfo {}
 
+/// Unescapes all `\\n` sequences back to `\n`.
 macro_rules! unescape_newlines {
     ($s:expr) => {
         Box::leak($s.replace("\\n", "\n").into_boxed_str())
