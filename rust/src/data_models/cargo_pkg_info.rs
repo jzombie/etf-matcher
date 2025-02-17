@@ -11,8 +11,6 @@
 // For more information, see: <https://doc.rust-lang.org/cargo/reference/environment-variables.html#environment-variables-cargo-sets-for-crates>
 //------------------------------------------------------------------------------
 
-const NO_ENV_FALLBACK: &str = "N/A";
-
 pub struct CargoPkgInfo {}
 
 /// Unescapes all `\\n` sequences back to `\n`.
@@ -25,129 +23,122 @@ macro_rules! unescape_newlines {
 impl CargoPkgInfo {
     /// Returns the package name.
     #[allow(dead_code)]
-    pub fn pkg_name() -> &'static str {
+    pub fn pkg_name() -> Option<&'static str> {
         option_env!("CARGO_PKG_NAME")
-            .unwrap_or(NO_ENV_FALLBACK)
-            .into()
     }
 
     /// Returns the crate name.
     #[allow(dead_code)]
-    pub fn crate_name() -> &'static str {
+    pub fn crate_name() -> Option<&'static str> {
         option_env!("CARGO_CRATE_NAME")
-            .unwrap_or(NO_ENV_FALLBACK)
-            .into()
     }
 
     /// Returns the package version.
     #[allow(dead_code)]
-    pub fn pkg_version() -> &'static str {
+    pub fn pkg_version() -> Option<&'static str> {
         option_env!("CARGO_PKG_VERSION")
-            .unwrap_or(NO_ENV_FALLBACK)
-            .into()
     }
 
     /// Returns the major version of the package.
     #[allow(dead_code)]
-    pub fn version_major() -> &'static str {
+    pub fn version_major() -> Option<&'static str> {
         option_env!("CARGO_PKG_VERSION_MAJOR")
-            .unwrap_or(NO_ENV_FALLBACK)
-            .into()
+    }
+
+    /// Returns the major version of the package as a number.
+    #[allow(dead_code)]
+    pub fn version_major_numeric() -> Option<u32> {
+        option_env!("CARGO_PKG_VERSION_MAJOR").and_then(|s| s.parse().ok())
     }
 
     /// Returns the minor version of the package.
     #[allow(dead_code)]
-    pub fn version_minor() -> &'static str {
+    pub fn version_minor() -> Option<&'static str> {
         option_env!("CARGO_PKG_VERSION_MINOR")
-            .unwrap_or(NO_ENV_FALLBACK)
-            .into()
+    }
+
+    /// Returns the minor version of the package as a number.
+    #[allow(dead_code)]
+    pub fn version_minor_numeric() -> Option<u32> {
+        option_env!("CARGO_PKG_VERSION_MINOR").and_then(|s| s.parse().ok())
     }
 
     /// Returns the patch version of the pacakge.
     #[allow(dead_code)]
-    pub fn version_patch() -> &'static str {
+    pub fn version_patch() -> Option<&'static str> {
         option_env!("CARGO_PKG_VERSION_PATCH")
-            .unwrap_or(NO_ENV_FALLBACK)
-            .into()
+    }
+
+    /// Returns the patch version of the pacakge as a number.
+    #[allow(dead_code)]
+    pub fn version_patch_numeric() -> Option<u32> {
+        option_env!("CARGO_PKG_VERSION_PATCH").and_then(|s| s.parse().ok())
     }
 
     /// Returns the pre-release version of the package.
     #[allow(dead_code)]
-    pub fn version_pre() -> &'static str {
+    pub fn version_pre() -> Option<&'static str> {
         option_env!("CARGO_PKG_VERSION_PRE")
-            .unwrap_or(NO_ENV_FALLBACK)
-            .into()
     }
 
     /// Returns the authors of the package.
     #[allow(dead_code)]
-    pub fn authors() -> &'static str {
+    pub fn authors() -> Option<&'static str> {
         option_env!("CARGO_PKG_AUTHORS")
-            .unwrap_or(NO_ENV_FALLBACK)
-            .into()
     }
 
     /// Returns the description of the package.
     #[allow(dead_code)]
-    pub fn description() -> &'static str {
+    pub fn description() -> Option<&'static str> {
         option_env!("CARGO_PKG_DESCRIPTION")
-            .unwrap_or(NO_ENV_FALLBACK)
-            .into()
     }
 
     /// Returns the homepage URL of the package.
     #[allow(dead_code)]
-    pub fn homepage() -> &'static str {
+    pub fn homepage() -> Option<&'static str> {
         option_env!("CARGO_PKG_HOMEPAGE")
-            .unwrap_or(NO_ENV_FALLBACK)
-            .into()
     }
 
     /// Returns the repository URL of the package.
     #[allow(dead_code)]
-    pub fn repository() -> &'static str {
+    pub fn repository() -> Option<&'static str> {
         option_env!("CARGO_PKG_REPOSITORY")
-            .unwrap_or(NO_ENV_FALLBACK)
-            .into()
     }
 
     /// Returns the license type of the package.
     #[allow(dead_code)]
-    pub fn license() -> &'static str {
+    pub fn license() -> Option<&'static str> {
         option_env!("CARGO_PKG_LICENSE")
-            .unwrap_or(NO_ENV_FALLBACK)
-            .into()
     }
 
     /// Returns the contents of the license file (embedded at build time).
     #[allow(dead_code)]
-    pub fn license_content() -> &'static str {
-        let license = option_env!("LICENSE_CONTENT").unwrap_or(NO_ENV_FALLBACK);
-        unescape_newlines!(license)
+    pub fn license_content() -> Option<&'static str> {
+        let license = option_env!("LICENSE_CONTENT");
+
+        if license.is_none() {
+            return None;
+        }
+
+        Some(unescape_newlines!(license.unwrap()))
     }
 
     /// Returns the Rust version required by the package.
     #[allow(dead_code)]
-    pub fn rust_version() -> &'static str {
+    pub fn rust_version() -> Option<&'static str> {
         option_env!("CARGO_PKG_RUST_VERSION")
-            .unwrap_or(NO_ENV_FALLBACK)
-            .into()
     }
 
     /// Returns the path to the README file.
     #[allow(dead_code)]
-    pub fn readme_path() -> &'static str {
+    pub fn readme_path() -> Option<&'static str> {
         option_env!("CARGO_PKG_README")
-            .unwrap_or(NO_ENV_FALLBACK)
-            .into()
     }
 
     /// Returns the build target (architecture/platform).
     #[allow(dead_code)]
-    pub fn build_target() -> &'static str {
+    pub fn build_target() -> Option<&'static str> {
         option_env!("BUILD_TARGET")
-            .unwrap_or(NO_ENV_FALLBACK)
-            .into()
     }
 
     /// Returns the UTC build time as an `Option<u64>`.

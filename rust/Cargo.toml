@@ -51,7 +51,7 @@ toml = {version = "0.8.19", features = ["preserve_order"] }
 serde = { version = "1.0.204", features = ["derive"] }
 chrono = { version = "0.4.38", features = ["serde"] }
 indexmap = "2.6.0"
-cargo-pkg-info-struct-builder = "0.1.0-alpha6"
+cargo-pkg-info-struct-builder = "0.1.0-alpha7"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
