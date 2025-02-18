@@ -1,3 +1,6 @@
+pub mod cargo_pkg_info;
+pub use cargo_pkg_info::CargoPkgInfo;
+
 pub mod data_build_info;
 
 pub mod data_url;

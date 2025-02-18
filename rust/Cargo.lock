@@ -280,6 +280,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "325918d6fe32f23b19878fe4b34794ae41fc19ddbe53b10571a4874d44ffd39b"
 
 [[package]]
+name = "cargo-pkg-info-struct-builder"
+version = "0.1.0-alpha11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "df34b3e45c8f1143b2d62232e8f66626316520a63abe40ab11bfa5478c5b9a15"
+dependencies = [
+ "string-auto-indent",
+ "toml",
+]
+
+[[package]]
 name = "cc"
 version = "1.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -521,6 +531,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "doc-comment"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fea41bba32d969b513997752735605054bc0dfa92b4c56bf1189f2e174be7a10"
+
+[[package]]
 name = "dotenv"
 version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -602,13 +618,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "etf-matcher"
+name = "etf-matcher-wasm-service"
 version = "0.1.0"
 dependencies = [
  "aes",
  "async-trait",
  "base64 0.21.7",
  "block-modes",
+ "cargo-pkg-info-struct-builder",
  "chrono",
  "config",
  "console_error_panic_hook",
@@ -2307,6 +2324,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
 
 [[package]]
+name = "string-auto-indent"
+version = "0.1.0-alpha"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c91f4736498d7a7ad74be22702be2eedaa9b0eff207ae6c681cec81c32390ac3"
+dependencies = [
+ "doc-comment",
+]
+
+[[package]]
 name = "subtle"
 version = "2.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2429,19 +2455,20 @@ dependencies = [
 
 [[package]]
 name = "ticker-similarity-search"
-version = "0.1.0-alpha"
+version = "0.1.0-alpha8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e7e07935f0c3ebef035660c279b3828018920c754344592db223c9ca0fd6ebd7"
+checksum = "46cabb2728109af854cdbbc7e1ab6abd73f49440981fbc6924e845726472a9a8"
 dependencies = [
  "flatbuffers",
  "lazy_static",
+ "ticker-sniffer",
 ]
 
 [[package]]
 name = "ticker-sniffer"
-version = "0.1.0-alpha.1o"
+version = "0.1.0-alpha10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0fc460bc85203600d1e89bc1915b3cd5c0139e193790e4cf8ecf288730bb716f"
+checksum = "2f8e96f37935bd6f04c53a5cfaca9d91230e9d7b2c3247bc1fa00257b66061a1"
 dependencies = [
  "csv",
  "embed-resources",
@@ -2529,9 +2556,9 @@ dependencies = [
 
 [[package]]
 name = "toml"
-version = "0.8.19"
+version = "0.8.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a1ed1f98e3fdc28d6d910e6737ae6ab1a93bf1985935a1193e68f93eeb68d24e"
+checksum = "cd87a5cdd6ffab733b2f74bc4fd7ee5fff6634124999ac278c35fc78c6120148"
 dependencies = [
  "indexmap",
  "serde",
@@ -2551,9 +2578,9 @@ dependencies = [
 
 [[package]]
 name = "toml_edit"
-version = "0.22.22"
+version = "0.22.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4ae48d6208a266e853d946088ed816055e556cc6028c5e8e2b84d9fa5dd7c7f5"
+checksum = "17b4795ff5edd201c7cd6dca065ae59972ce77d1b80fa0a84d94950ece7d1474"
 dependencies = [
  "indexmap",
  "serde",
@@ -2922,9 +2949,9 @@ checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
 
 [[package]]
 name = "winnow"
-version = "0.6.20"
+version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "36c1fec1a2bb5866f07c25f68c26e565c4c200aebb96d7e55710c19d3e8ac49b"
+checksum = "59690dea168f2198d1a3b0cac23b8063efcd11012f10ae4698f284808c8ef603"
 dependencies = [
  "memchr",
 ]

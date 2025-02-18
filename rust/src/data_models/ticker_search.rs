@@ -212,7 +212,8 @@ impl TickerSearch {
         })
     }
 
-    // TODO: In final implementation, include confidence scores, and ensure search results are ordered by confidence score by default
+    // TODO: In final implementation, include frequency scores, and ensure search results are ordered by frequency score by default
+    // Note: In `ticker-sniffer` >= v0.1.0-alpha9 there is a `utils::sort_results` method that will do this
     pub async fn extract_results_from_text(
         text: &str,
         page: usize,
@@ -221,9 +222,12 @@ impl TickerSearch {
         // // Step 1: Fetch raw results and construct the symbols map
         let raw_results = Self::get_all_raw_results().await?;
 
+        let is_case_sensitive = true;
+
         // Step 2: Use `ticker-sniffer` to extract symbols from text
-        let ticker_frequency_map = ticker_sniffer::extract_tickers_from_text(text)
-            .map_err(|e| JsValue::from_str(&e.to_string()))?;
+        let ticker_frequency_map =
+            ticker_sniffer::extract_tickers_from_text(text, is_case_sensitive)
+                .map_err(|e| JsValue::from_str(&e.to_string()))?;
 
         let extracted_symbols = ticker_frequency_map.keys();
 

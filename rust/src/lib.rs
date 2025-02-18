@@ -28,7 +28,13 @@ include!("__AUTOGEN__compilation_time.rs");
 
 #[wasm_bindgen(start)]
 pub fn main() -> Result<(), JsValue> {
-    web_sys::console::debug_1(&"Hello from Rust!".into());
+    web_sys::console::debug_1(
+        &format!(
+            "Hello from {}!",
+            data_models::CargoPkgInfo::pkg_name().unwrap_or("Rust")
+        )
+        .into(),
+    );
     web_sys::console::debug_1(&format!("Rust compiled at: {}", RUST_COMPILATION_TIME).into());
 
     // Debug panics on wasm32-unknown-unknown by providing a panic hook that forwards panic

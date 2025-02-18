@@ -71,6 +71,7 @@ impl DataURL {
     pub fn image_url(&self) -> String {
         match self {
             DataURL::Image(filename) => Self::build_path(&format!("images/{}", filename)),
+            // TODO: Don't panic!
             _ => panic!("Not an image URL"),
         }
     }

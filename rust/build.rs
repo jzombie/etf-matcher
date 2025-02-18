@@ -1,3 +1,4 @@
+use cargo_pkg_info_struct_builder::inject_build_metadata;
 use chrono::prelude::*;
 use dotenv::dotenv;
 use indexmap::IndexMap;
@@ -29,6 +30,13 @@ fn main() {
 
     // Generate the compilation time constant file
     generate_compilation_time_constant();
+
+    inject_build_metadata(
+        Path::new("src")
+            .join("data_models")
+            .join("cargo_pkg_info.rs")
+            .to_path_buf(),
+    );
 }
 
 fn generate_compilation_time_constant() {

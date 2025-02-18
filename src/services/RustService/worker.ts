@@ -1,4 +1,4 @@
-import init, * as wasmModule from "../../../public/pkg/etf_matcher";
+import init, * as wasmModule from "../../../public/pkg/etf_matcher_wasm_service";
 import customLogger from "../../utils/customLogger";
 import {
   EnvelopeType,
