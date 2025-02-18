@@ -25,9 +25,11 @@ export default class LRUCache<K, V> {
       // Remove the key to update its position as the most recently used
       this._cache.delete(key);
     } else if (this._cache.size >= this._limit) {
-      // Remove the least recently used (first) item from the cache
+      // Ensure `oldestKey` is defined before calling `.delete`
       const oldestKey = this._cache.keys().next().value;
-      this._cache.delete(oldestKey);
+      if (oldestKey !== undefined) {
+        this._cache.delete(oldestKey);
+      }
     }
     // Add the key and value to the cache
     this._cache.set(key, value);

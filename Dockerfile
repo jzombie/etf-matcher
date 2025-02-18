@@ -101,7 +101,9 @@ RUN apt-get update && \
     apt-get install -y curl gnupg tini inotify-tools bc && \
     curl -sL https://deb.nodesource.com/setup_22.x | bash - && \
     apt-get install -y nodejs && \
+    npm install -g npm@latest && \
     rm -rf /var/lib/apt/lists/*
+
 
 # Switch to the non-root user
 USER etfuser
