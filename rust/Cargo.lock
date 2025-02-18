@@ -281,10 +281,11 @@ checksum = "325918d6fe32f23b19878fe4b34794ae41fc19ddbe53b10571a4874d44ffd39b"
 
 [[package]]
 name = "cargo-pkg-info-struct-builder"
-version = "0.1.0-alpha7"
+version = "0.1.0-alpha11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b0193e5d761efe2be5950132698b97d147a39152e5ac195240e85bf9adf502b"
+checksum = "df34b3e45c8f1143b2d62232e8f66626316520a63abe40ab11bfa5478c5b9a15"
 dependencies = [
+ "string-auto-indent",
  "toml",
 ]
 
@@ -528,6 +529,12 @@ checksum = "442039f5147480ba31067cb00ada1adae6892028e40e45fc5de7b7df6dcc1b5f"
 dependencies = [
  "const-random",
 ]
+
+[[package]]
+name = "doc-comment"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fea41bba32d969b513997752735605054bc0dfa92b4c56bf1189f2e174be7a10"
 
 [[package]]
 name = "dotenv"
@@ -2317,6 +2324,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
 
 [[package]]
+name = "string-auto-indent"
+version = "0.1.0-alpha"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c91f4736498d7a7ad74be22702be2eedaa9b0eff207ae6c681cec81c32390ac3"
+dependencies = [
+ "doc-comment",
+]
+
+[[package]]
 name = "subtle"
 version = "2.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2439,9 +2455,9 @@ dependencies = [
 
 [[package]]
 name = "ticker-similarity-search"
-version = "0.1.0-alpha7"
+version = "0.1.0-alpha8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a368da04a27be49782ce7f28852aa11c226bbe33c61ea7b599173e3f5073665d"
+checksum = "46cabb2728109af854cdbbc7e1ab6abd73f49440981fbc6924e845726472a9a8"
 dependencies = [
  "flatbuffers",
  "lazy_static",
