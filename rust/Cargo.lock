@@ -275,9 +275,9 @@ checksum = "8f1fe948ff07f4bd06c30984e69f5b4899c516a3ef74f34df92a2df2ab535495"
 
 [[package]]
 name = "bytes"
-version = "1.9.0"
+version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "325918d6fe32f23b19878fe4b34794ae41fc19ddbe53b10571a4874d44ffd39b"
+checksum = "f61dac84819c6588b558454b194026eb1f09c293b9036ae9b159e74e73ab6cf9"
 
 [[package]]
 name = "cargo-pkg-info-struct-builder"
@@ -573,18 +573,19 @@ checksum = "60b1af1c220855b6ceac025d3f6ecdd2b7c4894bfe9cd9bda4fbb4bc7c0d4cf0"
 
 [[package]]
 name = "embed-bytes"
-version = "0.1.0-alpha4"
+version = "0.1.0-alpha6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c86722edd0d920b1b71b038bf7cbc3def68c664a420bc031f433464785edf8ff"
+checksum = "4967623293aa635b1a7314b004632d0f6fd77a0613dceaacb5662f8a4ceb564c"
 dependencies = [
  "bytes",
+ "pathdiff",
 ]
 
 [[package]]
 name = "embed-resources"
-version = "0.1.0-alpha4"
+version = "0.1.0-alpha6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3042f5c7dab8d32abf3500a3f9af47b9142ef27f4abbedc50a28798bb412143"
+checksum = "0a8c1a765795c40199e3d0a76d6a226376abcf2f1b327020f10012f3ee31c70f"
 dependencies = [
  "bytes",
  "embed-bytes",
@@ -1679,9 +1680,9 @@ checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
 
 [[package]]
 name = "pathdiff"
-version = "0.2.2"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d61c5ce1153ab5b689d0c074c4e7fc613e942dfb7dd9eea5ab202d2ad91fe361"
+checksum = "df94ce210e5bc13cb6651479fa48d14f601d9858cfe0467f43ae157023b938d3"
 
 [[package]]
 name = "pbkdf2"
@@ -2455,9 +2456,9 @@ dependencies = [
 
 [[package]]
 name = "ticker-similarity-search"
-version = "0.1.0-alpha8"
+version = "0.1.0-alpha9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "46cabb2728109af854cdbbc7e1ab6abd73f49440981fbc6924e845726472a9a8"
+checksum = "2b9d55faf6142751a7c27477cb517466c5f2c78a1d2d8589f5724032e5a85d4d"
 dependencies = [
  "flatbuffers",
  "lazy_static",
@@ -2466,9 +2467,9 @@ dependencies = [
 
 [[package]]
 name = "ticker-sniffer"
-version = "0.1.0-alpha10"
+version = "0.1.0-alpha14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2f8e96f37935bd6f04c53a5cfaca9d91230e9d7b2c3247bc1fa00257b66061a1"
+checksum = "b05d147ab540cfeb07dfa85a21b06038386d1213c3ba3dcbbed024971e986ea1"
 dependencies = [
  "csv",
  "embed-resources",
